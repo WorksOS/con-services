@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.Common;
@@ -12,7 +11,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   /// The response state returned from a Pass Count summary request
   /// </summary>
   public class PassCountStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<PassCountStatisticsResponse>, 
-    IAnalyticsOperationResponseResultConversion<PassCountStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
+    IAnalyticsOperationResponseResultConversion<PassCountStatisticsResult>
   {
     /// <summary>
     /// Holds last known good target Pass Count range values.
@@ -76,32 +75,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
         Counts = Counts,
         ResultStatus = ResultStatus
       };
-    }
-
-    protected bool Equals(PassCountStatisticsResponse other)
-    {
-      return base.Equals(other) && LastPassCountTargetRange.Equals(other.LastPassCountTargetRange);
-    }
-
-    public new bool Equals(StatisticsAnalyticsResponse other)
-    {
-      return Equals(other as PassCountStatisticsResponse);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((PassCountStatisticsResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (base.GetHashCode() * 397) ^ LastPassCountTargetRange.GetHashCode();
-      }
     }
   }
 }

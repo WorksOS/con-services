@@ -11,9 +11,9 @@ namespace VSS.TRex.DI
   /// </summary>
   public class DIBuilder
   {
-    public static DIBuilder Instance = null;
+    public static DIBuilder Instance;
 
-    public IServiceProvider ServiceProvider { get; internal set; }
+    public IServiceProvider ServiceProvider { get; private set; }
     public IServiceCollection ServiceCollection = new ServiceCollection();
 
     /// <summary>
@@ -43,16 +43,16 @@ namespace VSS.TRex.DI
     {
       if (ServiceCollection == null)
       {
-        throw new ArgumentNullException(nameof (ServiceCollection));
+        throw new ArgumentNullException(nameof(ServiceCollection));
       }
       if (configureClient == null)
       {
-        throw new ArgumentNullException(nameof (configureClient));
+        throw new ArgumentNullException(nameof(configureClient));
       }
 
       ServiceCollection.AddHttpClient();
 
-      DefaultHttpClientBuilder builder = new DefaultHttpClientBuilder(ServiceCollection, typeof (TClient).Name, Instance);
+      DefaultHttpClientBuilder builder = new DefaultHttpClientBuilder(ServiceCollection, typeof(TClient).Name, Instance);
       builder.ConfigureHttpClient(configureClient);
       builder.AddTypedClient<TClient>();
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.DI
     /// </summary>
     public DIBuilder AddLogging()
     {
-      // ### Set up log4net related configuration prior to instantiating the logging service
+      // Set up log4net related configuration prior to instantiating the logging service
       const string loggerRepoName = "VSS";
 
       //Now set actual logging name and configure logger.
@@ -73,15 +73,12 @@ namespace VSS.TRex.DI
 
       // Create the LoggerFactory instance for the service collection
       ILoggerFactory loggerFactory = new LoggerFactory();
-      // Complete configuration of the logger factory
-      // LoggerFactory.AddConsole();
-      // LoggerFactory.AddDebug();
       loggerFactory.AddProvider(new Log4NetProvider());
 
       // Insert this immediately into the TRex.Logging namespace to get logging available as early as possible
       Logging.Logger.Inject(loggerFactory);
 
-      // ### Add the logging related services to the collection
+      // Add the logging related services to the collection
       return Add(x => { x.AddSingleton<ILoggerFactory>(loggerFactory); });
     }
 
@@ -111,14 +108,26 @@ namespace VSS.TRex.DI
     }
 
     /// <summary>
-    /// A handly shorthand version of .Build().Inject()
+    /// Clears out any established DI context returning a empty TRex DI builder & context.
     /// </summary>
-    public DIBuilder Complete() => Build(); //.Inject();
+    public DIBuilder Eject()
+    {
+      DIContext.Eject();
+
+      ServiceProvider = null;
+      ServiceCollection = new ServiceCollection();
+
+      return this;
+    }
+
+    /// <summary>
+    /// A handy shorthand version of .Build()
+    /// </summary>
+    public DIBuilder Complete() => Build();
 
     /// <summary>
     /// Allow continuation of building the DI context
     /// </summary>
-    /// <returns></returns>
-    public static DIBuilder Continue() => Instance;
+    public static DIBuilder Continue() => Instance ?? New();
   }
 }

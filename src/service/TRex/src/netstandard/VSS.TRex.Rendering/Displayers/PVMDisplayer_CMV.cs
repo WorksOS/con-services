@@ -1,9 +1,8 @@
-﻿using Draw = System.Drawing;
-using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
+using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -28,24 +27,13 @@ namespace VSS.TRex.Rendering.Displayers
     private const short AbsoluteTargetCMV = 70;
 
     /// <summary>
-    /// CMV data holder.
-    /// </summary>
-    private ClientCMVLeafSubGrid SubGrid;
-
-    /// <summary>
     /// Renders CMV summary data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientCMVLeafSubGrid grid)
-      {
-          SubGrid = grid;
-          return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientCMVLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -60,7 +48,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      var cellValue = SubGrid.Cells[east_col, north_row];
+      var cellValue = ((ClientCMVLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       if (cellValue.MeasuredCMV == CellPassConsts.NullCCV)
         return Draw.Color.Empty;

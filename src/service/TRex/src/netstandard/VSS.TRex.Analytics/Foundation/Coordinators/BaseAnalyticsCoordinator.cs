@@ -58,7 +58,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E}");
+                Log.LogError(E, "Exception:");
             }
 
             Log.LogInformation("Out: Executing Coordination logic");

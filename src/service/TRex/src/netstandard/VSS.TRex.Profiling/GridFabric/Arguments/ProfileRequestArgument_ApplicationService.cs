@@ -1,6 +1,5 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
@@ -9,21 +8,18 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// <summary>
   /// Defines the parameters required for a production data profile request argument on the application service node
   /// </summary>
-  public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument
   {
     public GridDataType ProfileTypeRequired { get; set; }
 
-    public WGS84Point StartPoint = new WGS84Point(0, 0);
-    public WGS84Point EndPoint = new WGS84Point(0, 0);
+    public WGS84Point StartPoint { get; set; } = new WGS84Point();
+    public WGS84Point EndPoint { get; set; } = new WGS84Point();
 
-    public bool PositionsAreGrid { get; set; } = false;
+    public bool PositionsAreGrid { get; set; }
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
-    // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
-    public DesignDescriptor DesignDescriptor;
-
-    public bool ReturnAllPassesAndLayers { get; set; } = false;
+    public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -39,15 +35,15 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
     /// <param name="positionsAreGrid"></param>
-    /// <param name="designDescriptor"></param>
+    /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers)
     {
       ProfileTypeRequired = profileTypeRequired;
       StartPoint = startPoint;
       EndPoint = endPoint;
       PositionsAreGrid = positionsAreGrid;
-      DesignDescriptor = designDescriptor;
+      ReferenceDesignUID = referenceDesignUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 
@@ -69,8 +65,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       writer.WriteBoolean(PositionsAreGrid);
 
-      DesignDescriptor.ToBinary(writer);
-
       writer.WriteBoolean(ReturnAllPassesAndLayers);
     }
 
@@ -84,56 +78,17 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
+      StartPoint = new WGS84Point();
       if (reader.ReadBoolean())
         StartPoint.FromBinary(reader);
 
+      EndPoint = new WGS84Point();
       if (reader.ReadBoolean())
         EndPoint.FromBinary(reader);
 
       PositionsAreGrid = reader.ReadBoolean();
 
-      DesignDescriptor.FromBinary(reader);
-
       ReturnAllPassesAndLayers = reader.ReadBoolean();
-    }
-
-    protected bool Equals(ProfileRequestArgument_ApplicationService other)
-    {
-      return base.Equals(other) && 
-             Equals(StartPoint, other.StartPoint) && 
-             Equals(EndPoint, other.EndPoint) && 
-             ProfileTypeRequired == other.ProfileTypeRequired && 
-             PositionsAreGrid == other.PositionsAreGrid && 
-             DesignDescriptor.Equals(other.DesignDescriptor) && 
-             ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as ProfileRequestArgument_ApplicationService);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((ProfileRequestArgument_ApplicationService) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (StartPoint != null ? StartPoint.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (EndPoint != null ? EndPoint.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
-        hashCode = (hashCode * 397) ^ PositionsAreGrid.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReturnAllPassesAndLayers.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

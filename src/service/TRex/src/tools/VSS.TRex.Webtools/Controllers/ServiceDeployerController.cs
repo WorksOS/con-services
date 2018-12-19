@@ -31,12 +31,12 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception occurred deploying service: {e}");
+        Log.LogError(e, "Exception occurred deploying service:");
         return $"Exception occurred deploying service: {e}";
       }
 
-      Log.LogInformation("Complected service deployment for TAG file buffer queue service");
-      return "Complected service deployment for TAG file buffer queue service";
+      Log.LogInformation("Completed service deployment for TAG file buffer queue service");
+      return "Completed service deployment for TAG file buffer queue service";
     }
 
     /// <summary>
@@ -56,12 +56,12 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception occurred deploying service: {e}");
+        Log.LogError(e, "Exception occurred deploying service:");
         return $"Exception occurred deploying service: {e}";
       }
 
-      Log.LogInformation("Complected service deployment for mutable segment retirement service");
-      return "Complected service deployment for mutable segment retirement service";
+      Log.LogInformation("Completed service deployment for mutable segment retirement service");
+      return "Completed service deployment for mutable segment retirement service";
     }
 
     /// <summary>
@@ -81,12 +81,12 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception occurred deploying service: {e}");
+        Log.LogError(e, "Exception occurred deploying service:");
         return $"Exception occurred deploying service: {e}";
       }
 
-      Log.LogInformation("Complected service deployment for mutable segment retirement service");
-      return "Complected service deployment for mutable segment retirement service";
+      Log.LogInformation("Completed service deployment for mutable segment retirement service");
+      return "Completed service deployment for mutable segment retirement service";
     }
   }
 }

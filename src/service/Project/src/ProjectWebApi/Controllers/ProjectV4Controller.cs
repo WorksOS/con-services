@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -23,6 +24,8 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -56,15 +59,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
+    /// <param name="dataOceanClient"></param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore store,
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
+        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient)
     {
       this._logger = logger;
       this.HttpContextAccessor = httpContextAccessor;
@@ -160,8 +164,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
+            raptorProxy, subscriptionProxy, null, null, null,
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, dataOceanClient)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -213,13 +217,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Update Project
     /// </summary>
     /// <param name="projectRequest">UpdateProjectRequest model</param>
+    /// <param name="notificationHubClient"></param>
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("internal/v4/project")]
     [Route("api/v4/project")]
     [HttpPut]
-    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
+    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest, 
+      [FromServices] INotificationHubClient notificationHubClient)
     {
       if (projectRequest == null)
       {
@@ -239,14 +245,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpdateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
+            raptorProxy, subscriptionProxy, null, null, null,
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, dataOceanClient)
           .ProcessAsync(project)
       );
 
       //invalidate cache in Raptor
       log.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
-
+      await notificationHubClient.Notify(new ProjectDescriptorChangedNotification(project.ProjectUID));
       await raptorProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
@@ -431,7 +437,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpdateProjectGeofenceExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy, null, null, null,
             projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
           .ProcessAsync(updateProjectGeofenceRequest)
       );

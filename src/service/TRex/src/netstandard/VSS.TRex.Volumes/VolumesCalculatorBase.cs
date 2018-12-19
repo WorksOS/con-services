@@ -77,7 +77,7 @@ namespace VSS.TRex.Volumes
         /// <summary>
         /// BaseFilter and TopFilter reference two sets of filter settings
         /// between which we may calculate volumes. At the current time, it is
-        /// meaingful for a filter to have a spatial extent, and to denote an
+        /// meaningful for a filter to have a spatial extent, and to denote an
         /// 'as-at' time only.
         /// </summary>
         public ICombinedFilter BaseFilter { get; set; }
@@ -237,8 +237,7 @@ namespace VSS.TRex.Volumes
 
         public RequestErrorStatus ExecutePipeline()
         {
-          VolumesComputationTask /*PipelinedSubGridTask*/ PipelinedTask;
-            SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine;
+          SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine;
 
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
 
@@ -309,9 +308,11 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.Unknown;
                     }
 
-                    PipelinedTask = new VolumesComputationTask();
-                    PipelinedTask.Aggregator = Aggregator;
-
+                    VolumesComputationTask PipelinedTask = new VolumesComputationTask
+                    {
+                        Aggregator = Aggregator
+                    };
+                 
                     try
                     {
                         PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse>(/*0, */ PipelinedTask);
@@ -321,7 +322,13 @@ namespace VSS.TRex.Volumes
 
                         if (PipeLine.Initiate())
                         {
-                            PipeLine.WaitForCompletion();
+                          PipeLine.WaitForCompletion().ContinueWith(x =>
+                          {
+                            if (x.Result)
+                              Log.LogInformation("WaitForCompletion successful");
+                            else // No signal was received, the wait timed out...            
+                              Log.LogInformation($"WaitForCompletion timed out with {PipeLine.SubgridsRemainingToProcess} subgrids remaining to be processed");
+                          }).Wait();
                         }
 
                         /*
@@ -400,14 +407,14 @@ namespace VSS.TRex.Volumes
                 }
                 catch (Exception E)
                 {
-                    Log.LogError($"ExecutePipeline raised exception '{E}'");
+                    Log.LogError(E, "ExecutePipeline raised exception");
                 }
 
                 return Result;
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E}");
+                Log.LogError(E, "Exception");
             }
 
             return RequestErrorStatus.Unknown;
@@ -423,11 +430,11 @@ namespace VSS.TRex.Volumes
           gridDataType: GridDataType.Height,
           response: new SimpleVolumesResponse(), // todo or any predefined response object
           filters: new FilterSet(BaseFilter, TopFilter),
-          cutFillDesignID: ReferenceDesignID,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
+          cutFillDesignID: ReferenceDesignUID,
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignID != Guid.Empty,
+          requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignUID != Guid.Empty,
           requireSurveyedSurfaceInformation: true, // todo -> IncludeSurveyedSurfaces,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
         );

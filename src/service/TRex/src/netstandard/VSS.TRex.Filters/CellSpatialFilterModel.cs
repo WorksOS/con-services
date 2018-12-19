@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -18,6 +18,8 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The fence used to represent the spatial restriction derived from an alignment filter expressed as a 
     /// station and offset range with respect tot he alignment center line geometry expressed as a polygon
+    /// This is computed from the parametric (start/end station & left/right offset) description of the
+    /// area of the road design to act as the filter as a part of preparing a filter for use.
     /// </summary>
     public Fence AlignmentFence { get; set; } = new Fence(); // contains alignment boundary to help speed up filtering on alignment files
 
@@ -114,7 +116,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The design used as an alignment mask spatial filter
     /// </summary>
-    public Guid AlignmentMaskDesignUID { get; set; } = Guid.Empty;
+    public Guid AlignmentDesignMaskDesignUID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// Serialize out the state of the cell spatial filter using the Ignite IBinarizable serialisation
@@ -122,9 +124,9 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteBoolean(Fence != null);
       Fence?.ToBinary(writer);
@@ -163,7 +165,7 @@ namespace VSS.TRex.Filters
       writer.WriteGuid(SurfaceDesignMaskDesignUid);
 
       writer.WriteBoolean(IsAlignmentMask);
-      writer.WriteGuid(AlignmentMaskDesignUID);
+      writer.WriteGuid(AlignmentDesignMaskDesignUID);
     }
 
     /// <summary>
@@ -172,16 +174,21 @@ namespace VSS.TRex.Filters
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
-        (Fence ?? new Fence()).FromBinary(reader);
+      {
+        (Fence ?? (Fence = new Fence())).FromBinary(reader);
+      }
 
       if (reader.ReadBoolean())
-        (AlignmentFence ?? new Fence()).FromBinary(reader);
+      {
+        (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
+      }
 
       PositionX = reader.ReadDouble();
       PositionY = reader.ReadDouble();
@@ -202,87 +209,7 @@ namespace VSS.TRex.Filters
       IsDesignMask = reader.ReadBoolean();
       SurfaceDesignMaskDesignUid = reader.ReadGuid() ?? Guid.Empty;
       IsAlignmentMask = reader.ReadBoolean();
-      AlignmentMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
-    }
-
-    /// <summary>
-    /// Override equality comparision function with a protected access
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    protected bool Equals(CellSpatialFilterModel other)
-    {
-      return Equals(Fence, other.Fence) && 
-             Equals(AlignmentFence, other.AlignmentFence) && 
-             PositionX.Equals(other.PositionX) && 
-             PositionY.Equals(other.PositionY) && 
-             PositionRadius.Equals(other.PositionRadius) && 
-             IsSquare == other.IsSquare && 
-             OverrideSpatialCellRestriction.Equals(other.OverrideSpatialCellRestriction) && 
-             StartStation.Equals(other.StartStation) && 
-             EndStation.Equals(other.EndStation) && 
-             LeftOffset.Equals(other.LeftOffset) && 
-             RightOffset.Equals(other.RightOffset) && 
-             CoordsAreGrid == other.CoordsAreGrid && 
-             IsSpatial == other.IsSpatial && 
-             IsPositional == other.IsPositional && 
-             IsDesignMask == other.IsDesignMask && 
-             SurfaceDesignMaskDesignUid.Equals(other.SurfaceDesignMaskDesignUid) && 
-             IsAlignmentMask == other.IsAlignmentMask && 
-             AlignmentMaskDesignUID.Equals(other.AlignmentMaskDesignUID);
-    }
-
-    /// <summary>
-    /// Equality comparision function with a public access.
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    public bool Equals(ICellSpatialFilterModel other)
-    {
-      return Equals(other as CellSpatialFilterModel);
-    }
-
-    /// <summary>
-    /// Overrides generic object equals implementation to call custom implementation
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((CellSpatialFilterModel) obj);
-    }
-
-    /// <summary>
-    /// Gets hash code.
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = (Fence != null ? Fence.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (AlignmentFence != null ? AlignmentFence.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ PositionX.GetHashCode();
-        hashCode = (hashCode * 397) ^ PositionY.GetHashCode();
-        hashCode = (hashCode * 397) ^ PositionRadius.GetHashCode();
-        hashCode = (hashCode * 397) ^ IsSquare.GetHashCode();
-        hashCode = (hashCode * 397) ^ OverrideSpatialCellRestriction.GetHashCode();
-        hashCode = (hashCode * 397) ^ StartStation.GetHashCode();
-        hashCode = (hashCode * 397) ^ EndStation.GetHashCode();
-        hashCode = (hashCode * 397) ^ LeftOffset.GetHashCode();
-        hashCode = (hashCode * 397) ^ RightOffset.GetHashCode();
-        hashCode = (hashCode * 397) ^ CoordsAreGrid.GetHashCode();
-        hashCode = (hashCode * 397) ^ IsSpatial.GetHashCode();
-        hashCode = (hashCode * 397) ^ IsPositional.GetHashCode();
-        hashCode = (hashCode * 397) ^ IsDesignMask.GetHashCode();
-        hashCode = (hashCode * 397) ^ SurfaceDesignMaskDesignUid.GetHashCode();
-        hashCode = (hashCode * 397) ^ IsAlignmentMask.GetHashCode();
-        hashCode = (hashCode * 397) ^ AlignmentMaskDesignUID.GetHashCode();
-        return hashCode;
-      }
+      AlignmentDesignMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }

@@ -106,7 +106,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception thrown while retiring segments: {e}");
+        Log.LogError(e, "Exception thrown while retiring segments:");
         throw;
       }
     }

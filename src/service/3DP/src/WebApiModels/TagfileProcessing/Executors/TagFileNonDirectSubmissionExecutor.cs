@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
             new MemoryStream(tfRequest.Data),
             tfRequest.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, 0, 0, tfRequest.MachineId ?? -1,
             tfRequest.Boundary != null
-              ? RaptorConverters.convertWGS84Fence(tfRequest.Boundary)
+              ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
               : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
         log.LogInformation($"PostTagFile (NonDirect Raptor): result {resultCode} {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");

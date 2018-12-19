@@ -1,15 +1,13 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
-using VSS.TRex.Designs.Models;
+﻿using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.GridFabric
 {
   /// <summary>
   /// The argument to be supplied to the Patches request
   /// </summary>
-  public class PatchRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class PatchRequestArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
     /// The type of data requested for the patch. Single attribute only, expressed as the
@@ -55,39 +53,6 @@ namespace VSS.TRex.Exports.Patches.GridFabric
       Mode = (DisplayMode)reader.ReadInt();
       DataPatchNumber = reader.ReadInt();
       DataPatchSize = reader.ReadInt();
-    }
-
-    protected bool Equals(PatchRequestArgument other)
-    {
-      return base.Equals(other) && 
-             Mode == other.Mode && 
-             DataPatchNumber == other.DataPatchNumber && 
-             DataPatchSize == other.DataPatchSize;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as PatchRequestArgument);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((PatchRequestArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) Mode;
-        hashCode = (hashCode * 397) ^ DataPatchNumber;
-        hashCode = (hashCode * 397) ^ DataPatchSize;
-        return hashCode;
-      }
     }
   }
 }

@@ -28,6 +28,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         MachinesModified = true,
         MachineTargetValuesModified = true,
         MachineDesignsModified = true,
+        ProofingRunsModified = true,
         ExistenceMapChangeMask = new byte[] { 1, 2, 3 }
       };
 

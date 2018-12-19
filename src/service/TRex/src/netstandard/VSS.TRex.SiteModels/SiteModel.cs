@@ -21,8 +21,8 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
@@ -73,41 +73,33 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public bool IsTransient { get; private set; } = true;
 
-    /// <summary>
-    /// The grid data for this site model
-    /// </summary>
-    private IServerSubGridTree grid;
-
     private object machineLoadLockObject = new object();
+    private object siteProofingRunLockObject = new object();
     private object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid
-    {
-      get { return grid; }
-    }
+    private IServerSubGridTree grid;
 
+    /// <summary>
+    /// The grid data for this site model
+    /// </summary>
+    public IServerSubGridTree Grid => grid;
+    
     private ISubGridTreeBitMask existenceMap;
 
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
     /// load it from storage/cache
     /// </summary>
-    public ISubGridTreeBitMask ExistenceMap
-    {
-      get { return existenceMap ?? GetProductionDataExistenceMap(); }
-    }
+    public ISubGridTreeBitMask ExistenceMap => existenceMap ?? GetProductionDataExistenceMap();
 
     /// <summary>
     /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
     /// the existence map to be loaded via the ExistenceMap property
     /// </summary>
-    public bool ExistenceMapLoaded
-    {
-      get => existenceMap != null;
-    }
+    public bool ExistenceMapLoaded => existenceMap != null;
 
     /// <summary>
     /// SiteModelExtent records the 3D extents of the data stored in the site model
@@ -152,14 +144,8 @@ namespace VSS.TRex.SiteModels
     /// Gets the loaded state of the CSIB. This permits testing if a CSIB is loaded without forcing
     /// the CSIB to be loaded via the CSIB property
     /// </summary>
-    public bool CSIBLoaded
-    {
-      get => csib != null;
-    }
-
-    // ProofingRuns is the set of proofing runs that have been collected in this site model
-    // public SiteProofingRuns ProofingRuns;
-
+    public bool CSIBLoaded => csib != null;
+    
     // MachinesTargetValues stores a list of target values, one list per machine,
     // that record how the configured target CCV and pass count settings on each
     // machine has changed over time.
@@ -174,10 +160,7 @@ namespace VSS.TRex.SiteModels
       private set => machinesTargetValues = value;
     }
 
-    public bool MachineTargetValuesLoaded
-    {
-      get => machinesTargetValues != null;
-    }
+    public bool MachineTargetValuesLoaded => machinesTargetValues != null;
 
     /// <summary>
     /// Provides a set of metadata attributes about this sitemodel
@@ -191,44 +174,61 @@ namespace VSS.TRex.SiteModels
     /// Each site model designs records the name of the site model and the extents
     /// of the cell information that have been record for it.
     /// </summary>
-    public ISiteModelDesignList SiteModelDesigns
-    {
-      get { return siteModelDesigns; }
-    }
+    public ISiteModelDesignList SiteModelDesigns => siteModelDesigns;
 
     private ISurveyedSurfaces surveyedSurfaces;
 
     // This is a list of TTM descriptors which indicate designs
     // that can be used as a snapshot of an actual ground surface at a specific point in time
-    public ISurveyedSurfaces SurveyedSurfaces
-    {
-      get => surveyedSurfaces ?? (surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
-    }
+    public ISurveyedSurfaces SurveyedSurfaces => surveyedSurfaces ?? (surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
 
-    public bool SurveyedSurfacesLoaded
-    {
-      get => surveyedSurfaces != null;
-    }
+    public bool SurveyedSurfacesLoaded => surveyedSurfaces != null;
 
     private IDesigns designs;
 
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the sitemodel
     /// </summary>
-    public IDesigns Designs
+    public IDesigns Designs => designs ?? (designs = DIContext.Obtain<IDesignManager>().List(ID));
+
+    public bool DesignsLoaded => designs != null;
+
+    // The siteProofingRuns is the set of proofing runs that have been collected in this site model
+    private ISiteProofingRunList siteProofingRuns;
+
+    /// <summary>
+    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
+    /// Each site model proofing run records the name of the site model, machine ID, start/end times and the extents
+    /// of the cell information that have been record for it.
+    /// </summary>
+    public ISiteProofingRunList SiteProofingRuns
     {
-      get => designs ?? (designs = DIContext.Obtain<IDesignManager>().List(ID));
+      get
+      {
+        if (siteProofingRuns == null)
+        {
+          lock (siteProofingRunLockObject)
+          {
+            if (siteProofingRuns != null)
+              return siteProofingRuns;
+
+            siteProofingRuns = new SiteProofingRunList { DataModelID = ID };
+
+            if (!IsTransient)
+              siteProofingRuns.LoadFromPersistentStore();
+          }
+        }
+
+        return siteProofingRuns;
+      }
     }
 
-    public bool DesignsLoaded
-    {
-      get => designs != null;
-    }
+    public bool SiteProofingRunsLoaded => siteProofingRuns != null;
 
     /// <summary>
     /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this sitemodel.
     /// </summary>
-    private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; }
+    private ISiteModelMachineDesignList siteModelMachineDesigns;
 
     public ISiteModelMachineDesignList SiteModelMachineDesigns
     {
@@ -255,16 +255,13 @@ namespace VSS.TRex.SiteModels
       }
     }
 
-    public bool SiteModelMachineDesignsLoaded
-    {
-      get => siteModelMachineDesigns != null;
-    }
+    public bool SiteModelMachineDesignsLoaded => siteModelMachineDesigns != null;
 
     // Machines contains a list of compactor machines that this site model knows
     // about. Each machine contains a link to the machine hardware ID for the
     // appropriate machine
 
-    private IMachinesList machines { get; set; }
+    private IMachinesList machines;
 
     public IMachinesList Machines
     {
@@ -293,10 +290,7 @@ namespace VSS.TRex.SiteModels
       }
     }
 
-    public bool MachinesLoaded
-    {
-      get => machines != null;
-    }
+    public bool MachinesLoaded => machines != null;
 
     public bool IgnoreInvalidPositions { get; set; } = true;
 
@@ -347,6 +341,10 @@ namespace VSS.TRex.SiteModels
         ? originModel.Machines
         : null;
 
+      siteProofingRuns = originModel.SiteProofingRunsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveProofingRuns) != 0
+        ? originModel.SiteProofingRuns
+        : null;
+
       siteModelMachineDesigns = originModel.SiteModelMachineDesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineDesigns) != 0
         ? originModel.SiteModelMachineDesigns
         : null;
@@ -355,8 +353,6 @@ namespace VSS.TRex.SiteModels
       machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
         ? originModel.MachinesTargetValues
         : null;
-
-      // FProofingRuns:= TICSiteProofingRuns.Create;
 
       // Reload the bits that need to be reloaded
       LoadFromPersistentStore();
@@ -377,8 +373,6 @@ namespace VSS.TRex.SiteModels
 
       // Allow existence map loading to be deferred/lazy on reference
       existenceMap = null;
-
-      // FProofingRuns:= TICSiteProofingRuns.Create;
     }
 
     public SiteModel( //string name,
@@ -397,28 +391,27 @@ namespace VSS.TRex.SiteModels
       SiteModelExtent.Include(Source.SiteModelExtent);
 
       // Proofing runs
-      /* TODO: Proofing runs
-      for (int I = 0; I < Source.ProofingRuns.ProofingRuns.Count; I++)
-        with Source.ProofingRuns.ProofingRuns[I] do
-          begin
-            Index := FProofingRuns.IndexOf(Name, MachineID, StartTime, EndTime);
-  
-            if Index = -1 then
-              FProofingRuns.CreateNew(Name, MachineID, StartTime, EndTime, Extents)
-            else
-              begin
-                FProofingRuns.ProofingRuns[Index].Extents.Include(Extents);
-                if FProofingRuns.ProofingRuns[Index].StartTime > StartTime then
-                  FProofingRuns.ProofingRuns[Index].StartTime := StartTime;
-                if FProofingRuns.ProofingRuns[Index].EndTime<EndTime then
-                  FProofingRuns.ProofingRuns[Index].EndTime := EndTime;
-              end;
-          end;
-       */
+      if (Source.SiteProofingRunsLoaded)
+        for (var i = 0; i < Source.SiteProofingRuns.Count; i++)
+        {
+          var proofingRun = Source.SiteProofingRuns[i];
+
+          if (!SiteProofingRuns.CreateAndAddProofingRun(proofingRun.Name, proofingRun.MachineID, proofingRun.StartTime, proofingRun.EndTime, proofingRun.Extents))
+          {
+            SiteProofingRuns[i].Extents.Include(proofingRun.Extents);
+
+            if (SiteProofingRuns[i].StartTime > proofingRun.StartTime)
+              SiteProofingRuns[i].StartTime = proofingRun.StartTime;
+
+            if (SiteProofingRuns[i].EndTime < proofingRun.EndTime)
+              SiteProofingRuns[i].EndTime = proofingRun.EndTime;
+          }
+        }
+
       // Designs
       // Note: Design names are handled as a part of integration of machine events
 
-      LastModifiedDate = Source.LastModifiedDate;
+        LastModifiedDate = Source.LastModifiedDate;
     }
 
     public void Write(BinaryWriter writer)
@@ -436,7 +429,6 @@ namespace VSS.TRex.SiteModels
 
       SiteModelExtent.Write(writer);
 
-      //FProofingRuns.WriteToStream(Stream);
       //FSiteModelDesigns.WriteToStream(Stream);
 
       // Write the design names list
@@ -485,7 +477,6 @@ namespace VSS.TRex.SiteModels
 
       SiteModelExtent.Read(reader);
 
-      // FProofingRuns.ReadFromStream(Stream);
       // FSiteModelDesigns.ReadFromStream(Stream);
 
       // Read the design names list
@@ -494,7 +485,29 @@ namespace VSS.TRex.SiteModels
       LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
     }
 
-    public bool SaveToPersistentStore(IStorageProxy storageProxy)
+    /// <summary>
+    /// Saves only the core metadata about the site model to the persistent store
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy)
+    {
+      if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) == FileSystemErrorStatus.OK)
+      {
+        storageProxy.Commit();
+        return true;
+      }
+
+      Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
+      return false;
+    }
+
+    /// <summary>
+    /// Save the sitemodel metadata and core mutated state driven by TAG file ingest
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
       bool Result = true;
 
@@ -518,7 +531,17 @@ namespace VSS.TRex.SiteModels
         }
         catch (Exception e)
         {
-          Log.LogError($"Failed to save machine list for site model {ID} to persistent store: {e}");
+          Log.LogError(e, $"Failed to save machine list for site model {ID} to persistent store:");
+          Result = false;
+        }
+
+        try
+        {
+          siteProofingRuns?.SaveToPersistentStore(storageProxy);
+        }
+        catch (Exception e)
+        {
+          Log.LogError(e, $"Failed to save proofing run list for site model {ID} to persistent store:");
           Result = false;
         }
 
@@ -528,7 +551,7 @@ namespace VSS.TRex.SiteModels
         }
         catch (Exception e)
         {
-          Log.LogError($"Failed to save machine design name list for site model {ID} to persistent store: {e}");
+          Log.LogError(e, $"Failed to save machine design name list for site model {ID} to persistent store:");
           Result = false;
         }
       }
@@ -615,7 +638,7 @@ namespace VSS.TRex.SiteModels
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception occurred: {e}");
+        Log.LogError(e, "Exception occurred:");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
 

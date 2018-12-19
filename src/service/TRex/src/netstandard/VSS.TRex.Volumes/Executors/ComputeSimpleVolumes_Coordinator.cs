@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -9,7 +8,6 @@ using VSS.TRex.GridFabric.Models;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.Executors
@@ -38,7 +36,7 @@ namespace VSS.TRex.Volumes.Executors
         /// <summary>
         /// BaseFilter and TopFilter reference two sets of filter settings
         /// between which we may calculate volumes. At the current time, it is
-        /// meaingful for a filter to have a spatial extent, and to denote aa
+        /// meaningful for a filter to have a spatial extent, and to denote aa
         /// 'as-at' time only.
         /// </summary>
         public ICombinedFilter BaseFilter;
@@ -49,13 +47,13 @@ namespace VSS.TRex.Volumes.Executors
         /// The ID of the 'base' design. This is the design forming the 'from' surface in 
         /// the volumes calculation
         /// </summary>
-        Guid BaseDesignID;
+        private readonly Guid BaseDesignID;
 
         /// <summary>
         /// The ID of the 'to or top' design. This is the design forming the 'to or top' surface in 
         /// the volumes calculation
         /// </summary>
-        Guid TopDesignID;
+        private readonly Guid TopDesignID;
 
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
@@ -84,12 +82,12 @@ namespace VSS.TRex.Volumes.Executors
         public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
 
         /// <summary>
-        ///  Local refernece to the sitemodel to be used during processing
+        ///  Local reference to the sitemodel to be used during processing
         /// </summary>
         private ISiteModel siteModel;
 
         /// <summary>
-        /// Performs funcional initialisation of ComnputeVolumes state that is dependent on the initial state
+        /// Performs functional initialiaation of ComputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
         /// <param name="ComputeVolumes"></param>
@@ -218,7 +216,7 @@ namespace VSS.TRex.Volumes.Executors
 
                     // Create and configure the aggregator that contains the business logic for the 
                     // underlying volume calculation
-                    Aggregator = new SimpleVolumesCalculationsAggregator()
+                    Aggregator = new SimpleVolumesCalculationsAggregator
                     {
                         RequiresSerialisation = true,
                         SiteModelID = SiteModelID,
@@ -259,10 +257,10 @@ namespace VSS.TRex.Volumes.Executors
                       return VolumesResult;
                     }
 
-                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutVolume:.3F}, Fill={Aggregator.FillVolume:.3F}, Area={Aggregator.CoverageArea:.3F}");
-
-                    // Instruct the Aggregator to perform any finalisation logic before reading out the results
+                    // Instruct the Aggregator to perform any finalization logic before reading out the results
                     Aggregator.Finalise();
+
+                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutFillVolume.CutVolume:F3}, Fill={Aggregator.CutFillVolume.FillVolume:F3}, Area={Aggregator.CoverageArea:F3}");
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
@@ -275,31 +273,6 @@ namespace VSS.TRex.Volumes.Executors
 
                         return VolumesResult;
                     }
-
-                    // Convert bounding extents grid coordinates into WGS84 ones...
-                    var NEECoords = new []
-                    {
-                      new XYZ(Aggregator.BoundingExtents.MinX, Aggregator.BoundingExtents.MinY),
-                      new XYZ(Aggregator.BoundingExtents.MaxX, Aggregator.BoundingExtents.MaxY)
-                    };
-                  
-                    (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(siteModel.CSIB(), NEECoords);
-
-                    if (errorCode != RequestErrorStatus.OK)
-                    {
-                      Log.LogInformation("Summary volume failure, could not convert bounding area from grid to WGS coordinates");
-                      ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
-                    
-                      return null;
-                    }
-
-                    ResultBoundingExtents = new BoundingWorldExtent3D
-                    {
-                      MinX = MathUtilities.RadiansToDegrees(LLHCoords[0].X),
-                      MinY = MathUtilities.RadiansToDegrees(LLHCoords[0].Y),
-                      MaxX = MathUtilities.RadiansToDegrees(LLHCoords[1].X),
-                      MaxY = MathUtilities.RadiansToDegrees(LLHCoords[1].Y)
-                    };
 
                     // Fill in the result object to pass back to the caller
                     VolumesResult.Cut = Aggregator.CutFillVolume.CutVolume;
@@ -319,7 +292,7 @@ namespace VSS.TRex.Volumes.Executors
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E}");
+                Log.LogError(E, "Exception:");
             }
 
             return VolumesResult;

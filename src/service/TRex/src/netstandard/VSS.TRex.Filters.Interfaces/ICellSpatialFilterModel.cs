@@ -4,7 +4,7 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellSpatialFilterModel : IFromToBinary, IEquatable<ICellSpatialFilterModel>
+  public interface ICellSpatialFilterModel : IFromToBinary
   {
     /// <summary>
     /// The fence used for polygon based spatial filtering
@@ -101,28 +101,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// The design used as an alignment mask spatial filter
     /// </summary>
-    Guid AlignmentMaskDesignUID { get; set; }
-/*
-    /// <summary>
-    /// Delegates hash code to default object implementation
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    int GetHashCode(object obj);
-
-    /// <summary>
-    /// Overrides generic object equals implementation to call custom implementation
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    bool Equals(object obj);
-
-    /// <summary>
-    /// Equality comparision function
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    new bool Equals(ICellSpatialFilterModel other);
- */
+    Guid AlignmentDesignMaskDesignUID { get; set; }
   }
 }

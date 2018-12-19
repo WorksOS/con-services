@@ -22,7 +22,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <summary>
     /// The task to be fitted to the pipelien to mediate subgrid retrieval and procesing
     /// </summary>
-    ITask Task { get; set; }
+    ITRexTask Task { get; set; }
 
     /// <summary>
     /// The pipe lien used to retrive subgrids from the cluster compute layer

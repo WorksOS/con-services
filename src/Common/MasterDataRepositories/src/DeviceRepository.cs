@@ -12,10 +12,10 @@ namespace VSS.MasterData.Repositories
 {
   public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>, IDeviceRepository
   {
-    public DeviceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
+    public DeviceRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(connectionString,
       logger)
     {
-      log = logger.CreateLogger<DeviceRepository>();
+      Log = logger.CreateLogger<DeviceRepository>();
     }
 
     public async Task<int> StoreEvent(IDeviceEvent evt)
@@ -24,11 +24,11 @@ namespace VSS.MasterData.Repositories
       var eventType = "Unknown";
       if (evt == null)
       {
-        log.LogWarning($"Unsupported event type");
+        Log.LogWarning($"Unsupported event type");
         return 0;
       }
 
-      log.LogDebug($"Event type is {evt.GetType()}");
+      Log.LogDebug($"Event type is {evt.GetType()}");
       if (evt is CreateDeviceEvent)
       {
         var device = new Device();
@@ -106,7 +106,7 @@ namespace VSS.MasterData.Repositories
     /// <returns></returns>
     private async Task<int> UpsertDeviceDetail(Device device, string eventType)
     {
-      log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, device.DeviceUID);
+      Log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, device.DeviceUID);
       var upsertedCount = 0;
 
       var existing = (await QueryWithAsyncPolicy<Device>
@@ -115,7 +115,7 @@ namespace VSS.MasterData.Repositories
             LastActionedUTC AS LastActionedUtc
           FROM Device
           WHERE DeviceUID = @DeviceUID"
-        , new { DeviceUID = device.DeviceUID}
+        , new {DeviceUID = device.DeviceUID}
       )).FirstOrDefault();
 
       if (eventType == "CreateDeviceEvent")
@@ -124,8 +124,8 @@ namespace VSS.MasterData.Repositories
       if (eventType == "UpdateDeviceEvent")
         upsertedCount = await UpdateDevice(device, existing);
 
-      log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
-      log.LogInformation("Event storage {0}, {1}, success: {2}", eventType, JsonConvert.SerializeObject(device),
+      Log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
+      Log.LogInformation("Event storage {0}, {1}, success: {2}", eventType, JsonConvert.SerializeObject(device),
         upsertedCount);
       return upsertedCount;
     }
@@ -139,8 +139,9 @@ namespace VSS.MasterData.Repositories
                 (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, LastActionedUTC )
               VALUES
                 (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)";
-          return await ExecuteWithAsyncPolicy(upsert, device);
+        return await ExecuteWithAsyncPolicy(upsert, device);
       }
+
       if (device.LastActionedUtc >= existing.LastActionedUtc)
       {
         device.DeviceSerialNumber = device.DeviceSerialNumber == null
@@ -187,7 +188,6 @@ namespace VSS.MasterData.Repositories
       return await Task.FromResult(0);
     }
 
-
     private async Task<int> UpdateDevice(Device device, Device existing)
     {
       if (existing != null)
@@ -233,13 +233,14 @@ namespace VSS.MasterData.Repositories
                 WHERE DeviceUID = @DeviceUID";
           return await ExecuteWithAsyncPolicy(update, device);
         }
-        log.LogDebug(
+
+        Log.LogDebug(
           "DeviceRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
           existing.LastActionedUtc, device.LastActionedUtc);
       }
       else // doesn't exist already
       {
-        log.LogDebug("DeviceRepository: Inserted an UpdateDeviceEvent as none existed.  newActionedUTC{0}",
+        Log.LogDebug("DeviceRepository: Inserted an UpdateDeviceEvent as none existed.  newActionedUTC{0}",
           device.LastActionedUtc);
 
         const string upsert =
@@ -249,6 +250,7 @@ namespace VSS.MasterData.Repositories
                 (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @OwningCustomerUID, @LastActionedUtc)";
         return await ExecuteWithAsyncPolicy(upsert, device);
       }
+
       return await Task.FromResult(0);
     }
 
@@ -267,14 +269,14 @@ namespace VSS.MasterData.Repositories
     /// <returns></returns>
     private async Task<int> UpsertDeviceAssetDetail(AssetDevice assetDevice, string eventType)
     {
-      log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, assetDevice.DeviceUID);
+      Log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, assetDevice.DeviceUID);
       var upsertedCount = 0;
 
       var existing = (await QueryWithAsyncPolicy<AssetDevice>
       (@"SELECT fk_DeviceUID AS DeviceUID, fk_AssetUID AS AssetUID, LastActionedUTC
           FROM AssetDevice
           WHERE fk_DeviceUID = @DeviceUID"
-        , new { DeviceUID = assetDevice.DeviceUID}
+        , new {DeviceUID = assetDevice.DeviceUID}
       )).FirstOrDefault();
 
       if (eventType == "AssociateDeviceAssetEvent")
@@ -283,8 +285,8 @@ namespace VSS.MasterData.Repositories
       if (eventType == "DissociateDeviceAssetEvent")
         upsertedCount = await DissociateDeviceAsset(assetDevice, existing);
 
-      log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
-      log.LogInformation("Event storage: {0}, {1}, success{2}", eventType,
+      Log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
+      Log.LogInformation("Event storage: {0}, {1}, success{2}", eventType,
         JsonConvert.SerializeObject(assetDevice), upsertedCount);
       return upsertedCount;
     }
@@ -299,15 +301,16 @@ namespace VSS.MasterData.Repositories
                 (fk_DeviceUID, fk_AssetUID, LastActionedUTC )
               VALUES
                 (@DeviceUID, @AssetUID, @LastActionedUtc)";
-          return await ExecuteWithAsyncPolicy(upsert, assetDevice);
+        return await ExecuteWithAsyncPolicy(upsert, assetDevice);
       }
+
       if (assetDevice.LastActionedUtc >= existing.LastActionedUtc)
       {
         const string update =
           @"UPDATE AssetDevice                
                 SET fk_AssetUID = @AssetUID
               WHERE fk_DeviceUID = @DeviceUID";
-          return await ExecuteWithAsyncPolicy(update, assetDevice);
+        return await ExecuteWithAsyncPolicy(update, assetDevice);
       }
       // Create received after Update
       //     not required for assetDevice, as everything in an Update is also in the Create, so nothing to fill in
@@ -326,11 +329,11 @@ namespace VSS.MasterData.Repositories
             @"DELETE FROM AssetDevice                                 
                 WHERE fk_DeviceUID = @DeviceUID
                   AND fk_AssetUID = @AssetUID";
-            return await ExecuteWithAsyncPolicy(update, assetDevice);
- }
+          return await ExecuteWithAsyncPolicy(update, assetDevice);
+        }
         else
         {
-          log.LogDebug(
+          Log.LogDebug(
             "DeviceRepository: old delete event ignored as a newer one exists currentActionedUTC{0} newActionedUTC{1}",
             existing.LastActionedUtc, assetDevice.LastActionedUtc);
         }
@@ -346,25 +349,22 @@ namespace VSS.MasterData.Repositories
 
     public async Task<Device> GetDevice(string deviceUid)
     {
-      {
-        return (await QueryWithAsyncPolicy<Device>
-        (@"SELECT 
+      return (await QueryWithAsyncPolicy<Device>
+      (@"SELECT 
               DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
               LastActionedUTC AS LastActionedUtc
             FROM Device
             WHERE DeviceUID = @DeviceUID"
-          , new { DeviceUID = deviceUid }
-        )).FirstOrDefault();
-      }
+        , new {DeviceUID = deviceUid}
+      )).FirstOrDefault();
     }
 
 
     // for TFAS
     public async Task<AssetDeviceIds> GetAssociatedAsset(string radioSerial, string deviceType)
     {
-      {
-        return (await QueryWithAsyncPolicy<AssetDeviceIds>
-        (@"SELECT 
+      return (await QueryWithAsyncPolicy<AssetDeviceIds>
+      (@"SELECT 
                 a.AssetUID, a.LegacyAssetID, a.OwningCustomerUID, d.DeviceUid, d.DeviceType, d.DeviceSerialNumber AS RadioSerial
               FROM Device d
                 INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
@@ -372,9 +372,8 @@ namespace VSS.MasterData.Repositories
               WHERE a.IsDeleted = 0
                 AND d.DeviceSerialNumber LIKE @RadioSerial
                 AND d.DeviceType LIKE @DeviceType"
-          , new { RadioSerial = radioSerial, DeviceType = deviceType }
-        )).FirstOrDefault();
-      }
+        , new {RadioSerial = radioSerial, DeviceType = deviceType}
+      )).FirstOrDefault();
     }
 
     #endregion

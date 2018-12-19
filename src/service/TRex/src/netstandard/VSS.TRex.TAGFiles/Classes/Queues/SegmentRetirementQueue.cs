@@ -88,7 +88,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       }
       catch (Exception e)
       {
-        Log.LogError($"{nameof(Remove)} experienced exception while removing retirees from retirement queue: {e}");
+        Log.LogError(e, $"{nameof(Remove)} experienced exception while removing retirees from retirement queue:");
       }
     }
 
@@ -112,7 +112,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       }
       catch (Exception e)
       {
-        Log.LogError($"{nameof(Query)} experienced exception while querying retirees: {e}");
+        Log.LogError(e, $"{nameof(Query)} experienced exception while querying retirees:");
         return null;
       }
 
@@ -130,7 +130,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         }
         catch (Exception e)
         {
-          Log.LogError($"{nameof(Query)} experienced exception while querying retirees: {e}");
+          Log.LogError(e, $"{nameof(Query)} experienced exception while querying retirees:");
           return null;
         }
   */

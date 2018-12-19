@@ -99,7 +99,7 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
-      services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
       services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       
       serviceProvider = services.BuildServiceProvider();

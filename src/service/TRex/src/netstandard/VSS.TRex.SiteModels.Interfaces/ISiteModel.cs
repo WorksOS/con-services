@@ -59,12 +59,21 @@ namespace VSS.TRex.SiteModels.Interfaces
     bool DesignsLoaded { get; }
 
     /// <summary>
+    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
+    /// Each site model proofing run records the name of the site model, machine ID, start/end times and the extents
+    /// of the cell information that have been record for it.
+    /// </summary>
+    ISiteProofingRunList SiteProofingRuns { get; }
+
+    bool SiteProofingRunsLoaded { get; }
+
+    /// <summary>
     /// SiteModelMachineDesigns records all the machineDesignNames retrieved from tag file Change events.
     /// An indexed list is maintained in the sitemodel reported into.
     /// The event is stored with the index into the sitemodel list.
     /// </summary>
     ISiteModelMachineDesignList SiteModelMachineDesigns { get; }
-
+    
     bool SiteModelMachineDesignsLoaded { get; }
 
     IMachinesList Machines { get; }
@@ -78,7 +87,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
-    bool SaveToPersistentStore(IStorageProxy storageProxy);
+    bool SaveMetadataToPersistentStore(IStorageProxy storageProxy);
+    bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy);
     FileSystemErrorStatus LoadFromPersistentStore();
 
     /// <summary>

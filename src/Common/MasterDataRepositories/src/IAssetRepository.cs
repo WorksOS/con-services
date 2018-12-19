@@ -14,6 +14,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Asset>> GetAllAssetsInternal();
     Task<IEnumerable<Asset>> GetAssets(string[] productFamily);
 
-    Task<int> StoreEvent(IAssetEvent evt);
+    Task<int> StoreEvent(IAssetEvent filterEvent);
   }
 }

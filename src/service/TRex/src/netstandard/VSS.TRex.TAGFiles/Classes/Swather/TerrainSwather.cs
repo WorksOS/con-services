@@ -206,7 +206,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception in TerrainSwather.PerformSwathing: {E}");
+                Log.LogError(E, "Exception in TerrainSwather.PerformSwathing:");
                 return false;
             }
 

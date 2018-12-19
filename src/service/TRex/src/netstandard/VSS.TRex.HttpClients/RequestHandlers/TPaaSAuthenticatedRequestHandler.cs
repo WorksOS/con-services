@@ -25,10 +25,14 @@ namespace VSS.TRex.HttpClients.RequestHandlers
   /// </summary>
   public class TPaaSAuthenticatedRequestHandler : DelegatingHandler
   {
-
-    public TPaaSAuthenticatedRequestHandler() : base() { }
-
     public TPaaSAuthenticatedRequestHandler(HttpMessageHandler innerHandler) : base(innerHandler) { }
+
+    /// <summary>
+    /// Default constructor; required for dependency injection.
+    /// </summary>
+    public TPaaSAuthenticatedRequestHandler()
+      : base()
+    { }
 
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(
@@ -37,14 +41,14 @@ namespace VSS.TRex.HttpClients.RequestHandlers
     {
       try
       {
-        string bearerToken = await DIContext.Obtain<ITPaaSClient>().GetBearerTokenAsync().ConfigureAwait(false);
-
         if (!request.Headers.Contains("Authorization"))
         {
+          string bearerToken = await DIContext.Obtain<ITPaaSClient>().GetBearerTokenAsync();
+
           request.Headers.Add("Authorization", bearerToken);
         }
 
-        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        return await base.SendAsync(request, cancellationToken);
       }
       catch (ArgumentNullException ex)
       {

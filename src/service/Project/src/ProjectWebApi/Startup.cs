@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using DotNetCore.CAP;
+﻿using System;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,11 +11,13 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
@@ -25,6 +25,9 @@ using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -39,11 +42,14 @@ namespace VSS.MasterData.Project.WebAPI
     /// The name of this service for swagger etc.
     /// </summary>
     private const string SERVICE_TITLE = "Project Service API";
+
     /// <summary>
     /// The logger repository name
     /// </summary>
     public const string LoggerRepoName = "WebApi";
+
     private IServiceCollection serviceCollection;
+    public static IServiceProvider serviceProvider;
 
 
     /// <summary>
@@ -98,7 +104,11 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
-      services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddTransient<IDataOceanClient, DataOceanClient>();
+      services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
+      services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
+      services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
 
       services.AddOpenTracing(builder =>
       {
@@ -114,8 +124,10 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddOpenTracing();
       services.AddMemoryCache();
 
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      var serviceProvider = services.BuildServiceProvider();
+      serviceProvider = services.BuildServiceProvider();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       //Note: The injection of CAP subscriber service needed before 'services.AddCap()'
       services.AddTransient<ISubscriberService, SubscriberService>();
@@ -160,13 +172,31 @@ namespace VSS.MasterData.Project.WebAPI
       {
         app.UseMiddleware<NewRelicMiddleware>();
       }
+
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseStaticFiles();
       // Because we use Flow Files, and Background tasks we sometimes need to reread the body of the request
       // Without this, the Request Body Stream cannot set it's read position to 0.
       // See https://stackoverflow.com/questions/31389781/read-request-body-twice
-      app.Use(next => context => { context.Request.EnableRewind(); return next(context); });
+      app.Use(next => context =>
+      {
+        context.Request.EnableRewind();
+        return next(context);
+      });
       app.UseMvc();
+    }
+
+    private static ITransferProxy TransferProxyMethod(TransferProxyType type)
+    {
+      switch (type)
+      {
+        case TransferProxyType.DesignImport:
+          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
+            "AWS_DESIGNIMPORT_BUCKET_NAME");
+        default:
+          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), 
+            "AWS_BUCKET_NAME");
+      }
     }
   }
 }

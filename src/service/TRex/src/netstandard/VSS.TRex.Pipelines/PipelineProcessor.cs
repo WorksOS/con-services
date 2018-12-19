@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
@@ -24,9 +23,9 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   public class PipelineProcessor : IPipelineProcessor
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
 
-    private IExistenceMaps existenceMaps = null;
+    private IExistenceMaps existenceMaps;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
     public Guid RequestDescriptor;
@@ -53,7 +52,7 @@ namespace VSS.TRex.Pipelines
     public BoundingWorldExtent3D SpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
 
     /// <summary>
-    /// Any override world coordinate spatial entent imposed by the client context.
+    /// Any override world coordinate spatial extent imposed by the client context.
     /// For example, this might be the rectangular border of a tile being requested
     /// </summary>
     public BoundingWorldExtent3D OverrideSpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
@@ -73,12 +72,12 @@ namespace VSS.TRex.Pipelines
     public ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
 
     /// <summary>
-    /// Flag indicating if all surveyed surface have been excluded from the request due to time fitlering constraints
+    /// Flag indicating if all surveyed surface have been excluded from the request due to time filtering constraints
     /// </summary>
     public bool SurveyedSurfacesExludedViaTimeFiltering;
 
     /// <summary>
-    /// The identifier for any cut/fill design refefence being supplied to the request
+    /// The identifier for any cut/fill design reference being supplied to the request
     /// </summary>
     public Guid CutFillDesignID;
 
@@ -88,22 +87,22 @@ namespace VSS.TRex.Pipelines
     public bool PipelineAborted { get; set; }
 
     /// <summary>
-    /// The task to be fitted to the pipelien to mediate subgrid retrieval and procesing
+    /// The task to be fitted to the pipeline to mediate subgrid retrieval and processing
     /// </summary>
-    public ITask Task { get; set; }
+    public ITRexTask Task { get; set; }
 
     /// <summary>
-    /// The pipe lien used to retrive subgrids from the cluster compute layer
+    /// The pipe lien used to retrieve subgrids from the cluster compute layer
     /// </summary>
     public ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
-    /// The request analyser used to determine the subgrids to be sent to the cluster compute layer
+    /// The request analyzer used to determine the subgrids to be sent to the cluster compute layer
     /// </summary>
     public IRequestAnalyser RequestAnalyser { get; set; }
 
     /// <summary>
-    /// Reference to the site model incolved in the request
+    /// Reference to the site model involved in the request
     /// </summary>
     public ISiteModel SiteModel { get; set; }
 
@@ -144,7 +143,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
-    /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
+    /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
     /// <param name="siteModel"></param>
     public PipelineProcessor(Guid requestDescriptor,
                              Guid dataModelID,
@@ -153,7 +152,7 @@ namespace VSS.TRex.Pipelines
                              ISubGridsPipelinedReponseBase response,
                              IFilterSet filters,
                              Guid cutFillDesignID,
-                             ITask task,
+                             ITRexTask task,
                              ISubGridPipelineBase pipeline,
                              IRequestAnalyser requestAnalyser,
                              bool requireSurveyedSurfaceInformation,
@@ -264,19 +263,22 @@ namespace VSS.TRex.Pipelines
 
       foreach (var filter in Filters.Filters)
       {
-        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
+        if (filter != null)
         {
-          Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
-          return false;
-        }
-
-        if (filter?.AttributeFilter.AnyFilterSelections == true)
-        {
-          Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
-          if (Response.ResultStatus != RequestErrorStatus.OK)
+          if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
           {
-            Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
             return false;
+          }
+
+          if (filter.AttributeFilter.AnyFilterSelections)
+          {
+            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+            if (Response.ResultStatus != RequestErrorStatus.OK)
+            {
+              Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+              return false;
+            }
           }
         }
       }
@@ -311,7 +313,7 @@ namespace VSS.TRex.Pipelines
       // Impose the final restriction on the spatial extents from the client context
       SpatialExtents = SpatialExtents.Intersect(OverrideSpatialExtents);
 
-      // Introduce the Request analyser to the pipeline and spatial extents it requires
+      // Introduce the Request analyzer to the pipeline and spatial extents it requires
       RequestAnalyser.Pipeline = Pipeline;
       RequestAnalyser.WorldExtents = SpatialExtents;
 
@@ -340,7 +342,7 @@ namespace VSS.TRex.Pipelines
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
       // and the lift build settings requires all layers to be examined (so the
-      // apropriate summarize top layer only flag is false), then instruct the layer
+      // appropriate summarize top layer only flag is false), then instruct the layer
       // analysis engine to apply to restriction to the number of cell passes to use
       // to perform layer analysis (ie: all cell passes will be used).
 
@@ -384,7 +386,15 @@ namespace VSS.TRex.Pipelines
       try
       {
         if (Pipeline.Initiate())
-          Pipeline.WaitForCompletion();
+        {
+          Pipeline.WaitForCompletion().ContinueWith(x =>
+          {
+            if (x.Result)
+              Log.LogInformation("WaitForCompletion successful");
+            else // No signal was received, the wait timed out...            
+              Log.LogInformation($"WaitForCompletion timed out with {Pipeline.SubgridsRemainingToProcess} subgrids remaining to be processed");
+          }).Wait();
+        }
 
         PipelineAborted = Pipeline.Aborted;
 

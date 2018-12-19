@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -33,7 +34,7 @@ namespace VSS.MasterData.Proxies
         SubscriptionUID = subscriptionUid
       };
       await SendRequest<EmptyModel>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, "POST", String.Empty);
+        customHeaders, string.Empty, HttpMethod.Post, string.Empty);
     }
 
     /// <summary>
@@ -52,7 +53,7 @@ namespace VSS.MasterData.Proxies
         SubscriptionUID = subscriptionUid
       };
       await SendRequest<EmptyModel>("DISSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, "POST", String.Empty);
+        customHeaders, string.Empty, HttpMethod.Post, string.Empty);
     }
   }
 }

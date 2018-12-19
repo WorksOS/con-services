@@ -1,7 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Affinity
@@ -10,9 +10,9 @@ namespace VSS.TRex.GridFabric.Affinity
   /// The key type used to drive non-spatial affinity key mapping for elements stored in the Ignite cache. This controls
   /// which nodes in the PSNode layer the data for this key should reside. 
   /// </summary>
-  public struct NonSpatialAffinityKey : INonSpatialAffinityKey, IBinarizable, IFromToBinary, IEquatable<NonSpatialAffinityKey>
+  public struct NonSpatialAffinityKey : INonSpatialAffinityKey, IBinarizable, IFromToBinary
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The GUID for the project the subgrid data belongs to.
@@ -49,7 +49,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteGuid(ProjectUID);
       writer.WriteString(KeyName);
     }
@@ -58,30 +58,11 @@ namespace VSS.TRex.GridFabric.Affinity
     {
       int version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexException($"Invalid version number ({version}) in {nameof(NonSpatialAffinityKey)}, expected {versionNumber}");
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       KeyName = reader.ReadString();
-    }
-
-    public bool Equals(NonSpatialAffinityKey other)
-    {
-      return ProjectUID.Equals(other.ProjectUID) && string.Equals(KeyName, other.KeyName);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is NonSpatialAffinityKey other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (ProjectUID.GetHashCode() * 397) ^ (KeyName != null ? KeyName.GetHashCode() : 0);
-      }
     }
   }
 }

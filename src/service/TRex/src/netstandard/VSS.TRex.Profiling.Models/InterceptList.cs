@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Profiling.Models
 {
@@ -102,7 +102,9 @@ namespace VSS.TRex.Profiling.Models
         double MPX = (InterceptA.OriginX + InterceptB.OriginX) / 2;
         double MPY = (InterceptA.OriginY + InterceptB.OriginY) / 2;
 
-        Items[i] = new InterceptRec(Items[i].OriginX, Items[i].OriginY, MPX, MPY, Items[i].ProfileItemIndex, IntLength);
+        Items[i] = new InterceptRec(Items[i].OriginX, Items[i].OriginY, MPX, MPY, 
+          Items[i].ProfileItemIndex + IntLength / 2, // Shift the station position to the center of the intercept line across the cell.
+          IntLength);
       }
 
       // Discard the last intercept as it's already been used as the end point of the previous pair of intercepts

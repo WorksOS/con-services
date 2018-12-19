@@ -5,8 +5,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -64,6 +66,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ISubscriptionProxy subscriptionProxy;
 
     /// <summary>
+    /// 
+    /// </summary>
+    protected ITransferProxy persistantTransferProxy;
+
+    /// <summary>
+    /// Interface to filter service for importFile validation
+    /// </summary>
+    protected IFilterServiceProxy filterServiceProxy;
+
+    /// <summary>
+    ///  Trex Import files interface
+    /// </summary>
+    protected ITRexImportFileProxy tRexImportFileProxy;
+
+    /// <summary>
     /// Repository factory used extensively for project DB
     /// </summary>
     protected IProjectRepository projectRepo;
@@ -90,6 +107,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     /// 
     protected IHttpContextAccessor httpContextAccessor;
+
+    protected IDataOceanClient dataOceanClient;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -187,8 +206,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
-      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null)
+      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient=null)
     {
       log = logger;
       this.configStore = configStore;
@@ -201,11 +221,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.kafkaTopicName = kafkaTopicName;
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
+      this.persistantTransferProxy = persistantTransferProxy;
+      this.filterServiceProxy = filterServiceProxy;
+      this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
       this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
+      this.dataOceanClient = dataOceanClient;
     }
 
     /// <summary>

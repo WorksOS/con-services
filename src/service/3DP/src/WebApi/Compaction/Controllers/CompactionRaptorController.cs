@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -26,16 +27,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionRaptorController : BaseTileController<CompactionRaptorController>
   {
-    private readonly IASNodeClient raptorClient;
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionRaptorController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
+    public CompactionRaptorController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
       base(configStore, fileListProxy, settingsManager)
-    {
-      this.raptorClient = raptorClient;
-    }
+    { }
 
     /// <summary>
     /// Gets a "best fit" bounding box for the requested project and given query parameters.
@@ -54,7 +51,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetBoundingBox: " + Request.QueryString);
-
+      //Check we have at least one overlay
+      if (overlays == null || overlays.Length == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "At least one overlay type must be specified to calculate bounding box"));
+      }
       var project = await((RaptorPrincipal)User).GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
@@ -71,6 +74,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var result = boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
         sumVolParameters.Item2, designDescriptor);
       var bbox = $"{result.minLatDegrees},{result.minLngDegrees},{result.maxLatDegrees},{result.maxLngDegrees}";
+      Log.LogInformation($"GetBoundingBox: returning {bbox}");
       return bbox;
     }
 
@@ -132,6 +136,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/raptor/filterpointslist")]
     [HttpGet]
     public async Task<PointsListResult> GetFilterPointsList(
+      [FromServices] ISummaryDataHelper summaryDataHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? baseUid,
@@ -140,11 +145,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetFilterPointsList: " + Request.QueryString);
-
+       
       var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var baseFilter = await GetCompactionFilter(projectUid, baseUid);
-      var topFilter = await GetCompactionFilter(projectUid, topUid);
+      //Base or top may be a design UID
+      var baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+      var topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
 
       PointsListResult result = new PointsListResult();
  
@@ -171,13 +177,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       AlignmentPointsResult result = new AlignmentPointsResult();
-      IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
-        projectId, alignmentDescriptor);
+      var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
 
       if (alignmentPoints != null && alignmentPoints.Any())
       {
         //TODO: Fix this when WGSPoint & WGSPoint3D aligned
-        result.AlignmentPoints = alignmentPoints.Select(x => WGSPoint.CreatePoint(x.Lat, x.Lon)).ToList();
+        result.AlignmentPoints = alignmentPoints.Select(x => new WGSPoint(x.Lat, x.Lon)).ToList();
       }
 
       return result;
@@ -198,12 +203,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await GetLegacyProjectId(projectUid);
 
       PointsListResult result = new PointsListResult();
-      List<List<WGSPoint3D>> list = new List<List<WGSPoint3D>>();
+      List<List<WGSPoint>> list = new List<List<WGSPoint>>();
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       foreach (var alignmentDescriptor in alignmentDescriptors)
       {
-        IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
-          projectId, alignmentDescriptor);
+        var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
 
         if (alignmentPoints != null && alignmentPoints.Any())
         {
@@ -252,12 +256,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
     }
-
-
+    
     /// <summary>
     /// Temporary method to convert between WGSPoint3D and WGSPoint
     /// </summary>
-    private List<List<WGSPoint>> ConvertPoints(List<List<WGSPoint3D>> polygons)
+    private static List<List<WGSPoint>> ConvertPoints(List<List<WGSPoint>> polygons)
     {
       List<List<WGSPoint>> result = null;
       if (polygons != null && polygons.Any())
@@ -265,16 +268,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         foreach (var polygon in polygons)
         {
           if (result == null)
+          {
             result = new List<List<WGSPoint>>();
+          }
+
           //TODO: Fix this when WGSPoint & WGSPoint3D aligned
-          result.Add(polygon.Select(x => WGSPoint.CreatePoint(x.Lat, x.Lon)).ToList());
+          result.Add(polygon.Select(x => new WGSPoint(x.Lat, x.Lon)).ToList());
         }
       }
 
       return result;
     }
-
-
-
   }
 }

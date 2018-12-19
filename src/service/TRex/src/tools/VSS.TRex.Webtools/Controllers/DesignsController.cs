@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -13,7 +12,6 @@ using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -84,7 +82,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID"></param>
     /// <param name="designID"></param>
     /// <param name="fileName"></param>
-    /// <param name="fileType"></param>
     /// <returns></returns>
     [HttpPost("{siteModelID}/{fileName}")]
     public async Task<JsonResult> AddDesignSurfaceFromAwsS3ToSiteModel(
@@ -162,7 +159,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design to s3: {e}");
+        throw new TRexException($"Exception writing design to s3:", e);
       }
       return true;
     }
@@ -179,7 +176,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception reading design from s3: {e}");
+        throw new TRexException($"Exception reading design from s3:", e);
       }
 
       if (string.IsNullOrEmpty(fileStreamResult.ContentType))
@@ -197,7 +194,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design file locally: {e}");
+        throw new TRexException("Exception writing design file locally:", e);
       }
 
       return true;
@@ -227,7 +224,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design to siteModel: {e}");
+        throw new TRexException($"Exception writing design to siteModel:", e);
       }
 
       return design;

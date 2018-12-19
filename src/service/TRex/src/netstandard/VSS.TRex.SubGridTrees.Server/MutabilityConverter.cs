@@ -131,7 +131,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError($"Exception in conversion of subgrid directory mutable data to immutable schema: {e}");
+        Log.LogError(e, "Exception in conversion of subgrid directory mutable data to immutable schema");
         return false;
       }
     }
@@ -170,7 +170,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError($"Exception in conversion of subgrid directory mutable data to immutable schema: {e}");
+        Log.LogError(e, "Exception in conversion of subgrid directory mutable data to immutable schema");
         return false;
       }
     }
@@ -211,7 +211,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError($"Exception in conversion of subgrid segment mutable data to immutable schema: {e}");
+        Log.LogError(e, "Exception in conversion of subgrid segment mutable data to immutable schema");
         return false;
       }
     }
@@ -258,7 +258,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError($"Exception in conversion of subgrid segment mutable data to immutable schema: {e}");
+        Log.LogError(e, "Exception in conversion of subgrid segment mutable data to immutable schema");
         return false;
       }
     }
@@ -321,7 +321,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError($"Exception in conversion of event mutable data to immutable schema: {e}");
+        Log.LogError(e, "Exception in conversion of event mutable data to immutable schema");
         return false;
       }
     }

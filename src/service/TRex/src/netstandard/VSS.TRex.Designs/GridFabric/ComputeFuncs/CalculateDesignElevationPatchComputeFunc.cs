@@ -1,7 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -11,13 +10,11 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
     /// <summary>
     /// Ignite ComputeFunc responsible for executing the elevation patch calculator
     /// </summary>
-    public class CalculateDesignElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
+    public class CalculateDesignElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignElevationPatchArgument, byte []>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatchComputeFunc>();
 
-    // TODO: Ignite 2.4 has a fix for the two dimensional array serialisation bug that requires this result to be a byte array - this can be changed back but...
-    // Work out if our serialisation is preferred over Ignite's
-        public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)
+        public byte[] Invoke(CalculateDesignElevationPatchArgument args)
         {
             try
             {
@@ -25,11 +22,11 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
                 CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
 
-                return Executor.Execute(arg).ToBytes();
+                return Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.CellSize, args.OriginX, args.OriginY, 0).ToBytes();
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception: {E}");
+                Log.LogError(E, "Exception:");
                 return null; 
             }
         }

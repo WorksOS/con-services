@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
@@ -9,7 +8,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a CMV statistics request
   /// </summary>    
-  public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
@@ -61,42 +60,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
       CMVPercentageRange.FromBinary(reader);
 
       CMVDetailValues = reader.ReadIntArray();
-    }
-
-    protected bool Equals(CMVStatisticsArgument other)
-    {
-      return base.Equals(other) && 
-             CMVPercentageRange.Equals(other.CMVPercentageRange) && 
-             OverrideMachineCMV == other.OverrideMachineCMV && 
-             OverridingMachineCMV == other.OverridingMachineCMV && 
-             (Equals(CMVDetailValues, other.CMVDetailValues) ||
-             (CMVDetailValues != null && other.CMVDetailValues != null && CMVDetailValues.SequenceEqual(other.CMVDetailValues)));
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as CMVStatisticsArgument);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((CMVStatisticsArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ CMVPercentageRange.GetHashCode();
-        hashCode = (hashCode * 397) ^ OverrideMachineCMV.GetHashCode();
-        hashCode = (hashCode * 397) ^ OverridingMachineCMV.GetHashCode();
-        hashCode = (hashCode * 397) ^ (CMVDetailValues != null ? CMVDetailValues.GetHashCode() : 0);
-        return hashCode;
-      }
     }
   }
 }

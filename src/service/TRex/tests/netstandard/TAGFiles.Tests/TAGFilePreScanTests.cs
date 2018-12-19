@@ -48,7 +48,7 @@ namespace TAGFiles.Tests
       preScan.MachineType.Should().Be(39);
       preScan.MachineID.Should().Be("CB54XW  JLM00885");
       preScan.HardwareID.Should().Be("0523J019SW");
-      preScan.DesignName.Should().Be("䌀䄀吀 䐀䄀夀 ㈀㈀");
+      preScan.DesignName.Should().Be("CAT DAY 22");
       preScan.ApplicationVersion.Should().Be("12.61-75222");
     }
   }

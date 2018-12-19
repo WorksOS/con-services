@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
@@ -10,7 +9,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
   /// <summary>
   /// Describes the result of a simple volumes computation in terms of cut, fill and total volumes plus coverage areas
   /// </summary>
-  public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>, IEquatable<SubGridRequestsResponse>
+  public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>
   {
     private double DEFAULT_DOUBLE_VALUE = 0.0;
 
@@ -25,17 +24,17 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     public double? Fill;
 
     /// <summary>
-    /// Total area coverged by the volume computation, expressed in square meters
+    /// Total area covered by the volume computation, expressed in square meters
     /// </summary>
     public double? TotalCoverageArea;
 
     /// <summary>
-    /// Total area coverged by the volume computation that produced cut volume, expressed in square meters
+    /// Total area covered by the volume computation that produced cut volume, expressed in square meters
     /// </summary>
     public double? CutArea;
 
     /// <summary>
-    /// Total area coverged by the volume computation that produced fill volume, expressed in square meters
+    /// Total area covered by the volume computation that produced fill volume, expressed in square meters
     /// </summary>
     public double? FillArea;
 
@@ -57,7 +56,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -89,7 +88,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
@@ -111,8 +110,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
       if (reader.ReadBoolean())
         FillArea = reader.ReadDouble();
 
-      BoundingExtentGrid.FromBinary(reader);
-      BoundingExtentLLH.FromBinary(reader);
+      (BoundingExtentGrid ?? (BoundingExtentGrid = new BoundingWorldExtent3D())).FromBinary(reader);
+      (BoundingExtentLLH ?? (BoundingExtentLLH = new BoundingWorldExtent3D())).FromBinary(reader);
     }
 
     /// <summary>
@@ -147,50 +146,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     }
 
     /// <summary>
-    /// Simple textual represenation of the information in a simple volumes response
+    /// Simple textual representation of the information in a simple volumes response
     /// </summary>
     public override string ToString() => $"Cut:{Cut}, Fill:{Fill}, Cut Area:{CutArea}, FillArea: {FillArea}, Total Area:{TotalCoverageArea}, BoundingGrid:{BoundingExtentGrid}, BoundingLLH:{BoundingExtentLLH}";
-
-    protected bool Equals(SimpleVolumesResponse other)
-    {
-      return base.Equals(other) && 
-             Cut.Equals(other.Cut) && 
-             Fill.Equals(other.Fill) && 
-             TotalCoverageArea.Equals(other.TotalCoverageArea) && 
-             CutArea.Equals(other.CutArea) && 
-             FillArea.Equals(other.FillArea) && 
-             Equals(BoundingExtentGrid, other.BoundingExtentGrid) && 
-             Equals(BoundingExtentLLH, other.BoundingExtentLLH);
-    }
-
-    public new bool Equals(SubGridRequestsResponse other)
-    {
-      return Equals(other as SimpleVolumesResponse);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((SimpleVolumesResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ DEFAULT_DOUBLE_VALUE.GetHashCode();
-        hashCode = (hashCode * 397) ^ Cut.GetHashCode();
-        hashCode = (hashCode * 397) ^ Fill.GetHashCode();
-        hashCode = (hashCode * 397) ^ TotalCoverageArea.GetHashCode();
-        hashCode = (hashCode * 397) ^ CutArea.GetHashCode();
-        hashCode = (hashCode * 397) ^ FillArea.GetHashCode();
-        hashCode = (hashCode * 397) ^ (BoundingExtentGrid != null ? BoundingExtentGrid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (BoundingExtentLLH != null ? BoundingExtentLLH.GetHashCode() : 0);
-        return hashCode;
-      }
-    }
   }
 }

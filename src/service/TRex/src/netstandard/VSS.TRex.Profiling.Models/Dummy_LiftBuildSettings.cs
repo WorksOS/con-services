@@ -4,8 +4,8 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Profiling.Models
 {
   /// <summary>
-  /// A dummy class representing the Raptor lift build settigns schema. This is a large collection of semi-related configuration
-  /// elements thet need significant re-design for TRes. This dummy class is a place holder to permit initial conversion of Raptor
+  /// A dummy class representing the Raptor lift build settings schema. This is a large collection of semi-related configuration
+  /// elements that need significant re-design for TRes. This dummy class is a place holder to permit initial conversion of Raptor
   /// code to TRex pending those structural refactorings.
   /// </summary>
   public static class Dummy_LiftBuildSettings
@@ -34,7 +34,7 @@ namespace VSS.TRex.Profiling.Models
 
     public static bool IncludeSuperseded = false;
 
-    //Parameters controlling TargetLiftThcknessSummary overlay
+    //Parameters controlling TargetLiftThicknessSummary overlay
     public static double TargetLiftThickness = 0.0;
     public static double AboveToleranceLiftThickness = 0.0;
     public static double BelowToleranceLiftThickness = 0.0;
@@ -48,6 +48,6 @@ namespace VSS.TRex.Profiling.Models
     public static ushort TargetMaxMachineSpeed = 0;
     public static ushort TargetMinMachineSpeed = 0;
 
-    public static int CCATolerance = 0; // How many extra passes is OK before overcompaction is set
+    public static int CCATolerance = 0; // How many extra passes is OK before over-compaction is set
   }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
-using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignID = Guid.Empty,
+        ReferenceDesignUID = Guid.Empty,
         Mode = DisplayMode.Height,
         CoordsAreGrid =  true,
         PixelsX = 100,

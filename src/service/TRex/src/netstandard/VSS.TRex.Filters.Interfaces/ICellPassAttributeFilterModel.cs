@@ -4,7 +4,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellPassAttributeFilterModel : IFromToBinary, IEquatable<ICellPassAttributeFilterModel>
+  public interface ICellPassAttributeFilterModel : IFromToBinary
   {
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at
@@ -91,10 +91,10 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// The design to be used as the benchmark for a surface based elevation range filter
     /// </summary>
-    Guid ElevationRangeDesignID { get; set; }
+    Guid ElevationRangeDesignUID { get; set; }
 
     /// <summary>
-    /// Elevation parameters have been initialised in preparation for elevation range filtering, either
+    /// Elevation parameters have been initialized in preparation for elevation range filtering, either
     /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
     /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
     /// </summary>
@@ -127,11 +127,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// ID of layer we are only interested in
     /// </summary>
     int LayerID { get; set; }
-
-    /// <summary>
-    /// Only permit cell passes recorded from a compaction type machine to be considered for filtering
-    /// </summary>
-    bool RestrictFilteredDataToCompactorsOnly { get; set; }
 
     /// <summary>
     /// The list of surveyed surface identifiers to be excluded from the filtered result

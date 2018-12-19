@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
@@ -8,6 +9,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
   /// </summary>
   public abstract class BaseComputeFunc : IBinarizable, IFromToBinary
   {
+    private const byte VERSION_NUMBER = 1;
+
     public BaseComputeFunc()
     {
     }
@@ -34,10 +37,17 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
     public void ToBinary(IBinaryRawWriter writer)
     {
+      // Version the serialization, even if nothing additional is serialized
+      writer.WriteByte(VERSION_NUMBER);
     }
 
     public void FromBinary(IBinaryRawReader reader)
     {
+      // Version the serialization, even if nothing additional is serialized
+      var version = reader.ReadByte();
+
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
     }
   }
 }

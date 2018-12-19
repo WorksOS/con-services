@@ -225,7 +225,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception: {E}");
+        Log.LogError(E, "Exception:");
       }
 
       return null;
@@ -261,7 +261,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       }
       catch (Exception E)
       {
-        Log.LogError($"{nameof(CalculateSurfaceElevationPatch)}.Execute: Exception {E}");
+        Log.LogError(E, $"{nameof(CalculateSurfaceElevationPatch)}.Execute: Exception:");
         return null;
       }
     }

@@ -23,6 +23,5 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<GeofenceData> GetGeofenceForCustomer(string customerUid, string geofenceUid,
       IDictionary<string, string> customHeaders = null);
-
   }
 }

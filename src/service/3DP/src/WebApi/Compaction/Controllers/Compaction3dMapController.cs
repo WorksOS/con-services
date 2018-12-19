@@ -481,10 +481,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Converts a collection of TTMs to a single obj model, including UV mapping
     /// </summary>
-    /// <param name="tins"></param>
-    /// <param name="eastingModifier"></param>
-    /// <param name="northingModifier"></param>
-    /// <returns></returns>
     private FileStreamResult ConvertMultipleToObj(IList<TrimbleTINModel> tins, double eastingOffset, double northingOffset)
     {
       // FileStreamResult will dispose of this once the response has been completed

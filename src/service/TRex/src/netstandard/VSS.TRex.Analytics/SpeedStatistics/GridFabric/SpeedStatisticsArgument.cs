@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
@@ -8,7 +7,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	/// <summary>
 	/// Argument containing the parameters required for a Speed statistics request
 	/// </summary>    
-  public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument
   {
 	  /// <summary>
 	  /// Machine speed target record. It contains min/max machine speed target value.
@@ -36,32 +35,5 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 
 	    TargetMachineSpeed.FromBinary(reader);
 	  }
-
-    protected bool Equals(SpeedStatisticsArgument other)
-    {
-      return base.Equals(other) && 
-             TargetMachineSpeed.Equals(other.TargetMachineSpeed);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as SpeedStatisticsArgument);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((SpeedStatisticsArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (base.GetHashCode() * 397) ^ TargetMachineSpeed.GetHashCode();
-      }
-    }
   }
 }

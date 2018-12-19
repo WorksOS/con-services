@@ -6,6 +6,8 @@ using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.GridFabric.Factories;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -54,6 +56,7 @@ namespace VSS.TRex.Tests.TestFixtures
           .Continue()
           .Add(x => x.AddSingleton<IStorageProxy>(storageProxy))
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
+          .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
           .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
           .Add(x => x.AddSingleton<ISurveyedSurfaces>(moqSurveyedSurfaces.Object))
           .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
@@ -78,6 +81,9 @@ namespace VSS.TRex.Tests.TestFixtures
       }
     }
 
-    public void Dispose() { } // Nothing needing doing 
+    public void Dispose()
+    {
+      DIBuilder.Continue().Eject();
+    } 
   }
 }

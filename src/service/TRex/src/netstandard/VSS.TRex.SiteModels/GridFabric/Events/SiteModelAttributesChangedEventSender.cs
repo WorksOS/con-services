@@ -22,7 +22,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <summary>
     /// Notify all interested nodes in the immutable grid a site model has changed attributes
     /// </summary>
-
     /// <param name="targetGrids"></param>
     /// <param name="siteModelID"></param>
     /// <param name="existenceMapChanged"></param>
@@ -33,6 +32,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <param name="machineTargetValuesChanged"></param>
     /// <param name="surveyedSurfacesChanged"></param>
     /// <param name="machineDesignsModified"></param>
+    /// <param name="proofingRunsModified"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,
@@ -42,7 +42,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       bool csibChanged = false,
       bool machinesChanged = false,
       bool machineTargetValuesChanged = false,
-      bool machineDesignsModified = false)
+      bool machineDesignsModified = false,
+      bool proofingRunsModified = false)
     {
       try
       {
@@ -57,7 +58,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
           SurveyedSurfacesModified = surveyedSurfacesChanged,
           MachinesModified = machinesChanged,
           MachineTargetValuesModified = machineTargetValuesChanged,
-          MachineDesignsModified = machineDesignsModified
+          MachineDesignsModified = machineDesignsModified,
+          ProofingRunsModified = proofingRunsModified
         };
 
         if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)
@@ -68,7 +70,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception occurred sending model attributes changed notification: {e}");
+        Log.LogError(e, "Exception occurred sending model attributes changed notification:");
       }
     }
   }

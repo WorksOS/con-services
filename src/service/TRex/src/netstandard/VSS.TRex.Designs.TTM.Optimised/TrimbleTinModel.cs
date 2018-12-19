@@ -61,7 +61,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
         if (Header.FileMajorVersion != Consts.TTMMajorVersion
             || Header.FileMinorVersion != Consts.TTMMinorVersion)
         {
-          throw new TTMFileReadException("Unable to read this version of Trimble TIN Model file.");
+          throw new TTMFileReadException($"TTM_Optimized.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
         }
 
         // ModelName = (String)(InternalNameToANSIString(fHeader.DTMModelInternalName));

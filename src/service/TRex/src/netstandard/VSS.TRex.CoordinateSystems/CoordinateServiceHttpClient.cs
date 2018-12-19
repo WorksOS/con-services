@@ -22,32 +22,32 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Sends a standard request that might include query parameters, most likely a GET request.
     /// </summary>
-    public async Task<HttpResponseMessage> SendRequest(string route, HttpMethod method)
+    public Task<HttpResponseMessage> SendRequest(string route, HttpMethod method)
     {
-      return await SendHttpClientRequest(route, method);
+      return SendHttpClientRequest(route, method);
     }
 
     /// <summary>
     /// Sends a request with a JSON body content, such formdata POST.
     /// </summary>
-    public async Task<HttpResponseMessage> SendRequest(string route, HttpMethod method, string contentType, string bodyContent)
+    public Task<HttpResponseMessage> SendRequest(string route, HttpMethod method, string contentType, string bodyContent)
     {
-      return await SendHttpClientRequest(route, method, new StringContent(bodyContent, Encoding.UTF8, contentType));
+      return SendHttpClientRequest(route, method, new StringContent(bodyContent, Encoding.UTF8, contentType));
     }
 
     /// <summary>
     /// Sends a PUT request with a binary attachment.
     /// </summary>
-    public async Task<HttpResponseMessage> SendRequest(string route, MultipartFormDataContent content)
+    public Task<HttpResponseMessage> SendRequest(string route, MultipartFormDataContent content)
     {
       var absoluteUriPath = httpClient.BaseAddress.AbsoluteUri + route;
       
       log.LogInformation($"{nameof(CoordinateServiceHttpClient)}: {nameof(SendRequest)}: ({HttpMethod.Put.Method})|{absoluteUriPath}");
 
-      return await httpClient.PutAsync(absoluteUriPath, content).ConfigureAwait(false);
+      return httpClient.PutAsync(absoluteUriPath, content);
     }
 
-    private async Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpContent httpContent = null)
+    private Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpContent httpContent = null)
     {
       var absoluteUriPath = httpClient.BaseAddress.AbsoluteUri + route;
 
@@ -60,7 +60,7 @@ namespace VSS.TRex.CoordinateSystems
 
       httpClient.DefaultRequestHeaders.Add("Accept", MediaTypes.JSON);
 
-      return await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+      return httpClient.SendAsync(requestMessage);
     }
   }
 }

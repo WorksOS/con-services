@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -17,7 +17,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Executors
@@ -415,7 +415,7 @@ namespace VSS.TRex.Rendering.Executors
       */
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
-      // given the projet's coordinate system. If there is no coordinate system then exit.
+      // given the project's coordinate system. If there is no coordinate system then exit.
 
       ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
@@ -437,7 +437,7 @@ namespace VSS.TRex.Rendering.Executors
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
-          Log.LogInformation("Summary volume failure, could not convert bounding area from WGS to grid coordinates");
+          Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
           ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
 
           return null;
@@ -518,10 +518,10 @@ namespace VSS.TRex.Rendering.Executors
           dataModelID: DataModelID,
           siteModel: SiteModel,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
-          response: new SubGridsPipelinedReponseBase(),
+          response: new SubGridsPipelinedResponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
@@ -530,7 +530,7 @@ namespace VSS.TRex.Rendering.Executors
           overrideSpatialCellRestriction: CellExtents
         );
 
-        // Set the PVM rendering task parameters for progressive processing
+        // Set the PVM rendering rexTask parameters for progressive processing
         processor.Task.RequestDescriptor = RequestDescriptor;
         processor.Task.TRexNodeID = RequestingTRexNodeID;
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
@@ -589,7 +589,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} occurred");
+        Log.LogError(e, "Exception occurred");
         ResultStatus = RequestErrorStatus.Exception;
       }
 

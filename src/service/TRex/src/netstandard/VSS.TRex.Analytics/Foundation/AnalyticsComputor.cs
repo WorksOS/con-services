@@ -74,7 +74,7 @@ namespace VSS.TRex.Analytics.Foundation
               response: response,
               filters: Filters,
               cutFillDesignID: CutFillDesignID,
-              task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
+              task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
               pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
               requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
               requestRequiresAccessToDesignFileExistenceMap: CutFillDesignID != Guid.Empty,
@@ -97,7 +97,7 @@ namespace VSS.TRex.Analytics.Foundation
         }
         catch (Exception E)
         {
-          Log.LogError($"ExecutePipeline raised exception: {E}");
+          Log.LogError(E, "ExecutePipeline raised exception:");
         }
 
         return false;

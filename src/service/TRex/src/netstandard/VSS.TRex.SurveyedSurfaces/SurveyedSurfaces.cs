@@ -20,7 +20,7 @@ namespace VSS.TRex.SurveyedSurfaces
         private bool FSorted;
         private bool SortDescending;
 
-        public bool Sorted { get { return FSorted; } }
+        public bool Sorted => FSorted;
 
         private IExistenceMaps existenceMaps;
         private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
@@ -45,7 +45,7 @@ namespace VSS.TRex.SurveyedSurfaces
         {
             writer.Write(kMajorVersion);
             writer.Write(kMinorVersion);
-            writer.Write((int)Count);
+            writer.Write(Count);
 
             foreach (ISurveyedSurface ss in this)
             {
@@ -76,7 +76,7 @@ namespace VSS.TRex.SurveyedSurfaces
             }
         }
 
-        public void ReadVersionFromStream(BinaryReader reader, out byte MajorVersion, out byte MinorVersion)
+        private void ReadVersionFromStream(BinaryReader reader, out byte MajorVersion, out byte MinorVersion)
         {
             // Load file version info
             MajorVersion = reader.ReadByte();
@@ -158,9 +158,9 @@ namespace VSS.TRex.SurveyedSurfaces
             FSorted = true;
         }
 
-        public new void Sort()
+        private new void Sort()
         {
-            base.Sort((x, y) => SortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
+          Sort((x, y) => SortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace VSS.TRex.SurveyedSurfaces
             if (ExcludeSurveyedSurfaces)
                 return;
 
-            if (!HasTimeFilter && ExclusionList.Length == 0)
+            if (!HasTimeFilter && ExclusionList?.Length == 0)
             {
                 FilteredSurveyedSurfaceDetails.Assign(this);
                 return;
@@ -296,13 +296,13 @@ namespace VSS.TRex.SurveyedSurfaces
             {
                 if (!HasTimeFilter)
                 {
-                    if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
+                    if (ExclusionList?.Any(x => x == ss.ID) == false) // if SS not excluded from project
                         FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                 }
                 else
                 {
                     if (ss.AsAtDate >= StartTime && ss.AsAtDate <= EndTime &&
-                        !ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
+                        ExclusionList?.Any(x => x == ss.ID) == false) // if SS not excluded from project
                         FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                 }
             }
@@ -340,23 +340,26 @@ namespace VSS.TRex.SurveyedSurfaces
                                                           Filter.AttributeFilter.ExcludeSurveyedSurfaces(),
                                                           FilteredSurveyedSurfaces,
                                                           Filter.AttributeFilter.SurveyedSurfaceExclusionList);
-         
-            if (FilteredSurveyedSurfaces?.Equals(ComparisonList) == true)
+
+          if (FilteredSurveyedSurfaces != null)
+          {
+            if (FilteredSurveyedSurfaces.Equals(ComparisonList))
               return true;
-         
+
             if (FilteredSurveyedSurfaces.Count > 0)
             {
               ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
-              FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
-         
+                FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+
               if (OverallExistenceMap == null)
                 return false;
-         
+
               if (surveyedSurfaceExistenceMap != null)
                 OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
             }
-         
-            return true;
+          }
+
+          return true;
         }
     }
 }

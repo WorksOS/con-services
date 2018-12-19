@@ -11,7 +11,7 @@ namespace VSS.TRex.Pipelines.Tasks
     /// subgrids and profile sections that require additional processing to arrive at 
     /// the final result (such as a rendered tile)
     /// </summary>
-    public abstract class TaskBase : ITask
+    public abstract class TaskBase : ITRexTask
     {
         /// <summary>
         /// The request descriptor assigned to the task.
@@ -29,7 +29,7 @@ namespace VSS.TRex.Pipelines.Tasks
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
-        /// The node wanting to recieve the results of task bases subgrid requests to the PSNode clustered processing layer
+        /// The node wanting to receive the results of task bases subgrid requests to the PSNode clustered processing layer
         /// </summary>
         public string TRexNodeID { get; set; } = string.Empty;
 
@@ -54,13 +54,13 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// TransferReponse is the sink for responses received from the processing layers.
+        /// TransferResponse is the sink for responses received from the processing layers.
         /// </summary>
         /// <param name="response"></param>
         public abstract bool TransferResponse(object response);
 
         /// <summary>
-        /// TransferReponses is the sink for sets of responses received from the processing layers.
+        /// TransferResponses is the sink for sets of responses received from the processing layers.
         /// </summary>
         /// <param name="responses"></param>
         public abstract bool TransferResponses(object [] responses);

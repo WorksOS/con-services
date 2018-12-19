@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         switch (fileType)
         {
           case ImportedFileType.Linework:
-          case ImportedFileType.DesignSurface:
+          //case ImportedFileType.DesignSurface:
           case ImportedFileType.Alignment:
 
             var suffix = FileUtils.GeneratedFileSuffix(fileType);

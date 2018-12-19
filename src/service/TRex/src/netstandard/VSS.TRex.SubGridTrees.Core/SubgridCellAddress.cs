@@ -3,7 +3,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -45,7 +45,7 @@ namespace VSS.TRex.SubGridTrees
       set { BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); }
     }
 
-    private static readonly uint NumPartitionsPerDataCache = (uint) DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.kNumPartitionsPerDataCacheDefault);
+    private static readonly uint NumPartitionsPerDataCache = (uint) DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.NUMPARTITIONS_PERDATACACHE);
     
     public SubGridCellAddress(uint AX, uint AY) 
     {

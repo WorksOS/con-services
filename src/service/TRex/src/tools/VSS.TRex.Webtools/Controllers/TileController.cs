@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -20,7 +20,7 @@ namespace VSS.TRex.Webtools.Controllers
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
     /// <summary>
-    /// Generates a tile...
+    /// Generates a tile.
     /// </summary>
     /// <param name="siteModelID">Grid to return status for</param>
     /// <param name="maxY"></param>
@@ -32,7 +32,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="maxX"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
-    public JsonResult GetTile(string siteModelID,
+    public async Task<JsonResult> GetTile(string siteModelID,
       [FromQuery] double minX,
       [FromQuery] double minY,
       [FromQuery] double maxX,
@@ -42,7 +42,7 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] ushort pixelsY)
     {
       var request = new TileRenderRequest();
-      TileRenderResponse_Core2 response = request.Execute(new TileRenderRequestArgument(
+      TileRenderResponse_Core2 response = await request.ExecuteAsync(new TileRenderRequestArgument(
         siteModelID: Guid.Parse(siteModelID),
         coordsAreGrid: true,
         pixelsX: pixelsX,
@@ -51,7 +51,7 @@ namespace VSS.TRex.Webtools.Controllers
         mode: (DisplayMode) mode,
         filter1: new CombinedFilter(),
         filter2: new CombinedFilter(),
-        referenceDesignId: Guid.Empty
+        referenceDesignUid: Guid.Empty
       )) as TileRenderResponse_Core2;
 
       return new JsonResult(new TileResult(response?.TileBitmapData));
@@ -72,7 +72,9 @@ namespace VSS.TRex.Webtools.Controllers
         (DisplayMode.CutFill, "Cut/Fill"),
         (DisplayMode.MachineSpeed, "Speed"),
         (DisplayMode.TargetSpeedSummary, "Speed Summary"),
-        (DisplayMode.TemperatureSummary, "Temperature Summary")
+        (DisplayMode.TemperatureSummary, "Temperature Summary"),
+        (DisplayMode.CCA, "CCA"),
+        (DisplayMode.CCASummary, "CCA Summary")
       });
     }
   }

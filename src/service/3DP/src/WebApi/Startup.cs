@@ -119,6 +119,12 @@ namespace VSS.Productivity3D.WebApi
       app.UseResponseCompression();
       app.UseMvc();
 
+      //TODO: Remove this when our custom response caching fixed
+      if (CustomCachingPolicyProvider.ResponseCachingDisabled)
+      {
+        log.LogWarning("Response caching disabled");
+      }
+
       CheckRaptorAvailabilityIfRequired(serviceProvider);
     }
 
@@ -136,7 +142,8 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TEMPERATURE") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TILES") != "true" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SURFACE") != "true")
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SURFACE") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PATCHES") != "true")
         ConfigureRaptor(serviceProvider);
     }
 
@@ -156,7 +163,7 @@ namespace VSS.Productivity3D.WebApi
       }
       catch (Exception e)
       {
-        log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
+        log.LogError(e, "Exception loading config");
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
       }

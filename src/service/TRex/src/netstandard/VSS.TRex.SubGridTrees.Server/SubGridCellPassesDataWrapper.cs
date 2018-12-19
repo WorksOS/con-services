@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellPassesDataSegments PassesData { get; set; } = new SubGridCellPassesDataSegments();
 
-    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.kVlpdSubGridSegmentPassCountLimitDefault);
+    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
 
     public SubGridCellPassesDataWrapper()
     {
@@ -147,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
       do
       {
-        TestTime = new DateTime((TestTimeRangeStart.Ticks + TestTimeRangeEnd.Ticks) / 2);
+        TestTime = TestTimeRangeStart + new TimeSpan((TestTimeRangeEnd.Ticks - TestTimeRangeStart.Ticks) / 2);
 
         CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out uint _);
 

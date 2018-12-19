@@ -1,26 +1,21 @@
-﻿using SVOICOptionsDecls;
-using SVOICProfileCell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using SVOICOptionsDecls;
+using SVOICProfileCell;
 using VLPDDecls;
-using VSS.Common.Exceptions;
-using VSS.Productivity3D.Common.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Velociraptor.PDSInterface;
 using ProfileCell = VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling.ProfileCell;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {

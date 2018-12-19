@@ -21,7 +21,7 @@ namespace VSS.TRex.Common.CellPasses
     public const ushort NullPassCountValue = UInt16.MinValue;
 
     /// <summary>
-    /// Conversion ratio between temperature in whole degrees and tenths of degress reported by some measurements from machines
+    /// Conversion ratio between temperature in whole degrees and tenths of degrees reported by some measurements from machines
     /// </summary>
     public const short MaterialTempValueRatio = 10;
 
@@ -62,6 +62,11 @@ namespace VSS.TRex.Common.CellPasses
     public const short NullCCV = short.MaxValue;
 
     /// <summary>
+    /// Null value for reported CCV percentage
+    /// </summary>
+    public const int NullCCVPercentage = -1;
+
+    /// <summary>
     /// Maximum Pass Count value
     /// </summary>
     public const ushort MaxPassCountValue = ushort.MaxValue;
@@ -92,9 +97,19 @@ namespace VSS.TRex.Common.CellPasses
     public const short NullMDP = short.MaxValue;
 
     /// <summary>
+    /// Null value for reported MDP percentage
+    /// </summary>
+    public const int NullMDPPercentage = -1;
+
+    /// <summary>
     /// Null Caterpillar Compaction Algorithm value
     /// </summary>
     public const byte NullCCA = byte.MaxValue;
+
+    /// <summary>
+    /// Null Caterpillar Compaction Algorithm target value
+    /// </summary>
+    public const byte NullCCATarget = byte.MaxValue;
 
     /// <summary>
     /// Null machine type value
@@ -132,8 +147,13 @@ namespace VSS.TRex.Common.CellPasses
     public const float NullOverridingTargetLiftThicknessValue = Consts.NullHeight;
 
     /// <summary>
-    /// Null value for a Universal Tranverse Mercatore zone reference
+    /// Null value for a Universal Transverse Mercator zone reference
     /// </summary>
     public const byte NullUTMZone = 0;
+
+    /// <summary>
+    /// The CCA value, which a lift is marked as thick at.
+    /// </summary>
+    public const byte THICK_LIFT_CCA_VALUE = 120;
   }
 }

@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
 using Xunit.Gherkin.Quick;
-using Feature = Xunit.Gherkin.Quick.Feature;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
@@ -22,25 +20,23 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private GetMachineDesignResult getMachineDesignResult;
     private LayerIdsExecutionResult layerIdsExecutionResult;
 
-    private readonly DataEditContext _dataEditContext;
+    private readonly DataEditContext dataEditContext;
 
     public EditDataSteps()
     {
-      _dataEditContext = new DataEditContext();
+      dataEditContext = new DataEditContext();
     }
 
     [Given(@"the edit data service URI ""(.*)""")]
     public void GivenTheEditDataServiceURI(string editDataUri)
     {
-      editDataRequester =
-          new Poster<EditDataRequest, EditDataResult>(RestClient.Productivity3DServiceBaseUrl + editDataUri);
+      editDataRequester = new Poster<EditDataRequest, EditDataResult>(RestClient.Productivity3DServiceBaseUrl + editDataUri);
     }
 
     [And(@"the get edit data service URI ""(.*)""")]
     public void AndTheGetEditDataServiceURI(string getEditDataUri)
     {
-      getEditDataRequester =
-          new Poster<GetEditDataRequest, GetEditDataResult>(RestClient.Productivity3DServiceBaseUrl + getEditDataUri);
+      getEditDataRequester = new Poster<GetEditDataRequest, GetEditDataResult>(RestClient.Productivity3DServiceBaseUrl + getEditDataUri);
     }
 
     [And(@"all data edits are cleared for project (.*)")]
@@ -50,37 +46,26 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var undoAllEditsRequest = new EditDataRequest { projectId = pId, undo = true, dataEdit = null };
       var getAllEditsRequest = new GetEditDataRequest { projectId = pId, assetId = -1 };
 
-      // Get all edits - clear all if necessary
-      var allEdits = getEditDataRequester.DoValidRequest(getAllEditsRequest);
-      if (allEdits.dataEdits.Count > 0)
-      {
-        // Undo all edits
-        editDataRequester.DoValidRequest(undoAllEditsRequest);
-        Thread.Sleep(1000); // This takes time so wait a second
+      // Undo all edits
+      editDataRequester.DoValidRequest(undoAllEditsRequest);
 
-        // Get all edits again - stop test if still not clear
-        allEdits = getEditDataRequester.DoValidRequest(getAllEditsRequest);
-      }
+      // Get all edits and confirm they have been removed.
+      var allEdits = getEditDataRequester.DoValidRequest(getAllEditsRequest);
+      Assert.True(!allEdits.dataEdits.Any());
     }
 
     [And(@"GetLifts service ""(.*)"" only returns (.*) real lifts for project (.*)")]
     public void AndGetLiftsServiceOnlyReturnsRealLiftsForProject(string getLiftsUri, int numLifts, long pId)
     {
       var fullGetLiftsUri = RestClient.Productivity3DServiceBaseUrl + string.Format(getLiftsUri, pId);
-      var getLiftRequester =
-          new Getter<LayerIdsExecutionResult>(fullGetLiftsUri);
-
-      var result = getLiftRequester.SendRequest();
+      new Getter<LayerIdsExecutionResult>(fullGetLiftsUri).SendRequest();
     }
 
     [And(@"GetMachineDesign service ""(.*)"" only returns (.*) real designs for project (.*)")]
     public void AndGetMachineDesignServiceOnlyReturnsRealDesignsForProject(string getMachDesignUri, int numMachDesign, int pId)
     {
       var fullGetMachDesignUri = RestClient.Productivity3DServiceBaseUrl + string.Format(getMachDesignUri, pId);
-      var getMachDesignRequester =
-          new Getter<GetMachineDesignResult>(fullGetMachDesignUri);
-
-      var result = getMachDesignRequester.SendRequest();
+      new Getter<GetMachineDesignResult>(fullGetMachDesignUri).SendRequest();
     }
 
     [And(@"the following data edit details")]
@@ -91,7 +76,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         var onMachineDesignName = row.Cells.ElementAt(4).Value;
         var liftNumber = row.Cells.ElementAt(5).Value;
 
-        _dataEditContext.DataEdits.Add(new ProductionDataEdit
+        dataEditContext.DataEdits.Add(new ProductionDataEdit
         {
           assetId = int.Parse(row.Cells.ElementAt(1).Value),
           startUTC = DateTime.Parse(row.Cells.ElementAt(2).Value),
@@ -100,7 +85,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
             ? null
             : onMachineDesignName == "Random" ? "VirtualDesign_" + new Random().Next(32768) : onMachineDesignName,
           liftNumber = liftNumber == "null"
-            ? (int?) null
+            ? (int?)null
             : liftNumber == "Random" ? new Random().Next(32768) : Convert.ToInt32(liftNumber)
         });
       }
@@ -111,17 +96,16 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       foreach (var row in dataTable.Rows.Skip(1))
       {
-        var a = int.Parse(row.Cells.ElementAt(0).Value);
+        _ = int.Parse(row.Cells.ElementAt(0).Value);
 
         var doEditRequest = new EditDataRequest
         {
           projectId = pId,
           undo = false,
-          dataEdit = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]
+          dataEdit = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]
         };
 
         editDataResult = editDataRequester.DoValidRequest(doEditRequest);
-        Thread.Sleep(1000);
       }
     }
 
@@ -140,7 +124,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       foreach (var row in dataTable.Rows.Skip(1))
       {
-        edits.Add(_dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]);
+        edits.Add(dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]);
       }
       expectedResult.dataEdits = edits;
 
@@ -155,7 +139,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       foreach (var row in dataTable.Rows.Skip(1))
       {
-        edits.Add(_dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]);
+        edits.Add(dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]);
       }
       expectedResult.dataEdits = edits;
 
@@ -171,10 +155,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         {
           projectId = pId,
           undo = true,
-          dataEdit = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]
+          dataEdit = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]
         };
         editDataRequester.DoValidRequest(undoEditRequest);
-        Thread.Sleep(1000);
       }
     }
 
@@ -199,7 +182,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       // Construct Filter from data edit (by LiftId, DesignId or both)
       var filter = new FilterResult();
-      var edit = _dataEditContext.DataEdits[editId];
+      var edit = dataEditContext.DataEdits[editId];
       if (edit.liftNumber != null)
       {
         filter.layerType = FilterLayerMethod.TagfileLayerNumber;
@@ -223,8 +206,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       var expectedDatumResult = new CellDatumResult
       {
-        displayMode = (DisplayMode) displayMode,
-        returnCode = (short) returnCode,
+        displayMode = (DisplayMode)displayMode,
+        returnCode = (short)returnCode,
         value = value,
         timestamp = Convert.ToDateTime(timestamp)
       };
@@ -239,13 +222,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       {
         projectId = pId,
         undo = false,
-        dataEdit = _dataEditContext.DataEdits[editId]
+        dataEdit = dataEditContext.DataEdits[editId]
       };
 
-      // TODO (Aaron) Check refactoring hasn't broken this.
       editDataRequester.CurrentRequest = doEditRequest;
       editDataResult = editDataRequester.DoRequest(null, (int)HttpStatusCode.BadRequest);
-      Thread.Sleep(1000);
     }
 
     [Then(@"I should get Error Code (.*) and Message ""(.*)""")]
@@ -276,7 +257,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       foreach (var row in dataTable.Rows.Skip(1))
       {
-        var designName = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].onMachineDesignName;
+        var designName = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].onMachineDesignName;
 
         Assert.True(getMachineDesignResult.designs.Exists(d => d.designName == designName),
             "Cannot find design edit in the design list read back.");
@@ -288,19 +269,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       foreach (var row in dataTable.Rows.Skip(1))
       {
-        var assetId = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].assetId;
+        var assetId = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].assetId;
 
         var designIndex = -1;
         if (getMachineDesignResult != null)
         {
           designIndex = getMachineDesignResult.designs.FindIndex(d =>
-              d.designName == _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].onMachineDesignName);
+              d.designName == dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].onMachineDesignName);
         }
 
         var designId = getMachineDesignResult.designs[designIndex].designId;
-        var layerId = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].liftNumber.Value;
-        var startDate = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].startUTC;
-        var endDate = _dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].endUTC;
+        var layerId = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].liftNumber.Value;
+        var startDate = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].startUTC;
+        var endDate = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)].endUTC;
 
         Assert.True(layerIdsExecutionResult.LayerIdDetailsArray.ToList().Exists(l => l.AssetId == assetId &&
             l.DesignId == designId && l.LayerId == layerId && l.StartDate == startDate && l.EndDate == endDate),

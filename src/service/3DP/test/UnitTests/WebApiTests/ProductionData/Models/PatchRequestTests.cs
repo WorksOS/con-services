@@ -21,33 +21,33 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     {
 
       var validator = new DataAnnotationsValidator();
-      PatchRequest request = PatchRequest.Create(
-                projectId, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      PatchRequest request = new PatchRequest(
+                projectId, null, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(request, out results));
 
       //missing project id
-      request = PatchRequest.Create(
-                -1, callId, DisplayMode.Height, palettes, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      request = new PatchRequest(
+                -1, null, callId, DisplayMode.Height, palettes, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //vol no change tolerance out of range
-      request = PatchRequest.Create(
-                      projectId, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 10.1, null, null, 0, null, 0,
+      request = new PatchRequest(
+                      projectId, null, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 10.1, null, null, null,
                       FilterLayerMethod.None, 5, 50);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //patch number out of range
-      request = PatchRequest.Create(
-                      projectId, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      request = new PatchRequest(
+                      projectId, null, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                       FilterLayerMethod.None, -1, 50);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //patch size out of range
-      request = PatchRequest.Create(
-                      projectId, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      request = new PatchRequest(
+                      projectId, null, callId, DisplayMode.Height, null, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                       FilterLayerMethod.None, 5, 9999);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
@@ -58,8 +58,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void ValidateFailInvalidPaletteNumberTest()
     {
       //wrong number of palettes for display mode
-      PatchRequest request = PatchRequest.Create(
-                projectId, callId, DisplayMode.CCVPercent, palettes, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      PatchRequest request = new PatchRequest(
+                projectId, null, callId, DisplayMode.CCVPercent, palettes, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
 
       Assert.ThrowsException<ServiceException>(() => request.Validate());
@@ -69,8 +69,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void ValidateFailInvalidPaletteOrderTest()
     {
       //palettes out of order
-      PatchRequest request = PatchRequest.Create(
-                projectId, callId, DisplayMode.Height, invalidPalettes, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      PatchRequest request = new PatchRequest(
+                projectId, null, callId, DisplayMode.Height, invalidPalettes, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
@@ -80,8 +80,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void ValidateFailMissingDesignTest()
     {
       //missing design (for volumes display mode)
-      PatchRequest request = PatchRequest.Create(
-                projectId, callId, DisplayMode.CutFill, palettes, liftSettings, false, VolumesType.None, 0.0, null, null, 0, null, 0,
+      PatchRequest request = new PatchRequest(
+                projectId, null, callId, DisplayMode.CutFill, palettes, liftSettings, false, VolumesType.None, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
@@ -91,8 +91,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void ValidateFailMissingFilterTest()
     {
       //missing filter (for volumes display mode)
-      PatchRequest request = PatchRequest.Create(
-                projectId, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, VolumesType.Between2Filters, 0.0, null, null, 0, null, 0,
+      PatchRequest request = new PatchRequest(
+                projectId, null, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, VolumesType.Between2Filters, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
       Assert.ThrowsException<TwoFiltersRequiredException>(() => request.Validate());
     }
@@ -101,8 +101,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     public void ValidateFailInvalidVolumeTypeTest()
     {
       //Unsupported volume type (for volumes display mode)
-      PatchRequest request = PatchRequest.Create(
-                projectId, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, VolumesType.AboveLevel, 0.0, null, null, 0, null, 0,
+      PatchRequest request = new PatchRequest(
+                projectId, null, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, VolumesType.AboveLevel, 0.0, null, null, null,
                 FilterLayerMethod.None, 5, 50);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }

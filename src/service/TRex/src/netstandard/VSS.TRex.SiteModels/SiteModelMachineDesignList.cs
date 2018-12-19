@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {
   public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
-    private const string kMachineDesignsListStreamName = "MachineDesigns";
+    private const int READER_WRITER_VERSION_MACHINE_DESIGN_LIST = 1;
+    private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>
     /// The identifier of the site model owning this list of machine design names
@@ -57,7 +58,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersion); 
+      writer.Write(READER_WRITER_VERSION_MACHINE_DESIGN_LIST); 
 
       writer.Write((int) Count);
       for (int i = 0; i < Count; i++)
@@ -73,8 +74,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersion)
-        throw new Exception($"Invalid version number ({version}) reading machine designs list, expected version (1)");
+      if (version != READER_WRITER_VERSION_MACHINE_DESIGN_LIST)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_DESIGN_LIST, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -94,7 +95,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
+      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
     }
     
     /// <summary>
@@ -103,7 +104,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void LoadFromPersistentStore()
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
+      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
       if (MS == null)
         return;
 

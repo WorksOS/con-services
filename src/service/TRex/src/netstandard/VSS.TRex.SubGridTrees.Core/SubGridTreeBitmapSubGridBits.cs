@@ -41,14 +41,14 @@ namespace VSS.TRex.SubGridTrees
         public const long SumBitRowsFullCount = (((long)1 << SubGridTreeConsts.SubGridTreeDimension) - 1) * SubGridTreeConsts.SubGridTreeDimension;
 
         /// <summary>
-        /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
-        /// </summary>
-        public uint[] Bits;
-
-        /// <summary>
         /// The number of byte occupied by the Bits array
         /// </summary>
         private const int BytesOccupiedByBits = SubGridTreeConsts.SubGridTreeDimension * sizeof(uint);
+
+        /// <summary>
+        /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
+        /// </summary>
+        public uint[] Bits;
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -689,25 +689,6 @@ namespace VSS.TRex.SubGridTrees
                     return false;
          
             return true;
-        }
-      
-        /// <summary>
-        /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        /// <summary>
-        /// Overloaded Equals() accepting generic object type parameter
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
-        {
-            return obj != null && Equals((SubGridTreeBitmapSubGridBits)obj);
         }
 
       /// <summary>

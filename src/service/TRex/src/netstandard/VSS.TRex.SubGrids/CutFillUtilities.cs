@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public static class CutFillUtilities
   {
-    private static ILogger Log = Logging.Logger.CreateLogger("CutFillUtilities");
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("CutFillUtilities");
 
     /// <summary>
     /// Calculates a cut/fill subgrid from a production data elevation subgrid and an elevation subgrid computed from a referenced design,
@@ -36,14 +36,13 @@ namespace VSS.TRex.SubGrids
         return false;
       }
 
-      if (design.GetDesignHeights(DataModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
-            out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult) == false)
+      design.GetDesignHeights(DataModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
+        out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult);
+
+      if (ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
       {
-        if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-        {
-          Log.LogError($"Design profiler subgrid elevation request for {SubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
-          return false;
-        }
+        Log.LogError($"Design profiler subgrid elevation request for {SubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
+        return false;
       }
 
       ComputeCutFillSubgrid((IClientHeightLeafSubGrid) SubGrid, DesignElevations);

@@ -20,11 +20,11 @@ namespace VSS.TRex.Caching
       string fingerprint = $"{projectUID}-{gridDataType}";
 
       if (filter != null)
-        fingerprint = fingerprint + filter.AttributeFilter.SpatialCacheFingerprint();
+        fingerprint = $"{fingerprint}-{filter.AttributeFilter.SpatialCacheFingerprint()}";
 
       if (includedSurveyedSurfaces.Length > 0)
         foreach (var guid in includedSurveyedSurfaces)
-          fingerprint = fingerprint + $"-{guid}";
+          fingerprint = $"{fingerprint}-{guid}";
 
       return fingerprint;
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.TAGFiles.Classes.Sinks
 {

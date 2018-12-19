@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -13,7 +14,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Profiling
 {
@@ -33,7 +34,7 @@ namespace VSS.TRex.Profiling
     private int LayerIDOfLastProcessedCellPass;
 
     private short LastPassCCV;
-    public DateTime LastPassCCVTime;
+    private DateTime LastPassCCVTime;
     private short LastPassCCVMachine;
     private float LastPassCCVElev;
     private int LastPassCCVIdx;
@@ -108,8 +109,8 @@ namespace VSS.TRex.Profiling
 
     private ISiteModel SiteModel;
     private ProfileCell Cell;
-    private GridDataType ProfileTypeRequired;
-    private IFilteredValuePopulationControl PopulationControl;
+    private readonly GridDataType ProfileTypeRequired;
+    private readonly IFilteredValuePopulationControl PopulationControl;
     private ICellPassAttributeFilter PassFilter;
     private ICellPassFastEventLookerUpper CellPassFastEventLookerUpper;
     private ISubGridSegmentCellPassIterator CellPassIterator;
@@ -120,7 +121,7 @@ namespace VSS.TRex.Profiling
     public int FilteredPassCountOfTopMostLayer { get; set; }
 
     // FilteredHalfCellPassCountOfTopMostLayer tracks 'half cell passes'.
-    // A half cell pass is recorded whan a Quattro four drum compactor drives over the ground.
+    // A half cell pass is recorded when a Quattro four drum compactor drives over the ground.
     // Other machines, like single drum compactors, record two half cell pass counts to form a single cell pass.
     public int FilteredHalfCellPassCountOfTopMostLayer { get; set; }
 
@@ -151,10 +152,10 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="forMachineID"></param>
     /// <returns></returns>
-    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.Machines[forMachineID].TargetValueChanges;
+    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.MachinesTargetValues[forMachineID];
 
     /// <summary>
-    ///  Intialises the 'last' trackming variables for a layer
+    /// Initializes the 'last' tracking variables for a layer
     /// </summary>
     private void InitLastValueVars()
     {
@@ -171,7 +172,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Initialises layer tracking state ready to analyse a new cell profile
+    /// Initializes layer tracking state ready to analyze a new cell profile
     /// </summary>
     private void InitLayerTrackingVars()
     {
@@ -194,7 +195,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Detemines if the compaction observed in the cell is within the acceptable limits
+    /// Determines if the compaction observed in the cell is within the acceptable limits
     /// </summary>
     /// <param name="lift"></param>
     private void CheckProfileCellLiftCompaction(ProfileLayer lift)
@@ -206,7 +207,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Initialises cell pass interation state ready to analyse the cell passes in this cell
+    /// Initializes cell pass iteration state ready to analyze the cell passes in this cell
     /// </summary>
     private void SetCellIterationParameters()
     {
@@ -219,7 +220,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// BEgins iterating through the cell passes in this cell
+    /// Begins iterating through the cell passes in this cell
     /// </summary>
     private void BeginCellPassIteration()
     {
@@ -241,7 +242,7 @@ namespace VSS.TRex.Profiling
       // if (Debug_ExtremeLogSwitchG)
       //   Log.LogDebug("In SelectCurrentCellPassInScan");
 
-      //Select only those cellpasses which satisfy applied filter
+      //Select only those cell passes which satisfy applied filter
       bool Result;
 
       if (FilterAppliedToCellPasses)
@@ -254,8 +255,7 @@ namespace VSS.TRex.Profiling
           {
             CurrentPass = Cell.Passes.FilteredPassData[CurrentPassIndex];
             if (!FilteredValuePopulationComplete)
-              FiltersValuePopulation.PopulateFilteredValues( //SiteModel.MachinesTargetValues,
-                GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
+              FiltersValuePopulation.PopulateFilteredValues(GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
                 PopulationControl, ref CurrentPass);
             Result = true;
             break;
@@ -271,8 +271,7 @@ namespace VSS.TRex.Profiling
         {
           CurrentPass = Cell.Passes.FilteredPassData[CurrentPassIndex];
           if (!FilteredValuePopulationComplete)
-            FiltersValuePopulation.PopulateFilteredValues( //SiteModel.MachinesTargetValues,
-              GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
+            FiltersValuePopulation.PopulateFilteredValues(GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
               PopulationControl, ref CurrentPass);
         }
       }
@@ -284,7 +283,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Move the iterator staste to the next cell in the iteration
+    /// Move the iterator state to the next cell in the iteration
     /// </summary>
     private void MoveToNextCurrentPass()
     {
@@ -294,7 +293,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Adds a cell pass which has passed all validation criteria for inclusing in the current layer, to that layer.
+    /// Adds a cell pass which has passed all validation criteria for including in the current layer, to that layer.
     /// </summary>
     private void AddValidatedPassToLayer()
     {
@@ -415,7 +414,7 @@ namespace VSS.TRex.Profiling
       CellPassIterator != null ? CurrentPassIndex == 0 : CurrentPassIndex == FirstCellPassIndex;
 
     /// <summary>
-    /// Detemines if the given cell passes the criteria for inclusion in the current lift being constructed.
+    /// Determines if the given cell passes the criteria for inclusion in the current lift being constructed.
     /// </summary>
     /// <param name="pass"></param>
     /// <returns></returns>
@@ -450,7 +449,7 @@ namespace VSS.TRex.Profiling
         if (Result)
           return true;
 
-        // If we're not in the deadband, then check for a partial lift
+        // If we're not in the dead band, then check for a partial lift
         if (pass.FilteredPass.Height > ElevationOfLastProcessedCellPass)
         {
           double TargetThickness;
@@ -467,7 +466,7 @@ namespace VSS.TRex.Profiling
         }
       }
 
-      // If layer detction is via layerid has the layer id changed
+      // If layer detection is via layer id has the layer id changed
       if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.Tagfile)
       {
         if (pass.EventValues.LayerID == LastLayerID || pass.EventValues.LayerID == CellEvents.NullLayerID)
@@ -478,7 +477,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Updates trackign state to take into accoutn the state of the last cell pass that was analysed
+    /// Updates tracking state to take into account the state of the last cell pass that was analyzed
     /// </summary>
     private void UpdateLastPassTrackingVars()
     {
@@ -577,7 +576,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Determines if the cellpass being analysed triggers completion of the layer currently being consgructed
+    /// Determines if the cell pass being analyzed triggers completion of the layer currently being constructed
     /// </summary>
     /// <returns></returns>
     private bool CheckLayerCompleted()
@@ -601,7 +600,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Examines the set of layers for a cell and determines if any of them are superceded by activity subsequent
+    /// Examines the set of layers for a cell and determines if any of them are superseded by activity subsequent
     /// to the time the cell passes in the layer were measured
     /// </summary>
     private void ComputeSupercededStatusForLayers()
@@ -636,7 +635,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// from final passes only return passes in passcount range
+    /// from final passes only return passes in pass count range
     /// </summary>
     private void ApplyPassCountRangeFilter()
     {
@@ -780,7 +779,7 @@ namespace VSS.TRex.Profiling
           }
         }
 
-        // because we are delaing with only one record we need to reset the details at the layer level
+        // because we are dealing with only one record we need to reset the details at the layer level
         // if a elevation index was set in this layer update this layers details with the matching index
         if (SetInThisLayer)
         {
@@ -853,7 +852,7 @@ namespace VSS.TRex.Profiling
         {
           if (Cell.FilteredPassFlags[PassIndex])
           {
-            // every good pass gets readded here using the count index
+            // every good pass gets re-added here using the count index
             // count makes sure we always start at index 0 for for first layer
             if (Count != PassIndex)
             {
@@ -884,7 +883,7 @@ namespace VSS.TRex.Profiling
           }
         }
 
-        // for first layer we may need to reset indexes. It use to assume startindex was always 0 for first layer but that has changed since
+        // for first layer we may need to reset indexes. It use to assume start index was always 0 for first layer but that has changed since
         // Bug31595
         if (LayerIndex == 0)
         {
@@ -899,7 +898,7 @@ namespace VSS.TRex.Profiling
 
       Cell.FilteredPassCount = Count;
       Cell.FilteredHalfPassCount = HalfPassCount;
-      Cell.Passes.PassCount = Count;
+      Cell.SetFilteredPassCount(Count);
 
       // Remove any layers at the top of the stack that do not have any cell passes in them
       for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex >= 0; LayerIndex--)
@@ -910,8 +909,8 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Performs extrensive business rule logic analysis to the cell passes in a cell to derive layer breakdown
-    /// and summary analystics for the cell
+    /// Performs extensive business rule logic analysis to the cell passes in a cell to derive layer breakdown
+    /// and summary analytics for the cell
     /// </summary>
     /// <param name="cell"></param>
     /// <param name="ClientGrid"></param>
@@ -971,7 +970,7 @@ namespace VSS.TRex.Profiling
           FilteredValuePopulationComplete = true;
         }
         else
-          ; //Assert(False, 'FCellPassFastEventLookerUpper not available');
+          Debug.Assert(false, "CellPassFastEventLookerUpper not available");
       }
       else
       {
@@ -1301,7 +1300,7 @@ namespace VSS.TRex.Profiling
 
       if (Result)
       {
-        // Calculate the superceded and layer thickness information for the computed layers
+        // Calculate the superseded and layer thickness information for the computed layers
         if (Dummy_LiftBuildSettings.IncludeSuperseded == false)
           ComputeSupercededStatusForLayers();
 
@@ -1313,7 +1312,7 @@ namespace VSS.TRex.Profiling
       }
 
       // if (Debug_ExtremeLogSwitchE)
-      //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Handling passcount check");
+      //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Handling pass count check");
 
 
       ApplyPassCountRangeFilter();
@@ -1325,7 +1324,7 @@ namespace VSS.TRex.Profiling
       // the layer analysis and make sure indexing is correct in layers
       RemoveNonFilteredPasses();
 
-      // If the caller is really just interested in the passcount of the topmost (most
+      // If the caller is really just interested in the pass count of the topmost (most
       // recent) layer in the processed lifts, then count the number of cell passes in
       // the layer that match the filter and return that value to the caller.
       // Note: If there are no filters selections, or only a time filter is configured,

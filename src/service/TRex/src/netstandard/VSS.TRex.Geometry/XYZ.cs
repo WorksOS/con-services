@@ -71,26 +71,26 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// XYZ constructor taking X,Y and Z dimensions
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Z"></param>
-    public XYZ(double X, double Y, double Z)
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    public XYZ(double x, double y, double z)
     {
-      this.X = X;
-      this.Y = Y;
-      this.Z = Z;
+      X = x;
+      Y = y;
+      Z = z;
     }
 
     /// <summary>
     /// XYZ constructor taking X & Y dimensions, while defaulting the Z dimension to null
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    public XYZ(double X, double Y)
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    public XYZ(double x, double y)
     {
-      this.X = X;
-      this.Y = Y;
-      this.Z = Consts.NullDouble;
+      X = x;
+      Y = y;
+      Z = Consts.NullDouble;
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Internal function to determine is there is an intesection on the Y axis
+    /// Internal function to determine is there is an intersection on the Y axis
     /// </summary>
     /// <param name="P1"></param>
     /// <param name="P2"></param>
@@ -577,15 +577,6 @@ namespace VSS.TRex.Geometry
     /// <param name="V"></param>
     /// <returns></returns>
     public static XYZ UnitVector(XYZ V) => V * (1 / VectorLength(V));
-
-    /// <summary>
-    /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode()
-    {
-      return base.GetHashCode();
-    }
 
     /// <summary>
     /// Returns the triangle centroid

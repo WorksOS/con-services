@@ -195,7 +195,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             };
             segment2.AllocateFullPassStacks();
 
-            SegmentCellPassAdopter.AdoptCellPassesFrom(segment2.PassesData, segment1.PassesData, new DateTime((startSegmentTime.Ticks + endSegmentTime.Ticks) / 2));
+            SegmentCellPassAdopter.AdoptCellPassesFrom(segment2.PassesData, segment1.PassesData, startSegmentTime + new TimeSpan((endSegmentTime.Ticks - startSegmentTime.Ticks) / 2));
 
             // Check the times of the adopted cells are correct
             Assert.True(segment1.VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Segment1 has inappropriate cell pass time range compared to segment time range");
@@ -213,7 +213,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(totalPassCount2 == segment2.PassesData.SegmentPassCount, $"Total passes for segment 2 {totalPassCount2} is not equal to segmentPassCount in that segment {segment2.PassesData.SegmentPassCount}");
         }
 
-    private void SetupDITfa(int vlpdSubGridSegmentPassCountLimit = Consts.kVlpdSubGridSegmentPassCountLimitDefault)
+    private void SetupDITfa(int vlpdSubGridSegmentPassCountLimit = Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT)
     {
       var moqConfiguration = new Mock<IConfigurationStore>();
       moqConfiguration.Setup(x => x.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(vlpdSubGridSegmentPassCountLimit);

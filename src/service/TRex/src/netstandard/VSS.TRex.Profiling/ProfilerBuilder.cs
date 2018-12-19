@@ -13,24 +13,24 @@ namespace VSS.TRex.Profiling
   /// for the primary activities of collation of profile cells for a profile line, processing of those cells as a whole with respect to
   /// filtering and other parameters, and per-cell processing for layer analysis and other statistics
   /// </summary>
-  public class ProfilerBuilder : IProfilerBuilder
+  public class ProfilerBuilder<T> : IProfilerBuilder<T> where T: class, IProfileCellBase, new()
   {
-    private static IProfilerBuilderFactory factory = DI.DIContext.Obtain<IProfilerBuilderFactory>();
-
-    /// <summary>
-    /// Builder responsible fopr per-cell profile analysis
-    /// </summary>
-    public ICellLiftBuilder CellLiftBuilder { get; set; }
+    private static readonly IProfilerBuilderFactory<T> factory = DI.DIContext.Obtain<IProfilerBuilderFactory<T>>();
 
     /// <summary>
     /// Builder responsible for constructing cell vector from profile line
     /// </summary>
-    public ICellProfileBuilder CellProfileBuilder { get; set; }
+    public ICellProfileBuilder<T> CellProfileBuilder { get; set; }
 
     /// <summary>
-    /// Buidler responsibler from building overall profile informationk from cell vector
+    /// Builder responsible from building overall profile information from cell vector
     /// </summary>
-    public IProfileLiftBuilder ProfileLiftBuilder { get; set; }
+    public ICellProfileAnalyzer<T> CellProfileAnalyzer { get; set; }
+
+    /// <summary>
+    /// Builder responsible for per-cell profile analysis
+    /// </summary>
+    public ICellLiftBuilder CellLiftBuilder { get; set; }
 
     public ProfilerBuilder()
     {
@@ -65,7 +65,7 @@ namespace VSS.TRex.Profiling
 
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
 
-        ProfileLiftBuilder = factory.NewProfileLiftBuilder(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
+        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
     }
   }
 }

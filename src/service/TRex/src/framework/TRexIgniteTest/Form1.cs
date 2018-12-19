@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Analytics.CMVChangeStatistics;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Analytics.CMVStatistics;
@@ -40,6 +41,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
@@ -122,7 +124,7 @@ namespace TRexIgniteTest
 
 	    try
 	    {
-	      Task<Byte[]> taskResponse = myGateway.GetTile(txtGatewayBase.Text, jsonParams);
+	      Task<byte[]> taskResponse = myGateway.GetTile(txtGatewayBase.Text, jsonParams);
 	      tileData = await taskResponse;
 	      return 0;
 
@@ -196,16 +198,15 @@ namespace TRexIgniteTest
 	      ProfileTypeRequired = GridDataType.Height,
 	      PositionsAreGrid = true,
 	      Filters = new FilterSet(new[] {new CombinedFilter()}),
-	      ReferenceDesignID = Guid.Empty,
+	      ReferenceDesignUID = Guid.Empty,
 	      StartPoint = new WGS84Point(lon: extents.MinX, lat: extents.MinY),
 	      EndPoint = new WGS84Point(lon: extents.MaxX, lat: extents.MaxY),
-	      ReturnAllPassesAndLayers = false,
-	      DesignDescriptor = DesignDescriptor.Null()
+	      ReturnAllPassesAndLayers = false
 	    };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-	    ProfileRequest_ApplicationService request = new ProfileRequest_ApplicationService();
-	    ProfileRequestResponse Response = request.Execute(arg);
+	    ProfileRequest_ApplicationService<ProfileCell> request = new ProfileRequest_ApplicationService<ProfileCell>();
+	    ProfileRequestResponse<ProfileCell> Response = request.Execute(arg);
 
 	    if (Response == null)
 	      MessageBox.Show(@"Profile response is null");
@@ -260,7 +261,7 @@ namespace TRexIgniteTest
 
 		}
 
-		private void fitExtentsToView(int width, int height)
+		private void FitExtentsToView(int width, int height)
 		{
 				double Aspect = height / (double)width;
 
@@ -306,7 +307,7 @@ namespace TRexIgniteTest
 
 		private void DoRender()
 		{
-				fitExtentsToView(pictureBox1.Width, pictureBox1.Height);
+				FitExtentsToView(pictureBox1.Width, pictureBox1.Height);
 
 				Draw.Bitmap bmp = PerformRender((DisplayMode)displayMode.SelectedIndex, pictureBox1.Width, pictureBox1.Height, chkSelectEarliestPass.Checked, extents);
 
@@ -434,7 +435,7 @@ namespace TRexIgniteTest
 
 				//            Bitmap[] bitmaps = new Bitmap[nImages];
 
-				fitExtentsToView(width, height);
+				FitExtentsToView(width, height);
 
 				// Construct an array of identical bitmaps that are displayed on the form to see how well it multi-threads the requests
 
@@ -773,7 +774,7 @@ namespace TRexIgniteTest
 
 			  IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 			  
 				if (ignite != null)
 				{
@@ -804,7 +805,7 @@ namespace TRexIgniteTest
 			}
 			catch (Exception ee)
 			{
-			  textBoxTest.Text = String.Empty;
+			  textBoxTest.Text = string.Empty;
 			  AppendTextBoxWithNewLine("An error occurred:");
 			  AppendTextBoxWithNewLine("==============================================================================================================================================");
         AppendTextBoxWithNewLine(ee.ToString());
@@ -897,7 +898,7 @@ namespace TRexIgniteTest
 
 				SimpleVolumesResponse volume = PerformVolume(true);
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
 				if (volume == null)
 				{
@@ -921,7 +922,7 @@ namespace TRexIgniteTest
 				// Make a test queue object and see how it goes
 				TestQueueHolder queue = new TestQueueHolder();
 
-				IEnumerable<TestQueueItem> result = queue.Query(DateTime.Now);
+				IEnumerable<TestQueueItem> result = queue.Query(DateTime.UtcNow);
 
 				if (result?.Count() > 0)
 				{
@@ -983,7 +984,7 @@ namespace TRexIgniteTest
 					Offsets = offsets
 			});
 
-      textBoxTest.Text = String.Empty;
+      textBoxTest.Text = string.Empty;
 
 		  if (result != null)
 		  {
@@ -1025,7 +1026,7 @@ namespace TRexIgniteTest
 					}
 				);
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
 			  if (result != null)
 			  {
@@ -1095,7 +1096,7 @@ namespace TRexIgniteTest
 
 			SimpleVolumesResponse volume = PerformVolume(false);
 
-      textBoxTest.Text = String.Empty;
+      textBoxTest.Text = string.Empty;
 
 			if (volume == null)
 			{
@@ -1134,8 +1135,8 @@ namespace TRexIgniteTest
 						//  "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
 
 
-						Guid TheProject = (this.edtProjectID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtProjectID.Text);
-						Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
+						Guid TheProject = (this.edtProjectID.Text == string.Empty) ? Guid.Empty : Guid.Parse(this.edtProjectID.Text);
+						Guid TheAsset = (this.edtAssetID.Text == string.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
 						string TheFileName = Path.GetFileName(fileName);
 						string tccOrgID = this.edtTCCOrgID.Text; // maybe it could have been guid
 
@@ -1165,8 +1166,6 @@ namespace TRexIgniteTest
 						MessageBox.Show(exception.Message);
 						throw;
 				}
-
-
 		}
 
 		private void btnGenGUID_Click(object sender, EventArgs e)
@@ -1193,25 +1192,25 @@ namespace TRexIgniteTest
 		private void btnCustom_Click(object sender, EventArgs e)
 		{
 				// create some empty guids to customise
-				this.edtAssetID.Text = new Guid().ToString();
-				this.edtTCCOrgID.Text = new Guid().ToString();
-				this.edtProjectID.Text = new Guid().ToString();
+				edtAssetID.Text = new Guid().ToString();
+				edtTCCOrgID.Text = new Guid().ToString();
+				edtProjectID.Text = new Guid().ToString();
 		}
 
         private void btnGetMetaData_Click(object sender, EventArgs e)
         {
 
 
-            if (this.edtTagfile.Text == string.Empty)
+            if (edtTagfile.Text == string.Empty)
             {
                 MessageBox.Show(@"Missing tagfile");
                 return;
             }
             try
             {
-                string fileName = this.edtTagfile.Text;
-                Guid TheProject = (this.edtProjectID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtProjectID.Text);
-                Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
+                string fileName = edtTagfile.Text;
+                Guid TheProject = (edtProjectID.Text == string.Empty) ? Guid.Empty : Guid.Parse(edtProjectID.Text);
+                Guid TheAsset = (edtAssetID.Text == string.Empty) ? Guid.Empty : Guid.Parse(edtAssetID.Text);
                 string TheFileName = Path.GetFileName(fileName);
 
                 TagFileDetail td = new TagFileDetail()
@@ -1316,7 +1315,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {
@@ -1364,7 +1363,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {
@@ -1412,7 +1411,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {
@@ -1459,7 +1458,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {
@@ -1506,7 +1505,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {
@@ -1552,7 +1551,7 @@ namespace TRexIgniteTest
 	        }
 	      );
 
-	      textBoxTest.Text = String.Empty;
+	      textBoxTest.Text = string.Empty;
 
 	      if (result != null)
 	      {
@@ -1598,7 +1597,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {
@@ -1631,7 +1630,7 @@ namespace TRexIgniteTest
 
 	  private void PriorProcessingMessage()
 	  {
-	    textBoxTest.Text = String.Empty;
+	    textBoxTest.Text = string.Empty;
 	    textBoxTest.AppendText("Processing data and getting result...");
     }
     #endregion
@@ -1641,7 +1640,7 @@ namespace TRexIgniteTest
       // Get project statistics
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
-      textBoxTest.Text = String.Empty;
+      textBoxTest.Text = string.Empty;
 
       if (siteModel == null)
       {
@@ -1696,7 +1695,7 @@ namespace TRexIgniteTest
           }
         );
 
-        textBoxTest.Text = String.Empty;
+        textBoxTest.Text = string.Empty;
 
         if (result != null)
         {

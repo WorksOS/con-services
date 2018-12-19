@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using Apache.Ignite.Core.Binary;
-using VSS.TRex.Designs.Models;
+﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -12,18 +10,17 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// <summary>
   /// Defines the parameters required for a production data profile request argument on cluster compute nodes
   /// </summary>
-  public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     public GridDataType ProfileTypeRequired { get; set; }
 
-    public XYZ[] NEECoords { get; set; }
+    public XYZ[] NEECoords { get; set; } = new XYZ[0];
     
     // todo LiftBuildSettings: TICLiftBuildSettings;
-    // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
-    public DesignDescriptor DesignDescriptor;
-
-    public bool ReturnAllPassesAndLayers { get; set; } = false;
+    public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -39,12 +36,10 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="nEECoords"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords,
-      DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords, bool returnAllPassesAndLayers)
     {
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
-      DesignDescriptor = designDescriptor;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 
@@ -56,18 +51,14 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      writer.WriteByte(VERSION_NUMBER);
+
       writer.WriteInt((int)ProfileTypeRequired);
 
-      writer.WriteBoolean(NEECoords != null);
-
-      if (NEECoords != null)
-      {
-        writer.WriteInt(NEECoords.Length);
-        foreach (var xyz in NEECoords)
-          xyz.ToBinary(writer);
-      }
-
-      DesignDescriptor.ToBinary(writer);
+      var count = NEECoords?.Length ?? 0;
+      writer.WriteInt(count);
+      for (int i = 0; i < count; i++)
+        NEECoords[i].ToBinary(writer);
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
     }
@@ -80,55 +71,18 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
+      var version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
-      if (reader.ReadBoolean())
-      {
-        var count = reader.ReadInt();
-        NEECoords = new XYZ[count];
-        for (int i = 0; i < count; i++)
-          NEECoords[i] = NEECoords[i].FromBinary(reader);
-      }
-
-      DesignDescriptor.FromBinary(reader);
+      var count = reader.ReadInt();
+      NEECoords = new XYZ[count];
+      for (int i = 0; i < count; i++)
+        NEECoords[i] = NEECoords[i].FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
-    }
-
-    protected bool Equals(ProfileRequestArgument_ClusterCompute other)
-    {
-      return base.Equals(other) && 
-             ProfileTypeRequired == other.ProfileTypeRequired && 
-             (Equals(NEECoords, other.NEECoords) ||
-              (NEECoords != null && other.NEECoords != null && NEECoords.SequenceEqual(other.NEECoords))) &&
-             DesignDescriptor.Equals(other.DesignDescriptor) && 
-             ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as ProfileRequestArgument_ClusterCompute);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != GetType()) return false;
-      return Equals((ProfileRequestArgument_ClusterCompute) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
-        hashCode = (hashCode * 397) ^ (NEECoords != null ? NEECoords.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReturnAllPassesAndLayers.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

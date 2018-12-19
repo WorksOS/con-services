@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        var compactionPalette = this.SettingsManager.CompactionPalette(mode, null, projectSettings, projectSettingsColors);
+        var compactionPalette = SettingsManager.CompactionPalette(mode, null, projectSettings, projectSettingsColors);
         switch (mode)
         {
           case DisplayMode.CCV:
@@ -161,35 +161,28 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get the elevation color palette for a project.
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="filterUid">Filter UID</param>
-    /// <returns>Elevation color palette</returns>
     [ProjectVerifier]
-    [Route("api/v2/elevationpalette")]
-    [HttpGet]
+    [HttpGet("api/v2/elevationpalette")]
     public async Task<CompactionDetailPaletteResult> GetElevationPalette(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       Log.LogInformation("GetElevationPalette: " + Request.QueryString);
 
-      var projectSettings = await this.GetProjectSettingsTargets(projectUid);
-      var projectSettingsColors = await this.GetProjectSettingsColors(projectUid);
+      var projectSettingsTask = GetProjectSettingsTargets(projectUid);
+      var projectSettingsColorsTask = GetProjectSettingsColors(projectUid);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var projectId = await GetLegacyProjectId(projectUid);
-      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, CustomHeaders);
-      var compactionPalette = this.SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings, projectSettingsColors);
-
+      var filterTask = GetCompactionFilter(projectUid, filterUid);
+      var projectIdTask = GetLegacyProjectId(projectUid);
+      var elevExtents = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
+      var compactionPalette = SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettingsTask.Result, projectSettingsColorsTask.Result);
+      
       DetailPalette elevationPalette = null;
+
       if (compactionPalette != null)
       {
-        List<ColorValue> colorValues = new List<ColorValue>();
-        for (int i = 1; i < compactionPalette.Count - 1; i++)
-        {
-          colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
-            compactionPalette[i].Value));
-        }
+        var colorValues = compactionPalette.Select(t => ColorValue.CreateColorValue(t.Color, t.Value)).ToList();
+
         elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
           compactionPalette[compactionPalette.Count - 1].Color, compactionPalette[0].Color);
       }

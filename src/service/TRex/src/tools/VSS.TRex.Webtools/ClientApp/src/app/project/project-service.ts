@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS, SiteProofingRun } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -134,6 +134,10 @@ export class ProjectService {
     return this.executeRequest<MachineDesign[]>('getMachineDesigns', `sitemodels/${projectUid}/machinedesigns`);
   }
 
+  public getSiteProofingRuns(projectUid: string): Observable<SiteProofingRun[]> {
+    return this.executeRequest<SiteProofingRun[]>('getSiteProofingRuns', `sitemodels/${projectUid}/siteproofingruns`);
+  }
+
   public getMachines(projectUid: string): Observable<Machine[]> {
     return this.executeRequest<Machine[]>('getMachines', `machines/${projectUid}`);
   }
@@ -163,7 +167,15 @@ export class ProjectService {
     return this.executePutRequest<string>('switchToImmutable', 'switchablegrid/immutable');
   }
 
-  public drawProfileLine(projectUid: string, designUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  public drawProfileLineForDesign(projectUid: string, designUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
+  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
+  public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {
+    return this.executeRequest<any[]>('drawProfileLineForCompositeHeights', `profiles/compositeelevations/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
 }

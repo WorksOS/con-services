@@ -24,7 +24,6 @@ namespace WebApiTests
       mysql = new MySqlHelper();
     }
 
-    #region Filters
     [TestMethod]
     [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Transient)]
@@ -326,19 +325,16 @@ namespace WebApiTests
       listMachines.Add(machine);
       var listPoints = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(38.8361907402694, -121.349260032177),
-        WGSPoint.CreatePoint(38.8361656688414, -121.349217116833),
-        WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
-        WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
+        new WGSPoint(38.8361907402694, -121.349260032177),
+        new WGSPoint(38.8361656688414, -121.349217116833),
+        new WGSPoint(38.8387897637231, -121.347275197506),
+        new WGSPoint(38.8387145521594, -121.347189366818)
       };
       var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
                                         elevation, vibestate, listPoints, forward, layerNo);
       return JsonConvert.SerializeObject(filter);
     }
 
-    #endregion
-
-    #region Boundaries
     [TestMethod]
     public void InsertBoundaryInDatabaseAndGetItFromWebApi()
     {
@@ -368,8 +364,5 @@ namespace WebApiTests
       Assert.AreEqual(boundaryResponseGet.GeofenceData.GeometryWKT, boundaryWKT, "Boundary WKT doesn't match for GET request");
       Assert.AreEqual(boundaryResponseGet.GeofenceData.GeofenceName, boundaryName, "Boundary name doesn't match for GET request");
     }
-
-
-    #endregion
   }
 }

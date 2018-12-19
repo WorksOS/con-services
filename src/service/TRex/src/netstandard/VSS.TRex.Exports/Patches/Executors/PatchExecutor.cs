@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -102,7 +103,7 @@ namespace VSS.TRex.Exports.Patches.Executors
           response: PatchSubGridsResponse,
           filters: Filters,
           cutFillDesignID: CutFillDesignID,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PatchExport),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
@@ -133,7 +134,7 @@ namespace VSS.TRex.Exports.Patches.Executors
       }
       catch (Exception E)
       {
-        Log.LogError($"ExecutePipeline raised exception {E}");
+        Log.LogError(E, "ExecutePipeline raised Exception:");
         return false;
       }
 

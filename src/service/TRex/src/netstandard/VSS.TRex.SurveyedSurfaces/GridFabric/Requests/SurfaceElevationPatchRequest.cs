@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Cluster;
+﻿using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -37,12 +36,17 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         /// <summary>
+        /// The static compute function used for surface elevation patch requests
+        /// </summary>
+        private static readonly IComputeFunc<SurfaceElevationPatchArgument, byte[]> _computeFunc = new SurfaceElevationPatchComputeFunc();
+
+        /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SurfaceElevationPatchRequest(Guid projectUid, string cacheFingerprint) : this()
+        public SurfaceElevationPatchRequest(ITRexSpatialMemoryCache cache, ITRexSpatialMemoryCacheContext context) : this()
         {
-          _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
-          _context = _cache?.LocateOrCreateContext(projectUid, cacheFingerprint);
+          _cache = cache; 
+          _context = context; 
         }
      
         private SurfaceElevationPatchRequest()
@@ -59,30 +63,25 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
             }
 
             // Request the subgrid from the surveyed surface engine
-
-            // Construct the function to be used, but override the processing map in the argument to specify that all cells are required as the result 
-            // will be cached
-            IComputeFunc<SurfaceElevationPatchArgument, byte[]> func = new SurfaceElevationPatchComputeFunc();
-
             byte[] result = null;
             arg.ProcessingMap.Fill();
 
             try
             {
-                result = _Compute.Apply(func, arg);
+                result = _Compute.Apply(_computeFunc, arg);
             }
             catch (ClusterGroupEmptyException e)
             {
-                Log.LogWarning($"Grid error, retrying: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}\n:{e}");
+                Log.LogError(e, $"Grid error, retrying: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}:");
                 AcquireIgniteTopologyProjections();
 
                 try
                 {
-                    result = _Compute.Apply(func, arg);
+                    result = _Compute.Apply(_computeFunc, arg);
                 }
                 catch (ClusterGroupEmptyException e2)
                 {
-                    Log.LogError($"Grid error, failing: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}\n:{e2}");
+                    Log.LogError(e2, $"Grid error, failing: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}:");
                 }
             }
 
@@ -95,8 +94,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
             clientResult.FromBytes(result);
 
             // Fow now, only cache non-composite elevation subgrids
-            if (arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations)
-              if (_context != null)
+            if (arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null)
                 _cache?.Add(_context, clientResult);
 
             return clientResult;

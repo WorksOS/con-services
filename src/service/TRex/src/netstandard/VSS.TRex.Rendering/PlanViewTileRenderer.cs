@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using VSS.ConfigurationStore;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces;
@@ -56,7 +57,7 @@ namespace VSS.TRex.Rendering
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
 
-    private readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.kDebugDrawDiagonalCrossOnRenderedTilesDefault);
+    private readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
 
     /// <summary>
     /// Default no-arg constructor
@@ -123,7 +124,7 @@ namespace VSS.TRex.Rendering
     //      property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
 
     /// <summary>
-    /// Peform rendering activites to produce a bitmap tile
+    /// Perform rendering activities to produce a bitmap tile
     /// </summary>
     /// <param name="mode"></param>
     /// <param name="processor"></param>
@@ -132,7 +133,7 @@ namespace VSS.TRex.Rendering
     {
       try
       {
-        // Obtain the display responsible for rendering the themtic information for this mode
+        // Obtain the display responsible for rendering the thematic information for this mode
         Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
         if (Displayer == null)
@@ -144,7 +145,7 @@ namespace VSS.TRex.Rendering
           SquareAspect = IsWhollyInTermsOfGridProjection
         };
 
-        // Create and assign the colour pallete logic for this mode to the displayer`
+        // Create and assign the colour pallete logic for this mode to the displayer
         IPlanViewPalette Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
         Displayer.Palette = Palette;
 
@@ -194,7 +195,7 @@ namespace VSS.TRex.Rendering
       }
       catch (Exception E)
       {
-        Log.LogError($"ExecutePipeline raised exception {E}");
+        Log.LogError(E, "ExecutePipeline raised Exception:");
       }
 
       return RequestErrorStatus.Unknown;

@@ -135,7 +135,7 @@ namespace VSS.TRex.Events.Interfaces
     bool LoadEventsForMachine(IStorageProxy storageProxy);
 
     /// <summary>
-    /// Provides a refernece to the TAG file processing start/end events list
+    /// Provides a reference to the TAG file processing start/end events list
     /// </summary>
     /// <returns></returns>
     IProductionEventPairs GetStartEndRecordedDataEvents();

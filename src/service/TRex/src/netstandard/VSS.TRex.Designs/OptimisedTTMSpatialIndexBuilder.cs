@@ -359,7 +359,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} in TTTMDesign.ConstructSpatialIndex");
+        Log.LogError(e, "Exception in TTTMDesign.ConstructSpatialIndex");
         return false;
       }
     }

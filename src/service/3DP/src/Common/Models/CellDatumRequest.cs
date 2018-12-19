@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Common.Models
       /// May be null.
       /// </summary>       
       [JsonProperty(PropertyName = "llPoint", Required = Required.Default)]
-      public WGSPoint3D llPoint { get; private set; }
+      public WGSPoint llPoint { get; private set; }
 
       /// <summary>
       /// If defined, the grid point in the project coordinate system to identify the cell from.
@@ -68,10 +68,9 @@ namespace VSS.Productivity3D.Common.Models
       public static CellDatumRequest CreateCellDatumRequest(
         long projectId, 
         DisplayMode displayMode, 
-        WGSPoint3D llPoint, 
+        WGSPoint llPoint, 
         Point gridPoint,
-        FilterResult filter, 
-        long filterId, 
+        FilterResult filter,
         LiftBuildSettings liftBuildSettings, 
         DesignDescriptor design)
       {
@@ -82,7 +81,7 @@ namespace VSS.Productivity3D.Common.Models
             llPoint = llPoint,
             gridPoint = gridPoint,
             filter = filter,
-            filterId = filterId,
+            filterId = filter?.Id ?? -1,
             liftBuildSettings = liftBuildSettings,
             design = design
           };
@@ -91,7 +90,6 @@ namespace VSS.Productivity3D.Common.Models
       public override void Validate()
       {
         base.Validate();
-        llPoint?.Validate();
 
         if (gridPoint != null)
           gridPoint.Validate();

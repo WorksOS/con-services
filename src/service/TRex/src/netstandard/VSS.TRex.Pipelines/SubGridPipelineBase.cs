@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Models;
-using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -31,23 +29,24 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// The event used to signal that the pipeline processing has completed, or aborted
         /// </summary>
-        public AutoResetEvent PipelineSignalEvent { get; } = new AutoResetEvent(false);
+        public SemaphoreSlim PipelineSignalEvent { get; } = new SemaphoreSlim(0, 1);
 
         /// <summary>
-        /// Records how may subgrid results there are pending to be processed through the Task assigned to this pipeline.
+       /// Records how may subgrid results there are pending to be processed through the Task assigned to this pipeline.
         /// As each subgrid result is processed in the task, the task pings the pipeline to note another task has been 
         /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
         /// </summary>
-        private long SubgridsRemainingToProcess;
+        private long subgridsRemainingToProcess = 0;
+        public long SubgridsRemainingToProcess => subgridsRemainingToProcess;
 
-        public ITask PipelineTask { get; set; }
+        public ITRexTask PipelineTask { get; set; }
 
         public bool Aborted { get; set; }
 
         public bool Terminated { get; set; }
 
-        public uint TimeToLiveSeconds = 0;
-        private DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
+        //public uint TimeToLiveSeconds = 0;
+        //private DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
 
         /// <summary>
         /// The request descriptor ID for this request
@@ -91,20 +90,17 @@ namespace VSS.TRex.Pipelines
 
         public AreaControlSet AreaControlSet { get; set;  }
 
-        protected bool pipelineCompleted;
+        private bool pipelineCompleted;
 
         public bool PipelineCompleted {
-            get
-            {
-                return pipelineCompleted;
-            }
+            get => pipelineCompleted;
             set
             {
                 pipelineCompleted = value;
 
                 // The pipeline has been signaled as complete so set its completion signal
-                // Don't modify AllFinished as all results may not have been received/processed before completion
-                PipelineSignalEvent.Set();
+                if (PipelineSignalEvent.CurrentCount == 0)
+                    PipelineSignalEvent.Release();
             }
         }
 
@@ -120,20 +116,15 @@ namespace VSS.TRex.Pipelines
         // public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
      
         /// <summary>
-        /// Have all subgrids in the request been returned and processed?
-        /// </summary>
-         public bool AllFinished;
-
-        /// <summary>
-        /// The request anaylser to be used to identify the set of subgrids required for the request.
-        /// If no analyser is supplied then a default analyser will be created as need by the pipeline
+        /// The request analyzer to be used to identify the set of subgrids required for the request.
+        /// If no analyzer is supplied then a default analyzer will be created as need by the pipeline
         /// </summary>
         public IRequestAnalyser RequestAnalyser { get; set; }
 
         private void AllSubgridsProcessed()
         {
-            AllFinished = true;
-            PipelineSignalEvent.Set();
+            if (PipelineSignalEvent.CurrentCount == 0)
+              PipelineSignalEvent.Release();
         }
 
         /// <summary>
@@ -144,7 +135,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public void SubgridProcessed()
         {
-            if (Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
+            if (Interlocked.Decrement(ref subgridsRemainingToProcess) <= 0)
             {
                 AllSubgridsProcessed();
             }
@@ -158,7 +149,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public void SubgridsProcessed(long numProcessed)
         {
-            if (Interlocked.Add(ref SubgridsRemainingToProcess, -numProcessed) <= 0)
+            if (Interlocked.Add(ref subgridsRemainingToProcess, -numProcessed) <= 0)
             {
                 AllSubgridsProcessed();
             }
@@ -180,27 +171,26 @@ namespace VSS.TRex.Pipelines
             // FTimeToLiveSeconds:= kDefaultSubgridPipelineTimeToLiveSeconds;
 
             // FMaximumOutstandingSubgridRequests:= VLPDSvcLocations.VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline;
-
         }
 
         /// <summary>
         /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
         /// </summary>
         /// <param name="task"></param>
-        public SubGridPipelineBase(/*int AID, *//*PipelinedSubGridTask */ ITask task) : this()
+        public SubGridPipelineBase(ITRexTask task) : this()
         {
-            //ID = AID;
             PipelineTask = task;
         }
 
-    /// <summary>
-    /// Signals to the running pipeline that its operation has been aborted
-    /// </summary>
-    public virtual void Abort()
+        /// <summary>
+        /// Signals to the running pipeline that its operation has been aborted
+        /// </summary>
+        public virtual void Abort()
         {
             Aborted = true;
 
-            PipelineSignalEvent.Set();
+            if (PipelineSignalEvent.CurrentCount == 0)
+              PipelineSignalEvent.Release();
         }
 
         // procedure Terminate; Virtual;
@@ -215,23 +205,23 @@ namespace VSS.TRex.Pipelines
         /// Orchestrates sending subgrid requests to the compute cluster and handling the result
         /// </summary>
         /// <returns></returns>
-        public virtual bool Initiate()
+        public bool Initiate()
         {
-            // First analyse the request to determine the set of subgrids that will need to be requested
+            // First analyze the request to determine the set of subgrids that will need to be requested
             if (!RequestAnalyser.Execute())
             {
                 // Leave gracefully...
                 return false;
             }
 
-            SubgridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubgridsToRequest;
+            subgridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubgridsToRequest;
 
-            Log.LogInformation($"Request analyser counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existence map");
+            Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existence map");
 
             if (RequestAnalyser.TotalNumberOfSubgridsToRequest == 0)
             {
                 // There are no subgrids to be requested, leave quietly
-                Log.LogInformation("No subgrids analysed from request to be submitted to processing engine");
+                Log.LogInformation("No subgrids analyzed from request to be submitted to processing engine");
 
                 return false;
             }
@@ -239,9 +229,9 @@ namespace VSS.TRex.Pipelines
             Log.LogInformation($"START: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
-            TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
+            var requestor = new TSubGridRequestor
             {
-                Task = PipelineTask,
+                TRexTask = PipelineTask,
                 SiteModelID = DataModelID,
                 RequestID = RequestDescriptor,
                 TRexNodeId = PipelineTask.TRexNodeID,
@@ -253,94 +243,21 @@ namespace VSS.TRex.Pipelines
                 ReferenceDesignID = ReferenceDesignID
             };
 
-            ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
+            var Response = requestor.Execute();
 
-            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest } subgrids");
+            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids");
 
-            return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
+            return Response.ResponseCode == SubGridRequestsResponseResult.OK;
         }
 
         /// <summary>
         /// Waits until the set of requests injected into the pipeline have yielded all required results
         /// (passed into the relevant Task and signaled), or the pipeline timeout has expired
         /// </summary>
-        public void WaitForCompletion()
+        public Task<bool> WaitForCompletion()
         {
-      /* TODO: Add logging for periodic wait time reporting... ?
-            // WaitResult            : TWaitResult;
-            // bool ShouldAbortDueToCompletedEventSet  = false;
-
-      FEpochCount := 0;
-      while not FPipeLine.AllFinished and not FPipeline.PipelineAborted do
-        begin
-          WaitResult := FPipeLine.CompleteEvent.WaitFor(5000);
-
-          if VLPDSvcLocations.Debug_EmitSubgridPipelineProgressLogging then
-            begin
-              if ((FEpochCount > 0) or(FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned > 0)) and
-                ((FPipeLine.OperationNode.NumPendingResultsReceived >0) or(FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0)) then
-                 SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d): #Progress# - Scanned = %d, Submitted = %d, Processed = %d (with %d pending and %d results outstanding)',
-                                                      [Self.ClassName,
-                                                         FRequestDescriptor, FPipeLine.DataModelID,
-                                                         FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned,
-                                                         FPipeLine.SubmissionNode.TotalSumbittedSubgridRequests,
-                                                         FPipeLine.OperationNode.TotalOperatedOnSubgrids,
-                                                         FPipeLine.OperationNode.NumPendingResultsReceived,
-                                                         FPipeLine.OperationNode.OustandingSubgridsToOperateOn]), slmcDebug);
-            end;
-
-          if (WaitResult = wrSignaled) and not FPipeLine.AllFinished and not FPipeLine.PipelineAborted and not FPipeLine.Terminated then
-            begin
-              if ShouldAbortDueToCompletedEventSet then
-                begin
-                  if (FPipeLine.OperationNode.NumPendingResultsReceived >0) or(FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
-                   SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) being aborted as it''s completed event has remained set but still has work to do (%d outstanding subgrids, %d pending results to process) over a sleep epoch',
-                                                         [Self.ClassName,
-                                                           FRequestDescriptor, FPipeline.DataModelID,
-                                                           FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
-                                                           FPipeLine.OperationNode.NumPendingResultsReceived]), slmcError);
-                  FPipeLine.Abort;
-                  ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.PerformTaskCancellation(FPipelinedTask);
-                  Exit;
-                end
-              else
-                begin
-                  if (FPipeLine.OperationNode.NumPendingResultsReceived >0) or(FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
-                   SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) has it''s completed event set but still has work to do (%d outstanding subgrids, %d pending results to process)',
-                                                         [Self.ClassName,
-                                                           FRequestDescriptor, FPipeline.DataModelID,
-                                                           FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
-                                                           FPipeLine.OperationNode.NumPendingResultsReceived]), slmcDebug);
-
-                  Sleep(500);
-                  ShouldAbortDueToCompletedEventSet := True;
-                end;
-            end;
-
-          if FPipeLine.TimeToLiveExpired then
-            begin
-              FAbortedDueToTimeout := True;
-              FPipeLine.Abort;
-              ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.PerformTaskCancellation(FPipelinedTask);
-
-              // The pipeline has exceed its allotted time to complete. It will now
-              // be aborted and this request will be failed.
-              SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d) aborted due to time to live expiration (%d seconds)',
-                                                      [Self.ClassName, FRequestDescriptor, FPipeLine.TimeToLiveSeconds]), slmcError);
-              Exit;
-            end;
-//              Inc(FEpochCount);
-*/
-
-            if (PipelineSignalEvent.WaitOne(120000)) // Don't wait for more than two minutes...
-            {
-                Log.LogInformation($"WaitForCompletion received signal with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()}");
-            }
-            else
-            {
-                // No signal was received, the wait timed out...
-                Log.LogInformation($"WaitForCompletion timed out with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()} and {SubgridsRemainingToProcess} subgrids remaining to be processed");
-            }
+          // Todo: Make the 2 minute limit configurable
+          return PipelineSignalEvent.WaitAsync(120000); // Don't wait for more than two minutes...
         }
     }
 }

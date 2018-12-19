@@ -1,15 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
@@ -37,7 +35,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
       // full data
       CellAddress cellAddress = CellAddress.CreateCellAddress(1, 2);
       Point point = Point.CreatePoint(1.0, 2.0);
-      WGSPoint wgsPoint = new WGSPoint3D(1.0, 2.0);
+      WGSPoint wgsPoint = new WGSPoint(1.0, 2.0);
       LiftBuildSettings settings = new LiftBuildSettings(
         new CCVRangePercentage(30.0, 70.0), false, 0.0, 0.0, 0.2f, LiftDetectionType.Automatic,
         LiftThicknessType.Compacted, new MDPRangePercentage(35.0, 75.0),
@@ -57,8 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
           false, GPSAccuracy.Medium, false, null, null, null,
           new DesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0), null, null, null, null, null);
 
-      cpRequest = CellPassesRequest.CreateCellPassRequest(544, cellAddress, point, wgsPoint, settings,
-                                                          0, 0, filter);
+      cpRequest = CellPassesRequest.CreateCellPassRequest(544, cellAddress, point, wgsPoint, settings, 0, 0, filter);
       Assert.IsTrue(validator.TryValidate(cpRequest, out results));
     }
 

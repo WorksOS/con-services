@@ -1,6 +1,8 @@
-﻿namespace VSS.TRex.GridFabric.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace VSS.TRex.GridFabric.Interfaces
 {
-    public interface IGenericASNodeRequest<in TArgument, out TResponse>
+    public interface IGenericASNodeRequest<in TArgument, TResponse>
         where TResponse : class, new()
     {
         /// <summary>
@@ -10,5 +12,7 @@
         /// <param name="arg"></param>
         /// <returns></returns>       
         TResponse Execute(TArgument arg);
-    }
+
+        Task<TResponse> ExecuteAsync(TArgument arg);
+  }
 }

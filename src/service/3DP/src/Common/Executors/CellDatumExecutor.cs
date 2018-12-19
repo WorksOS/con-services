@@ -1,13 +1,12 @@
-﻿using SVOICDecls;
-using SVOICFilterSettings;
-using System.Net;
+﻿using System.Net;
+using SVOICDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.Common.Executors
 {
@@ -36,7 +35,7 @@ namespace VSS.Productivity3D.Common.Executors
         (int)RaptorConverters.convertDisplayMode(request.displayMode),
         request.gridPoint?.x ?? 0,
         request.gridPoint?.y ?? 0,
-        request.llPoint != null ? RaptorConverters.convertWGSPoint(request.llPoint) : new TWGS84Point(),
+        request.llPoint != null ? RaptorConverters.ConvertWGSPoint(request.llPoint) : new TWGS84Point(),
         request.llPoint == null,
         raptorFilter,
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),

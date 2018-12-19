@@ -1,6 +1,5 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
-using VSS.TRex.SubGridTrees.Types;
+﻿using VSS.TRex.Common.CellPasses;
+using VSS.TRex.SubGridTrees.Client.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client

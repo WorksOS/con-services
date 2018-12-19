@@ -106,7 +106,7 @@ namespace VSS.TRex.GridFabric
       }
       catch (Exception E)
       {
-        Log.LogInformation($"Exception: {E}");
+        Log.LogError(E, "Exception:");
       }
     }
 

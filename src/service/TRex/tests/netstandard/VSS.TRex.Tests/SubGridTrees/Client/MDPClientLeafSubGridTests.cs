@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -20,6 +20,15 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
+    }
+
+    [Fact]
+    public void Test_NullCell()
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+
+      clientGrid.Cells[0, 0] = clientGrid.NullCell();
+      Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");
     }
   }
 }

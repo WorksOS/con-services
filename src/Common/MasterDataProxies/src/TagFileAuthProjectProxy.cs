@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -21,7 +22,7 @@ namespace VSS.MasterData.Proxies
     {
       var payload = JsonConvert.SerializeObject(getProjectAndAssetUidsRequest);
       log.LogDebug($"TfaTagFileProxy.GetProjectAndAssetUids: getProjectAndAssetUidsRequest: {payload}");
-      var response = await SendRequest<GetProjectAndAssetUidsResult>("TFA_PROJECTV2_API_URL", payload, customHeaders, "/getUids", "POST", String.Empty);
+      var response = await SendRequest<GetProjectAndAssetUidsResult>("TFA_PROJECTV2_API_URL", payload, customHeaders, "/getUids", HttpMethod.Post, string.Empty);
 
       log.LogDebug("TfaTagFileProxy.GetProjectAndAssetUids: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
@@ -32,7 +33,7 @@ namespace VSS.MasterData.Proxies
     {
       var payload = JsonConvert.SerializeObject(getProjectUidRequest);
       log.LogDebug($"TfaTagFileProxy.GetProjectUid: getProjectUidRequest: {payload}");
-      var response = await SendRequest<GetProjectAndAssetUidsResult>("TFA_PROJECTV2_API_URL", payload, customHeaders, "/getUid", "POST", String.Empty);
+      var response = await SendRequest<GetProjectAndAssetUidsResult>("TFA_PROJECTV2_API_URL", payload, customHeaders, "/getUid", HttpMethod.Post, string.Empty);
 
       log.LogDebug("TfaTagFileProxy.GetProjectUid: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;

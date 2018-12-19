@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -106,7 +105,6 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// <summary>
     /// Returns an aggregated query string 
     /// </summary>
-    /// <returns></returns>
     public string BuildQueryString()
     {
       var queryString = new StringBuilder();

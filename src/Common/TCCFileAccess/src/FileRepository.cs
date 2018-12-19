@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -142,7 +143,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get list of TCC organizations", ex);
+        Log.LogError(ex, "Failed to get list of TCC organizations");
       }
       return orgs;
     }
@@ -188,11 +189,12 @@ namespace VSS.TCCFileAccess
       headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
       headers.Add("X-File-Size", sizeOfContents.ToString());
       headers.Add("X-FileType", "");
+      headers.Add("Content-Type", "application/octet-stream");
 
       PutFileResponse result = default(PutFileResponse);
       try
       {
-        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers, "PUT");
+        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers, HttpMethod.Put);
       }
       catch (WebException webException)
       {
@@ -204,7 +206,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response");
       }
       return result;
     }
@@ -272,7 +274,7 @@ namespace VSS.TCCFileAccess
       {
         if (!cacheable)
         {
-          using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers, retries: 0)).ReadAsStreamAsync())
+          using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers, retries: 0)).ReadAsStreamAsync())
           {
             responseStream.Position = 0;
             file = new byte[responseStream.Length];
@@ -281,7 +283,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers)).ReadAsStreamAsync())
+        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers)).ReadAsStreamAsync())
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           responseStream.Position = 0;
@@ -307,7 +309,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response.");
       }
       return null;
     }
@@ -442,7 +444,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get list of TCC folders: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get list of TCC folders");
       }
       return null;
     }
@@ -476,7 +478,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get list of TCC files: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get list of TCC files");
       }
       return null;
     }
@@ -511,7 +513,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get last time tag files added to folder: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get last time tag files added to folder");
       }
       return DateTime.MinValue;
     }
@@ -553,7 +555,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get TCC file attributes: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get TCC file attributes");
       }
       return false;
     }
@@ -593,7 +595,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to delete file: {0}", ex.Message);
+        Log.LogError(ex, "Failed to delete file");
       }
       return false;
     }
@@ -622,7 +624,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to make directory: {0}", ex.Message);
+        Log.LogError(ex, "Failed to make directory");
       }
       return false;
     }
@@ -658,7 +660,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to login to TCC: {0}", ex.Message);
+        Log.LogError(ex, "Failed to login to TCC");
         return null;
       }
     }
@@ -713,7 +715,7 @@ namespace VSS.TCCFileAccess
       var result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, method: "GET", customHeaders: headers);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders: headers);
       }
       catch (WebException webException)
       {
@@ -725,7 +727,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response.");
       }
       return result;
     }
@@ -746,7 +748,7 @@ namespace VSS.TCCFileAccess
       T result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, method: "GET", customHeaders:headers, retries: 0, suppressExceptionLogging: true);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders:headers, retries: 0, suppressExceptionLogging: true);
       }
       catch (WebException webException)
       {
@@ -773,7 +775,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response");
       }
       return result;
     }
@@ -831,7 +833,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to create file job: {0}", ex.Message);
+        Log.LogError(ex, "Failed to create file job");
       }
       return null;
     }
@@ -858,7 +860,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to check file job status: {0}", ex.Message);
+        Log.LogError(ex, "Failed to check file job status");
       }
       return null;
     }
@@ -880,7 +882,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get file job result: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get file job result");
       }
       return null;
     }
@@ -916,7 +918,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to export to web format: {0}", ex.Message);
+        Log.LogError(ex, "Failed to export to web format");
       }
       return null;
     }
@@ -943,7 +945,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to check export job status: {0}", ex.Message);
+        Log.LogError(ex, "Failed to check export job status");
       }
       return null;
     }

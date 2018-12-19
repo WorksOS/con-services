@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Net;
 using System.Reflection;
 using Gherkin.Ast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
@@ -97,14 +95,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       ObjectComparer.RoundAllDoubleProperties(expectedJObject, roundingPrecision: 8);
 
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
-    }
-
-    [Then(@"Delete surveyed surface file (.*)")]
-    public void ThenDeleteSurveyedSurfaceFile(int fileId)
-    {
-      var result = BeforeAndAfter.DeleteSurveyedSurfaceFile(fileId);
-
-      Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
     private static void TrySetProperty(object obj, string property, object value)

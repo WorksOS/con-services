@@ -76,7 +76,7 @@ namespace VSS.TRex.Designs.Executors
       }
       catch (Exception E)
       {
-        Log.LogError($"Execute: Exception {E}");
+        Log.LogError(E, "Execute: Exception:");
         return null;
       }
     }

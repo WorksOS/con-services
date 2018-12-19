@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Machines
 {
@@ -17,13 +17,14 @@ namespace VSS.TRex.Machines
   /// </summary>
   public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
   {
-    private const string kMachinesListStreamName = "Machines";
+    private const int READER_WRITER_VERSION_MACHINE_LIST = 1;
+    private const string MACHINES_LIST_STREAM_NAME = "Machines";
 
     /// <summary>
     /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines
     /// that have contributed to the owner SiteModel
     /// </summary>
-    private Dictionary<Guid, IMachine> MachineIDMap = new Dictionary<Guid, IMachine>();
+    private readonly Dictionary<Guid, IMachine> MachineIDMap = new Dictionary<Guid, IMachine>();
 
     /// <summary>
     /// The identifier of the site model owning this list of machines
@@ -64,8 +65,7 @@ namespace VSS.TRex.Machines
 
       short internalMachineID = (short) Count;
 
-      Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine
-        /* TODO, kICUnknownConnectedMachineLevel*/);
+      Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
 
       // Add it to the list
       Add(Result);
@@ -79,6 +79,9 @@ namespace VSS.TRex.Machines
     /// <param name="machine"></param>
     public new void Add(IMachine machine)
     {
+      if (machine == null)
+        throw new ArgumentException($"Machine reference cannot be null in {nameof(Add)}", nameof(machine));
+
       base.Add(machine);
 
       MachineIDMap.Add(machine.ID, machine);
@@ -94,8 +97,8 @@ namespace VSS.TRex.Machines
     public IMachine Locate(string name, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && name.Equals(x.Name));
 
     /// <summary>
-    // Locate finds the machine in the list whose name matches the given ID
-    // It returns NIL if there is no matching machine
+    /// Locate finds the machine in the list whose name matches the given ID
+    /// It returns NIL if there is no matching machine
     /// </summary>
     /// <param name="id"></param>
     /// <param name="isJohnDoeMachine"></param>
@@ -120,27 +123,24 @@ namespace VSS.TRex.Machines
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersion);
+      writer.Write(READER_WRITER_VERSION_MACHINE_LIST);
 
-      writer.Write((int) Count);
+      writer.Write(Count);
       for (int i = 0; i < Count; i++)
         this[i].Write(writer);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer)
-    {
-      throw new NotImplementedException();
-    }
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     /// <summary>
-    /// Deserialises the list of machines using the given reader
+    /// Deserializes the list of machines using the given reader
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersion)
-        throw new Exception($"Invalid version number ({version}) reading machines list, expected version (1)");
+      if (version != READER_WRITER_VERSION_MACHINE_LIST)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_LIST, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -160,16 +160,16 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream(), this);
+      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, this.ToStream(), this);
     }
 
     /// <summary>
-    /// Loads the content of the machines list from the tpersistent store. If there is no item in the persistent store containing
+    /// Loads the content of the machines list from the persistent store. If there is no item in the persistent store containing
     /// machines for this sitemodel them return an empty list.
     /// </summary>
     public void LoadFromPersistentStore()
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, out MemoryStream MS);
+      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
       if (MS == null)
         return;
 

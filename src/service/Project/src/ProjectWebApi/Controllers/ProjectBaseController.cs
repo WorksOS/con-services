@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
@@ -46,12 +47,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="log"></param>
+    /// <param name="dataOceanClient"></param>
     public ProjectBaseController(IKafka producer, 
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore configStore, 
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log)
-      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionRepo, fileRepo)
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log, IDataOceanClient dataOceanClient)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionRepo, fileRepo, dataOceanClient)
     {
       this.subscriptionProxy = subscriptionProxy;
     }

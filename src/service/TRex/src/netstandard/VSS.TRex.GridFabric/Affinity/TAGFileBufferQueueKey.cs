@@ -1,7 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Affinity
@@ -10,9 +10,9 @@ namespace VSS.TRex.GridFabric.Affinity
   /// <summary>
   /// The key used to identify TAG files in the TAG file buffer queue
   /// </summary>
-  public struct TAGFileBufferQueueKey : ITAGFileBufferQueueKey, IBinarizable, IFromToBinary, IEquatable<TAGFileBufferQueueKey>
+  public struct TAGFileBufferQueueKey : ITAGFileBufferQueueKey, IBinarizable, IFromToBinary
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The name of the TAG file being processed
@@ -52,7 +52,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteGuid(ProjectUID);
       writer.WriteGuid(AssetUID);
       writer.WriteString(FileName);
@@ -62,34 +62,12 @@ namespace VSS.TRex.GridFabric.Affinity
     {
       int version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexException($"Invalid version number ({version}) in {nameof(TAGFileBufferQueueKey)}, expected {versionNumber}");
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       AssetUID = reader.ReadGuid() ?? Guid.Empty;
       FileName = reader.ReadString();
-    }
-
-    public bool Equals(TAGFileBufferQueueKey other)
-    {
-      return string.Equals(FileName, other.FileName) && ProjectUID.Equals(other.ProjectUID) && AssetUID.Equals(other.AssetUID);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is TAGFileBufferQueueKey other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = (FileName != null ? FileName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ProjectUID.GetHashCode();
-        hashCode = (hashCode * 397) ^ AssetUID.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

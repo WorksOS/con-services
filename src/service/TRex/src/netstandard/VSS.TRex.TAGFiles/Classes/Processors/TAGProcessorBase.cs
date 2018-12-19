@@ -157,11 +157,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             int NumFences = Enum.GetValues(typeof(MachineSide)).Length;
             InterpolationFences = Enumerable.Range(1, NumFences).Select(x => new List<Fence>()).ToArray();
-           // InterpolationFences[(int)MachineSide.None] = null;
         }
 
         /// <summary>
-        /// Prepares the processor for the next interplation interval between measurement epochs
+        /// Prepares the processor for the next interpolation interval between measurement epochs
         /// </summary>
         private void ClearInterpolationState()
         {
@@ -220,31 +219,23 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 {
                     LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                     LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
-
-//                    LeftInterpolationFence.UpdateExtents();
                     InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machine side none
-        }
+                }
                 else
                 {
                     LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                     LeftFence2.SetXY(ADataLeft.X + Ratio * DeltaX, ADataLeft.Y + Ratio * DeltaY);
+                    InterpolationFences[MachineSideConst.Left].Add(LeftInterpolationFence); // machine side left
 
-//                    LeftInterpolationFence.UpdateExtents();
-                    InterpolationFences[MachineSideConst.Left].Add(LeftInterpolationFence); // machineside left
-
-          RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
+                    RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
                     RightFence2.SetXY(ADataRight.X, ADataRight.Y);
-
-//                    RightInterpolationFence.UpdateExtents();
                     InterpolationFences[MachineSideConst.Right].Add(RightInterpolationFence); // machine side right
-        }
+                }
             }
             else
             {
                 LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                 LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
-
-//                LeftInterpolationFence.UpdateExtents();
                 InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machine side none
             }
 
@@ -579,8 +570,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                         Math.Pow(InterpolationFences[J][I][1].X - InterpolationFences[J][I][2].X, 2) +
                         Math.Pow(InterpolationFences[J][I][1].Y - InterpolationFences[J][I][2].Y, 2) <= MaxEpochIntervalSquared)
                     {
-                      // InterpolationFences[I].UpdateExtents();
-
                       // Process the quadrilateral formed by the two epochs
                       if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
                       {

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -23,6 +24,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   public class SegmentRetirementQueueService : IService, ISegmentRetirementQueueService, IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
+
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do. Set to 30 seconds.
@@ -97,7 +100,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
           Log.LogInformation("About to query retiree spatial streams from cache");
 
-          DateTime earlierThan = DateTime.Now - retirementAge;
+          DateTime earlierThan = DateTime.UtcNow - retirementAge;
           // Retrieve the list of segments to be retired
           var retirees = queue.Query(earlierThan);
 
@@ -122,7 +125,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         }
         catch (Exception e)
         {
-          Log.LogError($"Exception reported while obtaining new group of retirees to process: {e}");
+          Log.LogError(e, "Exception reported while obtaining new group of retirees to process:");
         }
 
         waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
@@ -153,6 +156,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
+      writer.WriteByte(VERSION_NUMBER);
+
+      writer.WriteLong(retirementAge.Ticks);
     }
 
     /// <summary>
@@ -161,6 +167,12 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
+      byte readVersionNumber = reader.ReadByte();
+
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+
+      retirementAge = new TimeSpan(reader.ReadLong());
     }
   }
 }

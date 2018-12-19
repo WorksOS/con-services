@@ -48,7 +48,7 @@ namespace VSS.Tile.Service.Common.Services
         using (Image<Rgba32> bitmap = new Image<Rgba32>(parameters.mapWidth, parameters.mapHeight))
         {
           IEnumerable<WGSPoint> loads = loadDumpLocations
-            .Select(x => WGSPoint.CreatePoint(x.loadLatitude.LatDegreesToRadians(), x.loadLongitude.LonDegreesToRadians())).ToList();          
+            .Select(x => new WGSPoint(x.loadLatitude.LatDegreesToRadians(), x.loadLongitude.LonDegreesToRadians())).ToList();          
           PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(loads, parameters.pixelTopLeft, parameters.numTiles);
           foreach (var p in pixelPoints)
           {
@@ -61,7 +61,7 @@ namespace VSS.Tile.Service.Common.Services
           }
 
           IEnumerable<WGSPoint> dumps = loadDumpLocations
-            .Select(x => WGSPoint.CreatePoint(x.dumpLatitude.LatDegreesToRadians(), x.dumpLongitude.LonDegreesToRadians())).ToList();
+            .Select(x => new WGSPoint(x.dumpLatitude.LatDegreesToRadians(), x.dumpLongitude.LonDegreesToRadians())).ToList();
           pixelPoints = TileServiceUtils.LatLngToPixelOffset(dumps, parameters.pixelTopLeft, parameters.numTiles);
           foreach (var p in pixelPoints)
           {

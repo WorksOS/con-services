@@ -1,0 +1,8 @@
+FROM registry-docker-registry.jenkins:5000/vss-jenkinsslave:core21
+
+COPY . /app
+
+WORKDIR /app
+
+VOLUME testresults
+

@@ -22,7 +22,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.SubGrids
 {
@@ -45,7 +45,7 @@ namespace VSS.TRex.SubGrids
     private int MaxNumberOfPassesToReturn;
     private AreaControlSet AreaControlSet;
 
-    // Local state populated for the purpose of access from variosu local methods
+    // Local state populated for the purpose of access from various local methods
     private IClientLeafSubGrid ClientGrid;
     private ClientLeafSubGrid ClientGridAsLeaf;
     private GridDataType _GridDataType = GridDataType.All;
@@ -70,7 +70,7 @@ namespace VSS.TRex.SubGrids
 
     private IFilteredValuePopulationControl PopulationControl;
 
-    private IProfilerBuilder Profiler;
+    private IProfilerBuilder<ProfileCell> Profiler;
     private ProfileCell CellProfile;
 
     private ISubGridTreeBitMask PDExistenceMap;
@@ -176,8 +176,7 @@ namespace VSS.TRex.SubGrids
             if (Filter.AttributeFilter.HasElevationTypeFilter) 
               AssignmentContext.FilteredValue.PassCount = 1;
 
-            if (Filter.AttributeFilter.HasMinElevMappingFilter ||
-                (Filter.AttributeFilter.HasElevationTypeFilter &&
+            if (Filter.AttributeFilter.HasMinElevMappingFilter || (Filter.AttributeFilter.HasElevationTypeFilter &&
                  Filter.AttributeFilter.ElevationType == ElevationType.Lowest))
             {
               if (!HaveFilteredPass || CurrentPass.FilteredPass.Height < TempPass.FilteredPass.Height)
@@ -186,8 +185,7 @@ namespace VSS.TRex.SubGrids
             }
             else
             {
-              if (Filter.AttributeFilter.HasElevationTypeFilter &&
-                  Filter.AttributeFilter.ElevationType == ElevationType.Highest)
+              if (Filter.AttributeFilter.HasElevationTypeFilter && Filter.AttributeFilter.ElevationType == ElevationType.Highest)
               {
                 if (!HaveFilteredPass || CurrentPass.FilteredPass.Height > TempPass.FilteredPass.Height)
                   TempPass = CurrentPass;
@@ -518,7 +516,7 @@ namespace VSS.TRex.SubGrids
                   // if we have a temperature filter to be filtered by last pass
                   if (Filter.AttributeFilter.HasTemperatureRangeFilter && Filter.AttributeFilter.FilterTemperatureByLastPass)
                     {
-                      HaveFilteredPass = ( CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
+                      HaveFilteredPass = CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
                              Range.InRange(CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature, Filter.AttributeFilter.MaterialTemperatureMin, Filter.AttributeFilter.MaterialTemperatureMax);
                     }
                   else
@@ -657,7 +655,7 @@ namespace VSS.TRex.SubGrids
     {
       const int kMaxStepSize = 10000;
 
-      /* TODO - add configuration item
+      /* TODO - add configuration item for VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests
       if (!VLPDSvcLocations.VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests)
           return false;
       */
@@ -737,7 +735,7 @@ namespace VSS.TRex.SubGrids
       {
         Fence RotatedSubgridBoundary = new Fence();
 
-        // Create the rotated boundary by 'unrotating' the subgrid world extents into a context
+        // Create the rotated boundary by 'un-rotating' the subgrid world extents into a context
         // where the grid is itself not rotated
         GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
@@ -810,8 +808,8 @@ namespace VSS.TRex.SubGrids
                 CurrentNorth - SubgridMinY); // = new ProbePoint(CurrentEast - SubgridMinX, CurrentNorth - SubgridMinY);
           }
 
-          CurrentEast = CurrentEast + StepEastX;
-          CurrentNorth = CurrentNorth + StepEastY;
+          CurrentEast += StepEastX;
+          CurrentNorth += StepEastY;
         }
       }
     }
@@ -893,7 +891,7 @@ namespace VSS.TRex.SubGrids
         // Some display types require lift processing to be able to select the
         // appropriate cell pass containing the filtered value required.
 
-        Profiler = DIContext.Obtain<IProfilerBuilder>();
+        Profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         Profiler.Configure(SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
             null, null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
@@ -931,7 +929,6 @@ namespace VSS.TRex.SubGrids
           // First get the subgrid we are interested in
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
-          // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
           _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, false, false);
 
           //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
@@ -965,7 +962,7 @@ namespace VSS.TRex.SubGrids
 
           if (PruneSubGridRetrievalHere())
             return ServerRequestResult.NoError;
-          //todo: This map calculation seems odd if we are caching subgrids...
+
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
             cellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
@@ -981,8 +978,7 @@ namespace VSS.TRex.SubGrids
             if (!UseLastPassGrid)
               SetupForCellPassStackExamination();
 
-            // Some display types require lift processing to be able to select the
-            // appropriate cell pass containing the filtered value required.
+            // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
             if (ClientGrid.WantsLiftProcessingResults())
             {            
               SegmentIterator.IterationDirection = IterationDirection.Forwards;
@@ -1031,7 +1027,7 @@ namespace VSS.TRex.SubGrids
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} occured in RetrieveSubGrid");
+        Log.LogError(e, "Exception occured in RetrieveSubGrid");
         throw;
       }
 

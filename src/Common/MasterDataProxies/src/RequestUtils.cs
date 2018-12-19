@@ -9,7 +9,7 @@ namespace VSS.MasterData.Proxies
     {
       var customHeaders = new Dictionary<string, string>();
 
-      string[] keys = { "X-VisionLink-CustomerUid" , "X-VisionLink-UserUid", "X-VisionLink-ClearCache", "Authorization", "X-Request-ID", internalContext ? "X-Jwt-Assertion" : "" };
+      string[] keys = { "X-VisionLink-CustomerUid" , "X-VisionLink-UserUid", "X-VisionLink-ClearCache", "Authorization", "X-Request-ID", "Request-ID", "X-VSS-Request-ID", internalContext ? "X-Jwt-Assertion" : "" };
       foreach (var key in keys)
       {
         if (headers.ContainsKey(key))

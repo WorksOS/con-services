@@ -43,9 +43,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-    private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.kAdviseOtherServicesOfDataModelChangesDefault);
+    private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.kMaxMappedTagFilesToProcessPerAggregationEpochDefault);
+    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
 
     private AggregatedDataIntegratorWorker()
     {
@@ -339,7 +339,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
 
             // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-            SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
+            SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
 
             // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
             // All operations within the transaction to integrate the changes into the live model have completed successfully.
@@ -368,7 +368,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                   Debug.Assert(false, "No registered segment retirement queue in DI context");
                 }
 
-                DateTime insertUTC = DateTime.Now;
+                DateTime insertUTC = DateTime.UtcNow;
 
                 retirementQueue.Add(new SegmentRetirementQueueKey
                   {
@@ -384,7 +384,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               }
               catch (Exception e)
               {
-                Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception: {e}");
+                Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
                 Log.LogCritical("The following segments will NOT be retired as a result:");
                 foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
                   Log.LogCritical($"{invalidatedItem}");
@@ -405,13 +405,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 existenceMapChangeMask: WorkingModelUpdateMap,
                 machinesChanged: true,
                 machineTargetValuesChanged: true,
-                machineDesignsModified: true);
+                machineDesignsModified: true,
+                proofingRunsModified: true);
             }
 
             // Update the metadata for the site model
             Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
             DIContext.Obtain<ISiteModelMetadataManager>().Update
-            (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.Now, siteModelExtent: SiteModelFromDM.SiteModelExtent,
+            (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: SiteModelFromDM.SiteModelExtent,
               machineCount: SiteModelFromDM.Machines.Count);
 
           }
@@ -428,7 +429,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception in ProcessTask: {E}");
+        Log.LogError(E, "Exception in ProcessTask:");
         return false;
       }
 

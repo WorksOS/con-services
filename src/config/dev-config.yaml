@@ -40,7 +40,7 @@ data:
   IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
   IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
-  PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
+  PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
   PROJECT_INTERNAL_BASE_URL: http://project.dev.k8s.vspengg.com
   PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
   RAPTOR_3DPM_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
@@ -50,6 +50,7 @@ data:
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.k8s.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
   TREX_TAGFILE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
+  TREX_IMPORTFILE_CUD_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v1/design
 #CAP configuration  
   MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Dev
   MYSQL_CAP_TABLE_PREFIX: Project
@@ -74,6 +75,8 @@ data:
   ENABLE_CONNECTED_SITE_GATEWAY: "true"
   ENABLE_RAPTOR_GATEWAY: "true"
   ENABLE_TREX_GATEWAY: "true"
+  ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
+  ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
   IONODEIP: 10.97.96.92
   SHAREUNC: \\dev-iolv01.vssengg.com\ProductionData
   RAPTORUSERNAME: svcRaptor

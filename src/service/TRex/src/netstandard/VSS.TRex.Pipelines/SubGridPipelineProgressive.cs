@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGrids.GridFabric.Requests;
@@ -13,7 +14,7 @@ namespace VSS.TRex.Pipelines
   public class SubGridPipelineProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : 
     SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>
     where TSubGridsRequestArgument : SubGridsRequestArgument, new()
-    where TSubGridRequestsResponse : SubGridRequestsResponse, new()
+    where TSubGridRequestsResponse : SubGridRequestsResponse, IAggregateWith<TSubGridRequestsResponse>, new()
   {
     /// <summary>
     /// Default no-arg constructor
@@ -26,7 +27,7 @@ namespace VSS.TRex.Pipelines
     /// Default no-arg constructor
     /// </summary>
     /// <param name="task"></param>
-    public SubGridPipelineProgressive( /*int AID, */ ITask task) : base( /*AID,*/ task)
+    public SubGridPipelineProgressive( /*int AID, */ ITRexTask task) : base( /*AID,*/ task)
     {
     }
   }

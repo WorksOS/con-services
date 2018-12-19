@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -12,11 +11,11 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   /// The response returned from the Patches request executor that contains the response code and the set of
   /// subgrids extracted for the patch in question
   /// </summary>
-  public class PatchRequestResponse : SubGridsPipelinedReponseBase, IEquatable<SubGridsPipelinedReponseBase>
+  public class PatchRequestResponse : SubGridsPipelinedResponseBase
   {
     /// <summary>
     /// The total number of pages of subgrids required to contain the maximum number of subgrids'
-    /// that may be retuned for the query
+    /// that may be returned for the query
     /// </summary>
     public int TotalNumberOfPagesToCoverFilteredData { get; set; }
   
@@ -77,50 +76,6 @@ namespace VSS.TRex.Exports.Patches.GridFabric
             SubGrids.Add(subgrid);
           }
         }
-      }
-    }
-
-    protected bool Equals(PatchRequestResponse other)
-    {
-      if (!(base.Equals(other) &&
-            TotalNumberOfPagesToCoverFilteredData == other.TotalNumberOfPagesToCoverFilteredData &&
-            (Equals(SubGrids, other.SubGrids) ||
-             (SubGrids != null && other.SubGrids != null && SubGrids.Count == other.SubGrids.Count))))
-        return false;
-
-      if (SubGrids != null && other.SubGrids != null)
-      {
-        for (var i = 0; i < SubGrids.Count; i++)
-        {
-          if (!SubGrids[i].LeafContentEquals(other.SubGrids[i]))
-            return false;
-        }
-      }
-
-      return true;
-    }
-
-    public new bool Equals(SubGridsPipelinedReponseBase other)
-    {
-      return Equals(other as PatchRequestResponse);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((PatchRequestResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ TotalNumberOfPagesToCoverFilteredData;
-        hashCode = (hashCode * 397) ^ (SubGrids != null ? SubGrids.GetHashCode() : 0);
-        return hashCode;
       }
     }
   }

@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SubGridTrees.Core.Utilities
 {
@@ -43,7 +43,7 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
 
         /// <summary>
         /// Overloaded Write() method that does not accept a header or version to include into the serialised
-        /// stream. Header will be set to String.Empty and version will be set to 0.
+        /// stream. Header will be set to string.Empty and version will be set to 0.
         /// This should only be used in contexts where the existence of the stream is transient and never written
         /// to a persistent location that may be sensitive to versioning considerations.
         /// </summary>
@@ -113,14 +113,14 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
             }
             catch (Exception E)
             {
-              Log.LogError($"Exception in {nameof(SerialiseIn)}: {E}");
+              Log.LogError(E, $"Exception in {nameof(SerialiseIn)}:");
               return false;
             }
         }
 
         /// <summary>
         /// Overloaded Read() method that does not accept a header or version to verify in the deserialised
-        /// stream. Header will be expected to be String.Empty and version will be expected to be 0.
+        /// stream. Header will be expected to be string.Empty and version will be expected to be 0.
         /// This should only be used in contexts where the existence of the stream is transient and never read from
         /// a persistent location that may be sensitive to versioning considerations.
         /// </summary>
@@ -156,7 +156,7 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
             }
             catch (Exception E)
             {
-              Log.LogError($"Exception in {nameof(Read)}: {E}");
+              Log.LogError(E, $"Exception in {nameof(Read)}:");
               return false;
             }
         }

@@ -115,8 +115,8 @@ namespace VSS.TRex.Designs
                 double resolution, square_size;
                 double min_x, min_y, max_x, max_y;
 
-                Utilities.MinMax.SetMinMax(ref x1, ref x2);
-                Utilities.MinMax.SetMinMax(ref y1, ref y2);
+                Common.Utilities.MinMax.SetMinMax(ref x1, ref x2);
+                Common.Utilities.MinMax.SetMinMax(ref y1, ref y2);
 
                 tree.calc_rectangle_keys(x1, y1, x2, y2, ref key_list);
 
@@ -467,8 +467,8 @@ namespace VSS.TRex.Designs
             }
 
             // { Require x1 <= x2 and y1 <= y2}
-            Utilities.MinMax.SetMinMax(ref x1, ref x2);
-            Utilities.MinMax.SetMinMax(ref y1, ref y2);
+            Common.Utilities.MinMax.SetMinMax(ref x1, ref x2);
+            Common.Utilities.MinMax.SetMinMax(ref y1, ref y2);
 
             // { Get the associated key }
             key = rectangle_key(x1, y1, x2, y2);

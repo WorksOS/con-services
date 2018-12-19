@@ -142,7 +142,7 @@ namespace VSS.TRex.TAGFiles.Executors
             }
             catch (Exception e) // make sure any exception is trapped to return correct response to caller
             {
-                Log.LogError($"Exception {e} occurred while converting a TAG file");
+                Log.LogError(e, "Exception occurred while converting a TAG file");
                 return false;
             }
 

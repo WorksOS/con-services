@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
@@ -7,7 +6,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// <summary>
   /// The argument to be supplied to the Patches request
   /// </summary>
-  public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
     /// The tolerance to use (in meters) when decimating the elevation surface into a TIN
@@ -34,32 +33,6 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
       base.FromBinary(reader);
 
       Tolerance = reader.ReadDouble();
-    }
-
-    protected bool Equals(TINSurfaceRequestArgument other)
-    {
-      return base.Equals(other) && Tolerance.Equals(other.Tolerance);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as TINSurfaceRequestArgument);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((TINSurfaceRequestArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (base.GetHashCode() * 397) ^ Tolerance.GetHashCode();
-      }
     }
   }
 }

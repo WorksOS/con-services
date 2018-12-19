@@ -9,7 +9,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.CoordinateSystems.Executors
 {
   /// <summary>
-  /// Contains the busness logic for adding a coordinate system to a project
+  /// Contains the business logic for adding a coordinate system to a project
   /// </summary>
   public class AddCoordinateSystemExecutor
   {
@@ -47,7 +47,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} occurred adding coordinate system to project");
+        Log.LogError(e, "Exception occurred adding coordinate system to project");
         Console.WriteLine(e);
         throw;
       }

@@ -47,14 +47,17 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
-      string method = "POST", string payload = null, Stream streamPayload = null)
+      HttpMethod method = null, string payload = null, Stream streamPayload = null)
     {
+      // Default to POST
+      if (method == null)
+        method = HttpMethod.Post;
       var result = default(T);
-      log.LogDebug($"Preparing {url} ({method})");
+      log.LogDebug($"Preparing {url} ({method}) headers {customHeaders.LogHeaders()}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
-        if (method != "GET")
+        if (method != HttpMethod.Get)
         {
           if (streamPayload != null && payload == null)
             result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
@@ -69,7 +72,7 @@ namespace VSS.MasterData.Proxies
         }
         else
         {
-          result = await request.ExecuteRequest<T>(url, method: "GET");
+          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders);
         }
 
         log.LogDebug("Result of send to master data request: {0}", result);
@@ -94,9 +97,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
     protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
-      string route = null, string method = "POST", string queryParameters = null)
+      string route = null, HttpMethod method = null, string queryParameters = null)
     {
-      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} ");
+      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
@@ -111,8 +114,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
     protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
-      string route = null, string method = "POST", IDictionary<string, string> queryParameters = null)
+      string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
+      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
@@ -126,7 +130,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
     protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
-      string route = null, string method = "POST", IDictionary<string, string> queryParameters = null)
+      string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method,
         streamPayload: payload);
@@ -144,7 +148,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
     protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
-      string route = null, IDictionary<string, string> queryParams = null, string method = "POST")
+      string route = null, IDictionary<string, string> queryParams = null, HttpMethod method = null)
     {
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, string.Empty), customHeaders, method,
         streamPayload: payload);
@@ -160,7 +164,7 @@ namespace VSS.MasterData.Proxies
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
-        result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: "GET");
+        result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: HttpMethod.Get);
         log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
       }
       catch (Exception ex)
@@ -204,20 +208,30 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="urlKey">The configuration store key for the URL</param>
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="method">Http method, defaults to GET</param>
+    /// <param name="payload">The payload of the request</param>
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
     protected async Task<Stream> GetMasterDataStreamContent(string urlKey,
-      IDictionary<string, string> customHeaders,
+      IDictionary<string, string> customHeaders, HttpMethod method = null, string payload = null,
       string queryParams = null, string route = null)
     {
       Stream result = null;
       var url = ExtractUrl(urlKey, route, queryParams);
       try
       {
+	  	if (method == null)
+	      method = HttpMethod.Get;
+		  
         var request = new GracefulWebRequest(logger, configurationStore);
-        result = await (await request.ExecuteRequestAsStreamContent(url, "GET", customHeaders)).ReadAsStreamAsync();
-        log.LogDebug($"Result of get stream content request: {JsonConvert.SerializeObject(result)}");
+        if (method != HttpMethod.Get)
+        {
+          var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
+          result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+        }
+        else
+          result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
       }
       catch (Exception ex)
       {
@@ -301,7 +315,8 @@ namespace VSS.MasterData.Proxies
         log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
         result = await action.Invoke();
         if (result != null)
-          return cache.Set(cacheKey, result, opts);
+          return await cache.Set(cacheKey, Task.FromResult(result), opts); // Note: We have to store the result as a task, as if we use the 'GetOrCreate' method, it expects a task in the cache to be awaited.
+          
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Unable to request data from a webapi"));

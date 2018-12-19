@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using Xunit;
 
 namespace VSS.TRex.Tests.Utility

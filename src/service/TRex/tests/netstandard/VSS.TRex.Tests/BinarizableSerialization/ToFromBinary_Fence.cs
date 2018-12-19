@@ -19,6 +19,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       fence.Points.Add(new FencePoint(0, 10));
       fence.Points.Add(new FencePoint(10, 10));
       fence.Points.Add(new FencePoint(10, 0));
+      fence.UpdateExtents();
 
       SimpleBinarizableInstanceTester.TestExtension(fence, "Fence with points not same after round trip serialisation");
     }  

@@ -1,4 +1,8 @@
-﻿using VSS.TRex.Filters.Interfaces;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -11,6 +15,8 @@ namespace VSS.TRex.Profiling
   /// </summary>
   public static class ProfileFilterMask
   {
+    private static ILogger Log = Logging.Logger.CreateLogger("ProfileFilterMask");
+
     /// <summary>
     /// Constructs a mask using polygonal and positional spatial filtering aspects of a filter.
     /// </summary>
@@ -20,14 +26,14 @@ namespace VSS.TRex.Profiling
     /// <param name="Mask"></param>
     /// <param name="cellFilter"></param>
     /// <param name="SubGridTree"></param>
-    public static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
+    private static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList Intercepts,
       int fromProfileCellIndex,
       SubGridTreeBitmapSubGridBits Mask,
       ICellSpatialFilter cellFilter,
       ISubGridTree SubGridTree)
     {
-      bool cellFilter_HasSpatialOrPostionalFilters = cellFilter.HasSpatialOrPostionalFilters;
+      bool cellFilter_HasSpatialOrPositionalFilters = cellFilter.HasSpatialOrPositionalFilters;
       int Intercepts_Count = Intercepts.Count;
 
       Mask.Clear();
@@ -46,7 +52,7 @@ namespace VSS.TRex.Profiling
         uint CellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
           uint CellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
-          if (cellFilter_HasSpatialOrPostionalFilters)
+          if (cellFilter_HasSpatialOrPositionalFilters)
           {
             SubGridTree.GetCellCenterPosition(OTGCellX, OTGCellY, out double CellCenterX, out double CellCenterY);
 
@@ -62,85 +68,56 @@ namespace VSS.TRex.Profiling
     /// Constructs a mask using all spatial filtering elements active in the supplied filter
     /// </summary>
     /// <param name="currentSubGridOrigin"></param>
-    /// <param name="Intercepts"></param>
+    /// <param name="intercepts"></param>
     /// <param name="fromProfileCellIndex"></param>
-    /// <param name="Mask"></param>
+    /// <param name="mask"></param>
     /// <param name="cellFilter"></param>
-    /// <param name="SubGridTree"></param>
+    /// <param name="tree"></param>
+    /// <param name="surfaceDesignMaskDesign"></param>
     /// <returns></returns>
     public static bool ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
-      InterceptList Intercepts,
+      InterceptList intercepts,
       int fromProfileCellIndex,
-      SubGridTreeBitmapSubGridBits Mask,
+      SubGridTreeBitmapSubGridBits mask,
       ICellSpatialFilter cellFilter,
-      ISubGridTree SubGridTree)
+      ISubGridTree tree,
+      IDesign surfaceDesignMaskDesign)
     {
-      //      SubGridTreeBitmapSubGridBits DesignMask;
-      //      SubGridTreeBitmapSubGridBits DesignFilterMask;
-      //      DesignProfilerRequestResult RequestResult;
-      //      bool Result = true;
+      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, intercepts, fromProfileCellIndex, mask, cellFilter, tree);
 
-      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, Intercepts, fromProfileCellIndex, Mask,
-        cellFilter, SubGridTree);
-
-      // If the filter contains a design mask filter then compute this and AND it with the
+      // If the filter contains an alignment design mask filter then compute this and AND it with the
       // mask calculated in the step above to derive the final required filter mask
 
       if (cellFilter.HasAlignmentDesignMask())
       {
-        // Query the design profiler service for the corresponding filter mask given the
-        // alignment design configured in the cell selection filter.
-        /* TODO: Alignment design mask not yet supported 
-        with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
-        {
-          RequestResult = RequestDesignMaskFilterPatch(Construct_ComputeDesignFilterPatch_Args(SiteModel.ID,
-              SubgridOriginX, SubgridOriginY,
-              SiteModel.Grid.CellSize,
-              ReferenceDesign,
-              Mask,
-              StartStation, EndStation,
-              LeftOffset, RightOffset),
-            DesignMask);
+          if (cellFilter.AlignmentFence.IsNull()) // Should have been done in ASNode but if not
+            throw new ArgumentException($"Spatial filter does not contained pre-prepared alignment fence for design {cellFilter.AlignmentDesignMaskDesignUID}");
 
-          if (RequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-            Mask = Mask & DesignMask;
-          else
+          // Go over set bits and determine if they are in Design fence boundary
+          mask.ForEachSetBit((X, Y) =>
           {
-            Result = false;
-            //SIGLogMessage.PublishNoODS(Nil, Format('Call (A1) to RequestDesignMaskFilterPatch in TICServerProfiler returned error result %s for %s.', 
-            //    [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), ...);
-          }
-        }
-        */
+            tree.GetCellCenterPosition((uint)(currentSubGridOrigin.X + X), (uint)(currentSubGridOrigin.Y + Y), out var CX, out var CY);
+            if (!cellFilter.AlignmentFence.IncludesPoint(CX, CY))
+            {
+              mask.ClearBit(X, Y); // remove interest as its not in design boundary
+            }
+          });
       }
 
-      if (cellFilter.HasAlignmentDesignMask())
+      // If the filter contains a design mask filter then compute this and AND it with the
+      // mask calculated in the step above to derive the final required filter mask
+
+      if (surfaceDesignMaskDesign != null)
       {
-        // Query the design profiler service for the corresponding filter mask given the
-        // alignment design configured in the cell selection filter.
+        surfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize, out SubGridTreeBitmapSubGridBits filterMask, out DesignProfilerRequestResult requestResult);
 
-        /* todo Design elevation requests not yet supported
-        with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
+        if (requestResult == DesignProfilerRequestResult.OK)
+          mask.AndWith(filterMask);
+        else
         {
-          RequestResult = RequestDesignMaskFilterPatch(Construct_ComputeDesignFilterPatch_Args(SiteModel.ID,
-              SubgridOriginX, SubgridOriginY,
-              SiteModel.Grid.CellSize,
-              DesignFilter,
-              Mask,
-              StartStation, EndStation,
-              LeftOffset, RightOffset),
-            DesignFilterMask);
-
-          if (RequestResult == DesignProfilerRequestResult.OK)
-            Mask = Mask & DesignFilterMask;
-          else
-          {
-            Result = false;
-            //SIGLogMessage.PublishNoODS(Nil, Format('Call (A2) to RequestDesignMaskFilterPatch in TICServerProfiler returned error result %s for %s.', 
-            //    [DesignProfilerErrorStatusName(RequestResult), CellFilter.DesignFilter.ToString]), ...);
-          }
+          Log.LogError($"Call (A2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {requestResult} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          return false;
         }
-        */
       }
 
       return true;

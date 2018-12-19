@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
@@ -8,16 +7,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   [FeatureFile("GetProjectExtents.feature")]
   public class GetProjectExtentsSteps : FeaturePostRequestBase<ProjectExtentRequest, ProjectExtentsResult>
   {
-    [And(@"require surveyed surface larger than production data")]
-    public void RequireSurveyedSurfaceLargerThanProductionData()
+    [And(@"I decide to exclude surveyed surface (.*)")]
+    public void GivenIDecideToExcludeAnySurveyedSurface(int surveyedSurfaceId)
     {
-      BeforeAndAfter.CreateSurveyedSurfaceLargerThanProductionData();
-    }
-    
-    [And(@"I decide to exclude any surveyed surface")]
-    public void GivenIDecideToExcludeAnySurveyedSurface()
-    {
-       PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
+       PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { surveyedSurfaceId };
     }
 
     [Then(@"the following objects should be returned:")]

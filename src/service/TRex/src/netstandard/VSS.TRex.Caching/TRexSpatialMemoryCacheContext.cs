@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -29,7 +30,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public bool MarkedForRemoval { get; set; }
 
-    public DateTime MarkedForRemovalAt { get; set; } = DateTime.MinValue;
+    public DateTime MarkedForRemovalAtUtc { get; set; } = DateTime.MinValue;
 
     public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
@@ -148,7 +149,7 @@ namespace VSS.TRex.Caching
       // If the context has been emptied by the removal of this item them marked as a candidate for removal
       if (tokenCount == 0)
       {
-        MarkForRemoval(DateTime.Now);
+        MarkForRemoval(DateTime.UtcNow);
       }
     }
 
@@ -211,9 +212,11 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// Mark this context as a candidate for removal
     /// </summary>
-    public void MarkForRemoval(DateTime markedForRemovalAt)
+    public void MarkForRemoval(DateTime markedForRemovalAtUtc)
     {
-      MarkedForRemovalAt = markedForRemovalAt;
+      Debug.Assert(markedForRemovalAtUtc.Kind == DateTimeKind.Utc, "MarkForRemoval is not a UTC date");
+
+      MarkedForRemovalAtUtc = markedForRemovalAtUtc;
       MarkedForRemoval = true;
     }
 
@@ -222,7 +225,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Reanimate()
     {
-      MarkedForRemovalAt = DateTime.MinValue;
+      MarkedForRemovalAtUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
       MarkedForRemoval = false;
     }
   }

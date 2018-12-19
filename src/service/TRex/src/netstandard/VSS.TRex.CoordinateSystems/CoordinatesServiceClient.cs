@@ -19,6 +19,8 @@ namespace VSS.TRex.CoordinateSystems
   /// </summary>
   public class CoordinatesServiceClient
   {
+    public const string COORDINATE_SERVICE_URL_ENV_KEY = "COORDINATE_SERVICE_URL";
+
     private static readonly ILogger log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
     private readonly CoordinateServiceHttpClient serviceHttpClient;
 
@@ -47,14 +49,14 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var neeStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var neeStr = await response.Content.ReadAsStringAsync();
 
           return JsonConvert.DeserializeObject<NEE>(neeStr);
         }
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get NEE for lat={coordinates.Latitude}, lon={coordinates.Longitude}, height={coordinates.Height}, Exception: {exception}");
+        log.LogError(exception, $"Failed to get NEE for lat={coordinates.Latitude}, lon={coordinates.Longitude}, height={coordinates.Height}");
       }
 
       return new NEE
@@ -79,7 +81,7 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var neeStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var neeStr = await response.Content.ReadAsStringAsync();
           var resultArray = JsonConvert.DeserializeObject<double[,]>(neeStr);
 
           return (RequestErrorStatus.OK, resultArray.ToNEEArray());
@@ -87,7 +89,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get NEE for lat array, Exception: {exception}");
+        log.LogError(exception, "Failed to get NEE for lat array");
       }
 
       return (RequestErrorStatus.Exception, null);
@@ -108,14 +110,14 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var llhStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var llhStr = await response.Content.ReadAsStringAsync();
 
           return JsonConvert.DeserializeObject<LLH>(llhStr);
         }
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get LLH for east={coordinates.East}, north={coordinates.North}, elevation={coordinates.Elevation}, Exception: {exception}");
+        log.LogError(exception, $"Failed to get LLH for east={coordinates.East}, north={coordinates.North}, elevation={coordinates.Elevation}");
       }
 
       return new LLH
@@ -140,7 +142,7 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var llhStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var llhStr = await response.Content.ReadAsStringAsync();
           var resultArray = JsonConvert.DeserializeObject<double[,]>(llhStr);
 
           return (RequestErrorStatus.OK, resultArray.ToLLHArray());
@@ -148,7 +150,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get coordinates, Exception: {exception}");
+        log.LogError(exception, "Failed to get coordinates");
       }
 
       return (RequestErrorStatus.Exception, null);
@@ -165,7 +167,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to import coordinate system from DC {filePath}, Exception {exception}");
+        log.LogError(exception, $"Failed to import coordinate system from DC {filePath}");
       }
 
       return null;
@@ -180,7 +182,7 @@ namespace VSS.TRex.CoordinateSystems
 
       try
       {
-        using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+        using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
           content.Add(new StreamContent(new MemoryStream(fileContent)), "DC", Path.GetFileName(filePath));
 
@@ -190,7 +192,7 @@ namespace VSS.TRex.CoordinateSystems
             throw new Exception(response.ToString());
           }
 
-          var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var json = await response.Content.ReadAsStringAsync();
           var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystemResponse>>(json);
 
           imported = csList?.FirstOrDefault().CoordinateSystem.Id;
@@ -198,7 +200,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to import coordinate system from DC '{filePath}', Exception {exception}");
+        log.LogError(exception, $"Failed to import coordinate system from DC '{filePath}'");
       }
 
       return imported;

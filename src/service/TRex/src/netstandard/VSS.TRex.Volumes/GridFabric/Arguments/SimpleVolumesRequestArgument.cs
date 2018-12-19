@@ -9,7 +9,7 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
   /// <summary>
   /// The argument passed to simple volumes requests
   /// </summary>
-  public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument
   {
     //ExternalDescriptor : TASNodeRequestDescriptor;
 
@@ -23,7 +23,7 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     /// <summary>
     /// BaseFilter and TopFilter reference two sets of filter settings
     /// between which we may calculate volumes. At the current time, it is
-    /// meaingful for a filter to have a spatial extent, and to denote aa
+    /// meaningful for a filter to have a spatial extent, and to denote aa
     /// 'as-at' time only.
     /// </summary>
     public ICombinedFilter BaseFilter = null;
@@ -121,51 +121,6 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
 
       CutTolerance = reader.ReadDouble();
       FillTolerance = reader.ReadDouble();
-    }
-
-    protected bool Equals(SimpleVolumesRequestArgument other)
-    {
-      return base.Equals(other) && 
-             ProjectID.Equals(other.ProjectID) && 
-             VolumeType == other.VolumeType && 
-             Equals(BaseFilter, other.BaseFilter) && 
-             Equals(TopFilter, other.TopFilter) && 
-             BaseDesignID.Equals(other.BaseDesignID) && 
-             TopDesignID.Equals(other.TopDesignID) && 
-             Equals(AdditionalSpatialFilter, other.AdditionalSpatialFilter) && 
-             CutTolerance.Equals(other.CutTolerance) && 
-             FillTolerance.Equals(other.FillTolerance);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as SimpleVolumesRequestArgument);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((SimpleVolumesRequestArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ ProjectID.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) VolumeType;
-        hashCode = (hashCode * 397) ^ (BaseFilter != null ? BaseFilter.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (TopFilter != null ? TopFilter.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ BaseDesignID.GetHashCode();
-        hashCode = (hashCode * 397) ^ TopDesignID.GetHashCode();
-        hashCode = (hashCode * 397) ^ (AdditionalSpatialFilter != null ? AdditionalSpatialFilter.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ CutTolerance.GetHashCode();
-        hashCode = (hashCode * 397) ^ FillTolerance.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

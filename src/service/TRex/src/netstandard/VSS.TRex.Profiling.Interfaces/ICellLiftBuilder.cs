@@ -12,7 +12,7 @@ namespace VSS.TRex.Profiling.Interfaces
     int FilteredPassCountOfTopMostLayer { get; set; }
 
     // FilteredHalfCellPassCountOfTopMostLayer tracks 'half cell passes'.
-    // A half cell pass is recorded whan a Quattro four drum compactor drives over the ground.
+    // A half cell pass is recorded when a Quattro four drum compactor drives over the ground.
     // Other machines, like single drum compactors, record two half cell pass counts to form a single cell pass.
     int FilteredHalfCellPassCountOfTopMostLayer { get; set; }
 

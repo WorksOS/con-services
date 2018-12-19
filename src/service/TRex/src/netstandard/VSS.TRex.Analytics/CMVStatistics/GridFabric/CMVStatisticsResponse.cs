@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -11,7 +10,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   /// The response state returned from a CMV statistics request
   /// </summary>
   public class CMVStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<CMVStatisticsResponse>, 
-    IAnalyticsOperationResponseResultConversion<CMVStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
+    IAnalyticsOperationResponseResultConversion<CMVStatisticsResult>
   {
     /// <summary>
     /// Holds last known good target CMV value.
@@ -73,32 +72,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
         Counts = Counts,
         ResultStatus = ResultStatus
       };
-    }
-
-    protected bool Equals(CMVStatisticsResponse other)
-    {
-      return base.Equals(other) && LastTargetCMV == other.LastTargetCMV;
-    }
-
-    public new bool Equals(StatisticsAnalyticsResponse other)
-    {
-      return Equals(other as CMVStatisticsResponse);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((CMVStatisticsResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (base.GetHashCode() * 397) ^ LastTargetCMV.GetHashCode();
-      }
     }
   }
 }

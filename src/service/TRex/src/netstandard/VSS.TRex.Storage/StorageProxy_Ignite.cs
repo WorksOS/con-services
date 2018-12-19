@@ -42,29 +42,29 @@ namespace VSS.TRex.Storage
         new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
           ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
     }
-    
+
     /// <summary>
     /// Supports writing a named data stream to the persistent store via the grid cache.
     /// </summary>
     /// <param name="dataModelID"></param>
     /// <param name="streamName"></param>
     /// <param name="streamType"></param>
-    /// <param name="mutablestream"></param>
+    /// <param name="mutableStream"></param>
     /// <param name="source"></param>
     /// <returns></returns>
     public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID,
       string streamName,
       FileSystemStreamType streamType,
-      MemoryStream mutablestream,
+      MemoryStream mutableStream,
       object source)
     {
       try
       {
         INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutablestream))
+        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutablestream.Length} -> {compressedStream.Length}");
+          // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
           nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
         }
 
@@ -73,16 +73,16 @@ namespace VSS.TRex.Storage
           // Create the immutable stream from the source data
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            if (PerformNonSpatialImmutabilityConversion(mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source) == null)
+            if (PerformNonSpatialImmutabilityConversion(mutableStream, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source) == null)
             {
-              Log.LogError($"Unable to project an immutable stream");
+              Log.LogError("Unable to project an immutable stream");
               return FileSystemErrorStatus.MutableToImmutableConversionError;
             }
           }
         }
         catch (Exception e)
         {
-          Log.LogError($"Exception performing mutability conversion: {e}");
+          Log.LogError(e, "Exception performing mutability conversion:");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -134,7 +134,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError($"Exception performing mutability conversion: {e}");
+          Log.LogError(e, "Exception performing mutability conversion:");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -181,7 +181,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogInformation($"Exception occurred: {e}");
+        Log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -231,7 +231,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogInformation($"Exception occurred: {e}");
+        Log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -259,7 +259,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception E)
         {
-          Log.LogError($"Exception occurredL {E}");
+          Log.LogError(E, "Exception occurred:");
         }
 
         ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamName);

@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Draw = System.Drawing;
-using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -21,7 +20,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     /// </summary>
     public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TileRenderRequestComputeFunc>();
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -52,7 +51,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                      arg.CoordsAreGrid,
                      arg.PixelsX, arg.PixelsY,
                      arg.Filter1, arg.Filter2,
-                     arg.ReferenceDesignID,
+                     arg.ReferenceDesignUID,
                      Draw.Color.Black,
                      arg.TRexNodeID);
 

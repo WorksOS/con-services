@@ -5,7 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
+using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -39,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var project =
-        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+        (await projectRepo.GetProjectsForCustomer(customerUid)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
@@ -59,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       var overlaps =
         await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
+          projectStartDate, projectEndDate, projectUid);
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
@@ -125,8 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
-            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders)
-            .ConfigureAwait(false);
+            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
         }
         catch (Exception e)
         {
@@ -158,7 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
       IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
-      IFileRepository fileRepo)
+      IFileRepository fileRepo, IDataOceanClient dataOceanClient)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -172,7 +174,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           //Pass coordinate system to Raptor
           var coordinateSystemSettingsResult = await raptorProxy
             .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
-              coordinateSystemFileName, headers).ConfigureAwait(false);
+              coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
@@ -181,7 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
@@ -197,17 +199,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
-            var fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
-                ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
-                false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo)
-              .ConfigureAwait(false);
+            var fileDescriptor = await TccHelper.WriteFileToTCCRepository(
+              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
+              false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
+          }
+          //save copy to DataOcean
+          using (var ms = new MemoryStream(coordinateSystemFileContent))
+          {
+            await DataOceanHelper.WriteFileToDataOcean(
+              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
+              false, null, log, serviceExceptionHandler, dataOceanClient, customHeaders);
           }
 
         }
         catch (Exception e)
         {
           if (isCreate)
-            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
@@ -216,103 +224,39 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #endregion coordSystem
 
-    
-    #region TCC
+   
+    #region S3
     /// <summary>
-    /// get file content from TCC
-    ///     note that is is intended to be used for small, DC files only.
-    ///     If/when it is needed for large files, 
-    ///           e.g. surfaces, you should use a smaller buffer and loop to read.
-    /// </summary>
-    public static async Task<byte[]> GetFileContentFromTcc(BusinessCenterFile businessCentreFile,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
-    {
-      Stream memStream = null;
-      var tccPath = $"{businessCentreFile.Path}/{businessCentreFile.Name}";
-      byte[] coordSystemFileContent = null;
-      int numBytesRead = 0;
-
-      try
-      {
-        log.LogInformation(
-          $"GetFileContentFromTcc: getBusinessCentreFile fielspaceID: {businessCentreFile.FileSpaceId} tccPath: {tccPath}");
-        memStream = await fileRepo.GetFile(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
-
-        if (memStream != null && memStream.CanRead && memStream.Length > 0)
-        {
-          coordSystemFileContent = new byte[memStream.Length];
-          int numBytesToRead = (int) memStream.Length;
-          numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
-        }
-        else
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-            80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
-        }
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
-      }
-      finally
-      {
-        memStream?.Dispose();
-      }
-
-      log.LogInformation(
-        $"GetFileContentFromTcc: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
-      return coordSystemFileContent;
-    }
-
-    /// <summary>
-    /// Writes the importedFile to TCC
-    ///   returns filespaceID; path and filename which identifies it uniquely in TCC
-    ///   this may be a create or update, so ok if it already exists already
+    /// Writes the importedFile to S3
+    ///   if file exists, it will be overwritten
+    ///   returns FileDescriptor for backwards compatability
     /// </summary>
     /// <returns></returns>
-    public static async Task<FileDescriptor> WriteFileToTCCRepository(
-      Stream fileContents, string customerUid, string projectUid,
-      string pathAndFileName, bool isSurveyedSurface, DateTime? surveyedUtc, string fileSpaceId,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
+    public static FileDescriptor WriteFileToS3Repository(
+      Stream fileContents, string projectUid, string filename,
+      bool isSurveyedSurface, DateTime? surveyedUtc,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
+      ITransferProxy persistantTransferProxy)
     {
-      var tccPath = $"/{customerUid}/{projectUid}";
-      string tccFileName = Path.GetFileName(pathAndFileName);
-
+      string finalFilename = filename;
       if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+        finalFilename = ImportedFileUtils.IncludeSurveyedUtcInName(finalFilename, surveyedUtc.Value);
 
-      bool ccPutFileResult = false;
-      bool folderAlreadyExists = false;
+      var s3FullPath = $"{projectUid}/{finalFilename}";
       try
       {
-        log.LogInformation(
-          $"WriteFileToTCCRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-        // check for exists first to avoid an misleading exception in our logs.
-        folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
-        if (folderAlreadyExists == false)
-          await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-
-        // this does an upsert
-        ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileContents, fileContents.Length)
-          .ConfigureAwait(false);
+        persistantTransferProxy.Upload(fileContents, s3FullPath);
       }
       catch (Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "transferProxy.Upload()",
           e.Message);
       }
 
-      if (ccPutFileResult == false)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-      }
-
-      log.LogInformation(
-        $"WriteFileToTCCRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
-      return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
+      log.LogInformation($"WriteFileToS3Repository. Process add design :{finalFilename}, for Project:{projectUid}");
+      return FileDescriptor.CreateFileDescriptor(string.Empty, string.Empty, finalFilename);
     }
-    #endregion TCC
-    
+    #endregion S3
 
     #region rollback
 
@@ -337,14 +281,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         DeletePermanently = true,
         ActionUTC = DateTime.UtcNow
       };
-      await projectRepo.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
+      await projectRepo.StoreEvent(deleteProjectEvent);
 
       await projectRepo.StoreEvent(new DissociateProjectCustomer
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ActionUTC = DateTime.UtcNow
-      }).ConfigureAwait(false);
+      });
     }
 
 
@@ -362,7 +306,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         if (subscriptionUidAssignedGuid != Guid.Empty)
         {
           await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssignedGuid,
-            projectUid, customHeaders).ConfigureAwait(false);
+            projectUid, customHeaders);
         }
       }
     }

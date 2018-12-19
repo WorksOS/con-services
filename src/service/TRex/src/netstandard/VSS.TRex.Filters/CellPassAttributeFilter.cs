@@ -16,7 +16,7 @@ using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Filters
 {
@@ -389,9 +389,9 @@ namespace VSS.TRex.Filters
         return Result;
 
       if (HasElevationRangeFilter) // Check the contents of the elevation range filter
-        if (ElevationRangeDesignID != Guid.Empty)
+        if (ElevationRangeDesignUID != Guid.Empty)
         {
-          Result = ElevationRangeDesignID.CompareTo(AFilter.ElevationRangeDesignID);
+          Result = ElevationRangeDesignUID.CompareTo(AFilter.ElevationRangeDesignUID);
           if (Result == 0)
             Result = ElevationRangeOffset.CompareTo(AFilter.ElevationRangeOffset);
           if (Result == 0)
@@ -482,7 +482,7 @@ namespace VSS.TRex.Filters
       ElevationRangeLevel = Consts.NullDouble;
       ElevationRangeOffset = Consts.NullDouble;
       ElevationRangeThickness = Consts.NullDouble;
-      ElevationRangeDesignID = Guid.Empty;
+      ElevationRangeDesignUID = Guid.Empty;
 
       ElevationRangeIsInitialised = false;
       ElevationRangeIsLevelAndThicknessOnly = false;
@@ -563,7 +563,9 @@ namespace VSS.TRex.Filters
       // Machine based filtering members
       if (Source.MachinesList != null)
       {
-        Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
+        MachinesList = new Guid[Source.MachinesList.Length];
+        if (Source.MachinesList.Length > 0)
+          Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
         // all set types below HasMachineFilter = Source.HasMachineFilter;
       }
       else
@@ -571,15 +573,7 @@ namespace VSS.TRex.Filters
         ClearMachines();
       }
 
-
-      if (Source.MachineIDSet != null)
-      {
-        MachineIDSet = new BitArray(Source.MachineIDSet);
-      }
-      else
-      {
-        MachineIDSet = null;
-      }
+      MachineIDSet = Source.MachineIDSet != null ? new BitArray(Source.MachineIDSet) : null;
 
       // Design based filtering member
       DesignNameID = Source.DesignNameID;
@@ -613,9 +607,7 @@ namespace VSS.TRex.Filters
       ElevationRangeLevel = Source.ElevationRangeLevel;
       ElevationRangeOffset = Source.ElevationRangeOffset;
       ElevationRangeThickness = Source.ElevationRangeThickness;
-      ElevationRangeDesignID = Source.ElevationRangeDesignID;
-
-      RestrictFilteredDataToCompactorsOnly = Source.RestrictFilteredDataToCompactorsOnly;
+      ElevationRangeDesignUID = Source.ElevationRangeDesignUID;
 
       LayerID = Source.LayerID;
 
@@ -625,7 +617,13 @@ namespace VSS.TRex.Filters
       PasscountRangeMin = Source.PasscountRangeMin;
       PasscountRangeMax = Source.PasscountRangeMax;
 
-      Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
+      if (Source.SurveyedSurfaceExclusionList != null)
+      {
+        SurveyedSurfaceExclusionList = new Guid[Source.SurveyedSurfaceExclusionList.Length];
+        Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
+      }
+      else
+        SurveyedSurfaceExclusionList = new Guid[0];
 
       // This assignment method consciously does not "clone" or otherwise assign Elevation Range related filter state;
       // i.e. FElevationRangeIsInitialised, FElevationRangeIsLevelAndThicknessOnly, FElevationRangeTopElevationForCell,
@@ -657,7 +655,6 @@ namespace VSS.TRex.Filters
     public void ClearCompactionMachineOnlyRestriction()
     {
       HasCompactionMachinesOnlyFilter = false;
-      RestrictFilteredDataToCompactorsOnly = false;
     }
 
     public void ClearMachineDirection()
@@ -1337,7 +1334,7 @@ namespace VSS.TRex.Filters
 
       // Min elev mapping
       if (HasMinElevMappingFilter)
-        sb.Append($"VS:{(MinElevationMapping ? 1 : 0)}");
+        sb.Append($"MEM:{(MinElevationMapping ? 1 : 0)}");
 
       // Elevation type
       if (HasElevationTypeFilter)
@@ -1353,7 +1350,7 @@ namespace VSS.TRex.Filters
 
       // GPS Accuracy
       if (HasGPSAccuracyFilter)
-        sb.Append($"GA:{GCSGuidanceMode}-{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
+        sb.Append($"GA:{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
 
       // GPS Tolerance
       if (HasGPSToleranceFilter)
@@ -1366,10 +1363,10 @@ namespace VSS.TRex.Filters
       // Elevation Range
       if (HasElevationRangeFilter)
       {
-        if (ElevationRangeDesignID != Guid.Empty)
-          sb.Append($"ER-{ElevationRangeDesignID}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+        if (ElevationRangeDesignUID != Guid.Empty)
+          sb.Append($"ER:{ElevationRangeDesignUID}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
         else
-          sb.Append($"ER-{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+          sb.Append($"ER:{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
       }
 
       // Layer state filter
@@ -1377,20 +1374,23 @@ namespace VSS.TRex.Filters
         sb.Append($"LS:{LayerState}");
 
       // Compaction machines only
-      if (HasLayerStateFilter)
+      if (HasCompactionMachinesOnlyFilter)
         sb.Append("CMO:1");
 
       // Layer ID filter
       if (HasLayerIDFilter)
-        sb.Append($"LF:{LayerID}");
+        sb.Append($"LID:{LayerID}");
 
       // TemperatureRangeFilter
       if (HasTemperatureRangeFilter)
-        sb.Append($"LF:{MaterialTemperatureMin}-{MaterialTemperatureMax}-{(FilterTemperatureByLastPass?1:0)}");
+        sb.Append($"TR:{MaterialTemperatureMin}-{MaterialTemperatureMax}-{(FilterTemperatureByLastPass?1:0)}");
 
       // PassCountRangeFilter
       if (HasPassCountRangeFilter)
         sb.Append($"PC:{PasscountRangeMin}-{PasscountRangeMax}");
+
+      if (ReturnEarliestFilteredCellPass)
+        sb.Append("REFCP:1");
 
       return sb.ToString();
     }
@@ -1487,7 +1487,7 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public bool FilterMultiplePasses(CellPass[] passValues,
       int passValueCount,
-      ref FilteredMultiplePassInfo filteredPassInfo)
+      FilteredMultiplePassInfo filteredPassInfo)
     {
       if (!AnyFilterSelections)
       {

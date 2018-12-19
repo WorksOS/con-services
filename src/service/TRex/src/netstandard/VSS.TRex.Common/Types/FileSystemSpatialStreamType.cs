@@ -14,6 +14,7 @@
         SurveyedSurfaces,
         Designs,
         Machines,
-        MachineDesignNames
+        MachineDesignNames,
+        ProofingRuns
     }
 }

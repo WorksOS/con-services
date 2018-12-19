@@ -37,19 +37,64 @@
 <button (click)="panRight()">Right</button>
 <button (click)="panUp()">Up</button>
 <button (click)="panDown()">Down</button>
+
 <br />
-<img style="border:1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" />
+<div style="display: inline-block; position:relative" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" (click)="onMapMouseClick()">
+  <img style="position: absolute; border: 1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
+  <svg style="position: relative"
+       height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg:circle [attr.cx]="userProfilePoint1SVG_CX" [attr.cy]="userProfilePoint1SVG_CY" r="5" stroke="black" stroke-width="1" />
+    <svg:circle [attr.cx]="userProfilePoint2SVG_CX" [attr.cy]="userProfilePoint2SVG_CY" r="5" stroke="black" stroke-width="1" />
+    <svg:path [attr.d]="userProfilePath" stroke="black" stroke-width="1.5" fill="none" />
+  </svg>
+</div>
+
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
-<H3>Machines [{{machines.length}} in total]</H3>
-<!--Display the machines in a list
-<p *ngFor="let machine of machines">
-  Machine: {{ machine.id }} Internal Index: {{ machine.internalSiteModelMachineIndex }}, Name:{{machine.name}}, Type:{{machine.machineType}},
-  Hardware ID: {{machine.machineHardwareID}}, Device Type: {{machine.deviceType}} IsJohnDoe: {{machine.isJohnDoeMachine}},
-  Last known location: [{{machine.lastKnownX}}, {{machine.lastKnownY}} at {{machine.lastKnownPositionDateStamp}}],
-  Last known design: {{machine.lastKnownDesignName}}, Last known layer: {{machine.lastKnownLayerId}}
+
+<H3>Profiling points</H3>
+<p>
+  <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">First point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
+  <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">Second point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
+  Points in profile: {{numPointInProfile}}
 </p>
--->
+
+<p>
+  Design to profile: <input type="text" [(ngModel)]="designProfileUid">
+  <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Design Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Prod Latest Data Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
+</p>
+<p>
+Production elevation profiles:
+  <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
+  <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
+  <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
+  <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
+</p><p>
+Composite elevation profiles:
+  <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
+  <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
+  <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
+  <label><input type="checkbox" (ngModelChange)="showHighestCompositeElevationProfile_change()" [(ngModel)]="showHighestCompositeElevationProfile">Highest</label>
+</p>
+
+<svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     (mouseover)="onMouseOverProfile($event)" (mousemove)="onMouseMoveProfile($event)">
+  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1.5" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LastElev" stroke="red" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_FirstElev" stroke="green" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LowestElev" stroke="blue" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_HighestElev" stroke="yellow" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LastCompositeElev" stroke="orange" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_FirstCompositeElev" stroke="coral" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LowestCompositeElev" stroke="magenta" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_HighestCompositeElev" stroke="pink" stroke-width="1" fill="none" />
+</svg>
+<p>Profile extents: Start station: {{profileExtents.minX}}, End station: {{profileExtents.maxX}}, Min Z: {{profileExtents.minY}}, Max Z: {{profileExtents.maxY}}</p>
+<p>Mouse: Screen: {{mouseProfilePixelLocation}}, World: {{mouseProfileWorldLocation}} </p>
+
+<H3>Machines [{{machines.length}} in total]</H3>
 <!--Display the machines in a table-->
 <table>
   <tr>
@@ -64,6 +109,7 @@
     </td>
   </tr>
 </table>
+
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="surveyedSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value="" /> Offset: <input [(ngModel)]="surveyedSurfaceOffset" type="number" value="" /></p>
@@ -126,11 +172,8 @@
   machine design: {{machinedesign.id}}  {{machinedesign.name}}
 </p>
 
-<br/>
-<H3>Profile</H3>
-<p><button (click)="drawProfileBLToTR()">Draw BL->TR</button><button (click)="drawProfileTLToBR()">Draw TL->BR</button></p>
-
-<svg height="500" width="500" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none"/>
-</svg>
-
+<br />
+<H3>Proofing Runs</H3>
+<p *ngFor="let proofingRun of siteProofingRuns">
+  Proofing Run: {{proofingRun.name}}, Start Time: {{proofingRun.startTime}}, End Time: {{proofingRun.endTime}}
+</p>

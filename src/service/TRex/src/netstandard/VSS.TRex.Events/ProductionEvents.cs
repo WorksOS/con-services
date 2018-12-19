@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Events
 {
@@ -170,8 +170,6 @@ namespace VSS.TRex.Events
       return Find(value.Date, out index);
     }
 
-    //    property FileMajorVersion: Byte read FMajorVersion;
-    //    property FileMinorVersion: Byte read FMinorVersion;
     //    function UpgradeEventListFile(const FileStream : TStream;
     //                                  const InternalStream: TMemoryStream;
     //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;

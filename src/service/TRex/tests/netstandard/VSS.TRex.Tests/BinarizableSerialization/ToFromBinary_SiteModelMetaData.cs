@@ -1,7 +1,7 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
-using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_SiteModelMetadata()
     {
-      var argument = new SiteModelMetadata()
+      var argument = new SiteModelMetadata
       {
         ID = Guid.NewGuid(),
         Name = "Site Model",
@@ -29,7 +29,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         SurveyedSurfaceCount = 3
       };
 
-      SimpleBinarizableInstanceTester.TestClass(argument, "Custom SiteModelMetadata not same after round trip serialisation");
+      var result = SimpleBinarizableInstanceTester.TestClass(argument, "Custom SiteModelMetadata not same after round trip serialisation");
+
+      argument.LastModifiedDate.Should().Be(result.member.LastModifiedDate, "Dates are not equal");
     }
   }
 }

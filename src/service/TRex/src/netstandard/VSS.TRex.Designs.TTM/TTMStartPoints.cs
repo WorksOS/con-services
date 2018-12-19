@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.TTM
         }
         catch (Exception E)
         {
-          throw new Exception($"Failed to read start point {i + 1}\n{E}");
+          throw new Exception($"Failed to read start point {i + 1}", E);
         }
       }
     }

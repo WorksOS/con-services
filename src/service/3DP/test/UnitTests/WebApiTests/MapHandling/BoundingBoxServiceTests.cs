@@ -1,4 +1,8 @@
-﻿using DesignProfiler.ComputeDesignBoundary.RPC;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using DesignProfilerDecls;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,16 +10,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICStatistics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {
@@ -35,51 +34,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       serviceCollection.AddSingleton(loggerFactory);
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-    }
-
-
-    [TestMethod]
-    [DataRow(4096, 4096, false, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
-    [DataRow(2048, 2048, false, 2646, 2646, 0.63137, -2.00749, 0.63142, -2.00743)]//square tile smaller than bbox 
-    [DataRow(2048, 1024, false, 5292, 2646, 0.63137, -2.00752, 0.63142, -2.00740)]//rectangular tile smaller than bbox
-    [DataRow(4096, 4096, true, 4096, 4096, 0.63136, -2.00751, 0.63144, -2.00741)]//tile larger than bbox
-    [DataRow(2048, 2048, true, 2910, 2910, 0.63137, -2.00749, 0.63142, -2.00743)]//square tile smaller than bbox 
-    [DataRow(2048, 1024, true, 5820, 2910, 0.63137, -2.00752, 0.63142, -2.00740)]//rectangular tile smaller than bbox
-    public void ShouldAdjustBoundingBoxToFit(int tileWidth, int tileHeight, bool addMargin, int expectedWidth, int expectedHeight,
-      double expectedMinLat, double expectedMinLng, double expectedMaxLat, double expectedMaxLng)
-    {
-      var minLat = 0.63137;//36.175°
-      var minLng = -2.00748;//-115.020°
-      var maxLat = 0.63142;//36.178°
-      var maxLng = -2.00744;//-115.018°
-      MapBoundingBox bbox = new MapBoundingBox
-      {
-        minLat = minLat,
-        minLng = minLng,
-        maxLat = maxLat,
-        maxLng = maxLng
-      };
-
-      var raptorClient = new Mock<IASNodeClient>();
-
-      var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      //numTiles = 1048576 for Z10
-      MapParameters parameters = new MapParameters
-      {
-        bbox = bbox,
-        numTiles = 1048576,
-        zoomLevel = 10,
-        mapWidth = tileWidth,
-        mapHeight = tileHeight,
-        addMargin = addMargin
-      };
-      service.AdjustBoundingBoxToFit(parameters);
-      Assert.AreEqual(expectedWidth, parameters.mapWidth);
-      Assert.AreEqual(expectedHeight, parameters.mapHeight);
-      Assert.AreEqual(expectedMinLat, parameters.bbox.minLat, 0.00001);
-      Assert.AreEqual(expectedMinLng, parameters.bbox.minLng, 0.00001);
-      Assert.AreEqual(expectedMaxLat, parameters.bbox.maxLat, 0.00001);
-      Assert.AreEqual(expectedMaxLng, parameters.bbox.maxLng, 0.00001);
     }
 
     [TestMethod]

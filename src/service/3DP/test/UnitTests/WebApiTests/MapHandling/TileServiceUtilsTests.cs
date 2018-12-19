@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using Point = VSS.MasterData.Models.Models.Point;
 using VSS.MasterData.Models.Models;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
+using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {
@@ -38,51 +38,6 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       Assert.AreEqual(res1,res2);
       Assert.AreEqual(13,res1);
-
-    }
-
-    [TestMethod]
-    public void CanConvertLatLngToPixelOffset()
-    {
-      List<WGSPoint> latLngs = new List<WGSPoint>
-      {
-        new WGSPoint(36.210.LatDegreesToRadians(), -115.025.LonDegreesToRadians()),
-        new WGSPoint(36.205.LatDegreesToRadians(), -115.029.LonDegreesToRadians()),
-        new WGSPoint(36.200.LatDegreesToRadians(), -115.018.LonDegreesToRadians())
-      };
-      var topLeft = new Point(100, 250);
-      var pixelPoints = TileServiceUtils.LatLngToPixelOffset(latLngs, topLeft, 32768);
-
-      var expectedPoints = new PointF[3]
-      {
-        new PointF{X = 1513777.25F, Y = 3287930F},
-        new PointF{X = 1513684F, Y = 3288074.5F},
-        new PointF{X = 1513940.38F, Y = 3288218.75F},
-      };
-
-      for (int i = 0; i < 3; i++)
-      {
-        Assert.AreEqual(expectedPoints[i], pixelPoints[i]);
-      }
-    }
-
-    [TestMethod]
-    public void OverlayTilesReturnsTileForEmptyList()
-    {
-      var mapParameters = new MapParameters {mapWidth = 4, mapHeight = 4};
-      var result = TileServiceUtils.OverlayTiles(mapParameters, new Dictionary<TileOverlayType, byte[]>());
-      var expectedResult = new byte[]
-      {
-        137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 4, 0, 0, 0, 4, 8, 6, 0, 0, 0, 169, 241,
-        158, 126, 0, 0, 0, 1, 115, 82, 71, 66, 0, 174, 206, 28, 233, 0, 0, 0, 4, 103, 65, 77, 65, 0, 0, 177, 143, 11,
-        252, 97, 5, 0, 0, 0, 9, 112, 72, 89, 115, 0, 0, 14, 195, 0, 0, 14, 195, 1, 199, 111, 168, 100, 0, 0, 0, 13,
-        73, 68, 65, 84, 24, 87, 99, 160, 24, 48, 48, 0, 0, 0, 68, 0, 1, 190, 92, 113, 234, 0, 0, 0, 0, 73, 69, 78, 68,
-        174, 66, 96, 130
-      };
-      for (int i = 0; i < expectedResult.Length; i++)
-      {
-        Assert.AreEqual(expectedResult[i], result[i]);
-      }
     }
 
     [TestMethod]
@@ -116,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(35.0, -116.5),
         new WGSPoint(35.0, -116.0),
       };
-      Assert.IsTrue(TileServiceUtils.Outside(bbox, points));
+      Assert.IsTrue(Outside(bbox, points));
     }
 
     [TestMethod]
@@ -137,7 +92,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(36.1, -115.7),
         new WGSPoint(36.1, -115.5),
       };
-      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+      Assert.IsFalse(Outside(bbox, points));
     }
 
     [TestMethod]
@@ -158,7 +113,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(35.9, -115.7),
         new WGSPoint(35.9, -115.5),
       };
-      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+      Assert.IsFalse(Outside(bbox, points));
     }
 
     [TestMethod]
@@ -179,9 +134,21 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(35.9, -114.9),
         new WGSPoint(35.9, -116.0),
       };
-      Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
+      Assert.IsFalse(Outside(bbox, points));
     }
 
-
+    /// <summary>
+    /// Determines if a polygon lies outside a bounding box.
+    /// </summary>
+    /// <param name="bbox">The bounding box</param>
+    /// <param name="points">The polygon</param>
+    /// <returns>True if the polygon is completely outside the bounding box otherwise false</returns>
+    private bool Outside(MapBoundingBox bbox, List<WGSPoint> points)
+    {
+      return points.Min(p => p.Lat) > bbox.maxLat ||
+             points.Max(p => p.Lat) < bbox.minLat ||
+             points.Min(p => p.Lon) > bbox.maxLng ||
+             points.Max(p => p.Lon) < bbox.minLng;
+    }
   }
 }

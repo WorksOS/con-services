@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
@@ -43,12 +43,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<TileRequest>();
 
-      //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
-      //Raymond: how are designs implemented in TRex?
-      //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
-      //with all the same data but a derived DesignDescriptor with the Guid set, assuming serialization/deserialization
-      //gives us the derived class here
-
       BoundingWorldExtent3D extents = null;
       bool hasGridCoords = false;
       if (request.BoundBoxLatLon != null)
@@ -67,14 +61,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       var response = tileRequest.Execute(
         new TileRenderRequestArgument
         (siteModel.ID,
-          (Types.DisplayMode) request.Mode,
+          (DisplayMode) request.Mode,
           extents,
           hasGridCoords,
           request.Width, // PixelsX
           request.Height, // PixelsY
           ConvertFilter(request.Filter1, siteModel),
           ConvertFilter(request.Filter2, siteModel),
-          Guid.Empty //TODO: request.DesignDescriptor
+          request.DesignDescriptor.Uid ?? Guid.Empty
         )) as TileRenderResponse_Core2;
 
       return new TileResult(response?.TileBitmapData);

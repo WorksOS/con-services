@@ -254,26 +254,28 @@ namespace VSS.TRex.Tests
 
       var siteModel = new SiteModel(Guid.Empty, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 0);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 1);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 2);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 3);
-      Assert.True(5 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
+
+      DateTime ReferenceTime = DateTime.UtcNow;
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(ReferenceTime.AddMinutes(-60), 0);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(ReferenceTime.AddMinutes(-30), 1);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(ReferenceTime.AddMinutes(-29), 1);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(ReferenceTime.AddMinutes(-29), 2);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(ReferenceTime.AddMinutes(-29), 3);
+      Assert.True(3 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 3");
 
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
       var targetEventList = Deserialize(mutableStream);
-      Assert.Equal(5, targetEventList.Count());
+      Assert.Equal(3, targetEventList.Count());
 
       var mutabilityConverter = new MutabilityConverter();
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, null, events.MachineDesignNameIDStateEvents, out MemoryStream immutableStream);
 
       targetEventList = Deserialize(immutableStream);
-      Assert.Equal(4, targetEventList.Count());
+      Assert.Equal(2, targetEventList.Count());
 
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, mutableStream, null, out immutableStream);
       targetEventList = Deserialize(immutableStream);
-      Assert.Equal(4, targetEventList.Count());
+      Assert.Equal(2, targetEventList.Count());
     }
 
     private IProductionEvents Deserialize(MemoryStream stream)

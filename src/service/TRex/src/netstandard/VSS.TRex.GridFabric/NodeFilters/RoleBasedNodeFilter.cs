@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cluster;
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 
@@ -10,9 +11,9 @@ namespace VSS.TRex.GridFabric.NodeFilters
   /// <summary>
   /// Defines a node filter that filters nodes based on a defined role attribute
   /// </summary>
-  public abstract class RoleBasedNodeFilter : IClusterNodeFilter, IBinarizable, IFromToBinary, IEquatable<RoleBasedNodeFilter>
+  public abstract class RoleBasedNodeFilter : IClusterNodeFilter, IBinarizable, IFromToBinary
   {
-    private const int versionNumber = 1;
+    private const int VERSION_NUMBER = 1;
 
     /// <summary>
     /// The node role
@@ -52,7 +53,7 @@ namespace VSS.TRex.GridFabric.NodeFilters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteString(Role);
     }
 
@@ -60,30 +61,10 @@ namespace VSS.TRex.GridFabric.NodeFilters
     {
       var version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new ArgumentException($"Invalid version number. Expected {versionNumber}, got {version}");
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       Role = reader.ReadString();
-    }
-
-    public bool Equals(RoleBasedNodeFilter other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return string.Equals(Role, other.Role);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((RoleBasedNodeFilter) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      return (Role != null ? Role.GetHashCode() : 0);
     }
   }
 }

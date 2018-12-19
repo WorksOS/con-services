@@ -1,0 +1,9 @@
+NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
+NEW_RELIC_APP_NAME: k8s-project-service
+newrelic: "true"
+JAEGER_AGENT_HOST: jaeger-agent.jaeger
+JAEGER_AGENT_PORT: "6831"
+JAEGER_SAMPLER_TYPE: const
+JAEGER_SERVICE_NAME: Push Service
+NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
+PUSH_NO_AUTHENTICATION_HEADER: "true"

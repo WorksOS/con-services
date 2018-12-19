@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
@@ -113,7 +114,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -168,7 +169,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -227,7 +228,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -306,7 +307,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, subscriptionProxy.Object,
+          raptorProxy.Object, subscriptionProxy.Object, null, null, null,
           projectRepo.Object, subscriptionRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -384,12 +385,15 @@ namespace VSS.MasterData.ProjectTests
         fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
           It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
+        var dataOceanClient = new Mock<IDataOceanClient>();
+        dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+        dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+          It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
         var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
-        (_logger, _configStore, _serviceExceptionHandler,
-          _customerUid, _userId, null, _customHeaders,
-          _producer.Object, KafkaTopicName,
-          raptorProxy.Object, subscriptionProxy.Object,
-          projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
+        (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+          projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, null, dataOceanClient.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -442,8 +446,8 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
-          projectRepo.Object, subscriptionRepo.Object, null, null, null);
+          raptorProxy.Object, null, null, null, null,
+          projectRepo.Object, subscriptionRepo.Object);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
 
@@ -500,8 +504,8 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
-          projectRepo.Object, subscriptionRepo.Object, null, null, null);
+          raptorProxy.Object, null, null, null, null,
+          projectRepo.Object, subscriptionRepo.Object);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
 
@@ -570,12 +574,15 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
       var createExecutor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (_logger, _configStore, _serviceExceptionHandler,
-        _customerUid, _userId, null, _customHeaders,
-        _producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
+      (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
+        _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, dataOceanClient.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
       return AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);

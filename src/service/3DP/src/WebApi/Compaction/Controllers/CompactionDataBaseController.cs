@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -47,16 +48,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Short-circuit cache time for Archived projects.
     /// </summary>
-    protected async Task SetCacheControlPolicy(Guid projectUid)
+    protected Task SetCacheControlPolicy(Guid projectUid)
     {
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      if (!project.IsArchived)
+      Task<ProjectData> project = ((RaptorPrincipal)User).GetProject(projectUid);
+
+      if (project.Result.IsArchived)
       {
-        return;
+        const string days365 = "31536000";
+        Response.Headers["Cache-Control"] = $"public,max-age={days365}";
       }
 
-      const string days365 = "31536000";
-      Response.Headers["Cache-Control"] = $"public,max-age={days365}";
+      return Task.CompletedTask;
     }
 
     /// <summary>
@@ -83,12 +85,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, bool isSummary)
     {
       var projectSettings = await GetProjectSettingsTargets(projectUid);
-      PassCountSettings passCountSettings = isSummary ? null : SettingsManager.CompactionPassCountSettings(projectSettings);
-      LiftBuildSettings liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var passCountSettings = isSummary ? null : SettingsManager.CompactionPassCountSettings(projectSettings);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var projectId = await GetLegacyProjectId(projectUid);
-      return new PassCounts(projectId, projectUid, null, passCountSettings, liftSettings, filter, -1, null, null, null);
+      Task<FilterResult> filter = GetCompactionFilter(projectUid, filterUid);
+      Task<long> projectId = GetLegacyProjectId(projectUid);
+
+      return new PassCounts(projectId.Result, projectUid, null, passCountSettings, liftSettings, filter.Result, -1, null, null, null);
     }
 
     /// <summary>
@@ -102,10 +105,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (!filterUid.HasValue)
         return true;
 
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
-      var projectId = await GetLegacyProjectId(projectUid);
+      var excludedIds = GetExcludedSurveyedSurfaceIds(projectUid);
+      var projectId = GetLegacyProjectId(projectUid);
 
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Result, excludedIds.Result?.ToArray());
+
       request.Validate();
       try
       {
