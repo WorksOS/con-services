@@ -384,7 +384,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               }
               catch (Exception e)
               {
-                Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception:", e);
+                Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
                 Log.LogCritical("The following segments will NOT be retired as a result:");
                 foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
                   Log.LogCritical($"{invalidatedItem}");
@@ -429,7 +429,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       catch (Exception E)
       {
-        Log.LogError("Exception in ProcessTask:", E);
+        Log.LogError(E, "Exception in ProcessTask:");
         return false;
       }
 

@@ -40,6 +40,9 @@ namespace TestUtility
 
         private static void WriteEntry(string message, string logType, string contentType)
         {
+          // TODO (Aaron) Refactor, this isn't how we log test activity any longer.
+          return;
+
             message = message == null ? "" : Regex.Replace(message, @"\s+|\n|\r", " ");
             string contents = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{logType}] [{contentType}] {message}";
             using (StreamWriter w = File.AppendText("/app/testresults/accepttest.log")) //accepttest.log")) //"

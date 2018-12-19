@@ -269,8 +269,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+        log.LogError(e, $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}");
         return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists", e.Message);
       }
 
@@ -285,8 +284,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         }
         catch (Exception e)
         {
-          log.LogError(
-            $"DeleteFileFromTCCRepository DeleteFile failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+          log.LogError(e, $"DeleteFileFromTCCRepository DeleteFile failed with exception. importedFileUid:{importedFileUid}.");
           return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.DeleteFile", e.Message);
         }
 

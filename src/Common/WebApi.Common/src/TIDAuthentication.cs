@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
@@ -11,7 +10,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-
 
 namespace VSS.WebApi.Common
 {
@@ -46,7 +44,7 @@ namespace VSS.WebApi.Common
     {
       log = logger.CreateLogger<TIDAuthentication>();
       this.customerProxy = customerProxy;
-      this._next = next;
+      _next = next;
       this.store = store;
       ServiceExceptionHandler = serviceExceptionHandler;
     }
@@ -86,13 +84,12 @@ namespace VSS.WebApi.Common
         }
         catch (Exception e)
         {
-          log.LogWarning("Invalid JWT token with exception {0}", e.Message);
+          log.LogWarning(e, "Invalid JWT token with exception");
           await SetResult("Invalid authentication", context);
           return;
         }
 
         bool requireCustomerUid = RequireCustomerUid(context);
-
 
         if (requireCustomerUid)
         {
@@ -106,7 +103,6 @@ namespace VSS.WebApi.Common
           await SetResult("No account selected", context);
           return;
         }
-
 
         var customHeaders = context.Request.Headers.GetCustomHeaders();
         //If this is an application context do not validate user-customer
@@ -144,14 +140,14 @@ namespace VSS.WebApi.Common
         {
           customerName = "Unknown";
         }
-    
+
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
         //Set calling context Principal
         context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, customHeaders, applicationName);
       }
 
-      await this._next.Invoke(context);
+      await _next.Invoke(context);
     }
 
     /// <summary>
@@ -170,7 +166,7 @@ namespace VSS.WebApi.Common
       return true;
     }
 
- /// <summary>
+    /// <summary>
     /// Creates a TID principal. Override in a service to create custom service principals.
     /// </summary>
     public virtual TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, string userEmail,
@@ -179,26 +175,10 @@ namespace VSS.WebApi.Common
       return new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName);
     }
 
-    private async Task SetResult(string message, HttpContext context)
+    private static Task SetResult(string message, HttpContext context)
     {
-      context.Response.StatusCode = 403;
-      await context.Response.WriteAsync(message);
-    }
-  }
-
-  /// <summary>
-  /// 
-  /// </summary>
-  public static class TIDAuthenticationExtensions
-  {
-    /// <summary>
-    /// Uses the tid authentication.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <returns></returns>
-    public static IApplicationBuilder UseTIDAuthentication(this IApplicationBuilder builder)
-    {
-      return builder.UseMiddleware<TIDAuthentication>();
+      context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+      return context.Response.WriteAsync(message);
     }
   }
 }

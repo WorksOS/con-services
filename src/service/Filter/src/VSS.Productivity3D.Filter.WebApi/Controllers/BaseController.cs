@@ -65,15 +65,14 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       ServiceExceptionHandler = serviceExceptionHandler;
       ProjectListProxy = projectListProxy;
       RaptorProxy = raptorProxy;
+      Producer = producer;
 
-
-      this.Producer = producer;
-      if (!this.Producer.IsInitializedProducer)
+      if (!Producer.IsInitializedProducer)
       {
-        this.Producer.InitProducer(configStore);
+        Producer.InitProducer(configStore);
       }
 
-      this.KafkaTopicName = $"VSS.Interfaces.Events.MasterData.{eventType}{configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
+      KafkaTopicName = $"VSS.Interfaces.Events.MasterData.{eventType}{configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
     }
   }
 }

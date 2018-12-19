@@ -136,7 +136,7 @@ namespace VSS.TRex.Servers.Client
           }
           catch (Exception e)
           {
-            Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:", e);
+            Log.LogError(e, $"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:");
           }
           finally
           {
@@ -172,7 +172,7 @@ namespace VSS.TRex.Servers.Client
 
         IpFinder = new TcpDiscoveryStaticIpFinder()
         {
-          Endpoints = new[] {"127.0.0.1:48500..48509"}
+          Endpoints = new[] {"127.0.0.1:48500..48502"}
         }
       };
 

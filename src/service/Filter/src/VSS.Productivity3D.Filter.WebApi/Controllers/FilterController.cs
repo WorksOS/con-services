@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,6 @@ using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -32,6 +32,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
   {
     private readonly GeofenceRepository geofenceRepository;
     private readonly FilterRepository filterRepo;
+
+    private static Task<ProjectData> GetProjectForUser(ClaimsPrincipal user, string projectUid) => (user as FilterPrincipal)?.GetProject(projectUid);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FilterController"/> class.
@@ -49,13 +51,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <summary>
     /// Gets the active, persistent filters for a customer/project/user.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns>Returns an immutable collection of <see cref="FilterDescriptor"/> objects</returns>
-    [Route("api/v1/filters/{projectUid}")]
-    [HttpGet]
+    [HttpGet("api/v1/filters/{projectUid}")]
     public async Task<FilterDescriptorListResult> GetProjectFilters(string projectUid)
     {
-      Log.LogInformation($"{ToString()}.GetProjectFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
+      Log.LogInformation($"{nameof(GetProjectFilters)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} isApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} projectUid: {projectUid}");
 
       var user = (TIDCustomPrincipal)User;
 
@@ -64,7 +63,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
-        await (User as FilterPrincipal)?.GetProject(projectUid));
+        await GetProjectForUser(User, projectUid));
 
       requestFull.Validate(ServiceExceptionHandler, true);
 
@@ -72,7 +71,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, null, RaptorProxy);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorListResult;
 
-      Log.LogInformation($"{ToString()}.GetProjectFilters Completed: resultCode: {result?.Code} filterCount={result?.FilterDescriptors.Count}");
+      Log.LogInformation($"{nameof(GetProjectFilters)} Completed: resultCode: {result?.Code} filterCount={result?.FilterDescriptors.Count}");
       return result;
     }
 
@@ -82,12 +81,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <remarks>
     /// If the calling context is == Application, then get it, else get only if owned by the calling UserUid
     /// </remarks>
-    /// <returns>Returns an instance of <see cref="FilterDescriptorSingleResult"/></returns>
-    [Route("api/v1/filter/{ProjectUid}")]
-    [HttpGet]
+    [HttpGet("api/v1/filter/{ProjectUid}")]
     public async Task<FilterDescriptorSingleResult> GetProjectFilter(string projectUid, [FromQuery] string filterUid)
     {
-      Log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} FilterUid: {filterUid}");
+      Log.LogInformation($"{nameof(GetProjectFilter)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} FilterUid: {filterUid}");
 
       var user = (TIDCustomPrincipal)User;
 
@@ -96,7 +93,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
-        await (User as FilterPrincipal)?.GetProject(projectUid),
+        await GetProjectForUser(User, projectUid),
         new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);
@@ -105,7 +102,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectListProxy, RaptorProxy);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
 
-      Log.LogInformation($"{ToString()}.GetProjectFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+      Log.LogInformation($"{nameof(GetProjectFilter)} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -113,23 +110,16 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Persistent filter is Created or Deleted/Created
     /// Transient filter is Upserted
     /// </summary>
-    /// <returns>Returns an instance of <see cref="FilterDescriptorSingleResult"/></returns>
-    [Route("api/v1/filter/{ProjectUid}")]
-    [HttpPut]
-    public async Task<FilterDescriptorSingleResult> UpsertFilter(
+    [HttpPut("api/v1/filter/{ProjectUid}")]
+    public async Task<FilterDescriptorSingleResult> PutFilter(
       [FromServices] IFileListProxy fileListProxy,
       string projectUid,
       [FromBody] FilterRequest request)
     {
-      Log.LogInformation($"{ToString()}.UpsertFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
-
-      if (string.IsNullOrEmpty(request?.FilterJson))
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8, "Missing filter");
-      }
+      Log.LogInformation($"{nameof(PutFilter)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterRequest: {JsonConvert.SerializeObject(request)}");
 
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName, fileListProxy);
-      var upsertFilterResult = await UpsertFilter(filterExecutor, projectUid, request);
+      var upsertFilterResult = await UpsertFilter((TIDCustomPrincipal)User, (User.Identity as GenericIdentity)?.Name, filterExecutor, await GetProjectForUser(User, projectUid), request);
 
       return upsertFilterResult;
     }
@@ -137,79 +127,43 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <summary>
     /// Create one or more transient filters.
     /// </summary>
-    /// <returns>Returns a collection of <see cref="FilterDescriptorListResult"/> which contain the created filter objects.</returns>
-    [Route("api/v1/filters/{projectUid}")]
-    [HttpPost]
+    /// <remarks>
+    /// Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
+    /// </remarks>
+    [HttpPost("api/v1/filters/{projectUid}")]
     public async Task<FilterDescriptorListResult> CreateFilters(string projectUid, [FromBody] FilterListRequest request)
     {
-      Log.LogInformation($"{ToString()}.CreateFilters: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
+      Log.LogInformation($"{nameof(CreateFilters)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
 
       if (request?.FilterRequests == null || request.FilterRequests?.Count() == 0)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7, "Missing filters");
       }
 
-
-      //Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
-      foreach (var filterRequest in request.FilterRequests)
-      {
-        if (filterRequest.FilterType != FilterType.Transient)
-        {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
-        }
-
-        if (!string.IsNullOrEmpty(filterRequest.FilterUid))
-        {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
-        }
-      }
-
-      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
-
+      var project = await GetProjectForUser(User, projectUid);
       var newFilters = new List<FilterDescriptor>();
+      var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
+      var username = (User.Identity as GenericIdentity)?.Name;
 
       foreach (var filterRequest in request.FilterRequests)
       {
-        var upsertFilterResult = await UpsertFilter(filterExecutor, projectUid, filterRequest);
-        newFilters.Add(upsertFilterResult.FilterDescriptor);
+        newFilters.Add((await UpsertFilter((TIDCustomPrincipal)User, username, filterExecutor, project, filterRequest)).FilterDescriptor);
       }
-      var result = new FilterDescriptorListResult { FilterDescriptors = newFilters.ToImmutableList() };
-      Log.LogInformation($"{ToString()}.CreateFilters Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+
+      var result = new FilterDescriptorListResult{ FilterDescriptors = newFilters.ToImmutableList() };
+
+      Log.LogInformation($"{nameof(CreateFilters)} Completed: resultCode: {result.Code} result: {JsonConvert.SerializeObject(result)}");
+
       return result;
-    }
-
-    /// <summary>
-    /// Validates and saves a single filter. Also creates the project-geofence association if the filter contains a polygon boundary.
-    /// </summary>
-    private async Task<FilterDescriptorSingleResult> UpsertFilter(UpsertFilterExecutor filterExecutor, string projectUid, FilterRequest filterRequest)
-    {
-      var user = (TIDCustomPrincipal)User;
-
-      var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(),
-        user.CustomerUid,
-        user.IsApplication,
-        (user.Identity as GenericIdentity)?.Name,
-        await (User as FilterPrincipal)?.GetProject(projectUid),
-        filterRequest);
-
-      requestFull.Validate(ServiceExceptionHandler);
-
-      var upsertFilterResult = await filterExecutor.ProcessAsync(requestFull).ConfigureAwait(false) as FilterDescriptorSingleResult;
-
-      Log.LogInformation($"{ToString()}.UpsertFilter Completed: resultCode: {upsertFilterResult?.Code} result: {JsonConvert.SerializeObject(upsertFilterResult)}");
-      return upsertFilterResult;
     }
 
     /// <summary>
     /// Deletes a Filter from the specified project.
     /// </summary>
-    /// <returns><see cref="ContractExecutionResult"/></returns>
-    [Route("api/v1/filter/{ProjectUid}")]
-    [HttpDelete]
+    [HttpDelete("api/v1/filter/{ProjectUid}")]
     public async Task<ContractExecutionResult> DeleteFilter(string projectUid, [FromQuery] string filterUid)
     {
-      Log.LogInformation($"{ToString()}.DeleteFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} FilterUid: {filterUid}");
+      Log.LogInformation($"{nameof(DeleteFilter)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} FilterUid: {filterUid}");
 
       var user = (TIDCustomPrincipal)User;
 
@@ -219,7 +173,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         user.CustomerUid,
         user.IsApplication,
         (user.Identity as GenericIdentity)?.Name,
-        await (User as FilterPrincipal)?.GetProject(projectUid),
+        await GetProjectForUser(User, projectUid),
         new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);
@@ -227,8 +181,26 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);
 
-      Log.LogInformation($"{ToString()}.DeleteFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
+      Log.LogInformation($"{nameof(DeleteFilter)} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result;
+    }
+
+    /// <summary>
+    /// Validates and saves a single filter. Also creates the project-geofence association if the filter contains a polygon boundary.
+    /// </summary>
+    private async Task<FilterDescriptorSingleResult> UpsertFilter(TIDCustomPrincipal user, string username, UpsertFilterExecutor filterExecutor, ProjectData project, FilterRequest filterRequest)
+    {
+      var requestFull = FilterRequestFull.Create(
+        Request.Headers.GetCustomHeaders(),
+        user.CustomerUid,
+        user.IsApplication,
+        username,
+        project,
+        filterRequest);
+
+      requestFull.Validate(ServiceExceptionHandler);
+
+      return await filterExecutor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
     }
   }
 }

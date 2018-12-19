@@ -57,7 +57,7 @@ namespace VSS.TRex.Storage
             }
             catch ( Exception e)
             {
-                Log.LogError("Exception thrown committing changes to Ignite for spatial cache", e);
+                Log.LogError(e, "Exception thrown committing changes to Ignite for spatial cache");
                 throw;
             }
 
@@ -71,7 +71,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.LogError("Exception thrown committing changes to Ignite for non spatial cache", e);
+                Log.LogError(e, "Exception thrown committing changes to Ignite for non spatial cache");
                 throw;
             }
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.LogError("Exception thrown clearing changes for spatial cache", e);
+                Log.LogError(e, "Exception thrown clearing changes for spatial cache");
                 throw;
             }
 
@@ -101,7 +101,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.LogError("Exception thrown clearing changes for non spatial cache", e);
+                Log.LogError(e, "Exception thrown clearing changes for non spatial cache");
                 throw;
             }
 

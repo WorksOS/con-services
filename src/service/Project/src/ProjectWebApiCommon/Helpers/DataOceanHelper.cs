@@ -81,8 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"DeleteFileFromDataOcean DeleteFile failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+        log.LogError(e, $"DeleteFileFromDataOcean DeleteFile failed with exception. importedFileUid:{importedFileUid}");
         return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "dataOceanClient.DeleteFile", e.Message);
       }
 

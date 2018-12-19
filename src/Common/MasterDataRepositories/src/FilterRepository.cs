@@ -20,77 +20,80 @@ namespace VSS.MasterData.Repositories
 
     #region store
 
-    public async Task<int> StoreEvent(IFilterEvent evt)
+    public Task<int> StoreEvent(IFilterEvent evt)
     {
       // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, UserID
       // filterJson is only updateable if transient 
-      var upsertedCount = 0;
+
       if (evt == null)
       {
         Log.LogWarning("Unsupported Filter event type");
-        return 0;
+        return Task.FromResult(0);
       }
 
       Log.LogDebug($"Event type is {evt.GetType()}");
-      if (evt is CreateFilterEvent)
+      switch (evt)
       {
-        var filterEvent = (CreateFilterEvent) evt;
-        var filter = new Filter
-        {
-          CustomerUid = filterEvent.CustomerUID.ToString(),
-          UserId = filterEvent.UserID,
-          ProjectUid = filterEvent.ProjectUID.ToString(),
-          FilterUid = filterEvent.FilterUID.ToString(),
-          Name = filterEvent.Name,
-          FilterJson = filterEvent.FilterJson,
-          FilterType = filterEvent.FilterType,
-          LastActionedUtc = filterEvent.ActionUTC
-        };
+        case CreateFilterEvent @event:
+          {
+            var filter = new Filter
+            {
+              CustomerUid = @event.CustomerUID.ToString(),
+              UserId = @event.UserID,
+              ProjectUid = @event.ProjectUID.ToString(),
+              FilterUid = @event.FilterUID.ToString(),
+              Name = @event.Name,
+              FilterJson = @event.FilterJson,
+              FilterType = @event.FilterType,
+              LastActionedUtc = @event.ActionUTC
+            };
 
-        upsertedCount = await UpsertFilterDetail(filter, "CreateFilterEvent");
-      }
-      else if (evt is UpdateFilterEvent)
-      {
-        var filterEvent = (UpdateFilterEvent) evt;
-        var filter = new Filter
-        {
-          CustomerUid = filterEvent.CustomerUID.ToString(),
-          UserId = filterEvent.UserID,
-          ProjectUid = filterEvent.ProjectUID.ToString(),
-          FilterUid = filterEvent.FilterUID.ToString(),
-          Name = filterEvent.Name,
-          FilterJson = filterEvent.FilterJson,
-          FilterType = filterEvent.FilterType,
-          LastActionedUtc = filterEvent.ActionUTC
-        };
-        upsertedCount = await UpsertFilterDetail(filter, "UpdateFilterEvent");
-      }
-      else if (evt is DeleteFilterEvent)
-      {
-        var filterEvent = (DeleteFilterEvent) evt;
-        var filter = new Filter
-        {
-          CustomerUid = filterEvent.CustomerUID.ToString(),
-          UserId = filterEvent.UserID,
-          ProjectUid = filterEvent.ProjectUID.ToString(),
-          FilterUid = filterEvent.FilterUID.ToString(),
-          LastActionedUtc = filterEvent.ActionUTC
-        };
-        upsertedCount = await UpsertFilterDetail(filter, "DeleteFilterEvent");
-      }
+            return @event.FilterType == FilterType.Transient
+              ? CreateFilter(filter, null)
+              : UpsertFilterDetail(filter, "CreateFilterEvent");
+          }
+        case UpdateFilterEvent @event:
+          {
+            var filter = new Filter
+            {
+              CustomerUid = @event.CustomerUID.ToString(),
+              UserId = @event.UserID,
+              ProjectUid = @event.ProjectUID.ToString(),
+              FilterUid = @event.FilterUID.ToString(),
+              Name = @event.Name,
+              FilterJson = @event.FilterJson,
+              FilterType = @event.FilterType,
+              LastActionedUtc = @event.ActionUTC
+            };
 
-      return upsertedCount;
+            return UpsertFilterDetail(filter, "UpdateFilterEvent");
+          }
+        case DeleteFilterEvent @event:
+          {
+            var filter = new Filter
+            {
+              CustomerUid = @event.CustomerUID.ToString(),
+              UserId = @event.UserID,
+              ProjectUid = @event.ProjectUID.ToString(),
+              FilterUid = @event.FilterUID.ToString(),
+              LastActionedUtc = @event.ActionUTC
+            };
+
+            return UpsertFilterDetail(filter, "DeleteFilterEvent");
+          }
+        default:
+          {
+            Log.LogWarning("Unsupported Filter event type");
+            return Task.FromResult(0);
+          }
+      }
     }
-
 
     /// <summary>
     ///     All detail-related columns can be inserted,
     ///     but only certain columns can be updated.
     ///     on deletion, a flag will be set.
     /// </summary>
-    /// <param name="filter"></param>
-    /// <param name="eventType"></param>
-    /// <returns></returns>
     private async Task<int> UpsertFilterDetail(Filter filter, string eventType)
     {
       var upsertedCount = 0;
@@ -101,7 +104,7 @@ namespace VSS.MasterData.Repositories
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @FilterUid",
-        new {FilterUid = filter.FilterUid})).FirstOrDefault();
+        new { FilterUid = filter.FilterUid })).FirstOrDefault();
 
       if (eventType == "CreateFilterEvent")
         upsertedCount = await CreateFilter(filter, existing);
@@ -115,10 +118,9 @@ namespace VSS.MasterData.Repositories
     }
 
 
-    private async Task<int> CreateFilter(Filter filter, Filter existing)
+    private Task<int> CreateFilter(Filter filter, Filter existing)
     {
-      Log.LogDebug($"FilterRepository/CreateFilter: filter={JsonConvert.SerializeObject(filter)}))')");
-      int upsertedCount = 0;
+      Log.LogDebug($"{nameof(FilterRepository)}/{nameof(CreateFilter)}: filter={JsonConvert.SerializeObject(filter)}))')");
 
       if (existing == null)
       {
@@ -132,9 +134,7 @@ namespace VSS.MasterData.Repositories
                     @Name, @FilterJson, @FilterType,
                     @IsDeleted, @LastActionedUtc)";
 
-        upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
-        Log.LogDebug($"FilterRepository/CreateFilter: created {upsertedCount}");
-        return upsertedCount;
+        return ExecuteWithAsyncPolicy(insert, filter);
       }
 
       // a delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
@@ -150,13 +150,11 @@ namespace VSS.MasterData.Repositories
                   fk_FilterTypeID = @FilterType,
               WHERE FilterUID = @FilterUid";
 
-        upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
-        Log.LogDebug($"FilterRepository/CreateFilter: (update): updated {upsertedCount}");
-        return upsertedCount;
+        return ExecuteWithAsyncPolicy(update, filter);
       }
 
       // If Create received after it's been deleted then ignore it as Name; BoundaryJson and actionUtc will be more recent.
-      return upsertedCount;
+      return Task.FromResult(0);
     }
 
     private async Task<int> UpdateFilter(Filter filter, Filter existing)
@@ -287,10 +285,10 @@ namespace VSS.MasterData.Repositories
                 AND f.fk_ProjectUID = @ProjectUid 
                 AND f.UserID = @UserId 
                 AND f.IsDeleted = 0
-                AND f.fk_FilterTypeID = {(int) FilterType.Persistent}";
+                AND f.fk_FilterTypeID = {(int)FilterType.Persistent}";
 
       return (QueryWithAsyncPolicy<Filter>(queryString,
-        new {CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId}));
+        new { CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId }));
     }
 
     /// <summary>
@@ -308,8 +306,8 @@ namespace VSS.MasterData.Repositories
               FROM Filter f
               WHERE f.fk_ProjectUID = @ProjectUid 
                 AND f.IsDeleted = 0
-                AND f.fk_FilterTypeID = {(int) FilterType.Persistent}",
-        new {ProjectUid = projectUid}));
+                AND f.fk_FilterTypeID = {(int)FilterType.Persistent}",
+        new { ProjectUid = projectUid }));
     }
 
     /// <summary>
@@ -327,7 +325,7 @@ namespace VSS.MasterData.Repositories
               FROM Filter f
               WHERE f.FilterUID = @FilterUid 
                 AND f.IsDeleted = 0",
-        new {FilterUid = filterUid})).FirstOrDefault();
+        new { FilterUid = filterUid })).FirstOrDefault();
     }
 
     public async Task<int> DeleteTransientFilters(string deleteOlderThanUtc)
@@ -336,7 +334,7 @@ namespace VSS.MasterData.Repositories
       var delete =
         "DELETE FROM Filter " +
         "  WHERE ID > 0 " +
-        $"    AND fk_FilterTypeID = {(int) FilterType.Transient}" +
+        $"    AND fk_FilterTypeID = {(int)FilterType.Transient}" +
         $"    AND LastActionedUTC < '{deleteOlderThanUtc}';";
 
       Log.LogDebug($"FilterRepository/DeleteTransientFilters SQL: {delete}");
@@ -359,7 +357,7 @@ namespace VSS.MasterData.Repositories
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @FilterUid",
-        new {FilterUid = filterUid})).FirstOrDefault();
+        new { FilterUid = filterUid })).FirstOrDefault();
     }
 
     #endregion getters

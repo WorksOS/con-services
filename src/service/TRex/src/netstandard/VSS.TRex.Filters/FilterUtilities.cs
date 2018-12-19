@@ -7,7 +7,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
-using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 
@@ -128,11 +127,10 @@ namespace VSS.TRex.Filters
           // Is there a surface design to look up
           if (Filter.SpatialFilter.HasSurfaceDesignMask())
           {
-            // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in 
-            // the larger scale determination of the subgrids that need to be queried.
+            // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in the larger scale determination of the subgrids that need to be queried).
 
             /* If the filter needs to retain a reference to the existence map, then do this...
-            Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+            Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
             if (Filter.SpatialFilter.DesignMaskExistenceMap == null)
             {
@@ -144,7 +142,7 @@ namespace VSS.TRex.Filters
       }
       catch (Exception e)
       {
-        Log.LogError("PrepareFilterForUse: Exception raise:", e);
+        Log.LogError(e, "PrepareFilterForUse: Exception raise:");
         Result = RequestErrorStatus.Unknown;
       }
 
@@ -172,26 +170,6 @@ namespace VSS.TRex.Filters
       }
 
       return RequestErrorStatus.OK;
-    }
-
-    /// <summary>
-    /// Performs filter preparation for a matched pair of filters being used by a request
-    /// </summary>
-    /// <param name="Filter1"></param>
-    /// <param name="Filter2"></param>
-    /// <param name="DataModelID"></param>
-    /// <returns></returns>
-    public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter Filter1, ICombinedFilter Filter2, Guid DataModelID)
-    {
-      RequestErrorStatus Result = RequestErrorStatus.OK;
-
-      if (Filter1 != null && !Filter1.AttributeFilter.AnyFilterSelections)
-        Result = PrepareFilterForUse(Filter1, DataModelID);
-
-      if (Result == RequestErrorStatus.OK && Filter2 != null && !Filter2.AttributeFilter.AnyFilterSelections)
-        Result = PrepareFilterForUse(Filter2, DataModelID);
-
-      return Result;
     }
   }
 }
