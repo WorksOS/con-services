@@ -47,7 +47,7 @@ namespace VSS.WebApi.Common
           {
             {"Accept", "application/json"},
             {"Content-Type", "application/x-www-form-urlencoded"},
-            {"Authorization", string.Format($"Bearer {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
+            {"Authorization", string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           string grantType = "client_credentials";
           TPaasOauthResult tPaasOauthResult;

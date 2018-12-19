@@ -61,6 +61,8 @@
 [Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_TIMEOUT_MINS", "1", "Machine")
 [Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_WAIT_MILLSECS", "1000", "Machine")
 [Environment]::SetEnvironmentVariable("TILE_INTERNAL_BASE_URL", "http://mockprojectwebapi:5001/internal/mock", "Machine")
+[Environment]::SetEnvironmentVariable("TPAAS_APP_TOKENKEYS", "QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh", "Machine")
+[Environment]::SetEnvironmentVariable("TPAAS_OAUTH_URL", "http://mockprojectwebapi:5001/api/oauth2/token", "Machine")
 <# #>
 <#  Dev environment 
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
@@ -109,4 +111,6 @@
 [Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_TIMEOUT_MINS", "1", "Machine")
 [Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_WAIT_MILLSECS", "1000", "Machine")
 [Environment]::SetEnvironmentVariable("TILE_INTERNAL_BASE_URL", "http://mockprojectwebapi:5001/internal/mock", "Machine")
+[Environment]::SetEnvironmentVariable("TPAAS_APP_TOKENKEYS", "QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh", "Machine")
+[Environment]::SetEnvironmentVariable("TPAAS_OAUTH_URL", "http://mockprojectwebapi:5001/api/oauth2/token", "Machine")
 #>

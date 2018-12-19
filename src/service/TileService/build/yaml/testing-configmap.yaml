@@ -21,3 +21,5 @@ data:
   TILE_WEBSERVICES_URL: http://localhost:80
   LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump
   TILE_CACHE_LIFE: 00:15:00
+  TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
+  TPAAS_OAUTH_URL: http://locahost:5001/api/oauth2/token

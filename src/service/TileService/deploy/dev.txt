@@ -17,3 +17,5 @@ JAEGER_SERVICE_NAME: Dev Tile Service API
 TILE_CACHE_LIFE: 00:15:00
 NOTIFICATION_HUB_URL : http://push.dev.k8s.vspengg.com/notifications
 PUSH_NO_AUTHENTICATION_HEADER :  "true" 
+TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
+TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token

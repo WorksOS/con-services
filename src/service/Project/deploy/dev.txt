@@ -54,3 +54,5 @@ TILE_INTERNAL_BASE_URL: http://tile.dev.k8s.vspengg.com/internal/v1/
 PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
 PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
 PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
+TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
+TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token

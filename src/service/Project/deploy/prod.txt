@@ -56,3 +56,5 @@ TILE_INTERNAL_BASE_URL: http://tile.prod.k8s.services.myvisionlink.com/internal/
 PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus-v1.0
 PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
 PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
+TPAAS_APP_TOKENKEYS: Q1VrR3pGbzhfd2xzcElhbWtNSkozODF1R1RzYTpwOWxjU0phbVFFQ2lXYkhpdTJiMUhUSFM3S1Fh
+TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
