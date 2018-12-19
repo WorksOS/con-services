@@ -153,6 +153,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.raptorProxy = raptorProxy;
       this.dataOceanClient = dataOceanClient;
       this.tileServiceProxy = tileServiceProxy;
+      this.authn = authn;
     }
 
     /// <summary>

@@ -248,7 +248,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, dataOceanClient)
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, 
+            dataOceanClient, null, authn)
           .ProcessAsync(project)
       );
 
