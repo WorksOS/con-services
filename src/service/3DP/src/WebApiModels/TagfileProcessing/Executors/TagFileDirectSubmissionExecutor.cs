@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       }
       catch (Exception ex)
       {
-        log.LogError($"PostTagFile (Direct Raptor): exception {ex.Message}");
+        log.LogError(ex, "PostTagFile (Direct Raptor)");
         return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprUnknown));
       }
       finally

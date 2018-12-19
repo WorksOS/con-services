@@ -45,7 +45,7 @@ namespace VSS.TRex.Service.Deployer
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred deploying service:", e);
+        Log.LogError(e, "Exception occurred deploying service:");
       }
 
       Log.LogInformation("Completed service deployment for TAG file buffer queue service");
@@ -58,7 +58,7 @@ namespace VSS.TRex.Service.Deployer
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred deploying service:", e);
+        Log.LogError(e, "Exception occurred deploying service:");
       }
 
       Log.LogInformation("Completed service deployment for mutable segment retirement queue service");
@@ -72,7 +72,7 @@ namespace VSS.TRex.Service.Deployer
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred deploying service:", e);
+        Log.LogError(e, "Exception occurred deploying service:");
       }
 
       Log.LogInformation("Completed service deployment for immutable segment retirement queue service");

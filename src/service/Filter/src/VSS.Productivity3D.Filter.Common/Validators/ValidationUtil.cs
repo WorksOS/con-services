@@ -47,8 +47,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"{nameof(HydrateJsonWithBoundary)}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid} . Exception Thrown: {e.Message}.");
+        log.LogError(e, $"{nameof(HydrateJsonWithBoundary)}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 41, e.Message);
       }
 
@@ -74,8 +73,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"{nameof(HydrateJsonWithBoundary)}: {nameof(HydrateJsonWithBoundary)} failed with exception. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid} Exception Thrown: {e.Message}.");
+        log.LogError(e, $"{nameof(HydrateJsonWithBoundary)}: {nameof(HydrateJsonWithBoundary)} failed with exception. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}");
         // todo normally we incude e.Message. is e.GetBaseException.message specific to Json exception?
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 43, e.GetBaseException().Message);
       }

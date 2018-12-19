@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -15,6 +15,6 @@ namespace VSS.MasterData.Repositories
     Task<Customer> GetCustomer_UnitTest(Guid customerUid);
     Task<CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(Guid userUid);
 
-    Task<int> StoreEvent(ICustomerEvent filterEvent);
+    Task<int> StoreEvent(ICustomerEvent evt);
   }
 }

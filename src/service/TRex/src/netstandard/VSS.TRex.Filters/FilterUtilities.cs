@@ -144,7 +144,7 @@ namespace VSS.TRex.Filters
       }
       catch (Exception e)
       {
-        Log.LogError("PrepareFilterForUse: Exception raise:", e);
+        Log.LogError(e, "PrepareFilterForUse: Exception raise:");
         Result = RequestErrorStatus.Unknown;
       }
 

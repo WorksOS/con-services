@@ -174,7 +174,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
+        log.LogError(ex, $"Scheduler.Configure: Unable to cleanup existing jobs");
         throw;
       }
     }
@@ -266,7 +266,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        log.LogError($"Scheduler: ConfigureHangfireUse: UseHangfireServer failed: {ex.Message}");
+        log.LogError(ex, $"Scheduler: ConfigureHangfireUse: UseHangfireServer failed");
         throw;
       }
     }
