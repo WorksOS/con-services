@@ -448,7 +448,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (!LiftFilterMask<ProfileCell>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
-            ProfileCells, FilterMask, I, CellFilter, SurfaceDesignMaskDesign, AlignmentDesignMaskDesign))
+            ProfileCells, FilterMask, I, CellFilter, SurfaceDesignMaskDesign))
             continue;
 
           if (FilteredSurveyedSurfaces != null)

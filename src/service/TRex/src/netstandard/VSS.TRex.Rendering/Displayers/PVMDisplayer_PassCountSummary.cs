@@ -13,7 +13,7 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_PassCountSummary : PVMDisplayerBase
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.
+    /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.
     /// </summary>
     private const bool UseMachineTargetPass = false;
 
@@ -23,17 +23,17 @@ namespace VSS.TRex.Rendering.Displayers
     private PassCountRangeRecord TargetPassCountRange = new PassCountRangeRecord(5, 10);
 
     /// <summary>
-    /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are greater than target range.
+    /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are greater than target range.
     /// </summary>
     private Draw.Color AbovePassTargetRangeColour;
 
     /// <summary>
-    /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are within target range.
+    /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are within target range.
     /// </summary>
     private Draw.Color WithinPassTargetRangeColour;
 
     /// <summary>
-    /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are less than target range.
+    /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are less than target range.
     /// </summary>
     private Draw.Color BelowPassTargetRangeColour;
 

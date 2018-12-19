@@ -82,7 +82,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError("Exception performing mutability conversion:", e);
+          Log.LogError(e, "Exception performing mutability conversion:");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -134,7 +134,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError("Exception performing mutability conversion:", e);
+          Log.LogError(e, "Exception performing mutability conversion:");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -181,7 +181,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception occurred:", e);
+        Log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -231,7 +231,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception occurred:", e);
+        Log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -259,7 +259,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception E)
         {
-          Log.LogError("Exception occurred:", E);
+          Log.LogError(E, "Exception occurred:");
         }
 
         ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamName);

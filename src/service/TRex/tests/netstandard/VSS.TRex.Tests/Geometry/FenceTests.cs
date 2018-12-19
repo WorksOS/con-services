@@ -110,9 +110,7 @@ namespace VSS.TRex.Tests.Geometry
         {
             Fence fence = makeSimpleRectangleFence();
 
-            double minx, miny, maxx, maxy;
-
-            fence.GetExtents(out minx, out miny, out maxx, out maxy);
+            fence.GetExtents(out double minx, out double miny, out double maxx, out double maxy);
 
             Assert.True(minx == 0 && miny == 0 && maxx == 100 && maxy == 100,
                 "Extracted extents are incorrect");
@@ -167,8 +165,6 @@ namespace VSS.TRex.Tests.Geometry
         public void Test_FenceTests_UpdateExtents()
         {
             Fence fence = makeSimpleRectangleFence();
-
-            fence.UpdateExtents();
 
             Assert.True(fence.MinX == 0 && fence.MinY == 0 && fence.MaxX == 100 && fence.MaxY == 100,
                 "Extents are incorrect");

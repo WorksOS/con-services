@@ -14,13 +14,12 @@ namespace VSS.KafkaConsumer.Kafka
     private Consumer<Ignore, byte[]> rdConsumer;
     private Producer<byte[], byte[]> rdProducer;
 
-    private readonly Object syncPollObject = new object();
+    private readonly object syncPollObject = new object();
     private Dictionary<string, string> consumerConfig;
     private Dictionary<string, string> producerConfig;
     private int batchSize;
     private ILogger<IKafka> log;
-    private ConsumeResult<Ignore, byte[]> lastValidResult = null;
-
+    private ConsumeResult<Ignore, byte[]> lastValidResult;
 
     public string ConsumerGroup { get; set; }
 
@@ -35,21 +34,17 @@ namespace VSS.KafkaConsumer.Kafka
     public bool IsInitializedProducer { get; private set; }
     public bool IsInitializedConsumer { get; private set; }
 
-    private Func<ConsumeResult<Ignore, byte[]>, int> onMessagesArrivedAction;
-    private Action onCompletedAction;
-    private Message messageQueue = new Message();
-
     public TopicPartitionOffset Commit()
     {
-      // Console.WriteLine($"Comitting offsets");
-      if (lastValidResult != null)
+      if (lastValidResult == null)
       {
-        var committedOffsets = rdConsumer.Commit(lastValidResult);
-        log?.LogTrace($"Committed number of offsets {lastValidResult}");
-        return committedOffsets;
+        return null;
       }
 
-      return null;
+      var committedOffsets = rdConsumer.Commit(lastValidResult);
+      log?.LogTrace($"Committed number of offsets {lastValidResult}");
+
+      return committedOffsets;
     }
 
     [Obsolete("Use Consume() instead")]
@@ -58,18 +53,10 @@ namespace VSS.KafkaConsumer.Kafka
       throw new NotImplementedException();
     }
 
-    [Obsolete("Do not use observer pattern - use Consume() instead")]
-    private void RdConsumer_OnMessage(object sender, Confluent.Kafka.Message e)
-    {
-      throw new NotImplementedException();
-    }
-
     public Message Consume(TimeSpan timeout)
     {
       var payloads = new List<byte[]>();
-
       int protectionCounter = 0;
-
 
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
@@ -103,10 +90,9 @@ namespace VSS.KafkaConsumer.Kafka
     }
 
 
-    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null,
-      ILogger<IKafka> logger = null)
+    public void InitConsumer(IConfigurationStore configurationStore, string groupName = null, ILogger<IKafka> logger = null)
     {
-      this.log = logger;
+      log = logger;
       ConsumerGroup = groupName ?? configurationStore.GetValueString("KAFKA_GROUP_NAME");
       EnableAutoCommit = configurationStore.GetValueBool("KAFKA_AUTO_COMMIT").Value;
       OffsetReset = configurationStore.GetValueString("KAFKA_OFFSET");
@@ -138,21 +124,20 @@ namespace VSS.KafkaConsumer.Kafka
 
     public void Subscribe(List<string> topics)
     {
-      rdConsumer = new Consumer<Ignore, byte[]>(consumerConfig.ToList<KeyValuePair<string, string>>());
+      rdConsumer = new Consumer<Ignore, byte[]>(consumerConfig.ToList());
       rdConsumer.Subscribe(topics);
     }
-
 
     public void InitProducer(IConfigurationStore configurationStore)
     {
       Uri = configurationStore.GetValueString("KAFKA_URI");
       Port = configurationStore.GetValueInt("KAFKA_PORT");
       var sessionTimeout = 10000;
+
       if (configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT") > -1)
         sessionTimeout = configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT");
 
-      log?.LogTrace(
-        $"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
+      log?.LogTrace($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
 
       producerConfig = new Dictionary<string, string>
       {
@@ -164,18 +149,18 @@ namespace VSS.KafkaConsumer.Kafka
       };
 
       //socket.blocking.max.ms=1
-      rdProducer = new Producer<byte[], byte[]>(producerConfig.ToList<KeyValuePair<string, string>>());
+      rdProducer = new Producer<byte[], byte[]>(producerConfig.ToList());
       IsInitializedProducer = true;
     }
 
     public void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys)
     {
-      List<Task> tasks = new List<Task>();
+      var tasks = new List<Task>();
       foreach (var messagesToSendWithKey in messagesToSendWithKeys)
       {
         byte[] data = Encoding.UTF8.GetBytes(messagesToSendWithKey.Value);
         byte[] key = Encoding.UTF8.GetBytes(messagesToSendWithKey.Key);
-        tasks.Add(rdProducer.ProduceAsync(topic, new Message<byte[], byte[]>() {Key = key, Value = data}));
+        tasks.Add(rdProducer.ProduceAsync(topic, new Message<byte[], byte[]> { Key = key, Value = data }));
       }
 
       Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));
@@ -185,18 +170,18 @@ namespace VSS.KafkaConsumer.Kafka
     {
       byte[] data = Encoding.UTF8.GetBytes(messageToSendWithKey.Value);
       byte[] key = Encoding.UTF8.GetBytes(messageToSendWithKey.Key);
-      await rdProducer.ProduceAsync(topic, new Message<byte[], byte[]>() {Key = key, Value = data});
+      await rdProducer.ProduceAsync(topic, new Message<byte[], byte[]> { Key = key, Value = data });
     }
 
     public void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys)
     {
-      List<Task> tasks = new List<Task>();
+      var tasks = new List<Task>();
       foreach (var topicMessagesToSendWithKey in topicMessagesToSendWithKeys)
       {
         byte[] data = Encoding.UTF8.GetBytes(topicMessagesToSendWithKey.Value.Value);
         byte[] key = Encoding.UTF8.GetBytes(topicMessagesToSendWithKey.Value.Key);
         tasks.Add(rdProducer.ProduceAsync(topicMessagesToSendWithKey.Key,
-          new Message<byte[], byte[]>() {Key = key, Value = data}));
+          new Message<byte[], byte[]> { Key = key, Value = data }));
       }
 
       Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));

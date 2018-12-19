@@ -269,17 +269,6 @@ namespace WebApiTests
     /// <summary>
     /// Create the filter and convert it to json 
     /// </summary>
-    /// <param name="elevation">ElevationType</param>
-    /// <param name="vibestate">true or false</param>
-    /// <param name="forward">true or false</param>
-    /// <param name="layerNo">layer number</param>
-    /// <param name="onMachineDesignId"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
-    /// <param name="polygonUid"></param>
-    /// <param name="polygonName"></param>
-    /// <param name="polygonPoints"></param>
-    /// <returns>complete filter in json format</returns>
     private static string CreateTestFilter(ElevationType? elevation = null, bool? vibestate = null, bool? forward = null,
                                     int? layerNo = null, int? onMachineDesignId = null, DateTime? startUtc = null,
                                     DateTime? endUtc = null, string polygonUid = null, string polygonName = null,
