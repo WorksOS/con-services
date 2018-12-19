@@ -11,7 +11,8 @@ namespace VSS.TRex.Common.Utilities
     /// <summary>
     /// Performs a byte-wise hash of the content of the GUID. Unfortunately this is not as fast as the .Net
     /// implementation which uses an unsafe context XOR of the four internal integers contained in the GUID
-    /// (which is in itself may not not stable due to hardware big/little Endianness)
+    /// (which is in itself may not not stable due to hardware big/little Endianness). However, it's intent
+    /// is essentially the same.
     /// </summary>
     /// <param name="g"></param>
     /// <returns></returns>
