@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;

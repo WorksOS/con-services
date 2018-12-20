@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;

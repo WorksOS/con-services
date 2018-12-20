@@ -7,6 +7,7 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -81,7 +82,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         processor.Task.RequestDescriptor = requestDescriptor;
         processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
         processor.Task.GridDataType = GridDataType.CellProfile;
-
+       
         // report options 0=direction,1=endpoint,2=automatic
         if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
         {
@@ -101,9 +102,9 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
         // Interval will be >= 0.1m and <= 100.0m
         processor.Pipeline.AreaControlSet =
-          new AreaControlSet(_griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
+          new AreaControlSet(false, _griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
             _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
-            _griddedReportRequestArgument.Azimuth, false);
+            _griddedReportRequestArgument.Azimuth);
 
         if (!processor.Build())
         {
@@ -136,7 +137,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
     private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
-      IClientHeightLeafSubGrid DesignHeights = null;
+      IClientHeightLeafSubGrid designHeights = null;
 
       if (_griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty)
       {
@@ -145,9 +146,9 @@ namespace VSS.TRex.Reports.Gridded.Executors
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognised design in project {_griddedReportRequestArgument.ProjectID}");
 
         CutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
-          subGrid.CellSize, out DesignHeights, out var errorCode);
+          subGrid.CellSize, out designHeights, out var errorCode);
 
-        if (errorCode != DesignProfilerRequestResult.OK || DesignHeights == null)
+        if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
         {
           string errorMessage;
           if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -157,7 +158,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
           }
           else
           {
-            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {DesignHeights}.";
+            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {designHeights}.";
             Log.LogWarning(errorMessage);
           }
           throw new ArgumentException(errorMessage);
@@ -180,9 +181,9 @@ namespace VSS.TRex.Reports.Gridded.Executors
           Easting = cell.CellXOffset + subgridWorldOriginX,
           Northing = cell.CellYOffset + subgridWorldOriginY,
           Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
-          CutFill = (griddedReportRequestArgument.ReportCutFill && (DesignHeights != null) &&
-                     DesignHeights.Cells[x, y] != Consts.NullHeight)
-            ? cell.Height - DesignHeights.Cells[x, y]
+          CutFill = (griddedReportRequestArgument.ReportCutFill && (designHeights != null) &&
+                     designHeights.Cells[x, y] != Consts.NullHeight)
+            ? cell.Height - designHeights.Cells[x, y]
             : Consts.NullHeight,
 
           // CCV is equiv to CMV in this instance

@@ -75,6 +75,7 @@ namespace VSS.TRex.Server.Reports
       .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
       .Build()
       .Add(x => x.AddSingleton(new GriddedReportRequestServer()))
+      .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
       .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
       .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))

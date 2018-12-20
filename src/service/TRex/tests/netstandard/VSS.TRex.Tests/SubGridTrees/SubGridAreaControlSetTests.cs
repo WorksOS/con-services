@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees;
@@ -22,7 +23,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = 0;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, true);
+      var areaControlSet = new AreaControlSet(true, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize; 
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, true);
+      var areaControlSet = new AreaControlSet(true, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
@@ -62,7 +63,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = SubGridTreeConsts.DefaultCellSize * 2;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, true);
+      var areaControlSet = new AreaControlSet(true, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
@@ -97,7 +98,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize * 2;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, true);
+      var areaControlSet = new AreaControlSet(true, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
@@ -132,7 +133,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize * 2;
       double userOriginXY = siteModelCellsize * 30;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, true);
+      var areaControlSet = new AreaControlSet(true, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
@@ -153,7 +154,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize * 2;
       double userOriginXY = 0;
       var rotation = 90;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, true);
+      var areaControlSet = new AreaControlSet(true, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
@@ -176,7 +177,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = 0;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
+      var areaControlSet = new AreaControlSet(false, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
@@ -196,7 +197,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize /2;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
+      var areaControlSet = new AreaControlSet(false, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
@@ -218,7 +219,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = SubGridTreeConsts.DefaultCellSize * 2;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
+      var areaControlSet = new AreaControlSet(false, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2; 
       double subGridWorldOriginY = siteModelCellsize / 2;
@@ -255,7 +256,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize * 2;
       double userOriginXY = 0;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
+      var areaControlSet = new AreaControlSet(false, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
@@ -294,7 +295,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize * 2;
       double userOriginXY = 1000; // i.e. easting/northing // siteModelCellsize * 30;
       var rotation = Consts.NullDouble;
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
+      var areaControlSet = new AreaControlSet(false, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
@@ -333,7 +334,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       double pixelWorldSizeOrIntervalXY = siteModelCellsize * 2;
       double userOriginXY = 0;
       var rotation = 1.5708; // 90deg
-      var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
+      var areaControlSet = new AreaControlSet(false, pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation);
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;

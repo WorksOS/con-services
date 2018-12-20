@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -12,7 +13,6 @@ using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.Gateway.Common.Helpers;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Webtools.Controllers
