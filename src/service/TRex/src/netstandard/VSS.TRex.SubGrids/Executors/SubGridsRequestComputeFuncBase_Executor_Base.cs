@@ -255,7 +255,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// <param name="requester"></param>
     /// <param name="address"></param>
     /// <param name="clientGrid"></param>
-    private ServerRequestResult PerformSubgridRequest(SubGridRequestor requester,
+    private ServerRequestResult PerformSubgridRequest(ISubGridRequestor requester,
       ISubGridCellAddress address,
       out IClientLeafSubGrid clientGrid)
     {
@@ -470,11 +470,13 @@ namespace VSS.TRex.SubGrids.Executors
       return localArg.Filters.Filters.Select(getIntermediary).ToArray();
     }
 
+    private static Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>() ;
+
     /// <summary>
     /// Constructs the set of requestors, one per filter, required to query the data stacks
     /// </summary>
     /// <returns></returns>
-    private SubGridRequestor[] ConstructRequestors()
+    private ISubGridRequestor[] ConstructRequestors()
     {
       // Construct the resulting requestors
       return RequestorIntermediaries.Select(x =>
@@ -492,7 +494,8 @@ namespace VSS.TRex.SubGrids.Executors
           ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
         };
 
-        return new SubGridRequestor(siteModel,
+        var requestor = SubGridRequestorFactory();
+        requestor.Initialize(siteModel,
           siteModels.StorageProxy,
           x.Filter,
           false, // Override cell restriction
@@ -508,6 +511,8 @@ namespace VSS.TRex.SubGrids.Executors
           x.FilteredSurveyedSurfacesAsArray,
           x.Request,
           surfaceElevationPatchArg);
+
+        return requestor;
       }).ToArray();
     }
 

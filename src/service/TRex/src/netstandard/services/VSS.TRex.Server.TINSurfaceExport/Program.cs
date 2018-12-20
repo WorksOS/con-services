@@ -113,7 +113,6 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
         typeof(VSS.TRex.Pipelines.PipelineProcessor),
-        typeof(VSS.TRex.Profiling.CellLiftBuilder),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
         typeof(VSS.TRex.Services.Designs.DesignsService),
         typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),
