@@ -48,7 +48,6 @@ services:
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent:1:1
-      - KAFKA_ADVERTISED_PORT=9092
     ports:
       - "9092:9092"
     volumes:
@@ -59,7 +58,7 @@ services:
     build:
       context: ./AcceptanceTests/deploy
       args:
-        - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
+        - APP_BUILD_IMAGE=microsoft/dotnet:2.1-sdk
     env_file:
       - docker-compose-local.env
     volumes:

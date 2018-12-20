@@ -123,7 +123,10 @@ services:
     depends_on:
       - zookeeper
   accepttest:
-    build: ./AcceptanceTests/deploy
+    build:
+      context: ./AcceptanceTests/deploy
+      args:
+        - APP_BUILD_IMAGE=microsoft/dotnet:2.1-sdk
     env_file:
       - docker-compose-local.env
     volumes:

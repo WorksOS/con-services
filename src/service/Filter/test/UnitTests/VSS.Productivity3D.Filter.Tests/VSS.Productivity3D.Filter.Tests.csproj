@@ -45,7 +45,7 @@
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.WebApi\VSS.Productivity3D.Filter.WebApi.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <None Update="appsettings.json;log4net.xml;log4nettest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
