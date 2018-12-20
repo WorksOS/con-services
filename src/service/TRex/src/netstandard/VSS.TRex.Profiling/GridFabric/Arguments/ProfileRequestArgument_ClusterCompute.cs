@@ -3,6 +3,7 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.GridFabric.Arguments
@@ -15,6 +16,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     public GridDataType ProfileTypeRequired { get; set; }
+
+    public ProfileStyle ProfileStyle { get; set; }
 
     public XYZ[] NEECoords { get; set; } = new XYZ[0];
     
@@ -34,7 +37,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// </summary>
     /// <param name="profileTypeRequired"></param>
     /// <param name="nEECoords"></param>
-    /// <param name="designDescriptor"></param>
     /// <param name="returnAllPassesAndLayers"></param>
     public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords, bool returnAllPassesAndLayers)
     {
@@ -53,7 +55,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       writer.WriteByte(VERSION_NUMBER);
 
-      writer.WriteInt((int)ProfileTypeRequired);
+      writer.WriteByte((byte)ProfileStyle);
+      writer.WriteByte((byte)ProfileTypeRequired);
 
       var count = NEECoords?.Length ?? 0;
       writer.WriteInt(count);
@@ -75,7 +78,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       if (version != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
-      ProfileTypeRequired = (GridDataType)reader.ReadInt();
+      ProfileStyle = (ProfileStyle) reader.ReadByte();
+      ProfileTypeRequired = (GridDataType)reader.ReadByte();
 
       var count = reader.ReadInt();
       NEECoords = new XYZ[count];

@@ -4,6 +4,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -40,16 +41,27 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="cellFilter"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
+    /// <param name="profileStyle"></param>
     /// <returns></returns>
-    public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ISiteModel siteModel,
+    public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
+      ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,
       IDesign cellPassFilter_ElevationRangeDesign,
       ICellLiftBuilder cellLiftBuilder)
     {
-      return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-        (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
+      switch (profileStyle)
+      {
+        case ProfileStyle.CellPasses:
+          return new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
+//          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
+//            (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
+        case ProfileStyle.SummaryVolume:
+          return new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(profileStyle), profileStyle, null);
+      }
     }
 
     /// <summary>

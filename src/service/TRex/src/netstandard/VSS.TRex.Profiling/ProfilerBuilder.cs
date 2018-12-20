@@ -2,6 +2,7 @@
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -50,7 +51,8 @@ namespace VSS.TRex.Profiling
     /// <param name="PopulationControl"></param>
     /// <param name="CellPassFastEventLookerUpper"></param>
     /// <param name="slicerToolUsed"></param>
-    public void Configure(ISiteModel siteModel,
+    public void Configure(ProfileStyle profileStyle,
+      ISiteModel siteModel,
       ISubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
       ICellPassAttributeFilter passFilter,
@@ -65,7 +67,7 @@ namespace VSS.TRex.Profiling
 
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
 
-        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
+        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(profileStyle, siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
     }
   }
 }

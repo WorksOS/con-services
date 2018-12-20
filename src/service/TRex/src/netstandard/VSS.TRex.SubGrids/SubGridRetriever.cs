@@ -893,7 +893,7 @@ namespace VSS.TRex.SubGrids
 
         Profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
-        Profiler.Configure(SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
+        Profiler.Configure(ProfileStyle.CellPasses, SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
             null, null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
         CellProfile = new ProfileCell();

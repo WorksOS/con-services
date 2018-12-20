@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -47,7 +48,8 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
-    ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ISiteModel siteModel,
+    ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
+      ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,

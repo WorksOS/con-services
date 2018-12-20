@@ -10,6 +10,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -29,6 +30,7 @@ namespace VSS.TRex.Profiling.Executors
     private readonly GridDataType ProfileTypeRequired;
     private readonly XYZ[] NEECoords;
     private readonly IFilterSet Filters;
+    private readonly ProfileStyle ProfileStyle;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -50,11 +52,12 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="filters"></param>
     /// <param name="designUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
+    public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
       Guid designUid, bool returnAllPassesAndLayers)
     {
+      ProfileStyle = profileStyle;
       ProjectID = projectID;
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
@@ -147,7 +150,7 @@ namespace VSS.TRex.Profiling.Executors
 
           IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
 
-          Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, design,
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, design,
             /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
