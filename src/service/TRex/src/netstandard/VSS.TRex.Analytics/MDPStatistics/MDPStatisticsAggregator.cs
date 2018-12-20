@@ -79,7 +79,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
 
       foreach (IClientLeafSubGrid[] subGrid in subGrids)
       {
-        if (subGrid == null)
+        if ((subGrid?.Length ?? 0) == 0)
           continue;
 
         if (subGrid[0] is ClientMDPLeafSubGrid SubGrid)
