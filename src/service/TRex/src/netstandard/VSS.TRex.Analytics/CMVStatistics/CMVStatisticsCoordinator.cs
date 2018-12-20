@@ -17,7 +17,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
     /// <summary>
-    /// Constructs the aggregator from the supplied argument to be used for the CMV summary analytics request
+    /// Constructs the aggregator from the supplied argument to be used for the CMV statistics analytics request
     /// Create the aggregator to collect and reduce the results.
     /// </summary>
     /// <param name="argument"></param>
@@ -26,7 +26,6 @@ namespace VSS.TRex.Analytics.CMVStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      //LiftBuildSettings := LiftBuildSettings;
       CellSize = SiteModel.Grid.CellSize,
       OverrideMachineCMV = argument.OverrideMachineCMV,
       OverridingMachineCMV = argument.OverridingMachineCMV,
@@ -36,7 +35,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
     };
 
     /// <summary>
-    /// Constructs the computor from the supplied argument and aggregator for the CMV summary analytics request
+    /// Constructs the computor from the supplied argument and aggregator for the CMV statistics analytics request
     /// </summary>
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
@@ -52,7 +51,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
     };
 
     /// <summary>
-    /// Pull the required counts information from the internal CMV summary aggregator state
+    /// Pull the required counts information from the internal CMV statistics aggregator state
     /// </summary>
     /// <param name="aggregator"></param>
     /// <param name="response"></param>
