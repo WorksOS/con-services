@@ -16,3 +16,4 @@ dotnet test VSS.Visionlink.Filter.AcceptanceTests.sln --logger \"xunit;LogFileNa
 echo " "
 echo " All acceptance tests completed"
 echo " "
+
