@@ -243,7 +243,7 @@ namespace VSS.TRex.SubGrids
       for (int I = 0; I < numRowsToScan; I++)
       {
         double currentNorth = firstScanPointNorth + I * stepNorthY;
-        double currentEast = firstScanPointEast + I * stepNorthX; // todoJeanne odd
+        double currentEast = firstScanPointEast + I * stepNorthX; 
 
         for (int J = 0; J < numColsToScan; J++)
         {

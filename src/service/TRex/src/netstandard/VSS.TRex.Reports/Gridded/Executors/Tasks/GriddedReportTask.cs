@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
@@ -17,10 +16,10 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// The collection of subgrids, being collected for a gridded report response
+    /// The action (via a delegate) this task will perform on each of the subgrids transferred to it
     /// </summary>
-    public List<IClientLeafSubGrid> ResultantSubgrids = new List<IClientLeafSubGrid>();
-
+    public Action<ClientCellProfileLeafSubgrid> ProcessorDelegate { get; set; } = null;
+  
     public GriddedReportTask()
     {
     }
@@ -56,10 +55,8 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
 
       foreach (var subGrid in subGridResponses)
       {
-        if (!(subGrid is ClientCellProfileLeafSubgrid))
-          continue;
-
-        ResultantSubgrids.Add(subGrid);
+        if (subGrid is ClientCellProfileLeafSubgrid leafSubGrid)
+          ProcessorDelegate(leafSubGrid);
       }
 
       return true;

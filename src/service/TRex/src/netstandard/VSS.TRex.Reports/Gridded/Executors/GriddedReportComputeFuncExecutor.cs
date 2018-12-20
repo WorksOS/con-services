@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -82,7 +80,12 @@ namespace VSS.TRex.Reports.Gridded.Executors
         processor.Task.RequestDescriptor = requestDescriptor;
         processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
         processor.Task.GridDataType = GridDataType.CellProfile;
-       
+
+        ((GriddedReportTask)processor.Task).ProcessorDelegate = 
+          subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
+            .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, (ClientCellProfileLeafSubgrid)subGrid));
+
+
         // report options 0=direction,1=endpoint,2=automatic
         if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
         {
@@ -114,21 +117,14 @@ namespace VSS.TRex.Reports.Gridded.Executors
         
         processor.Process();
 
-        if (GriddedReportRequestResponse.ResultStatus == RequestErrorStatus.OK)
+        if (GriddedReportRequestResponse.ResultStatus != RequestErrorStatus.OK)
         {
-          foreach (var subGrid in ((GriddedReportTask)processor.Task).ResultantSubgrids)
-          {
-            if (!(subGrid is ClientCellProfileLeafSubgrid))
-              continue;
-
-            GriddedReportRequestResponse.GriddedReportDataRowList
-              .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, (ClientCellProfileLeafSubgrid)subGrid));
-          }
+          throw new ArgumentException($"Unable to obtain data for Gridded report. GriddedReportRequestResponse: {GriddedReportRequestResponse.ResultStatus.ToString()}.");
         }
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError($"ExecutePipeline raised exception {E}");
+        Log.LogError(e, "ExecutePipeline raised exception");
         return false;
       }
 
@@ -137,15 +133,18 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
     private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
+      var result = new List<GriddedReportDataRow>();
       IClientHeightLeafSubGrid designHeights = null;
 
       if (_griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty)
       {
-        IDesign CutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
-        if (CutFillDesign == null)
+        IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
+        if (cutFillDesign == null)
+        {
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognised design in project {_griddedReportRequestArgument.ProjectID}");
+        }
 
-        CutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
+        cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
           subGrid.CellSize, out designHeights, out var errorCode);
 
         if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
@@ -161,14 +160,10 @@ namespace VSS.TRex.Reports.Gridded.Executors
             errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {designHeights}.";
             Log.LogWarning(errorMessage);
           }
-          throw new ArgumentException(errorMessage);
         }
       }
 
-      var result = new List<GriddedReportDataRow>();
-      // use of FIndexOriginOffset?
       subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
-
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         var cell = subGrid.Cells[x, y];

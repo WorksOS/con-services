@@ -87,6 +87,7 @@ namespace VSS.TRex.GridFabric.Arguments
       MessageTopic = reader.ReadString();
       IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
 
+      AreaControlSet = new AreaControlSet();
       AreaControlSet.FromBinary(reader);
     }
   }
