@@ -4,7 +4,7 @@ services:
     build:
       context: ./artifacts/VSS.Productivity3D.Filter.WebApi
       args:
-        - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
+        - APP_BUILD_IMAGE=microsoft/dotnet:2.1-sdk
     env_file:
       - docker-compose-local.env
     volumes:
