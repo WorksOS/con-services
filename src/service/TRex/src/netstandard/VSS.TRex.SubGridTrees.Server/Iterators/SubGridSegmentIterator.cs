@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
                   {
                     // This additional check to determine if the required storage classes
-                    // are present is necesary to check if an earlier thread through this code has
+                    // are present is necessary to check if an earlier thread through this code has
                     // already allocated them
 
                     if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))

@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.All" /> <!-- Can be removed when the project is on netcoreapp2.2. -->
+    <!--<PackageReference Include="Microsoft.AspNetCore.App" />--> <!-- Can be uncommented when the project is on netcoreapp2.2. -->
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />  
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
     <PackageReference Include="Apache.Ignite" Version="2.6.0" />
@@ -30,8 +31,6 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
   </ItemGroup>
-
-
 
   <ItemGroup>
     <None Update="log4net.xml">
