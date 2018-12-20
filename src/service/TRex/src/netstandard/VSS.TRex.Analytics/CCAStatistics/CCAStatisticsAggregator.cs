@@ -84,7 +84,7 @@ namespace VSS.TRex.Analytics.CCAStatistics
           {
             var ccaValue = SubGrid.Cells[I, J];
 
-            if (ccaValue.MeasuredCCA != CellPassConsts.NullCCA && ccaValue.MeasuredCCA < CellPassConsts.NullCCATarget) // Is there a measured value and not too thick to test?..
+            if (ccaValue.MeasuredCCA != CellPassConsts.NullCCA && ccaValue.MeasuredCCA < CellPassConsts.ThickLiftCCAValue) // Is there a measured value and not too thick to test?..
             {
               // Using the machine target values to check whether the target varies...
               if (IsTargetValueConstant) // Do we need to test...
@@ -93,11 +93,11 @@ namespace VSS.TRex.Analytics.CCAStatistics
                   IsTargetValueConstant = LastTargetCCA == ccaValue.TargetCCA;  // Check whether the target value varies...
               }
 
-              if (ccaValue.TargetCCA != CellPassConsts.NullCCATarget && LastTargetCCA != CellPassConsts.NullCCATarget)
+              if (LastTargetCCA != ccaValue.TargetCCA && ccaValue.TargetCCA != CellPassConsts.NullCCATarget)
                 LastTargetCCA = ccaValue.TargetCCA; // Holds last valid target value...
 
               // Set the current target value...
-              if (currentTargetCCA != CellPassConsts.NullCCATarget)
+              if (currentTargetCCA != ccaValue.TargetCCA)
                 currentTargetCCA = ccaValue.TargetCCA;
 
               if (currentTargetCCA != CellPassConsts.NullCCATarget)

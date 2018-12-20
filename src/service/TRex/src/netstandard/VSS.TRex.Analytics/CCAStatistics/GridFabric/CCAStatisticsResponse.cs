@@ -69,7 +69,6 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
 
         ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? MissingTargetDataResultType.NoResult : MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.NoProblems,
 
-        Counts = Counts,
         ResultStatus = ResultStatus
       };
     }
