@@ -38,8 +38,8 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 
 	    foreach (IClientLeafSubGrid[] subGrid in subGrids)
 	    {
-	      if (subGrid == null)
-	        continue;
+	      if ((subGrid?.Length ?? 0) == 0)
+          continue;
 
 	      if (subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
 	      {

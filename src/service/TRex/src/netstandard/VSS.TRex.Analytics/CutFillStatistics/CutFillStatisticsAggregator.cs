@@ -84,8 +84,8 @@ namespace VSS.TRex.Analytics.CutFillStatistics
 
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if (subGrid == null)
-            continue;
+        if ((subGrid?.Length ?? 0) == 0)
+          continue;
 
           if (subGrid[0] is ClientHeightLeafSubGrid SubGrid)
           {
