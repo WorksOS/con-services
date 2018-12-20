@@ -712,10 +712,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       SiteModel.SiteModelExtent.Expand(SiteModelGridAggregator.CellSize / 2, SiteModelGridAggregator.CellSize / 2);
 
       // Update the design extent...
-      if (Design != string.Empty)
+      if (!string.IsNullOrEmpty(Design))
       {
-        // TODO readd when designs are implemented
-        // UpdateCurrentDesignExtent;
+        UpdateCurrentDesignExtent();
       }
     }
 
