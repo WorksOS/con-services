@@ -34,7 +34,7 @@ namespace VSS.TRex.Profiling.Executors
         if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
         {
           // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
-          if (false == arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).Any(x => x != RequestErrorStatus.OK))
+          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
           {
             return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }
@@ -47,7 +47,9 @@ namespace VSS.TRex.Profiling.Executors
           Filters = arg.Filters,
           ReferenceDesignUID = arg.ReferenceDesignUID,
           ReturnAllPassesAndLayers = arg.ReturnAllPassesAndLayers,
-          TRexNodeID = arg.TRexNodeID
+          TRexNodeID = arg.TRexNodeID,
+          VolumeType = arg.VolumeType
+          
         };
 
         // Perform coordinate conversion on the argument before broadcasting it:

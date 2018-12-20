@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.Interfaces;
+﻿using VSS.TRex.Common;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Models;
@@ -49,6 +50,7 @@ namespace VSS.TRex.Profiling.Interfaces
       IDesign cellPassFilter_ElevationRangeDesign,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
+      VolumeComputationType VolumeType = VolumeComputationType.None,
       bool slicerToolUsed = true);
   }
 }

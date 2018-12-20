@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -31,6 +32,7 @@ namespace VSS.TRex.Profiling.Executors
     private readonly XYZ[] NEECoords;
     private readonly IFilterSet Filters;
     private readonly ProfileStyle ProfileStyle;
+    private readonly VolumeComputationType VolumeType;	
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -55,7 +57,7 @@ namespace VSS.TRex.Profiling.Executors
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      Guid designUid, bool returnAllPassesAndLayers)
+      Guid designUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;
@@ -64,6 +66,7 @@ namespace VSS.TRex.Profiling.Executors
       Filters = filters;
       DesignUid = designUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -188,7 +191,7 @@ namespace VSS.TRex.Profiling.Executors
       }
       catch (Exception E)
       {
-        Log.LogError("Execute: Exception:", E);
+        Log.LogError(E, "Execute: Exception:");
       }
 
       return new ProfileRequestResponse<T>();

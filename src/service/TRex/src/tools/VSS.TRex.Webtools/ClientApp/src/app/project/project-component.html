@@ -52,22 +52,53 @@
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
 
-<H3>Profiling points</H3>
+<H3>Profiling Points</H3>
 <p>
   <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">First point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
   <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">Second point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
   Points in profile: {{numPointInProfile}}
 </p>
 
+<H3>Summary Volumes Profiling Points</H3>
+<p>
+  <label><input type="checkbox" [(ngModel)]="updateFirstPointLocationSV">First point X:</label><input type="number" [(ngModel)]="svFirstPointX" /> Y:<input type="number" [(ngModel)]="svFirstPointY" />
+  <label><input type="checkbox" [(ngModel)]="updateSecondPointLocationSV">Second point X:</label><input type="number" [(ngModel)]="svSecondPointX" /> Y:<input type="number" [(ngModel)]="svSecondPointY" />
+  Points in profile: {{numPointInProfile}}
+</p>
+
+
+
 <p>
   Design to profile: <input type="text" [(ngModel)]="designProfileUid">
-  <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Draw Design Profile</button>
-  <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Draw Prod Data Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Design Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Prod Latest Data Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
+</p>
+<p>
+Production elevation profiles:
+  <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
+  <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
+  <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
+  <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
+</p><p>
+Composite elevation profiles:
+  <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
+  <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
+  <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
+  <label><input type="checkbox" (ngModelChange)="showHighestCompositeElevationProfile_change()" [(ngModel)]="showHighestCompositeElevationProfile">Highest</label>
 </p>
 
 <svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      (mouseover)="onMouseOverProfile($event)" (mousemove)="onMouseMoveProfile($event)">
   <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1.5" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LastElev" stroke="red" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_FirstElev" stroke="green" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LowestElev" stroke="blue" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_HighestElev" stroke="yellow" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LastCompositeElev" stroke="orange" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_FirstCompositeElev" stroke="coral" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_LowestCompositeElev" stroke="magenta" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="compositeElevationProfilePath_HighestCompositeElev" stroke="pink" stroke-width="1" fill="none" />
 </svg>
 <p>Profile extents: Start station: {{profileExtents.minX}}, End station: {{profileExtents.maxX}}, Min Z: {{profileExtents.minY}}, Max Z: {{profileExtents.maxY}}</p>
 <p>Mouse: Screen: {{mouseProfilePixelLocation}}, World: {{mouseProfileWorldLocation}} </p>

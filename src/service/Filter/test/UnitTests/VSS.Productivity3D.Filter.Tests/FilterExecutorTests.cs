@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(configStore, logger, serviceExceptionHandler,
           filterRepo.Object, null);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request).ConfigureAwait(false));
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       StringAssert.Contains(ex.GetContent, "2036");
       StringAssert.Contains(ex.GetContent, "GetFilter By filterUid. The requested filter does not exist, or does not belong to the requesting customer; project or user.");
@@ -164,8 +164,9 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var filterListToTest = new FilterDescriptorListResult
       {
-        FilterDescriptors = filters.Select(filter => AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
-                             .ToImmutableList()
+        FilterDescriptors = filters
+          .Select(filter => AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
+          .ToImmutableList()
       };
 
       var request = FilterRequestFull.Create
@@ -247,7 +248,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, projectListProxy.Object, 
         raptorProxy.Object, producer.Object, kafkaTopicName);
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request).ConfigureAwait(false));
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       StringAssert.Contains(ex.GetContent, "2016");
       StringAssert.Contains(ex.GetContent, "UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.");

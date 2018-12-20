@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.Interfaces;
+﻿using VSS.TRex.Common;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
@@ -61,6 +62,7 @@ namespace VSS.TRex.Profiling
       IDesign cellPassFilter_ElevationRangeDesign,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
+      VolumeComputationType VolumeType = VolumeComputationType.None,
       bool slicerToolUsed = true)    
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, passFilter, CellPassFastEventLookerUpper);

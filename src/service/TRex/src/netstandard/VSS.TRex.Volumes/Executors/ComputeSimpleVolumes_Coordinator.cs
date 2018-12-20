@@ -9,6 +9,7 @@ using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Volumes.Executors
 {
@@ -292,7 +293,7 @@ namespace VSS.TRex.Volumes.Executors
             }
             catch (Exception E)
             {
-                Log.LogError("Exception:", E);
+                Log.LogError(E, "Exception:");
             }
 
             return VolumesResult;

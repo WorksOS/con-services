@@ -153,13 +153,13 @@ namespace VSS.TRex.Servers.Compute
         LocalAddress = "127.0.0.1",
         LocalPort = 48500,
 
-        IpFinder = new TcpDiscoveryStaticIpFinder()
+        IpFinder = new TcpDiscoveryStaticIpFinder
         {
-          Endpoints = new[] { "127.0.0.1:48500..48509" }
+          Endpoints = new[] { "127.0.0.1:48500..48502" }
         }
       };
 
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      cfg.CommunicationSpi = new TcpCommunicationSpi
       {
         LocalAddress = "127.0.0.1",
         LocalPort = 48100,
@@ -272,7 +272,7 @@ namespace VSS.TRex.Servers.Compute
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception during creation of new Ignite node:", e);
+        Log.LogError(e, "Exception during creation of new Ignite node:");
         throw;
       }
       finally

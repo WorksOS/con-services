@@ -7,13 +7,17 @@ $Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
 # Running locally we cannot 'see' the Jenkins image repository so override it with a comparable image from visible repo.
 $Env:APP_BUILD_IMAGE="microsoft/dotnet:2.0-sdk"
 
+& $PSScriptRoot/DockerEnvironmentVariables.ps1
+
 Write-Host "Stopping Docker containers" -ForegroundColor DarkGray
 docker stop $(docker ps -aq)
 
 # This is not ideal; but too often the Kafka container throws the following error, fails to start and breaks the dependency chain;
 # java.lang.RuntimeException: A broker is already registered on the path /brokers/ids/1001
-Write-Host "Removing Kafka containers" -ForegroundColor DarkGray
+Write-Host "Removing Kafka, Filter WebAPI and Filter acceptance test containers" -ForegroundColor DarkGray
 docker rm $(docker ps -aq --filter "name=filter_kafka")
+docker rm $(docker ps -aq --filter "name=filter_webapi")
+docker rm $(docker ps -aq --filter "name=filter_accepttest")
 
 Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)

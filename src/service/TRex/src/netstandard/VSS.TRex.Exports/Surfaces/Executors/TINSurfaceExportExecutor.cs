@@ -196,7 +196,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       }
       catch (Exception E)
       {
-        Log.LogError("ExecutePipeline raised Exception:", E);
+        Log.LogError(E, "ExecutePipeline raised Exception:");
         return false;
       }
 

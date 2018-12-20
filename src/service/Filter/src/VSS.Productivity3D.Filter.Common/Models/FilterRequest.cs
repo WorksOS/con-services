@@ -46,9 +46,9 @@ namespace VSS.Productivity3D.Filter.Common.Models
       };
     }
 
-    public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid=false)
+    public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid = false)
     {
-      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out Guid _) == false))
+      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
       }
@@ -78,8 +78,24 @@ namespace VSS.Productivity3D.Filter.Common.Models
       }
     }
 
+    /// <summary>
+    /// Validate the object as a transient filter.
+    /// </summary>
+    public void ValidateTransientFilter(IServiceExceptionHandler serviceExceptionHandler)
+    {
+      if (FilterType != FilterType.Transient)
+      {
+        return;
+      }
+
+      if (string.IsNullOrEmpty(FilterJson))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8, "Missing filter");
+      }
+    }
+
     public MasterData.Models.Models.Filter FilterModel(IServiceExceptionHandler serviceExceptionHandler)
-    {    
+    {
       try
       {
         return string.IsNullOrEmpty(FilterJson) ? null : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(FilterJson);
@@ -88,7 +104,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 42, exception.Message);
       }
-      return null;      
+      return null;
     }
   }
 }

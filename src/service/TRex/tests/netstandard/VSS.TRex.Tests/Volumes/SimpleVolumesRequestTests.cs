@@ -2,7 +2,7 @@
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Volumes;
+using VSS.TRex.Common;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;

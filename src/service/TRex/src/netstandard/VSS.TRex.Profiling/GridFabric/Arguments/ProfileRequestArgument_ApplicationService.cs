@@ -2,6 +2,8 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
+using VSS.TRex.Common;
+
 
 namespace VSS.TRex.Profiling.GridFabric.Arguments
 {
@@ -21,12 +23,21 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
+
+    /// <summary>
+    /// The volume computation method to use when calculating summary volume information
+    /// </summary>
+    public VolumeComputationType VolumeType = VolumeComputationType.None;
+
+
     /// <summary>
     /// Constructs a default profile request argument
     /// </summary>
     public ProfileRequestArgument_ApplicationService()
     {
     }
+
+
 
     /// <summary>
     /// Creates a new profile request argument initialized with the supplied parameters
@@ -37,7 +48,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="positionsAreGrid"></param>
     /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileTypeRequired = profileTypeRequired;
       StartPoint = startPoint;
@@ -45,6 +56,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       PositionsAreGrid = positionsAreGrid;
       ReferenceDesignUID = referenceDesignUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -66,6 +78,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       writer.WriteBoolean(PositionsAreGrid);
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
+
+      writer.WriteInt((int)VolumeType);
+
     }
 
     /// <summary>
@@ -89,6 +104,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       PositionsAreGrid = reader.ReadBoolean();
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
+
+      VolumeType = (VolumeComputationType)reader.ReadInt();
+
     }
   }
 }
