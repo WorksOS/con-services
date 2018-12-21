@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       // Fix for Raptor issue where the 'below' color is not being set correctly and the Red and Blue parts of the RGB are being
       // flipped incorrectly (Delphi uses BGR not RGB like C#). 
       // The following is a workaround to this behaviour and WILL be removed once the Raptor behaviour is properly understood (maybe fixed).
-      // if (request.Mode == DisplayMode.Design3D || request.Mode == DisplayMode.Height)
+      if (request.Mode == DisplayMode.Design3D || request.Mode == DisplayMode.Height)
       {
         byte[] values = BitConverter.GetBytes(request.Palettes[0].Color);
 
