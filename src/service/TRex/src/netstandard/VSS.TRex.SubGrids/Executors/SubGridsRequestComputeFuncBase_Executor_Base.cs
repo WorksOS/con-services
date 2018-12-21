@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SubGridTrees;
@@ -88,7 +89,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private int listCount;
 
-    private AreaControlSet AreaControlSet = AreaControlSet.Null();
+    private AreaControlSet AreaControlSet = AreaControlSet.CreateAreaControlSet();
 
     /// <summary>
     /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
@@ -247,6 +248,8 @@ namespace VSS.TRex.SubGrids.Executors
       // Set up any required cut fill design
       if (arg.ReferenceDesignUID != Guid.Empty)
         ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignUID);
+
+      AreaControlSet = arg.AreaControlSet;
     }
 
     /// <summary>
@@ -573,17 +576,6 @@ namespace VSS.TRex.SubGrids.Executors
 
       Log.LogError("Failed to process all subgrids");
       return null;
-    }
-
-    /// <summary>
-    /// Performs any initialization of this compute func that might ordinarily be achieved through automatic property
-    /// initialization or constructor initialization that is not invoked when the compute func is created at the
-    /// target server. Ignite performs an under-the-hood instantiation and hydration of state that does not invoke either
-    /// automatics field initialization or constructor invocation.
-    /// </summary>
-    public virtual void InitialiseComputeFunc()
-    {
-      AreaControlSet = AreaControlSet.Null();
     }
 
   public TSubGridRequestsResponse Execute()

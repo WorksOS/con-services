@@ -45,7 +45,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         {
           var Executor = GetExecutor();
 
-          Executor.InitialiseComputeFunc();
           Executor.UnpackArgument(arg);
 
           result = Executor.Execute();

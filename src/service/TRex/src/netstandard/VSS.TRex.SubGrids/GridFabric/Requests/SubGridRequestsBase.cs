@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Requests;
@@ -80,6 +81,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// </summary>
         public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
+        public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
+
         /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
         /// of subgrid processing is returned as a set of partitioned results from the Broadcast() invocation.
@@ -91,7 +94,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="task"></param>
+        /// <param name="tRexTask"></param>
         /// <param name="siteModelID"></param>
         /// <param name="requestID"></param>
         /// <param name="trexNodeId"></param>
@@ -110,7 +113,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                                    ISubGridTreeBitMask prodDataMask,
                                    ISubGridTreeBitMask surveyedSurfaceOnlyMask,
                                    IFilterSet filters,
-                                   Guid referenceDesignId) : this()
+                                   Guid referenceDesignId,
+                                   AreaControlSet areaControlSet) : this()
         {
             TRexTask = tRexTask;
             SiteModelID = siteModelID;
@@ -122,6 +126,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             SurveyedSurfaceOnlyMask = surveyedSurfaceOnlyMask;
             Filters = filters;
             ReferenceDesignID = referenceDesignId;
+            AreaControlSet = areaControlSet;
         }
 
         /// <summary>
@@ -143,7 +148,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 Filters = Filters,
                 MessageTopic = $"SubGridRequest:{RequestID}",
                 TRexNodeID = TRexNodeId,
-                ReferenceDesignUID = ReferenceDesignID
+                ReferenceDesignUID = ReferenceDesignID,
+                AreaControlSet = AreaControlSet
             };
         }
 

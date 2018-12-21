@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using ASNodeRPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,10 +13,13 @@ using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -45,12 +50,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [TestMethod]
-    public void CompactionReportGridExecutorNoResult()
+    public void CompactionReportGridExecutor_Raptor_NoResult()
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
-        0, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic, 0.0, 0.0, 0.0, 0.0, 0.0);
+        0, null, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-      MemoryStream responseData = new MemoryStream();
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("false");
+
+      MemoryStream responseData;
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -82,8 +90,34 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         Returns(0); // icsrrUnknownError
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, raptorClient.Object);
+        .Build<CompactionReportGridExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+    }
+
+    [TestMethod]
+    public void CompactionReportGridExecutor_TRex_NoResult()
+    {
+      var projectUid = Guid.NewGuid();
+      var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
+        0, projectUid, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic,
+        0.0, 0.0, 0.0, 0.0, 0.0);
+
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_GRIDREPORT")).Returns("true");
+
+      var exception = new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"Grid report has not been implemented in Trex yet. ProjectUid: {projectUid}"));
+      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
+      tRexProxy.Setup(x => x.SendGridReportRequest(request, It.IsAny<IDictionary<string, string>>()))
+        .Throws(exception);
+      var executor = RequestExecutorContainerFactory
+        .Build<CompactionReportGridExecutor>(logger, null, configStore: mockConfigStore.Object,
+          trexCompactionDataProxy: tRexProxy.Object);
+      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
+      Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
+      Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
     }
 
     [Ignore]
@@ -91,7 +125,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void CompactionReportGridExecutorSuccess()
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
-        0, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic, 0.0, 0.0, 0.0, 0.0, 0.0);
+        0, null, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic, 0.0, 0.0, 0.0, 0.0, 0.0);
 
       MemoryStream responseData = new MemoryStream();
 

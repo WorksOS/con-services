@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;

@@ -479,7 +479,7 @@ constructor(
     var descriptor = new DesignDescriptor();
     descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
 
-    this.projectService.addDesign(this.projectUid, descriptor, this.tileExtents).subscribe(
+    this.projectService.addDesign(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesigns();
@@ -489,26 +489,26 @@ constructor(
   public addNewDesign(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
-    descriptor.offset = this.designOffset;
+    descriptor.offset = 0;
 
-    this.projectService.addDesign(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
+    this.projectService.addDesign(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesigns();
       });
   }
 
-  public addNewDesignFromS3(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.designFileName;
-    descriptor.designId = this.designUID;
+  //public addNewDesignFromS3(): void {
+  //  var descriptor = new DesignDescriptor();
+  //  descriptor.fileName = this.designFileName;
+  //  descriptor.designId = this.designUID;
 
-    this.projectService.addDesignFromS3(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
-      uid => {
-        this.newDesignGuid = uid.designId;
-        this.getDesigns();
-      });
-  }
+  //  this.projectService.addDesignFromS3(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
+  //    uid => {
+  //      this.newDesignGuid = uid.designId;
+  //      this.getDesigns();
+  //    });
+  //}
 
     public getDesigns(): void {
     var result: Design[] = [];
