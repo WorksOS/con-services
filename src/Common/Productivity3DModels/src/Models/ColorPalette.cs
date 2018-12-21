@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "color", Required = Required.Always)]
     [Required]
-    public uint Color { get; private set; }
+    public uint Color { get; set; }
 
     /// <summary>
     /// The datum value at which the color defined in color should be used.
