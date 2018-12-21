@@ -113,15 +113,15 @@ Composite elevation profiles:
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="surveyedSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value="" /> Offset: <input [(ngModel)]="surveyedSurfaceOffset" type="number" value="" /></p>
-<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button> <button (click)="addADummySurveyedSurface()">Add a dummy!</button></p>
+<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button>   <button (click)="addADummySurveyedSurface()">Add a dummy!</button></p>
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
   <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
   Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}
 </p>
 <br />
 <H3>Designs [{{designs.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" /></p>
-<p><button (click)=addNewDesign()>Add New Design</button> <button (click)="addADummyDesign()">Add a dummy!</button></p>
+<p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /></p>
+<p><button (click)=addNewDesign()>Add New Design</button>   <button (click)="addADummyDesign()">Add a dummy!</button></p>
 <p *ngFor="let design of designs">
   <button (click)="deleteDesign(design)">Delete</button>
   Design: {{ design.id }} with offset {{design.designDescriptor.offset}} from file {{design.designDescriptor.fileName}}

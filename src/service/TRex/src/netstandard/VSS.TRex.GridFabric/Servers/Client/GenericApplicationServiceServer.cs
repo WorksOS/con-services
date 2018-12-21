@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.GridFabric.Servers.Client;
 
 namespace VSS.TRex.Servers.Client
 {

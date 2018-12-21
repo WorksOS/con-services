@@ -92,11 +92,13 @@ namespace VSS.TRex.Gateway.Common.Converters
         {
           fence = new Fence();
           fence.Points = Automapper.Map<List<Point>, List<FencePoint>>(src.PolygonGrid);
+          fence.UpdateExtents();
         }
         else if (src.PolygonLL != null)
         {
           fence = new Fence();
           fence.Points = Automapper.Map<List<WGSPoint>, List<FencePoint>>(src.PolygonLL);
+          fence.UpdateExtents();
         }
 
         return new CellSpatialFilter
