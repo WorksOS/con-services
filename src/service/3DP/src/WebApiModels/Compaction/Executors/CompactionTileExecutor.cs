@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 
@@ -86,14 +87,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       // Fix for Raptor issue where the 'below' color is not being set correctly and the Red and Blue parts of the RGB are being
       // flipped incorrectly (Delphi uses BGR not RGB like C#). 
       // The following is a workaround to this behaviour and WILL be removed once the Raptor behaviour is properly understood (maybe fixed).
-      byte[] values = BitConverter.GetBytes(request.Palettes[0].Color);
+      // if (request.Mode == DisplayMode.Design3D || request.Mode == DisplayMode.Height)
+      {
+        byte[] values = BitConverter.GetBytes(request.Palettes[0].Color);
 
-      // Flip the bits represending Red and Blue in the color byte. We don't care about endian differences here; assume isLittleEndian=true.
-      var rgbRed = values[0];
-      values[0] = values[2];
-      values[2] = rgbRed;
+        // Flip the bits represending Red and Blue in the color byte. We don't care about endian differences here; assume isLittleEndian=true.
+        var rgbRed = values[0];
+        values[0] = values[2];
+        values[2] = rgbRed;
 
-      request.Palettes[0].Color = BitConverter.ToUInt32(values, 0);
+        request.Palettes[0].Color = BitConverter.ToUInt32(values, 0);
+      }
       // End temporary fix.
 
       var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
