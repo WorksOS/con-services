@@ -3,7 +3,9 @@ using System.IO;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
@@ -141,10 +143,28 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <summary>
     /// Sends a request to get production data patches from the TRex database.
     /// </summary>
-    /// <param name="tileRequest"></param>
+    /// <param name="patchDataRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     Task<Stream> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get station and offset report data from TRex.
+    /// </summary>
+    /// <param name="stationOffsetRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get grid report data from TRex.
+    /// </summary>
+    /// <param name="gridRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<Stream> SendGridReportRequest(CompactionReportGridRequest gridRequest,
       IDictionary<string, string> customHeaders = null);
   }
 }

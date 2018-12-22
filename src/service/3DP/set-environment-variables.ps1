@@ -44,9 +44,11 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "REPORT_SVC_BASE_URI"; value = ":5000"},
   @{key = "TAG_SVC_BASE_URI"; value = ":5000"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
-
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
   @{key = "ALK_KEY"; value = "97CC5BD1CA28934796791B229AE9C3FA"},
@@ -63,8 +65,10 @@ $tccAndAwsEnvironmentVariables = @(
   @{key = "TCCSynchProjectBoundaryIssueFolder"; value = "Project Boundary (Issue)"},    
   @{key = "TCCSynchSubscriptionIssueFolder"; value = "Subscription (Issue)"},
   @{key = "TCCSynchOtherIssueFolder"; value = "Other... (Issue)"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Used when running the collaborating services against a locally running MockWebApi service.
 $localhostEnvironmentVariables = @(
@@ -75,14 +79,17 @@ $localhostEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "http://localhost:5001/api/v1/mock/preferences"},
   @{key = "PROJECT_API_URL"; value = "http://localhost:5001/api/v4/mockproject"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "http://localhost:5001/api/v4/mock"},
-  @{key = "TREX_TAGFILE_API_URL"; value = "http://mockprojectwebapi:5001/api/v2/mocktrextagfile"},
+  @{key = "TREX_TAGFILE_API_URL"; value = "http://localhost:5001/api/v2/mocktrextagfile"},
+  @{key = "TREX_GATEWAY_API_URL"; value = "http://localhost:55750/api/v1"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://localhost:5001/internal/v1/mock/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
   @{key = "TCCUSERNAME"; value = "vldev"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"},
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"},
   @{key = "MYSQL_SERVER_NAME_VSPDB"; value = "db"},
   @{key = "MYSQL_PORT"; value = "3306"},
   @{key = "MYSQL_USERNAME"; value = "root"},
@@ -107,13 +114,16 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-dev-trexgateway/2.0/tagfiles"},
+  @{key = "TREX_GATEWAY_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-dev-trexgateway/2.0"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.dev.k8s.vspengg.com/internal/v1/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
   @{key = "TCCUSERNAME"; value = "vldev"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /alpha deployed collaborating services
 $alphaCollaboratorsEnvironmentVariables = @(
@@ -125,13 +135,16 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0/tagfiles"},
+  @{key = "TREX_GATEWAY_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0"}
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.alpha.k8s.vspengg.com/internal/v1/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-alpha"},
   @{key = "TCCORG"; value = "vlalpha"},
   @{key = "TCCPWD"; value = "vlalpha_key"},
   @{key = "TCCUSERNAME"; value = "vlalpha"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /prod deployed collaborating services
 $prodCollaboratorsEnvironmentVariables = @(
@@ -143,13 +156,16 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api.trimble.com/t/trimble.com/vss-trexgateway/2.0/tagfiles"},
+  @{key = "TREX_GATEWAY_API_URL"; value = "http://api.trimble.com/t/trimble.com/vss-trexgateway/2.0"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = ""},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-prod"},
   @{key = "TCCORG"; value = "vlprod"},
   @{key = "TCCPWD"; value = "vlprod_key"},
   @{key = "TCCUSERNAME"; value = "vlprod"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 if ($environment -ieq "--dev" -or $environment -ieq "-d") {
   $environmentVariables = $devCollaboratorsEnvironmentVariables
