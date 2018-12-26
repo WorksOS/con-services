@@ -43,7 +43,7 @@ Master:
   ServiceAnnotations: { service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0 }
   #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
   # Used to create Ingress record (should used with ServiceType: ClusterIP)
-  HostName: ci.k8s.vspengg.com
+  HostName: ci.eks.vspengg.com
   ContainerPort: 8080
   # Enable Kubernetes Liveness and Readiness Probes
   HealthProbes: true
@@ -111,6 +111,7 @@ Master:
     ApiVersion: extensions/v1beta1
     Annotations:
       kubernetes.io/ingress.class: nginx
+      external-dns.alpha.kubernetes.io/target: eks.vspengg.com
     # kubernetes.io/tls-acme: "true"
 
     TLS:
@@ -159,7 +160,7 @@ Persistence:
 
   Annotations: {}
   AccessMode: ReadWriteOnce
-  Size: 8Gi
+  Size: 50Gi
   volumes:
   #  - name: nothing
   #    emptyDir: {}
