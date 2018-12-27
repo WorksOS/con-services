@@ -2,7 +2,7 @@ replicas: 1
 
 image:
   repository: 276986344560.dkr.ecr.us-west-2.amazonaws.com/helm-vsts-agent
-  tag: master-11047
+  tag: master-11047-eks
   pullPolicy: Always
 
 resources:
