@@ -74,6 +74,7 @@ node ('jenkinsslave-pod') {
     def acceptance_testing_yaml
 	def runtimeImage
 	def dbRuntimeImage
+	def testImage
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
@@ -162,7 +163,8 @@ node ('jenkinsslave-pod') {
 	if (runTests)
 	{
 		stage('Build Acceptance tests') {	
-			docker.build(testContainer, "-f ./${servicePath}/build/Dockerfile.tests . --build-arg SERVICE_PATH=${servicePath}").push()
+			testImage = docker.build(testContainer, "-f ./${servicePath}/build/Dockerfile.tests . --build-arg SERVICE_PATH=${servicePath}")
+			testImage.push()
 		}
 	
 		stage ('Run acceptance tests') {
