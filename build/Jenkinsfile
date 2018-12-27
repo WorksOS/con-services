@@ -44,7 +44,7 @@ node ('jenkinsslave-pod') {
     def buildkey = UUID.randomUUID()
                  .toString()
                  .split('-')[-1..-2]
-                 .join()
+                 .join('')
                  .toUpperCase()
 			 
 	// We may need to rename the branch to conform to DNS name spec
