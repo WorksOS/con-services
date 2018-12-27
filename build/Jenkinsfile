@@ -3,11 +3,7 @@
 	def key
     
 	def giveMeKey(){
-    String alphabet = (('A'..'N')+('P'..'Z')+('a'..'k')+('m'..'z')+('2'..'9')).join() 
-    def length = 6
-     key = new Random().with {
-           (1..length).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
-             }
+
             return key
         }
 
@@ -54,6 +50,12 @@ node ('jenkinsslave-pod') {
 		])
 	])
 
+    String alphabet = (('A'..'N')+('P'..'Z')+('a'..'k')+('m'..'z')+('2'..'9')).join() 
+    def length = 6
+    def key = new Random().with {
+           (1..length).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
+             }
+			 
 	// We may need to rename the branch to conform to DNS name spec
 	def fullBranchName = env.BRANCH_NAME
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
