@@ -28,7 +28,7 @@ Master:
   #   - name: http_proxy
   #     value: "http://192.168.64.1:3128"
   # Set min/max heap here if needed with:
-  # JavaOpts: "-Xms512m -Xmx512m"
+  JavaOpts: "-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=300 -Djenkins.slaves.DefaultJnlpSlaveReceiver.disableStrictVerification=true -Dhudson.slaves.NodeProvisioner.initialDelay=0 -Dhudson.slaves.NodeProvisioner.MARGIN=50 -Dhudson.slaves.NodeProvisioner.MARGIN0=0.85"
   # JenkinsOpts: ""
   # JenkinsUriPrefix: "/jenkins"
   # Set RunAsUser to 1000 to let Jenkins run as non-root user 'jenkins' which exists in 'jenkins/jenkins' docker image.

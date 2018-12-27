@@ -1,8 +1,8 @@
 replicas: 1
 
 image:
-  repository: microsoft/vsts-agent
-  tag: ubuntu-16.04-standard
+  repository: 276986344560.dkr.ecr.us-west-2.amazonaws.com/helm-vsts-agent
+  tag: master-11047
   pullPolicy: Always
 
 resources:
@@ -10,4 +10,4 @@ resources:
 
 vstsToken: "kk6mfp4kkqmupyec7tztxiiihzsg4okb6otwufw7hsfclizmlqvq"
 vstsAccount: "VisionLink"
-vstsPool: "kubernetes-vsts-agents"
+vstsPool: "eks-stg"
