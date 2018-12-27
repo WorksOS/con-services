@@ -179,7 +179,7 @@ node ('jenkinsslave-pod') {
 				acceptance_testing_yaml = acceptance_testing_yaml.replace('!db-container!', "${elbContainerDb}")
 			}
 				def label = "testingpod-${UUID.randomUUID().toString()}"
-			podTemplate(label: label, nodeSelector:"kops.k8s.io/instancegroup=spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)])
+			podTemplate(label: label, nodeSelector:"lifecycle=Ec2Spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)])
 			{
 				node (label) {
 					dir ("/app/${servicePath}") {
