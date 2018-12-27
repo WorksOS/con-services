@@ -41,11 +41,11 @@ node ('jenkinsslave-pod') {
 		])
 	])
 
-    String alphabet = (('A'..'N')+('P'..'Z')+('a'..'k')+('m'..'z')+('2'..'9')).join() 
-    def length = 6
-    def buildkey = new Random().with {
-           (1..length).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
-             }
+    def buildkey = UUID.randomUUID()
+                 .toString()
+                 .split('-')[-1..-2]
+                 .join()
+                 .toUpperCase()
 			 
 	// We may need to rename the branch to conform to DNS name spec
 	def fullBranchName = env.BRANCH_NAME
