@@ -52,7 +52,7 @@ node ('jenkinsslave-pod') {
 
     String alphabet = (('A'..'N')+('P'..'Z')+('a'..'k')+('m'..'z')+('2'..'9')).join() 
     def length = 6
-    def key = new Random().with {
+    def buildkey = new Random().with {
            (1..length).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
              }
 			 
@@ -62,9 +62,9 @@ node ('jenkinsslave-pod') {
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${key}-${params.VSTS_BUILD_NUMBER}"
-	def containerDb = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${key}.db-${params.VSTS_BUILD_NUMBER}"
-    def testContainer = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${key}.tests-${params.VSTS_BUILD_NUMBER}"
+    def container = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+	def containerDb = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.db-${params.VSTS_BUILD_NUMBER}"
+    def testContainer = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.tests-${params.VSTS_BUILD_NUMBER}"
 
 	def elbContainer = container
 	def elbContainerDb = containerDb
