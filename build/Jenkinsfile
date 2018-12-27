@@ -97,7 +97,7 @@ node ('jenkinsslave-pod') {
 		
 		checkout scm
 		
-		sh "eval \$(aws ecr get-login --no-include-email)"
+		sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 		
 	    def build_container = docker.build(container, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
 
