@@ -143,7 +143,7 @@ namespace VSS.TRex.Profiling
       SiteModel = siteModel;
       ProfileTypeRequired = profileTypeRequired;
       PopulationControl = populationControl;
-      PassFilter = filterSet.Filters[0].AttributeFilter;
+      PassFilter = filterSet?.Filters[0].AttributeFilter;
       CellPassFastEventLookerUpper = cellPassFastEventLookerUpper;
     }
 

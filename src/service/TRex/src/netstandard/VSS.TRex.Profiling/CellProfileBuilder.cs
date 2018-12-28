@@ -83,7 +83,7 @@ namespace VSS.TRex.Profiling
       bool slicerToolUsed)
     {
       SiteModel = siteModel;
-      CellFilter = filterSet.Filters[0].SpatialFilter;
+      CellFilter = filterSet?.Filters[0].SpatialFilter;
       CutFillDesign = cutFillDesign;
       SlicerToolUsed = slicerToolUsed;
 
