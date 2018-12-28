@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
@@ -20,16 +19,16 @@ namespace VSS.TRex.Profiling.Factories
     /// Creates a new builder responsible for determining a vector of cells that are crossed by a profile line
     /// </summary>
     /// <param name="siteModel"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     public ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cutFillDesign,
       bool slicerToolUsed)
     {
-      return new CellProfileBuilder<T>(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
+      return new CellProfileBuilder<T>(siteModel, filterSet, cutFillDesign, slicerToolUsed);
     }
 
     /// <summary>
@@ -37,8 +36,7 @@ namespace VSS.TRex.Profiling.Factories
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <param name="profileStyle"></param>
@@ -46,19 +44,18 @@ namespace VSS.TRex.Profiling.Factories
     public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
-      ICellPassAttributeFilter passFilter,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
       ICellLiftBuilder cellLiftBuilder)
     {
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
+          return new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
 //          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
 //            (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
         case ProfileStyle.SummaryVolume:
-          return new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
+          return new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
         default:
           throw new ArgumentOutOfRangeException(nameof(profileStyle), profileStyle, null);
       }
@@ -70,16 +67,16 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="siteModel"></param>
     /// <param name="gridDataType"></param>
     /// <param name="populationControl"></param>
-    /// <param name="passFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFastEventLookerUpper"></param>
     /// <returns></returns>
     public ICellLiftBuilder NewCellLiftBuilder(ISiteModel siteModel,
       GridDataType gridDataType,
       IFilteredValuePopulationControl populationControl,
-      ICellPassAttributeFilter passFilter,
+      IFilterSet filterSet,
       ICellPassFastEventLookerUpper cellPassFastEventLookerUpper)
     {
-      return new CellLiftBuilder(siteModel, gridDataType, populationControl, passFilter, cellPassFastEventLookerUpper);
+      return new CellLiftBuilder(siteModel, gridDataType, populationControl, filterSet, cellPassFastEventLookerUpper);
     }
   }
 }

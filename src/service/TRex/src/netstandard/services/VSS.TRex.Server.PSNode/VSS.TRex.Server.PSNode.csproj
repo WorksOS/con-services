@@ -137,6 +137,7 @@
     <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
       <Private>true</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGrids.Interfaces\VSS.TRex.SubGrids.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SubGrids\VSS.TRex.SubGrids.csproj">
       <Private>true</Private>
     </ProjectReference>

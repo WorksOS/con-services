@@ -54,8 +54,8 @@ namespace VSS.TRex.SubGrids
 
     private SubGridTreeBitmapSubGridBits _sieveBitmask;
 
-    ISubGrid _subGrid;
-    IServerLeafSubGrid _subGridAsLeaf;
+    private ISubGrid _subGrid;
+    private IServerLeafSubGrid _subGridAsLeaf;
 
     private FilteredValueAssignmentContext _assignmentContext;
     private ISubGridSegmentIterator _segmentIterator;
@@ -673,7 +673,7 @@ namespace VSS.TRex.SubGrids
 
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
-        _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, _filter.AttributeFilter, _filter.SpatialFilter,
+        _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
             null, null, _populationControl, new CellPassFastEventLookerUpper(_siteModel));
 
         _cellProfile = new ProfileCell();

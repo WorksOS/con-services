@@ -153,7 +153,7 @@ namespace VSS.TRex.Profiling.Executors
 
           IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, design,
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design,
             /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 

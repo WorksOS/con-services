@@ -131,19 +131,19 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="profileTypeRequired"></param>
     /// <param name="populationControl"></param>
-    /// <param name="passFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFastEventLookerUpper"></param>
     public CellLiftBuilder(ISiteModel siteModel,
       GridDataType profileTypeRequired,
       IFilteredValuePopulationControl populationControl,
-      ICellPassAttributeFilter passFilter,
+      IFilterSet filterSet,
       ICellPassFastEventLookerUpper cellPassFastEventLookerUpper
     )
     {
       SiteModel = siteModel;
       ProfileTypeRequired = profileTypeRequired;
       PopulationControl = populationControl;
-      PassFilter = passFilter;
+      PassFilter = filterSet.Filters[0].AttributeFilter;
       CellPassFastEventLookerUpper = cellPassFastEventLookerUpper;
     }
 

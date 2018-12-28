@@ -16,43 +16,42 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="siteModel"></param>
     /// <param name="gridDataType"></param>
     /// <param name="populationControl"></param>
-    /// <param name="passFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFastEventLookerUpper"></param>
     /// <returns></returns>
     ICellLiftBuilder NewCellLiftBuilder(ISiteModel siteModel,
       GridDataType gridDataType,
       IFilteredValuePopulationControl populationControl,
-      ICellPassAttributeFilter passFilter,
+      IFilterSet filterSet,
       ICellPassFastEventLookerUpper cellPassFastEventLookerUpper);
 
     /// <summary>
     /// Creates a new builder responsible for determining a vector of cells that are cross by a profile line
     /// </summary>
     /// <param name="siteModel"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cutFillDesign,
       bool slicerToolUsed);
 
     /// <summary>
     /// Creates a new builder responsible for analyzing profile information for a cell of cells identified along a profile line
     /// </summary>
+    /// <param name="profileStyle"></param>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
     ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
-      ICellPassAttributeFilter passFilter,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
       ICellLiftBuilder cellLiftBuilder);
   }

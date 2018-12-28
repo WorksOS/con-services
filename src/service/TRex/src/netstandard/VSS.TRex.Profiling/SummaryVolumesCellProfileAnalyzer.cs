@@ -38,16 +38,14 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
-      ICellPassAttributeFilter passFilter,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign)
+      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign)
     {
     }
 
@@ -80,7 +78,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Builds a fully analyzed vector of profiled cells from the list of cell passed to it
     /// </summary>
-    /// <param name="ProfileCells"></param>
+    /// <param name="profileCells"></param>
     /// <param name="cellPassIterator"></param>
     /// <returns></returns>
     ///

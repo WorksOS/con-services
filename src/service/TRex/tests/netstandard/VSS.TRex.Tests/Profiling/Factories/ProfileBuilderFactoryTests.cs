@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
       {
         var factory = new ProfilerBuilderFactory<ProfileCell>();
 
-        Assert.True(factory.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, null, null) != null, "Failed to construct new profile lift builder");
+        Assert.True(factory.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, null) != null, "Failed to construct new profile lift builder");
       }
   }
 }

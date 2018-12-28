@@ -74,16 +74,16 @@ namespace VSS.TRex.Profiling
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
     /// </summary>
     /// <param name="siteModel"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
     /// <param name="slicerToolUsed"></param>
     public CellProfileBuilder(ISiteModel siteModel,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cutFillDesign,
       bool slicerToolUsed)
     {
       SiteModel = siteModel;
-      CellFilter = cellFilter;
+      CellFilter = filterSet.Filters[0].SpatialFilter;
       CutFillDesign = cutFillDesign;
       SlicerToolUsed = slicerToolUsed;
 

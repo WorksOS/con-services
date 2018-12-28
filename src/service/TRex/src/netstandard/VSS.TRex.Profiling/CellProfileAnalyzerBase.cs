@@ -100,19 +100,17 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     public CellProfileAnalyzerBase(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
-      ICellPassAttributeFilter passFilter,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign)
     {
       SiteModel = siteModel;
       PDExistenceMap = pDExistenceMap;
-      PassFilter = passFilter;
-      CellFilter = cellFilter;
+      PassFilter = filterSet.Filters[0].AttributeFilter;
+      CellFilter = filterSet.Filters[0].SpatialFilter;
       CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
 
       Initialise();
