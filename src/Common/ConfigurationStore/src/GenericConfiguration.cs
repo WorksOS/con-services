@@ -167,7 +167,16 @@ namespace VSS.ConfigurationStore
           try
           {
             log.LogTrace("Connecting to kubernetes cluster");
-            var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
+            KubernetesClientConfiguration config = null;
+            if (string.IsNullOrWhiteSpace(KubernetesContext))
+            {
+              log.LogDebug("Using InCluster config");
+              KubernetesClientConfiguration.InClusterConfig();
+            }
+            else
+              config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
+
+
             var client = new Kubernetes(config);
 
             kubernetesConfig = new Dictionary<string, string>(client
