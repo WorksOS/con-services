@@ -171,7 +171,7 @@ namespace VSS.ConfigurationStore
             if (string.IsNullOrWhiteSpace(KubernetesContext))
             {
               log.LogDebug("Using InCluster config");
-              KubernetesClientConfiguration.InClusterConfig();
+              config = KubernetesClientConfiguration.InClusterConfig();
             }
             else
               config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
@@ -188,7 +188,7 @@ namespace VSS.ConfigurationStore
           catch (Exception ex)
           {
             log.LogWarning(
-              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process.");
+              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process. at {ex.StackTrace}" );
             kubernetesInitialized = KubernetesState.Disabled;
             UseKubernetes = false;
           }

@@ -104,6 +104,11 @@ data:
   MIN_IO_THREADS: "1024"
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
+#Logging configuration - Jaeger
+  JAEGER_AGENT_HOST: jaeger-agent.logging
+  JAEGER_AGENT_PORT: "6831"
+  JAEGER_SAMPLER_TYPE: const
+
 
 
 

@@ -90,8 +90,6 @@ namespace VSS.WebApi.Common
     public static IServiceCollection AddJaeger(this IServiceCollection collection, string service_title)
     {
       //Add Jaegar tracing
-      try
-      {
         collection.AddSingleton<ITracer>(serviceProvider =>
         {
           ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -126,13 +124,6 @@ namespace VSS.WebApi.Common
 
           return tracer;
         });
-      }
-      catch (Exception ex)
-      {
-       //Dump exception somewhere since logger is not available in this scope
-       Console.WriteLine($"Can't start Jaeger since {ex.Message}");
-      }
-
       return collection;
     }
 
