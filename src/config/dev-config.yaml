@@ -6,9 +6,6 @@ metadata:
 data: 
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
-  TCCORG: vldev
-  TCCUSERNAME: vldev
-  TCCPWD: vldev_key
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
 #Jaeger configuration  
   JAEGER_AGENT_HOST: jaeger-agent.jaeger
@@ -18,8 +15,6 @@ data:
   MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
-  MYSQL_USERNAME: Merino
-  MYSQL_ROOT_PASSWORD: R58Kper%5
   MYSQL_USERNAME_BUILD: vssBuildUsr
   MYSQL_PASSWORD_BUILD: V$$8u1ld45er
 #Kafka configuration  
