@@ -120,7 +120,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
+          log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
           log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
@@ -195,7 +195,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
+          log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           log.LogDebug($"Request to {endpoint} completed");
 
@@ -271,7 +271,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
+          log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           log.LogDebug($"Request to {endpoint} completed");
 
