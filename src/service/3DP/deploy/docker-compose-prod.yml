@@ -69,6 +69,7 @@ services:
      - KAFKA_PORT=9092
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
      - KAFKA_TOPIC_NAME_SUFFIX=-3dpm
+     - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-tile/1.0
     ports:
       - "8080:80"
 networks:
