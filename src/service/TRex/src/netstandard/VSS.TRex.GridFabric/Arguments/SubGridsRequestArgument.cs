@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.GridFabric.Arguments
@@ -39,6 +40,9 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public bool IncludeSurveyedSurfaceInformation { get; set; }
 
+    public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
+
+
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
@@ -62,6 +66,8 @@ namespace VSS.TRex.GridFabric.Arguments
 
       writer.WriteString(MessageTopic);
       writer.WriteBoolean(IncludeSurveyedSurfaceInformation);
+
+      AreaControlSet.ToBinary(writer);
     }
 
     /// <summary>
@@ -80,6 +86,9 @@ namespace VSS.TRex.GridFabric.Arguments
 
       MessageTopic = reader.ReadString();
       IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
+
+      AreaControlSet = new AreaControlSet();
+      AreaControlSet.FromBinary(reader);
     }
   }
 }

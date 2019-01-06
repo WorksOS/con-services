@@ -1,5 +1,6 @@
 ﻿using ASNodeRaptorReports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
@@ -25,7 +26,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
       };
 
       var request = CompactionReportStationOffsetRequest.CreateRequest(
-      0, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, null, null
+      0, null, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, null, null
       );
 
       var result = StationOffsetRow.CreateRow(stationOffset, request);

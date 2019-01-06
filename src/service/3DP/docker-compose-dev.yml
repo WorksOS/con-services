@@ -13,8 +13,10 @@ services:
       - CUSTOMER_CACHE_LIFE=00:30:00
       - DEFAULT_CONNECTION_LIMIT=64
       - ELEVATION_EXTENTS_CACHE_LIFE=00:30:00
-      - ENABLE_RAPTOR_GATEWAY=true
-      - ENABLE_TREX_GATEWAY=true
+      - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
+      - ENABLE_TREX_GATEWAY_TAGFILE=true
+      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
+      - ENABLE_TREX_GATEWAY_GRIDREPORT=false
       - FILTER_API_URL=http://filter.dev.k8s.vspengg.com/api/v1
       - FILTER_CACHE_LIFE=00:15:00
       - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
@@ -63,6 +65,7 @@ services:
       - KAFKA_PORT=9092
       - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
       - KAFKA_TOPIC_NAME_SUFFIX=-Dev
+      - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-tile/1.0
     ports:
      - "5001:80"
     restart: always

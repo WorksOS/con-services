@@ -8,11 +8,11 @@ using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DILoggingAndStorgeProxyFixture : IDisposable
+  public class DILoggingAndStorageProxyFixture : IDisposable
   {
     private static object Lock = new object();
 
-    public DILoggingAndStorgeProxyFixture()
+    public DILoggingAndStorageProxyFixture()
     {
       lock (Lock)
       {

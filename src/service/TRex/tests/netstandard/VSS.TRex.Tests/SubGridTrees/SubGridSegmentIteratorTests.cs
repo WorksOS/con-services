@@ -12,7 +12,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubGridSegmentIteratorTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+  public class SubGridSegmentIteratorTests : IClassFixture<DILoggingAndStorageProxyFixture>
     {
         [Fact()]
         public void Test_SubGridSegmentIterator_SubGridSegmentIterator()

@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using VSS.TRex.Common;
 
-namespace VSS.TRex.Gateway.Common.Helpers
+namespace VSS.TRex.Common.Utilities
 {
   public class DesignHelper
   {
