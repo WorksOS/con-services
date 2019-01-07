@@ -64,6 +64,7 @@ data:
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
   AWS_SECRET_KEY: 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
+  AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
 #Raptor configuration
   ASNODEIP: 10.97.96.134
@@ -99,10 +100,18 @@ data:
   MIN_IO_THREADS: "1024"
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
+#Notifications config
+  NOTIFICATION_HUB_URL: http://push.dev.k8s.vspengg.com/notifications
+  PUSH_NO_AUTHENTICATION_HEADER: "true" 
+#DataOcean config
+  DATA_OCEAN_URL: https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0
+  DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
+  DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
 #Logging configuration - Jaeger
   JAEGER_AGENT_HOST: jaeger-agent.logging
   JAEGER_AGENT_PORT: "6831"
   JAEGER_SAMPLER_TYPE: const
+
 
 
 
