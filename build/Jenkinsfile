@@ -41,19 +41,25 @@ node ('jenkinsslave-pod') {
 		])
 	])
 
+    def buildkey = UUID.randomUUID()
+                 .toString()
+                 .split('-')[-1..-2]
+                 .join('')
+                 .toUpperCase()
+			 
 	// We may need to rename the branch to conform to DNS name spec
 	def fullBranchName = env.BRANCH_NAME
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
-	def containerDb = "registry-docker-registry.jenkins:5000/${project_name}.db:${versionNumber}"
-    def testContainer = "registry-docker-registry.jenkins:5000/${project_name}.tests:${versionNumber}"
+    def container = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+	def containerDb = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.db-${params.VSTS_BUILD_NUMBER}"
+    def testContainer = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.tests-${params.VSTS_BUILD_NUMBER}"
 
-	def elbContainer = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
-	def elbContainerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
-    def elbTestContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"	
+	def elbContainer = container
+	def elbContainerDb = containerDb
+    def elbTestContainer = testContainer
 
     def ecrRepository = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
     def finalImage = "${ecrRepository}:${versionNumber}"
@@ -68,6 +74,7 @@ node ('jenkinsslave-pod') {
     def acceptance_testing_yaml
 	def runtimeImage
 	def dbRuntimeImage
+	def testImage
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
@@ -96,6 +103,8 @@ node ('jenkinsslave-pod') {
         //])
 		
 		checkout scm
+		
+		sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 		
 	    def build_container = docker.build(container, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
 
@@ -154,7 +163,8 @@ node ('jenkinsslave-pod') {
 	if (runTests)
 	{
 		stage('Build Acceptance tests') {	
-			docker.build(testContainer, "-f ./${servicePath}/build/Dockerfile.tests . --build-arg SERVICE_PATH=${servicePath}").push()
+			testImage = docker.build(testContainer, "-f ./${servicePath}/build/Dockerfile.tests . --build-arg SERVICE_PATH=${servicePath}")
+			testImage.push()
 		}
 	
 		stage ('Run acceptance tests') {
@@ -167,9 +177,13 @@ node ('jenkinsslave-pod') {
 				acceptance_testing_yaml = readFile("pod.yaml")
 				acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${elbContainer}")
 				acceptance_testing_yaml = acceptance_testing_yaml.replace('!db-container!', "${elbContainerDb}")
+				
+				sh "kubectl apply -f testing-configmap.yaml -n testing" 
 			}
-				def label = "testingpod-${UUID.randomUUID().toString()}"
-			podTemplate(label: label, nodeSelector:"kops.k8s.io/instancegroup=spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)])
+			
+			def label = "testingpod-${UUID.randomUUID().toString()}"
+
+			podTemplate(label: label, nodeSelector:"lifecycle=Ec2Spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)])
 			{
 				node (label) {
 					dir ("/app/${servicePath}") {

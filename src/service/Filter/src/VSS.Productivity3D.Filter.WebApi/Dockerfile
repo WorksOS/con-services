@@ -1,4 +1,4 @@
-ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.0-sdk
+ARG APP_BUILD_IMAGE=276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-sdk
 
 FROM ${APP_BUILD_IMAGE}
 

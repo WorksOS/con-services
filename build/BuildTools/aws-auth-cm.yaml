@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::276986344560:role/eks-worker-nodes-NodeInstanceRole-RJWNXFI8VB28
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+        - system:masters
+  mapUsers: |
+    - userarn: arn:aws:iam::276986344560:role/eks-worker-nodes-NodeInstanceRole-RJWNXFI8VB28/system:node:{{EC2PrivateDNSName}}
+      username: admin
+      groups:
+        - system:masters
+    - userarn: arn:aws:iam::276986344560:user/josh_nimmo@trimble.com
+      username: admin
+      groups:
+        - system:masters        
+    - userarn: arn:aws:iam::276986344560:user/bhoobalan_palanivel@trimble.com
+      username: admin
+      groups:
+        - system:masters        
+    - userarn: arn:aws:iam::276986344560:user/stephen_post@trimble.com
+      username: eks-user
+      groups:
+        - edit

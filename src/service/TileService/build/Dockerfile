@@ -1,4 +1,4 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.1-sdk as builder
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk as builder
 
 COPY . /build/
 WORKDIR /build
@@ -6,7 +6,7 @@ ARG SERVICE_PATH
 
 RUN dotnet publish ./$SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj -o /build/artifacts/VSS.Tile.Service.WebApi --framework netcoreapp2.1 --runtime linux-x64
 
-FROM registry-docker-registry.jenkins:5000/dotnet:2.1-runtime
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-runtime
 
 ENV CORECLR_ENABLE_PROFILING=1 \
     CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \

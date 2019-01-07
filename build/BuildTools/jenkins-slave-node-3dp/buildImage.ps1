@@ -1,2 +1,2 @@
-docker build -t registry.k8s.vspengg.com:80/node:8-3dpm ./
-docker push registry.k8s.vspengg.com:80/node:8-3dpm
+docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:node-8 ./
+docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:node-8
