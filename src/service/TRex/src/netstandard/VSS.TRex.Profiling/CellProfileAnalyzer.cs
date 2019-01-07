@@ -37,6 +37,10 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public int TopMostLayerCompactionHalfPassCount;
 
+    private ICellPassAttributeFilter PassFilter;
+
+    private ICellSpatialFilter CellFilter;
+
     /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
     /// </summary>
@@ -62,6 +66,9 @@ namespace VSS.TRex.Profiling
       ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign)
     {
       CellLiftBuilder = cellLiftBuilder;
+
+      PassFilter = filterSet.Filters[0].AttributeFilter;
+      CellFilter = filterSet.Filters[0].SpatialFilter;
     }
 
     /// <summary>

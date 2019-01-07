@@ -6,6 +6,7 @@ using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
@@ -49,7 +50,54 @@ namespace VSS.TRex.Profiling
     {
     }
 
+    /// <summary>
+    /// Constructs the set of filters that will be used to derive the set of production data subgrids required for
+    /// each subgrid being considered along the profile line.
+    /// </summary>
+    /// <returns></returns>
+    private IFilterSet ConstructFilters()
+    {
+      // If the volume calculation is between two filters then handle appropriately...
+      if (VolumeType == VolumeComputationType.Between2Filters)
+      {
+        var BaseFilter = FilterSet.Filters[0];
+        var TopFilter = FilterSet.Filters[1];
 
+        // Determine if intermediary filter/surface behaviour is required to support summary volumes
+        bool IntermediaryFilterRequired = VolumeType == VolumeComputationType.Between2Filters &&
+                                          BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == DateTime.MinValue && // 'From' has As-At Time filter
+                                          !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass && // Want latest cell pass in 'from'
+                                          TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != DateTime.MinValue && // 'To' has time-range filter with latest
+                                          !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass; // Want latest cell pass in 'to'
+
+        if (IntermediaryFilterRequired)
+        {
+          // Create and use the intermediary filter. The intermediary filter
+          // is create from the Top filter, with the return earliest flag set to true
+          var IntermediaryFilter = new CombinedFilter();
+          IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
+          IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
+
+
+          return new FilterSet(new[] {FilterSet.Filters[0], IntermediaryFilter, FilterSet.Filters[1]});
+        }
+      }
+
+      return FilterSet;
+    }
+
+    /// <summary>
+    /// Merges the 'from' elevation subgrid and the 'intermediary' subgrid result into a single subgrid for 
+    /// subsequent calculation
+    /// </summary>
+    private void MergeIntemediaryResults()
+    {
+
+    }
+
+    /// <summary>
+    /// Processes each subgrid in turn into the resulting profile.
+    /// </summary>
     public void ProcessSubGroup()
     {
 
@@ -175,10 +223,6 @@ namespace VSS.TRex.Profiling
     Procedure Abort;
   end;
 
-const
-  ListInc = 1000;
-  MaxIntercepts = 10000;  // note this should give a profile at least up to 2-3km long
-
 constructor TICSVServerProfiler.Create(SiteModel: TICSiteModel;
                                      ASubGridTree: TICServerSubGridTree;
                                      const APDExistenceMap : TSubGridTreeBitMask;
@@ -193,7 +237,6 @@ begin
   FProfileTypeRequired := AProfileTypeRequired;
   FSVProfileCells := TICSummaryVolumesProfileCellList.Create;
 
-//  FOverallExistenceMap := AOverallExistenceMap;
   FPDExistenceMap := APDExistenceMap;
   FGridDistanceBetweenProfilePoints := 0;
 
@@ -201,7 +244,6 @@ begin
 
   FPopulationControl := APopulationControl;
 
-// RCE 36155  FMachineTargetValuesEventsLocked := False;
   FLastGetTargetValues_MachineID := -1;
   FVolumeType := AVolumeType;
   FDesignFile := ADesignfile;

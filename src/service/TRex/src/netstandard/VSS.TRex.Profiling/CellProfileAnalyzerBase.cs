@@ -59,10 +59,9 @@ namespace VSS.TRex.Profiling
     protected SubGridTreeBitmapSubGridBits FilterMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     protected ISiteModel SiteModel;
-    protected ICellPassAttributeFilter PassFilter;
-
-    protected ICellSpatialFilter CellFilter;
     protected ISubGridTreeBitMask PDExistenceMap;
+
+    protected IFilterSet FilterSet;
 
     /// <summary>
     /// The set of surveyed surfaces that match the time constraints of the supplied filter.
@@ -109,8 +108,7 @@ namespace VSS.TRex.Profiling
     {
       SiteModel = siteModel;
       PDExistenceMap = pDExistenceMap;
-      PassFilter = filterSet.Filters[0].AttributeFilter;
-      CellFilter = filterSet.Filters[0].SpatialFilter;
+      FilterSet = filterSet;
       CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
 
       Initialise();
@@ -118,6 +116,10 @@ namespace VSS.TRex.Profiling
 
     public virtual void Initialise()
     {
+      // Todo: Only first filter in filter set is currently used for surface & alignment mask designs or surveyed surface restriction driven by date range
+      var PassFilter = FilterSet.Filters[0].AttributeFilter;
+      var CellFilter = FilterSet.Filters[0].SpatialFilter;
+
       if (CellFilter.SurfaceDesignMaskDesignUid != Guid.Empty)
       {
         SurfaceDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.SurfaceDesignMaskDesignUid);
