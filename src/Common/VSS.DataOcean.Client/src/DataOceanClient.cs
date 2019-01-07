@@ -120,10 +120,10 @@ namespace VSS.DataOcean.Client
         {
           if (uploadWaitInterval > 0) await Task.Delay(uploadWaitInterval);
           //TODO: This could be a scheduler job, polled for by the caller, if the upload is too slow.
-          var getResult = await GetData<DataOceanFile>(route, null, customHeaders);
-          var status = getResult.Status.ToUpper();
+          var getResult = await GetData<DataOceanFileResult>(route, null, customHeaders);
+          var status = getResult.File.Status.ToUpper();
           success = string.Compare(status, "AVAILABLE", true) == 0;
-          done = success || status == "UPLOAD_FAILED";
+          done = success || string.Compare(status, "UPLOAD_FAILED", true) == 0;
         }
 
         if (!done)
@@ -382,7 +382,7 @@ namespace VSS.DataOcean.Client
     /// <param name="parentId">DataOcean ID of the parent directory</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private Task<CreateDirectoryResult> CreateDirectory(string name, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<DataOceanDirectoryResult> CreateDirectory(string name, Guid? parentId, IDictionary<string, string> customHeaders)
     {
       var message = new CreateDirectoryMessage
       {
@@ -393,7 +393,7 @@ namespace VSS.DataOcean.Client
         }
       };
 
-      return CreateItem<CreateDirectoryMessage, CreateDirectoryResult>(message, "/api/directories", customHeaders);
+      return CreateItem<CreateDirectoryMessage, DataOceanDirectoryResult>(message, "/api/directories", customHeaders);
     }
 
     /// <summary>
@@ -403,7 +403,7 @@ namespace VSS.DataOcean.Client
     /// <param name="parentId">DataOcean ID of the parent directory</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private Task<CreateFileResult> CreateFile(string name, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<DataOceanFileResult> CreateFile(string name, Guid? parentId, IDictionary<string, string> customHeaders)
     {
       var message = new CreateFileMessage
       {
@@ -415,7 +415,7 @@ namespace VSS.DataOcean.Client
           RegionPreferences = new List<string> { "us1"}
         }
       };
-      return CreateItem<CreateFileMessage, CreateFileResult>(message, "/api/files", customHeaders);
+      return CreateItem<CreateFileMessage, DataOceanFileResult>(message, "/api/files", customHeaders);
     }
 
     /// <summary>

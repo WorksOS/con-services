@@ -205,8 +205,8 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<CreateDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
-          false)).ReturnsAsync(new CreateDirectoryResult{Directory  = expectedFolderResult});
+        .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync(new DataOceanDirectoryResult{Directory  = expectedFolderResult});
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
@@ -252,8 +252,8 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedSubBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<CreateDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
-          false)).ReturnsAsync(new CreateDirectoryResult { Directory = expectedSubFolderResult });
+        .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync(new DataOceanDirectoryResult { Directory = expectedSubFolderResult });
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
@@ -683,7 +683,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var uploadUrl = "https://fs-us1.staging-tdata-cdn.com/r/11591287-648f-4c60-ae5c-80b61b12d78b?Signature=lD3yNv-YesLoQWwCYPVo-dzh9Xw0Q5kiCkPkckv67tOP1e~AfFiJv9jYAqmES0vQgkQvSqzvK4RJ2l2gXybdq3pvEDxeFbQtvAW-6hHMBd7q~KUMi4gW4GSD-mWtiH~4~576SEUn-uZl6reyaM6yRqPXjS2VhBJGnBWzdhU~HVEiMJERR5MSfZp~oXfi~Gq-0NbeiXF-zIp1EIuH-cEP69MZg4zXRQn~wbHdrkBeVQeaziPVo1Keg~xDoi5TkyBnfV5Lpc3ZlRvlgHdPPrLuzOKbHXnsH2rPSD3naZPNfxtCq-V8YapD2NnZGyTPX-2FE77y3~X8k-rWPboU210WdA__&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9mcy11czEuc3RhZ2luZy10ZGF0YS1jZG4uY29tL3IvMTE1OTEyODctNjQ4Zi00YzYwLWFlNWMtODBiNjFiMTJkNzhiIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNTQxNjI1NzA1fX19XX0_&Key-Pair-Id=APKAJZFK5OCWBA5LQHUQ";
 
       const string fileName = "dummy.dxf";
-      var expectedFileResult = new DataOceanFile
+      var expectedFile = new DataOceanFile
       {
         Id = Guid.NewGuid(),
         Name = fileName,
@@ -692,6 +692,7 @@ namespace VSS.DataOcean.Client.UnitTests
         Status = status,
         DataOceanUpload = new DataOceanTransfer { Url = uploadUrl }
       };
+      var expectedFileResult = new DataOceanFileResult {File = expectedFile};
       var folderName = $"{Path.DirectorySeparatorChar}";
       var expectedBrowseResult = new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory>() };
       var expectedUploadResult = new StringContent("some ok result");
@@ -700,18 +701,18 @@ namespace VSS.DataOcean.Client.UnitTests
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
       var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
       var createUrl = $"{dataOceanBaseUrl}/api/files";
-      var getUrl = $"{createUrl}/{expectedFileResult.Id}";
+      var getUrl = $"{createUrl}/{expectedFile.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
       .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<CreateFileResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3, false))
-        .ReturnsAsync(new CreateFileResult{File = expectedFileResult});
+        .Setup(g => g.ExecuteRequest<DataOceanFileResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3, false))
+        .ReturnsAsync(expectedFileResult);
       gracefulMock
         .Setup(g => g.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, null, It.IsAny<Stream>(), null, 3, false))
         .ReturnsAsync(expectedUploadResult);
-      gracefulMock.Setup(g => g.ExecuteRequest<DataOceanFile>(getUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<DataOceanFileResult>(getUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileResult));
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
