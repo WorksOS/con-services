@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: descheduler-job
+  namespace: kube-system
+spec:
+  schedule: "30 12 * * *"
+  jobTemplate:
+    metadata:
+      name: descheduler-pod
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+    spec:
+      template:
+        spec:
+          containers:
+          - name: descheduler
+            image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:descheduler
+            volumeMounts:
+            - mountPath: /policy-dir
+              name: policy-volume
+            command: ["/bin/descheduler"]
+            args: ["--policy-config-file", "/policy-dir/descheduler.yaml", "--v","5"]
+          restartPolicy: "Never"
+          serviceAccountName: descheduler-sa
+          volumes:
+          - name: policy-volume
+            configMap:
+              name: descheduler-policy-configmap

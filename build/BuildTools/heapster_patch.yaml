@@ -1,0 +1,9 @@
+spec:
+  template:
+    spec:
+      containers:
+      - command:
+        - /heapster
+        - --source=kubernetes:kubernetes:https://kubernetes.default?useServiceAccount=true&kubeletHttps=true&kubeletPort=10250&insecure=true
+        - --sink=influxdb:http://monitoring-influxdb.kube-system.svc:8086
+        name: heapster

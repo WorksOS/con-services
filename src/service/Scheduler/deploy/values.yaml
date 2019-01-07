@@ -26,5 +26,5 @@ ingress:
     - scheduler
   annotations:
     kubernetes.io/ingress.class: nginx
-    external-dns.alpha.kubernetes.io/target: endpoints.k8s.vspengg.com
+    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
     

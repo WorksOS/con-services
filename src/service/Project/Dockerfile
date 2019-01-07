@@ -1,4 +1,4 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as builder
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-sdk as builder
 
 COPY . /build/
 WORKDIR /build
@@ -7,7 +7,7 @@ RUN chmod 777 *.sh
 
 RUN ["/bin/sh", "build.sh"]
 
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
