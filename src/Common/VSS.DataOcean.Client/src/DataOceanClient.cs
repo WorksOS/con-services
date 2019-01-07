@@ -106,13 +106,14 @@ namespace VSS.DataOcean.Client
       var parentFolder = await GetFolderMetadata(path, true, customHeaders);
       //1. Create the file
       var createResult = await CreateFile(filename, parentFolder?.Id, customHeaders);
-      if (createResult != null)
+      var newFile = createResult?.File;
+      if (newFile != null)
       {
         //2. Upload the file
-        HttpContent result = await gracefulClient.ExecuteRequestAsStreamContent(createResult.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
+        HttpContent result = await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
 
         //3. Monitor status of upload until done
-        var route = $"/api/files/{createResult.Id}";
+        var route = $"/api/files/{newFile.Id}";
         DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(uploadTimeout);
         bool done = false;
         while (!done && DateTime.Now <= endJob)
@@ -309,7 +310,7 @@ namespace VSS.DataOcean.Client
             }
             else
             {
-              folder = await CreateDirectory(parts[i], folder?.ParentId, customHeaders);
+              folder = (await CreateDirectory(parts[i], folder?.ParentId, customHeaders)).Directory;
             }
           }
           else //count > 1
@@ -381,7 +382,7 @@ namespace VSS.DataOcean.Client
     /// <param name="parentId">DataOcean ID of the parent directory</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private Task<DataOceanDirectory> CreateDirectory(string name, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<CreateDirectoryResult> CreateDirectory(string name, Guid? parentId, IDictionary<string, string> customHeaders)
     {
       var message = new CreateDirectoryMessage
       {
@@ -392,7 +393,7 @@ namespace VSS.DataOcean.Client
         }
       };
 
-      return CreateItem<CreateDirectoryMessage, DataOceanDirectory>(message, "/api/directories", customHeaders);
+      return CreateItem<CreateDirectoryMessage, CreateDirectoryResult>(message, "/api/directories", customHeaders);
     }
 
     /// <summary>
@@ -402,7 +403,7 @@ namespace VSS.DataOcean.Client
     /// <param name="parentId">DataOcean ID of the parent directory</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private Task<DataOceanFile> CreateFile(string name, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<CreateFileResult> CreateFile(string name, Guid? parentId, IDictionary<string, string> customHeaders)
     {
       var message = new CreateFileMessage
       {
@@ -414,7 +415,7 @@ namespace VSS.DataOcean.Client
           RegionPreferences = new List<string> { "us1"}
         }
       };
-      return CreateItem<CreateFileMessage, DataOceanFile>(message, "/api/files", customHeaders);
+      return CreateItem<CreateFileMessage, CreateFileResult>(message, "/api/files", customHeaders);
     }
 
     /// <summary>

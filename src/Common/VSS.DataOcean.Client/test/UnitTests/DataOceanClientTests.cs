@@ -205,8 +205,8 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<DataOceanDirectory>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
-          false)).ReturnsAsync(expectedFolderResult);
+        .Setup(g => g.ExecuteRequest<CreateDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync(new CreateDirectoryResult{Directory  = expectedFolderResult});
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
@@ -252,8 +252,8 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedSubBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<DataOceanDirectory>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
-          false)).ReturnsAsync(expectedSubFolderResult);
+        .Setup(g => g.ExecuteRequest<CreateDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync(new CreateDirectoryResult { Directory = expectedSubFolderResult });
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
@@ -706,8 +706,8 @@ namespace VSS.DataOcean.Client.UnitTests
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
       .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<DataOceanFile>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3, false))
-        .ReturnsAsync(expectedFileResult);
+        .Setup(g => g.ExecuteRequest<CreateFileResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3, false))
+        .ReturnsAsync(new CreateFileResult{File = expectedFileResult});
       gracefulMock
         .Setup(g => g.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, null, It.IsAny<Stream>(), null, 3, false))
         .ReturnsAsync(expectedUploadResult);
