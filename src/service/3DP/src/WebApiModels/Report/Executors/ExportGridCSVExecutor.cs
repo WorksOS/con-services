@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException<ExportGridCSV>();
 
-        var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.filter);
         MemoryStream outputStream = null;
 
         Stream writerStream = null;
