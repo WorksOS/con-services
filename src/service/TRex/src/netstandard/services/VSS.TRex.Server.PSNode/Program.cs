@@ -34,6 +34,7 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGrids;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -96,6 +97,8 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+
+        .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
 
         // Create the cache to store the general subgrid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(

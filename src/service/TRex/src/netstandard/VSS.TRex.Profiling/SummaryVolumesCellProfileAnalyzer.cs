@@ -1,22 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Caching;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
@@ -31,6 +42,10 @@ namespace VSS.TRex.Profiling
 
     private SummaryVolumeProfileCell profileCell;
     public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
+
+    private ISubGridRequestor[] Requestors;
+
+    private bool IntermediaryFilterRequired = false;
 
     private SummaryVolumesCellProfileAnalyzer()
     {}
@@ -65,7 +80,7 @@ namespace VSS.TRex.Profiling
         var TopFilter = FilterSet.Filters[1];
 
         // Determine if intermediary filter/surface behaviour is required to support summary volumes
-        bool IntermediaryFilterRequired = VolumeType == VolumeComputationType.Between2Filters &&
+        IntermediaryFilterRequired = VolumeType == VolumeComputationType.Between2Filters &&
                                           BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == DateTime.MinValue && // 'From' has As-At Time filter
                                           !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass && // Want latest cell pass in 'from'
                                           TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != DateTime.MinValue && // 'To' has time-range filter with latest
@@ -111,10 +126,8 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Processes each subgrid in turn into the resulting profile.
     /// </summary>
-    public void ProcessSubGroup()
-    {
-
-
+    public void ProcessSubGroup(SubGridCellAddress address, bool prodDataAtAddress, SubGridTreeBitmapSubGridBits cellOverrideMask)
+    { 
       // This this subgrid get relevant data based upon VolumeType requested
 
       int I,J,K;
@@ -123,15 +136,43 @@ namespace VSS.TRex.Profiling
       float StationAtNextCellBorder;
       bool OKToAdd;
 
-      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.Between2Filters)
+      // Execute a client grid request for each requester and create an array of the results
+      var clientGrids = Requestors.Select(x =>
       {
-        var acs = new AreaControlSet();
-        // to do get subgrid
+        var clientGrid = ClientLeafSubGridFactory.GetSubGrid(GridDataType.HeightAndTime);
+
+        clientGrid.CellSize = SiteModel.Grid.CellSize;
+        clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
+        clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
+          (uint)(address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+
+        // Reach into the subgrid request layer and retrieve an appropriate subgrid
+        x.CellOverrideMask = cellOverrideMask;
+
+        ServerRequestResult result = x.RequestSubGridInternal((SubGridCellAddress)address, prodDataAtAddress, true, clientGrid);
+
+        if (result != ServerRequestResult.NoError)
+          Log.LogInformation($"Request for subgrid {address} request failed with code {result}");
+
+        return clientGrid;
+      }).ToArray();
+
+      // If an intermediary result was requested then merge the 'from' and intermediary subgrids now
+      if (IntermediaryFilterRequired)
+      {
+        MergeIntemediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);
+
+        //... and chop out the intermediary grid
+        clientGrids = new[] {clientGrids[0], clientGrids[2]};
       }
 
+      var HeightsGrid1 = clientGrids[0] as ClientHeightAndTimeLeafSubGrid;
+      var HeightsGrid2 = clientGrids[1] as ClientHeightAndTimeLeafSubGrid;
 
-
-
+      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.Between2Filters)
+      {
+       
+      }
 
     }
 
@@ -155,6 +196,14 @@ namespace VSS.TRex.Profiling
       profileCell = null;
       //      FilterDesignElevations = null;
       bool IgnoreSubgrid = false;
+
+      // Construct the set of requestors to query elevation subgrids needed for the summary volume calculations.
+      var utilities = DIContext.Obtain<IRequestorUtilities>();
+      Requestors = utilities.ConstructRequestors(SiteModel,
+        utilities.ConstructRequestorIntermediaries(SiteModel, ConstructFilters(), true, GridDataType.HeightAndTime),
+        AreaControlSet.CreateAreaControlSet(), PDExistenceMap);
+
+      SubGridTreeBitmapSubGridBits cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       for (int I = 0; I < profileCells.Count; I++)
       {
@@ -184,7 +233,11 @@ namespace VSS.TRex.Profiling
 
         if (SubGrid != null && !IgnoreSubgrid)
         {
-          ProcessSubGroup();
+          ProcessSubGroup(new SubGridCellAddress(CurrentSubgridOrigin.X << SubGridTreeConsts.SubGridIndexBitsPerLevel, CurrentSubgridOrigin.Y << SubGridTreeConsts.SubGridIndexBitsPerLevel),
+            PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y],
+            cellOverrideMask);
+
+          cellOverrideMask.Clear();
         }
       }
 

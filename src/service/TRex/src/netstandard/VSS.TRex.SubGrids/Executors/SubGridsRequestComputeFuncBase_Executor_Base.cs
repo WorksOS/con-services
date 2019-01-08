@@ -25,6 +25,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
@@ -357,7 +358,7 @@ namespace VSS.TRex.SubGrids.Executors
         return;
 
       // Construct the set of requester objects to be used for the filters present in the request
-      var Requestors = ConstructRequestors();
+      var Requestors = DIContext.Obtain<IRequestorUtilities>().ConstructRequestors(siteModel, RequestorIntermediaries, localArg.AreaControlSet, ProdDataMask);
 
       //Log.LogInformation("Sending {0} subgrids to caller for processing", count);
       //Log.LogInformation($"Requester list contains {Requestors.Length} items");
@@ -415,109 +416,6 @@ namespace VSS.TRex.SubGrids.Executors
       Guid[] FilteredSurveyedSurfacesAsArray, 
       SurfaceElevationPatchRequest Request,
       ITRexSpatialMemoryCacheContext CacheContext)[] RequestorIntermediaries;
-
-    /// <summary>
-    /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches pre-calculated
-    /// ready to be used to create per-Task requestor delegates
-    /// </summary>
-    /// <returns></returns>
-    private (ICombinedFilter Filter, 
-      ISurveyedSurfaces FilteredSurveyedSurfaces, 
-      Guid[] FilteredSurveyedSurfacesAsArray, 
-      SurfaceElevationPatchRequest Request, 
-      ITRexSpatialMemoryCacheContext CacheContext)[] ConstructRequestorIntermediaries()
-    {
-      (ICombinedFilter Filter, 
-      ISurveyedSurfaces FilteredSurveyedSurfaces, 
-      Guid[] FilteredSurveyedSurfacesAsArray, 
-      SurfaceElevationPatchRequest Request, 
-      ITRexSpatialMemoryCacheContext CacheContext) getIntermediary(ICombinedFilter filter)
-      {
-        // Construct the appropriate list of surveyed surfaces
-        // Obtain local reference to surveyed surface list. If it is replaced while processing the
-        // list then the local reference will still be valid allowing lock free read access to the list.
-        ISurveyedSurfaces FilteredSurveyedSurfaces = null;
-        ISurveyedSurfaces SurveyedSurfaceList = siteModel.SurveyedSurfaces;
-
-        if (localArg.IncludeSurveyedSurfaceInformation && SurveyedSurfaceList?.Count > 0)
-        {
-          FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-
-          // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-          SurveyedSurfaceList.FilterSurveyedSurfaceDetails(filter.AttributeFilter.HasTimeFilter,
-            filter.AttributeFilter.StartTime, filter.AttributeFilter.EndTime,
-            filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
-            filter.AttributeFilter.SurveyedSurfaceExclusionList);
-
-          // Ensure that the filtered surveyed surfaces are in a known ordered state
-          FilteredSurveyedSurfaces.SortChronologically(filter.AttributeFilter.ReturnEarliestFilteredCellPass);
-        }
-
-        Guid[] FilteredSurveyedSurfacesAsArray = FilteredSurveyedSurfaces?.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
-
-        // Get a caching context for the subgrids returned by this requester, but only if the requested grid data type supports it
-        ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
-
-        if (_enableGeneralSubgridResultCaching &&
-            ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int)localArg.GridDataType])
-        {
-          SubGridCacheContext = SubGridCache.LocateOrCreateContext(localArg.ProjectID, SpatialCacheFingerprint.ConstructFingerprint(localArg.ProjectID, localArg.GridDataType, filter, FilteredSurveyedSurfacesAsArray));
-        }
-
-        return (filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray, 
-          new SurfaceElevationPatchRequest(SubGridCache, SubGridCache.LocateOrCreateContext(localArg.ProjectID, SpatialCacheFingerprint.ConstructFingerprint(localArg.ProjectID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
-            SubGridCacheContext);
-      }
-
-      // Construct the intermediary requestor state
-      return localArg.Filters.Filters.Select(getIntermediary).ToArray();
-    }
-
-    private static Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>() ;
-
-    /// <summary>
-    /// Constructs the set of requestors, one per filter, required to query the data stacks
-    /// </summary>
-    /// <returns></returns>
-    private ISubGridRequestor[] ConstructRequestors()
-    {
-      // Construct the resulting requestors
-      return RequestorIntermediaries.Select(x =>
-      {
-        // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
-        // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
-        // promote cacheability.
-
-        var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
-        {
-          SiteModelID = localArg.ProjectID,
-          CellSize = siteModel.Grid.CellSize,
-          IncludedSurveyedSurfaces = x.FilteredSurveyedSurfacesAsArray,
-          SurveyedSurfacePatchType = x.Filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
-          ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
-        };
-
-        var requestor = SubGridRequestorFactory();
-        requestor.Initialize(siteModel,
-          siteModels.StorageProxy,
-          x.Filter,
-          false, // Override cell restriction
-          BoundingIntegerExtent2D.Inverted(),
-          SubGridTreeConsts.SubGridTreeLevels,
-          int.MaxValue, // MaxCellPasses
-          AreaControlSet,
-          new FilteredValuePopulationControl(),
-          ProdDataMask,
-          SubGridCache,
-          x.CacheContext,
-          x.FilteredSurveyedSurfaces,
-          x.FilteredSurveyedSurfacesAsArray,
-          x.Request,
-          surfaceElevationPatchArg);
-
-        return requestor;
-      }).ToArray();
-    }
 
     /// <summary>
     /// Process the set of subgrids in the request that have partition mappings that match their affinity with this node
@@ -587,7 +485,7 @@ namespace VSS.TRex.SubGrids.Executors
       if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
         return new TSubGridRequestsResponse {ResponseCode = contextEstablishmentResponse};
 
-      RequestorIntermediaries = ConstructRequestorIntermediaries();
+      RequestorIntermediaries = DIContext.Obtain<IRequestorUtilities>().ConstructRequestorIntermediaries(siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, localArg.GridDataType);
 
       TSubGridRequestsResponse result = PerformSubgridRequests();
       result.NumSubgridsExamined = NumSubgridsToBeExamined;
