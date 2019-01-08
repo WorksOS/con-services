@@ -58,8 +58,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       newClient.CellSize.Should().Be(1.0);
       newClient.Level.Should().Be(SubGridTreeConsts.SubGridTreeLevels);
-      newClient.OriginX.Should().Be(123456 & ~SubGridTreeConsts.SubGridLocalKeyMask);
-      newClient.OriginY.Should().Be(234567 & ~SubGridTreeConsts.SubGridLocalKeyMask);
+      newClient.OriginX.Should().Be(123456);
+      newClient.OriginY.Should().Be(234567);
     }
 
     [Fact]
