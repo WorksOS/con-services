@@ -94,8 +94,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
           projectCustomerSubs =
             (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow)).ToList();
-          log.LogDebug(
-            $"ProjectAndAssetUidsExecutor: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
+          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
         }
         else
         {
@@ -103,7 +102,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      if (request.DeviceType != (int) DeviceTypeEnum.MANUALDEVICE && !string.IsNullOrEmpty(request.RadioSerial))
+      // if a SNM device is provided, try to use it, over any EC520
+      if (request.DeviceType != (int) DeviceTypeEnum.MANUALDEVICE && !string.IsNullOrEmpty(request.RadioSerial)) 
       {
         var assetDevice =
           await dataRepository.LoadAssetDevice(request.RadioSerial, ((DeviceTypeEnum) request.DeviceType).ToString());
@@ -114,8 +114,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           log.LogDebug("ProjectAndAssetUidsExecutor: Failed for SNM940 trying again as Device Type SNM941");
           assetDevice = await dataRepository.LoadAssetDevice(request.RadioSerial, DeviceTypeEnum.SNM941.ToString());
         }
-
-        log.LogDebug("ProjectAndAssetUidsExecutor: Loaded assetDevice? {0}", JsonConvert.SerializeObject(assetDevice));
 
         if (assetDevice != null)
         {
@@ -128,6 +126,34 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
             log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
           }
+        }
+        else
+        {
+          log.LogDebug($"ProjectAndAssetUidsExecutor: Unable to locate SNM assetDevice for radioSerial: {request.RadioSerial} and deviceType: {request.DeviceType}");
+        }
+      }
+
+      // if a SNM device is provided, try to use it first 
+      if (assetSubs.Count == 0 && !string.IsNullOrEmpty(request.Ec520Serial))
+      {
+        var assetDevice =
+          await dataRepository.LoadAssetDevice(request.Ec520Serial, ((DeviceTypeEnum.SNM941 /* todoJeannie EC520 */).ToString()));
+
+        if (assetDevice != null)
+        {
+          assetUid = assetDevice.AssetUID;
+          assetOwningCustomerUid = assetDevice.OwningCustomerUID;
+          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
+
+          if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
+          {
+            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
+            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
+          }
+        }
+        else
+        {
+          log.LogDebug($"ProjectAndAssetUidsExecutor: Unable to locate ECM assetDevice for ec520serial: {request.Ec520Serial}");
         }
       }
 

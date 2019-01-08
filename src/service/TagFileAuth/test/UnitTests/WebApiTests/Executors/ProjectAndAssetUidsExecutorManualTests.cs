@@ -62,7 +62,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: (new List<Subscription>()
@@ -94,7 +94,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, DateTime.UtcNow),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, DateTime.UtcNow),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -131,7 +131,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -170,7 +170,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -206,7 +206,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -249,7 +249,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -292,7 +292,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -331,7 +331,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(-1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -371,7 +371,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -410,7 +410,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -447,7 +447,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -486,7 +486,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 0, "radSer45", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 0, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -529,7 +529,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -571,7 +571,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -609,7 +609,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -646,7 +646,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -686,7 +686,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>()
@@ -730,7 +730,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -771,7 +771,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer 450", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer 450", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
@@ -812,7 +812,7 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 0, "radSer 450", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 0, "radSer 450", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
