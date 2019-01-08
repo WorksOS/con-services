@@ -37,7 +37,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <returns></returns>
     private static async Task<GetProjectAndAssetUidsResult> ValidateWithTfa(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest)
     {
-      Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA servce to validate tagfile permissions:{JsonConvert.SerializeObject(getProjectAndAssetUidsRequest)}");
+      Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA service to validate tagfile permissions:{JsonConvert.SerializeObject(getProjectAndAssetUidsRequest)}");
       var tfa = DIContext.Obtain<ITagFileAuthProjectProxy>();
       
       GetProjectAndAssetUidsResult tfaResult;
@@ -53,6 +53,21 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       
       return tfaResult;
     }
+
+    private static string GetEC520SerialID(this string sValue)
+    {
+      const string EC520_SUFFIX = "YU";
+
+      //Check if the value is a valid EC520 Serial ID else make field empty
+      string EC520Serial = String.Empty;
+      if (!string.IsNullOrEmpty(sValue))
+      {
+        if ((sValue.Length > 2) && (sValue.Substring(sValue.Length - 2, 2) == EC520_SUFFIX))
+          EC520Serial = sValue;
+      }
+      return EC520Serial;
+    }
+
 
     /// <summary>
     /// this needs to be public, only for unit tests
@@ -78,6 +93,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
        */
 
+
+      string EC520SerialID = GetEC520SerialID(processor.HardwareID);
+
       // Type C. Do we have what we need already (Most likley test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
@@ -86,17 +104,17 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Business rule for device type conversion
       int radioType = processor.RadioType == "torch" ? (int) DeviceType.SNM940 : (int) DeviceType.ManualDevice; // torch device set to type 6
 
-      if (processor.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty)
+      if (processor.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && EC520SerialID == string.Empty)
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
-        var message = "Must have either a valid TCCOrgID or RadioSerialNo or ProjectUID";
+        var message = "Must have either a valid TCCOrgID or RadioSerialNo or EC520SerialNo or ProjectUID";
         Log.LogWarning(message);
         return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
       var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        radioType, processor.RadioSerial, tagDetail.tccOrgId,
+        radioType, processor.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
         MathUtilities.RadiansToDegrees(processor.LLHLat),
         MathUtilities.RadiansToDegrees(processor.LLHLon),
         processor.DataTime);
