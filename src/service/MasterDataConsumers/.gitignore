@@ -28,6 +28,7 @@ bld/
 [Oo]bj/ 
 _ReSharper*/
 [Tt]est[Rr]esult*
+AcceptanceTests/deploy/*
 
 # Track ToolsFolder
 !tools/x64/

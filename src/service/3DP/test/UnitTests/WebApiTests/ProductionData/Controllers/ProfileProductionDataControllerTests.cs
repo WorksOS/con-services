@@ -1,20 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICOptionsDecls;
-using System;
-using System.IO;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
@@ -30,10 +28,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     /// 
     private ProfileProductionDataRequest CreateRequest()
     {
-      var profileLLPoints = ProfileLLPoints.CreateProfileLLPoints(35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-        -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,
-        35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
-        -104.28745 * ConversionConstants.DEGREES_TO_RADIANS);
+      var profileLLPoints = ProfileLLPoints.CreateProfileLLPoints(35.109149 * Coordinates.DEGREES_TO_RADIANS,
+        -106.6040765 * Coordinates.DEGREES_TO_RADIANS,
+        35.109149 * Coordinates.DEGREES_TO_RADIANS,
+        -104.28745 * Coordinates.DEGREES_TO_RADIANS);
 
       return ProfileProductionDataRequest.CreateProfileProductionData(
         PD_MODEL_ID,
@@ -77,7 +75,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
             positionsAreGrid,
             startPt,
             endPt,
-            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
+            RaptorConverters.ConvertFilter(request.Filter),
             RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
             RaptorConverters.DesignDescriptor(request.alignmentDesign),
             request.returnAllPassesAndLayers);
@@ -119,7 +117,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
             positionsAreGrid,
             startPt,
             endPt,
-            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId, null),
+            RaptorConverters.ConvertFilter(request.Filter),
             RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
             RaptorConverters.DesignDescriptor(request.alignmentDesign),
             request.returnAllPassesAndLayers);

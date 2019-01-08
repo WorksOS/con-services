@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private ContractExecutionResult ProcessWithRaptor(CompactionReportGridRequest request)
     {
-      var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
       var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);

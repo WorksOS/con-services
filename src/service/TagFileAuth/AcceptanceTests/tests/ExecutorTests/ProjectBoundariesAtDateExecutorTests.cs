@@ -40,7 +40,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -68,7 +68,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -97,7 +97,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -132,7 +132,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -167,7 +167,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -220,7 +220,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber,
@@ -267,7 +267,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       // note no owningCustomerUID
@@ -301,7 +301,7 @@ namespace ExecutorTests
       Guid assetOwningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, assetOwningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -335,7 +335,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -368,7 +368,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
@@ -401,7 +401,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());

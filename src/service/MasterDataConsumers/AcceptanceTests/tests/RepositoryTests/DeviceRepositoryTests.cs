@@ -27,10 +27,10 @@ namespace RepositoryTests
     }
 
     /// <summary>
-    /// Happy path i.e. device doesn't exist already.
+    /// Happy path i.e. snm940 device doesn't exist already.
     /// </summary>
     [TestMethod]
-    public void CreateDevice_HappyPath()
+    public void CreateDevice_SNM940_HappyPath()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
       var deviceEvent = new CreateDeviceEvent()
@@ -38,6 +38,60 @@ namespace RepositoryTests
         DeviceUID = Guid.NewGuid(),
         DeviceSerialNumber = "Device radio serial",
         DeviceType = "SNM940",
+        DeviceState = "active",
+        DeregisteredUTC = firstCreatedUTC,
+        ModuleType = "theModule Type",
+        MainboardSoftwareVersion = "mb45",
+        RadioFirmwarePartNumber = "rd 567",
+        GatewayFirmwarePartNumber = "them or us",
+        DataLinkType = "CAT",
+        ActionUTC = firstCreatedUTC,
+        ReceivedUTC = firstCreatedUTC
+      };
+
+      var device = new Device
+      {
+        DeviceUID = deviceEvent.DeviceUID.ToString(),
+        DeviceSerialNumber = deviceEvent.DeviceSerialNumber,
+        DeviceType = deviceEvent.DeviceType,
+        DeviceState = deviceEvent.DeviceState,
+        DeregisteredUTC = deviceEvent.DeregisteredUTC,
+        ModuleType = deviceEvent.ModuleType,
+        MainboardSoftwareVersion = deviceEvent.MainboardSoftwareVersion,
+        RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber,
+        GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber,
+        DataLinkType = deviceEvent.DataLinkType,
+        OwningCustomerUID = null,
+        LastActionedUtc = deviceEvent.ActionUTC
+      };
+
+      deviceContext.InRollbackTransactionAsync<object>(async o =>
+      {
+        var g = await deviceContext.GetDevice(device.DeviceUID);
+        Assert.IsNull(g, "Device shouldn't be there yet");
+
+        var s = await deviceContext.StoreEvent(deviceEvent);
+        Assert.AreEqual(1, s, "Device event not written");
+
+        g = await deviceContext.GetDevice(device.DeviceUID);
+        Assert.IsNotNull(g, "Unable to retrieve Device from DeviceRepo");
+        Assert.AreEqual(device, g, "Device details are incorrect from DeviceRepo");
+        return null;
+      }).Wait();
+    }
+
+    /// <summary>
+    /// Happy path i.e. ec520 device doesn't exist already.
+    /// </summary>
+    [TestMethod]
+    public void CreateDevice_EC520_HappyPath()
+    {
+      DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
+      var deviceEvent = new CreateDeviceEvent()
+      {
+        DeviceUID = Guid.NewGuid(),
+        DeviceSerialNumber = "Device radio serial",
+        DeviceType = "EC520",
         DeviceState = "active",
         DeregisteredUTC = firstCreatedUTC,
         ModuleType = "theModule Type",

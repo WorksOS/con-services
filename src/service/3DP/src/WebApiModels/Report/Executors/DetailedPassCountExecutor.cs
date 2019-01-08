@@ -48,18 +48,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
         }
 
-        TPassCountDetails passCountDetails;
-
-        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
-            request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds, log: log);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
         var raptorResult = raptorClient.GetPassCountDetails(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtPassCountDetailed),
           request.passCountSettings != null ? ConvertSettings(request.passCountSettings) : new TPassCountSettings(),
           raptorFilter,
           RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-          out passCountDetails);
-        //log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
+          out var passCountDetails);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
             return ConvertResult(passCountDetails, request.liftBuildSettings);

@@ -97,17 +97,20 @@ namespace MockProjectWebApi.Controllers
 
       var result = new
       {
-        id = id,
-        name = "some file",
-        parent_id = (Guid?)null,
-        status = "AVAILABLE",
-        upload = new
+        file = new
         {
-          url = $"{baseUrl}/dummy_upload_signed_url"
-        },
-        download = new
-        {
-          url = $"{baseUrl}/dummy_download_signed_url"
+          id = id,
+          name = "some file",
+          parent_id = (Guid?)null,
+          status = "AVAILABLE",
+          upload = new
+          {
+            url = $"{baseUrl}/dummy_upload_signed_url"
+          },
+          download = new
+          {
+            url = $"{baseUrl}/dummy_download_signed_url"
+          }
         }
       };
       Console.WriteLine($"{nameof(GetFile)} returning: {JsonConvert.SerializeObject(result)}");
