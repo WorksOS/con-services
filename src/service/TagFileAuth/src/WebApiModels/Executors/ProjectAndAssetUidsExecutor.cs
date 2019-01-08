@@ -133,11 +133,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      // if a SNM device is provided, try to use it first 
+      // if a SNM device was not provided, or did not have any subs,
+      //     then see if we can get a relavant sub from any EC520 device 
       if (assetSubs.Count == 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         var assetDevice =
-          await dataRepository.LoadAssetDevice(request.Ec520Serial, ((DeviceTypeEnum.SNM941 /* todoJeannie EC520 */).ToString()));
+          await dataRepository.LoadAssetDevice(request.Ec520Serial, ((DeviceTypeEnum.EC520).ToString()));
 
         if (assetDevice != null)
         {
@@ -153,7 +154,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
         else
         {
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Unable to locate ECM assetDevice for ec520serial: {request.Ec520Serial}");
+          log.LogDebug($"ProjectAndAssetUidsExecutor: Unable to locate EC520 assetDevice for ec520serial: {request.Ec520Serial}");
         }
       }
 

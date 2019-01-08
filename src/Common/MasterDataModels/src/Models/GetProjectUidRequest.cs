@@ -70,7 +70,7 @@ namespace VSS.MasterData.Models.Models
     public int Validate()
     {
       // what VSS deviceTypes are these: torch=SNM940/941, aqua=?, R2=? 
-      var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.SNM941 /* todoJeannie EC520 */ };
+      var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.EC520 };
       var isDeviceTypeValid = allowedDeviceTypes.Contains(deviceType);
 
       if (!isDeviceTypeValid)

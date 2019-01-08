@@ -29,7 +29,7 @@ namespace VSS.MasterData.Models.Models
     public string RadioSerial { get; set; }
 
     /// <summary>
-    /// The ECM520 serial number of the machine from the tagfile.
+    /// The EC520 serial number of the machine from the tagfile.
     /// </summary>
     [JsonProperty(PropertyName = "ec520Serial", Required = Required.Default)]
     public string Ec520Serial { get; set; }
@@ -116,7 +116,7 @@ namespace VSS.MasterData.Models.Models
       {
         return 36;
       }
-      var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.SNM941 /* todoJeannie EC520 */ };
+      var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.EC520 };
       var isDeviceTypeValid = allowedDeviceTypes.Contains(DeviceType);
 
       if (!isDeviceTypeValid)
