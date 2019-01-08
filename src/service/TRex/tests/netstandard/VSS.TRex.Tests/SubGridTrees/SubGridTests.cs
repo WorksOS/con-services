@@ -9,7 +9,7 @@ using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+        public class SubGridTests : IClassFixture<DILoggingAndStorageProxyFixture>
   {
         [Fact]
         public void Test_SubGrid_Creation()

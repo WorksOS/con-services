@@ -2,6 +2,7 @@
 using VSS.TRex.Exports.Patches;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.Exports.Servers.Client

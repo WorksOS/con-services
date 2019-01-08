@@ -39,6 +39,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Build()
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
+        .Add(X => X.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))

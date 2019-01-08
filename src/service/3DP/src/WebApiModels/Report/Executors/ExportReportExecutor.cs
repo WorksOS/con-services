@@ -35,8 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       if (request == null)
         ThrowRequestTypeCastException<ExportReport>();
 
-      var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter,
-        request.ProjectId);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,

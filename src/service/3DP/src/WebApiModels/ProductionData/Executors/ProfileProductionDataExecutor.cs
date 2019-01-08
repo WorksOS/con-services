@@ -5,6 +5,7 @@ using System.Linq;
 using SVOICOptionsDecls;
 using SVOICProfileCell;
 using VLPDDecls;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -36,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           request.startStation ?? ValidationConstants3D.MIN_STATION,
           request.endStation ?? ValidationConstants3D.MIN_STATION,
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
+          RaptorConverters.ConvertFilter(request.Filter),
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
           request.returnAllPassesAndLayers);
@@ -58,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           positionsAreGrid,
           startPt,
           endPt,
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
+          RaptorConverters.ConvertFilter(request.Filter),
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
           request.returnAllPassesAndLayers);
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         {
           points = packager.LatLongList.ToList().ConvertAll(delegate (TWGS84StationPoint p)
           {
-            return new StationLLPoint { station = p.Station, lat = p.Lat * 180 / Math.PI, lng = p.Lon * 180 / Math.PI };
+            return new StationLLPoint { station = p.Station, lat = p.Lat * Coordinates.RADIANS_TO_DEGREES, lng = p.Lon * Coordinates.RADIANS_TO_DEGREES };
           });
         }
 

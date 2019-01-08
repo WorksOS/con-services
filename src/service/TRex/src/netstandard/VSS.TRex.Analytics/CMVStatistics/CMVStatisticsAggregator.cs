@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
@@ -79,7 +78,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
 
       foreach (IClientLeafSubGrid[] subGrid in subGrids)
       {
-        if (subGrid == null)
+        if ((subGrid?.Length ?? 0) == 0)
           continue;
 
         if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
