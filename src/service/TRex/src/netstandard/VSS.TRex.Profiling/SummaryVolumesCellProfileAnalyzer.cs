@@ -139,12 +139,8 @@ namespace VSS.TRex.Profiling
       // Execute a client grid request for each requester and create an array of the results
       var clientGrids = Requestors.Select(x =>
       {
-        var clientGrid = ClientLeafSubGridFactory.GetSubGrid(GridDataType.HeightAndTime);
-
-        clientGrid.CellSize = SiteModel.Grid.CellSize;
-        clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
-        clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
-          (uint)(address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+        var clientGrid = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.HeightAndTime, SiteModel.Grid.CellSize, SubGridTreeConsts.SubGridTreeLevels,
+          (uint)(address.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint)(address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
 
         // Reach into the subgrid request layer and retrieve an appropriate subgrid
         x.CellOverrideMask = cellOverrideMask;

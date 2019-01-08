@@ -278,12 +278,9 @@ namespace VSS.TRex.SubGrids.Executors
         return ServerRequestResult.FailedToComputeDesignElevationPatch;
       }
 
-      clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
-
-      clientGrid.CellSize = siteModel.Grid.CellSize;
-      clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
-      clientGrid.SetAbsoluteOriginPosition((uint) (address.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
-        (uint) (address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+      clientGrid = ClientLeafSubGridFactory.GetSubGridEx(Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested),
+        siteModel.Grid.CellSize, SubGridTreeConsts.SubGridTreeLevels, 
+        (uint) (address.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint) (address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
 
       // Reach into the subgrid request layer and retrieve an appropriate subgrid
       requester.CellOverrideMask.Fill();

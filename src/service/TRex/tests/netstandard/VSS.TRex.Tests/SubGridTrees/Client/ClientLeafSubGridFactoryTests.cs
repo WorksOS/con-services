@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -26,7 +27,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var newClient = factory.GetSubGrid(GridDataType.Height);
 
       Assert.NotNull(newClient);
-      Assert.True(newClient is ClientHeightLeafSubGrid, "Returned subgrid unexpected type");
+      Assert.True(newClient is ClientHeightLeafSubGrid, "Returned sub grid unexpected type");
     }
 
     [Fact]
@@ -39,7 +40,26 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var newClient = factory.GetSubGrid(GridDataType.Height);
 
       Assert.NotNull(newClient);
-      Assert.True(newClient is ClientHeightLeafSubGrid, "Returned subgrid unexpected type");
+      Assert.True(newClient is ClientHeightLeafSubGrid, "Returned sub grid unexpected type");
+    }
+
+
+    [Fact]
+    public void Test_ClientLeafSubGridFactoryTests_GetSubGridEx()
+    {
+      var factory = new ClientLeafSubGridFactory();
+
+      factory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
+
+      var newClient = factory.GetSubGridEx(GridDataType.Height, 1.0, SubGridTreeConsts.SubGridTreeLevels, 123456, 234567);
+
+      Assert.NotNull(newClient);
+      Assert.True(newClient is ClientHeightLeafSubGrid, "Returned sub grid unexpected type");
+
+      newClient.CellSize.Should().Be(1.0);
+      newClient.Level.Should().Be(SubGridTreeConsts.SubGridTreeLevels);
+      newClient.OriginX.Should().Be(123456 & ~SubGridTreeConsts.SubGridLocalKeyMask);
+      newClient.OriginY.Should().Be(234567 & ~SubGridTreeConsts.SubGridLocalKeyMask);
     }
 
     [Fact]
@@ -52,9 +72,9 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var newClient = factory.GetSubGrid(GridDataType.Height);
       factory.ReturnClientSubGrid(ref newClient);
 
-      Assert.True(null == newClient, "Factory did not accept subgrid back");
+      Assert.True(null == newClient, "Factory did not accept sub grid back");
 
-      // Attempt repatriating it twice - nothign should happen
+      // Attempt repatriating it twice - nothing should happen
       factory.ReturnClientSubGrid(ref newClient);
     }
 
@@ -72,12 +92,12 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       };
       factory.ReturnClientSubGrids(newClients, newClients.Length);
 
-      Assert.True(null == newClients[0], "Factory did not accept first subgrid back");
-      Assert.True(null == newClients[1], "Factory did not accept second subgrid back");
+      Assert.True(null == newClients[0], "Factory did not accept first sub grid back");
+      Assert.True(null == newClients[1], "Factory did not accept second sub grid back");
 
       Assert.Throws<ArgumentException>(() => factory.ReturnClientSubGrids(newClients, 10));
 
-      // Attempt repatriating it twice - nothign should happen
+      // Attempt repatriating it twice - nothing should happen
       factory.ReturnClientSubGrids(newClients, newClients.Length);
     }
 
@@ -96,15 +116,15 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       factory.ReturnClientSubGrids(newClients, newClients.Length);
 
-      Assert.True(null == newClients[0][0], "Factory did not accept first/first subgrid back");
-      Assert.True(null == newClients[0][1], "Factory did not accept first/second subgrid back");
+      Assert.True(null == newClients[0][0], "Factory did not accept first/first sub grid back");
+      Assert.True(null == newClients[0][1], "Factory did not accept first/second sub grid back");
 
-      Assert.True(null == newClients[1][0], "Factory did not accept second/first subgrid back");
-      Assert.True(null == newClients[1][1], "Factory did not accept second/second subgrid back");
+      Assert.True(null == newClients[1][0], "Factory did not accept second/first sub grid back");
+      Assert.True(null == newClients[1][1], "Factory did not accept second/second sub grid back");
 
       Assert.Throws<ArgumentException>(() => factory.ReturnClientSubGrids(newClients, 10));
 
-      // Attempt repatriating it twice - nothign should happen
+      // Attempt repatriating it twice - nothing should happen
       factory.ReturnClientSubGrids(newClients, newClients.Length);
     }
   }

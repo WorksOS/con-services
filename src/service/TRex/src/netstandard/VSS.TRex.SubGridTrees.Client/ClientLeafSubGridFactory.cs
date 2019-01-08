@@ -12,15 +12,15 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientLeafSubGridFactory : IClientLeafSubGridFactory
   {
     /// <summary>
-    /// Simple array to hold client leaf subgrid type constructor map
+    /// Simple array to hold client leaf sub grid type constructor map
     /// </summary>
-    private Func<IClientLeafSubGrid>[] typeMap;
+    private readonly Func<IClientLeafSubGrid>[] typeMap;
 
     /// <summary>
     /// Stores of cached client grids to reduce the object instantiation and garbage collection overhead
     /// </summary>
 //        private ConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new ConcurrentBag<IClientLeafSubGrid>()).ToArray();
-    private SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
+    private readonly SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
 
     public ClientLeafSubGridFactory()
     {
@@ -36,19 +36,19 @@ namespace VSS.TRex.SubGridTrees.Client
     public void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor)
     {
       if ((int) gridDataType > typeMap.Length)
-        throw new ArgumentException("Unknown grid data type in RegisterClientLeafSubgridType", nameof(gridDataType));
+        throw new ArgumentException("Unknown grid data type in RegisterClientLeafSubGridType", nameof(gridDataType));
 
       typeMap[(int) gridDataType] = constructor;
     }
 
     /// <summary>
-    /// Construct a concrete instance of a subgrid implementing the IClientLeafSubGrid interface based
+    /// Construct a concrete instance of a sub grid implementing the IClientLeafSubGrid interface based
     /// on the role it should play according to the grid data type requested. All aspects of leaf ownership
-    /// by a subgrid tree, parentage, level, cell size, index origin offset are delegated responsibilities
+    /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
     /// of the caller or a derived factory class
     /// </summary>
     /// <param name="gridDataType"></param>
-    /// <returns>An appropriate instance derived from ClientLeafSubgrid</returns>
+    /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
     public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType)
     {
       if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
@@ -58,6 +58,32 @@ namespace VSS.TRex.SubGridTrees.Client
       }
 
       result?.Clear();
+      return result;
+    }
+
+    /// <summary>
+    /// Construct a concrete instance of a sub grid implementing the IClientLeafSubGrid interface based
+    /// on the role it should play according to the grid data type requested. All aspects of leaf ownership
+    /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
+    /// of the caller or a derived factory class
+    /// </summary>
+    /// <param name="gridDataType"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="level"></param>
+    /// <param name="originX"></param>
+    /// <param name="originY"></param>
+    /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
+    public IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, uint originX, uint originY)
+    {
+      var result = GetSubGrid(gridDataType);
+
+      if (result == null)
+        return null;
+
+      result.CellSize = cellSize;
+      result.SetAbsoluteLevel(level);
+      result.SetAbsoluteOriginPosition(originX, originY);
+
       return result;
     }
 

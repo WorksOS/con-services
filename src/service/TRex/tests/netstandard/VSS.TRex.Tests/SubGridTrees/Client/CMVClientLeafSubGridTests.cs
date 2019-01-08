@@ -8,7 +8,7 @@ using Xunit;
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// Includes tests not covered in GenericClientLeafSubGridTests
   /// </summary>
   public class CMVClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
