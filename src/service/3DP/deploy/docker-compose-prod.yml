@@ -41,6 +41,7 @@ services:
      - SCHEDULED_JOB_TIMEOUT=900000
      - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
      - SHAREUNC=\\prod-iolv01.vssengg.com\ProductionData
+     - SNAKEPIT_HOST=snakepit.dev.k8s.vspengg.com
      - TCCBASEURL=https://www.myconnectedsite.com
      - TCCFILESPACEID=ucc083712-346e-466e-8cba-3c3eb0f9fb05
      - TCCFILESPACENAME=Vldatastore-Production
