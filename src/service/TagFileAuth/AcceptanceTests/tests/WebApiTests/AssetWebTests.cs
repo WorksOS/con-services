@@ -32,7 +32,7 @@ namespace WebApiTests
       $"| Device      | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | 0d+09:00:00     | {deviceUid} | CDMA         | Asset WebTest 1           |               |              |",
       $"| AssetDevice | 0d+09:05:00 |                    |             |                         |                 |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
-      var actualResult = CallWebApiGetAssetId(ts,-1,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,-1, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(true, actualResult.Result , " result of request doesn't match expected");
     }
@@ -43,7 +43,7 @@ namespace WebApiTests
       msg.Title("Asset WebTest 2", "Call webAPI to get asset Id for non existent rado serial");
       var ts = new TestSupport { IsPublishToKafka = false };
       var deviceUid = Guid.NewGuid();
-      var actualResult = CallWebApiGetAssetId(ts,-1,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,-1, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(-1, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(false, actualResult.Result , " result of request doesn't match expected");
     }
@@ -75,7 +75,7 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,-1,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,-1, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       // Note : 15 ng machine level but 18 is current gen machine level
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
@@ -108,7 +108,7 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |                          |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,-1,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,-1, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(0, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(true, actualResult.Result , " result of request doesn't match expected");
@@ -141,7 +141,7 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,-1,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,-1, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(16, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(true, actualResult.Result , " result of request doesn't match expected");
@@ -177,7 +177,7 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,-1,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,-1, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(16, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(true, actualResult.Result , " result of request doesn't match expected");
@@ -199,7 +199,7 @@ namespace WebApiTests
       $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | AssetWebTest7 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
       ts.PublishEventCollection(assetEventArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId,0,"");
+      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId, (int)DeviceTypeEnum.MANUALDEVICE, "");
       Assert.AreEqual(-1, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(0, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(false, actualResult.Result , " result of request doesn't match expected");
@@ -227,7 +227,7 @@ namespace WebApiTests
        $"| CustomerProject | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |"};
       ts.PublishEventCollection(eventsArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId,0,"");
+      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId, (int)DeviceTypeEnum.MANUALDEVICE, "");
       Assert.AreEqual(-1, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(0, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(false, actualResult.Result , " result of request doesn't match expected");
@@ -258,7 +258,7 @@ namespace WebApiTests
        $"| CustomerProject | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |"};
       ts.PublishEventCollection(eventsArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId,0,"");
+      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId, (int)DeviceTypeEnum.MANUALDEVICE, "");
       Assert.AreEqual(-1, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(true, actualResult.Result , " result of request doesn't match expected");
@@ -299,7 +299,7 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId,6,deviceUid.ToString());
+      var actualResult = CallWebApiGetAssetId(ts,legacyProjectId, (int)DeviceTypeEnum.SNM940, deviceUid.ToString());
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(true, actualResult.Result , " result of request doesn't match expected");
