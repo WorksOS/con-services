@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           exportDataUrl = $"{exportDataUrl}&machineNames={machineNames}";
         }
 
-        return ScheduleJob(exportDataUrl, fileName, scheduler);
+        return ScheduleJob(exportDataUrl, fileName, scheduler, 3 * FIVE_MIN_SCHEDULER_TIMEOUT);
       }
       throw new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(
