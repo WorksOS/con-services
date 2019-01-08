@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
     {
       var aggregator = new CCAStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CCA) as ClientCCALeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CCA) as ClientCCALeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 

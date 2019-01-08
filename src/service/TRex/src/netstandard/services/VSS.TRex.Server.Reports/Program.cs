@@ -72,7 +72,7 @@ namespace VSS.TRex.Server.Reports
       .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
-      .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+      .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
       .Build()
       .Add(x => x.AddSingleton(new GriddedReportRequestServer()))
       .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))

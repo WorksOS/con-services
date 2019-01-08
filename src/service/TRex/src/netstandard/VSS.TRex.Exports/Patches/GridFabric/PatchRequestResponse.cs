@@ -65,7 +65,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
         {
           SubGrids = new List<IClientLeafSubGrid>();
 
-          var clientLeafSubgridFactory = DIContext.Obtain<IClientLeafSubgridFactory>();
+          var clientLeafSubgridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
           for (var i = 1; i <= numberOfSubGrids; i++)
           {

@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       long minDateTime = DateTime.MinValue.ToBinary();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullHeight, "Cell not set to correct null value"));
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Times[x, y] == minDateTime, "Cell time not set to correct null value"));
@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_NullCell()
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
 
       clientGrid.Cells[0, 0] = clientGrid.NullCell();
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");

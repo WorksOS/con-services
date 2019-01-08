@@ -33,10 +33,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+    private IClientLeafSubGridFactory ClientLeafSubGridFactory
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
     /// The reference to the TRexTask responsible for handling the returned subgrid information from the processing cluster

@@ -25,10 +25,10 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+    private IClientLeafSubGridFactory ClientLeafSubGridFactory
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
     /// Private reference to the arguments provided to the executor

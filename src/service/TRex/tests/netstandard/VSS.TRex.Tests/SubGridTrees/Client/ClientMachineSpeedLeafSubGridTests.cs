@@ -15,14 +15,14 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_NullCells()
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullMachineSpeed, "Cell not set to correct null value"));
     }
 
     [Fact]
     public void Test_NullCell()
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
 
       clientGrid.Cells[0, 0] = clientGrid.NullCell();
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");
@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_IndicativeSize()
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
 
       int expectedSize = 2 * (4 * 32); // 2 bit mask subgrids in this and parent class
       int actualSize = clientGrid.IndicativeSizeInBytes();

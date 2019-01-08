@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// Factory responsible for creating concrete 'grid data' specific client sub grid leaf instances
   /// </summary>
-  public class ClientLeafSubGridFactory : IClientLeafSubgridFactory
+  public class ClientLeafSubGridFactory : IClientLeafSubGridFactory
   {
     /// <summary>
     /// Simple array to hold client leaf subgrid type constructor map

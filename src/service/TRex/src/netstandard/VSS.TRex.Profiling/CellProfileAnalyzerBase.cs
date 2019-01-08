@@ -32,10 +32,10 @@ namespace VSS.TRex.Profiling
     /// Local reference to the client subgrid factory
     /// </summary>
     // ReSharper disable once StaticMemberInGenericType
-    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-    protected IClientLeafSubgridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+    protected IClientLeafSubGridFactory ClientLeafSubGridFactory
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
     /// The storage proxy to use when requesting subgrids for profiling operations

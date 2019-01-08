@@ -17,10 +17,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+    private IClientLeafSubGridFactory ClientLeafSubGridFactory
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
     /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to

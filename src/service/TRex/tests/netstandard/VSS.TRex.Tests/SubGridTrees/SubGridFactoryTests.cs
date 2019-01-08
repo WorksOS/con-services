@@ -19,62 +19,62 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             Assert.NotNull(factory);
 
-            // Create a tree for the factory to create subgrids for
+            // Create a tree for the factory to create sub grids for
             ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, factory);
 
             Assert.NotNull(tree);
         }
 
         [Fact]
-        public void Test_SubGridFactory_Create_NodeAndLeafSubgrids()
+        public void Test_SubGridFactory_Create_NodeAndLeafSubGrids()
         {
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, LeafSubGrid>();
 
-            // Create a tree for the factory to create subgrids for
+            // Create a tree for the factory to create sub grids for
             ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, factory);
 
-            // Create subgrids for each layer, ensure layers
+            // Create sub grids for each layer, ensure layers
             // Ask the factory to create node for an invalid tree level
             try
             {
                 ISubGrid invalid = factory.GetSubGrid(tree, 0);
-                Assert.True(false,"Factory created subgrid for invalid tree level.");
+                Assert.True(false,"Factory created sub grid for invalid tree level.");
             }
             catch (ArgumentException)
             {
                 // As expected
             }
 
-            // Ask the factory to create node and leaf subgrids for a 6 level tree, from root to leaf.
+            // Ask the factory to create node and leaf sub grids for a 6 level tree, from root to leaf.
             ISubGrid root = factory.GetSubGrid(tree, 1);
             Assert.NotNull(root);
-            Assert.True(root is NodeSubGrid, "Factory did not create node subgrid for root tree level.");
+            Assert.True(root is NodeSubGrid, "Factory did not create node sub grid for root tree level.");
 
             ISubGrid level2 = factory.GetSubGrid(tree, 2);
             Assert.NotNull(level2);
-            Assert.True(level2 is NodeSubGrid, "Factory did not create node subgrid for tree level 2.");
+            Assert.True(level2 is NodeSubGrid, "Factory did not create node sub grid for tree level 2.");
 
             ISubGrid level3 = factory.GetSubGrid(tree, 3);
             Assert.NotNull(level3);
-            Assert.True(level3 is NodeSubGrid, "Factory did not create node subgrid for tree level 3.");
+            Assert.True(level3 is NodeSubGrid, "Factory did not create node sub grid for tree level 3.");
 
             ISubGrid level4 = factory.GetSubGrid(tree, 4);
             Assert.NotNull(level4);
-            Assert.True(level4 is NodeSubGrid, "Factory did not create node subgrid for tree level 4.");
+            Assert.True(level4 is NodeSubGrid, "Factory did not create node sub grid for tree level 4.");
 
             ISubGrid level5 = factory.GetSubGrid(tree, 5);
             Assert.NotNull(level5);
-            Assert.True(level5 is NodeSubGrid, "Factory did not create node subgrid for tree level 5.");
+            Assert.True(level5 is NodeSubGrid, "Factory did not create node sub grid for tree level 5.");
 
             ISubGrid leaf = factory.GetSubGrid(tree, 6);
             Assert.NotNull(leaf);
-            Assert.True(leaf is LeafSubGrid, "Factory did not create leaf subgrid for tree level 6.");
+            Assert.True(leaf is LeafSubGrid, "Factory did not create leaf sub grid for tree level 6.");
         }
 
         [Fact]
         public void Test_SubGridClientLeafFactory_Creation()
         {
-            IClientLeafSubgridFactory factory = new ClientLeafSubGridFactory();
+            IClientLeafSubGridFactory factory = new ClientLeafSubGridFactory();
 
             Assert.NotNull(factory);
 
@@ -90,7 +90,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridClientLeafFactory_Recycling()
         {
-            IClientLeafSubgridFactory factory = new ClientLeafSubGridFactory();
+            IClientLeafSubGridFactory factory = new ClientLeafSubGridFactory();
 
             Assert.NotNull(factory);
 
@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridClientLeafFactory_Reuse()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory();
+            IClientLeafSubGridFactory factory = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory();
 
             Assert.NotNull(factory);
 

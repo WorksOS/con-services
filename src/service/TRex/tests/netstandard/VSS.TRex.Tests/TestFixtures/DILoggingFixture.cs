@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.TestFixtures
           .New()
           .AddLogging()
           .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-          .Add(x => x.AddSingleton(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+          .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
           .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
           .Complete();
       }

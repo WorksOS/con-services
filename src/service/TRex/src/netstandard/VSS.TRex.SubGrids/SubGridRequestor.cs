@@ -30,10 +30,10 @@ namespace VSS.TRex.SubGrids
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        private IClientLeafSubgridFactory clientLeafSubGridFactory;
+        private IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-        private IClientLeafSubgridFactory ClientLeafSubGridFactory
-           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+        private IClientLeafSubGridFactory ClientLeafSubGridFactory
+           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
         private SubGridRetriever retriever;
         private ISiteModel SiteModel;
