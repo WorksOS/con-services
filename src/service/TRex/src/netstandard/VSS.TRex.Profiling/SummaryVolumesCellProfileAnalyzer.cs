@@ -13,6 +13,7 @@ using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -78,7 +79,6 @@ namespace VSS.TRex.Profiling
           IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
           IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
 
-
           return new FilterSet(new[] {FilterSet.Filters[0], IntermediaryFilter, FilterSet.Filters[1]});
         }
       }
@@ -88,11 +88,24 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// Merges the 'from' elevation subgrid and the 'intermediary' subgrid result into a single subgrid for 
-    /// subsequent calculation
+    /// subsequent calculation. THe result is placed into the 'from' subgrid.
     /// </summary>
-    private void MergeIntemediaryResults()
+    private void MergeIntemediaryResults(ClientHeightAndTimeLeafSubGrid heightGrid1, ClientHeightAndTimeLeafSubGrid intermediaryHeightGrid)
     {
+      // Combine this result with the result of the first query to obtain a modified heights grid
 
+      // Merge the first two results to give the profile calc the correct combined 'from' surface
+      // HeightsGrid1 is 'latest @ first filter', HeightsGrid1 is earliest @ second filter
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        if (heightGrid1.Cells[x, y] == CellPassConsts.NullHeight &&
+            // Check if there is a non null candidate in the earlier @ second filter
+            intermediaryHeightGrid.Cells[x, y] != CellPassConsts.NullHeight)
+        {
+          heightGrid1.Cells[x, y] = intermediaryHeightGrid.Cells[x, y];
+          heightGrid1.Times[x, y] = intermediaryHeightGrid.Times[x, y];
+        }
+      });
     }
 
     /// <summary>
@@ -191,9 +204,6 @@ namespace VSS.TRex.Profiling
     FPDExistenceMap : TSubGridTreeBitMask;
     FGridDistanceBetweenProfilePoints : Double;
     FLastGetTargetValues_MachineID : TICMachineID;
-// RCE 36155    FMachineTargetValuesEventsLocked : Boolean;
-    FPopulationControl : TFilteredValuePopulationControl;
-    FPopulationControl_AnySet : Boolean;
 
     FVolumeType : TComputeICVolumesType;
     FDesignFile : TVLPDDesignDescriptor;
@@ -202,13 +212,11 @@ namespace VSS.TRex.Profiling
     property Profile: TICSummaryVolumesProfileCellList read FSVProfileCells;
     property Aborted : Boolean read FAborted;
     property GridDistanceBetweenProfilePoints : double read FGridDistanceBetweenProfilePoints;
-    property PopulationControl : TFilteredValuePopulationControl read FPopulationControl write FPopulationControl;
 
     constructor Create(SiteModel: TICSiteModel;
                        ASubGridTree: TICServerSubGridTree;
                        const APDExistenceMap : TSubGridTreeBitMask;
                        const AProfileTypeRequired: TICGridDataType;
-                       const APopulationControl : TFilteredValuePopulationControl;
                        const AVolumeType : TComputeICVolumesType;
                        const ADesignfile : TVLPDDesignDescriptor);
 
@@ -227,7 +235,6 @@ constructor TICSVServerProfiler.Create(SiteModel: TICSiteModel;
                                      ASubGridTree: TICServerSubGridTree;
                                      const APDExistenceMap : TSubGridTreeBitMask;
                                      const AProfileTypeRequired: TICGridDataType;
-                                     const APopulationControl : TFilteredValuePopulationControl;
                                      const AVolumeType : TComputeICVolumesType;
                                      const ADesignfile : TVLPDDesignDescriptor);
 begin
@@ -242,12 +249,9 @@ begin
 
   FSiteModel := SiteModel;
 
-  FPopulationControl := APopulationControl;
-
   FLastGetTargetValues_MachineID := -1;
   FVolumeType := AVolumeType;
   FDesignFile := ADesignfile;
-
 end;
 
 procedure TICSVServerProfiler.Abort;
@@ -289,7 +293,6 @@ var
   Distance : Double;
 
   ServerResult : TICServerRequestResult;
-  LiftBuildSettings: TICLiftBuildSettings;
   CellOverrideMask : TSubGridTreeLeafBitmapSubGridBits;
 
   GridResults : array[0..1024, 0..1] of Integer;
@@ -540,19 +543,12 @@ begin
 
   CurrStationPos := 0;
   SlicerToolUsed := False;
-
   DesignElevations := Nil;
-
   FReturnDesignElevation := FDesignFile.FileName <> '';
-
   NVtHzIntercepts := 0;
-
   CurrentSubgridOrigin := TSubgridCellAddress.CreateSimple(MaxInt, MaxInt);
-  FPopulationControl_AnySet := FPopulationControl.AnySet;
-
   FGridDistanceBetweenProfilePoints := 0;
   ArrayCount := Length(NEECoords);
-
   ProcessCount := 0;
 
   //............................
@@ -581,8 +577,6 @@ begin
 
       if NVtHzIntercepts > FSVProfileCells.Capacity then // make sure we can store our results
         FSVProfileCells.Capacity := NVtHzIntercepts;
-
-      LiftBuildSettings := TICLiftBuildSettings.Create; // defaults are fine
 
       try
         // Iterate over all intercepts calculating the results for each cell that lies in
@@ -622,14 +616,12 @@ begin
                   inc(TotalCells);
                   if not CurrentSubgridOrigin.IsSameAs(ThisSubgridOrigin) then
                     CurrentSubgridOrigin := ThisSubgridOrigin; // make sure its set
-
                 end
               else
                 begin
                   ProcessSubGroup;
                   BasePosition := I;
                 end;
-
           except
             On E:exception do
               begin
@@ -652,18 +644,13 @@ begin
                 end;
             end;
           end;
-
         end; // end NVtHzIntercepts loop
-
       finally
-        FreeAndNil(LiftBuildSettings);
         SIGLogMessage.Publish(nil, 'Summary Volumes Profile BuildCellPassProfile. # ProcessCount= ' + IntToStr(ProcessCount), slmcDebug);
       end;
-
     finally
       LockTokenManager.ReleaseToken(FLockTokenName);
     end;
-
   finally
     HeightsGrid1.Free;
     HeightsGrid2.Free;
@@ -674,5 +661,4 @@ begin
   Result := True;
 end;
 end.
-
  */
