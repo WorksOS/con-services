@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Models.Utilities
@@ -207,7 +208,6 @@ namespace VSS.MasterData.Models.Utilities
       //This is like MATLAB areaint function.
       //Calculate the surface per unit area using lat/lng then multiply by Earth's surface area
       const double EARTH_SURFACE_AREA = 5.10072E14; //sq m
-      const double DEGREES_TO_RADIANS = Math.PI / 180;
       double sum = 0.0;
       double prevcolat = 0.0;
       double prevaz = 0.0;
@@ -215,8 +215,8 @@ namespace VSS.MasterData.Models.Utilities
       double az0 = 0.0;
       for (int i = 0; i < points.Count; i++)
       {
-        double latRad = points[i].Latitude * DEGREES_TO_RADIANS;
-        double lngRad = points[i].Longitude * DEGREES_TO_RADIANS;
+        double latRad = points[i].Latitude * Coordinates.DEGREES_TO_RADIANS;
+        double lngRad = points[i].Longitude * Coordinates.DEGREES_TO_RADIANS;
         double sinLatDiv2 = Math.Sin(latRad / 2);
         double sinLngDiv2 = Math.Sin(lngRad / 2);
         double cosLat = Math.Cos(latRad);

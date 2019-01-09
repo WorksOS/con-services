@@ -26,12 +26,12 @@ namespace VSS.TRex.SubGrids
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger< RequestorUtilities>();
 
-    private static readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
+    private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     private static ITRexSpatialMemoryCache subGridCache;
 
     /// <summary>
-    /// The DI injected TRex spatial memory cache for general subgrid results
+    /// The DI injected TRex spatial memory cache for general sub grid results
     /// </summary>
     private static ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
 
@@ -79,10 +79,10 @@ namespace VSS.TRex.SubGrids
 
         Guid[] FilteredSurveyedSurfacesAsArray = FilteredSurveyedSurfaces?.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
 
-        // Get a caching context for the subgrids returned by this requester, but only if the requested grid data type supports it
+        // Get a caching context for the sub grids returned by this requester, but only if the requested grid data type supports it
         ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
 
-        if (_enableGeneralSubgridResultCaching &&
+        if (_enableGeneralSubGridResultCaching &&
             ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int)gridDataType])
         {
           SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
@@ -116,7 +116,7 @@ namespace VSS.TRex.SubGrids
       return Intermediaries.Select(x =>
       {
         // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
-        // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
+        // the common elements for this set of sub grids being requested. We always want to request all surface elevations to 
         // promote cacheability.
 
         var surfaceElevationPatchArg = new SurfaceElevationPatchArgument

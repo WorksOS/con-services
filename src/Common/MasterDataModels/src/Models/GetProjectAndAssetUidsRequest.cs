@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -22,13 +23,16 @@ namespace VSS.MasterData.Models.Models
     public int DeviceType { get; set; }
 
     /// <summary>
-    /// The radio serial number of the machine from the tagfile.
+    /// The SNM94n radio serial number of the machine from the tagfile.
     /// </summary>
     [JsonProperty(PropertyName = "radioSerial", Required = Required.Default)]
     public string RadioSerial { get; set; }
 
-    // workflow #3 tccOrgUid 
-    //             Validate correct subscription/s : ????
+    /// <summary>
+    /// The EC520 serial number of the machine from the tagfile.
+    /// </summary>
+    [JsonProperty(PropertyName = "ec520Serial", Required = Required.Default)]
+    public string Ec520Serial { get; set; }
 
     /// <summary>
     /// Date and time the asset was at the given location. 
@@ -66,7 +70,8 @@ namespace VSS.MasterData.Models.Models
     /// Create instance of GetProjectAndAssetUidsRequest
     /// </summary>
     public static GetProjectAndAssetUidsRequest CreateGetProjectAndAssetUidsRequest
-    (string projectUid, int deviceType, string radioSerial, string tccOrgUid,
+    (string projectUid, int deviceType, string radioSerial, string ec520Serial, 
+      string tccOrgUid,
       double latitude, double longitude, DateTime timeOfPosition)
     {
       return new GetProjectAndAssetUidsRequest
@@ -74,6 +79,7 @@ namespace VSS.MasterData.Models.Models
         ProjectUid = projectUid,
         DeviceType = deviceType,
         RadioSerial = radioSerial,
+        Ec520Serial = ec520Serial,
         TccOrgUid = tccOrgUid,
         Latitude = latitude,
         Longitude = longitude,
@@ -87,13 +93,15 @@ namespace VSS.MasterData.Models.Models
     /// workflow #1 TFHarvester Auto import
     ///       projectUid is NOT supplied
     ///    There must be a way to identify a customer
-    ///     a) radioSerial and DeviceType or b) tccOrgId
-    ///             Validate BOTH exist
+    ///     a) radioSerial and DeviceType or
+    ///     b) ec520serial or
+    ///     c) tccOrgId
+    ///             Validate at least one exists
     ///             Validate correct subscription/s
     ///
     /// workflow #2 Manual import
     ///       projectUid is supplied
-    ///          RadioSerial must also be supplied - else error
+    ///          RadioSerial/ec520Serial must also be supplied - else error
     ///             Validate BOTH exist
     ///             Validate correct subscription/s  
     ///
@@ -108,15 +116,15 @@ namespace VSS.MasterData.Models.Models
       {
         return 36;
       }
-
-      var isDeviceTypeValid = (((DeviceTypeEnum)DeviceType).ToString() != DeviceType.ToString());
+      var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.EC520 };
+      var isDeviceTypeValid = allowedDeviceTypes.Contains(DeviceType);
 
       if (!isDeviceTypeValid)
       {
         return 30;
       }
 
-      if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(TccOrgUid))
+      if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial) && string.IsNullOrEmpty(TccOrgUid))
       {
         return 37;
       }

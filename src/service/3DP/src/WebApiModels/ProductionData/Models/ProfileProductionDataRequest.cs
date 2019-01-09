@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
 
@@ -39,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -124,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         ProjectId = projectID,
         callId = callId,
         profileType = profileType,
-        filter = filter,
+        Filter = filter,
         filterID = filterID,
         alignmentDesign = alignmentDesign,
         gridPoints = gridPoints,
@@ -155,9 +154,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
               $"Profile type {(int)profileType} is out of range. It should be between: {(int)ProductionDataType.All} and {(int)ProductionDataType.CCVChange}."));
       }
 
-      if (filter != null)
+      if (Filter != null)
       {
-        filter.Validate();
+        Filter.Validate();
 
         if (filterID.HasValue && filterID.Value <= 0)
         {

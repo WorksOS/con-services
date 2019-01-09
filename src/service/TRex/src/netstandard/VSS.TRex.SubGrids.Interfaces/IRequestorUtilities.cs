@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;

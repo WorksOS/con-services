@@ -41,7 +41,7 @@ namespace ExecutorTests
       Guid owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
 
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -70,7 +70,7 @@ namespace ExecutorTests
       Guid owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
@@ -111,7 +111,7 @@ namespace ExecutorTests
       Guid owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
@@ -146,7 +146,7 @@ namespace ExecutorTests
       Guid owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = Guid.NewGuid().ToString();
 
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
@@ -277,7 +277,7 @@ namespace ExecutorTests
       Guid owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = Guid.NewGuid().ToString();
 
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
@@ -380,7 +380,7 @@ namespace ExecutorTests
       Guid owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       string tccOrgId = Guid.NewGuid().ToString();
 
       CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());

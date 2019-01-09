@@ -13,7 +13,7 @@ namespace VSS.MasterData.Repositories
 {
   public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>, ISubscriptionRepository
   {
-    private Dictionary<string, ServiceType> _serviceTypes;
+    public Dictionary<string, ServiceType> ServiceTypes;
 
     public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
       connectionString, logger)
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Repositories
         {
           SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
           CustomerUID = subscriptionEvent.CustomerUID.ToString(),
-          ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID,
+          ServiceTypeID = ServiceTypes[subscriptionEvent.SubscriptionType].ID,
           StartDate = subscriptionEvent.StartDate.Date,
           EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
             ? new DateTime(9999, 12, 31)
@@ -120,7 +120,7 @@ namespace VSS.MasterData.Repositories
         {
           SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
           CustomerUID = subscriptionEvent.CustomerUID.ToString(),
-          ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID,
+          ServiceTypeID = ServiceTypes[subscriptionEvent.SubscriptionType].ID,
           StartDate = subscriptionEvent.StartDate,
           EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
             ? new DateTime(9999, 12, 31)
@@ -155,7 +155,7 @@ namespace VSS.MasterData.Repositories
         {
           SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
           CustomerUID = subscriptionEvent.CustomerUID.ToString(),
-          ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID,
+          ServiceTypeID = ServiceTypes[subscriptionEvent.SubscriptionType].ID,
           StartDate = subscriptionEvent.StartDate,
           EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
             ? new DateTime(9999, 12, 31)
@@ -452,11 +452,11 @@ namespace VSS.MasterData.Repositories
 
     private async Task<bool> IsServiceTypeValidAsync(string subscriptionType, string subscriptionFamily)
     {
-      if (_serviceTypes == null)
-        _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
+      if (ServiceTypes == null)
+        ServiceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
 
       ServiceType serviceType;
-      var doesServiceTypeExist = _serviceTypes.TryGetValue(subscriptionType, out serviceType);
+      var doesServiceTypeExist = ServiceTypes.TryGetValue(subscriptionType, out serviceType);
       if (!doesServiceTypeExist)
       {
         Log.LogWarning($"Unsupported SubscriptionType: {subscriptionType}");
