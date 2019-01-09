@@ -37,7 +37,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper
 
     public static void ConfigureAutomapper()
     {
-
       automapperConfiguration = new MapperConfiguration(
         //define mappings <source type, destination type>
         cfg =>

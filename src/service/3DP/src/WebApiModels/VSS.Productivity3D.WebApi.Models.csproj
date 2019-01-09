@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Interfaces\VSS.Productivity3D.Interfaces.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
 

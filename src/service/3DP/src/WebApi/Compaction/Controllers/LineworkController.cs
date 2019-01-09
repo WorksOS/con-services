@@ -8,6 +8,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class LineworkController : BaseController<LineworkController>
   {
     /// <inheritdoc />
-    public LineworkController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
+    public LineworkController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
       base(configStore, fileListProxy, settingsManager)
     { }
 
@@ -41,8 +42,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
                          .ProcessAsync(executorRequestObj);
 
+      // https://stackoverflow.com/questions/2034540/calculating-area-of-irregular-polygon-in-c-sharp
+
       return result.Code == 0
-        ? StatusCode((int)HttpStatusCode.OK, result)
+        ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())
         : StatusCode((int)HttpStatusCode.BadRequest, result);
     }
   }

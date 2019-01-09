@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Models
 {

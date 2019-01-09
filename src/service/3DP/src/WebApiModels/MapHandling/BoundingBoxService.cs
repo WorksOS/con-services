@@ -305,11 +305,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       var geoJson = GetDesignBoundary(projectId, designDescriptor);
       log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
       if (string.IsNullOrEmpty(geoJson)) return polygons;
-      var root = JsonConvert.DeserializeObject<RootObject>(geoJson);
-      foreach (var feature in root.features)
+      var root = JsonConvert.DeserializeObject<GeoJson>(geoJson);
+      foreach (var feature in root.Features)
       {
         var points = new List<WGSPoint>();
-        foreach (var coordList in feature.geometry.coordinates)
+        foreach (var coordList in feature.Geometry.Coordinates)
         {
           foreach (var coordPair in coordList)
           {

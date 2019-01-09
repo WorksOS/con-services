@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// <summary>
     /// Gets the temporary working directory on the Raptor IONode host.
     /// </summary>
-    public const string FILE_PATH = @"D:\VLPDProductionData\Temp\12121212\";
+    public const string FILE_PATH = @"D:\VLPDProductionData\Temp\12121212\"; // TODO Change to something tied to the Canary project id.
 
     public string Filename { get; private set; }
     public IFormFile FileData { get; private set; }
