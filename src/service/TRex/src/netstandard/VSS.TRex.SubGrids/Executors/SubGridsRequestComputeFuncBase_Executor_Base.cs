@@ -288,7 +288,7 @@ namespace VSS.TRex.SubGrids.Executors
       ServerRequestResult result = requester.RequestSubGridInternal((SubGridCellAddress) address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
       if (result != ServerRequestResult.NoError)
-        Log.LogInformation($"Request for subgrid {address} request failed with code {result}");
+        Log.LogError($"Request for subgrid {address} request failed with code {result}");
 
       // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
       // Convert the computed intermediary grids into the client grid form expected by the caller

@@ -46,6 +46,7 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="referenceDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
     ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
@@ -53,6 +54,7 @@ namespace VSS.TRex.Profiling.Interfaces
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
+      IDesign referenceDesign,
       ICellLiftBuilder cellLiftBuilder);
   }
 }

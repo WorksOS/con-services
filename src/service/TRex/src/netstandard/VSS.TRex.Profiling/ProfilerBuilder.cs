@@ -58,7 +58,7 @@ namespace VSS.TRex.Profiling
       ISubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
       IFilterSet filterSet,
-      IDesign cutFillDesign,
+      IDesign referenceDesign,
       IDesign cellPassFilter_ElevationRangeDesign,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
@@ -67,9 +67,9 @@ namespace VSS.TRex.Profiling
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, filterSet, CellPassFastEventLookerUpper);
 
-        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, cutFillDesign, slicerToolUsed);
+        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesign, slicerToolUsed);
 
-        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
+        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign,referenceDesign, CellLiftBuilder);
     }
   }
 }

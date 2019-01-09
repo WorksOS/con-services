@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
@@ -38,6 +39,7 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="referenceDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <param name="profileStyle"></param>
     /// <returns></returns>
@@ -46,16 +48,19 @@ namespace VSS.TRex.Profiling.Factories
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
+      IDesign referenceDesign,
       ICellLiftBuilder cellLiftBuilder)
     {
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
-//          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-//            (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
+
         case ProfileStyle.SummaryVolume:
-          return new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder);
+
         default:
           throw new ArgumentOutOfRangeException(nameof(profileStyle), profileStyle, null);
       }
