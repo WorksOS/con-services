@@ -21,20 +21,16 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
   /// <summary>
   /// For submitting direct submitted TAG files to TRex and Raptor.
   /// for now: we will ALWAYS send to Raptor, but only send to TRex if configured.
-  ///          if TRex fails, then we will continue sending to Raptor
+  /// if TRex fails, then we will continue sending to Raptor
   /// </summary>
   public class TagFileDirectSubmissionExecutor : RequestExecutorContainer
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionTagFileRequest;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<CompactionTagFileRequest>();
-      }
+      var request = CastRequestObjectTo<CompactionTagFileRequest>(item);
 
-      var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY");
-      var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY");
+      var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY_TAGFILE");
+      var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY_TAGFILE");
 
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
 

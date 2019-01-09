@@ -39,12 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionTagFileRequestExtended;
-      if (request == null)
-      {
-        ThrowRequestTypeCastException<CompactionTagFileRequestExtended>();
-      }
-      
+      var request = CastRequestObjectTo<CompactionTagFileRequestExtended>(item);
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TAGFILE"), out var useTrexGateway);

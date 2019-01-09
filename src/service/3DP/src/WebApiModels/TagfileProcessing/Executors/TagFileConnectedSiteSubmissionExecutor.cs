@@ -14,11 +14,8 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     public const string DEFAULT_ERROR_MESSAGE = "Unknown exception.";
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionTagFileRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<CompactionTagFileRequest>();
-
+      var request = CastRequestObjectTo<CompactionTagFileRequest>(item);
+      
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
         DISABLED_MESSAGE);
       //Send the tagfile to the connected site gateway if enabled first, no project/subscription validation is required.
