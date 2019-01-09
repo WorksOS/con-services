@@ -7,8 +7,8 @@ data:
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
-#Jaeger configuration  
-  JAEGER_AGENT_HOST: jaeger-agent.jaeger
+#Logging configuration - Jaeger
+  JAEGER_AGENT_HOST: jaeger-agent.logging
   JAEGER_AGENT_PORT: "6831"
   JAEGER_SAMPLER_TYPE: const
 #MySql configuration  
@@ -115,10 +115,7 @@ data:
   PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
-#Logging configuration - Jaeger
-  JAEGER_AGENT_HOST: jaeger-agent.logging
-  JAEGER_AGENT_PORT: "6831"
-  JAEGER_SAMPLER_TYPE: const
+
 
 
 
