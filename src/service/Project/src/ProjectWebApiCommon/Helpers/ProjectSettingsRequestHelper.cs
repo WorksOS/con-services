@@ -35,37 +35,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       return ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, projectSettingsType);
     }
-
-    public async Task RaptorValidateProjectSettings(
-      IRaptorProxy raptorProxy, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      ProjectSettingsRequest request, IDictionary<string, string> customHeaders
-      )
-    {
-      BaseDataResult result = null;
-      try
-      {
-        result = await raptorProxy
-          .ValidateProjectSettings(request, customHeaders)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        log.LogError(e, $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.Settings}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70,
-          "raptorProxy.ValidateProjectSettings", e.Message);
-      }
-
-      log.LogDebug(
-        $"RaptorValidateProjectSettings: projectUid: {request.projectUid} settings: {request.Settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
-
-      if (result != null && result.Code != 0)
-      {
-        log.LogError(
-          $"RaptorValidateProjectSettings: RaptorServices failed. projectUid:{request.projectUid} settings:{request.Settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
-
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
-          result.Message);
-      }
-    }
   }
 }

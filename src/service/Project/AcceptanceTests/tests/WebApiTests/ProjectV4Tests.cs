@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Repositories.DBModels;
 
 namespace WebApiTests
@@ -882,7 +883,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -908,14 +909,21 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
 
-      ts.FirstEventDate = DateTime.Now;
+      ts.FirstEventDate = DateTime.UtcNow;
       ts.ProjectUid = new Guid(projectUid);
+
+      // project deletion sets the ProjectEndDate to now, in the projects timezone.
+      //    this may cause the endDate to be a day earlier/later than 'NowUtc',
+      //    depending on when this test is run.
+      // not that only projectUID is passed from this array to the ProjectSvc endpoint,
+      //    the others are simply used for comparison
+      var endDateTime2Reset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland").Date;
+
       var projectEventArray3 = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
-      $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
+      $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2Reset:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
       var response = ts.PublishEventToWebApi(projectEventArray3);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
-      var todoJeannie = projectEventArray3.Where(f => f.Equals("EndDate"));
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray3, true);
     }
