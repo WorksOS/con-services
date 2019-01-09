@@ -21,7 +21,11 @@ spec:
         tty: true
         envFrom:
         - configMapRef:
-            name: {{ $configname }}
+            name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
@@ -29,7 +33,11 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
         - configMapRef:
-            name: {{ $configname }}
+            name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
         imagePullPolicy: Always
 
 
