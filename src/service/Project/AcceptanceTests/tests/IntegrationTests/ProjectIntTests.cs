@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net;
+using System.Threading;
 using TestUtility;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Repositories.DBModels;
@@ -559,6 +560,7 @@ namespace IntegrationTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray2, true);
 
       // Now check the project type has changed and the kafka message consumed properly.
+      Thread.Sleep(10000);
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "1", projectUid);
@@ -591,7 +593,7 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
 
       ts.IsPublishToWebApi = true;
-      var projectName = $"Standard To LandFill test";
+      var projectName = $"Standard To Civil test";
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
@@ -609,6 +611,7 @@ namespace IntegrationTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray2, true);
 
       // Now check the project type has changed and the kafka message consumed properly.
+      Thread.Sleep(10000);
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "2", projectUid);
