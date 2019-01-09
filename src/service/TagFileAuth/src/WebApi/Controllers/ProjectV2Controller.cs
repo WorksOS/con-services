@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectUidResult> GetProjectUid([FromBody]GetProjectUidRequest request)
     {
-      _log.LogDebug("GetProjectUid: request:{0}", JsonConvert.SerializeObject(request));
+      _log.LogDebug($"GetProjectUid: request:{JsonConvert.SerializeObject(request)}");
       var errorCodeResult = request.Validate();
       if (errorCodeResult > 0)
       {
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
     {
-      _log.LogDebug("GetProjectAndAssetUids: request:{0}", JsonConvert.SerializeObject(request));
+      _log.LogDebug($"GetProjectAndAssetUids: request:{JsonConvert.SerializeObject(request)}");
       var errorCodeResult = request.Validate();
       if (errorCodeResult > 0)
       {
