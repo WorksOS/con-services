@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.UnitTests
@@ -22,9 +22,9 @@ namespace VSS.Productivity3D.Models.UnitTests
       //everything filter
       List<WGSPoint> latLngs = new List<WGSPoint>
       {
-        new WGSPoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+        new WGSPoint(35.13*Coordinates.DEGREES_TO_RADIANS, 179.2*Coordinates.DEGREES_TO_RADIANS),
+        new WGSPoint(34.25*Coordinates.DEGREES_TO_RADIANS, 178.1*Coordinates.DEGREES_TO_RADIANS),
+        new WGSPoint(36.4*Coordinates.DEGREES_TO_RADIANS, 177.34*Coordinates.DEGREES_TO_RADIANS)
       };
       List<Point> gridPoints = new List<Point>
       {
@@ -175,9 +175,9 @@ namespace VSS.Productivity3D.Models.UnitTests
       //both LL and grid points specified
       List<WGSPoint> latLngs = new List<WGSPoint>
       {
-        new WGSPoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+        new WGSPoint(35.13*Coordinates.DEGREES_TO_RADIANS, 179.2*Coordinates.DEGREES_TO_RADIANS),
+        new WGSPoint(34.25*Coordinates.DEGREES_TO_RADIANS, 178.1*Coordinates.DEGREES_TO_RADIANS),
+        new WGSPoint(36.4*Coordinates.DEGREES_TO_RADIANS, 177.34*Coordinates.DEGREES_TO_RADIANS)
       };
       List<Point> gridPoints = new List<Point>
       {

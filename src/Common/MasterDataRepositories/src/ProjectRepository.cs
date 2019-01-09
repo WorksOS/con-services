@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
@@ -528,10 +529,11 @@ namespace VSS.MasterData.Repositories
           else
           {
             Log.LogDebug($"ProjectRepository/DeleteProject: updating project={project.ProjectUID}");
-
+            project.EndDate = project.LastActionedUTC.ToLocalDateTime(project.LandfillTimeZone);
             const string update =
               @"UPDATE Project                
                   SET IsDeleted = 1,
+                    EndDate = @EndDate,
                     LastActionedUTC = @LastActionedUTC
                   WHERE ProjectUID = @ProjectUID";
             upsertedCount = await ExecuteWithAsyncPolicy(update, project);
