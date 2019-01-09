@@ -946,6 +946,8 @@ namespace TestUtility
         case "CreateProjectEvent":
         case "UpdateProjectEvent":
         case "DeleteProjectEvent":
+          topicName = SetKafkaTopicName("IProjectEvent");
+          break;
         case "AssociateProjectCustomer":
         case "AssociateProjectGeofence":
         case "CreateGeofenceEvent":

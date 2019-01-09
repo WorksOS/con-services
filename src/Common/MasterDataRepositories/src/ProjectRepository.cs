@@ -529,7 +529,9 @@ namespace VSS.MasterData.Repositories
           else
           {
             Log.LogDebug($"ProjectRepository/DeleteProject: updating project={project.ProjectUID}");
-            project.EndDate = project.LastActionedUTC.ToLocalDateTime(project.LandfillTimeZone);
+
+            // on deletion, the projects endDate will be set to now, in its local time.
+            project.EndDate = project.LastActionedUTC.ToLocalDateTime(existing.LandfillTimeZone);
             const string update =
               @"UPDATE Project                
                   SET IsDeleted = 1,
