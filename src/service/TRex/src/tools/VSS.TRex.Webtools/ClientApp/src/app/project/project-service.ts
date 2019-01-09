@@ -86,21 +86,9 @@ export class ProjectService {
   }
 
   public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<SurveyedSurface> {
-
-//    var newSurveyedSurface = new SurveyedSurface();
-
-//    newSurveyedSurface.descriptor = descriptor;
-//    newSurveyedSurface.asAtDate = asAtDate;
-//    newSurveyedSurface.extents = extents;
-
-//    return this.executePostRequest<string>
-//      ('addSurveyedSurface',
-//      `surveyedsurfaces/${projectUid}?newsurveyedsurface=${btoa(JSON.stringify(newSurveyedSurface))}`,
-//      null);
-
     return this.executePostRequest<SurveyedSurface>
     ('addSurveyedSurface',
-      `surveyedsurfaces/${projectUid}?fileName=${descriptor.fileName}&offset=${descriptor.offset}&asAtDate=${asAtDate.toISOString()}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`,
+      `surveyedsurfaces/${projectUid}?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,
       null);
   }
 
@@ -112,14 +100,9 @@ export class ProjectService {
     return this.executeDeleteRequest<any>('deleteSurveyedSurface', `surveyedsurfaces/${projectUid}/${surveyedSurfaceId}`);
   }
 
-  public addDesign(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
+  public addDesign(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`, null);
-  }
-
-  public addDesignFromS3(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
-    return this.executePostRequest<DesignDescriptor>
-    ('addDesign', `designs/${projectUid}/${descriptor.designId}?fileName=${descriptor.fileName}`, null);
+      ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}`, null);
   }
 
   public getDesigns(projectUid: string): Observable<Design[]> {

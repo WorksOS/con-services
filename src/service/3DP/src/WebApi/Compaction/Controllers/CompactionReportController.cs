@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for report requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
   public class CompactionReportController : BaseController<CompactionReportController>
   {
     /// <summary>
@@ -43,14 +42,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IPreferenceProxy prefProxy;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore,
+      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
+      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
+      ITRexCompactionDataProxy tRexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
+      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -93,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endEasting,
       [FromQuery] double azimuth)
     {
-      Log.LogInformation("GetReportGrid: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetReportGrid)}: " + Request.QueryString);
 
       var projectId = await GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -101,6 +109,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -126,7 +135,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
+          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+            trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportGridRequest) as CompactionReportResult
       );
     }
@@ -158,16 +168,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double[] rightOffsets,
       [FromQuery] double[] offsets)
     {
-      Log.LogInformation("GetStationOffset: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetStationOffsetReport)}: " + Request.QueryString);
 
-      var user = (RaptorPrincipal)User;
+      var user = (RaptorPrincipal) User;
       var project = await user.GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var userPreferences = user.IsApplication ? new UserPreferenceData() : await GetUserPreferences();
-
 
       double[] updatedOffsets;
       if (leftOffsets.Length > 0 || rightOffsets.Length > 0)
@@ -176,7 +185,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         {
           leftOffsets[i] *= -1;
         }
-        updatedOffsets = leftOffsets.Concat(rightOffsets).ToArray().AddZeroDistinctSortBy(); ;
+
+        updatedOffsets = leftOffsets.Concat(rightOffsets).ToArray().AddZeroDistinctSortBy();
+        ;
       }
       else
       {
@@ -184,34 +195,34 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         updatedOffsets = offsets?.AddZeroDistinctSortBy();
       }
 
-
-
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
-        .ProjectId(project.LegacyProjectId)
-        .Headers(CustomHeaders)
-        .ProjectSettings(projectSettings)
-        .Filter(filter))
-      .CreateRequest(
-        reportElevation,
-        reportCmv,
-        reportMdp,
-        reportPassCount,
-        reportTemperature,
-        reportCutFill,
-        cutFillDesignDescriptor,
-        alignmentDescriptor,
-        crossSectionInterval,
-        startStation,
-        endStation,
-        updatedOffsets,
-        userPreferences,
-        project.ProjectTimeZone);
+          .ProjectUid(projectUid)
+          .ProjectId(project.LegacyProjectId)
+          .Headers(CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .CreateRequest(
+          reportElevation,
+          reportCmv,
+          reportMdp,
+          reportPassCount,
+          reportTemperature,
+          reportCutFill,
+          cutFillDesignDescriptor,
+          alignmentDescriptor,
+          crossSectionInterval,
+          startStation,
+          endStation,
+          updatedOffsets,
+          userPreferences,
+          project.ProjectTimeZone);
 
       reportRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
+          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+            trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportRequest) as CompactionReportResult
       );
     }
@@ -226,6 +237,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Failed to retrieve preferences for current user"));
       }
+
       return userPreferences;
     }
   }

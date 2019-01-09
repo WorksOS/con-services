@@ -6,9 +6,6 @@ metadata:
 data: 
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
-  TCCORG: vldev
-  TCCUSERNAME: vldev
-  TCCPWD: vldev_key
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
 #Jaeger configuration  
   JAEGER_AGENT_HOST: jaeger-agent.jaeger
@@ -18,8 +15,6 @@ data:
   MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
-  MYSQL_USERNAME: Merino
-  MYSQL_ROOT_PASSWORD: R58Kper%5
   MYSQL_USERNAME_BUILD: vssBuildUsr
   MYSQL_PASSWORD_BUILD: V$$8u1ld45er
 #Kafka configuration  
@@ -50,7 +45,7 @@ data:
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.k8s.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
   TREX_TAGFILE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
-  TREX_IMPORTFILE_CUD_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v1/design
+  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v1/design
 #CAP configuration  
   MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Dev
   MYSQL_CAP_TABLE_PREFIX: Project
@@ -69,14 +64,17 @@ data:
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
   AWS_SECRET_KEY: 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
+  AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
 #Raptor configuration
   ASNODEIP: 10.97.96.134
   ENABLE_CONNECTED_SITE_GATEWAY: "true"
-  ENABLE_RAPTOR_GATEWAY: "true"
-  ENABLE_TREX_GATEWAY: "true"
+  ENABLE_RAPTOR_GATEWAY_TAGFILE: "true"
+  ENABLE_TREX_GATEWAY_TAGFILE: "true"
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
   ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
+  ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
+  ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
   IONODEIP: 10.97.96.92
   SHAREUNC: \\dev-iolv01.vssengg.com\ProductionData
   RAPTORUSERNAME: svcRaptor
@@ -102,6 +100,19 @@ data:
   MIN_IO_THREADS: "1024"
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
+#Notifications config
+  NOTIFICATION_HUB_URL: http://push.dev.k8s.vspengg.com/notifications
+  PUSH_NO_AUTHENTICATION_HEADER: "true" 
+#DataOcean config
+  DATA_OCEAN_URL: https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0
+  DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
+  DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
+#Logging configuration - Jaeger
+  JAEGER_AGENT_HOST: jaeger-agent.logging
+  JAEGER_AGENT_PORT: "6831"
+  JAEGER_SAMPLER_TYPE: const
+
+
 
 
 

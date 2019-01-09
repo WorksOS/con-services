@@ -1,4 +1,4 @@
-ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.1-sdk
+ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.0-sdk
 
 FROM ${APP_BUILD_IMAGE}
 COPY . /app
