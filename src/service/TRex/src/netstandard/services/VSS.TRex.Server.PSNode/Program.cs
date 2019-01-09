@@ -39,6 +39,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Consts = VSS.TRex.Common.Consts;
 
@@ -123,6 +124,9 @@ namespace VSS.TRex.Server.PSNode
         // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
         .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
           factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder) =>  new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder)))
+
+        // Register the factory for surface elevation requests
+        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequest(cache, context)))
 
         .Complete();
     }

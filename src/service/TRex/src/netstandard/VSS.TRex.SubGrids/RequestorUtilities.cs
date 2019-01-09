@@ -10,13 +10,14 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -37,6 +38,9 @@ namespace VSS.TRex.SubGrids
 
     private static Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>();
 
+    private static Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
+      DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
+
     /// <summary>
     /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches pre-calculated
     /// ready to be used to create per-Task requestor delegates
@@ -45,7 +49,7 @@ namespace VSS.TRex.SubGrids
     public (ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
-      SurfaceElevationPatchRequest Request,
+      ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ITRexSpatialMemoryCacheContext CacheContext)[] ConstructRequestorIntermediaries(ISiteModel siteModel,
         IFilterSet filters,
         bool includeSurveyedSurfaceInformation,
@@ -54,7 +58,7 @@ namespace VSS.TRex.SubGrids
       (ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
-      SurfaceElevationPatchRequest Request,
+      ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ITRexSpatialMemoryCacheContext CacheContext) getIntermediary(ICombinedFilter filter)
       {
         // Construct the appropriate list of surveyed surfaces
@@ -89,7 +93,7 @@ namespace VSS.TRex.SubGrids
         }
 
         return (filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray,
-          new SurfaceElevationPatchRequest(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
+          SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
             SubGridCacheContext);
       }
 
@@ -105,7 +109,7 @@ namespace VSS.TRex.SubGrids
       (ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         Guid[] FilteredSurveyedSurfacesAsArray,
-        SurfaceElevationPatchRequest Request,
+        ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
         ITRexSpatialMemoryCacheContext CacheContext)[] Intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask)
@@ -143,7 +147,7 @@ namespace VSS.TRex.SubGrids
           x.CacheContext,
           x.FilteredSurveyedSurfaces,
           x.FilteredSurveyedSurfacesAsArray,
-          x.Request,
+          x.surfaceElevationPatchRequest,
           surfaceElevationPatchArg);
 
         return requestor;

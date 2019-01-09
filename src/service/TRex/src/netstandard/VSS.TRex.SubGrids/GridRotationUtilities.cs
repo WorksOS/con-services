@@ -7,7 +7,6 @@ using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGrids
 {
@@ -73,8 +72,7 @@ namespace VSS.TRex.SubGrids
 
       sieveBitmask.Clear();
 
-      // Calculate the world coordinate location of the origin (bottom left corner)
-      // of this subgrid
+      // Calculate the world coordinate location of the origin (bottom left corner) of this subgrid
       //subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
       // Skip-Iterate through the cells marking those cells that require values
@@ -175,7 +173,6 @@ namespace VSS.TRex.SubGrids
       double intraGridOffsetX = areaControlSet.UserOriginX - (Math.Floor(areaControlSet.UserOriginX / stepX) * stepX);
       double intraGridOffsetY = areaControlSet.UserOriginY - (Math.Floor(areaControlSet.UserOriginY / stepY) * stepY);
 
-
       if (areaControlSet.Rotation != Consts.NullDouble && areaControlSet.Rotation != 0) // Radians, north azimuth survey angle
       {
         Fence rotatedSubgridBoundary = new Fence();
@@ -255,8 +252,7 @@ namespace VSS.TRex.SubGrids
           {
             sieveBitmask.SetBit(eastCol, northRow);
             assignmentContext.ProbePositions[eastCol, northRow]
-              .SetOffsets(currentEast - subgridMinX,
-                currentNorth - subgridMinY); // = new ProbePoint(CurrentEast - SubgridMinX, CurrentNorth - SubgridMinY);
+              .SetOffsets(currentEast - subgridMinX, currentNorth - subgridMinY);
           }
 
           currentEast += stepEastX;
@@ -264,6 +260,5 @@ namespace VSS.TRex.SubGrids
         }
       }
     }
-
   }
 }

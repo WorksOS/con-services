@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
 using VSS.TRex.Exceptions;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Requests
 {
   /// <summary>
   /// The base class for requests. This provides common aspects such as the injected Ignite instance
   /// </summary>
-  public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass
+  public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>
   {
     /// <summary>
     /// Default no-arg constructor

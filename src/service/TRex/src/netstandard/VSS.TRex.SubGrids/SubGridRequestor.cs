@@ -12,12 +12,11 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -38,7 +37,7 @@ namespace VSS.TRex.SubGrids
         private SubGridRetriever retriever;
         private ISiteModel SiteModel;
         private ICombinedFilter Filter;
-        private SurfaceElevationPatchRequest surfaceElevationPatchRequest;
+        private ISurfaceElevationPatchRequest surfaceElevationPatchRequest;
         private byte TreeLevel;
         private bool HasOverrideSpatialCellRestriction;
         private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
@@ -46,7 +45,7 @@ namespace VSS.TRex.SubGrids
         private bool ProdDataRequested;
         private bool SurveyedSurfaceDataRequested;
         private IClientLeafSubGrid ClientGrid;
-        private SurfaceElevationPatchArgument SurfaceElevationPatchArg;
+        private ISurfaceElevationPatchArgument SurfaceElevationPatchArg;
         private uint CellX;
         private uint CellY;
         public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
@@ -92,8 +91,8 @@ namespace VSS.TRex.SubGrids
                                 ITRexSpatialMemoryCacheContext subGridCacheContext,                                
                                 ISurveyedSurfaces filteredSurveyedSurfaces,
                                 Guid[] filteredSurveyedSurfacesAsArray,
-                                SurfaceElevationPatchRequest surfaceElevationPatchRequest,
-                                SurfaceElevationPatchArgument surfaceElevationPatchArgument)
+                                ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+                                ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
         {
             SiteModel = sitemodel;
 

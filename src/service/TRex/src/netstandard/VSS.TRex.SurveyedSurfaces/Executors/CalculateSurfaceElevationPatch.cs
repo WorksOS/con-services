@@ -8,14 +8,13 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SurveyedSurfaces.Executors
 {
   /// <summary>
-  /// Calculate a surface patch for a subgrid by querying a set of supplied surveyed surfaces and extracting
+  /// Calculate a surface patch for a sub grid by querying a set of supplied surveyed surfaces and extracting
   /// earliest, latest or composite elevation information from those surveyed surfaces
   /// </summary>
   public class CalculateSurfaceElevationPatch
@@ -23,7 +22,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateSurfaceElevationPatch>();
 
     /// <summary>
-    /// Local reference to the client subgrid factory
+    /// Local reference to the client sub grid factory
     /// </summary>
     private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
@@ -33,7 +32,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Private reference to the arguments provided to the executor
     /// </summary>
-    private SurfaceElevationPatchArgument Args { get; set; }
+    private ISurfaceElevationPatchArgument Args { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -46,7 +45,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// Constructor for the executor accepting the arguments for its operation
     /// </summary>
     /// <param name="args"></param>
-    public CalculateSurfaceElevationPatch(SurfaceElevationPatchArgument args) : this()
+    public CalculateSurfaceElevationPatch(ISurfaceElevationPatchArgument args) : this()
     {
       Args = args;
     }

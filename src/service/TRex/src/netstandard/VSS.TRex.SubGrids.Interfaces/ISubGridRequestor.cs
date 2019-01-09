@@ -8,19 +8,17 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.SubGrids
+namespace VSS.TRex.SubGrids.Interfaces
 {
   public interface ISubGridRequestor
   {
     SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; }
 
     /// <summary>
-    /// Responsible for coordinating the retrieval of production data for a subgrid from a site model and also annotating it with
+    /// Responsible for coordinating the retrieval of production data for a sub grid from a site model and also annotating it with
     /// surveyed surface information for requests involving height data.
     /// </summary>
     /// <param name="subGridAddress"></param>
@@ -36,8 +34,8 @@ namespace VSS.TRex.SubGrids
     );
 
     /// <summary>
-    /// Constructor that accepts the common parameters around a set of subgrids the requester will be asked to process
-    /// and initializes the requester state ready to start processing individual subgrid requests.
+    /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
+    /// and initializes the requester state ready to start processing individual sub grid requests.
     /// </summary>
     void Initialize(ISiteModel sitemodel,
       IStorageProxy storageProxy,
@@ -53,8 +51,7 @@ namespace VSS.TRex.SubGrids
       ITRexSpatialMemoryCacheContext subGridCacheContext,
       ISurveyedSurfaces filteredSurveyedSurfaces,
       Guid[] filteredSurveyedSurfacesAsArray,
-      SurfaceElevationPatchRequest surfaceElevationPatchRequest,
-      SurfaceElevationPatchArgument surfaceElevationPatchArgument);
-
+      ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+      ISurfaceElevationPatchArgument surfaceElevationPatchArgument);
   }
 }

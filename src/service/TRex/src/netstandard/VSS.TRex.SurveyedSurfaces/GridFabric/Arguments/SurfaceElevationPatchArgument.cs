@@ -7,8 +7,8 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
 {
-    public class SurfaceElevationPatchArgument
-    {
+  public class SurfaceElevationPatchArgument : ISurfaceElevationPatchArgument
+  {
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>

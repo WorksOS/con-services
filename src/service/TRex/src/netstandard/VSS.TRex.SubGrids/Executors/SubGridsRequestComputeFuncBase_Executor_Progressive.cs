@@ -13,7 +13,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 namespace VSS.TRex.SubGrids.Executors
 {
   /// <summary>
-  /// The closure/function that implements subgrid request processing on compute nodes
+  /// The closure/function that implements sub grid request processing on compute nodes
   /// </summary>
   public class SubGridsRequestComputeFuncBase_Executor_Progressive<TSubGridsRequestArgument, TSubGridRequestsResponse> :
                   SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>
@@ -27,14 +27,14 @@ namespace VSS.TRex.SubGrids.Executors
     private string tRexNodeIDAsString = string.Empty;
 
     /// <summary>
-    /// Processes a subgrid result that consists of a client leaf subgrid for each of the filters in the request
+    /// Processes a sub grid result that consists of a client leaf sub grid for each of the filters in the request
     /// </summary>
     /// <param name="results"></param>
     /// <param name="resultCount"></param>
 
-    protected override void ProcessSubgridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
+    protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
-      // Package the resulting subgrids into the MemoryStream
+      // Package the resulting sub grids into the MemoryStream
       using (var MS = new MemoryStream())
       {
         using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGrids.Executors
     }
 
     /// <summary>
-    /// Set up Ignite elements for progressive subgrid requests
+    /// Set up Ignite elements for progressive sub grid requests
     /// </summary>
     protected override bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse)
     {
@@ -101,7 +101,7 @@ namespace VSS.TRex.SubGrids.Executors
     }
 
     /// <summary>
-    /// Capture elements from the argument relevant to progressive subgrid requests
+    /// Capture elements from the argument relevant to progressive sub grid requests
     /// </summary>
     /// <param name="arg"></param>
     public override void UnpackArgument(SubGridsRequestArgument arg)

@@ -8,7 +8,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 namespace VSS.TRex.SubGrids.Executors
 { 
   /// <summary>
-  /// The closure/function that implements subgrid request processing on compute nodes
+  /// The closure/function that implements sub grid request processing on compute nodes
   /// </summary>
   public class SubGridsRequestComputeFuncBase_Executor_Aggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> :
                   SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>
@@ -18,20 +18,20 @@ namespace VSS.TRex.SubGrids.Executors
     // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Aggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     /// <summary>
-    /// The Task responsible for handling further processing of subgrid query responses
+    /// The Task responsible for handling further processing of sub grid query responses
     /// </summary>
     public ITRexTask Task { get; set; }
 
     /// <summary>
-    /// Processes a subgrid result consisting of a client leaf subgrid matching each of the filters present in the request
+    /// Processes a sub grid result consisting of a client leaf sub grid matching each of the filters present in the request
     /// </summary>
     /// <param name="results"></param>
     /// <param name="resultCount"></param>
-    protected override void ProcessSubgridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
+    protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       if (Task == null)
       {
-        throw new ArgumentException("Task null in ProcessSubgridRequestResult() for SubGridsRequestComputeFuncAggregative<TArgument, TResponse> instance.");
+        throw new ArgumentException("Task null in ProcessSubGridRequestResult() for SubGridsRequestComputeFuncAggregative<TArgument, TResponse> instance.");
       }
 
       Task.TransferResponse(results);
@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGrids.Executors
     }
 
     /// <summary>
-    /// Set up Ignite elements for aggregated subgrid requests
+    /// Set up Ignite elements for aggregated sub grid requests
     /// </summary>
     protected override bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse)
     {

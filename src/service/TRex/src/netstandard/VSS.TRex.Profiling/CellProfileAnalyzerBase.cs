@@ -14,7 +14,6 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -36,6 +35,9 @@ namespace VSS.TRex.Profiling
 
     protected IClientLeafSubGridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
+
+    protected static Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory =
+      DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 
     /// <summary>
     /// The storage proxy to use when requesting subgrids for profiling operations
@@ -69,11 +71,11 @@ namespace VSS.TRex.Profiling
     protected ISurveyedSurfaces FilteredSurveyedSurfaces;
 
     /// <summary>
-    /// The argument to be used when requesting composite elevation subgrids to support profile analysis
+    /// The argument to be used when requesting composite elevation sub grids to support profile analysis
     /// </summary>
-    protected SurfaceElevationPatchArgument SurfaceElevationPatchArg;
+    protected ISurfaceElevationPatchArgument SurfaceElevationPatchArg;
 
-    protected SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
+    protected ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
 
     /// <summary>
     /// The design supplied as a result of an independent lookup outside the scope of this builder
@@ -150,7 +152,7 @@ namespace VSS.TRex.Profiling
       }
 
       // Instantiate a single instance of the argument object for the surface elevation patch requests to obtain composite
-      // elevation subgrids and populate it with the common elements for this set of subgrids being requested.
+      // elevation sub grids and populate it with the common elements for this set of sub grids being requested.
       SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
       {
         SiteModelID = SiteModel.ID,
@@ -163,7 +165,7 @@ namespace VSS.TRex.Profiling
       var _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
       var _context = _cache?.LocateOrCreateContext(SiteModel.ID, SurfaceElevationPatchArg.CacheFingerprint());
 
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(_cache, _context);
+      SurfaceElevationPatchRequest = SurfaceElevationPatchRequestFactory(_cache, _context);
     }
 
     /// <summary>
