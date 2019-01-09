@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
         }
 
-        var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
+        var filter = RaptorConverters.ConvertFilter(request.Filter);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
         var liftBuildSettings =
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);

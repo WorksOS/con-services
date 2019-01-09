@@ -4,6 +4,7 @@ namespace VSS.Productivity3D.Models.Models
 {
   public class DxfFileRequest
   {
+    public string FilespaceId { get;set; } // Not required for our request, but is when creating FileDescriptor.
     public string Filename { get; set; }
     public IFormFile FileData { get; set; }
     public int DistanceUnits { get; set; }

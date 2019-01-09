@@ -59,8 +59,8 @@ namespace VSS.Productivity3D.Common.Executors
       RaptorConverters.convertGridOrLLBoundingBox(
         request.BoundBoxGrid, request.BoundBoxLatLon, out var bl, out var tr, out bool coordsAreGrid);
 
-      var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-      var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+      var filter1 = RaptorConverters.ConvertFilter(request.Filter1);
+      var filter2 = RaptorConverters.ConvertFilter(request.Filter2);
       var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
 
       if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)

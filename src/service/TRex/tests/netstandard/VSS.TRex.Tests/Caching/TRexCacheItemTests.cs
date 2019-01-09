@@ -5,7 +5,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexCacheItemTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+  public class TRexCacheItemTests : IClassFixture<DILoggingAndStorageProxyFixture>
   {
     [Fact]
     public void Test_TRexCacheItem_Creation_Default()

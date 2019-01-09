@@ -63,20 +63,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       MemoryStream memoryStream;
 
-      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
+      var filter = RaptorConverters.ConvertFilter(request.Filter);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      TWGS84Point startPt, endPt;
-      bool positionsAreGrid;
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt,
-        out positionsAreGrid);
+      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out var startPt, out var endPt,
+        out var positionsAreGrid);
 
       CompactionProfileResult<CompactionProfileDataResult> totalResult = null;
       if (request.IsAlignmentDesign)
       {
-        ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
+        var args
           = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
           (request.ProjectId ?? -1,
             ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
@@ -92,7 +90,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
       else
       {
-        ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
+        var args
           = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
           (request.ProjectId ?? -1,
             ProfilesHelper.PROFILE_TYPE_HEIGHT,
@@ -136,8 +134,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var profile = new CompactionProfileResult<CompactionProfileCell>();
 
-      PDSProfile pdsiProfile = new PDSProfile();
-      TICProfileCellListPackager packager = new TICProfileCellListPackager();
+      var pdsiProfile = new PDSProfile();
+      var packager = new TICProfileCellListPackager();
       packager.CellList = new TICProfileCellList();
       packager.ReadFromStream(ms);
       pdsiProfile.Assign(packager.CellList);
@@ -146,7 +144,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       profile.results = new List<CompactionProfileCell>();
       ProfileCell prevCell = null;
-      foreach (ProfileCell currCell in pdsiProfile.cells)
+      foreach (var currCell in pdsiProfile.cells)
       {
         var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
 
@@ -319,7 +317,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
-      StringBuilder sb = new StringBuilder();
+      var sb = new StringBuilder();
       sb.Append($"After profile conversion: {profile.results.Count}");
       foreach (var cell in profile.results)
       {
@@ -371,19 +369,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <returns>Summary volumes profile</returns>
     private CompactionProfileDataResult ProcessSummaryVolumes(CompactionProfileProductionDataRequest request, CompactionProfileResult<CompactionProfileDataResult> totalResult)
     {
-      MemoryStream memoryStream;
-
-      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      var baseFilter = RaptorConverters.ConvertFilter(null, request.baseFilter, request.ProjectId);
-      var topFilter = RaptorConverters.ConvertFilter(null, request.topFilter, request.ProjectId);
+      var baseFilter = RaptorConverters.ConvertFilter(request.baseFilter);
+      var topFilter = RaptorConverters.ConvertFilter(request.topFilter);
       var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
-      TWGS84Point startPt, endPt;
-      bool positionsAreGrid;
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt,
-        out positionsAreGrid);
+      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out var startPt, out var endPt,
+        out var positionsAreGrid);
 
       CompactionProfileResult<CompactionSummaryVolumesProfileCell> volumesResult = null;
       if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
@@ -393,10 +386,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
         }
+
+        MemoryStream memoryStream;
         if (request.IsAlignmentDesign)
         {
-          ASNode.RequestSummaryVolumesAlignmentProfile.RPC.
-            TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args args
+          var args
               = ASNode.RequestSummaryVolumesAlignmentProfile.RPC.__Global
                 .Construct_RequestSummaryVolumesAlignmentProfile_Args
                 (request.ProjectId ?? -1,
@@ -414,7 +408,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
         else
         {
-          ASNode.RequestSummaryVolumesProfile.RPC.TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args args
+          var args
             = ASNode.RequestSummaryVolumesProfile.RPC.__Global.Construct_RequestSummaryVolumesProfile_Args(
               (request.ProjectId ?? -1),
               ProfilesHelper.PROFILE_TYPE_HEIGHT,
@@ -469,8 +463,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var profile = new CompactionProfileResult<CompactionSummaryVolumesProfileCell>();
 
-      PDSSummaryVolumesProfile pdsiProfile = new PDSSummaryVolumesProfile();
-      TICSummaryVolumesProfileCellListPackager packager = new TICSummaryVolumesProfileCellListPackager();
+      var pdsiProfile = new PDSSummaryVolumesProfile();
+      var packager = new TICSummaryVolumesProfileCellListPackager();
       packager.CellList = new TICSummaryVolumesProfileCellList();
       packager.ReadFromStream(ms);
       pdsiProfile.Assign(packager.CellList);
@@ -480,7 +474,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       profile.results = new List<CompactionSummaryVolumesProfileCell>();
       SummaryVolumesProfileCell prevCell = null;
 
-      foreach (SummaryVolumesProfileCell currCell in pdsiProfile.Cells)
+      foreach (var currCell in pdsiProfile.Cells)
       {
         var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
 
@@ -554,7 +548,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
-      StringBuilder sb = new StringBuilder();
+      var sb = new StringBuilder();
       sb.Append($"After summary volumes profile conversion: {profile.results.Count}");
       foreach (var cell in profile.results)
       {

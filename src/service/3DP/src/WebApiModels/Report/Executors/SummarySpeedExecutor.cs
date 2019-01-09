@@ -57,8 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var raptorResult = raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
-          RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
-            new List<long>()),
+          RaptorConverters.ConvertFilter(request.Filter, overrideAssetIds: new List<long>()),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out var result);
 

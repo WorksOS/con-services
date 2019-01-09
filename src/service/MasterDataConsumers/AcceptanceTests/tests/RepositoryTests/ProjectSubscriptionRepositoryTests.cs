@@ -505,7 +505,7 @@ namespace RepositoryTests
       Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
-      project.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID;
+      project.ServiceTypeID = subscriptionContext.ServiceTypes[createProjectSubscriptionEvent.SubscriptionType].ID;
       project.SubscriptionStartDate = createProjectSubscriptionEvent.StartDate;
       project.SubscriptionEndDate = createProjectSubscriptionEvent.EndDate;
       project.SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID.ToString();
@@ -752,7 +752,7 @@ namespace RepositoryTests
       Project project1 = TestHelpers.CopyModel(createProjectEvent);
       project1.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project1.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
-      project1.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent1.SubscriptionType].ID;
+      project1.ServiceTypeID = subscriptionContext.ServiceTypes[createProjectSubscriptionEvent1.SubscriptionType].ID;
       project1.SubscriptionStartDate = createProjectSubscriptionEvent1.StartDate;
       project1.SubscriptionEndDate = createProjectSubscriptionEvent1.EndDate;
       project1.SubscriptionUID = createProjectSubscriptionEvent1.SubscriptionUID.ToString();
@@ -767,7 +767,7 @@ namespace RepositoryTests
       Project project2 = TestHelpers.CopyModel(createProjectEvent);
       project2.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project2.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
-      project2.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent2.SubscriptionType].ID;
+      project2.ServiceTypeID = subscriptionContext.ServiceTypes[createProjectSubscriptionEvent2.SubscriptionType].ID;
       project2.SubscriptionStartDate = createProjectSubscriptionEvent2.StartDate;
       project2.SubscriptionEndDate = createProjectSubscriptionEvent2.EndDate;
       project2.SubscriptionUID = createProjectSubscriptionEvent2.SubscriptionUID.ToString();
@@ -1183,7 +1183,7 @@ namespace RepositoryTests
       {
         SubscriptionUID = kafkaProjectSubscriptionEvent.SubscriptionUID.ToString(),
         CustomerUID = kafkaProjectSubscriptionEvent.CustomerUID.ToString(),
-        ServiceTypeID = subscriptionRepo._serviceTypes[kafkaProjectSubscriptionEvent.SubscriptionType].ID,
+        ServiceTypeID = subscriptionRepo.ServiceTypes[kafkaProjectSubscriptionEvent.SubscriptionType].ID,
         StartDate = kafkaProjectSubscriptionEvent.StartDate,
         EndDate = kafkaProjectSubscriptionEvent.EndDate,
         LastActionedUTC = kafkaProjectSubscriptionEvent.ActionUTC,

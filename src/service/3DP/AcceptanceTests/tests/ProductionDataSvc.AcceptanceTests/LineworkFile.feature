@@ -1,5 +1,6 @@
 ﻿Feature: LineworkFile
 
+@Ignore
 Scenario Outline: LineworkFile - Bad Request
   Given the service route "/api/v2/linework/boundaries" and result repo "LineworkFileResponse.json"
   And with parameter "projectUid" with value "<ProjectUID>"

@@ -7,7 +7,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
@@ -30,8 +29,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<PatchRequest>(item);
-        var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-        var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+        var filter1 = RaptorConverters.ConvertFilter(request.Filter1);
+        var filter2 = RaptorConverters.ConvertFilter(request.Filter2);
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
 
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)

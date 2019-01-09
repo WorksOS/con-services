@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<ExportGridCSV>(item);
-        var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.filter);
         MemoryStream outputStream = null;
         Stream writerStream = null;
         ZipArchive archive = null;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SVOICFiltersDecls;
-using SVOICFilterSettings;
 using SVOICGridCell;
 using SVOICProfileCell;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -26,8 +25,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
       double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
 
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId, null, null,
-        new List<long>());
+      var raptorFilter = RaptorConverters.ConvertFilter(request.filter, overrideAssetIds: new List<long>());
+
       int code = raptorClient.RequestCellProfile
       (request.ProjectId ?? -1,
         RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),

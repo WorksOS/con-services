@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         return new CompactionTemperatureDetailResult(temperatureDetailsResult);
       }
 
-      var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
+      var filter = RaptorConverters.ConvertFilter(request.Filter);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 

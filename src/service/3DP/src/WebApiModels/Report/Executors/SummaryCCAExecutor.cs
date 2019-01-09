@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<CCARequest>(item);
-        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
         bool success = raptorClient.GetCCASummary(request.ProjectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCCASummary),

@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -244,7 +245,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IProductionDataRequestFactory requestFactory,
       [FromServices] IFileRepository tccFileRepository)
     {
-      const double radToDegrees = 180.0 / Math.PI;
       const double surfaceExportTollerance = 0.05;
 
       var tins = new List<TrimbleTINModel>();
@@ -378,12 +378,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       // The values returned from Raptor are in rads, where we need degrees for the bbox
-      var minLat = coordPointList.Points.Coords[0].Y * radToDegrees;
-      var minLng = coordPointList.Points.Coords[0].X * radToDegrees;
-      var maxLat = coordPointList.Points.Coords[1].Y * radToDegrees;
-      var maxLng = coordPointList.Points.Coords[1].X * radToDegrees;
-      var centerLat = coordPointList.Points.Coords[2].Y * radToDegrees;
-      var centerLng = coordPointList.Points.Coords[2].X * radToDegrees;
+      var minLat = coordPointList.Points.Coords[0].Y * Coordinates.RADIANS_TO_DEGREES;
+      var minLng = coordPointList.Points.Coords[0].X * Coordinates.RADIANS_TO_DEGREES;
+      var maxLat = coordPointList.Points.Coords[1].Y * Coordinates.RADIANS_TO_DEGREES;
+      var maxLng = coordPointList.Points.Coords[1].X * Coordinates.RADIANS_TO_DEGREES;
+      var centerLat = coordPointList.Points.Coords[2].Y * Coordinates.RADIANS_TO_DEGREES;
+      var centerLng = coordPointList.Points.Coords[2].X * Coordinates.RADIANS_TO_DEGREES;
       var bbox = $"{minLat},{minLng},{maxLat},{maxLng}"; 
 
       var outputStream = new MemoryStream();
