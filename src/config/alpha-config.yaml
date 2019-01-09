@@ -104,6 +104,13 @@ data:
   MIN_IO_THREADS: "1024"
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
+#Notifications
+  NOTIFICATION_HUB_URL: http://push.alpha.k8s.vspengg.com/notifications
+  PUSH_NO_AUTHENTICATION_HEADER: "true" 
+#DataOcean
+  DATA_OCEAN_URL: https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0
+  DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
+  DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
 
 
 

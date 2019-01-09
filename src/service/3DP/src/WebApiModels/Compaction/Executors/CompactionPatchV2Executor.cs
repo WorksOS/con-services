@@ -71,8 +71,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private ContractExecutionResult ProcessWithRaptor(PatchRequest request)
     {
-      var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-      var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+      var filter1 = RaptorConverters.ConvertFilter(request.Filter1);
+      var filter2 = RaptorConverters.ConvertFilter(request.Filter2);
       var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
 
       if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)

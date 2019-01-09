@@ -28,7 +28,11 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+            name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
         imagePullPolicy: Always
 
 

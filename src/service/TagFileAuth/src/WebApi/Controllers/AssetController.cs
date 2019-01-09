@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetAssetIdResult> GetAssetId([FromBody]GetAssetIdRequest request)
     {
-      log.LogDebug("GetAssetId: request:{0}", JsonConvert.SerializeObject(request) );            
+      log.LogDebug($"GetAssetId: request: {JsonConvert.SerializeObject(request)}");            
       request.Validate();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);

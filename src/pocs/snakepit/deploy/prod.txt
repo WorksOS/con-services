@@ -1,0 +1,3 @@
+PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
+RAPTOR_3DPM_API_URL: https://3dproductivity.myvisionlink.com/t/trimble.com/vss-3dproductivity/2.0
+SCHEDULER_EXTERNAL_URL: https://3dproductivity.myvisionlink.com/t/trimble.com/vss-3dscheduler/1.0

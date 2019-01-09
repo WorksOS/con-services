@@ -97,17 +97,20 @@ namespace MockProjectWebApi.Controllers
 
       var result = new
       {
-        id = id,
-        name = "some file",
-        parent_id = (Guid?)null,
-        status = "AVAILABLE",
-        upload = new
+        file = new
         {
-          url = $"{baseUrl}/dummy_upload_signed_url"
-        },
-        download = new
-        {
-          url = $"{baseUrl}/dummy_download_signed_url"
+          id = id,
+          name = "some file",
+          parent_id = (Guid?)null,
+          status = "AVAILABLE",
+          upload = new
+          {
+            url = $"{baseUrl}/dummy_upload_signed_url"
+          },
+          download = new
+          {
+            url = $"{baseUrl}/dummy_download_signed_url"
+          }
         }
       };
       Console.WriteLine($"{nameof(GetFile)} returning: {JsonConvert.SerializeObject(result)}");
@@ -130,12 +133,14 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"{nameof(CreateDirectory)}: {JsonConvert.SerializeObject(message)}");
 
-
       var result = new
       {
-        id = Guid.NewGuid(),
-        name = message.directory.name,
-        parent_id = message.directory.parent_id
+        directory = new
+        {
+          id = Guid.NewGuid(),
+          name = message.directory.name,
+          parent_id = message.directory.parent_id
+        }
       };
       Console.WriteLine($"{nameof(CreateDirectory)} returning: {JsonConvert.SerializeObject(result)}");
       return new CreatedResult(Request.Path, result);
@@ -149,17 +154,20 @@ namespace MockProjectWebApi.Controllers
 
       var result = new
       {
-        id = Guid.NewGuid(),
-        name = message.file.name,
-        parent_id = message.file.parent_id,
-        status = "UPLOADABLE",
-        upload = new
+        file = new
         {
-          url = $"{baseUrl}/dummy_upload_signed_url"
-        },
-        download = new
-        {
-          url = $"{baseUrl}/dummy_download_signed_url"
+          id = Guid.NewGuid(),
+          name = message.file.name,
+          parent_id = message.file.parent_id,
+          status = "UPLOADABLE",
+          upload = new
+          {
+            url = $"{baseUrl}/dummy_upload_signed_url"
+          },
+          download = new
+          {
+            url = $"{baseUrl}/dummy_download_signed_url"
+          }
         }
       };
       Console.WriteLine($"{nameof(CreateFile)} returning: {JsonConvert.SerializeObject(result)}");

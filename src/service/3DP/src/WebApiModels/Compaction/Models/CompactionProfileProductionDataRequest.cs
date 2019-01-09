@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         ProjectId = projectID,
         callId = callId,
         profileType = profileType,
-        filter = filter,
+        Filter = filter,
         filterID = filterID,
         alignmentDesign = alignmentDesign,
         gridPoints = gridPoints,

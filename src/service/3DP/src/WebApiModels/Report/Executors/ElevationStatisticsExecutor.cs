@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       new TASNodeElevationStatisticsResult();
 
-      var Filter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+      var Filter = RaptorConverters.ConvertFilter(request.Filter);
 
       var raptorResult = raptorClient.GetElevationStatistics(request.ProjectId ?? -1,
                            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,

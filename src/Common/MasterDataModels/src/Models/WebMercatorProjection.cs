@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Converters;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -129,7 +130,7 @@ namespace VSS.MasterData.Models.Models
     /// <returns>converted lat else throws exception</returns>
     public static double LatDegreesToRadians(this double lat)
     {
-      lat = lat * Math.PI / 180.0;
+      lat = lat * Coordinates.DEGREES_TO_RADIANS;
       if (lat < -Math.PI / 2)
       {
         lat = lat + Math.PI;
@@ -148,7 +149,7 @@ namespace VSS.MasterData.Models.Models
     /// <returns>converted lon else throws exception</returns>
     public static double LonDegreesToRadians(this double lon)
     {
-      lon = lon * Math.PI / 180.0;
+      lon = lon * Coordinates.DEGREES_TO_RADIANS;
       if (lon < -Math.PI)
       {
         lon = lon + 2 * Math.PI;
@@ -181,8 +182,7 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     private static double RadiansToDegrees(this double rad)
     {
-      return rad / (Math.PI / 180.0);
+      return rad * Coordinates.RADIANS_TO_DEGREES;
     }
   }
 }
-
