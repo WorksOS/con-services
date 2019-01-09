@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -20,7 +21,6 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -253,10 +253,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         FilterLayerMethod.TagfileLayerNumber,
         new BoundingBox2DLatLon
           (
-            double.Parse(points[1]) * ConversionConstants.DEGREES_TO_RADIANS, // The Bottom Left corner, longitude...
-            double.Parse(points[0]) * ConversionConstants.DEGREES_TO_RADIANS, // The Bottom Left corner, latitude...
-            double.Parse(points[3]) * ConversionConstants.DEGREES_TO_RADIANS, // The Top Right corner, longitude..
-            double.Parse(points[2]) * ConversionConstants.DEGREES_TO_RADIANS  // The Top Right corner, latitude...
+            double.Parse(points[1]) * Coordinates.DEGREES_TO_RADIANS, // The Bottom Left corner, longitude...
+            double.Parse(points[0]) * Coordinates.DEGREES_TO_RADIANS, // The Bottom Left corner, latitude...
+            double.Parse(points[3]) * Coordinates.DEGREES_TO_RADIANS, // The Top Right corner, longitude..
+            double.Parse(points[2]) * Coordinates.DEGREES_TO_RADIANS  // The Top Right corner, latitude...
           ),
         null,
         width,

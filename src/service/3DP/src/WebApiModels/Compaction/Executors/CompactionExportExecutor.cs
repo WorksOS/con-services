@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private ContractExecutionResult ProcessWithRaptor(ExportReport request)
     {
-      var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,

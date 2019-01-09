@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using SVOICFiltersDecls;
-using SVOICFilterSettings;
 using SVOICGridCell;
 using SVOICProfileCell;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -26,14 +23,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (request == null)
         ThrowRequestTypeCastException<CellPassesRequest>();
 
-      TICProfileCell profile;
       bool isGridCoord = request.probePositionGrid != null;
       bool isLatLgCoord = request.probePositionLL != null;
       double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
       double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
 
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId, null, null,
-        new List<long>());
+      var raptorFilter = RaptorConverters.ConvertFilter(request.filter, overrideAssetIds: new List<long>());
+
       int code = raptorClient.RequestCellProfile
       (request.ProjectId ?? -1,
         RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
@@ -42,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
         request.gridDataType,
         raptorFilter,
-        out profile);
+        out var profile);
 
       if (code == 1)//TICServerRequestResult.icsrrNoError
         return ConvertResult(profile);

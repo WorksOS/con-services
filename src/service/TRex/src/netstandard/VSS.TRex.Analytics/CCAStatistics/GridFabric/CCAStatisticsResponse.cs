@@ -61,7 +61,7 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
       return new CCAStatisticsResult
       {
         IsTargetCCAConstant = IsTargetValueConstant,
-        ConstantTargetCCA = LastTargetCCA,
+        ConstantTargetCCA = IsTargetValueConstant ? LastTargetCCA : (short)-1,
         AboveTargetPercent = ValueOverTargetPercent,
         WithinTargetPercent = ValueAtTargetPercent,
         BelowTargetPercent = ValueUnderTargetPercent,
