@@ -324,9 +324,9 @@ namespace WebApiTests
       var projectUid2 = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = DateTime.Now.Date.AddMonths(2);
-      var startDateTime2 = DateTime.Now.Date.AddMonths(3);
-      var endDateTime2 = DateTime.Now.Date.AddMonths(9);
+      var endDateTime = DateTime.UtcNow.Date.AddMonths(2);
+      var startDateTime2 = DateTime.UtcNow.Date.AddMonths(3);
+      var endDateTime2 = DateTime.UtcNow.Date.AddMonths(9);
       const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
       const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
       var customerEventArray = new[] {
@@ -463,7 +463,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -503,7 +503,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -544,7 +544,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -585,7 +585,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -628,7 +628,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -676,7 +676,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -842,7 +842,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -941,7 +941,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";

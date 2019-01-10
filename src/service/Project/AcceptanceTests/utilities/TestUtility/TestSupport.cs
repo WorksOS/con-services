@@ -120,7 +120,7 @@ namespace TestUtility
     /// </summary>
     public void SetFirstEventDate()
     {
-      FirstEventDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
+      FirstEventDate = DateTime.SpecifyKind(DateTime.UtcNow.Date.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
     public ImportedFileType ImportedFileType { get; set; }
 
-    public DateTime? SurveyedUtc { get; set; } // todo Jeannie track this filename through for TRex
+    public DateTime? SurveyedUtc { get; set; } 
 
     public FileDescriptor FileDescriptor { get; set; }
 
