@@ -326,7 +326,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Create the grouper responsible for grouping TAG files into project/asset combinations
             grouper = new TAGFileBufferQueueGrouper();
 
-            /*Task[] tasks = */Enumerable.Range(0, NumConcurrentProcessingTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)); /*.ToArray();*/
+            // Note ToArray at end is important to activate tasks (ie lazy loading)
+            var _ = Enumerable.Range(0, NumConcurrentProcessingTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
         }
 
         /// <summary>
