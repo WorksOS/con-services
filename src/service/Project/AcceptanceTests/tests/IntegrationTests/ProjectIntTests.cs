@@ -560,7 +560,7 @@ namespace IntegrationTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray2, true);
 
       // Now check the project type has changed and the kafka message consumed properly.
-      Thread.Sleep(10000);
+      Thread.Sleep(2000);
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "1", projectUid);
@@ -611,7 +611,7 @@ namespace IntegrationTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray2, true);
 
       // Now check the project type has changed and the kafka message consumed properly.
-      Thread.Sleep(10000);
+      Thread.Sleep(2000);
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "2", projectUid);
