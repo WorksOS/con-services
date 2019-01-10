@@ -18,21 +18,30 @@ namespace MockProjectWebApi.Services
 
     public FilterData GetFilter(string projectUid, string filterUid)
     {
-      var filter = FilterData[projectUid]
-                   .filterDescriptors
-                   .SingleOrDefault(s => string.Equals(s.FilterUid, filterUid, StringComparison.CurrentCultureIgnoreCase));
-
-      if (filter == null)
-      {
-        return new FilterData
+      var filters = GetFilters(projectUid);
+      var filter = filters
+        .filterDescriptors
+        .SingleOrDefault(s => string.Equals(s.FilterUid, filterUid, StringComparison.CurrentCultureIgnoreCase));
+  
+        if (filter == null)
         {
-          Code = 36,
-          Message =
-            "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
-        };
-      }
+          return new FilterData
+          {
+            Code = 36,
+            Message =
+              "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
+          };
+        }
+        return new FilterData {filterDescriptor = filter};  
+    }
 
-      return new FilterData { filterDescriptor = filter };
+    public FilterListData GetFilters(string projectUid)
+    {
+      if (FilterData.ContainsKey(projectUid))
+      {
+        return FilterData[projectUid];
+      }
+      return new FilterListData{ filterDescriptors = new List<FilterDescriptor>() };
     }
 
     private void CreateTestData()

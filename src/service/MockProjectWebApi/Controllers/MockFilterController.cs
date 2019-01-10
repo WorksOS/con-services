@@ -34,7 +34,7 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"{nameof(GetMockFilters)}: projectUid={projectUid}");
 
-      return filtersService.FilterData[projectUid];
+      return filtersService.GetFilters(projectUid);
     }
   }
 }
