@@ -50,6 +50,7 @@ ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false"
 DATA_OCEAN_URL: https://api-usw2.trimblepaas.com/data_ocean-v1.0
 DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
 DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
+DATA_OCEAN_ROOT_FOLDER: prod
 NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
 PUSH_NO_AUTHENTICATION_HEADER: "true"
 TILE_INTERNAL_BASE_URL: http://tile.prod.k8s.services.myvisionlink.com/internal/v1

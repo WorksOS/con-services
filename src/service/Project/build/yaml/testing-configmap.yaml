@@ -51,6 +51,7 @@ data:
   DATA_OCEAN_URL: http://localhost:5001
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
+  DATA_OCEAN_ROOT_FOLDER: dev
   MOCK_WEBAPI_BASE_URL: http://localhost:5001
   TILE_INTERNAL_BASE_URL: http://localhost:5001/internal/v1/mock
   PEGASUS_URL: http://localhost:5001

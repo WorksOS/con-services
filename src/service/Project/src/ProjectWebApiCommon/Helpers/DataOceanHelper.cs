@@ -20,13 +20,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///   this may be a create or update, so ok if it already exists already
     /// </summary>
     public static async Task WriteFileToDataOcean(
-      Stream fileContents, string customerUid, string projectUid,
+      Stream fileContents, string rootFolder, string customerUid, string projectUid,
       string pathAndFileName, bool isSurveyedSurface, DateTime? surveyedUtc,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
     {
       var customHeaders = CustomHeaders(authn);
-      var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}";
+      var dataOceanPath = $"{Path.DirectorySeparatorChar}{rootFolder}{Path.DirectorySeparatorChar}{customerUid}{Path.DirectorySeparatorChar}{projectUid}";
       string dataOceanFileName = Path.GetFileName(pathAndFileName);
 
       //TODO: DataOcean has versions of files. We should leverage that rather than appending surveyed UTC to file name.

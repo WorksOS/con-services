@@ -437,7 +437,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ConfigureAwait(false);
           //save copy to DataOcean
           await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, customerUid, projectUid.ToString(), 
+              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), 
               filename,
               importedFileType == ImportedFileType.SurveyedSurface,
               surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
@@ -517,7 +517,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, customerUid, projectUid, filePath,
+              fileStream, DataOceanRootFolder, customerUid, projectUid, filePath,
               importedFileType == ImportedFileType.SurveyedSurface, 
               surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);        

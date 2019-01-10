@@ -203,10 +203,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
           //save copy to DataOcean
+          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+          if (string.IsNullOrEmpty(rootFolder))
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+          }
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
-              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
+              ms, rootFolder, customerUid, projectUid.ToString(), coordinateSystemFileName,
               false, null, log, serviceExceptionHandler, dataOceanClient, authn);
           }
 
