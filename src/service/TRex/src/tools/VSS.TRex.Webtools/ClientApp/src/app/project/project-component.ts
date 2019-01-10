@@ -788,9 +788,47 @@ constructor(
       });
   }
 
+
+  public drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
+    var profileCanvasHeight: number = 500.0;
+    var profileCanvasWidth: number = 1000.0;
+
+    var result: string = "";
+    var first: boolean = true;
+
+    return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
+      .subscribe(points => {
+        var stationRange: number = points[points.length - 1].station - points[0].station;
+        var stationRatio: number = profileCanvasWidth / stationRange;
+
+        var minZ: number = 100000.0;
+        var maxZ: number = -100000.0;
+        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
+        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+
+        var zRange = maxZ - minZ;
+        var zRatio = profileCanvasHeight / zRange;
+
+        points.forEach(point => {
+          if (point.z < -100000) {
+            // It's a gap...
+            first = true;
+          }
+          else {
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+            first = false;
+          }
+        });
+
+        this.profilePath = result;
+        this.numPointInProfile = result.length;
+        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+      });
+  }
+
+
   public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
-    // This seems to have gone missing in recent merges...
-    // this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
+     this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
   } 
 
   public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {

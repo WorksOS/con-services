@@ -153,6 +153,13 @@ namespace VSS.TRex.Profiling.Executors
 
           IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
 
+          if (Profiler == null)
+          {
+            Log.LogWarning($"Failed to create IProfileBuilder via DI");
+            return Response = new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedOnRequestProfile};
+          }
+
+
           Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design,
             /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));

@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 using VSS.TRex.Common;
+using VSS.TRex.Profiling.Models;
 
 
 namespace VSS.TRex.Profiling.GridFabric.Arguments
@@ -13,10 +14,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument
   {
     public GridDataType ProfileTypeRequired { get; set; }
-
+    public ProfileStyle ProfileStyleRequired { get; set; }
     public WGS84Point StartPoint { get; set; } = new WGS84Point();
     public WGS84Point EndPoint { get; set; } = new WGS84Point();
-
     public bool PositionsAreGrid { get; set; }
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
@@ -38,19 +38,20 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     }
 
 
-
     /// <summary>
     /// Creates a new profile request argument initialized with the supplied parameters
     /// </summary>
     /// <param name="profileTypeRequired"></param>
+    /// <param name="profileStyleRequired"></param>
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
     /// <param name="positionsAreGrid"></param>
     /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, ProfileStyle profileStyleRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileTypeRequired = profileTypeRequired;
+      ProfileStyleRequired = profileStyleRequired;
       StartPoint = startPoint;
       EndPoint = endPoint;
       PositionsAreGrid = positionsAreGrid;
@@ -69,10 +70,14 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       writer.WriteInt((int)ProfileTypeRequired);
 
+      writer.WriteInt((int)ProfileStyleRequired);
+
       writer.WriteBoolean(StartPoint != null);
+
       StartPoint?.ToBinary(writer);
 
       writer.WriteBoolean(EndPoint != null);
+
       EndPoint?.ToBinary(writer);
 
       writer.WriteBoolean(PositionsAreGrid);
@@ -92,6 +97,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       base.FromBinary(reader);
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
+
+      ProfileStyleRequired = (ProfileStyle)reader.ReadInt();
 
       StartPoint = new WGS84Point();
       if (reader.ReadBoolean())
