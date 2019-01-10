@@ -252,7 +252,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    public static async Task<List<VSS.MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, 
+    public static async Task<List<MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, 
       IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
@@ -261,7 +261,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         return null;
       }
 
-      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<VSS.MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
+      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
     }
   }
 }
