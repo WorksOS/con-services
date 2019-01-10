@@ -40,9 +40,10 @@ header {
 }*/
 
 .requestButton {
-  width: 150px;
-  height: 30px;
-  margin-left: 50px;
+  width: 100px;
+  height: 26px;
+  margin-left: 75px;
+  font-size: 14px;
 }
 
 .spacer
@@ -56,6 +57,7 @@ header {
   font-size: large;
   font-weight: bold;
   text-align: center;
+  margin-top: 5px;
 }
 
 .fetchDataButtonsPanel {
@@ -67,11 +69,11 @@ header {
 }
 
 .panel-heading {
-  height: 25px;
+  height: 28px;
   border-style: solid;
   border-width: 1px;
   border-color: lightgray;
-  font-size: small;
+  font-size: medium;
   font-weight: bold;
   text-align: center;
   background: #f8f9fa;
