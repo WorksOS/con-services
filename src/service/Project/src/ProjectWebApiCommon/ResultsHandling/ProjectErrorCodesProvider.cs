@@ -117,7 +117,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("UpsertProject Not allowed duplicate, active projectnames: {0}.", 109);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Duplicate GeofenceUids appear in the request body.", 110);
       this.DynamicAddwithOffset("Invalid project boundary points.Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid", 111);
-      this.DynamicAddwithOffset("Cannot delete a design or alignment file which is used in a filter.", 112);
+      this.DynamicAddwithOffset("Cannot delete a design, surveyed surface, or alignment file which is used in a filter.", 112);
       this.DynamicAddwithOffset("ImportedFile environment variable configuration will result in file being ignored.", 113);
       this.DynamicAddwithOffset("FileImport AddFile in TRex failed. Reason: {0} {1}.", 114);
     }

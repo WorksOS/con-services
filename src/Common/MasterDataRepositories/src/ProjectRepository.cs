@@ -531,16 +531,24 @@ namespace VSS.MasterData.Repositories
             Log.LogDebug($"ProjectRepository/DeleteProject: updating project={project.ProjectUID}");
 
             // on deletion, the projects endDate will be set to now, in its local time.
-            project.EndDate = project.LastActionedUTC.ToLocalDateTime(existing.LandfillTimeZone);
-            const string update =
-              @"UPDATE Project                
+            var localEndDate = project.LastActionedUTC.ToLocalDateTime(existing.LandfillTimeZone);
+            if (localEndDate != null)
+            {
+              project.EndDate = localEndDate.Value;
+              const string update =
+                @"UPDATE Project                
                   SET IsDeleted = 1,
                     EndDate = @EndDate,
                     LastActionedUTC = @LastActionedUTC
                   WHERE ProjectUID = @ProjectUID";
-            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-            Log.LogDebug(
-              $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+              upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+              Log.LogDebug(
+                $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+            }
+            else
+            {
+              Log.LogError($"ProjectRepository/DeleteProject: Unable to convert current Utc date to local. Unknown timeZone: {existing.LandfillTimeZone}");
+            }
 
             if (upsertedCount > 0)
             {

@@ -628,7 +628,6 @@ namespace WebApiTests
     [TestMethod]
     [DataRow("api/v4/importedfile")]
     [DataRow("api/v4/importedfile/direct")]
-    [Ignore] // todo Aaron fix reinstate these tests when MockFilterController fixed to not require a cache for all ProjectUids
     public void TestImportANewFileThenDeleteTheAlignmentFile(string uriRoot)
     {
       const string testName = "File Import 14";

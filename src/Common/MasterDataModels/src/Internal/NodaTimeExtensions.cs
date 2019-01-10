@@ -96,14 +96,18 @@ namespace VSS.MasterData.Models.Internal
     /// <param name="dateTimeUtc"></param>
     /// <param name="ianaTimeZoneName"></param>
     /// <returns></returns>
-    public static DateTime ToLocalDateTime(this DateTime dateTimeUtc, string ianaTimeZoneName) 
+    public static DateTime? ToLocalDateTime(this DateTime dateTimeUtc, string ianaTimeZoneName) 
     {
       dateTimeUtc = DateTime.SpecifyKind(dateTimeUtc, DateTimeKind.Utc);
 
-      DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[ianaTimeZoneName];
-      Instant instant = Instant.FromDateTimeUtc(dateTimeUtc);
-      var zonedDateTime = instant.InZone(timeZone);
-      return zonedDateTime.ToDateTimeUnspecified();
+      DateTimeZone timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(ianaTimeZoneName);
+      if (timeZone != null)
+      {
+        Instant instant = Instant.FromDateTimeUtc(dateTimeUtc);
+        var zonedDateTime = instant.InZone(timeZone);
+        return zonedDateTime.ToDateTimeUnspecified();
+      }
+      return null;
     }
   }
 }

@@ -915,9 +915,9 @@ namespace WebApiTests
       // project deletion sets the ProjectEndDate to now, in the projects timezone.
       //    this may cause the endDate to be a day earlier/later than 'NowUtc',
       //    depending on when this test is run.
-      // not that only projectUID is passed from this array to the ProjectSvc endpoint,
+      // note that only projectUID is passed from this array to the ProjectSvc endpoint,
       //    the others are simply used for comparison
-      var endDateTime2Reset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland").Date;
+      var endDateTime2Reset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland")?.Date;
 
       var projectEventArray3 = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",

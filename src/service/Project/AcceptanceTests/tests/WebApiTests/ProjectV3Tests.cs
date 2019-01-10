@@ -373,7 +373,7 @@ namespace WebApiTests
 
       var dateRange = FormatProjectDateRangeWebApi(ts);
       // on project deletion, endDate is set to now, in the projects timezone.
-      var dateRangeResetEndDate = ts.FirstEventDate.ToString("O") + " | " + DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland").Date.ToString("O");
+      var dateRangeResetEndDate = ts.FirstEventDate.ToString("O") + " | " + DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland")?.Date.ToString("O");
       var expectedProjects = new[] {
       "| IsArchived | ProjectName  | ProjectTimezone           | ProjectType | ProjectStartDate | ProjectEndDate | ProjectUID     | ProjectID    | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
       "| true       | project 23-1 | New Zealand Standard Time | Standard    | " + dateRangeResetEndDate + $"                | {projectUid1}  | {projectId1} | {ts.CustomerUid} | 222222222        | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
