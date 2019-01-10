@@ -10,12 +10,10 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -23,9 +21,12 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGrids
 {
+  /// <summary>
+  /// Provides support for creation of requestors that encapsulate much of the state related to querying sets of sub grids
+  /// </summary>
   public class RequestorUtilities : IRequestorUtilities
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger< RequestorUtilities>();
+    //private static readonly ILogger Log = Logging.Logger.CreateLogger<RequestorUtilities>();
 
     private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
@@ -36,8 +37,14 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     private static ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
 
+    /// <summary>
+    /// The DI injected factory to create requestor instances
+    /// </summary>
     private static Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>();
 
+    /// <summary>
+    /// The DI injected factory to created requests for surveyed surface information
+    /// </summary>
     private static Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 

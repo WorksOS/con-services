@@ -145,7 +145,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
             foreach (ISurveyedSurface ss in source)
             {
-                Add(ss.Clone());
+                Add(ss); // formerly Add(ss.Clone());
             }
         }
 
@@ -285,7 +285,7 @@ namespace VSS.TRex.SurveyedSurfaces
             if (ExcludeSurveyedSurfaces)
                 return;
 
-            if (!HasTimeFilter && ExclusionList?.Length == 0)
+            if (!HasTimeFilter && (ExclusionList?.Length ?? 0) == 0)
             {
                 FilteredSurveyedSurfaceDetails.Assign(this);
                 return;
@@ -296,13 +296,13 @@ namespace VSS.TRex.SurveyedSurfaces
             {
                 if (!HasTimeFilter)
                 {
-                    if (ExclusionList?.Any(x => x == ss.ID) == false) // if SS not excluded from project
+                    if (ExclusionList == null || !ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
                         FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                 }
                 else
                 {
                     if (ss.AsAtDate >= StartTime && ss.AsAtDate <= EndTime &&
-                        ExclusionList?.Any(x => x == ss.ID) == false) // if SS not excluded from project
+                        (ExclusionList == null || !ExclusionList.Any(x => x == ss.ID))) // if SS not excluded from project
                         FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                 }
             }
