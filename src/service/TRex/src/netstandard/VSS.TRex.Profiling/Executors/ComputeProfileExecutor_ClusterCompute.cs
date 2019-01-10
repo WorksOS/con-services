@@ -150,9 +150,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           Log.LogInformation("Creating IProfileBuilder");
-
           IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
-
           if (Profiler == null)
           {
             Log.LogWarning($"Failed to create IProfileBuilder via DI");

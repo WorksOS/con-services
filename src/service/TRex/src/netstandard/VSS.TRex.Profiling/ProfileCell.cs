@@ -462,7 +462,7 @@ namespace VSS.TRex.Profiling
     /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
 
@@ -523,7 +523,7 @@ namespace VSS.TRex.Profiling
     /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
 
