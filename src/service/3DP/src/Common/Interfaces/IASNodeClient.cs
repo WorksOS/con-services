@@ -297,7 +297,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     int GetReportStationOffset(TASNodeServiceRPCVerb_StationOffsetReport_Args args, out MemoryStream dataReport);
 
     /// <summary>
-    /// 
+    /// Gets all boundaries in a given linework file as lat/lon.
     /// </summary>
     TASNodeErrorStatus GetBoundariesFromLinework(TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args args, out TWGS84LineworkBoundary[] lineworkBoundaries);
   }

@@ -13,10 +13,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     [DataRow("filename", "csName", VLPDDecls.__Global.MAX_BOUNDARIES_TO_PROCESS)]
     public void Should_return_correct_boundary_for_request(string filename, string coordinateSystemName, int expectedResult)
     {
-      var request = LineworkRequest.Create(new DxfFileRequest{
+      var request = LineworkRequest.Create(new DxfFileRequest
+      {
         Filename = filename,
         CoordinateSystemName = coordinateSystemName
-      });
+      }, null);
 
       Assert.AreEqual(expectedResult, request.NumberOfBoundariesToProcess);
     }

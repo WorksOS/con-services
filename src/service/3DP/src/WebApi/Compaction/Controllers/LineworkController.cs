@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -26,23 +28,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get all boundaries from provided linework (DXF) files.
     /// </summary>
-    [Route("api/v2/linework/boundaries")]
-    [HttpPost]
-    public async Task<IActionResult> GetBoundariesFromLinework(DxfFileRequest requestDto)
+    [HttpPost("api/v2/linework/boundaries")]
+    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
 
+      var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
+
       var executorRequestObj = LineworkRequest
-                               .Create(requestDto)
+                               .Create(requestDto, customerUid)
                                .Validate();
 
-      // TODO Upload file to IONode.
+      fileUploadUtility.UploadFile(
+        executorRequestObj.FileDescriptor, 
+        customerUid,
+        executorRequestObj.FileData);
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
                          .ProcessAsync(executorRequestObj);
-
-      // https://stackoverflow.com/questions/2034540/calculating-area-of-irregular-polygon-in-c-sharp
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())

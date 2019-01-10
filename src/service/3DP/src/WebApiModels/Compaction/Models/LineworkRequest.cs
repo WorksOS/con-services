@@ -14,10 +14,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
   public class LineworkRequest : ProjectID
   {
     /// <summary>
-    /// Gets the temporary working directory on the Raptor IONode host.
+    /// Project Id internal to Raptor that denotes a 'not real' project. Sufficient for our purposes here where we have no project yet.
+    /// The ID is consistent across all deployed environments and so acts as a suitable placeholder here.
     /// </summary>
-    public const string FILE_PATH = @"D:\VLPDProductionData\Temp\12121212\"; // TODO Change to something tied to the Canary project id.
-
+    private const int RAPTOR_CANARY_PROJECT_ID = 987654321;
+    
     public string Filename { get; private set; }
     public IFormFile FileData { get; private set; }
     public string FilespaceId { get; private set; }
@@ -31,23 +32,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     private LineworkRequest()
     { }
 
-    public static LineworkRequest Create(DxfFileRequest fileRequest)
+    public static LineworkRequest Create(DxfFileRequest fileRequest, string fileDescriptorPathIdentifier)
     {
-      // Raptor's Canary project is consistent across deployed environments and acts as a suitable placeholder here.
-      const int raptorCanaryProjectId = 987654321;
+      // Gets the relative temporary working directory on the Raptor IONode host.
+      var rootFolder = $@"D:\ProductionData\Temp\LineworkFileUploads\{fileDescriptorPathIdentifier}\";
 
-      var result = new LineworkRequest
+      return new LineworkRequest
       {
-        ProjectId = raptorCanaryProjectId,
-        FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, FILE_PATH, fileRequest.Filename),
+        ProjectId = RAPTOR_CANARY_PROJECT_ID,
+        FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, @"D:\VLPDProductionData\Temp\12121212\", fileRequest.Filename),
         CoordSystemFileName = fileRequest.CoordinateSystemName?.Trim(),
         LineworkUnits = (TVLPDDistanceUnits)fileRequest.DistanceUnits,
         Filename = fileRequest.Filename,
         FileData = fileRequest.FileData,
         FilespaceId = fileRequest.FilespaceId
       };
-
-      return result;
     }
 
     public new LineworkRequest Validate()
