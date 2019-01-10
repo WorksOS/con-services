@@ -52,7 +52,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, _) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionCmvSummaryResult());
       }
@@ -103,12 +104,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var mdpSettings = SettingsManager.CompactionMdpSettings(projectSettings);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionMdpSummaryResult());
       }
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+
       var projectId = await GetLegacyProjectId(projectUid);
       var request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
@@ -153,12 +156,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionPassCountSummaryResult());
       }
-
-      var request = await GetPassCountRequest(projectUid, filterUid, true);
+      
+      var request = await GetPassCountRequest(projectUid, filterUid, filter, isSummary: true);
       request.Validate();
 
       try
@@ -201,7 +205,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionTemperatureSummaryResult());
       }
@@ -210,11 +215,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings, false);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+
       var projectId = await GetLegacyProjectId(projectUid);
-      TemperatureRequest request = new TemperatureRequest(projectId, projectUid, null,
-        temperatureSettings, liftSettings, filter, -1, null, null, null);
+      var request = new TemperatureRequest(projectId, projectUid, null, temperatureSettings, liftSettings, filter, -1, null, null, null);
+
       request.Validate();
+
       try
       {
         var result = RequestExecutorContainerFactory
@@ -259,12 +266,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionSpeedSummaryResult());
       }
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
 
       SummarySpeedRequest request = new SummarySpeedRequest(projectId, projectUid, null, liftSettings, filter, -1);
       request.Validate();

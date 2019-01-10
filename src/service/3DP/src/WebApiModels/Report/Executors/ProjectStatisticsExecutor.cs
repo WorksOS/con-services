@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       bool success = raptorClient.GetDataModelStatistics(
         request.ProjectId ?? -1,
-        RaptorConverters.convertSurveyedSurfaceExlusionList(request.excludedSurveyedSurfaceIds),
+        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds),
         out var statistics);
 
       if (success)

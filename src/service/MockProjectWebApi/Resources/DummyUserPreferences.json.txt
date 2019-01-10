@@ -1,0 +1,18 @@
+{
+  "Timezone": "New Zealand Standard Time",
+  "Language": "en-US",
+  "Units": "Metric",
+  "DateFormat": "dd/MM/yy",
+  "TimeFormat": "HH:mm",
+  "AssetLabelDisplay": "Asset ID",
+  "MeterLabelDisplay": "Hour Meter",
+  "LocationDisplay": "Address",
+  "CurrencySymbol": "US Dollar",
+  "TemperatureUnit": "Celsius",
+  "PressureUnit": "PSI",
+  "MapProvider": "ALK",
+  "BrowserRefresh": "Hourly",
+  "ThousandsSeparator": ",",
+  "DecimalSeparator": ".",
+  "DecimalPrecision": "1"
+}

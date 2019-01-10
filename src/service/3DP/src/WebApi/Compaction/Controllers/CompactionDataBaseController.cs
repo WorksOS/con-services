@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -44,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected Task SetCacheControlPolicy(Guid projectUid)
     {
-      Task<ProjectData> project = ((RaptorPrincipal)User).GetProject(projectUid);
+      var project = ((RaptorPrincipal)User).GetProject(projectUid);
 
       if (project.Result.IsArchived)
       {
@@ -62,80 +60,92 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
-      CMVSettings cmvSettings = !isCustomCMVTargets ?
+      var cmvSettings = !isCustomCMVTargets ?
         SettingsManager.CompactionCmvSettings(projectSettings) :
         SettingsManager.CompactionCmvSettingsEx(projectSettings);
 
-      LiftBuildSettings liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var filterTask = GetCompactionFilter(projectUid, filterUid);
+      var projectIdTask = GetLegacyProjectId(projectUid);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var projectId = await GetLegacyProjectId(projectUid);
-      return new CMVRequest(projectId, projectUid, null, cmvSettings, liftSettings, filter, -1, null, null, null, isCustomCMVTargets);
+      await Task.WhenAll(filterTask, projectIdTask);
+
+      return new CMVRequest(projectIdTask.Result, projectUid, null, cmvSettings, liftSettings, filterTask.Result, -1, null, null, null, isCustomCMVTargets);
     }
 
     /// <summary>
     /// Creates an instance of the PassCounts class and populate it with data.
     /// </summary>
-    protected async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, bool isSummary)
+    protected async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, FilterResult filterResult = null, bool isSummary = false)
     {
+      Task<FilterResult> filterTask = null;
+
+      if (filterResult == null)
+      {
+        filterTask = GetCompactionFilter(projectUid, filterUid);
+      }
+
+      var projectIdTask = GetLegacyProjectId(projectUid);
+
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var passCountSettings = isSummary ? null : SettingsManager.CompactionPassCountSettings(projectSettings);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      Task<FilterResult> filter = GetCompactionFilter(projectUid, filterUid);
-      Task<long> projectId = GetLegacyProjectId(projectUid);
+      await Task.WhenAll(filterTask ?? Task.CompletedTask, projectIdTask);
 
-      return new PassCounts(projectId.Result, projectUid, null, passCountSettings, liftSettings, filter.Result, -1, null, null, null);
+      if (filterResult == null)
+      {
+        filterResult = await filterTask;
+      }
+
+      return new PassCounts(projectIdTask.Result, projectUid, passCountSettings, liftSettings, filterResult, -1, null, null, null);
     }
 
     /// <summary>
     /// Tests if there is overlapping data in Raptor 
     /// </summary>
-    protected async Task<bool> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
+    protected async Task<(bool isValidFilterForProjextExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
     {
-      Log.LogInformation("GetProjectStatistics: " + Request.QueryString);
+      if (!filterUid.HasValue) return (true, null);
 
-      //No filter - so proceed further
-      if (!filterUid.HasValue)
-        return true;
+      var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
+      var projectIdTask = GetLegacyProjectId(projectUid);
+      var filterTask = GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
 
-      var excludedIds = GetExcludedSurveyedSurfaceIds(projectUid);
-      var projectId = GetLegacyProjectId(projectUid);
+      await Task.WhenAll(filterTask, excludedIdsTask, projectIdTask);
 
-      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Result, excludedIds.Result?.ToArray());
+      var filter = await filterTask;
+      var projectId = await projectIdTask;
+      var excludedIds = await excludedIdsTask;
 
+      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
       request.Validate();
+
       try
       {
-        var projectExtents =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
-                                         .Process(request) as ProjectStatisticsResult;
+        var projectExtents = RequestExecutorContainerFactory
+                             .Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
+                             .Process(request) as ProjectStatisticsResult;
 
         //No data in Raptor - stop
-        if (projectExtents == null)
-          return false;
-
-        var filter = await GetCompactionFilter(projectUid, filterUid);
+        if (projectExtents == null) return (false, null);
 
         //No filter dates defined - project extents requested. Proceed further
-        if (filter.StartUtc == null && filter.EndUtc == null)
-          return true;
+        if (filter.StartUtc == null && filter.EndUtc == null) return (true, filter);
 
         //Do we have intersecting dates? True if yes
-        if (filter.StartUtc != null && filter.EndUtc != null)
-          return projectExtents.startTime <= filter.EndUtc && filter.StartUtc <= projectExtents.endTime;
+        if (filter.StartUtc != null && filter.EndUtc != null) return (true, filter);
 
         //Handle 'as-at' dates where StartUTC is null but EndUTC is not null
-        if (filter.StartUtc == null && filter.EndUtc != null)
-          return projectExtents.startTime <= filter.EndUtc;
+        if (filter.StartUtc == null && filter.EndUtc != null) return (true, filter);
 
         //All other cases - proceed further
-        return true;
+        return (true, filter);
       }
       catch
       {
         //Some exception - do not proceed further
-        return false;
+        return (false, null);
       }
     }
   }
