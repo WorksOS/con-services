@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockRaptorController : Controller
+  public class MockRaptorController
   {
     [Route("api/v2/mock/export/veta")]
     [HttpGet]

@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using PassCountSummaryData = VSS.Productivity3D.WebApi.Models.Compaction.Models.PassCountSummaryData;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -26,7 +25,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="result"></param>
     public CompactionPassCountSummaryResult(PassCountSummaryResult result)
     {
       if (result != null && result.HasData())

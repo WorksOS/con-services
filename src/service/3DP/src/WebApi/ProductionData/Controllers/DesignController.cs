@@ -90,7 +90,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
+      var result = RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
+
+      return result;
     }
 
     /// <summary>
