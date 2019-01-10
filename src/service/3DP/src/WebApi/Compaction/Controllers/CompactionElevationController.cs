@@ -73,16 +73,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var projectSettings = await GetProjectSettingsTargets(projectUid);
+        var projectSettingsTask = GetProjectSettingsTargets(projectUid);
 
-        var filter = await GetCompactionFilter(projectUid, filterUid);
-        var projectId = await GetLegacyProjectId(projectUid);
-        var result = elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, CustomHeaders);
+        var filterTask = GetCompactionFilter(projectUid, filterUid);
+        var projectIdTask = GetLegacyProjectId(projectUid);
+
+        await Task.WhenAll(projectSettingsTask, filterTask, projectIdTask);
+
+        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
+
         if (result == null)
         {
           //Ideally want to return an error code and message only here
           result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
         }
+
         Log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
@@ -142,10 +147,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       Log.LogInformation("GetProjectStatistics: " + Request.QueryString);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
-      var projectId = await GetLegacyProjectId(projectUid);
+      var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
+      var projectIdTask = GetLegacyProjectId(projectUid);
 
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+      await Task.WhenAll(excludedIdsTask, projectIdTask);
+
+      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectIdTask.Result, excludedIdsTask.Result?.ToArray());
       request.Validate();
       try
       {
