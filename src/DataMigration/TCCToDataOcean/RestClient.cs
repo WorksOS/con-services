@@ -13,14 +13,14 @@ namespace TCCToDataOcean
   /// This base class provides utilty methods for validation of the response status codes,
   /// response headers, and response contents
   /// </summary>
-  public class RestClientUtil
+  public class RestClient
   {
     private readonly ILogger Log;
     private readonly ITPaaSApplicationAuthentication Authentication;
 
-    public RestClientUtil(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication)
+    public RestClient(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication)
     {
-      Log = loggerFactory.CreateLogger<RestClientUtil>();
+      Log = loggerFactory.CreateLogger<RestClient>();
       Authentication = authentication;
     }
 
@@ -34,7 +34,7 @@ namespace TCCToDataOcean
     /// <param name="mediaType">This is the mediaType of the HTTP request which can be json or xml </param>    
     /// <param name="customerUid">This is the customer UID for the header</param>
     /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string mediaType = "application/json", string customerUid = null)
+    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string mediaType, string customerUid)
     {
       Log.LogInformation(resourceUri);
       var msg = new Msg();

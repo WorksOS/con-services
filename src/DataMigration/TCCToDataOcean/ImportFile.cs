@@ -21,6 +21,7 @@ namespace TCCToDataOcean
     private readonly string BaseUrl;
     private readonly IConfigurationStore ConfigStore;
     private readonly ITPaaSApplicationAuthentication Authentication;
+    private readonly IRestClient RestClient;
 
     private const string ProjectWebApiKey = "PROJECT_API_URL";
 
@@ -30,7 +31,8 @@ namespace TCCToDataOcean
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
 
-    public ImportFile(ILoggerFactory loggerFactory, IConfigurationStore configurationStore, ITPaaSApplicationAuthentication authentication, string uriRoot = null)
+    public ImportFile(ILoggerFactory loggerFactory, IConfigurationStore configurationStore, ITPaaSApplicationAuthentication authentication, 
+      IRestClient restClient, string uriRoot = null)
     {
       this.uriRoot = uriRoot ?? "api/v4/importedfile";
       Log = loggerFactory.CreateLogger<ImportFile>();
@@ -40,8 +42,8 @@ namespace TCCToDataOcean
       {
         throw new InvalidOperationException($"Mising environment variable {ProjectWebApiKey}");
       }
-
       Authentication = authentication;
+      RestClient = restClient;
     }
 
     /// <summary>
@@ -94,7 +96,7 @@ namespace TCCToDataOcean
         uri = BaseUrl + $"api/v4/importedfile?projectUid={fileDescr.ProjectUid}&importedFileUid={fileDescr.ImportedFileUid}";
       }
 
-      var response = UploadFilesToWebApi(fileDescr.Name, uri, fileDescr.CustomerUid, importOptions.HttpMethod);
+      var response = UploadFileToWebApi(fileDescr.Name, uri, fileDescr.CustomerUid, importOptions.HttpMethod);
 
       try
       {
@@ -117,7 +119,7 @@ namespace TCCToDataOcean
     /// Upload a single file to the web api 
     /// </summary>
     /// <returns>Repsonse from web api as string</returns>
-    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
+    private string UploadFileToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
       try
       {
@@ -290,15 +292,11 @@ namespace TCCToDataOcean
     /// <summary>
     /// Call the web api for the imported files
     /// </summary>
-    private static string CallWebApi(string uri, string method, string configJson, string customerUid = null, string jwt = null)
+    private string CallWebApi(string uri, string method, string configJson, string customerUid)
     {
-      var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json",
-        customerUid, jwt);
+      var response = RestClient.DoHttpRequest(uri, method, configJson, "application/json", customerUid);
       return response;
     }
 
-
-   
   }
 }
