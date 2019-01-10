@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
@@ -22,7 +24,8 @@ namespace VSS.TRex.Tests.SubGrids
 {
   public class RequestorUtilitiesTestsLoggingFixture : IDisposable
   {
-    public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest = null;
+    public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
+    public static ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
 
     public RequestorUtilitiesTestsLoggingFixture()
     {
@@ -33,6 +36,8 @@ namespace VSS.TRex.Tests.SubGrids
 
       // Provide the mocks for spatial caching
       Mock<ITRexSpatialMemoryCacheContext> tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
+      TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
+
       Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
 
@@ -85,7 +90,7 @@ namespace VSS.TRex.Tests.SubGrids
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().BeNull();
       intermediaries[0].FilteredSurveyedSurfacesAsArray.Should().BeEmpty();
-      intermediaries[0].CacheContext.Should().NotBeNull();
+      intermediaries[0].CacheContext.Should().Be(RequestorUtilitiesTestsLoggingFixture.TRexSpatialMemoryCacheContext);
       intermediaries[0].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
     }
 
@@ -111,8 +116,201 @@ namespace VSS.TRex.Tests.SubGrids
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
       intermediaries[0].FilteredSurveyedSurfacesAsArray.Should().Equal(new [] { ssGuid });
-      intermediaries[0].CacheContext.Should().NotBeNull();
+      intermediaries[0].CacheContext.Should().Be(RequestorUtilitiesTestsLoggingFixture.TRexSpatialMemoryCacheContext);
       intermediaries[0].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Test_RequestorUtilities_CreateIntermediaries_MultipleDefaultFilters_NoSurveyedSurfaces(int filterCount)
+    {
+      var ru = new RequestorUtilities();
+
+      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+
+      ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x => new CombinedFilter()).ToArray();
+      IFilterSet filterSet = new FilterSet(filters);
+
+      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, false, GridDataType.Height);
+
+      intermediaries.Length.Should().Be(filters.Length);
+
+      for (int i = 0; i < intermediaries.Length; i++)
+      {
+        intermediaries[i].Filter.Should().Be(filters[i]);
+        intermediaries[i].FilteredSurveyedSurfaces.Should().BeNull();
+        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().BeEmpty();
+        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Test_RequestorUtilities_CreateIntermediaries_MultipleDefaultFilters_WithSurveyedSurfaces(int filterCount)
+    {
+      var ru = new RequestorUtilities();
+
+      Guid ssGuid = Guid.NewGuid();
+      ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+
+      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+
+      ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x => new CombinedFilter()).ToArray();
+      IFilterSet filterSet = new FilterSet(filters);
+
+      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+
+      intermediaries.Length.Should().Be(filters.Length);
+
+      for (int i = 0; i < intermediaries.Length; i++)
+      {
+        intermediaries[i].Filter.Should().Be(filters[i]);
+        intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
+        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new[] { ssGuid });
+        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Test_RequestorUtilities_CreateIntermediaries_MultipleFilters_WithSingleExcludedSurveyedSurface(int filterCount)
+    {
+      var ru = new RequestorUtilities();
+
+      Guid ssGuid = Guid.NewGuid();
+      ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+      surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+
+      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+
+      ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
+      {
+        var filter = new CombinedFilter();
+        filter.AttributeFilter.SurveyedSurfaceExclusionList = new[] {ssGuid};
+        return filter;
+      }).ToArray();
+      IFilterSet filterSet = new FilterSet(filters);
+
+      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+
+      intermediaries.Length.Should().Be(filters.Length);
+
+      for (int i = 0; i < intermediaries.Length; i++)
+      {
+        intermediaries[i].Filter.Should().Be(filters[i]);
+        intermediaries[i].FilteredSurveyedSurfaces.Should().BeEmpty();
+        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().BeEmpty();
+        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Test_RequestorUtilities_CreateIntermediaries_MultipleFilters_WithOneOfTwoSurveyedSurfacesExcluded(int filterCount)
+    {
+      var ru = new RequestorUtilities();
+
+      ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+
+      // Create two surveyed surfaces that bracket current time by one day either side and set the filter end time to be current time
+      // which will cause only one surveyed surface to be filtered
+      Guid ssGuid1 = Guid.NewGuid();
+      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.Now.AddDays(-1), BoundingWorldExtent3D.Null());
+
+      Guid ssGuid2 = Guid.NewGuid();
+      var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.Now.AddDays(+1), BoundingWorldExtent3D.Null());
+
+      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+
+      ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
+      {
+        var filter = new CombinedFilter();
+        filter.AttributeFilter.SurveyedSurfaceExclusionList = new[] { ssGuid1 };
+        return filter;
+      }).ToArray();
+      IFilterSet filterSet = new FilterSet(filters);
+
+      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+
+      intermediaries.Length.Should().Be(filters.Length);
+
+      for (int i = 0; i < intermediaries.Length; i++)
+      {
+        intermediaries[i].Filter.Should().Be(filters[i]);
+        intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface>{ss2});
+        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new [] { ssGuid2 });
+        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Test_RequestorUtilities_CreateIntermediaries_MultipleFilters_WithOneOfTwoSurveyedSurfacesFilteredByTime_NoSurveyedSurfaceExclusions(int filterCount)
+    {
+      var ru = new RequestorUtilities();
+
+      ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+
+      // Create two surveyed surfaces that bracket current time by one day either side and set the filter end time to be current time
+      // which will cause only one surveyed surface to be filtered
+      Guid ssGuid1 = Guid.NewGuid();
+      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.Now.AddDays(-1), BoundingWorldExtent3D.Null());
+
+      Guid ssGuid2 = Guid.NewGuid();
+      var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.Now.AddDays(+1), BoundingWorldExtent3D.Null());
+
+      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+
+      ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
+      {
+        var filter = new CombinedFilter();
+        filter.AttributeFilter.HasTimeFilter = true;
+        filter.AttributeFilter.StartTime = DateTime.MinValue;
+        filter.AttributeFilter.EndTime = DateTime.Now;
+        return filter;
+      }).ToArray();
+      IFilterSet filterSet = new FilterSet(filters);
+
+      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+
+      intermediaries.Length.Should().Be(filters.Length);
+
+      for (int i = 0; i < intermediaries.Length; i++)
+      {
+        intermediaries[i].Filter.Should().Be(filters[i]);
+        intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface> { ss1 });
+        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new[] { ssGuid1 });
+        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      }
     }
   }
 }
