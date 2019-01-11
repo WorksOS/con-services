@@ -34,11 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as TemperatureRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<TemperatureRequest>();
-
+        var request = CastRequestObjectTo<TemperatureRequest>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE"), out var useTrexGateway);
 
         if (useTrexGateway)

@@ -24,10 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as PatchRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<PatchRequest>();
+      var request = CastRequestObjectTo<PatchRequest>(item);
 
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.

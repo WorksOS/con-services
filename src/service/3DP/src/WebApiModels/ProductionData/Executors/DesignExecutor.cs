@@ -27,12 +27,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         log.LogDebug("Getting GeoJson design boundaries from Raptor");
 
-        var request = item as DesignBoundariesRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<DesignBoundariesRequest>();
-
-        JObject[] geoJsons = null;
+        var request = CastRequestObjectTo<DesignBoundariesRequest>(item);
+        JObject[] geoJsons;
 
         if (fileList != null && fileList.Count > 0)
         {
@@ -60,6 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             {
               if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null && memoryStream.Length > 0)
               {
+                // TODO (Aaron) Re do this.
                 memoryStream.Position = 0;
                 var sr = new StreamReader(memoryStream);
                 string geoJSONStr = sr.ReadToEnd();
@@ -82,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           geoJsons = new JObject[0];
         }
 
-        return DesignResult.CreateDesignResult(geoJsons); ;
+        return DesignResult.CreateDesignResult(geoJsons);
       }
       finally
       {

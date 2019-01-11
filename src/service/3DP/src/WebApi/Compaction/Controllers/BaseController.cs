@@ -32,6 +32,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
+    private IASNodeClient raptorClient;
     private ILogger<T> logger;
     private ILoggerFactory loggerFactory;
     private IFilterServiceProxy filterServiceProxy;
@@ -57,6 +58,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the service exception handler.
     /// </summary>
     private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+
+    protected IASNodeClient RaptorClient => raptorClient ?? (raptorClient = HttpContext.RequestServices.GetService<IASNodeClient>());
 
     /// <summary>
     /// Gets the application logging interface.
@@ -246,9 +249,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
                       Path.GetExtension(tccFileName);
       }
-
-      string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
-      FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
+      
+      var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
       return new DesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0, fileUid);
     }
@@ -437,7 +440,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets the <see cref="FilterDescriptor"/> for a given Filter Uid (by project).
+    /// Gets the <see cref="FilterDescriptor"/> for a given Filter FileUid (by project).
     /// </summary>
     protected async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {

@@ -4,7 +4,6 @@ using System.Net;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -32,10 +31,7 @@ namespace VSS.Productivity3D.Common.Executors
     {
       try
       {
-        var request = item as TileRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<TileRequest>();
+        var request = CastRequestObjectTo<TileRequest>(item);
 
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
 
@@ -61,7 +57,7 @@ namespace VSS.Productivity3D.Common.Executors
     private ContractExecutionResult ProcessWithRaptor(TileRequest request)
     {
       RaptorConverters.convertGridOrLLBoundingBox(
-        request.BoundBoxGrid, request.BoundBoxLatLon, out TWGS84Point bl, out TWGS84Point tr, out bool coordsAreGrid);
+        request.BoundBoxGrid, request.BoundBoxLatLon, out var bl, out var tr, out bool coordsAreGrid);
 
       var filter1 = RaptorConverters.ConvertFilter(request.Filter1);
       var filter2 = RaptorConverters.ConvertFilter(request.Filter2);

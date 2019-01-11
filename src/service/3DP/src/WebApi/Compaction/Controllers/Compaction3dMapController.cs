@@ -335,8 +335,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // If we have a design request, get the ttm and add it for parsing
       if (design != null)
       {
-        var path = design.File.path + "/" + design.File.fileName;
-        var file = await tccFileRepository.GetFile(design.File.filespaceId, path);
+        var path = design.File.Path + "/" + design.File.FileName;
+        var file = await tccFileRepository.GetFile(design.File.FilespaceId, path);
         using (var ms = new MemoryStream())
         {
           if (file != null)
@@ -360,7 +360,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       
       var points = new TWGS84FenceContainer
       {
-        FencePoints = new TWGS84Point[]
+        FencePoints = new[]
         {
           TWGS84Point.Point(minEasting, minNorthing),
           TWGS84Point.Point(maxEasting, maxNorthing),
