@@ -1,18 +1,20 @@
+{{- $name :=       printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+  name: {{ $name }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+    app: {{ $name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+      app: {{ $name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+        app: {{ $name }}
     spec:
       initContainers:
       - name: init-db
@@ -20,10 +22,14 @@ spec:
         tty: true
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+            name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
-        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
+        name: {{ $name }}     
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
