@@ -6,12 +6,22 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
   public class CalculateDesignElevationPatchArgument : DesignSubGridRequestArgumentBase
   {
     /// <summary>
-    /// The offset to be applied to computed elevations
+    /// The X origin location for the patch of elevations, or spot elevation, to be computed from
     /// </summary>
-    public double Offset { get; set; }
+    public uint OriginX { get; set; }
 
     /// <summary>
-    /// A map of the cells within the subgrid patch to be computed
+    /// The Y origin location for the patch of elevations, or spot elevation, to be computed from
+    /// </summary>
+    public uint OriginY { get; set; }
+
+    /// <summary>
+    /// The cell stepping size to move between points in the patch being interpolated
+    /// </summary>
+    public double CellSize { get; set; }
+
+    /// <summary>
+    /// A map of the cells within the sub grid patch to be computed
     /// </summary>
     ///        public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
 
@@ -31,17 +41,16 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="cellSize"></param>
     /// <param name="designUid"></param>
     /// <param name="offset"></param>
-    // /// <param name="processingMap"></param>
     public CalculateDesignElevationPatchArgument(Guid siteModelID,
       uint originX,
       uint originY,
       double cellSize,
       Guid designUid,
-      double offset
-      /*SubGridTreeBitmapSubGridBits processingMap*/) : base(siteModelID, originX, originY, cellSize, designUid)
+      double offset) : base(siteModelID, designUid, offset)
     {
-      Offset = offset;
-      //            ProcessingMap = processingMap;
+      OriginX = originX;
+      OriginY = originY;
+      CellSize = cellSize;
     }
 
     /// <summary>
@@ -50,7 +59,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $", Offset{Offset}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{ReferenceDesignUID}, Offset:{Offset}";
     }
 
     /// <summary>
@@ -61,7 +70,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteDouble(Offset);
+      writer.WriteInt((int)OriginX);
+      writer.WriteInt((int)OriginY);
+      writer.WriteDouble(CellSize);
     }
 
     /// <summary>
@@ -72,7 +83,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
-      Offset = reader.ReadDouble();
+      OriginX = (uint)reader.ReadInt();
+      OriginY = (uint)reader.ReadInt();
+      CellSize = reader.ReadDouble();
     }
   }
 }
