@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         ProjectId = RAPTOR_CANARY_PROJECT_ID,
         FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, @"D:\VLPDProductionData\Temp\12121212\", fileRequest.Filename),
         CoordSystemFileName = fileRequest.CoordinateSystemName?.Trim(),
-        LineworkUnits = (TVLPDDistanceUnits)fileRequest.DistanceUnits,
+        LineworkUnits = (TVLPDDistanceUnits)fileRequest.DxfUnits,
         Filename = fileRequest.Filename,
         FileData = fileRequest.FileData,
         FilespaceId = fileRequest.FilespaceId

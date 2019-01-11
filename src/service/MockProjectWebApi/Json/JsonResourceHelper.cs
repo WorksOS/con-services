@@ -36,7 +36,7 @@ namespace MockProjectWebApi.Json
     }
 
     /// <summary>
-    /// Gets the color settings JSON for a given project FileUid.
+    /// Gets the color settings JSON for a given project uid.
     /// </summary>
     public static JObject GetColorSettings(string projectUid)
     {

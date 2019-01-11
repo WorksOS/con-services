@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      Log.LogDebug("GetBoundariesFromLinework: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetProductionDataTile)}: " + Request.QueryString);
 
       var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
