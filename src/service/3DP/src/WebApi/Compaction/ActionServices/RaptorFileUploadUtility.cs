@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
   /// <inheritdoc />
   public class RaptorFileUploadUtility : IRaptorFileUploadUtility
   {
-    const long MAX_UPLOAD_SIZE_LIMIT = 20971520; //1024 * 1024 * 20
+    private const long MAX_UPLOAD_SIZE_LIMIT = 20971520; //1024 * 1024 * 20
 
     private ILogger log;
     private IConfigurationStore configStore;
@@ -32,17 +32,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
       using (var ms = new MemoryStream())
       {
         fileData.CopyTo(ms);
-        var fileContent = ms.ToArray();
 
-        if (fileContent.LongLength > MAX_UPLOAD_SIZE_LIMIT)
+        if (ms.Length > MAX_UPLOAD_SIZE_LIMIT)
         {
-          return (success: false, message: "File too large"); // TODO (Aaron) include file sizees
+          return (success: false, message: $"File too large {ms.Length / 1024}kb; maximum allowed filesize is {MAX_UPLOAD_SIZE_LIMIT / 1024}kb.");
         }
 
-        using (var file = new BinaryWriter(File.OpenWrite(MappedFileName(fileDescriptor, fileDescriptorPathIdentifier))))
+        using (var file = File.OpenWrite(MappedFileName(fileDescriptor, fileDescriptorPathIdentifier)))
         {
-          file.Write(fileContent);
-          file.Close();
+          if (ms.CanSeek) ms.Seek(0, SeekOrigin.Begin);
+
+          ms.CopyTo(file);
         }
 
         return (success: true, null);

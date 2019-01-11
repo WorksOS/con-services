@@ -39,10 +39,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                                .Create(requestDto, customerUid)
                                .Validate();
 
-      fileUploadUtility.UploadFile(
+      var (uploadSuccess, message) = fileUploadUtility.UploadFile(
         executorRequestObj.FileDescriptor, 
         customerUid,
         executorRequestObj.FileData);
+
+      if (!uploadSuccess) return StatusCode((int)HttpStatusCode.BadRequest, message);
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
