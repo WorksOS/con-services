@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}
+  name: {{ $name }}-consumer
   labels:
     app: {{ $name }}
 spec:
@@ -29,7 +29,7 @@ spec:
             name: {{ .Values.globalConfig }}-secret
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
-        name: {{ $name }}     
+        name: {{ $name }}-consumer     
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
