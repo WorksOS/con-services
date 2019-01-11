@@ -28,21 +28,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the detailed pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a PassCountDetailedResult if successful</returns>     
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
-        var request = item as PassCounts;
+        var request = CastRequestObjectTo<PassCounts>(item);
 
-        if (request == null)
-          ThrowRequestTypeCastException<PassCounts>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_PASSCOUNT"))
         {
           var pcDetailsRequest = new PassCountDetailsRequest(request.ProjectUid, request.Filter, request.passCountSettings.passCounts);
           return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
@@ -58,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           out var passCountDetails);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-            return ConvertResult(passCountDetails, request.liftBuildSettings);
+          return ConvertResult(passCountDetails, request.liftBuildSettings);
 
         throw CreateServiceException<DetailedPassCountExecutor>((int)raptorResult);
       }
@@ -76,8 +68,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     private PassCountDetailedResult ConvertResult(TPassCountDetails details, LiftBuildSettings liftSettings)
     {
       return new PassCountDetailedResult(
-          ((liftSettings != null) && (liftSettings.OverridingTargetPassCountRange != null)) 
-              ? liftSettings.OverridingTargetPassCountRange 
+          ((liftSettings != null) && (liftSettings.OverridingTargetPassCountRange != null))
+              ? liftSettings.OverridingTargetPassCountRange
               : (!details.IsTargetPassCountConstant ? new TargetPassCountRange(0, 0) : new TargetPassCountRange(details.ConstantTargetPassCountRange.Min, details.ConstantTargetPassCountRange.Max)),
           details.IsTargetPassCountConstant,
           details.Percents, details.TotalAreaCoveredSqMeters);

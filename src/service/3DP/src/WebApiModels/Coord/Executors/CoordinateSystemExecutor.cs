@@ -1,13 +1,11 @@
 ﻿using ASNodeDecls;
-using System.Net;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Coord.Executors
+namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {
   /// <summary>
   /// Generic coordinate system definition file executor.

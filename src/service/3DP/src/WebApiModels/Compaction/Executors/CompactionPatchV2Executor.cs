@@ -32,10 +32,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        var request = item as PatchRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<PatchRequest>();
+        var request = CastRequestObjectTo<PatchRequest>(item);
 
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PATCHES"), out var useTrexGateway);
 

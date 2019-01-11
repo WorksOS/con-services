@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -295,9 +292,9 @@ namespace VSS.MasterData.Proxies
     public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
+      log.LogDebug($"RaptorProxy.{nameof(GetProductionDataTile)}: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 
-      Dictionary<string, string> parameters = new Dictionary<string, string>
+      var parameters = new Dictionary<string, string>
       {
         {"SERVICE", "WMS" }, {"VERSION" , "1.3.0" }, {"REQUEST", "GetMap" }, {"FORMAT", "image/png"}, {"TRANSPARENT", "true"},
         { "LAYERS", "Layers"}, {"CRS", "EPSG:4326" }, {"STYLES", string.Empty}, {"projectUid", projectUid.ToString()},

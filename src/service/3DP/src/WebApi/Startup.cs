@@ -7,13 +7,12 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.WebApi.Common;
 using WebApiContrib.Core.Formatter.Protobuf;
 

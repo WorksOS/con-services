@@ -3,10 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
-namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
+namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
 {
   [TestClass]
   public class AutoMapperTests
@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
-    
+
     [TestMethod]
     public void MapProjectSettingsToCMVSettings()
     {
@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     {
       // The useDefaultCMVTargets is set to "false".
       var ps = CompactionProjectSettings.CreateProjectSettings(
-        useMachineTargetCmv: false, customTargetCmv: 50, 
+        useMachineTargetCmv: false, customTargetCmv: 50,
         useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
         useDefaultCMVTargets: false, customCMVTargets: new List<int> { 0, 40, 80, 120, 170 });
 
@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       for (int i = 0; i < temp.CustomTemperatureDetailsTargets.Length; i++)
       {
         //Values are mapped to what Raptor expects i.e. 10ths of degrees
-        Assert.AreEqual(ps.customTemperatureTargets[i], temp.CustomTemperatureDetailsTargets[i]/10, $"Temperature item {i} not mapped correctly");
+        Assert.AreEqual(ps.customTemperatureTargets[i], temp.CustomTemperatureDetailsTargets[i] / 10, $"Temperature item {i} not mapped correctly");
       }
     }
 
