@@ -15,6 +15,7 @@ using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Policy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -10,6 +12,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
@@ -71,6 +74,7 @@ namespace VSS.TRex.Webtools.Controllers
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
+        ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new[] {new CombinedFilter()}),
         ReferenceDesignUID = Guid.Empty,
@@ -126,6 +130,7 @@ namespace VSS.TRex.Webtools.Controllers
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
+        ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new [] { new CombinedFilter() }),
         ReferenceDesignUID = Guid.Empty,
@@ -147,5 +152,49 @@ namespace VSS.TRex.Webtools.Controllers
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
       return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1) ));
     }
+
+
+    [HttpGet("volumes/{siteModelID}")]
+    public JsonResult ComputeSummaryVolumesProfile(string siteModelID,
+      [FromQuery] double startX,
+      [FromQuery] double startY,
+      [FromQuery] double endX,
+      [FromQuery] double endY)
+    {
+      Guid siteModelUid = Guid.Parse(siteModelID);
+
+      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      {
+        ProjectID = siteModelUid,
+        ProfileTypeRequired = GridDataType.Height,
+        ProfileStyle = ProfileStyle.SummaryVolume,
+        PositionsAreGrid = true,
+        Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
+        ReferenceDesignUID = Guid.Empty,
+        StartPoint = new WGS84Point(lon: startX, lat: startY),
+        EndPoint = new WGS84Point(lon: endX, lat: endY),
+        ReturnAllPassesAndLayers = false,
+        VolumeType = VolumeComputationType.Between2Filters
+      };
+
+      // This is a simple earliest filter to latest filter test
+      arg.Filters.Filters[0].AttributeFilter.ReturnEarliestFilteredCellPass = true;
+      arg.Filters.Filters[1].AttributeFilter.ReturnEarliestFilteredCellPass = false;
+
+      // Compute a profile from the bottom left of the screen extents to the top right 
+      var request = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
+
+      var Response = request.Execute(arg);
+
+      if (Response == null)
+        return new JsonResult(@"Profile response is null");
+
+      if (Response.ProfileCells == null)
+        return new JsonResult(@"Profile response contains no profile cells");
+
+      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
+    }
+
+
   }
 }

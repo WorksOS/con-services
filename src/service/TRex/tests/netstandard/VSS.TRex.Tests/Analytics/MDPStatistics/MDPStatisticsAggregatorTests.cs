@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       var aggregator = new MDPStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       var aggregator = new MDPStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       var aggregator = new MDPStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -126,7 +126,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       var aggregator = new MDPStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 

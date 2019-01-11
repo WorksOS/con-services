@@ -19,7 +19,6 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
-using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
