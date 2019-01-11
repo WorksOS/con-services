@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        DesignID = request.DesignDescriptor.Uid ?? Guid.Empty,
+        DesignID = request.DesignDescriptor.FileUid ?? Guid.Empty,
         Offsets = request.CutFillTolerances
       });
 
