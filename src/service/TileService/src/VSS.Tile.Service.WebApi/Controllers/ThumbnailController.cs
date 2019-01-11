@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
+using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.ResultHandling;
 using VSS.Tile.Service.Common.Services;
-using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
@@ -220,9 +220,48 @@ namespace VSS.Tile.Service.WebApi.Controllers
     }
 
     /// <summary>
+    /// Gets a list of geofence thumbnail images as a Base64 encoded string using the provided geometry
+    /// </summary>
+    [Route("api/v1/geofencethumbnailsraw/base64")]
+    [HttpPost]
+    public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsRawBase64(
+      [FromBody] RootObject geoJson)
+    {
+      Log.LogDebug($"{nameof(GetGeofenceThumbnailsRawBase64)}: {Request.QueryString}");
+
+      if (geoJson == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing geoJson for geofence thumbnail"));
+      }
+
+      //GeoJson can contain multiple boundaries. Limit to 10.
+      const int MAX_GEOFENCES = 10;
+      var polygons = geoJson.GeoJsonToPoints().ToList();
+      if (polygons.Count == 0)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "No boundaries found for geofence thumbnails"));
+      if (polygons.Count > MAX_GEOFENCES)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"A maximum of {MAX_GEOFENCES} boundaries allowed for geofence thumbnails"));
+
+      var thumbnails = await Task.WhenAll(polygons.Select(GeofenceThumbnailPng));
+
+      return new MultipleThumbnailsResult
+      {
+        Thumbnails = thumbnails.Select(thumb => new ThumbnailResult
+          { Uid = Guid.Empty, Data = GetStreamContents(thumb) }).ToList()
+      };
+    }
+
+    #region privates
+    /// <summary>
     /// Multithreaded method to retrieve Geofence PNG
     /// </summary>
-    /// <param name="geofenceUid"></param>
+    /// <param name="geofence"></param>
     /// <returns></returns>
     private async Task<(Guid, FileResult)> GeofenceThumbnailPng(GeofenceData geofence)
     {
@@ -230,10 +269,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
       //We don't need to do it twice as the very first caching request should be enough
       //var geofence = await geofenceProxy.GetGeofenceForCustomer(GetCustomerUid, geofenceUid.ToString(), CustomHeaders);
 
-
       if (geofence == null)
       {
-        return (geofence.GeofenceUID, new FileStreamResult(
+        return (Guid.Empty, new FileStreamResult(
           new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png"));
       }
 
@@ -242,18 +280,40 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var bbox = GetBoundingBoxFromWKT(geofence.GeometryWKT);
 
       var tileResult = await GetGeneratedTile(geofence, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, DEFAULT_THUMBNAIL_WIDTH,
-        DEFAULT_THUMBNAIL_HEIGHT,
-        bbox, MapType.MAP, null, true);
+        DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP, null, true);
       return (geofence.GeofenceUID, tileResult);
     }
 
+    /// <summary>
+    /// Multithreaded method to retrieve Geofence PNG
+    /// </summary>
+    /// <param name="boundary"></param>
+    /// <returns></returns>
+    private Task<FileResult> GeofenceThumbnailPng(IEnumerable<WGSPoint> boundary)
+    {
+      var points = boundary.ToList();
+      var bbox = GetBoundingBox(points);
+
+      var tileResult = GetGeneratedTile(points, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, DEFAULT_THUMBNAIL_WIDTH,
+        DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP, null, true);
+
+      return tileResult;
+    }
 
     /// <summary>
     /// Gets the bounding box of the WKT
     /// </summary>
     private string GetBoundingBoxFromWKT(string wkt)
     {
-      var points = wkt.GeometryToPoints().ToList();
+      var points = wkt.GeometryToPoints();
+      return GetBoundingBox(points.ToList());
+    }
+
+    /// <summary>
+    /// Gets the bounding box of the points
+    /// </summary>
+    private string GetBoundingBox(List<WGSPoint> points)
+    {
       var minLat = points.Min(p => p.Lat).LatRadiansToDegrees();
       var minLng = points.Min(p => p.Lon).LonRadiansToDegrees();
       var maxLat = points.Max(p => p.Lat).LatRadiansToDegrees();
@@ -272,6 +332,6 @@ namespace VSS.Tile.Service.WebApi.Controllers
         return ms.ToArray();
       }
     }
-
+    #endregion
   }
 }

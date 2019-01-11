@@ -136,7 +136,9 @@ namespace VSS.Tile.Service.Common.Services
           break;
         case TileOverlayType.GeofenceBoundary:
         case TileOverlayType.Geofences:
-          bitmap = geofenceTileService.GetSitesBitmap(request.mapParameters, request.geofences);
+          bitmap = request.geoJsonPoints != null && overlay == TileOverlayType.GeofenceBoundary
+            ? geofenceTileService.GetGeoJsonBitmap(request.mapParameters, request.geoJsonPoints)
+            : geofenceTileService.GetSitesBitmap(request.mapParameters, request.geofences);
           break;
         case TileOverlayType.FilterCustomBoundary:
           bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.customFilterBoundary,
