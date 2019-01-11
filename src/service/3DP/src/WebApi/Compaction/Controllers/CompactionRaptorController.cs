@@ -95,8 +95,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUid);
 
       PointsListResult result = new PointsListResult();
-      var polygons = boundingBoxService.GetDesignBoundaryPolygons(
-        projectId, designDescriptor);
+      var polygons = boundingBoxService.GetDesignBoundaryPolygons(projectId, designDescriptor);
       result.PointsList = ConvertPoints(polygons);
 
       return result;
@@ -146,17 +145,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetFilterPointsList: " + Request.QueryString);
        
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
+      var filterTask = GetCompactionFilter(projectUid, filterUid);
       //Base or top may be a design UID
-      var baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
-      var topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+      var baseFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+      var topFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
 
       PointsListResult result = new PointsListResult();
  
-      var polygons = boundingBoxService.GetFilterBoundaries(
-        project, filter, baseFilter, topFilter, boundaryType);
+      await Task.WhenAll(projectTask, filterTask, baseFilterTask, topFilterTask);
+
+      var polygons = boundingBoxService.GetFilterBoundaries(projectTask.Result, filterTask.Result, baseFilterTask.Result, topFilterTask.Result, boundaryType);
+
       result.PointsList = ConvertPoints(polygons);
+
       return result;
     }
 

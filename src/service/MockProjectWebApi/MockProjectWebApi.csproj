@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
+    <Content Remove="Json\DummyUserPreferences.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
     <Content Remove="Json\Filters\DimensionsAsAtCustom.json" />
@@ -67,11 +67,11 @@
     <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
     <Content Remove="Json\Filters\SummaryVolumesTopFilter.json" />
-    <Content Remove="Json\UserPreferences\DummyUserPreferences.json" />
+    <Content Remove="Json\GoldenDataDimensions_ColorSettings.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
+    <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAsAtCustom.json" />
@@ -117,7 +117,7 @@
     <EmbeddedResource Include="Json\Filters\ReportDxfTile.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesBaseFilter.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesTopFilter.json" />
-    <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
+    <EmbeddedResource Include="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
   </ItemGroup>
  
   <ItemGroup>
@@ -155,9 +155,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">

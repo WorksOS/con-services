@@ -42,8 +42,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 
-            MemoryStream memoryStream;
-            TDesignProfilerRequestResult designProfilerResult;
             string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
             FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, fileList[i].Path, fileList[i].Name);
 
@@ -55,8 +53,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
                 request.tolerance,
                 TVLPDDistanceUnits.vduMeters,
                 0),
-              out memoryStream,
-              out designProfilerResult);
+              out var memoryStream,
+              out var designProfilerResult);
 
             if (result)
             {

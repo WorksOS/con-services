@@ -12,6 +12,7 @@ import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
 
+
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
@@ -28,6 +29,7 @@ export class ProjectService {
     this.baseUrl = baseUrl;
   }
 
+  
   private executeRequest<T>(label: string, url: string): Observable<T> {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);

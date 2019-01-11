@@ -28,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\fetch-data\fetch-data-model.ts" />
+    <None Remove="ClientApp\src\app\fetch-data\fetch-data.component.ts" />
+    <None Remove="ClientApp\src\app\fetch-data\fetch-data.service.ts" />
     <None Remove="ClientApp\src\app\grid-service-deployer\grid-service-deployer.service.ts" />
     <None Remove="ClientApp\src\app\grid-status\grid-model.ts" />
     <None Remove="ClientApp\src\app\grid-status\grid-status.service.ts" />
@@ -63,6 +66,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\grid-service-deployer\grid-service-deployer.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\grid-status\grid-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\grid-status\grid-status.service.ts" />

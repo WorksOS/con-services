@@ -176,7 +176,7 @@ export class ProjectComponent {
   public designProfileUid: string = ""
 
 constructor(
-    private projectService: ProjectService
+  private projectService: ProjectService
   ) { }
 
   ngOnInit() { 
@@ -210,6 +210,7 @@ constructor(
 
   public setProjectToZero(): void {
     this.projectUid = "00000000-0000-0000-0000-000000000000";
+    localStorage.setItem("projectUid", undefined);
   }
 
   public getProjectExtents(): void {
@@ -259,7 +260,7 @@ constructor(
 
   public getTile() : void {
     // If there is no project bail...
-    if (this.projectUid === undefined)
+    if (!this.projectUid)
       return;
 
     // Make sure the displayed tile extents is updated
@@ -561,11 +562,27 @@ constructor(
       metadata => {
         metadata.forEach(data => result.push(data));
         this.allProjectsMetadata = result;
+        this.projectMetadata = this.allProjectsMetadata[this.getIndexOfSelectedProjectMetadata()];
+        this.projectUid = this.projectMetadata.id;
       });
+  }
+
+  private getIndexOfSelectedProjectMetadata(): number {
+    let projectUid = localStorage.getItem("projectUid");
+
+    for (var i = 0; i < this.allProjectsMetadata.length; i++) {
+      if (this.allProjectsMetadata[i].id === projectUid)
+        return i;
+    }
+
+    localStorage.setItem("projectUid", undefined);
+
+    return -1;
   }
 
   public projectMetadataChanged(event: any): void {
     this.projectUid = this.projectMetadata.id;
+    localStorage.setItem("projectUid", this.projectMetadata.id);
     this.selectProject();
   }
 

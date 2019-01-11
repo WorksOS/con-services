@@ -11,7 +11,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -47,22 +46,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return new CompactionCmvPercentChangeResult();
       }
 
-      var projectSettings = await this.GetProjectSettingsTargets(projectUid);
-      LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
 
-      double[] cmvChangeSummarySettings = this.SettingsManager.CompactionCmvPercentChangeSettings(projectSettings);
+      double[] cmvChangeSummarySettings = SettingsManager.CompactionCmvPercentChangeSettings(projectSettings);
       var projectId = await GetLegacyProjectId(projectUid);
 
-      CMVChangeSummaryRequest request = new CMVChangeSummaryRequest(
-        projectId, projectUid, null, liftSettings, filter, -1, cmvChangeSummarySettings);
+      var request = new CMVChangeSummaryRequest(projectId, projectUid, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
+      
       try
       {
         var result = RequestExecutorContainerFactory
@@ -199,14 +199,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetPassCountDetails: " + Request.QueryString);
 
-      PassCounts request = await GetPassCountRequest(projectUid, filterUid, false);
-      request.Validate();
+      var passCountsRequest = await GetPassCountRequest(projectUid, filterUid, isSummary: false);
+      passCountsRequest.Validate();
 
       try
       {
         var result = RequestExecutorContainerFactory
                      .Build<DetailedPassCountExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-                     .Process(request) as PassCountDetailedResult;
+                     .Process(passCountsRequest) as PassCountDetailedResult;
 
         var returnResult = new CompactionPassCountDetailedResult(result);
 
@@ -250,7 +250,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var cutFillRequest = RequestFactory.Create<CutFillRequestHelper>(r => r
           .ProjectUid(projectUid)
           .ProjectId(projectId)
-          .Headers(this.CustomHeaders)
+          .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
@@ -284,7 +284,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var detailsRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
           .ProjectUid(projectUid)
           .ProjectId(projectId)
-          .Headers(this.CustomHeaders)
+          .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .CreateTemperatureDetailsRequest();
