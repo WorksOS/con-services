@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Policy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
@@ -176,6 +177,10 @@ namespace VSS.TRex.Webtools.Controllers
         VolumeType = VolumeComputationType.Between2Filters
       };
 
+      // This is a simple earliest filter to latest filter test
+      arg.Filters.Filters[0].AttributeFilter.ReturnEarliestFilteredCellPass = true;
+      arg.Filters.Filters[1].AttributeFilter.ReturnEarliestFilteredCellPass = false;
+
       // Compute a profile from the bottom left of the screen extents to the top right 
       var request = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
 
@@ -187,9 +192,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (Response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
-//  ajr todo    return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1)));
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.DesignElev, x.Station, -1)));
+      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.LastCellPassElevation2 - x.LastCellPassElevation1, x.Station, -1)));
     }
 
 

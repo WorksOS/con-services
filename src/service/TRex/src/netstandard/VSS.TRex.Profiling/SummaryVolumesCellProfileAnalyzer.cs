@@ -247,7 +247,7 @@ namespace VSS.TRex.Profiling
 
         // get subgrid origin for cell address
         SubGridCellAddress thisSubgridOrigin = new SubGridCellAddress(profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-          profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+                                                   profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         if (!CurrentSubgridOrigin.Equals(thisSubgridOrigin)) // if we have a new subgrid to fetch 
         {
@@ -256,23 +256,25 @@ namespace VSS.TRex.Profiling
           {
             ProcessSubGroup(new SubGridCellAddress(CurrentSubgridOrigin.X << SubGridTreeConsts.SubGridIndexBitsPerLevel, CurrentSubgridOrigin.Y << SubGridTreeConsts.SubGridIndexBitsPerLevel),
                             PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y], cellOverrideMask);
-
             cellOverrideMask.Clear();
           }
 
-          CurrentSubgridOrigin = thisSubgridOrigin;
           SubGrid = null;
           cellCounter = 0;
 
           // Does the subgrid tree contain this node in it's existence map? if so get subgrid
-          if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
+          if (PDExistenceMap[thisSubgridOrigin.X, thisSubgridOrigin.Y])
             SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
               (StorageProxy, SiteModel.Grid, profileCell.OTGCellX, profileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
 
           _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
           if (_SubGridAsLeaf == null)
             continue;
+
+          CurrentSubgridOrigin = thisSubgridOrigin; // all good to proceed with this subgrid
+
         }
+
         profileCellList[cellCounter++] = profileCell; // add cell to list to process for this subgrid
         cellOverrideMask.SetBit(profileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask, profileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
       }
