@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VSS.Tile.Service.Common.Models
+namespace WebApiTests.Models
 {
   /// <summary>
   /// Classes that are the model for the GeoJSON for geofence boundaries.
