@@ -32,7 +32,11 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
         - configMapRef:
-            name: {{ $configname }}
+            name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
         imagePullPolicy: Always
         ports:
         - containerPort: 80
