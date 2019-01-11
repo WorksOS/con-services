@@ -1,6 +1,5 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
