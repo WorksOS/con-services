@@ -74,7 +74,7 @@ namespace VSS.TRex.Webtools.Controllers
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
-        ProfileStyleRequired = ProfileStyle.CellPasses,
+        ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new[] {new CombinedFilter()}),
         ReferenceDesignUID = Guid.Empty,
@@ -130,7 +130,7 @@ namespace VSS.TRex.Webtools.Controllers
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
-        ProfileStyleRequired = ProfileStyle.CellPasses,
+        ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
         Filters = new FilterSet(new [] { new CombinedFilter() }),
         ReferenceDesignUID = Guid.Empty,
@@ -167,7 +167,7 @@ namespace VSS.TRex.Webtools.Controllers
       {
         ProjectID = siteModelUid,
         ProfileTypeRequired = GridDataType.Height,
-        ProfileStyleRequired = ProfileStyle.SummaryVolume,
+        ProfileStyle = ProfileStyle.SummaryVolume,
         PositionsAreGrid = true,
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
         ReferenceDesignUID = Guid.Empty,

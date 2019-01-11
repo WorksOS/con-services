@@ -14,7 +14,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument
   {
     public GridDataType ProfileTypeRequired { get; set; }
-    public ProfileStyle ProfileStyleRequired { get; set; }
+    public ProfileStyle ProfileStyle { get; set; }
     public WGS84Point StartPoint { get; set; } = new WGS84Point();
     public WGS84Point EndPoint { get; set; } = new WGS84Point();
     public bool PositionsAreGrid { get; set; }
@@ -48,10 +48,10 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="positionsAreGrid"></param>
     /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, ProfileStyle profileStyleRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, ProfileStyle profileStyle, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileTypeRequired = profileTypeRequired;
-      ProfileStyleRequired = profileStyleRequired;
+      ProfileStyle = profileStyle;
       StartPoint = startPoint;
       EndPoint = endPoint;
       PositionsAreGrid = positionsAreGrid;
@@ -70,7 +70,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       writer.WriteInt((int)ProfileTypeRequired);
 
-      writer.WriteInt((int)ProfileStyleRequired);
+      writer.WriteInt((int)ProfileStyle);
 
       writer.WriteBoolean(StartPoint != null);
 
@@ -98,7 +98,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
-      ProfileStyleRequired = (ProfileStyle)reader.ReadInt();
+      ProfileStyle = (ProfileStyle)reader.ReadInt();
 
       StartPoint = new WGS84Point();
       if (reader.ReadBoolean())

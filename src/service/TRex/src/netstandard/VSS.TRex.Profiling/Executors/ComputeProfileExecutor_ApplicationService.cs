@@ -43,7 +43,7 @@ namespace VSS.TRex.Profiling.Executors
         ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute
         {
           ProfileTypeRequired = arg.ProfileTypeRequired,
-          ProfileStyle = arg.ProfileStyleRequired,
+          ProfileStyle = arg.ProfileStyle,
           ProjectID = arg.ProjectID,
           Filters = arg.Filters,
           ReferenceDesignUID = arg.ReferenceDesignUID,

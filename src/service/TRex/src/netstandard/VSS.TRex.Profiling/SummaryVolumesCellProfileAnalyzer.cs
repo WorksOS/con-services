@@ -131,7 +131,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public void ProcessSubGroup(SubGridCellAddress address, bool prodDataAtAddress, SubGridTreeBitmapSubGridBits cellOverrideMask)
     { 
-      bool noErrors = true;
+      bool okToProceed = false;
 
       // Execute a client grid request for each requester and create an array of the results
       var clientGrids = Requestors.Select(x =>
@@ -154,7 +154,6 @@ namespace VSS.TRex.Profiling
       if (IntermediaryFilterRequired)
       {
         MergeIntemediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);
-
         //... and chop out the intermediary grid
         clientGrids = new[] {clientGrids[0], clientGrids[2]};
       }
@@ -167,26 +166,24 @@ namespace VSS.TRex.Profiling
       if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
       {
 
-
         if (svDesign != null)
         {
 
           svDesign.GetDesignHeights(SiteModel.ID, address, SiteModel.Grid.CellSize, out designHeights, out var errorCode);
-
           if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
           {
-            string errorMessage;
-            noErrors = false;
             if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
             {
-              errorMessage = "Call to RequestDesignElevationPatch failed due to no elevations in requested patch.";
-              Log.LogInformation(errorMessage);
+              Log.LogInformation("Call to RequestDesignElevationPatch failed due to no elevations in requested patch.");
             }
             else
             {
-              errorMessage = $"Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.";
-              Log.LogError(errorMessage);
+              Log.LogError($"Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.");
             }
+          }
+          else
+          {
+            okToProceed = true;
           }
         }
         else
@@ -195,8 +192,12 @@ namespace VSS.TRex.Profiling
         }
 
       }
+      else
+      {
+        okToProceed = true;
+      }
 
-      if (noErrors)
+      if (okToProceed)
       {
         for (int I = 0; I < cellCounter; I++)
         {
