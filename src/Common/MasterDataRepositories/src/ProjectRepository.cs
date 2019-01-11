@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
@@ -529,14 +530,25 @@ namespace VSS.MasterData.Repositories
           {
             Log.LogDebug($"ProjectRepository/DeleteProject: updating project={project.ProjectUID}");
 
-            const string update =
-              @"UPDATE Project                
+            // on deletion, the projects endDate will be set to now, in its local time.
+            var localEndDate = project.LastActionedUTC.ToLocalDateTime(existing.LandfillTimeZone);
+            if (localEndDate != null)
+            {
+              project.EndDate = localEndDate.Value;
+              const string update =
+                @"UPDATE Project                
                   SET IsDeleted = 1,
+                    EndDate = @EndDate,
                     LastActionedUTC = @LastActionedUTC
                   WHERE ProjectUID = @ProjectUID";
-            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-            Log.LogDebug(
-              $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+              upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+              Log.LogDebug(
+                $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+            }
+            else
+            {
+              Log.LogError($"ProjectRepository/DeleteProject: Unable to convert current Utc date to local. Unknown timeZone: {existing.LandfillTimeZone}");
+            }
 
             if (upsertedCount > 0)
             {

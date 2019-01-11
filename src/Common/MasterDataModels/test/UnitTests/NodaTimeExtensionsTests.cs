@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
 using VSS.MasterData.Models.Internal;
 
@@ -143,6 +144,54 @@ namespace VSS.MasterData.Models.UnitTests
       var end = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousWeek, false);
       Assert.AreEqual(new LocalDateTime(2018, 3, 26, 0, 0, 0), start, "Wrong start for prior to previous week");
       Assert.AreEqual(new LocalDateTime(2018, 4, 1, 23, 59, 59), end, "Wrong end for prior to previous week");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForUtcUsingTimeZone()
+    {
+      var dateTimeUtc = new DateTime(2018, 5, 10, 15, 28, 10);
+      var ianaTimeZone = "America/Chicago"; // Central Standard Time GMT-6
+      var dateTimeLocal = dateTimeUtc.ToLocalDateTime(ianaTimeZone);
+      Assert.IsNotNull(dateTimeLocal, $"Unable to convert Utc date to local. Unknown timeZone: {ianaTimeZone}");
+      Assert.AreEqual(dateTimeUtc.AddHours(-5), dateTimeLocal, "Wrong offset hours for local date");
+
+      DateTime endDate = dateTimeLocal.Value.Date;
+      Assert.AreEqual(dateTimeUtc.Date, endDate.Date, "Wrong date-only component");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForUtcUsingTimeZone_DaylightSavings()
+    {
+      var dateTimeUtc = new DateTime(2018, 2, 10, 15, 28, 10);
+      var ianaTimeZone = "America/Chicago";
+      var dateTimeLocal = dateTimeUtc.ToLocalDateTime(ianaTimeZone);
+      Assert.IsNotNull(dateTimeLocal, $"Unable to convert Utc date to local. Unknown timeZone: {ianaTimeZone}");
+      Assert.AreEqual(dateTimeUtc.AddHours(-6), dateTimeLocal, "Wrong offset hours for local date");
+
+      DateTime endDate = dateTimeLocal.Value.Date;
+      Assert.AreEqual(dateTimeUtc.Date, endDate.Date, "Wrong date-only component");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForUtcUsingTimeZone_SpanMidnight()
+    {
+      var dateTimeUtc = new DateTime(2018, 2, 10, 1, 45, 34);
+      var ianaTimeZone = "America/Chicago"; 
+      var dateTimeLocal = dateTimeUtc.ToLocalDateTime(ianaTimeZone); 
+      Assert.IsNotNull(dateTimeLocal, $"Unable to convert Utc date to local. Unknown timeZone: {ianaTimeZone}");
+      Assert.AreEqual(dateTimeUtc.AddHours(-6), dateTimeLocal, "Wrong offset hours for local date");
+
+      DateTime endDate = dateTimeLocal.Value.Date;
+      Assert.AreEqual(dateTimeUtc.Date.AddDays(-1), endDate.Date, "Wrong date-only component");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForUtcUsing_InvalidTimeZone()
+    {
+      var dateTimeUtc = new DateTime(2018, 5, 10, 15, 28, 10);
+      var ianaTimeZone = "Blah/DeBlah";
+      var dateTimeLocal = dateTimeUtc.ToLocalDateTime(ianaTimeZone); 
+      Assert.IsNull(dateTimeLocal, $"Should not be able to convert Utc date to local as Unknown timeZone: {ianaTimeZone}");
     }
 
     private LocalDateTime localNow = new LocalDateTime(2017, 1, 18, 10, 25, 12);//Wednesday

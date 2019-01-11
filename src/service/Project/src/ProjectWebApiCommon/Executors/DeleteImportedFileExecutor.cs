@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -126,13 +127,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
     private async Task CheckIfUsedInAFilterAsync(DeleteImportedFile deleteImportedFile)
     {
-      //Cannot delete a design that is used in a filter
+      //Cannot delete a design (or alignment) which is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
-      if (deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface || deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+      if (deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
+          deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || 
+          deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
       {
-        var filters = await ImportedFileRequestDatabaseHelper.GetFilters
-          (deleteImportedFile.ProjectUid, customHeaders, filterServiceProxy);
-        if (filters != null)
+        var filters = await ImportedFileRequestDatabaseHelper.GetFilters(deleteImportedFile.ProjectUid, customHeaders, filterServiceProxy);
+        if (filters != null && filters.Any())
         {
           var fileUidStr = deleteImportedFile.ImportedFileUid.ToString();
           if (filters.Any(f => f.DesignUid == fileUidStr || f.AlignmentUid == fileUidStr))
