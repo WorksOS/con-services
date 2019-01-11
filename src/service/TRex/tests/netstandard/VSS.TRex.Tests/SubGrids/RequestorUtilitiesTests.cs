@@ -13,11 +13,15 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Xunit;
 using Moq;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.SubGrids
@@ -54,6 +58,9 @@ namespace VSS.TRex.Tests.SubGrids
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => null /*DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()*/)))
+        .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
 
         .Complete();
     }
@@ -310,6 +317,44 @@ namespace VSS.TRex.Tests.SubGrids
         intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new[] { ssGuid1 });
         intermediaries[i].CacheContext.Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Test_RequestorUtilities_CreateRequestors_DefaultFilters(int filterCount)
+    {
+      var ru = new RequestorUtilities();
+
+      ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+
+      // Create two surveyed surfaces that bracket current time by one day either side and set the filter end time to be current time
+      // which will cause only one surveyed surface to be filtered
+      Guid ssGuid1 = Guid.NewGuid();
+      var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+
+      Mock<IServerSubGridTree> MockGrid = new Mock<IServerSubGridTree>();
+      MockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+
+      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      MockSiteModel.Setup(x => x.Grid).Returns(MockGrid.Object);
+
+      ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x => new CombinedFilter()).ToArray();
+      IFilterSet filterSet = new FilterSet(filters);
+      
+      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+      var requestors = ru.ConstructRequestors(MockSiteModel.Object, intermediaries, AreaControlSet.CreateAreaControlSet(), null);
+
+      requestors.Length.Should().Be(filters.Length);
+
+      for (int i = 0; i < requestors.Length; i++)
+      {
+        requestors[i].CellOverrideMask.Should().NotBe(null);
       }
     }
   }
