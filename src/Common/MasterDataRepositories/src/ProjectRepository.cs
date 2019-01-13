@@ -1452,6 +1452,35 @@ namespace VSS.MasterData.Repositories
     }
 
     /// <summary>
+    ///     There may be 0 or n subscriptions for each project. None/many may be current.
+    ///     This method gets the latest EndDate so at most 1 sub per project
+    ///     Also returns the GeofenceWRK. List returned excludes archived projects.
+    /// </summary>
+    public async Task<IEnumerable<Project>> GetActiveProjects()
+    {
+      var projects = await QueryWithAsyncPolicy<Project>
+      (@"SELECT 
+              c.CustomerUID, cp.LegacyCustomerID, 
+              p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+              p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+              p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
+              ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
+            FROM Customer c  
+              JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID 
+              JOIN Project p on p.ProjectUID = cp.fk_ProjectUID           
+              LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
+              LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID
+            WHERE p.IsDeleted = 0"
+      );
+
+
+      // need to get the row with the later SubscriptionEndDate if there are duplicates
+      // Also if there are >1 projectGeofences.. hmm.. it will just return either
+      return projects.OrderByDescending(proj => proj.SubscriptionEndDate).GroupBy(d => d.ProjectUID)
+        .Select(g => g.First()).ToList();
+    }
+
+    /// <summary>
     ///     Gets the specified project without linked data like customer and subscription.
     /// </summary>
     /// <param name="projectUid"></param>

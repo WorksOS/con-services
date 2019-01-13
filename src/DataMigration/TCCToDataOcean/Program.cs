@@ -1,6 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Repositories;
+using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
 namespace TCCToDataOcean
@@ -25,6 +30,13 @@ namespace TCCToDataOcean
         .AddDebug())
         .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+      services.AddScoped<IProjectRepository, ProjectRepository>();
+      services.AddScoped<IErrorCodesProvider, MigrationErrorCodesProvider>();
+      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<IFileRepository, FileRepository>();
+      services.AddTransient<IWebApiUtils, WebApiUtils>();
+      services.AddTransient<IRestClient, RestClient>();
+      services.AddTransient<IImportFile, ImportFile>();
 
       Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4nettest.xml");
 

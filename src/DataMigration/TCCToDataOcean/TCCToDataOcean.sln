@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\Common\ITask\src\VSS.ITask.csproj", "{5CD29ABB-3DD9-4177-AACB-0850AF57F77C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess", "..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj", "{DC919EED-FAFB-4BD8-85F8-2982F5F812D3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client", "..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj", "{904BDD7F-DA6F-4A61-8327-8C30176EEF8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,14 @@ Global
 		{5CD29ABB-3DD9-4177-AACB-0850AF57F77C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CD29ABB-3DD9-4177-AACB-0850AF57F77C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CD29ABB-3DD9-4177-AACB-0850AF57F77C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC919EED-FAFB-4BD8-85F8-2982F5F812D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC919EED-FAFB-4BD8-85F8-2982F5F812D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC919EED-FAFB-4BD8-85F8-2982F5F812D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC919EED-FAFB-4BD8-85F8-2982F5F812D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{904BDD7F-DA6F-4A61-8327-8C30176EEF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{904BDD7F-DA6F-4A61-8327-8C30176EEF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{904BDD7F-DA6F-4A61-8327-8C30176EEF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{904BDD7F-DA6F-4A61-8327-8C30176EEF8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

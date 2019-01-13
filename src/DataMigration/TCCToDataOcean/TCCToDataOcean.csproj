@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
     <ProjectReference Include="..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
   </ItemGroup>
 

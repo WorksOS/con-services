@@ -23,6 +23,7 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Project>> GetProjectsForCustomer(string customerUid);
     Task<IEnumerable<Project>> GetProjectsForCustomerUser(string customerUid, string userUid);
     Task<IEnumerable<Project>> GetProjectsForUser(string userUid);
+    Task<IEnumerable<Project>> GetActiveProjects();
     Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid);
     Task<IEnumerable<GeofenceWithAssociation>> GetCustomerGeofences(string customerUid);
     Task<IEnumerable<Project>> GetProjects_UnitTests();

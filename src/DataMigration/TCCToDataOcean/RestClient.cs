@@ -13,7 +13,7 @@ namespace TCCToDataOcean
   /// This base class provides utilty methods for validation of the response status codes,
   /// response headers, and response contents
   /// </summary>
-  public class RestClient
+  public class RestClient : IRestClient
   {
     private readonly ILogger Log;
     private readonly ITPaaSApplicationAuthentication Authentication;

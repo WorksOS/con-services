@@ -7,23 +7,18 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace TCCToDataOcean
 {
-  public class ImportFile
+  public class ImportFile : IImportFile
   {
     private readonly ILogger Log;
-    private readonly string uriRoot;
-    private readonly string BaseUrl;
-    private readonly IConfigurationStore ConfigStore;
     private readonly ITPaaSApplicationAuthentication Authentication;
     private readonly IRestClient RestClient;
-
-    private const string ProjectWebApiKey = "PROJECT_API_URL";
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
@@ -31,17 +26,11 @@ namespace TCCToDataOcean
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
 
-    public ImportFile(ILoggerFactory loggerFactory, IConfigurationStore configurationStore, ITPaaSApplicationAuthentication authentication, 
-      IRestClient restClient, string uriRoot = null)
+    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, 
+      IRestClient restClient)
     {
-      this.uriRoot = uriRoot ?? "api/v4/importedfile";
       Log = loggerFactory.CreateLogger<ImportFile>();
-      ConfigStore = configurationStore;
-      BaseUrl = ConfigStore.GetValueString(ProjectWebApiKey);
-      if (string.IsNullOrEmpty(BaseUrl))
-      {
-        throw new InvalidOperationException($"Mising environment variable {ProjectWebApiKey}");
-      }
+ 
       Authentication = authentication;
       RestClient = restClient;
     }
@@ -49,36 +38,29 @@ namespace TCCToDataOcean
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    public T GetImportedFilesFromWebApi<T>(string uri, Guid customerUid)
+    public FileDataResult GetImportedFilesFromWebApi(string uri, string customerUid)
     {
-      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      var filesResult = JsonConvert.DeserializeObject<T>(response);
-      return filesResult;
-    }
-
-    public T GetFromWebApi<T>(string uri, Guid customerUid)
-    {
-      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      var filesResult = JsonConvert.DeserializeObject<T>(response);
+      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid);
+      var filesResult = JsonConvert.DeserializeObject<FileDataResult>(response);
       return filesResult;
     }
 
     /// <summary>
     /// Send request to the FileImportV4 controller
     /// </summary>
-    public FileDataSingleResult SendRequestToFileImportV4(FileData fileDescr, ImportOptions importOptions = new ImportOptions())
+    public FileDataSingleResult SendRequestToFileImportV4(string uriRoot, FileData fileDescr, string fullFileName, ImportOptions importOptions = new ImportOptions())
     {
       var createdDt = fileDescr.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = fileDescr.FileUpdatedUtc.ToUniversalTime().ToString("o");
 
-      var uri = BaseUrl + $"{uriRoot}?projectUid={fileDescr.ProjectUid}&importedFileType={fileDescr.ImportedFileTypeName}&fileCreatedUtc={createdDt:yyyy-MM-ddTHH:mm:ss.fffffff}&fileUpdatedUtc={updatedDt:yyyy-MM-ddTHH:mm:ss.fffffff}";
+      var uri = $"{uriRoot}?projectUid={fileDescr.ProjectUid}&importedFileType={fileDescr.ImportedFileTypeName}&fileCreatedUtc={createdDt:yyyy-MM-ddTHH:mm:ss.fffffff}&fileUpdatedUtc={updatedDt:yyyy-MM-ddTHH:mm:ss.fffffff}";
 
-      switch (fileDescr.ImportedFileTypeName)
+      switch (fileDescr.ImportedFileType)
       {
-        case "SurveyedSurface":
+        case ImportedFileType.SurveyedSurface:
           uri = $"{uri}&SurveyedUtc={fileDescr.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
           break;
-        case "Linework":
+        case ImportedFileType.Linework:
           uri = $"{uri}&DxfUnitsType={fileDescr.DxfUnitsType}";
           break;
       }
@@ -90,13 +72,8 @@ namespace TCCToDataOcean
           uri = $"{uri}&{param}";
         }
       }
-
-      if (importOptions.HttpMethod == HttpMethod.Delete)
-      {
-        uri = BaseUrl + $"api/v4/importedfile?projectUid={fileDescr.ProjectUid}&importedFileUid={fileDescr.ImportedFileUid}";
-      }
-
-      var response = UploadFileToWebApi(fileDescr.Name, uri, fileDescr.CustomerUid, importOptions.HttpMethod);
+          
+      var response = UploadFileToWebApi(fullFileName, uri, fileDescr.CustomerUid, importOptions.HttpMethod);
 
       try
       {
