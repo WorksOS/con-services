@@ -60,6 +60,19 @@ namespace VSS.TRex.Designs.Interfaces
     bool Equals(IDesign other);
 
     /// <summary>
+    /// Calculates a spot elevation designated location on this design
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="spotX"></param>
+    /// <param name="spotY"></param>
+    /// <param name="spotHeight"></param>
+    /// <param name="errorCode"></param>
+    void GetDesignSpotHeight(Guid siteModelID,
+      double spotX, double spotY,
+      out double spotHeight,
+      out DesignProfilerRequestResult errorCode);
+
+    /// <summary>
     /// Calculates an elevation subgrid for a design subgrid on this design
     /// </summary>
     /// <param name="siteModelID"></param>

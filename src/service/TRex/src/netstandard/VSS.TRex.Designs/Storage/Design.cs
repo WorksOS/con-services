@@ -23,6 +23,12 @@ namespace VSS.TRex.Designs.Storage
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
+    private static readonly DesignElevationSpotRequest elevSpotRequest = new DesignElevationSpotRequest();
+
+    /// <summary>
+    /// Singleton request used by all designs. This request encapsulates the Ignite reference which
+    /// is relatively slow to initialise when making many calls.
+    /// </summary>
     private static readonly DesignElevationPatchRequest elevPatchRequest = new DesignElevationPatchRequest();
 
     /// <summary>
@@ -186,6 +192,26 @@ namespace VSS.TRex.Designs.Storage
              (ID == other.ID) &&
              DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
              (Extents.Equals(other.Extents));
+    }
+
+    /// <summary>
+    /// Calculates a spot elevation designated location on this design
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="spotX"></param>
+    /// <param name="spotY"></param>
+    /// <param name="spotHeight"></param>
+    /// <param name="errorCode"></param>
+    public void GetDesignSpotHeight(Guid siteModelID,
+      double spotX, double spotY,
+      out double spotHeight,
+      out DesignProfilerRequestResult errorCode)
+    {
+      // Query the DesignProfiler service to get the spot elevation calculated
+      errorCode = DesignProfilerRequestResult.OK;
+
+      spotHeight = elevSpotRequest.Execute(new CalculateDesignElevationSpotArgument
+        (siteModelID, spotX, spotY, DesignDescriptor.DesignID, DesignDescriptor.Offset));
     }
 
     /// <summary>
