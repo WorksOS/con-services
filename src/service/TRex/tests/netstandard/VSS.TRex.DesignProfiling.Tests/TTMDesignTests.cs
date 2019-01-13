@@ -35,11 +35,6 @@ namespace VSS.TRex.DesignProfiling.Tests
     }
 
     [Fact(Skip = "not implemented")]
-    public void CreateAccessContextTest()
-    {
-    }
-
-    [Fact(Skip = "not implemented")]
     public void ComputeFilterPatchTest()
     {
     }
