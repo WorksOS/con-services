@@ -12,10 +12,8 @@ namespace MockProjectWebApi.Controllers
   public class MockDataOceanController : Controller
   {
     private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
-    //private string TILE_METADATA_ROUTE = $"{Path.DirectorySeparatorChar}/tiles{Path.DirectorySeparatorChar}/tiles.json";
     private string TILE_METADATA_ROUTE = "/{path}";
 
-    private readonly IConfigurationStore configStore;
     private readonly string baseUrl;
 
     public MockDataOceanController(IConfigurationStore configurationStore)
