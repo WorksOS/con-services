@@ -78,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               serviceExceptionHandler, projectRepo);
 
           await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, updateImportedFile.ProjectUid, customerUid,
-            updateImportedFile.FileDescriptor.fileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
+            updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
             project.CoordinateSystemFileName, log, customHeaders, tileServiceProxy);
         }
       }
