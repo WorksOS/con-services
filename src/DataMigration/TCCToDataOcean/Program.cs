@@ -20,6 +20,9 @@ namespace TCCToDataOcean
       ConfigureServices(serviceCollection);
 
       var serviceProvider = serviceCollection.BuildServiceProvider();
+
+      var migrator = serviceProvider.GetRequiredService<IMigrator>();
+      var success = migrator.MigrateFilesForAllActiveProjects().Result;
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -37,6 +40,7 @@ namespace TCCToDataOcean
       services.AddTransient<IWebApiUtils, WebApiUtils>();
       services.AddTransient<IRestClient, RestClient>();
       services.AddTransient<IImportFile, ImportFile>();
+      services.AddTransient<IMigrator, Migrator>();
 
       Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4nettest.xml");
 

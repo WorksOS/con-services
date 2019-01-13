@@ -7,15 +7,7 @@ namespace TCCToDataOcean
     public MigrationErrorCodesProvider()
     {
       DynamicAddwithOffset("Unable to obtain Project Web API URL.", 1);
-
-      DynamicAddwithOffset("", 1);
-      DynamicAddwithOffset("", 1);
-      DynamicAddwithOffset("", 1);
-      DynamicAddwithOffset("", 1);
-      DynamicAddwithOffset("", 1);
-      DynamicAddwithOffset("", 1);
-      DynamicAddwithOffset("", 1);
-
+      DynamicAddwithOffset("Unable to obtain Temporary folder name.", 2);
       DynamicAddwithOffset("Unable to obtain TCC fileSpaceId.", 48);
       DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Exception reading file {0}.", 79);
       DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Returned file invalid {0}.", 80);

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,7 +25,7 @@ namespace TCCToDataOcean
     /// <summary>
     /// Update the project via the web api. 
     /// </summary>
-    public ProjectDataSingleResult UpdateProjectViaWebApi(string uriRoot, Project project)
+    public ProjectDataSingleResult UpdateProjectViaWebApi(string uriRoot, Project project, byte[] coordSystemFileContent)
     {
       var updateProjectEvt = new UpdateProjectEvent
       {
@@ -37,7 +35,7 @@ namespace TCCToDataOcean
         ProjectEndDate = project.EndDate,
         ProjectTimezone = project.ProjectTimeZone,
         CoordinateSystemFileName = project.CoordinateSystemFileName,
-        CoordinateSystemFileContent = project.CoordinateSystemFileName,
+        CoordinateSystemFileContent = coordSystemFileContent,
         ProjectBoundary = project.GeometryWKT,
         Description = project.Description,
         ReceivedUTC = DateTime.UtcNow,
