@@ -30,11 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as ExportReport;
-
-      if (request == null)
-        ThrowRequestTypeCastException<ExportReport>();
-
+      var request = CastRequestObjectTo<ExportReport>(item);
       var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,

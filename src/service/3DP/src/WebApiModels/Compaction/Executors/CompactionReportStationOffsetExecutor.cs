@@ -1,18 +1,18 @@
-﻿using ASNodeDecls;
+﻿using System;
+using System.IO;
+using ASNodeDecls;
 using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {

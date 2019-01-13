@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Productivity3D.WebApi.Models.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Coord.Contracts
+namespace VSS.Productivity3D.WebApi.Models.Coord.Contracts
 {
     /// <summary>
     /// Data contract representing a coordinate system definition...

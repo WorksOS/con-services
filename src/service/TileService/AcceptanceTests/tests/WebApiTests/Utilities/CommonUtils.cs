@@ -92,12 +92,11 @@ namespace WebApiTests.Utilities
       //var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
       //var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
 
-      var expFileName = "Expected_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
-      var actFileName = "Actual_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
+      var expFileName = "Expected_" + resultName + ".png";
+      var actFileName = "Actual_" + resultName + ".png";
       var diff = CommonUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
       Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
-      Console.WriteLine(actualTileData);
       actualDiff = (int)Math.Round(diff * 100);
       return Math.Abs(diff) < imageDifference;
     }

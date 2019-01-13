@@ -4,7 +4,7 @@ using VSS.TRex.Profiling.Interfaces;
 
 namespace VSS.TRex.Profiling
 {
-  public class ProfileCellBase : IProfileCellBase, IFromToBinary
+  public class ProfileCellBase : IProfileCellBase
   {
     /// <summary>
     /// The real-world distance from the 'start' of the profile line drawn by the user;
@@ -37,7 +37,7 @@ namespace VSS.TRex.Profiling
     /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public virtual void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteDouble(Station);
       writer.WriteDouble(InterceptLength);
@@ -52,7 +52,7 @@ namespace VSS.TRex.Profiling
     /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public virtual void FromBinary(IBinaryRawReader reader)
     {
       Station = reader.ReadDouble();
       InterceptLength = reader.ReadDouble();

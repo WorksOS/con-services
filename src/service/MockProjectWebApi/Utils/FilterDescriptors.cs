@@ -159,7 +159,6 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryMDPPassCountRange")
       };
 
-
       public static FilterDescriptor DimensionsBoundaryMdpAsAtToday => new FilterDescriptor
       {
         FilterUid = "cefd0bda-53e4-45bf-a2b9-ca0cf6f6907a",

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApiModels.Notification.Executors;
+using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
 
@@ -53,10 +53,10 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(loggingFactory, raptorServiceClient, null,
         configServiceStore, fileRepo, tileServiceGenerator, null, null, null, null, null);
       var result = await executor.ProcessAsync(file) as AddFileResult;
-      log.LogInformation($"Processed file {file.File.fileName} with result {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"Processed file {file.File.FileName} with result {JsonConvert.SerializeObject(result)}");
       var eventAttributes = new Dictionary<string, object>
       {
-        {"file", file.File.fileName},
+        {"file", file.File.FileName},
         {"status", result.Code.ToString() },
         {"result", result.Message }
       };

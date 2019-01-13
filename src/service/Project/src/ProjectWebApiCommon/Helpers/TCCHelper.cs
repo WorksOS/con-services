@@ -264,7 +264,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       try
       {
         ccFileExistsResult = await fileRepo
-          .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
+          .FileExists(fileDescriptor.FilespaceId, fileDescriptor.Path + '/' + fileDescriptor.FileName)
           .ConfigureAwait(false);
       }
       catch (Exception e)
@@ -278,8 +278,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         bool ccDeleteFileResult = false;
         try
         {
-          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
-              fileDescriptor.path + '/' + fileDescriptor.fileName)
+          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.FilespaceId,
+              fileDescriptor.Path + '/' + fileDescriptor.FileName)
             .ConfigureAwait(false);
         }
         catch (Exception e)

@@ -34,11 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as PassCounts;
-
-        if (request == null)
-          ThrowRequestTypeCastException<PassCounts>();
-
+        var request = CastRequestObjectTo<PassCounts>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
 
         if (useTrexGateway)
@@ -61,7 +57,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           out var passCountSummary);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
+        {
           return ConvertResult(passCountSummary, request.liftBuildSettings);
+        }
 
         throw CreateServiceException<SummaryPassCountsExecutor>((int)raptorResult);
       }
@@ -76,24 +74,24 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-    private PassCountSummaryResult ConvertResult(TPassCountSummary summary, LiftBuildSettings liftSettings)
+    private static PassCountSummaryResult ConvertResult(TPassCountSummary summary, LiftBuildSettings liftSettings)
     {
       return new PassCountSummaryResult(
-          liftSettings != null && liftSettings.OverridingTargetPassCountRange != null ? liftSettings.OverridingTargetPassCountRange : new TargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max), 
-          summary.IsTargetPassCountConstant, 
+          liftSettings?.OverridingTargetPassCountRange ?? new TargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max),
+          summary.IsTargetPassCountConstant,
           summary.PercentEqualsTarget,
           summary.PercentGreaterThanTarget,
-          summary.PercentLessThanTarget, 
-          summary.ReturnCode, 
+          summary.PercentLessThanTarget,
+          summary.ReturnCode,
           summary.TotalAreaCoveredSqMeters);
     }
 
-    private TPassCountSettings ConvertSettings()
+    private static TPassCountSettings ConvertSettings()
     {
       return new TPassCountSettings
       {
         IsSummary = true,
-        PassCounts = new[]{0,0}
+        PassCounts = new[] { 0, 0 }
       };
     }
   }

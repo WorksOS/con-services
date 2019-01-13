@@ -43,7 +43,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     bool ExistenceMapLoaded { get; }
 
     /// <summary>
-    /// SiteModelDesigns records all the designs that have been seen in this sitemodel.
+    /// SiteModelDesigns records all the designs that have been seen in this site model.
     /// Each site model designs records the name of the site model and the extents
     /// of the cell information that have been record for it.
     /// </summary>
@@ -53,13 +53,13 @@ namespace VSS.TRex.SiteModels.Interfaces
     bool SurveyedSurfacesLoaded { get; }
 
     /// <summary>
-    /// Designs records all the design surfaces that have been imported into the sitemodel
+    /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
     IDesigns Designs { get; }
     bool DesignsLoaded { get; }
 
     /// <summary>
-    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
+    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this site model.
     /// Each site model proofing run records the name of the site model, machine ID, start/end times and the extents
     /// of the cell information that have been record for it.
     /// </summary>
@@ -69,8 +69,8 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     /// <summary>
     /// SiteModelMachineDesigns records all the machineDesignNames retrieved from tag file Change events.
-    /// An indexed list is maintained in the sitemodel reported into.
-    /// The event is stored with the index into the sitemodel list.
+    /// An indexed list is maintained in the site model reported into.
+    /// The event is stored with the index into the site model list.
     /// </summary>
     ISiteModelMachineDesignList SiteModelMachineDesigns { get; }
     

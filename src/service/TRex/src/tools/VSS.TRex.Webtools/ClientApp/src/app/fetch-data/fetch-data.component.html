@@ -1,0 +1,31 @@
+<div class="container">
+  <header>
+    <div class="title">Fetch Data</div>
+  </header>
+
+  <div class="container-fluid" id="panel">
+    <div class="row" id="fetchDataRow">
+      <div class="fetchDataButtonsPanel col-lg-3">
+        <div class="panel-heading">Request Types</div>
+        <div class="panel-default">
+          <select id="dataRequestType" name="dataRequestType" [(ngModel)]="dataRequestType" (change)="dataRequestTypeChanged($event)">
+            <option *ngFor="let dataRequestType of allDataRequestTypes" [ngValue]="dataRequestType">
+              {{ dataRequestType.item2 }}
+            </option>
+          </select>
+          <div class="spacer"></div>
+          <button class="requestButton" [disabled]="noProjectSelected()" (click)="getProductionData()">Execute</button>
+        </div>
+      </div>
+
+      <div class="fetchDataOutputPanel col-lg-9">
+        <div class="panel-heading">Results</div>
+        <div class="panel-default" [innerHTML]="dataResult" style="padding-left: 10px; padding-top: 10px; font-size: small"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
