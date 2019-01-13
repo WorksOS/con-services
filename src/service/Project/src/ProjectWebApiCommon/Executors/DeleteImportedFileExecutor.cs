@@ -57,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
         await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
-          deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.fileName,
+          deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.FileName,
           deleteImportedFile.ImportedFileUid,
           deleteImportedFile.SurveyedUtc, 
           log, customHeaders, serviceExceptionHandler,
@@ -97,7 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (importedFileInternalResult == null)
         {
           importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-            $"{deleteImportedFile.FileDescriptor.path}{Path.DirectorySeparatorChar}{deleteImportedFile.FileDescriptor.fileName}", deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
+            $"{deleteImportedFile.FileDescriptor.Path}{Path.DirectorySeparatorChar}{deleteImportedFile.FileDescriptor.FileName}", deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
               log, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);
         }

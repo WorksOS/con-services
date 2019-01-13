@@ -12,68 +12,72 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGrids
 {
-    public class SubGridRequestor
+    public class SubGridRequestor : ISubGridRequestor
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        private IClientLeafSubgridFactory clientLeafSubGridFactory;
+        private IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-        private IClientLeafSubgridFactory ClientLeafSubGridFactory
-           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+        private IClientLeafSubGridFactory ClientLeafSubGridFactory
+           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
-        private readonly SubGridRetriever retriever;
-        private readonly ISiteModel SiteModel;
-        private readonly ICombinedFilter Filter;
-        private readonly SurfaceElevationPatchRequest surfaceElevationPatchRequest;
-        private readonly byte TreeLevel;
-        private readonly bool HasOverrideSpatialCellRestriction;
-        private readonly BoundingIntegerExtent2D OverrideSpatialCellRestriction;
+        private SubGridRetriever retriever;
+        private ISiteModel SiteModel;
+        private ICombinedFilter Filter;
+        private ISurfaceElevationPatchRequest surfaceElevationPatchRequest;
+        private byte TreeLevel;
+        private bool HasOverrideSpatialCellRestriction;
+        private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
         private int MaxNumberOfPassesToReturn;
         private bool ProdDataRequested;
         private bool SurveyedSurfaceDataRequested;
         private IClientLeafSubGrid ClientGrid;
-        private readonly SurfaceElevationPatchArgument SurfaceElevationPatchArg;
+        private ISurfaceElevationPatchArgument SurfaceElevationPatchArg;
         private uint CellX;
         private uint CellY;
-        public readonly SubGridTreeBitmapSubGridBits CellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        private readonly AreaControlSet AreaControlSet;
+        public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        private AreaControlSet AreaControlSet;
 
         // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
-        private readonly SubGridTreeBitmapSubGridBits ProcessingMap;
+        private SubGridTreeBitmapSubGridBits ProcessingMap;
 
-        private readonly ISurveyedSurfaces FilteredSurveyedSurfaces;
-        private readonly Guid[] FilteredSurveyedSurfacesAsArray;
+        private ISurveyedSurfaces FilteredSurveyedSurfaces;
+        private Guid[] FilteredSurveyedSurfacesAsArray;
 
-        private readonly bool ReturnEarliestFilteredCellPass;
+        private bool ReturnEarliestFilteredCellPass;
 
-        private readonly ITRexSpatialMemoryCache SubGridCache;
-        private readonly ITRexSpatialMemoryCacheContext SubGridCacheContext;
+        private ITRexSpatialMemoryCache SubGridCache;
+        private ITRexSpatialMemoryCacheContext SubGridCacheContext;
 
-        private readonly IDesign ElevationRangeDesign;
-        private readonly IDesign SurfaceDesignMaskDesign;
+        private IDesign ElevationRangeDesign;
+        private IDesign SurfaceDesignMaskDesign;
 
         private IClientHeightLeafSubGrid DesignElevations;
         private IClientHeightLeafSubGrid SurfaceDesignMaskElevations;
+
+
+        public SubGridRequestor()
+        {
+        }
 
         /// <summary>
         /// Constructor that accepts the common parameters around a set of subgrids the requester will be asked to process
         /// and initializes the requester state ready to start processing individual subgrid requests.
         /// </summary>
-        public SubGridRequestor(ISiteModel sitemodel,
+        public void Initialize(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
                                 ICombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
@@ -87,8 +91,8 @@ namespace VSS.TRex.SubGrids
                                 ITRexSpatialMemoryCacheContext subGridCacheContext,                                
                                 ISurveyedSurfaces filteredSurveyedSurfaces,
                                 Guid[] filteredSurveyedSurfacesAsArray,
-                                SurfaceElevationPatchRequest surfaceElevationPatchRequest,
-                                SurfaceElevationPatchArgument surfaceElevationPatchArgument)
+                                ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+                                ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
         {
             SiteModel = sitemodel;
 

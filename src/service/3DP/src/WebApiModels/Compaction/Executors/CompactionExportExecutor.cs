@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using ASNodeDecls;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -35,14 +34,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as ExportReport;
-
-        if (request == null)
-          ThrowRequestTypeCastException<ExportReport>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SURFACE"), out var useTrexGateway);
-
-        if (useTrexGateway && request?.ExportType == ExportTypes.SurfaceExport)
+        var request = CastRequestObjectTo<ExportReport>(item);
+        
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") && request?.ExportType == ExportTypes.SurfaceExport)
         {
           var cmvChangeDetailsRequest = new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
 
@@ -71,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.Precheckonly, request.Filename, request.MachineList, (int)request.CoordType,
         (int)request.OutputType,
         request.DateFromUTC, request.DateToUTC,
-        request.Translations, request.ProjectExtents, out TDataExport dataexport);
+        request.Translations, request.ProjectExtents, out var dataexport);
 
       if (success)
       {

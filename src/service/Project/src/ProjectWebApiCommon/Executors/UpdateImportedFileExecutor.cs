@@ -51,7 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
         await ImportedFileRequestHelper.NotifyTRexUpdateFile(updateImportedFile.ProjectUid,
-          updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.fileName, updateImportedFile.ImportedFileUid,
+          updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileUid,
           updateImportedFile.SurveyedUtc,  
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);

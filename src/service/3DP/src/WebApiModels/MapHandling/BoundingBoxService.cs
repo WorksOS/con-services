@@ -15,9 +15,9 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
-using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
@@ -305,11 +305,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       var geoJson = GetDesignBoundary(projectId, designDescriptor);
       log.LogDebug($"GetDesignBoundaryPolygons: geoJson={geoJson}");
       if (string.IsNullOrEmpty(geoJson)) return polygons;
-      var root = JsonConvert.DeserializeObject<RootObject>(geoJson);
-      foreach (var feature in root.features)
+      var root = JsonConvert.DeserializeObject<GeoJson>(geoJson);
+      foreach (var feature in root.Features)
       {
         var points = new List<WGSPoint>();
-        foreach (var coordList in feature.geometry.coordinates)
+        foreach (var coordList in feature.Geometry.Coordinates)
         {
           foreach (var coordPair in coordList)
           {
@@ -362,7 +362,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              $"Failed to get design boundary for file: {designDescriptor.File.fileName}"));
+              $"Failed to get design boundary for file: {designDescriptor.File.FileName}"));
         }
         return null;
       }

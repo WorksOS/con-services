@@ -1,4 +1,4 @@
-using VSS.MasterData.Models.Models;
+﻿using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -10,7 +10,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   {
     public static string BaseFileName(this FileDescriptor fileDescr)
     {
-      return ImportedFileUtils.RemoveSurveyedUtcFromName(fileDescr.fileName);
+      return ImportedFileUtils.RemoveSurveyedUtcFromName(fileDescr.FileName);
     }
   }
 }

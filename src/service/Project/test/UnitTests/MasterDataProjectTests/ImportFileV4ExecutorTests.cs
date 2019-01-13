@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -97,7 +96,7 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
-        Name = fileDescriptor.fileName,
+        Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
       };
 
@@ -108,7 +107,7 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.DesignSurface,
         DxfUnitsType = DxfUnitsType.Meters,
-        Name = fileDescriptor.fileName,
+        Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
         FileCreatedUtc = fileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
@@ -119,7 +118,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(_projectUid),
-        fileDescriptor.fileName, fileDescriptor, ImportedFileType.DesignSurface,
+        fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface,
         null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44));
 
       var project = new Repositories.DBModels.Project() { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
@@ -163,7 +162,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(0, result.Code, "Raptor Create should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Create should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Raptor Create has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.fileName, result.ImportedFileDescriptor.Name, "Raptor Create has invalid name");
+      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Raptor Create has invalid name");
     }
 
     [TestMethod]
@@ -231,7 +230,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(0, result.Code, "Raptor Update should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Update should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Raptor Update has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.fileName, result.ImportedFileDescriptor.Name, "Raptor Update has invalid name");
+      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Raptor Update has invalid name");
     }
 
     [TestMethod]
@@ -324,7 +323,7 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
-        Name = fileDescriptor.fileName,
+        Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
       };
 
@@ -335,7 +334,7 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.DesignSurface,
         DxfUnitsType = DxfUnitsType.Meters,
-        Name = fileDescriptor.fileName,
+        Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
         FileCreatedUtc = fileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
@@ -346,7 +345,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(_projectUid),
-        fileDescriptor.fileName, fileDescriptor, ImportedFileType.DesignSurface,
+        fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface,
         null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44));
 
       var importedFilesList = new List<ImportedFile>(); importedFilesList.Add(newImportedFile);
@@ -379,7 +378,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(0, result.Code, "Trex Create should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Create should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.fileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
+      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
     }
 
     [TestMethod]
@@ -437,7 +436,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(0, result.Code, "Trex Update should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Update should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Update has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.fileName, result.ImportedFileDescriptor.Name, "Trex Update has invalid name");
+      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Update has invalid name");
     }
 
     [TestMethod]
@@ -463,7 +462,7 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
-        Name = fileDescriptor.fileName,
+        Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
       };
 
@@ -474,7 +473,7 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.DesignSurface,
         DxfUnitsType = DxfUnitsType.Meters,
-        Name = fileDescriptor.fileName,
+        Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
         FileCreatedUtc = fileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
@@ -485,7 +484,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(_projectUid),
-        fileDescriptor.fileName, fileDescriptor, ImportedFileType.DesignSurface,
+        fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface,
         null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44));
 
       var importedFilesList = new List<ImportedFile>(); importedFilesList.Add(newImportedFile);
@@ -518,7 +517,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(0, result.Code, "Trex Create should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Create should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
-      Assert.AreEqual(fileDescriptor.fileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
+      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
     }
 
   }

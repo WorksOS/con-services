@@ -4,17 +4,17 @@ using VSS.TRex.Types;
 namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
-  /// The factory used to create the client subgrid creation factory. This abstracts the factory creation aspect away
+  /// The factory used to create the client sub grid creation factory. This abstracts the factory creation aspect away
   /// from the dependency injection aspect.
   /// </summary>
-  public static class ClientLeafSubgridFactoryFactory
+  public static class ClientLeafSubGridFactoryFactory
   {
     /// <summary>
-    /// Gets the subgrid client factory to use. Replace this with an implementation that 
+    /// Gets the sub grid client factory to use. Replace this with an implementation that 
     /// returns an appropriate element from the Dependency Injection container when this is implemented
     /// </summary>
     /// <returns></returns>
-    public static IClientLeafSubgridFactory CreateClientSubGridFactory()
+    public static IClientLeafSubGridFactory CreateClientSubGridFactory()
     {
       var clientSubGridFactory = new ClientLeafSubGridFactory();
 

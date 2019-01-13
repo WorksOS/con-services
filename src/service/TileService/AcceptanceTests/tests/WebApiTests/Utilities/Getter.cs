@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using WebApiTests.Extensions;
 using Xunit;
 
 namespace WebApiTests.Utilities
@@ -19,9 +20,10 @@ namespace WebApiTests.Utilities
     public string Uri { get; set; }
     public Dictionary<string, string> QueryString { get; set; }
     public TResponse CurrentResponse { get; private set; }
-    public ServiceResponse CurrentServiceResponse { get; private set; }
+    public ServiceResponse CurrentServiceResponse { get; }
 
     public HttpResponseMessage HttpResponseMessage { get; private set; }
+    public byte[] ByteContent { get; private set; }
 
     private static readonly string TestDatapath;
 
@@ -50,33 +52,14 @@ namespace WebApiTests.Utilities
         return;
       }
 
-      try
-      {
-        var path = Path.Combine(TestDatapath, responseFile);
+      var path = Path.Combine(TestDatapath, responseFile);
 
-        Console.WriteLine(path);
-        using (var file = File.OpenText(path))
-        {
-          var serializer = new JsonSerializer();
-          ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file, typeof(Dictionary<string, TResponse>));
-        }
-      }
-      catch (Exception e)
+      Console.WriteLine(path);
+      using (var file = File.OpenText(path))
       {
-        Logger.Error(e.Message, Logger.ContentType.Error);
-        throw;
+        var serializer = new JsonSerializer();
+        ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file, typeof(Dictionary<string, TResponse>));
       }
-    }
-
-    /// <summary>
-    /// Do an HTTP GET request - expecting success e.g. 200 OK.
-    /// </summary>
-    /// <param name="uri">URI of the service.</param>
-    /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 200 OK.</param>
-    /// <returns>Request response.</returns>
-    public TResponse DoValidRequest(string uri = "", HttpStatusCode expectedHttpCode = HttpStatusCode.OK)
-    {
-      return DoRequest(uri, expectedHttpCode);
     }
 
     /// <summary>
@@ -86,18 +69,7 @@ namespace WebApiTests.Utilities
     /// <returns>Request response.</returns>
     public TResponse DoValidRequest(HttpStatusCode expectedHttpCode)
     {
-      return DoRequest(Uri, expectedHttpCode);
-    }
-
-    /// <summary>
-    /// Do an invalid GET request - expecting failure e.g. 400 BadRequest.
-    /// </summary>
-    /// <param name="uri">URI of the service.</param>
-    /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 400 BadRequest.</param>
-    /// <returns>Request response.</returns>
-    public TResponse DoInvalidRequest(string uri = "", HttpStatusCode expectedHttpCode = HttpStatusCode.BadRequest)
-    {
-      return DoRequest(uri, expectedHttpCode);
+      return SendRequest(Uri, expectedHttpCode);
     }
 
     /// <summary>
@@ -107,105 +79,90 @@ namespace WebApiTests.Utilities
     /// <returns>Request response.</returns>
     public TResponse DoInvalidRequest(HttpStatusCode expectedHttpCode)
     {
-      return DoRequest(Uri, expectedHttpCode);
+      return SendRequest(Uri, expectedHttpCode);
     }
 
-    /// <summary>
-    /// Implementation for public methods DoValidRequest and DoInvalidRequest.
-    /// </summary>
-    /// <param name="uri">URI of the service.</param>
-    /// <param name="expectedHttpCode">Expected response HttpStatusCode.</param>
-    /// <returns>Request response.</returns>
-    public TResponse DoRequest(string uri, HttpStatusCode expectedHttpCode)
+    public TResponse SendRequest(string url = "", HttpStatusCode expectedHttpCode = HttpStatusCode.OK, string acceptHeader = MediaTypes.JSON)
     {
-      if (uri != "")
+      if (string.IsNullOrEmpty(url))
       {
-        Uri = uri;
+        url = Uri;
       }
 
-      if (QueryString != null)
+      HttpResponseMessage = RestClient.SendHttpClientRequest(
+        url,
+        BuildQueryString(),
+        HttpMethod.Get,
+        acceptHeader,
+        MediaTypes.JSON,
+        null).Result;
+
+      Assert.Equal(expectedHttpCode, HttpResponseMessage.StatusCode);
+
+      var receiveStream = HttpResponseMessage.Content.ReadAsStreamAsync().Result;
+      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
+      var responseBody = readStream.ReadToEnd();
+
+      if (!HttpResponseMessage.IsSuccessStatusCode)
       {
-        Uri += BuildQueryString();
+        CurrentResponse = JsonConvert.DeserializeObject<TResponse>(responseBody, new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented
+        });
+
+        return CurrentResponse;
       }
 
-      CurrentServiceResponse = TileClientUtil.DoHttpRequest(Uri, HttpMethod.Get.ToString(), TileClientUtil.JsonMediaType, null);
-
-      if (CurrentServiceResponse == null)
+      switch (HttpResponseMessage.Content.Headers.ContentType.MediaType)
       {
-        Console.WriteLine("No HTTP response received");
-        return default(TResponse);
+        case MediaTypes.JSON:
+          {
+            CurrentResponse = JsonConvert.DeserializeObject<TResponse>(responseBody, new JsonSerializerSettings
+            {
+              Formatting = Formatting.Indented
+            });
+
+            break;
+          }
+        case MediaTypes.PNG:
+          {
+            ByteContent = HttpResponseMessage.Content.ReadAsStreamAsync().Result.ToByteArray();
+            break;
+          }
+        case MediaTypes.ZIP:
+        case MediaTypes.PROTOBUF:
+          {
+            ByteContent = HttpResponseMessage.Content.ReadAsByteArrayAsync().Result;
+            break;
+          }
+        default:
+          {
+            Assert.True(false, $"Unsupported ContentType to request: {url}");
+            break;
+          }
       }
-
-      if (expectedHttpCode != CurrentServiceResponse.HttpCode)
-      {
-        Logger.Error($"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.",
-          Logger.ContentType.Error);
-      }
-
-      Assert.Equal(expectedHttpCode, CurrentServiceResponse.HttpCode);
-
-      CurrentResponse = JsonConvert.DeserializeObject<TResponse>(CurrentServiceResponse.ResponseBody, new JsonSerializerSettings
-      {
-        Formatting = Formatting.Indented
-      });
 
       return CurrentResponse;
     }
 
-   
-    public byte[] DoRequestWithStreamResponse(string uri)
-    {
-      if (uri != "")
-      {
-        Uri = uri;
-      }
-
-      if (QueryString != null)
-      {
-        Uri += BuildQueryString();
-      }
-
-      var httpResponse = TileClientUtil.DoHttpRequest(Uri, HttpMethod.Get.ToString(), TileClientUtil.JsonMediaType, "image/png", null);
-
-      return TileClientUtil.GetStreamContentsFromResponse(httpResponse);
-    }
-
     public string BuildQueryString()
     {
-      StringBuilder queryString = new StringBuilder();
-      bool firstparam = true;
+      var queryString = new StringBuilder();
+      var firstparam = true;
+
       if (QueryString != null)
       {
-        foreach (string parameter in QueryString.Keys)
+        foreach (var parameter in QueryString.Keys)
         {
           queryString.Append(firstparam ? "?" : "&");
           firstparam = false;
           queryString.Append(WebUtility.UrlEncode(parameter));
           queryString.Append("=");
-          queryString.Append(WebUtility.UrlEncode(QueryString[parameter]));
+          queryString.Append(QueryString[parameter]);
         }
       }
 
       return queryString.ToString();
-    }
-
-    // TODO (Aaron) Make QueryString private and refactor step classes removing unnecesary string.isnullorempty() checks. Use AddQueryParam() instead.
-    public bool AddQueryParam(string key, string value)
-    {
-      if (string.IsNullOrEmpty(value))
-      {
-        return false;
-      }
-
-      QueryString.Add(key, value);
-
-      return true;
-    }
-
-    public void Send(string acceptHeader, string contentType, string content = null)
-    {
-      var response = TileClientUtil.SendHttpClientRequest(Uri, BuildQueryString(), HttpMethod.Get, acceptHeader, contentType, content).Result;
-      HttpResponseMessage = response;
     }
   }
 }

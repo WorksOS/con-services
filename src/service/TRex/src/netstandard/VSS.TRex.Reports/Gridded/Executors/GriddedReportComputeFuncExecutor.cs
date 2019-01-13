@@ -157,7 +157,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
           }
           else
           {
-            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {designHeights}.";
+            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.";
             Log.LogWarning(errorMessage);
           }
         }

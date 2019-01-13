@@ -33,8 +33,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
-      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
+    public CompactionSummaryDataController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+      : base(configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
     { }
 
     /// <summary>
@@ -308,9 +308,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
     /// <param name="summaryDataHelper">Volume Summary helper.</param>
-    /// <param name="projectUid">The project Uid.</param>
-    /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
-    /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="baseUid">The uid for the base surface, either a filter or design.</param>
+    /// <param name="topUid">The uid for the top surface, either a filter or design.</param>
     [ProjectVerifier]
     [Route("api/v2/volumes/summary")]
     [HttpGet]

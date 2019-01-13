@@ -43,11 +43,14 @@ namespace VSS.TRex.Profiling.Executors
         ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute
         {
           ProfileTypeRequired = arg.ProfileTypeRequired,
+          ProfileStyle = arg.ProfileStyle,
           ProjectID = arg.ProjectID,
           Filters = arg.Filters,
           ReferenceDesignUID = arg.ReferenceDesignUID,
           ReturnAllPassesAndLayers = arg.ReturnAllPassesAndLayers,
-          TRexNodeID = arg.TRexNodeID
+          TRexNodeID = arg.TRexNodeID,
+          VolumeType = arg.VolumeType
+          
         };
 
         // Perform coordinate conversion on the argument before broadcasting it:

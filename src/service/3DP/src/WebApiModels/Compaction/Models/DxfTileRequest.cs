@@ -2,10 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Models
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
   /// <summary>
   /// The request representation for getting a DXF tile from TCC

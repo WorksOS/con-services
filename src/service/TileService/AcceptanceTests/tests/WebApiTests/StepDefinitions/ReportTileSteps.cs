@@ -26,13 +26,11 @@ namespace WebApiTests.StepDefinitions
     private string language;
     private Getter<byte[]> tileRequesterGood;
     private Getter<RequestResult> tileRequesterBad;
-    private byte[] currentResponse;
-
 
     [Given(@"the Report Tile service URI ""(.*)""")]
     public void GivenTheReportTileServiceURI(string url)
     {
-      this.url = TileClientConfig.TileSvcBaseUri + url;
+      this.url = RestClient.TileServiceBaseUrl + url;
     }
 
     [And(@"a projectUid ""(.*)""")]
@@ -108,7 +106,7 @@ namespace WebApiTests.StepDefinitions
     {
       var uri = MakeUrl();
       tileRequesterGood = new Getter<byte[]>(uri, resultFile);
-      currentResponse = tileRequesterGood.DoRequestWithStreamResponse(uri);
+      _ = tileRequesterGood.SendRequest(uri, acceptHeader: MediaTypes.PNG);
     }
 
     [When(@"I request a Report Tile Expecting BadRequest")]
@@ -128,7 +126,7 @@ namespace WebApiTests.StepDefinitions
     [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
     public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithinPercent(string resultName, string difference)
     {
-      CompareExpectedAndActualTiles(resultName, difference, tileRequesterGood.ResponseRepo[resultName], currentResponse);
+      CompareExpectedAndActualTiles(resultName, difference, tileRequesterGood.ResponseRepo[resultName], tileRequesterGood.ByteContent);
     }
 
 
