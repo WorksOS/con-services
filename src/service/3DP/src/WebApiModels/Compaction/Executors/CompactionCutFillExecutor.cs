@@ -28,15 +28,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as CutFillDetailsRequest;
+        var request = CastRequestObjectTo<CutFillDetailsRequest>(item);
 
-        if (request == null)
-          ThrowRequestTypeCastException<CutFillDetailsRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_CUTFILL"))
+        {
           return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
+        }
 
         var filter = RaptorConverters.ConvertFilter(request.Filter);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);

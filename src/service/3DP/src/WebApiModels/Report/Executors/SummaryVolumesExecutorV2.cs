@@ -30,21 +30,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as SummaryVolumesRequest;
+        var request = CastRequestObjectTo<SummaryVolumesRequest>(item);
 
-        if (request == null)
-          ThrowRequestTypeCastException<SummaryVolumesRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_VOLUMES"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_VOLUMES"))
         {
           var summaryVolumesRequest = new SummaryVolumesDataRequest(
             request.ProjectUid,
             request.BaseFilter,
             request.TopFilter,
-            request.BaseDesignDescriptor.Uid,
-            request.TopDesignDescriptor.Uid,
+            request.BaseDesignDescriptor.FileUid,
+            request.TopDesignDescriptor.FileUid,
             request.VolumeCalcType);
 
           return trexCompactionDataProxy.SendSummaryVolumesRequest(summaryVolumesRequest, customHeaders).Result;

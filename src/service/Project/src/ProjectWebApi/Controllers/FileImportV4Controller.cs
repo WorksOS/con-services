@@ -39,19 +39,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// File import controller v4
     /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="store"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="raptorProxy"></param>
     /// <param name="persistantTransferProxy"></param>
     /// <param name="filterServiceProxy"></param>
     /// <param name="tRexImportFileProxy"></param>
@@ -76,11 +68,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.logger = logger;
     }
 
-    // GET: api/v4/importedfiles
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    /// <returns>A list of files</returns>
     [Route("api/v4/importedfiles")]
     [HttpGet]
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)

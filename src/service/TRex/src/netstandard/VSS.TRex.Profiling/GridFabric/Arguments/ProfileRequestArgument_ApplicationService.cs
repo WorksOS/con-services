@@ -2,6 +2,9 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
+using VSS.TRex.Common;
+using VSS.TRex.Profiling.Models;
+
 
 namespace VSS.TRex.Profiling.GridFabric.Arguments
 {
@@ -11,15 +14,21 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument
   {
     public GridDataType ProfileTypeRequired { get; set; }
-
+    public ProfileStyle ProfileStyle { get; set; }
     public WGS84Point StartPoint { get; set; } = new WGS84Point();
     public WGS84Point EndPoint { get; set; } = new WGS84Point();
-
     public bool PositionsAreGrid { get; set; }
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
 
     public bool ReturnAllPassesAndLayers { get; set; }
+
+
+    /// <summary>
+    /// The volume computation method to use when calculating summary volume information
+    /// </summary>
+    public VolumeComputationType VolumeType = VolumeComputationType.None;
+
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -28,23 +37,27 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
     }
 
+
     /// <summary>
     /// Creates a new profile request argument initialized with the supplied parameters
     /// </summary>
     /// <param name="profileTypeRequired"></param>
+    /// <param name="profileStyleRequired"></param>
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
     /// <param name="positionsAreGrid"></param>
     /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, ProfileStyle profileStyle, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileTypeRequired = profileTypeRequired;
+      ProfileStyle = profileStyle;
       StartPoint = startPoint;
       EndPoint = endPoint;
       PositionsAreGrid = positionsAreGrid;
       ReferenceDesignUID = referenceDesignUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -57,15 +70,22 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       writer.WriteInt((int)ProfileTypeRequired);
 
+      writer.WriteInt((int)ProfileStyle);
+
       writer.WriteBoolean(StartPoint != null);
+
       StartPoint?.ToBinary(writer);
 
       writer.WriteBoolean(EndPoint != null);
+
       EndPoint?.ToBinary(writer);
 
       writer.WriteBoolean(PositionsAreGrid);
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
+
+      writer.WriteInt((int)VolumeType);
+
     }
 
     /// <summary>
@@ -78,6 +98,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
+      ProfileStyle = (ProfileStyle)reader.ReadInt();
+
       StartPoint = new WGS84Point();
       if (reader.ReadBoolean())
         StartPoint.FromBinary(reader);
@@ -89,6 +111,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       PositionsAreGrid = reader.ReadBoolean();
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
+
+      VolumeType = (VolumeComputationType)reader.ReadInt();
+
     }
   }
 }

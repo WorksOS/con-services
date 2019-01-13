@@ -1,6 +1,8 @@
-﻿using VSS.TRex.Designs.Interfaces;
+﻿using VSS.TRex.Common;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -28,25 +30,27 @@ namespace VSS.TRex.Profiling.Interfaces
     /// Configures a new profile builder that provides the three core builders used in profiling: construction of cell vector from profile line,
     /// profile analysis orchestration and per cell layer/statistics calculation
     /// </summary>
+    /// <param name="profileStyle"></param>
     /// <param name="siteModel"></param>
     /// <param name="productionDataExistenceMap"></param>
     /// <param name="gridDataType"></param>
-    /// <param name="passFilter"></param>
-    /// <param name="cellFilter"></param>
+    /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="PopulationControl"></param>
     /// <param name="CellPassFastEventLookerUpper"></param>
+    /// <param name="VolumeType"></param>
     /// <param name="slicerToolUsed"></param>
-    void Configure(ISiteModel siteModel,
+    void Configure(ProfileStyle profileStyle,
+      ISiteModel siteModel,
       ISubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
-      ICellPassAttributeFilter passFilter,
-      ICellSpatialFilter cellFilter,
+      IFilterSet filterSet,
       IDesign cutFillDesign,
       IDesign cellPassFilter_ElevationRangeDesign,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
+      VolumeComputationType VolumeType = VolumeComputationType.None,
       bool slicerToolUsed = true);
   }
 }

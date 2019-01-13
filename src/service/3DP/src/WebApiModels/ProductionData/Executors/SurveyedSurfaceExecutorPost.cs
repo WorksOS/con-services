@@ -8,7 +8,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   /// <summary>
   /// Executes POST method on Surveyed Surfaces resource.
   /// </summary>
-  /// 
   public class SurveyedSurfaceExecutorPost : SurveyedSurfaceExecutor
   {
     /// <summary>
@@ -17,14 +16,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     /// <param name="item">POST request description.</param>
     /// <param name="surveyedSurfaces">Returned list of Surveyed Surfaces.</param>
     /// <returns>True if the processed request from PDS was successful, false - otherwise.</returns>
-    /// 
     protected override bool SendRequestToPdsClient(object item, out TSurveyedSurfaceDetails[] surveyedSurfaces)
     {
-      var request = item as SurveyedSurfaceRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<SurveyedSurfaceRequest>();
-
+      var request = CastRequestObjectTo<SurveyedSurfaceRequest>(item);
       surveyedSurfaces = null;
 
       var args = ASNode.GroundSurface.RPC.__Global

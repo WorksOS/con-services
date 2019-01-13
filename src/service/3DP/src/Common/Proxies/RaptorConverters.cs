@@ -643,9 +643,9 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.DesignFilter = VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(
           filterResult.DesignFile.Id,
           fileSpaceName,
-          filterResult.DesignFile.File.filespaceId,
-          filterResult.DesignFile.File.path,
-          filterResult.DesignFile.File.fileName,
+          filterResult.DesignFile.File.FilespaceId,
+          filterResult.DesignFile.File.Path,
+          filterResult.DesignFile.File.FileName,
           filterResult.DesignFile.Offset);
 
         filter.SetDesignFilterMaskCellSelectionState(true);
@@ -814,7 +814,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
       return dd.File == null
         ? DesignDescriptor(dd.Id, string.Empty, string.Empty, string.Empty, dd.Offset)
-        : DesignDescriptor(dd.Id, dd.File.filespaceId, dd.File.path, dd.File.fileName, dd.Offset);
+        : DesignDescriptor(dd.Id, dd.File.FilespaceId, dd.File.Path, dd.File.FileName, dd.Offset);
     }
 
     /// <summary>

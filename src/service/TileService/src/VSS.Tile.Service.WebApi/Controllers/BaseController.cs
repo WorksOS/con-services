@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -189,14 +190,15 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.ProjectBoundary), adjustBoundingBox);
 
-      var request = TileGenerationRequest.CreateTileGenerationRequest(filterUid, baseUid, topUid, cutFillDesignUid, volumeCalcType, geofences,
-        alignmentPoints, customFilterBoundary, designFilterBoundary, alignmentFilterBoundary, designBoundary,
-        dxfFiles, overlayTypes, width, height, mapType, mode, language, project, mapParameters, CustomHeaders);
+      var request = TileGenerationRequest.CreateTileGenerationRequest(filterUid, baseUid, topUid, 
+        cutFillDesignUid, volumeCalcType, geofences, alignmentPoints, customFilterBoundary, 
+        designFilterBoundary, alignmentFilterBoundary, designBoundary, dxfFiles, overlayTypes, 
+        width, height, mapType, mode, language, project, mapParameters, CustomHeaders, null);
 
       request.Validate();
 
-      var byteResult = await WithServiceExceptionTryExecuteAsync(async () =>
-        await tileGenerator.GetMapData(request));
+      var byteResult = await WithServiceExceptionTryExecuteAsync(() =>
+        tileGenerator.GetMapData(request));
 
       return new FileStreamResult(new MemoryStream(byteResult), "image/png");
 
@@ -220,15 +222,41 @@ namespace VSS.Tile.Service.WebApi.Controllers
         var geofences = new List<GeofenceData> { geofence };
         var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
 
-        var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, geofences,
-          null, null, null, null, null, null, overlayTypes, width, height, mapType, null, language, null, mapParameters, CustomHeaders);
+        var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, 
+          geofences, null, null, null, null, null, null, overlayTypes, width, height, mapType, null, 
+          language, null, mapParameters, CustomHeaders, null);
 
         request.Validate();
 
         Log.LogDebug("The tile doesn't exist in cache - generating it");
-        return await WithServiceExceptionTryExecuteAsync(async () =>
-          await tileGenerator.GetMapData(request));
+        return await WithServiceExceptionTryExecuteAsync(() =>
+          tileGenerator.GetMapData(request));
       });
+
+      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+    }
+
+    /// <summary>
+    /// Get the generated tile for the request. Used for raw geofence thumbnails where the boundaries have come from a DXF file.
+    /// </summary>
+    protected async Task<FileResult> GetGeneratedTile(List<WGSPoint> geofencePoints,
+      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType,
+      string language, bool adjustBoundingBox)
+    {
+      var overlayTypes = overlays.ToList();
+
+      language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
+
+      var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
+
+      var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, null,
+        null, null, null, null, null, null, overlayTypes, width, height, mapType, null, language, null, 
+        mapParameters, CustomHeaders, geofencePoints);
+
+      request.Validate();
+
+      var byteResult = await WithServiceExceptionTryExecuteAsync(() =>
+        tileGenerator.GetMapData(request));
 
       return new FileStreamResult(new MemoryStream(byteResult), "image/png");
     }

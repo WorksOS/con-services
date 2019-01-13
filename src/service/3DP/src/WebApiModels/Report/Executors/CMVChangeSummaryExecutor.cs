@@ -40,14 +40,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as CMVChangeSummaryRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CMVChangeSummaryRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
+        var request = CastRequestObjectTo<CMVChangeSummaryRequest>(item);
         
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_CMV"))
         {
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
           return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;

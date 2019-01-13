@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Converters;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.UnitTests
@@ -40,13 +40,13 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
       var validator = new DataAnnotationsValidator();
       BoundingBox2DLatLon bbox = new BoundingBox2DLatLon(
-        -106.604076 * ConversionConstants.DEGREES_TO_RADIANS, 35.109149 * ConversionConstants.DEGREES_TO_RADIANS, -105.234 * ConversionConstants.DEGREES_TO_RADIANS, 35.39012 * ConversionConstants.DEGREES_TO_RADIANS);
+        -106.604076 * Coordinates.DEGREES_TO_RADIANS, 35.109149 * Coordinates.DEGREES_TO_RADIANS, -105.234 * Coordinates.DEGREES_TO_RADIANS, 35.39012 * Coordinates.DEGREES_TO_RADIANS);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(bbox, out results));
 
       //too big value
       bbox = new BoundingBox2DLatLon(
-        -106.604076 * ConversionConstants.DEGREES_TO_RADIANS, 35.109149 * ConversionConstants.DEGREES_TO_RADIANS, -105.234 * ConversionConstants.DEGREES_TO_RADIANS, 525.5 * ConversionConstants.DEGREES_TO_RADIANS);
+        -106.604076 * Coordinates.DEGREES_TO_RADIANS, 35.109149 * Coordinates.DEGREES_TO_RADIANS, -105.234 * Coordinates.DEGREES_TO_RADIANS, 525.5 * Coordinates.DEGREES_TO_RADIANS);
       Assert.IsFalse(validator.TryValidate(bbox, out results));
     }
 

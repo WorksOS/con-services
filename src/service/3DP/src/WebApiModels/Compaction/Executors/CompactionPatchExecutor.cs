@@ -28,11 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        var request = item as PatchRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<PatchRequest>();
-
+        var request = CastRequestObjectTo<PatchRequest>(item);
         var filter1 = RaptorConverters.ConvertFilter(request.Filter1);
         var filter2 = RaptorConverters.ConvertFilter(request.Filter2);
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);

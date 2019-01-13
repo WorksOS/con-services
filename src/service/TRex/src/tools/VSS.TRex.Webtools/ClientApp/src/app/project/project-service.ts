@@ -12,6 +12,7 @@ import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
 
+
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
@@ -28,6 +29,7 @@ export class ProjectService {
     this.baseUrl = baseUrl;
   }
 
+  
   private executeRequest<T>(label: string, url: string): Observable<T> {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);
@@ -161,4 +163,9 @@ export class ProjectService {
   public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {
     return this.executeRequest<any[]>('drawProfileLineForCompositeHeights', `profiles/compositeelevations/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
+
+  public drawProfileLineForSummaryVolumes(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/volumes/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
 }

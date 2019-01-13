@@ -84,7 +84,7 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
-        .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new TileRenderingServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
@@ -127,7 +127,6 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
         typeof(VSS.TRex.Pipelines.PipelineProcessor),
-        typeof(VSS.TRex.Profiling.CellLiftBuilder),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
         typeof(VSS.TRex.Services.Designs.DesignsService),
         typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),

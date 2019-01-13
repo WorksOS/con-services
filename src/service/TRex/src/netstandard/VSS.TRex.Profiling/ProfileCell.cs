@@ -14,7 +14,7 @@ namespace VSS.TRex.Profiling
   /// <summary>
   /// ProfileCell is a package of information relating to one cell in a profile drawn across IC data
   /// </summary>
-  public class ProfileCell : ProfileCellBase, IProfileCell, IFromToBinary
+  public class ProfileCell : ProfileCellBase, IProfileCell
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileCell>();
 
@@ -462,7 +462,7 @@ namespace VSS.TRex.Profiling
     /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
 
@@ -523,7 +523,7 @@ namespace VSS.TRex.Profiling
     /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
 

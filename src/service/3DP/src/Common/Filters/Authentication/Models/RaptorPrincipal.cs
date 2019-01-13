@@ -90,26 +90,28 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Gets the legacy Project Id (long) from a ProjectUid (Guid).
     /// </summary>
-    public async Task<long> GetLegacyProjectId(Guid projectUid)
+    public Task<long> GetLegacyProjectId(Guid projectUid)
     {
-      if (legacyProjectIdsCache.TryGetValue(projectUid, out var legacyId))
+      return legacyProjectIdsCache.TryGetValue(projectUid, out var legacyId)
+        ? Task.FromResult(legacyId)
+        : GetProjectUid();
+
+      async Task<long> GetProjectUid()
       {
-        return legacyId;
+        var project = await GetProject(projectUid);
+        var projectId = project.LegacyProjectId;
+
+        if (projectId > 0)
+        {
+          legacyProjectIdsCache.TryAdd(projectUid, projectId);
+
+          return projectId;
+        }
+
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
       }
-
-      var project = await GetProject(projectUid);
-      var projectId = project.LegacyProjectId;
-
-      if (projectId > 0)
-      {
-        legacyProjectIdsCache.TryAdd(projectUid, projectId);
-
-        return projectId;
-      }
-
-      throw new ServiceException(
-        HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
     }
   }
 }

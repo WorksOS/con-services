@@ -41,7 +41,7 @@ namespace TestUtility
         private static void WriteEntry(string message, string logType, string contentType)
         {
             message = message == null ? string.Empty : Regex.Replace(message, @"\s+|\n|\r", " ");
-            string contents = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{logType}] [{contentType}] {message}";
+            string contents = $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff} [{logType}] [{contentType}] {message}";
             using (StreamWriter w = File.AppendText("/app/testresults/accepttest.log")) //accepttest.log")) //"
             {
                 w.WriteLine(contents);

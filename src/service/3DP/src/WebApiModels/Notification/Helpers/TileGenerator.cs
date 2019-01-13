@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
       //In CG this was min/max/lat/lng in database as a flag
       bool success = true;
 
-      string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+      string generatedName = FileUtils.GeneratedFileName(fileDescr.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
       if (regenerate)
       {
         // Delete previously generated .DXF tiles
@@ -68,19 +68,19 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
         //Do we care if this fails?
       }
 
-      var fullGeneratedName = string.Format("{0}/{1}", fileDescr.path, generatedName);
+      var fullGeneratedName = string.Format("{0}/{1}", fileDescr.Path, generatedName);
       success = zoomResult.success;
       if (success)
       {
         //Now do the rendering
-        string tilePath = FileUtils.TilePath(fileDescr.path, generatedName);
+        string tilePath = FileUtils.TilePath(fileDescr.Path, generatedName);
         var timeout = GetJobTimeoutConfig();
 
         // Generate .DXF file tiles and place the tiles in TCC...
-        if (regenerate || ! await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
+        if (regenerate || ! await fileRepo.FolderExists(fileDescr.FilespaceId, tilePath))
         {
           for (int zoomLevel = zoomResult.minZoom; zoomLevel <= zoomResult.maxZoom; zoomLevel++)
-            success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel, timeout);
+            success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.FilespaceId, zoomLevel, timeout);
         }
         else
         {
@@ -88,8 +88,8 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
           {
             string zoomPath = FileUtils.ZoomPath(tilePath, zoomLevel);
 
-            if (! await fileRepo.FolderExists(fileDescr.filespaceId, zoomPath))
-              success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel, timeout);
+            if (! await fileRepo.FolderExists(fileDescr.FilespaceId, zoomPath))
+              success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.FilespaceId, zoomLevel, timeout);
           }
         }
       }
@@ -283,11 +283,11 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
     public async Task<bool> DeleteDxfTiles(long projectId, string generatedName, FileDescriptor fileDescr)
     {
       bool success = true;
-      string tilePath = FileUtils.TilePath(fileDescr.path, generatedName);
+      string tilePath = FileUtils.TilePath(fileDescr.Path, generatedName);
       log.LogDebug("Deleting DXF tiles {0}", tilePath);
-      if (await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
+      if (await fileRepo.FolderExists(fileDescr.FilespaceId, tilePath))
       {
-        success = await fileRepo.DeleteFolder(fileDescr.filespaceId, tilePath);
+        success = await fileRepo.DeleteFolder(fileDescr.FilespaceId, tilePath);
         if (!success)
         {
           log.LogWarning("Failed to delete tiles {0} for project {1}", tilePath, projectId);

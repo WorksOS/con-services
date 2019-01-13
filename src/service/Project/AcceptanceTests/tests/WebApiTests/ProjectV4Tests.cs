@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Repositories.DBModels;
 
 namespace WebApiTests
@@ -322,9 +324,9 @@ namespace WebApiTests
       var projectUid2 = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = DateTime.Now.Date.AddMonths(2);
-      var startDateTime2 = DateTime.Now.Date.AddMonths(3);
-      var endDateTime2 = DateTime.Now.Date.AddMonths(9);
+      var endDateTime = DateTime.UtcNow.Date.AddMonths(2);
+      var startDateTime2 = DateTime.UtcNow.Date.AddMonths(3);
+      var endDateTime2 = DateTime.UtcNow.Date.AddMonths(9);
       const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
       const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
       var customerEventArray = new[] {
@@ -461,7 +463,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -501,7 +503,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -542,7 +544,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -583,7 +585,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -626,7 +628,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -674,7 +676,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -840,7 +842,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -881,7 +883,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -907,11 +909,19 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
 
-      ts.FirstEventDate = DateTime.Now;
+      ts.FirstEventDate = DateTime.UtcNow;
       ts.ProjectUid = new Guid(projectUid);
+
+      // project deletion sets the ProjectEndDate to now, in the projects timezone.
+      //    this may cause the endDate to be a day earlier/later than 'NowUtc',
+      //    depending on when this test is run.
+      // note that only projectUID is passed from this array to the ProjectSvc endpoint,
+      //    the others are simply used for comparison
+      var endDateTime2Reset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland")?.Date;
+
       var projectEventArray3 = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
-      $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
+      $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2Reset:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
       var response = ts.PublishEventToWebApi(projectEventArray3);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, true);
@@ -931,7 +941,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
