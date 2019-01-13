@@ -1277,7 +1277,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
 
-      project.EndDate = project.EndDate.ToLocalDateTime(ProjectTimezones.PacificAuckland) ?? DateTime.UtcNow;
+      project.EndDate = (project.LastActionedUTC.ToLocalDateTime(ProjectTimezones.PacificAuckland) ?? DateTime.UtcNow.Date).Date;
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
 
       CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);

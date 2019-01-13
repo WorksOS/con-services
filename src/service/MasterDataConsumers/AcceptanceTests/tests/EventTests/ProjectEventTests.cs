@@ -207,11 +207,9 @@ namespace EventTests
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-
-      var localEndDate = endDate.ToLocalDateTime("Pacific/Auckland");
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
       "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
-      $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, {startDate}, {localEndDate.Value}", //Expected
+      $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, {startDate}, {endDate}", //Expected
       projectGuid);
     }
 
@@ -235,12 +233,15 @@ namespace EventTests
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+
+      var retrievedEventDate = DateTime.Parse(testSupport.GetEventDateFromArray(eventArray[0], eventArray[2]));
+      var localEndDate = (retrievedEventDate.ToLocalDateTime("Pacific/Auckland") ?? DateTime.UtcNow).Date;
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, IsDeleted, StartDate, EndDate", //Fields
-        $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, 1, {startDate}, {endDate}", //Expected
+        $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, 1, {startDate}, {localEndDate}", //Expected
         projectGuid);
     }
-
+ 
 
     [TestMethod]
     public void Associate_Customer_With_Project()
