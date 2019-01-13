@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TestUtility;
+using VSS.MasterData.Models.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace EventTests
@@ -206,10 +207,12 @@ namespace EventTests
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+
+      var localEndDate = endDate.ToLocalDateTime("Pacific/Auckland");
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
-        "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
-        $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, {startDate}, {endDate}", //Expected
-        projectGuid);
+      "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
+      $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, {startDate}, {localEndDate.Value}", //Expected
+      projectGuid);
     }
 
 
