@@ -55,7 +55,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// </summary>
     /// <param name="CalcResult"></param>
     /// <returns></returns>
-    private IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid */ Calc(out DesignProfilerRequestResult CalcResult)
+    private IClientLeafSubGrid Calc(out DesignProfilerRequestResult CalcResult)
     {
       CalcResult = DesignProfilerRequestResult.UnknownError;
 

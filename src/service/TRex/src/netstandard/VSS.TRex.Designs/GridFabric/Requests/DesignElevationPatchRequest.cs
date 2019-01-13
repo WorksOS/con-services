@@ -11,9 +11,9 @@ namespace VSS.TRex.Designs.GridFabric.Requests
         public override ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument arg)
         {
             // Construct the function to be used
-            IComputeFunc<CalculateDesignElevationPatchArgument, byte[] /*ClientHeightLeafSubGrid*/> func = new CalculateDesignElevationPatchComputeFunc();
+            IComputeFunc<CalculateDesignElevationPatchArgument, byte[]> func = new CalculateDesignElevationPatchComputeFunc();
 
-            /*ClientHeightLeafSubGrid */ byte[] result = _Compute.Apply(func, arg);
+            byte[] result = _Compute.Apply(func, arg);
 
             if (result == null)
             {
@@ -23,11 +23,6 @@ namespace VSS.TRex.Designs.GridFabric.Requests
             ClientHeightLeafSubGrid clientResult = new ClientHeightLeafSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset);
             clientResult.FromBytes(result);
             return clientResult;
-
-//            Task<ClientHeightLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
-
-            // Send the appropriate response to the caller
-//            return taskResult.Result;
         }
     }
 }
