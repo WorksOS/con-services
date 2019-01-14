@@ -58,7 +58,7 @@ node ('jenkinsslave-pod') {
 		checkout scm
 		sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 		
-	    def build_container = docker.build(container, "-f ./build/Dockerfile.build .")
+	    def build_container = docker.build(container, "-f ./src/Common/Dockerfile.build .")
 
 		if (runUnitTests)
 		{
