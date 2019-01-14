@@ -45,11 +45,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (createimportedfile == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "shouldn't get here"); // to keep compiler happy
       }
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),  out var useRaptorGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
+        out var useRaptorGatewayDesignImport);
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
                              createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface;
 
@@ -68,10 +70,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
         var result = await ImportedFileRequestHelper.NotifyTRexAddFile(createimportedfile.ProjectUid,
-          createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
-          createimportedfile.SurveyedUtc, 
-          log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy, projectRepo)
+            createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
+            createimportedfile.SurveyedUtc,
+            log, customHeaders, serviceExceptionHandler,
+            tRexImportFileProxy, projectRepo)
           .ConfigureAwait(false);
       }
 
