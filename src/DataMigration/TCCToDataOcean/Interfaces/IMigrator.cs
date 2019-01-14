@@ -1,0 +1,9 @@
+﻿using System.Threading.Tasks;
+
+namespace TCCToDataOcean.Interfaces
+{
+  interface IMigrator
+  {
+    Task<bool> MigrateFilesForAllActiveProjects();
+  }
+}

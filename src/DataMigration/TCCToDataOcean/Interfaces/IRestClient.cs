@@ -1,4 +1,4 @@
-﻿namespace TCCToDataOcean
+﻿namespace TCCToDataOcean.Interfaces
 {
   public interface IRestClient
   {

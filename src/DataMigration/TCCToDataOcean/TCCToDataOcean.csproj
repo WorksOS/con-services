@@ -15,4 +15,10 @@
     <ProjectReference Include="..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

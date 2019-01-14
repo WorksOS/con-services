@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using TCCToDataOcean.Interfaces;
 using VSS.WebApi.Common;
 
 namespace TCCToDataOcean
@@ -15,6 +16,8 @@ namespace TCCToDataOcean
   /// </summary>
   public class RestClient : IRestClient
   {
+    private const string DASH = "----------------------------------------------------------------------------------------------------------------------";
+
     private readonly ILogger Log;
     private readonly ITPaaSApplicationAuthentication Authentication;
 
@@ -37,7 +40,6 @@ namespace TCCToDataOcean
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string mediaType, string customerUid)
     {
       Log.LogInformation(resourceUri);
-      var msg = new Msg();
       var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, Authentication.GetApplicationBearerToken());                   
       {
         request.ContentType = mediaType;
@@ -51,11 +53,11 @@ namespace TCCToDataOcean
       try
       {
         string responseString = null;
-        Console.WriteLine("Call Web API=" + resourceUri);
+        Log.LogInformation("Call Web API=" + resourceUri);
         using (var response = (HttpWebResponse)request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);
-          msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
+          DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
         }
         return responseString;
       }
@@ -68,11 +70,11 @@ namespace TCCToDataOcean
           var response = webException.Response as HttpWebResponse;
           if (response == null) continue;
           var resp = GetStringFromResponseStream(response);
-          msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);
+          DisplayWebApi(httpMethod, resourceUri, resp, payloadData);
           return resp;
         }
-        Console.WriteLine(ex.InnerException.Message);
-        msg.DisplayException(ex.Message);
+        Log.LogInformation(ex.InnerException.Message);
+        DisplayException(ex.Message);
         return string.Empty;
       }
     }
@@ -96,7 +98,7 @@ namespace TCCToDataOcean
     }
 
     /// <summary>
-    /// Overloaded (no auth): This method sets the Http Request Method, Header, Media Type, and Authentication
+    /// This method sets the Http Request Method, Header, Media Type, and Authentication
     /// </summary>
     /// <param name="resourceUri">This is the resource on the endpoint.This includes the full endpoint URI.</param>
     /// <param name="httpMethod">This is the HTTP Method: GET, PUT, POST</param>
@@ -114,6 +116,23 @@ namespace TCCToDataOcean
       //request.Headers["X-VisionLink-ClearCache"] = "true";
       request.Headers["Authorization"] = bearerToken;
       return request;
+    }
+
+    private void DisplayWebApi(string webMethod, string webRequest, string webResponse, string payload)
+    {
+      Log.LogInformation("WebApi Method   :" + webMethod);
+      Log.LogInformation("WebApi Request  :" + webRequest.Replace('&', ' '));
+      if (!string.IsNullOrEmpty(payload))
+      { Log.LogInformation("WebApi Request Body:" + payload.Replace('&', ' ')); }
+      if (!string.IsNullOrEmpty(webResponse))
+      { Log.LogInformation("WebApi Response :" + webResponse.Replace('&', ' ')); }
+    }
+
+    private void DisplayException(string exception)
+    {
+      Log.LogInformation(DASH);
+      Log.LogInformation("**** EXCEPTION ****: " + exception);
+      Log.LogInformation(DASH);
     }
 
   }

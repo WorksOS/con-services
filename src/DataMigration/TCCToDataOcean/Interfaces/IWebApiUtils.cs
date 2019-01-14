@@ -1,7 +1,7 @@
 ﻿using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories.DBModels;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Interfaces
 {
   public interface IWebApiUtils
   {

@@ -1,8 +1,7 @@
-﻿using System;
-using VSS.MasterData.Models.Models;
+﻿using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Interfaces
 {
   public interface IImportFile
   {

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
+using TCCToDataOcean.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -117,7 +117,6 @@ namespace TCCToDataOcean
       try
       {
         memStream = await FileRepo.GetFile(FileSpaceId, $"/{project.CustomerUID}/{project.ProjectUID}/{project.CoordinateSystemFileName}");
-
         if (memStream != null && memStream.CanRead && memStream.Length > 0)
         {
           coordSystemFileContent = new byte[memStream.Length];
