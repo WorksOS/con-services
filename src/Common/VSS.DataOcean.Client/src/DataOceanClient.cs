@@ -307,7 +307,7 @@ namespace VSS.DataOcean.Client
             if (count == 1)
             {
               folder = result.Directories[0];
-              parentId = folder.ParentId;
+              parentId = folder.Id;
             }
           }
       
@@ -319,7 +319,7 @@ namespace VSS.DataOcean.Client
             }
             else
             {
-              folder = (await CreateDirectory(parts[i], folder?.Id, customHeaders)).Directory;
+              folder = (await CreateDirectory(parts[i], parentId, customHeaders)).Directory;
               parentId = folder.Id;
               creatingPath = true;
             }
