@@ -9,9 +9,9 @@ Scenario Outline: ExportReportToSurface - Good Request - With Tolerance
   When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the export result should be of a minimum length
   Examples: 
-  | RequestName      | ProjectUID                           | Tolerance | FileName             | ResultName                  |
-  | No Excluded SS   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | SurfaceWithTolerance | WithToleranceNoExcludedSS   |
-  | With Excluded SS | 86a42bbf-9d0e-4079-850f-835496d715c5 | 1.50      | SurfaceWithTolerance | WithToleranceWithExcludedSS |
+  | RequestName      | ProjectUID                           | Tolerance | FileName | ResultName                  |
+  | No Excluded SS   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | 3ee27a2e | WithToleranceNoExcludedSS   |
+  | With Excluded SS | 86a42bbf-9d0e-4079-850f-835496d715c5 | 1.50      | 7018f6d3 | WithToleranceWithExcludedSS |
 
 Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
   Given the service route "/api/v2/export/surface" and result repo "ExportReportToSurfaceResponse.json"
@@ -20,8 +20,8 @@ Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
   When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the export result should be of a minimum length
   Examples: 
-  | RequestName | ProjectUID                           | FileName           | ResultName  |
-  |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | SurfaceNoTolerance | NoTolerance |
+  | RequestName | ProjectUID                           | FileName | ResultName  |
+  |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 898919ef | NoTolerance |
 
 Scenario Outline: ExportReportToSurface - Bad Request - NoProjectUID
   Given the service route "/api/v2/export/surface" and result repo "ExportReportToSurfaceResponse.json"
@@ -30,8 +30,8 @@ Scenario Outline: ExportReportToSurface - Bad Request - NoProjectUID
   When I send the GET request I expect response code 400
   Then the response should contain message "<ErrorMessage>" and code "<ErrorCode>"
   Examples:
-  | RequestName | Tolerance | FileName | ErrorCode | ErrorMessage                                                                                                                              |
-  |             | 0.05      | Test     | -1        | ProjectId and ProjectUID cannot both be null. |
+  | RequestName | Tolerance | FileName | ErrorCode | ErrorMessage                                  |
+  |             | 0.05      | a8da3b3e | -1        | ProjectId and ProjectUID cannot both be null. |
 
 Scenario Outline: ExportReportToSurface - Bad Request - NoFileName
   Given the service route "/api/v2/export/surface" and result repo "ExportReportToSurfaceResponse.json"
@@ -52,5 +52,5 @@ Scenario Outline: ExportReportToSurface - Good Request with Filter
   When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the export result should be of a minimum length
   Examples:
-| RequestName | ProjectUID                           | FilterUID                             | Tolerance | FileName              |
-|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d7cb424d-b012-4618-b3bc-e526ca84bbd6  | 0.05      | SurfanceWithTolerance |
+| RequestName | ProjectUID                           | FilterUID                            | Tolerance | FileName |
+|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d7cb424d-b012-4618-b3bc-e526ca84bbd6 | 0.05      | a122715e |

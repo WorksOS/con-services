@@ -17,13 +17,13 @@ using VSS.TRex.Common.Serialisation;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
-namespace VSS.TRex.Servers.Compute
+namespace VSS.TRex.GridFabric.Servers.Compute
 {
   /// <summary>
   /// Defines a representation of a server responsible for performing TRex related compute operations using

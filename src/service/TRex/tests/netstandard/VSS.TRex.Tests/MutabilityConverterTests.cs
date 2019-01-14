@@ -85,7 +85,7 @@ namespace VSS.TRex.Tests
       mutableLeaf.SaveDirectoryToStream(mutableStream);
 
       var mutabilityConverter = new MutabilityConverter();
-      /* todo test using the mutableStream */
+      /* todo also test using the mutableStream */
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, null, mutableLeaf, out MemoryStream immutableStream);
 
       IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
@@ -152,7 +152,7 @@ namespace VSS.TRex.Tests
       }
 
       // Convert the mutable data, using the sourceSegment, into the immutable form and reload it into an immutable segment
-      /* todo test using the mutableStream */
+      /* todo also test using the mutableStream */
       var mutabilityConverter = new MutabilityConverter();
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, null, mutableSegment, out MemoryStream immutableStream);
 

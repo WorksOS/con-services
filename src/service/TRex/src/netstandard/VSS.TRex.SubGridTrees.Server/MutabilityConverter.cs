@@ -19,11 +19,11 @@ namespace VSS.TRex.SubGridTrees.Server
   /// </summary>
   public class MutabilityConverter : IMutabilityConverter
   {
-    private static ILogger Log = Logging.Logger.CreateLogger(nameof(MutabilityConverter));
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(MutabilityConverter));
     private const int MinEventStreamLength = 16;
 
     /// <summary>
-    /// Converts the structure of the global latext cells structure into an immutable form
+    /// Converts the structure of the global latest cells structure into an immutable form
     /// </summary>
     /// <returns></returns>
     public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses)
@@ -52,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <summary>
     /// Primary method for performing mutability conversion to immutable. It accepts either
     /// a) a sourceObject, from which the immutable stream can be built directly, or
-    /// b) a stream, which must be de-serialized into a sourceobject, from which the immutable stream can be built
+    /// b) a stream, which must be de-serialized into a source object, from which the immutable stream can be built
     /// i.e. either mutableStream, or source are null
     /// </summary>
     /// <param name="streamType"></param>
@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       immutableStream = null;
 
-      if ((mutableStream == null && source == null))
+      if (mutableStream == null && source == null)
       {
         throw new TRexException("Unable to determine a single valid source for immutability conversion.");
       }
@@ -74,14 +74,14 @@ namespace VSS.TRex.SubGridTrees.Server
         case FileSystemStreamType.SubGridDirectory:
         {
             return source == null 
-              ? ConvertSubgridDirectoryToImmutable(mutableStream, out immutableStream)
-              : ConvertSubgridDirectoryToImmutable(source, out immutableStream);
+              ? ConvertSubGridDirectoryToImmutable(mutableStream, out immutableStream)
+              : ConvertSubGridDirectoryToImmutable(source, out immutableStream);
         }
         case FileSystemStreamType.SubGridSegment:
         {
           return source == null
-            ? ConvertSubgridSegmentToImmutable(mutableStream, out immutableStream)
-            : ConvertSubgridSegmentToImmutable(source, out immutableStream);
+            ? ConvertSubGridSegmentToImmutable(mutableStream, out immutableStream)
+            : ConvertSubGridSegmentToImmutable(source, out immutableStream);
         }
         case FileSystemStreamType.Events:
         {
@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
         default:
         {
-          // EG: Subgrid existence map etc
+          // EG: Sub grid existence map etc
           immutableStream = mutableStream;
           return true;
         }
@@ -99,12 +99,12 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Converts a subgrid directory into its immutable form, using the source object
+    /// Converts a sub grid directory into its immutable form, using the source object
     /// </summary>
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridDirectoryToImmutable(object source, out MemoryStream immutableStream)
+    public bool ConvertSubGridDirectoryToImmutable(object source, out MemoryStream immutableStream)
     {
       try
       {
@@ -131,18 +131,18 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError(e, "Exception in conversion of subgrid directory mutable data to immutable schema");
+        Log.LogError(e, "Exception in conversion of sub grid directory mutable data to immutable schema");
         return false;
       }
     }
 
     /// <summary>
-    /// Converts a subgrid directory into its immutable form, using a cached stream
+    /// Converts a sub grid directory into its immutable form, using a cached stream
     /// </summary>
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    public bool ConvertSubGridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
     {
       try
       {
@@ -170,18 +170,18 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError(e, "Exception in conversion of subgrid directory mutable data to immutable schema");
+        Log.LogError(e, "Exception in conversion of sub grid directory mutable data to immutable schema");
         return false;
       }
     }
 
     /// <summary>
-    /// Converts a subgrid segment into its immutable form, using the source object
+    /// Converts a sub grid segment into its immutable form, using the source object
     /// </summary>
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridSegmentToImmutable(object source, out MemoryStream immutableStream)
+    public bool ConvertSubGridSegmentToImmutable(object source, out MemoryStream immutableStream)
     {
       try
       {
@@ -211,22 +211,22 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError(e, "Exception in conversion of subgrid segment mutable data to immutable schema");
+        Log.LogError(e, "Exception in conversion of sub grid segment mutable data to immutable schema");
         return false;
       }
     }
 
     /// <summary>
-    /// Converts a subgrid segment into its immutable form, using a cached stream
+    /// Converts a sub grid segment into its immutable form, using a cached stream
     /// </summary>
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    public bool ConvertSubGridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
     {
       try
       {
-        // Read in the subgrid segment from the mutable stream
+        // Read in the sub grid segment from the mutable stream
         SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
         (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false),
           SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false));
@@ -258,7 +258,7 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         immutableStream = null;
 
-        Log.LogError(e, "Exception in conversion of subgrid segment mutable data to immutable schema");
+        Log.LogError(e, "Exception in conversion of sub grid segment mutable data to immutable schema");
         return false;
       }
     }
@@ -289,7 +289,6 @@ namespace VSS.TRex.SubGridTrees.Server
       immutableStream = null;
       try
       {
-        IProductionEvents events;
         using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
         {
           if (mutableStream.Length < MinEventStreamLength)
@@ -302,11 +301,11 @@ namespace VSS.TRex.SubGridTrees.Server
           var eventType = reader.ReadInt32();
           if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
           {
-            Log.LogError($"ProductionEvent eventType is not recognized. Invalid stream.");
+            Log.LogError("ProductionEvent eventType is not recognized. Invalid stream.");
             return false;
           }
 
-          events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
+          IProductionEvents events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
 
           mutableStream.Position = 0;
           events.ReadEvents(reader);

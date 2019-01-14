@@ -17,7 +17,7 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Servers.Compute;
+using VSS.TRex.GridFabric.Servers.Compute;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
