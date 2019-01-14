@@ -292,17 +292,26 @@ namespace VSS.DataOcean.Client
 
       var parts = path.Split(Path.DirectorySeparatorChar);
       DataOceanDirectory folder = null;
+      Guid? parentId = null;
+      bool creatingPath = false;
       for (var i = 0; i < parts.Length; i++)
       {
         if (!string.IsNullOrEmpty(parts[i]))
         {
-          var result = await BrowseFolder(parts[i], folder?.ParentId, customHeaders);
-          var count = result?.Directories?.Count;
-          if (count == 1)
+          //Once we know part of the path doesn't exist we can shortcut browsing to check for existance
+          int? count = 0;
+          if (!creatingPath)
           {
-            folder = result.Directories[0];
+            var result = await BrowseFolder(parts[i], parentId, customHeaders);
+            count = result?.Directories?.Count;
+            if (count == 1)
+            {
+              folder = result.Directories[0];
+              parentId = folder.ParentId;
+            }
           }
-          else if (count == 0)
+      
+          if (count == 0)
           {
             if (mustExist)
             {
@@ -310,10 +319,12 @@ namespace VSS.DataOcean.Client
             }
             else
             {
-              folder = (await CreateDirectory(parts[i], folder?.ParentId, customHeaders)).Directory;
+              folder = (await CreateDirectory(parts[i], folder?.Id, customHeaders)).Directory;
+              parentId = folder.Id;
+              creatingPath = true;
             }
           }
-          else //count > 1
+          else if (count > 1)
           {
             //Should we throw an exception here?
             Log.LogWarning($"Duplicate folders {parts[i]} in path {path}");
