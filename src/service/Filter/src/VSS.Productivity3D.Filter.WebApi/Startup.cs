@@ -16,7 +16,6 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.Productivity3D.Filter.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -117,10 +116,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       app.UseCommon(SERVICE_TITLE);
       app.UseFilterMiddleware<FilterAuthentication>();
 
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseMiddleware<NewRelicMiddleware>();
-      }
+      //if (Configuration["newrelic"] == "true")
+      //{
+      //  app.UseMiddleware<NewRelicMiddleware>();
+      //}
 
       app.UseMvc();
 
