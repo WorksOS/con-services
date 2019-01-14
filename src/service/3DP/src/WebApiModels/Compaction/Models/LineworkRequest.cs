@@ -32,15 +32,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     private LineworkRequest()
     { }
 
-    public static LineworkRequest Create(DxfFileRequest fileRequest, string fileDescriptorPathIdentifier)
+    public static LineworkRequest Create(DxfFileRequest fileRequest, string uploadPath)
     {
-      // Gets the relative temporary working directory on the Raptor IONode host.
-      var rootFolder = $@"D:\ProductionData\Temp\LineworkFileUploads\{fileDescriptorPathIdentifier}\";
-
       return new LineworkRequest
       {
         ProjectId = RAPTOR_CANARY_PROJECT_ID,
-        FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, @"D:\VLPDProductionData\Temp\12121212\", fileRequest.Filename),
+        FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, uploadPath, fileRequest.Filename),
         CoordSystemFileName = fileRequest.CoordinateSystemName?.Trim(),
         LineworkUnits = (TVLPDDistanceUnits)fileRequest.DxfUnits,
         Filename = fileRequest.Filename,

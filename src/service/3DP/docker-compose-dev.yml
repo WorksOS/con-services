@@ -4,7 +4,7 @@ services:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
     environment:
       - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
-      - ASNODEIP=10.97.96.134
+      - ASNODEIP=dev-aslv01.vssengg.com
       - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
       - AWS_SECRET_KEY=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
@@ -23,7 +23,7 @@ services:
       - GEOFENCE_CACHE_LIFE=00:15:00
       - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
       - IMPORTED_FILE_CACHE_LIFE=00:15:00
-      - IONODEIP=10.97.96.92
+      - IONODEIP=dev-iolv01.vssengg.com
       - LIBUV_THREAD_COUNT=32
       - LOG_MAX_CHAR=1000
       - MAX_IO_THREADS=1024
