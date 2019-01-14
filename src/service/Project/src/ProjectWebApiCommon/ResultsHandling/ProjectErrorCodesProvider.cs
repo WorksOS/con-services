@@ -120,6 +120,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Cannot delete a design, surveyed surface, or alignment file which is used in a filter.", 112);
       this.DynamicAddwithOffset("ImportedFile environment variable configuration will result in file being ignored.", 113);
       this.DynamicAddwithOffset("FileImport AddFile in TRex failed. Reason: {0} {1}.", 114);
+      this.DynamicAddwithOffset("Unable to obtain DataOcean root folder.", 115);
     }
   }
 }

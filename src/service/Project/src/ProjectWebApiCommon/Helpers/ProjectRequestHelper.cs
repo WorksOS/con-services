@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -206,7 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
           if (string.IsNullOrEmpty(rootFolder))
           {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
           }
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
@@ -221,6 +222,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           if (isCreate)
             await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
+          //Don't hide exceptions thrown above
+          if (e is ServiceException)
+            throw;
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
       }

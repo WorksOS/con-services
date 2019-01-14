@@ -55,7 +55,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// </summary>
     /// <param name="CalcResult"></param>
     /// <returns></returns>
-    private IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid */ Calc(out DesignProfilerRequestResult CalcResult)
+    private IClientLeafSubGrid Calc(out DesignProfilerRequestResult CalcResult)
     {
       CalcResult = DesignProfilerRequestResult.UnknownError;
 
@@ -132,7 +132,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                 long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
                 double Offset = ThisSurveyedSurface.Get_DesignDescriptor().Offset;
 
-                // Walk across the subgrid checking for a design elevation for each appropriate cell
+                // Walk across the sub grid checking for a design elevation for each appropriate cell
                 // based on the processing bit mask passed in
                 Args.ProcessingMap.ForEachSetBit((x, y) =>
                 {
@@ -234,7 +234,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid*/ Execute()
+    public IClientLeafSubGrid Execute()
     {
       try
       {
@@ -242,8 +242,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         try
         {
           // Calculate the patch of elevations and return it
-          IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid*/
-            result = Calc(out DesignProfilerRequestResult CalcResult);
+          IClientLeafSubGrid result = Calc(out DesignProfilerRequestResult CalcResult);
 
           if (result == null)
           {

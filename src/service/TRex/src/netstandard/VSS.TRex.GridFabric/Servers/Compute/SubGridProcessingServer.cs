@@ -4,7 +4,7 @@ using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Models.Servers;
 
-namespace VSS.TRex.Servers.Compute
+namespace VSS.TRex.GridFabric.Servers.Compute
 {
     /// <summary>
     /// A server type that represents a server useful for context processing sets of SubGrid information. This is essentially an analogue of
@@ -28,12 +28,13 @@ namespace VSS.TRex.Servers.Compute
         /// </summary>
         public SubGridProcessingServer()
         {
+          SetupServerSpecificConfiguration();
         }
 
         /// <summary>
         /// Sets up the local server configuration to reflect the requirements of subgrid processing
         /// </summary>
-        public override void SetupServerSpecificConfiguration()
+        public void SetupServerSpecificConfiguration()
         {
             // Enable use of immutable data pools when processing requests
             TRexServerConfig.Instance().UseMutableSpatialData = false;
