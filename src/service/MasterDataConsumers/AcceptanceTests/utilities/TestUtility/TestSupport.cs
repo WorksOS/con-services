@@ -120,6 +120,14 @@ namespace TestUtility
       }
     }
 
+    public string GetEventDateFromArray(string headerArray, string eventArray)
+    {
+      var allColumnNames = headerArray.Split(SEPARATOR);
+      var eventRow = eventArray.Split(SEPARATOR);
+      dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
+      return eventObject.EventDate.ToString();
+    }
+
     public string GetBaseUri()
     {
       var baseUri = tsCfg.webApiUri;

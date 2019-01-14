@@ -45,7 +45,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        ReferenceDesignUID = request.DesignFile?.Uid ?? Guid.Empty, // only present if ReportCutFill required
+        ReferenceDesignUID = request.DesignFile?.FileUid ?? Guid.Empty, // only present if ReportCutFill required
         ReportElevation = request.ReportElevation,
         ReportCutFill = request.ReportCutFill,
         ReportCMV = request.ReportCMV,

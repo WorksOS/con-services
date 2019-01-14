@@ -11,7 +11,7 @@ using VSS.TRex.TAGFiles.Classes.Validator;
 namespace VSS.TRex.TAGFiles.Classes
 {
   /// <summary>
-  /// Archiving will intially write tag files to a local folder before another process either internal or external will move the files to a S3 bucket on Amazon
+  /// Archiving will initially write tag files to a local folder before another process either internal or external will move the files to a S3 bucket on Amazon
   /// Ideas. 
   /// </summary>
 
@@ -43,7 +43,7 @@ namespace VSS.TRex.TAGFiles.Classes
     }
 
     /// <summary>
-    /// Achives successfully processed tagfiles for reprocessing when required
+    /// Archives successfully processed tag files for reprocessing when required
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
@@ -57,7 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
       string ArchiveTagfilePath = Path.Combine(thePath, tagDetail.tagFileName);
 
-      // We dont keep dups in TRex
+      // We don't keep duplicates in TRex
       if (File.Exists(ArchiveTagfilePath))
         File.Delete(ArchiveTagfilePath);
 
@@ -120,13 +120,13 @@ namespace VSS.TRex.TAGFiles.Classes
     }
 
     /// <summary>
-    /// Returns tagfile content and meta data for an archived tagfile. Input requires filename and projectid
+    /// Returns tag file content and meta data for an archived tag file. Input requires filename and project id
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static TagFileDetail GetTagfile(TagFileDetail tagDetail)
+    public static TagFileDetail GetTagFile(TagFileDetail tagDetail)
     {
-      // just requires the projectid and tagfile name to be set
+      // just requires the project id and tag file name to be set
       string ArchiveTagfilePath = Path.Combine(MakePath(tagDetail), tagDetail.tagFileName);
       string ArchiveTagfileMetaDataPath = Path.ChangeExtension(ArchiveTagfilePath, ".xml");
 
@@ -139,7 +139,7 @@ namespace VSS.TRex.TAGFiles.Classes
         file.Read(tagDetail.tagFileContent, 0, (int)file.Length);
       }
 
-      // load xml data ArchiveTagfileMetaDataPath and put into tagDetail
+      // load xml data ArchiveTagFileMetaDataPath and put into tagDetail
       // if using location only for metadata then you would have to extract it from the path
 
       var enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
