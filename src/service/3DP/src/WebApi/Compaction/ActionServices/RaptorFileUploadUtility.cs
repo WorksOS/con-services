@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     }
 
     /// <inheritdoc />
-    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, IFormFile fileData)
+    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, IFormFile fileData)  // TODO (Aaron) unit test
     {
       using (var ms = new MemoryStream())
       {
@@ -37,11 +38,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 
         if (!folderCreated) return (false, mappedFilenameResult);
 
-        using (var file = File.OpenWrite(mappedFilenameResult))
+        try
         {
-          if (ms.CanSeek) ms.Seek(0, SeekOrigin.Begin);
+          using (var file = File.OpenWrite(mappedFilenameResult))
+          {
+            if (ms.CanSeek) ms.Seek(0, SeekOrigin.Begin);
 
-          ms.CopyTo(file);
+            ms.CopyTo(file);
+          }
+        }
+        catch (Exception ex)
+        {
+          log.LogError($"Error uploading file '{fileDescriptor.FileName}' to '{fileDescriptor.Path}': {ex.GetBaseException().Message}");
         }
 
         log.LogDebug($"Successfully uploaded temporary linework file '{mappedFilenameResult}'");
@@ -50,27 +58,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     }
 
     /// <inheritdoc />
-    public string GenerateUniqueId() => $"{DateTime.Now.Ticks.GetHashCode():X}";
+    public string GenerateUniqueId() => $"{DateTime.Now.Ticks.GetHashCode():X}";  // TODO (Aaron) unit test
 
     /// <inheritdoc />
-    public bool DeleteFile(string filename)
+    public void DeleteFile(string filename) // TODO (Aaron) unit test
     {
-      if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return true;
+      if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return;
 
       try
       {
         log.LogDebug($"Deleting temporary linework file '{filename}'");
 
-        File.Delete(filename);
-        return true;
+        _ = Task.Run(() => File.Delete(filename));
       }
       catch (Exception ex)
       {
         log.LogInformation($"Failed to delete temporary linework file '{filename}', error: {ex.GetBaseException().Message}");
       }
-
-      log.LogInformation($"Failed to delete temporary linework file '{filename}', with unknown failure state.");
-      return false;
     }
 
     /// <summary>

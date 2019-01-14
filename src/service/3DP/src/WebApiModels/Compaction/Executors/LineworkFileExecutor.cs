@@ -23,16 +23,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
       {
-        var result = CallTRexEndpoint(request);
-
-        return result;
+        return CallTRexEndpoint(request);
       }
 
       if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY"))
       {
-        var result = CallRaptorEndpoint(request);
-
-        return result;
+        return CallRaptorEndpoint(request);
       }
 
       return ContractExecutionResult.ErrorResult();
@@ -51,6 +47,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var customDescriptor = new TVLPDDesignDescriptor();
         customDescriptor.Init(0, string.Empty, string.Empty, request.FileDescriptor.Path, request.FileDescriptor.FileName, 0);
+
+        log.LogDebug($"{nameof(LineworkFileExecutor)}: {nameof(TVLPDDesignDescriptor)} = {JsonConvert.SerializeObject(customDescriptor)}");
 
         var args = new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
         {

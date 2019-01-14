@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (!uploadSuccess) return StatusCode((int)HttpStatusCode.BadRequest, message);
 
       var result = await RequestExecutorContainerFactory
-                         .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
+                         .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)
                          .ProcessAsync(executorRequestObj);
 
       fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.FileDescriptor.Path, executorRequestObj.FileDescriptor.FileName));

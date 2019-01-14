@@ -19,8 +19,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     string GenerateUniqueId();
 
     /// <summary>
-    /// Deletes a file safely.
+    /// Asynchrously and safely deletes a file.
     /// </summary>
-    bool DeleteFile(string filename);
+    /// <remarks>
+    /// For performance/network latency reasons, this method deletes the file asynchronously.
+    /// </remarks>
+    void DeleteFile(string filename);
   }
 }
