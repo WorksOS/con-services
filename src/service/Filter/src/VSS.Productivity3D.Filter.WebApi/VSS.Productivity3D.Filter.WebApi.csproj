@@ -27,18 +27,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="Jaeger" Version="0.2.2" />-->
     <PackageReference Include="Microsoft.AspNetCore.All" />
-    <!--<PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Core" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="2.2.0" />-->
-    <!--<PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />-->
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
-    <!--<PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
-    <PackageReference Include="NewRelic.Agent.Api" Version="8.10.51" />-->
   </ItemGroup>
 
   <ItemGroup>
