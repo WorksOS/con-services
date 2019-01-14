@@ -2,9 +2,9 @@
 using Apache.Ignite.Core.Cache.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 
-namespace VSS.TRex.Servers.Compute
+namespace VSS.TRex.GridFabric.Servers.Compute
 {
     /// <summary>
     /// Defines a representation of a server responsible for performing TRex related compute operations using

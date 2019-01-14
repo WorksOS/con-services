@@ -83,12 +83,12 @@ namespace VSS.TRex.Volumes.Executors
         public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
 
         /// <summary>
-        ///  Local reference to the sitemodel to be used during processing
+        ///  Local reference to the site model to be used during processing
         /// </summary>
         private ISiteModel siteModel;
 
         /// <summary>
-        /// Performs functional initialiaation of ComputeVolumes state that is dependent on the initial state
+        /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
         /// <param name="ComputeVolumes"></param>
