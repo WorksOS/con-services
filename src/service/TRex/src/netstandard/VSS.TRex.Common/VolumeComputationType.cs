@@ -1,7 +1,7 @@
-﻿namespace VSS.TRex.Volumes
+﻿namespace VSS.TRex.Common
 {
     /// <summary>
-    /// Denotes the different types of volume conputations that may be performed
+    /// Denotes the different types of volume computations that may be performed
     /// </summary>
     public enum VolumeComputationType
     {
@@ -11,7 +11,7 @@
         None,
 
         /// <summary>
-        /// Calculate volumes above a base dutem level
+        /// Calculate volumes above a base datum level
         /// </summary>
         AboveLevel,
 

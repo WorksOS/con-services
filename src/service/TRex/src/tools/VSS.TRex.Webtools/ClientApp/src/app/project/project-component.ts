@@ -149,12 +149,22 @@ export class ProjectComponent {
 
   public updateFirstPointLocation: boolean = false;
   public updateSecondPointLocation: boolean = false;
+  public updateFirstPointLocationSV: boolean = false;
+  public updateSecondPointLocationSV: boolean = false;
 
   public firstPointX: number = 0.0;
   public firstPointY: number = 0.0;
 
   public secondPointX: number = 0.0;
   public secondPointY: number = 0.0;
+
+  public svFirstPointX: number = 0.0;
+  public svFirstPointY: number = 0.0;
+
+  public svSecondPointX: number = 0.0;
+  public svSecondPointY: number = 0.0;
+
+
 
   public profileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public mouseProfileWorldStation: Number = 0.0;
@@ -362,6 +372,18 @@ constructor(
     if (this.updateFirstPointLocation || this.updateSecondPointLocation) {
       this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
     }
+
+    // SV Profile
+    if (this.updateSecondPointLocationSV) {
+      this.userProfilePoint2SVG_CX = this.mousePixelX;
+      this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+    }
+
+    if (this.updateFirstPointLocationSV || this.updateSecondPointLocationSV) {
+      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+    }
+
+
   }
 
   public onMouseOver(event: any): void {
@@ -675,11 +697,32 @@ constructor(
       this.drawProfileLineFromStartToEndPointsForProdData();
     }
 
+    if (this.updateSecondPointLocationSV) {
+      this.svSecondPointX = this.mouseWorldX;
+      this.svSecondPointY = this.mouseWorldY;
+      this.updateSecondPointLocationSV = false; // Uncheck the second check box
+
+      this.userProfilePoint2SVG_CX = this.mousePixelX;
+      this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+
+      this.drawProfileLineFromStartToEndPointsForSummaryVolumes(); // call SV Profile method
+    }
+
     if (this.updateFirstPointLocation) {
       this.firstPointX = this.mouseWorldX;
       this.firstPointY = this.mouseWorldY;
       this.updateFirstPointLocation = false; // Uncheck the first check box
       this.updateSecondPointLocation = true; // Check the second check box
+
+      this.userProfilePoint1SVG_CX = this.mousePixelX;
+      this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
+    }
+
+    if (this.updateFirstPointLocationSV) { // Summary Volumes Profile
+      this.svFirstPointX = this.mouseWorldX;
+      this.svFirstPointY = this.mouseWorldY;
+      this.updateFirstPointLocationSV = false; // Uncheck the first check box
+      this.updateSecondPointLocationSV = true; // Check the second check box
 
       this.userProfilePoint1SVG_CX = this.mousePixelX;
       this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
@@ -748,7 +791,7 @@ constructor(
   // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
   // between all others
   public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
-    getValue: (point: any) => number, setResult:(theResult:string) => void) {
+    getValue: (point: any) => number, setResult: (theResult: string) => void) {
     return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => this.ProcessProfileDataVectorToSVGPolyLine(points, getValue, setResult));
   }
@@ -762,9 +805,52 @@ constructor(
       });
   }
 
-  public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
-    return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
+
+  public drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
+    var profileCanvasHeight: number = 500.0;
+    var profileCanvasWidth: number = 1000.0;
+
+    var result: string = "";
+    var first: boolean = true;
+
+    return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => {
+        var stationRange: number = points[points.length - 1].station - points[0].station;
+        var stationRatio: number = profileCanvasWidth / stationRange;
+
+        var minZ: number = 100000.0;
+        var maxZ: number = -100000.0;
+        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
+        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+
+        var zRange = maxZ - minZ;
+        var zRatio = profileCanvasHeight / zRange;
+
+        points.forEach(point => {
+          if (point.z < -100000) {
+            // It's a gap...
+            first = true;
+          }
+          else {
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+            first = false;
+          }
+        });
+
+        this.profilePath = result;
+        this.numPointInProfile = result.length;
+        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+      });
+  }
+
+
+  public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
+     this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
+  } 
+
+  public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
+  return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
+    .subscribe(points => {
         this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
         this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
         this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);

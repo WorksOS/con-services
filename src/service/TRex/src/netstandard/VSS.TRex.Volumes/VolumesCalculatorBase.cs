@@ -20,6 +20,8 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
+using VSS.TRex.Common;
+
 
 namespace VSS.TRex.Volumes
 {
@@ -261,7 +263,7 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
-                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
+                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
 
                         if (DesignSubgridOverlayMap == null)
                             return RequestErrorStatus.NoDesignProvided;
