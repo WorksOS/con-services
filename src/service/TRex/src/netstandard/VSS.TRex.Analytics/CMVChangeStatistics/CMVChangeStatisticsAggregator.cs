@@ -44,40 +44,42 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
     /// <param name="subGrids"></param>
     public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
     {
-      const double MAX_PERCENTAGE_VALUE = 100;
-
-      base.ProcessSubgridResult(subGrids);
-
-      // Works out the percentage each colour on the map represents
-
-      foreach (IClientLeafSubGrid[] subGrid in subGrids)
+      lock (this)
       {
-        if ((subGrid?.Length ?? 0) == 0)
-          continue;
+        const double MAX_PERCENTAGE_VALUE = 100;
 
-        if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
+        base.ProcessSubgridResult(subGrids);
+
+        // Works out the percentage each colour on the map represents
+
+        foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          double cmvChangeValue;
+          if ((subGrid?.Length ?? 0) == 0)
+            continue;
 
-          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+          if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
           {
-            var cmvValue = SubGrid.Cells[I, J];
+            double cmvChangeValue;
 
-            if (cmvValue.MeasuredCMV != CellPassConsts.NullCCV) // Is there a measured value to test?..
+            SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-              SummaryCellsScanned++;
+              var cmvValue = SubGrid.Cells[I, J];
 
-              if (cmvValue.PreviousMeasuredCMV == CellPassConsts.NullCCV)
-                cmvChangeValue = MAX_PERCENTAGE_VALUE;
-              else
-                cmvChangeValue = (cmvValue.MeasuredCMV - cmvValue.PreviousMeasuredCMV) / cmvValue.PreviousMeasuredCMV * MAX_PERCENTAGE_VALUE;
+              if (cmvValue.MeasuredCMV != CellPassConsts.NullCCV) // Is there a measured value to test?..
+              {
+                SummaryCellsScanned++;
 
-              IncrementCountOfTransition(cmvChangeValue); // CMV Change Detail is counted here...
-            }
-          });
+                if (cmvValue.PreviousMeasuredCMV == CellPassConsts.NullCCV)
+                  cmvChangeValue = MAX_PERCENTAGE_VALUE;
+                else
+                  cmvChangeValue = (cmvValue.MeasuredCMV - cmvValue.PreviousMeasuredCMV) / cmvValue.PreviousMeasuredCMV * MAX_PERCENTAGE_VALUE;
+
+                IncrementCountOfTransition(cmvChangeValue); // CMV Change Detail is counted here...
+              }
+            });
+          }
         }
       }
     }
-
   }
 }

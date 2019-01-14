@@ -73,76 +73,79 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <param name="subGrids"></param>
     public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
     {
-      base.ProcessSubgridResult(subGrids);
-
-      // Works out the percentage each colour on the map represents
-
-      foreach (IClientLeafSubGrid[] subGrid in subGrids)
+      lock (this)
       {
-        if ((subGrid?.Length ?? 0) == 0)
-          continue;
+        base.ProcessSubgridResult(subGrids);
 
-        if (subGrid[0] is ClientMDPLeafSubGrid SubGrid)
+        // Works out the percentage each colour on the map represents
+
+        foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          var currentTargetMDP = CellPassConsts.NullMDP;
+          if ((subGrid?.Length ?? 0) == 0)
+            continue;
 
-          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+          if (subGrid[0] is ClientMDPLeafSubGrid SubGrid)
           {
-            var mdpValue = SubGrid.Cells[I, J];
+            var currentTargetMDP = CellPassConsts.NullMDP;
 
-            if (mdpValue.MeasuredMDP != CellPassConsts.NullMDP) // Is there a measured value to test?..
+            SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-              if (OverrideMachineMDP) // Are we overriding target values?..
+              var mdpValue = SubGrid.Cells[I, J];
+
+              if (mdpValue.MeasuredMDP != CellPassConsts.NullMDP) // Is there a measured value to test?..
               {
-                if (LastTargetMDP != OverridingMachineMDP)
-                  LastTargetMDP = OverridingMachineMDP;
-                if (currentTargetMDP != OverridingMachineMDP)
-                  currentTargetMDP = OverridingMachineMDP;
-              }
-              else
-              {
-                // Using the machine target values test if target varies...
-                if (IsTargetValueConstant && mdpValue.TargetMDP != CellPassConsts.NullMDP && LastTargetMDP != CellPassConsts.NullMDP) // Values a re all good to test...
-                  IsTargetValueConstant = LastTargetMDP == mdpValue.TargetMDP; // Check to see if target value varies...
-
-                if (LastTargetMDP != mdpValue.TargetMDP && mdpValue.TargetMDP != CellPassConsts.NullMDP)
-                  LastTargetMDP = mdpValue.TargetMDP; // LastTargetMDP holds last good value...
-
-                if (currentTargetMDP != mdpValue.TargetMDP) // Set current target value...
-                  currentTargetMDP = mdpValue.TargetMDP;
-              }
-
-              if (currentTargetMDP != CellPassConsts.NullMDP) // If target is not null then do statistics...
-              {
-                var mdpRangeMin = Math.Round(LastTargetMDP * MDPPercentageRange.Min / 100);
-                var mdpRangeMax = Math.Round(LastTargetMDP * MDPPercentageRange.Max / 100);
-
-                SummaryCellsScanned++;
-                if (mdpValue.MeasuredMDP > mdpRangeMax)
-                  CellsScannedOverTarget++;
-                else if (mdpValue.MeasuredMDP < mdpRangeMin)
-                  CellsScannedUnderTarget++;
+                if (OverrideMachineMDP) // Are we overriding target values?..
+                {
+                  if (LastTargetMDP != OverridingMachineMDP)
+                    LastTargetMDP = OverridingMachineMDP;
+                  if (currentTargetMDP != OverridingMachineMDP)
+                    currentTargetMDP = OverridingMachineMDP;
+                }
                 else
-                  CellsScannedAtTarget++;
+                {
+                  // Using the machine target values test if target varies...
+                  if (IsTargetValueConstant && mdpValue.TargetMDP != CellPassConsts.NullMDP && LastTargetMDP != CellPassConsts.NullMDP) // Values a re all good to test...
+                    IsTargetValueConstant = LastTargetMDP == mdpValue.TargetMDP; // Check to see if target value varies...
+
+                  if (LastTargetMDP != mdpValue.TargetMDP && mdpValue.TargetMDP != CellPassConsts.NullMDP)
+                    LastTargetMDP = mdpValue.TargetMDP; // LastTargetMDP holds last good value...
+
+                  if (currentTargetMDP != mdpValue.TargetMDP) // Set current target value...
+                    currentTargetMDP = mdpValue.TargetMDP;
+                }
+
+                if (currentTargetMDP != CellPassConsts.NullMDP) // If target is not null then do statistics...
+                {
+                  var mdpRangeMin = Math.Round(LastTargetMDP * MDPPercentageRange.Min / 100);
+                  var mdpRangeMax = Math.Round(LastTargetMDP * MDPPercentageRange.Max / 100);
+
+                  SummaryCellsScanned++;
+                  if (mdpValue.MeasuredMDP > mdpRangeMax)
+                    CellsScannedOverTarget++;
+                  else if (mdpValue.MeasuredMDP < mdpRangeMin)
+                    CellsScannedUnderTarget++;
+                  else
+                    CellsScannedAtTarget++;
+                }
+                else // We have data but no target data to do a summary...
+                  MissingTargetValue = true; // Flag to issue a warning to user...
+
+                IncrementCountOfTransition(mdpValue.MeasuredMDP); // MDP Detail is counted here...
+
+                // TODO: When MDP % details is to be implemented...
+                //switch (SubGrid.GridDataType)
+                //{
+                //  case GridDataType.MDP:
+                //    Transitions.IncrementCountOfTransition(mdpValue.MeasuredMDP);
+                //    break;
+                //  case GridDataType.MDPPercent:
+                //    if MDPCellValueToDisplay(MDPValue.MeasuredMDP, LastTargetMDP, SubGrid.GridDataType, LiftBuildSettings, MDPPercentValue) then
+                //    Transitions.IncrementCountOfTransition(MDPPercentValue);
+                //    break;
+                //}
               }
-              else // We have data but no target data to do a summary...
-                MissingTargetValue = true; // Flag to issue a warning to user...
-
-              IncrementCountOfTransition(mdpValue.MeasuredMDP); // MDP Detail is counted here...
-
-              // TODO: When MDP % details is to be implemented...
-              //switch (SubGrid.GridDataType)
-              //{
-              //  case GridDataType.MDP:
-              //    Transitions.IncrementCountOfTransition(mdpValue.MeasuredMDP);
-              //    break;
-              //  case GridDataType.MDPPercent:
-              //    if MDPCellValueToDisplay(MDPValue.MeasuredMDP, LastTargetMDP, SubGrid.GridDataType, LiftBuildSettings, MDPPercentValue) then
-              //    Transitions.IncrementCountOfTransition(MDPPercentValue);
-              //    break;
-              //}
-            }
-          });
+            });
+          }
         }
       }
     }
