@@ -8,7 +8,7 @@ data:
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
 #Jaeger configuration  
-  JAEGER_AGENT_HOST: jaeger-agent.jaeger
+  JAEGER_AGENT_HOST: jaeger-agent.logging
   JAEGER_AGENT_PORT: "6831"
   JAEGER_SAMPLER_TYPE: const
 #MySql configuration  
