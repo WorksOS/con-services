@@ -29,10 +29,12 @@ namespace TCCToDataOcean
     private readonly IImportFile ImportFile;
     private readonly ILogger Log;
     private string FileSpaceId;
-    private readonly string BaseUrl;
+    private readonly string ProjectApiUrl;
+    private readonly string ImportedFileApiUrl;
     private readonly string TemporaryFolder;
 
     private const string ProjectWebApiKey = "PROJECT_API_URL";
+    private const string ImportedFileWebApiKey = "IMPORTED_FILE_API_URL";
     private const string TccFilespaceKey = "TCCFILESPACEID";
     private const string TemporaryFolderKey = "TEMPORARY_FOLDER";
 
@@ -54,23 +56,23 @@ namespace TCCToDataOcean
       ServiceExceptionHandler = serviceExceptionHandler;
       WebApiUtils = webApiUtils;
       ImportFile = importFile;
-      FileSpaceId = GetEnvironmentVariable(TccFilespaceKey, 48);   
-      BaseUrl = GetEnvironmentVariable(ProjectWebApiKey, 1);   
+      FileSpaceId = GetEnvironmentVariable(TccFilespaceKey, 48);
+      ProjectApiUrl = GetEnvironmentVariable(ProjectWebApiKey, 1);
+      ImportedFileApiUrl = GetEnvironmentVariable(ImportedFileWebApiKey, 3);
       TemporaryFolder = GetEnvironmentVariable(TemporaryFolderKey, 2);   
       Log = loggerFactory.CreateLogger<Migrator>();
     }
 
     public async Task<bool> MigrateFilesForAllActiveProjects()
     {
-      var projectUri = $"{BaseUrl}api/v4/project/";
       //Get list of all active projects for all customers fronm project repo
-      Log.LogInformation($"Getting list of projects from {projectUri}");
+      Log.LogInformation($"Getting list of projects from project repo");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"Got {projects.Count} projects");
       var projectTasks = new List<Task<bool>>();
       foreach (var project in projects)
       {
-        projectTasks.Add(MigrateProject(project, projectUri));      
+        projectTasks.Add(MigrateProject(project));      
       }
       await Task.WhenAll(projectTasks);
       var result = projectTasks.All(t => t.Result);
@@ -78,30 +80,43 @@ namespace TCCToDataOcean
       return result;
     }
 
-    private async Task<bool> MigrateProject(Project project, string projectUri)
+    private async Task<bool> MigrateProject(Project project)
     {
       Log.LogInformation($"Migrating project {project.Name} {project.ProjectUID}");
-      //Download coordinate system file from TCC
-      var coordSystemFileContent = await GetCoordSystemFileContent(project);
-      //Update project in project web api to get coordinate system file migrated
-      var updateProjectResult = WebApiUtils.UpdateProjectViaWebApi(projectUri, project, coordSystemFileContent);
-      Log.LogInformation($"Project {project.ProjectUID} update result {updateProjectResult.Code} {updateProjectResult.Message}");
-      //Get list of imported files for project from project web api
-      var fileUriRoot = $"{BaseUrl}api/v4/importedfiles";
-      Log.LogInformation($"Getting list of files for project {project.ProjectUID} from {fileUriRoot}");
-      var filesResult = ImportFile.GetImportedFilesFromWebApi($"{fileUriRoot}?projectUid={project.ProjectUID}", project.CustomerUID); 
-      var selectedFiles =
-        filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
-      Log.LogInformation($"Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for project {project.ProjectUID}");
-      var fileTasks = new List<Task<FileDataSingleResult>>();
-      foreach (var file in selectedFiles)
-      {    
-        fileTasks.Add(MigrateFile(file, fileUriRoot));
+      //Migrate coordinate system file if applicable
+      var coordFileResult = true;
+      if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
+      {
+        //Download coordinate system file from TCC
+        var coordSystemFileContent = await GetCoordSystemFileContent(project);
+        //Update project in project web api to get coordinate system file migrated
+        var updateProjectResult = WebApiUtils.UpdateProjectViaWebApi(ProjectApiUrl, project, coordSystemFileContent);
+        coordFileResult = updateProjectResult.Code == ContractExecutionStatesEnum.ExecutedSuccessfully;
+        Log.LogInformation($"Project {project.ProjectUID} update result {updateProjectResult.Code} {updateProjectResult.Message}");
       }
-      await Task.WhenAll(fileTasks);
-     
-      var result = updateProjectResult.Code == ContractExecutionStatesEnum.ExecutedSuccessfully &&
-             fileTasks.All(t => t.Result.Code == ContractExecutionStatesEnum.ExecutedSuccessfully);
+      //Get list of imported files for project from project web api
+      Log.LogInformation($"Getting list of files for project {project.ProjectUID} from {ImportedFileApiUrl}");
+      var importedFilesResult = true;
+      var filesResult = ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project.CustomerUID);
+      var filesList = filesResult.ImportedFileDescriptors;
+      if (filesList?.Count > 0)
+      {
+        var selectedFiles =
+          filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
+        Log.LogInformation($"Found {selectedFiles.Count} out of {filesList.Count} files to migrate for project {project.ProjectUID}");
+        var fileTasks = new List<Task<FileDataSingleResult>>();
+        foreach (var file in selectedFiles)
+        {
+          fileTasks.Add(MigrateFile(file));
+        }
+        await Task.WhenAll(fileTasks);
+        importedFilesResult = fileTasks.All(t => t.Result.Code == ContractExecutionStatesEnum.ExecutedSuccessfully);
+      }
+      else
+      {
+        Log.LogInformation($"No files found for project {project.ProjectUID}");
+      }
+      var result = coordFileResult && importedFilesResult;
       Log.LogInformation($"Project {project.ProjectUID} migration result {result}");
       return result;
     }
@@ -143,7 +158,7 @@ namespace TCCToDataOcean
       return coordSystemFileContent;
 
     }
-    private async Task<FileDataSingleResult> MigrateFile(FileData file, string fileUriRoot)
+    private async Task<FileDataSingleResult> MigrateFile(FileData file)
     {
       Log.LogInformation($"Migrating file {file.Name} {file.ImportedFileUid}");
       //Download file from TCC
@@ -160,7 +175,7 @@ namespace TCCToDataOcean
       fileContents?.Dispose();
       //Upload file to project web api to migrate
       Log.LogInformation($"Uploading file {file.ImportedFileUid}");
-      var result = ImportFile.SendRequestToFileImportV4(fileUriRoot, file, tempFileName, new ImportOptions(HttpMethod.Post));
+      var result = ImportFile.SendRequestToFileImportV4(ImportedFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
       Log.LogInformation($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
       return result;
     }

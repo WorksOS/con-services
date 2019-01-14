@@ -40,7 +40,8 @@ namespace TCCToDataOcean
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string mediaType, string customerUid)
     {
       Log.LogInformation(resourceUri);
-      var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, Authentication.GetApplicationBearerToken());                   
+      var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid, Authentication.GetApplicationBearerToken());   
+      if (!string.IsNullOrEmpty(payloadData))
       {
         request.ContentType = mediaType;
         var writeStream = request.GetRequestStreamAsync().Result;
@@ -114,7 +115,7 @@ namespace TCCToDataOcean
       request.Accept = mediaType;
       request.Headers["X-VisionLink-CustomerUid"] = customerUid;
       //request.Headers["X-VisionLink-ClearCache"] = "true";
-      request.Headers["Authorization"] = bearerToken;
+      request.Headers["Authorization"] = $"Bearer {bearerToken}";
       return request;
     }
 
