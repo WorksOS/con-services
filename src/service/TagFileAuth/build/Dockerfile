@@ -6,7 +6,7 @@ WORKDIR /build
 
 RUN dotnet publish ./$SERVICE_PATH/src/WebApi/VSS.Productivity3D.TagFileAuth.WebAPI.csproj -o /build/artifacts/WebApi -f netcoreapp2.0 -c Docker
 
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-runtime
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-aspnetcore-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
