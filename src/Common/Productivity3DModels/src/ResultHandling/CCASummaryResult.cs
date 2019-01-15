@@ -1,6 +1,6 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary CCA request
