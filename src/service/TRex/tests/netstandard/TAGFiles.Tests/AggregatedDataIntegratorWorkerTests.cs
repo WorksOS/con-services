@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using FluentAssertions;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
@@ -28,25 +30,24 @@ namespace TAGFiles.Tests
       Assert.True(false);
     }
 
-    [Fact()]
-    public void Test_AggregatedDataIntegratorWorker_ProcessTask()
+    [Fact]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile()
     {
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      TAGFileConverter converter = new TAGFileConverter();
+      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
 
-      Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"), FileMode.Open, FileAccess.Read)),
-        "Converter execute returned false");
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      var machineId = Guid.NewGuid();
-      converter.SiteModel.ID = DITagFileFixture.NewSiteModelGuid;
-      converter.Machine.ID = machineId;
+      //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
+      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+
+      converter.Machine.ID = targetMachine.ID;
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
 
-      //integrator.AddTaskToProcessList(siteModel, machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
-      integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(targetSiteModel, targetMachine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
       List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
@@ -54,10 +55,77 @@ namespace TAGFiles.Tests
       AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
       worker.ProcessTask(ProcessedTasks);
 
-      Assert.True(1 == ProcessedTasks.Count, $"ProcessedTasks = {ProcessedTasks.Count}");
+      ProcessedTasks.Count.Should().Be(1);
+      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(12);
     }
 
-    [Fact()]
+    [Fact]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFileTwice()
+    {
+      // Convert a TAG file using a TAGFileConverter into a mini-site model
+      TAGFileConverter converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      TAGFileConverter converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+
+      // Create the site model and machine etc to aggregate the processed TAG file into
+      //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
+      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+
+      converter1.Machine.ID = targetMachine.ID;
+      converter2.Machine.ID = targetMachine.ID;
+
+      // Create the integrator and add the processed TAG file to its processing list
+      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+
+      integrator.AddTaskToProcessList(targetSiteModel, targetMachine, converter1.SiteModelGridAggregator, converter1.ProcessedCellPassCount, converter1.MachineTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(targetSiteModel, targetMachine, converter2.SiteModelGridAggregator, converter2.ProcessedCellPassCount, converter2.MachineTargetValueChangesAggregator);
+
+      // Construct an integration worker and ask it to perform the integration
+      List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+
+      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      worker.ProcessTask(ProcessedTasks);
+
+      ProcessedTasks.Count.Should().Be(2);
+      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(12);
+    }
+
+    [Theory]
+    [InlineData("Dimensions2018-CaseMachine")]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet(string tagFileCollectionFolder)
+    {
+      // Convert TAG files using TAGFileConverters into mini-site models
+      var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
+        .ToList().OrderBy(x => x).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+
+      // Create the site model and machine etc to aggregate the processed TAG file into
+      //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
+      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+
+      // Create the integrator and add the processed TAG file to its processing list
+      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+
+      foreach (var c in converters)
+      {
+        c.Machine.ID = targetMachine.ID;
+        integrator.AddTaskToProcessList(targetSiteModel, targetMachine, c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
+      }
+
+      // Construct an integration worker and ask it to perform the integration
+      List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+
+      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      worker.ProcessTask(ProcessedTasks);
+      
+      // The number of TAG files processing in one aggregation epoch is limited
+      ProcessedTasks.Count.Should().Be(VSS.TRex.Common.Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH /*converters.Length*/);
+
+      // The first tranche of aggregated TAG file only modified 3 sub grids in the target site model
+      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(3);
+    }
+
+    [Fact]
     public void Test_AggregatedDataIntegratorWorker_EventIntegrator_NoTargetDesignIds()
     {
       /*
@@ -96,7 +164,7 @@ namespace TAGFiles.Tests
       Assert.Equal(1, state);
     }
 
-    [Fact()]
+    [Fact]
     public void Test_AggregatedDataIntegratorWorker_EventIntegrator_NoOverlappedDesignIds()
     {
       /*
@@ -135,7 +203,7 @@ namespace TAGFiles.Tests
       Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
     }
 
-    [Fact()]
+    [Fact]
     public void Test_AggregatedDataIntegratorWorker_EventIntegrator_OverlappedDesignIds()
     {
       /*
@@ -171,7 +239,7 @@ namespace TAGFiles.Tests
       Assert.Equal(0, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
     }
 
-    [Fact()]
+    [Fact]
     public void Test_AggregatedDataIntegratorWorker_EventIntegrator_DifferentDesignIds()
     {
       /*
