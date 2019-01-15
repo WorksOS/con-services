@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
-using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.GridActivator
 {

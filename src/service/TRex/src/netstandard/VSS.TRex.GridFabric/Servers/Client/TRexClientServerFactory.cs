@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.TRex.Servers.Client
+namespace VSS.TRex.GridFabric.Servers.Client
 {
     /// <summary>
     /// A factory class responsible for creating mutable or immutable TRex client nodes in the Ignite grid

@@ -72,76 +72,79 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// <param name="subGrids"></param>
     public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
     {
-      base.ProcessSubgridResult(subGrids);
-
-      // Works out the percentage each colour on the map represents
-
-      foreach (IClientLeafSubGrid[] subGrid in subGrids)
+      lock (this)
       {
-        if ((subGrid?.Length ?? 0) == 0)
-          continue;
+        base.ProcessSubgridResult(subGrids);
 
-        if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
+        // Works out the percentage each colour on the map represents
+
+        foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          var currentTargetCMV = CellPassConsts.NullCCV;
+          if ((subGrid?.Length ?? 0) == 0)
+            continue;
 
-          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+          if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
           {
-            var cmvValue = SubGrid.Cells[I, J];
+            var currentTargetCMV = CellPassConsts.NullCCV;
 
-            if (cmvValue.MeasuredCMV != CellPassConsts.NullCCV) // Is there a measured value to test?..
+            SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-              if (OverrideMachineCMV) // Are we overriding target values?..
+              var cmvValue = SubGrid.Cells[I, J];
+
+              if (cmvValue.MeasuredCMV != CellPassConsts.NullCCV) // Is there a measured value to test?..
               {
-                if (LastTargetCMV != OverridingMachineCMV)
-                  LastTargetCMV = OverridingMachineCMV;
-                if (currentTargetCMV != OverridingMachineCMV)
-                  currentTargetCMV = OverridingMachineCMV;
-              }
-              else
-              {
-                // Using the machine target values test if target varies...
-                if (IsTargetValueConstant && cmvValue.TargetCMV != CellPassConsts.NullCCV && LastTargetCMV != CellPassConsts.NullCCV) // Values a re all good to test...
-                  IsTargetValueConstant = LastTargetCMV == cmvValue.TargetCMV; // Check to see if target value varies...
-
-                if (LastTargetCMV != cmvValue.TargetCMV && cmvValue.TargetCMV != CellPassConsts.NullCCV)
-                  LastTargetCMV = cmvValue.TargetCMV; // LastTargetCMV holds last good value...
-
-                if (currentTargetCMV != cmvValue.TargetCMV) // Set current target value...
-                  currentTargetCMV = cmvValue.TargetCMV;
-              }
-
-              if (currentTargetCMV != CellPassConsts.NullCCV) // If target is not null then do statistics...
-              {
-                var cmvRangeMin = Math.Round(LastTargetCMV * CMVPercentageRange.Min / 100);
-                var cmvRangeMax = Math.Round(LastTargetCMV * CMVPercentageRange.Max / 100);
-
-                SummaryCellsScanned++;
-                if (cmvValue.MeasuredCMV > cmvRangeMax)
-                  CellsScannedOverTarget++;
-                else if (cmvValue.MeasuredCMV < cmvRangeMin)
-                  CellsScannedUnderTarget++;
+                if (OverrideMachineCMV) // Are we overriding target values?..
+                {
+                  if (LastTargetCMV != OverridingMachineCMV)
+                    LastTargetCMV = OverridingMachineCMV;
+                  if (currentTargetCMV != OverridingMachineCMV)
+                    currentTargetCMV = OverridingMachineCMV;
+                }
                 else
-                  CellsScannedAtTarget++;
+                {
+                  // Using the machine target values test if target varies...
+                  if (IsTargetValueConstant && cmvValue.TargetCMV != CellPassConsts.NullCCV && LastTargetCMV != CellPassConsts.NullCCV) // Values a re all good to test...
+                    IsTargetValueConstant = LastTargetCMV == cmvValue.TargetCMV; // Check to see if target value varies...
+
+                  if (LastTargetCMV != cmvValue.TargetCMV && cmvValue.TargetCMV != CellPassConsts.NullCCV)
+                    LastTargetCMV = cmvValue.TargetCMV; // LastTargetCMV holds last good value...
+
+                  if (currentTargetCMV != cmvValue.TargetCMV) // Set current target value...
+                    currentTargetCMV = cmvValue.TargetCMV;
+                }
+
+                if (currentTargetCMV != CellPassConsts.NullCCV) // If target is not null then do statistics...
+                {
+                  var cmvRangeMin = Math.Round(LastTargetCMV * CMVPercentageRange.Min / 100);
+                  var cmvRangeMax = Math.Round(LastTargetCMV * CMVPercentageRange.Max / 100);
+
+                  SummaryCellsScanned++;
+                  if (cmvValue.MeasuredCMV > cmvRangeMax)
+                    CellsScannedOverTarget++;
+                  else if (cmvValue.MeasuredCMV < cmvRangeMin)
+                    CellsScannedUnderTarget++;
+                  else
+                    CellsScannedAtTarget++;
+                }
+                else // We have data but no target data to do a summary...
+                  MissingTargetValue = true; // Flag to issue a warning to user...
+
+                IncrementCountOfTransition(cmvValue.MeasuredCMV); // CMV Detail is counted here...
+
+                // TODO: When CMV % details is to be implemented...
+                //switch (SubGrid.GridDataType)
+                //{
+                //  case GridDataType.CCV:
+                //    Transitions.IncrementCountOfTransition(cmvValue.MeasuredCMV);
+                //    break;
+                //  case GridDataType.CCVPercent:
+                //    if CCVCellValueToDisplay(cmvValue.MeasuredCMV, LastTargetCMV, SubGrid.GridDataType, LiftBuildSettings, CCVPercentValue) then
+                //    Transitions.IncrementCountOfTransition(CCVPercentValue);
+                //    break;
+                //}
               }
-              else // We have data but no target data to do a summary...
-                MissingTargetValue = true; // Flag to issue a warning to user...
-
-              IncrementCountOfTransition(cmvValue.MeasuredCMV); // CMV Detail is counted here...
-
-              // TODO: When CMV % details is to be implemented...
-              //switch (SubGrid.GridDataType)
-              //{
-              //  case GridDataType.CCV:
-              //    Transitions.IncrementCountOfTransition(cmvValue.MeasuredCMV);
-              //    break;
-              //  case GridDataType.CCVPercent:
-              //    if CCVCellValueToDisplay(cmvValue.MeasuredCMV, LastTargetCMV, SubGrid.GridDataType, LiftBuildSettings, CCVPercentValue) then
-              //    Transitions.IncrementCountOfTransition(CCVPercentValue);
-              //    break;
-              //}
-            }
-          });
+            });
+          }
         }
       }
     }

@@ -11,11 +11,11 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGrids
 {
   /// <summary>
-  /// Contains methods relevant to supporting Cut/Fill operations, such a computing cut/fill elevation subgrids
+  /// Contains methods relevant to supporting Cut/Fill operations, such a computing cut/fill elevation sub grids
   /// </summary>
   public static class GridRotationUtilities
   {
-    private static ILogger Log = Logging.Logger.CreateLogger("GridRotationUtilities");
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("GridRotationUtilities");
 
     /// <summary>
     /// Computes a bitmask used to sieve out only the cells that will be used in the query context.
@@ -24,19 +24,19 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     /// <param name="subGridMoniker"></param>
     /// <param name="areaControlSet"></param>
-    /// <param name="siteModelCellsize"></param>
+    /// <param name="siteModelCellSize"></param>
     /// <param name="sieveBitmask"></param>
     /// <param name="subGridWorldOriginX"></param>
     /// <param name="subGridWorldOriginY"></param>
     /// <returns></returns>
     public static bool ComputeSieveBitmaskInteger(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
-      AreaControlSet areaControlSet, double siteModelCellsize, out SubGridTreeBitmapSubGridBits sieveBitmask)
+      AreaControlSet areaControlSet, double siteModelCellSize, out SubGridTreeBitmapSubGridBits sieveBitmask)
     {
       const int kMaxStepSize = 10000;
       sieveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-      /* TODO - add configuration item for VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests
-      if (!VLPDSvcLocations.VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests)
+      /* TODO - add configuration item for VLPDPSNode_UseSkipStepComputationForWMSSubGridRequests
+      if (!VLPDSvcLocations.VLPDPSNode_UseSkipStepComputationForWMSSubGridRequests)
           return false;
       */
 
@@ -49,15 +49,15 @@ namespace VSS.TRex.SubGrids
 
       ///////////////// CalculateParameters;  START
 
-      double stepsPerPixelX = areaControlSet.PixelXWorldSize / siteModelCellsize;
-      double stepsPerPixelY = areaControlSet.PixelYWorldSize / siteModelCellsize;
+      double stepsPerPixelX = areaControlSet.PixelXWorldSize / siteModelCellSize;
+      double stepsPerPixelY = areaControlSet.PixelYWorldSize / siteModelCellSize;
 
-      // note ints
+      // Note: integers
       int stepX = Math.Min(kMaxStepSize, Math.Max(1, (int)Math.Truncate(stepsPerPixelX)));
       int stepY = Math.Min(kMaxStepSize, Math.Max(1, (int)Math.Truncate(stepsPerPixelY)));
 
-      double stepXIncrement = stepX * siteModelCellsize;
-      double stepYIncrement = stepY * siteModelCellsize;
+      double stepXIncrement = stepX * siteModelCellSize;
+      double stepYIncrement = stepY * siteModelCellSize;
 
       double stepXIncrementOverTwo = stepXIncrement / 2;
       double stepYIncrementOverTwo = stepYIncrement / 2;
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGrids
 
       sieveBitmask.Clear();
 
-      // Calculate the world coordinate location of the origin (bottom left corner) of this subgrid
+      // Calculate the world coordinate location of the origin (bottom left corner) of this sub grid
       //subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
       // Skip-Iterate through the cells marking those cells that require values
@@ -80,7 +80,7 @@ namespace VSS.TRex.SubGrids
 
       double temp = subGridWorldOriginY / stepYIncrement;
       double currentNorth = (Math.Truncate(temp) * stepYIncrement) - stepYIncrementOverTwo;
-      int northRow = (int)Math.Floor((currentNorth - subGridWorldOriginY) / siteModelCellsize);
+      int northRow = (int)Math.Floor((currentNorth - subGridWorldOriginY) / siteModelCellSize);
 
       while (northRow < 0)
         northRow += stepY;
@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGrids
         temp = subGridWorldOriginX / stepXIncrement;
 
         double currentEast = (Math.Truncate(temp) * stepXIncrement) + stepXIncrementOverTwo;
-        int eastCol = (int)Math.Floor((currentEast - subGridWorldOriginX) / siteModelCellsize);
+        int eastCol = (int)Math.Floor((currentEast - subGridWorldOriginX) / siteModelCellSize);
 
         while (eastCol < 0)
           eastCol += stepX;
@@ -110,20 +110,20 @@ namespace VSS.TRex.SubGrids
     /// <param name="subGridWorldOriginY"></param>
     /// <param name="subGridMoniker"></param>
     /// <param name="areaControlSet"></param>
-    /// <param name="siteModelCellsize"></param>
+    /// <param name="siteModelCellSize"></param>
     /// <param name="assignmentContext"></param>
     /// <param name="sieveBitmask"></param>
     /// <param name="subGridWorldOriginX"></param>
     /// <returns></returns>
     public static bool ComputeSieveBitmaskFloat(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
-      AreaControlSet areaControlSet, double siteModelCellsize, FilteredValueAssignmentContext assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask)
+      AreaControlSet areaControlSet, double siteModelCellSize, FilteredValueAssignmentContext assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask)
     {
       sieveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       if (areaControlSet.PixelXWorldSize == 0 || areaControlSet.PixelYWorldSize == 0)
         return false;
 
-      if (areaControlSet.PixelXWorldSize < siteModelCellsize && areaControlSet.PixelYWorldSize < siteModelCellsize)
+      if (areaControlSet.PixelXWorldSize < siteModelCellSize && areaControlSet.PixelYWorldSize < siteModelCellSize)
         return false;
 
       // Progress through the cells in the grid, starting from the southern most
@@ -134,12 +134,12 @@ namespace VSS.TRex.SubGrids
       sieveBitmask.Clear();
 
       // Calculate the world coordinate location of the origin (bottom left corner)
-      // and limits (top right corner) of this subgrid
-      double subGridWorldLimitX = subGridWorldOriginX + (SubGridTreeConsts.SubGridTreeDimension * siteModelCellsize);
-      double subGridWorldLimitY = subGridWorldOriginY + (SubGridTreeConsts.SubGridTreeDimension * siteModelCellsize);
+      // and limits (top right corner) of this sub grid
+      double subGridWorldLimitX = subGridWorldOriginX + (SubGridTreeConsts.SubGridTreeDimension * siteModelCellSize);
+      double subGridWorldLimitY = subGridWorldOriginY + (SubGridTreeConsts.SubGridTreeDimension * siteModelCellSize);
 
       // Calculate the parameter to control skipping across a rotated grid with respect to
-      // a grid projection north oriented subgrid
+      // a grid projection north oriented sub grid
       InitialiseRotationAndBounds(areaControlSet,
         subGridWorldOriginX, subGridWorldOriginY, subGridWorldLimitX, subGridWorldLimitY,
         out int numRowsToScan, out int numColsToScan,
@@ -148,7 +148,7 @@ namespace VSS.TRex.SubGrids
 
       // Perform the walk across all probed locations determining the cells we want to
       // obtain values for and the probe locations.
-      PerformScan(siteModelCellsize, assignmentContext, sieveBitmask,
+      PerformScan(siteModelCellSize, assignmentContext, sieveBitmask,
         numRowsToScan, numColsToScan,
         stepNorthX, stepNorthY, stepEastX, stepEastY,
         subGridWorldOriginX, subGridWorldOriginY,
@@ -158,7 +158,7 @@ namespace VSS.TRex.SubGrids
     }
 
     private static void InitialiseRotationAndBounds(AreaControlSet areaControlSet,
-      double subgridMinX, double subgridMinY, double subgridMaxX, double subgridMaxY,
+      double subGridMinX, double subGridMinY, double subGridMaxX, double subGridMaxY,
       out int numRowsToScan, out int numColsToScan,
       out double stepNorthX, out double stepNorthY, out double stepEastX, out double stepEastY,
       out double firstScanPointEast, out double firstScanPointNorth)
@@ -175,28 +175,28 @@ namespace VSS.TRex.SubGrids
 
       if (areaControlSet.Rotation != Consts.NullDouble && areaControlSet.Rotation != 0) // Radians, north azimuth survey angle
       {
-        Fence rotatedSubgridBoundary = new Fence();
+        Fence rotatedSubGridBoundary = new Fence();
 
-        // Create the rotated boundary by 'un-rotating' the subgrid world extents into a context
+        // Create the rotated boundary by 'un-rotating' the sub grid world extents into a context
         // where the grid is itself not rotated
-        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subgridMinX, subgridMinY, out double x, out double y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
-        rotatedSubgridBoundary.Points.Add(new FencePoint(x, y));
-        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subgridMinX, subgridMaxY, out x, out y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
-        rotatedSubgridBoundary.Points.Add(new FencePoint(x, y));
-        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subgridMaxX, subgridMaxY, out x, out y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
-        rotatedSubgridBoundary.Points.Add(new FencePoint(x, y));
-        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subgridMaxX, subgridMinY, out x, out y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
-        rotatedSubgridBoundary.Points.Add(new FencePoint(x, y));
+        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subGridMinX, subGridMinY, out double x, out double y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
+        rotatedSubGridBoundary.Points.Add(new FencePoint(x, y));
+        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subGridMinX, subGridMaxY, out x, out y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
+        rotatedSubGridBoundary.Points.Add(new FencePoint(x, y));
+        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subGridMaxX, subGridMaxY, out x, out y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
+        rotatedSubGridBoundary.Points.Add(new FencePoint(x, y));
+        GeometryHelper.RotatePointAbout(areaControlSet.Rotation, subGridMaxX, subGridMinY, out x, out y, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
+        rotatedSubGridBoundary.Points.Add(new FencePoint(x, y));
 
-        rotatedSubgridBoundary.UpdateExtents();
-        firstScanPointEast = Math.Truncate(rotatedSubgridBoundary.MinX / stepX) * stepX + intraGridOffsetX;
-        firstScanPointNorth = Math.Truncate(rotatedSubgridBoundary.MinY / stepY) * stepY + intraGridOffsetY;
+        rotatedSubGridBoundary.UpdateExtents();
+        firstScanPointEast = Math.Truncate(rotatedSubGridBoundary.MinX / stepX) * stepX + intraGridOffsetX;
+        firstScanPointNorth = Math.Truncate(rotatedSubGridBoundary.MinY / stepY) * stepY + intraGridOffsetY;
 
-        numRowsToScan = (int)Math.Ceiling((rotatedSubgridBoundary.MaxY - firstScanPointNorth) / stepY) + 1;
-        numColsToScan = (int)Math.Ceiling((rotatedSubgridBoundary.MaxX - firstScanPointEast) / stepX) + 1;
+        numRowsToScan = (int)Math.Ceiling((rotatedSubGridBoundary.MaxY - firstScanPointNorth) / stepY) + 1;
+        numColsToScan = (int)Math.Ceiling((rotatedSubGridBoundary.MaxX - firstScanPointEast) / stepX) + 1;
 
         // Rotate the first scan point back to the context of the grid projection north oriented
-        // subgrid world extents
+        // sub grid world extents
         GeometryHelper.RotatePointAbout(-areaControlSet.Rotation, firstScanPointEast, firstScanPointNorth, out firstScanPointEast,
           out firstScanPointNorth, areaControlSet.UserOriginX, areaControlSet.UserOriginY);
 
@@ -213,11 +213,11 @@ namespace VSS.TRex.SubGrids
       }
       else
       {
-        firstScanPointEast = Math.Truncate(subgridMinX / stepX) * stepX + intraGridOffsetX;
-        firstScanPointNorth = Math.Truncate(subgridMinY / stepY) * stepY + intraGridOffsetY;
+        firstScanPointEast = Math.Truncate(subGridMinX / stepX) * stepX + intraGridOffsetX;
+        firstScanPointNorth = Math.Truncate(subGridMinY / stepY) * stepY + intraGridOffsetY;
 
-        numRowsToScan = (int)Math.Ceiling((subgridMaxY - firstScanPointNorth) / stepY) + 1;
-        numColsToScan = (int)Math.Ceiling((subgridMaxX - firstScanPointEast) / stepX) + 1;
+        numRowsToScan = (int)Math.Ceiling((subGridMaxY - firstScanPointNorth) / stepY) + 1;
+        numColsToScan = (int)Math.Ceiling((subGridMaxX - firstScanPointEast) / stepX) + 1;
 
         stepNorthX = 0;
         stepNorthY = stepY;
@@ -226,11 +226,11 @@ namespace VSS.TRex.SubGrids
       }
     }
 
-    private static void PerformScan(double siteModelCellsize, FilteredValueAssignmentContext assignmentContext, 
+    private static void PerformScan(double siteModelCellSize, FilteredValueAssignmentContext assignmentContext, 
       SubGridTreeBitmapSubGridBits sieveBitmask,
       int numRowsToScan, int numColsToScan,
       double stepNorthX, double stepNorthY, double stepEastX, double stepEastY,
-      double subgridMinX, double subgridMinY,
+      double subGridMinX, double subGridMinY,
       double firstScanPointEast, double firstScanPointNorth)
     {
       // Skip-Iterate through the cells marking those cells that require values
@@ -244,15 +244,15 @@ namespace VSS.TRex.SubGrids
 
         for (int J = 0; J < numColsToScan; J++)
         {
-          int eastCol = (int)Math.Floor((currentEast - subgridMinX) / siteModelCellsize);
-          int northRow = (int)Math.Floor((currentNorth - subgridMinY) / siteModelCellsize);
+          int eastCol = (int)Math.Floor((currentEast - subGridMinX) / siteModelCellSize);
+          int northRow = (int)Math.Floor((currentNorth - subGridMinY) / siteModelCellSize);
 
           if (Range.InRange(eastCol, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
               Range.InRange(northRow, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1))
           {
             sieveBitmask.SetBit(eastCol, northRow);
             assignmentContext.ProbePositions[eastCol, northRow]
-              .SetOffsets(currentEast - subgridMinX, currentNorth - subgridMinY);
+              .SetOffsets(currentEast - subGridMinX, currentNorth - subGridMinY);
           }
 
           currentEast += stepEastX;

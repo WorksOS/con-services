@@ -49,7 +49,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
         /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
-        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
+        /// with the given time would be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -82,14 +82,13 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             });
 
-      // Read all the cells from the stream
+          // Read all the cells from the stream
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 int PassCount_ = PassCounts[i, j];
 
                 if (PassCount_ > 0)
                 {
-                    // TODO: Revisit static cell pass support for reading contexts
                     AllocatePasses(i, j, (uint)PassCount_);
                     Read(i, j, reader);
 
@@ -113,7 +112,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
@@ -155,8 +154,8 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets asre an 
-        /// optimisation for read requests on compressed static cell pass representations
+        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets are an 
+        /// optimization for read requests on compressed static cell pass representations
         /// </summary>
         /// <returns></returns>
         public BitArray GetMachineIDSet() => null;
@@ -203,7 +202,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             });
 
-      // write all the cell passess to the stream, avoiding those cells that do not have any passes
+      // write all the cell passes to the stream, avoiding those cells that do not have any passes
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) => 
             {
                 if (PassCount(i, j) > 0)
