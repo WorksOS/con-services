@@ -20,6 +20,7 @@ namespace VSS.TRex.Tools.KeyScanner
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build()
         .Add(x => x.AddSingleton(new ImmutableClientServer("Webtools-Immutable")))
         .Add(x => x.AddSingleton(new MutableClientServer("Webtools-Mutable")))
