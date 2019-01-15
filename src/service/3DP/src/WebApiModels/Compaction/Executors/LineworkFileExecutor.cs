@@ -19,27 +19,26 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<LineworkRequest>(item);
-
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
+      try
       {
-        return CallTRexEndpoint(request);
-      }
+        var request = CastRequestObjectTo<LineworkRequest>(item);
 
-      if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY"))
+        return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
+          ? ProcessForTRex(request)
+          : ProcessForRaptor(request);
+      }
+      finally
       {
-        return CallRaptorEndpoint(request);
+        ContractExecutionStates.ClearDynamic();
       }
-
-      return ContractExecutionResult.ErrorResult();
     }
 
-    private DxfLineworkFileResult CallTRexEndpoint(LineworkRequest request)
+    private DxfLineworkFileResult ProcessForTRex(LineworkRequest request)
     {
       throw new NotImplementedException("TRex Gateway not yet implemented for LineworkFileExecutor");
     }
 
-    private DxfLineworkFileResult CallRaptorEndpoint(LineworkRequest request)
+    private DxfLineworkFileResult ProcessForRaptor(LineworkRequest request)
     {
       var returnResult = TASNodeErrorStatus.asneUnknown;
 
@@ -77,8 +76,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      throw new NotImplementedException();
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

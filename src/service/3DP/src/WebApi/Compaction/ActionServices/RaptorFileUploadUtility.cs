@@ -23,8 +23,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     }
 
     /// <inheritdoc />
-    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, IFormFile fileData)  // TODO (Aaron) unit test
+    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, IFormFile fileData)
     {
+      if (fileDescriptor == null) return (false, "File descriptor cannot be null");
+      if (fileData == null) return (false, "File data cannot be null");
+
       using (var ms = new MemoryStream())
       {
         fileData.CopyTo(ms);
@@ -58,10 +61,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     }
 
     /// <inheritdoc />
-    public string GenerateUniqueId() => $"{DateTime.Now.Ticks.GetHashCode():X}";  // TODO (Aaron) unit test
+    public string GenerateUniqueId() => $"{DateTime.Now.Ticks.GetHashCode():X}";
 
     /// <inheritdoc />
-    public void DeleteFile(string filename) // TODO (Aaron) unit test
+    public void DeleteFile(string filename)
     {
       if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return;
 

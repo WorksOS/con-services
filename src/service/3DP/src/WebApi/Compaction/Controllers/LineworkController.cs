@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -38,9 +39,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
       requestDto.Filename = fileUploadUtility.GenerateUniqueId() + "_" + requestDto.Filename;
 
-      var executorRequestObj = LineworkRequest
-                               .Create(requestDto, uploadPath)
-                               .Validate();
+      var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
       (bool uploadSuccess, string message) = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
 

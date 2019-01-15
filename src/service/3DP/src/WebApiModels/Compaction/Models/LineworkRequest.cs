@@ -18,32 +18,26 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// The ID is consistent across all deployed environments and so acts as a suitable placeholder here.
     /// </summary>
     private const int RAPTOR_CANARY_PROJECT_ID = 987654321;
-    
-    public string Filename { get; private set; }
-    public IFormFile FileData { get; private set; }
-    public string FilespaceId { get; private set; }
-    public TVLPDDistanceUnits LineworkUnits { get; private set; }
-    public string CoordSystemFileName { get; private set; }
-    public FileDescriptor FileDescriptor { get; private set; }
-    
+
+    public string Filename { get; }
+    public IFormFile FileData { get; }
+    public string FilespaceId { get; }
+    public TVLPDDistanceUnits LineworkUnits { get; }
+    public string CoordSystemFileName { get; }
+    public FileDescriptor FileDescriptor { get; }
+
     public int NumberOfBoundariesToProcess => string.IsNullOrEmpty(CoordSystemFileName) ? 1 : __Global.MAX_BOUNDARIES_TO_PROCESS;
     public int NumberOfVerticesPerBoundary = __Global.MAX_VERTICES_PER_BOUNDARY;
 
-    private LineworkRequest()
-    { }
-
-    public static LineworkRequest Create(DxfFileRequest fileRequest, string uploadPath)
+    public LineworkRequest(DxfFileRequest fileRequest, string uploadPath)
     {
-      return new LineworkRequest
-      {
-        ProjectId = RAPTOR_CANARY_PROJECT_ID,
-        FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, uploadPath, fileRequest.Filename),
-        CoordSystemFileName = fileRequest.CoordinateSystemName?.Trim(),
-        LineworkUnits = (TVLPDDistanceUnits)fileRequest.DxfUnits,
-        Filename = fileRequest.Filename,
-        FileData = fileRequest.FileData,
-        FilespaceId = fileRequest.FilespaceId
-      };
+      ProjectId = RAPTOR_CANARY_PROJECT_ID;
+      FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, uploadPath, fileRequest.Filename);
+      CoordSystemFileName = fileRequest.CoordinateSystemName?.Trim();
+      LineworkUnits = (TVLPDDistanceUnits)fileRequest.DxfUnits;
+      Filename = fileRequest.Filename;
+      FileData = fileRequest.FileData;
+      FilespaceId = fileRequest.FilespaceId;
     }
 
     public new LineworkRequest Validate()
