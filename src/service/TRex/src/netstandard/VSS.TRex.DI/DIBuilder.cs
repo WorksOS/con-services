@@ -14,13 +14,23 @@ namespace VSS.TRex.DI
     public static DIBuilder Instance;
 
     public IServiceProvider ServiceProvider { get; private set; }
-    public IServiceCollection ServiceCollection = new ServiceCollection();
-
+    public IServiceCollection ServiceCollection { get; set; }
+  
     /// <summary>
     /// Default constructor for DI implementation
     /// </summary>
     public DIBuilder()
-    { }
+    {
+       ServiceCollection = new ServiceCollection();
+    }
+
+    /// <summary>
+    /// Default constructor for DI implementation
+    /// </summary>
+    public DIBuilder(IServiceCollection serviceCollection)
+    {
+       ServiceCollection = serviceCollection;
+    }
 
     /// <summary>
     /// Constructor accepting a lambda returning a service collection to add to the DI collection
@@ -99,6 +109,11 @@ namespace VSS.TRex.DI
     public static DIBuilder New() => Instance = new DIBuilder();
 
     /// <summary>
+    /// Static method to create a new DIImplementation instance
+    /// </summary>
+    public static DIBuilder New(IServiceCollection serviceCollection) => Instance = new DIBuilder(serviceCollection);
+
+    /// <summary>
     /// Performs the Inject operation into the DIContext as a fluent operation from the DIImplementation
     /// </summary>
     public DIBuilder Inject()
@@ -129,5 +144,10 @@ namespace VSS.TRex.DI
     /// Allow continuation of building the DI context
     /// </summary>
     public static DIBuilder Continue() => Instance ?? New();
+
+    /// <summary>
+    /// Allow continuation of building the DI context
+    /// </summary>
+    public static DIBuilder Continue(IServiceCollection serviceCollection) => Instance ?? New(serviceCollection);
   }
 }
