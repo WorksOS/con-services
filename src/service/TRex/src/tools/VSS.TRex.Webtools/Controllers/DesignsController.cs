@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
@@ -44,10 +45,10 @@ namespace VSS.TRex.Webtools.Controllers
       {
         return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(Guid.Parse(siteModelUid)));
       }
-      //else if (importedFileTypeEnum == ImportedFileType.Alignment)
-      //{
-      //  return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(Guid.Parse(siteModelUid)));
-      //}
+      else if (importedFileTypeEnum == ImportedFileType.Alignment)
+      {
+        return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(Guid.Parse(siteModelUid)));
+      }
       throw new ArgumentException($"{nameof(GetDesignsForSiteModel)} Unsupported ImportedFileType: {importedFileType}");
     }
 
@@ -72,10 +73,10 @@ namespace VSS.TRex.Webtools.Controllers
       {
         return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
       }
-      //else if (importedFileTypeEnum == ImportedFileType.Alignment)
-      //{
-      //  return new JsonResult(DIContext.Obtain<IAlignmentManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
-      //}
+      else if (importedFileTypeEnum == ImportedFileType.Alignment)
+      {
+        return new JsonResult(DIContext.Obtain<IAlignmentManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
+      }
 
       throw new ArgumentException($"{nameof(DeleteDesignFromSiteModel)} Unsupported ImportedFileType: {importedFileType}");
     }
@@ -139,7 +140,7 @@ namespace VSS.TRex.Webtools.Controllers
       else if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
       {
         var surveyedUtc = DateTime.UtcNow; // unable to parse the date from UI DateTime.Parse(asAtDate);
-        AddTheSSToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly, surveyedUtc);
+        AddTheSurveyedSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly, surveyedUtc);
 
         // upload indices
         var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + ".$DesignSpatialIndex$");
@@ -150,12 +151,12 @@ namespace VSS.TRex.Webtools.Controllers
           throw new ArgumentException($"Unable to copy subgrid index file to S3: {fileNameOnly + ".$DesignSubgridIndex$"}");
 
         return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
-
       }
-      //else if (importedFileTypeEnum == ImportedFileType.Alignment)
-      //{
-      //  return woteva
-      //}
+      else if (importedFileTypeEnum == ImportedFileType.Alignment)
+      {
+        AddTheAlignmentToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly);
+        return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(siteModelGuid).Locate(designUid));
+      }
       throw new ArgumentException($"{nameof(AddDesignToSiteModel)} Unsupported ImportedFileType: {importedFileType}");
     }
 
@@ -172,7 +173,7 @@ namespace VSS.TRex.Webtools.Controllers
 
     private void AddTheDesignSurfaceToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName)
     {
-      // Invoke the service to add the design
+      // Invoke the service to add the design surface
       try
       {
         // Load the file and extract its extents
@@ -184,21 +185,20 @@ namespace VSS.TRex.Webtools.Controllers
         TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new design for the site model
-        var design = DIContext.Obtain<IDesignManager>().Add(siteModelUid,
-           new DesignDescriptor(designUid, string.Empty, localFileName, 0),
-          extents);
+        var design = DIContext.Obtain<IDesignManager>()
+          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), extents);
 
         DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design to siteModel:", e);
+        throw new TRexException($"Exception writing design surface to siteModel:", e);
       }
     }
 
-    private void AddTheSSToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName, DateTime surveyedUtc)
+    private void AddTheSurveyedSurfaceToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName, DateTime surveyedUtc)
     {
-      // Invoke the service to add the design
+      // Invoke the service to add the surveyed surface
       try
       {
         // Load the file and extract its extents
@@ -210,16 +210,42 @@ namespace VSS.TRex.Webtools.Controllers
         TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new design for the site model (note that SS and design types are different)
-        var design = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModelUid,
-          new Designs.Models.DesignDescriptor(designUid, string.Empty, localFileName, 0),
-          surveyedUtc, extents);
+        var design = DIContext.Obtain<ISurveyedSurfaceManager>()
+          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), surveyedUtc, extents);
 
         DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design to siteModel:", e);
+        throw new TRexException($"Exception writing surveyed surface to siteModel:", e);
       }
     }
+
+    private void AddTheAlignmentToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName)
+    {
+      // Invoke the service to add the alignment
+      try
+      {
+        // Load the file and extract its extents
+        // todoJeannie AlignmentDesign
+        TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+        TTM.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
+
+        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+        TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+
+        // Create the new design for the site model
+        var design = DIContext.Obtain<IAlignmentManager>()
+          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), extents);
+
+        //DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+      }
+      catch (Exception e)
+      {
+        throw new TRexException($"Exception writing alignment to siteModel:", e);
+      }
+    }
+
   }
 }

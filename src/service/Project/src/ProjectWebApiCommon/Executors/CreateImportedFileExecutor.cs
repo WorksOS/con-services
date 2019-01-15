@@ -53,7 +53,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out var useRaptorGatewayDesignImport);
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
-                             createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface;
+                             createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface ||
+                             createimportedfile.ImportedFileType == ImportedFileType.Alignment;
 
       // need to write to Db prior to 
       //      notifying raptor, as raptor needs the legacyImportedFileID 
@@ -95,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db (Raptor - todo is this still needed?)  
+        //Need to update zoom levels in Db (Raptor - todo is this still needed (i.e. with new tiling process)?)  
         _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
             createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,

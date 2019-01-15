@@ -2,30 +2,29 @@
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 
-namespace VSS.TRex.SurveyedSurfaces.Interfaces
+namespace VSS.TRex.Alignments.Interfaces
 {
-  public interface ISurveyedSurfaceManager
+  public interface IAlignmentManager
   {
     /// <summary>
-    /// Add a new surveyed surface to a sitemodel
+    /// Add a new Alignment to a sitemodel
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>
-    /// <param name="asAtDate"></param>
     /// <param name="extents"></param>
-    ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents);
+    IAlignment Add(Guid siteModelUid, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents);
 
     /// <summary>
     /// List the surveyed surfaces for a site model
     /// </summary>
-    ISurveyedSurfaces List(Guid siteModelUid);
+    IAlignments List(Guid siteModelUid);
 
     /// <summary>
     /// Remove a given surveyed surface from a site model
     /// </summary>
     /// <param name="siteModelUid"></param>
-    /// <param name="surveySurfaceUid"></param>
+    /// <param name="alignmentUid"></param>
     /// <returns></returns>
-    bool Remove(Guid siteModelUid, Guid surveySurfaceUid);
+    bool Remove(Guid siteModelUid, Guid alignmentUid);
   }
 }
