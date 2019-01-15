@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using Xunit;
 
@@ -11,7 +10,7 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGReader_Creation()
         {
-            //Verify the no-arg connstructor fails
+            //Verify the no-arg constructor fails
             try
             {
                 TAGReader stream = new TAGReader();
@@ -20,7 +19,7 @@ namespace TAGFiles.Tests
             }
             catch (Exception E)
             {
-                Assert.True(E is ArgumentException, "Exception thrown n is incorrect");
+                Assert.True(E is ArgumentException, "Exception thrown is incorrect");
             }
 
             TAGReader reader = new TAGReader(new MemoryStream());

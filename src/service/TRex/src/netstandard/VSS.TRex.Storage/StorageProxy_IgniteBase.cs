@@ -3,14 +3,12 @@ using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Storage.Utilities;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
@@ -22,21 +20,15 @@ namespace VSS.TRex.Storage
 
     private static readonly IMutabilityConverter MutabilityConverter = DIContext.Obtain<IMutabilityConverter>();
 
-    protected IIgnite ignite;
+    protected readonly IIgnite ignite;
 
     protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> nonSpatialCache;
 
-    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache
-    {
-      get { return nonSpatialCache; }
-    }
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache => nonSpatialCache;
 
     protected IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> spatialCache;
 
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache
-    {
-      get { return spatialCache; }
-    }
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache; 
 
     /// <summary>
     /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.
@@ -147,7 +139,7 @@ namespace VSS.TRex.Storage
 
       if (mutableStream != immutableStream)
       {
-        mutableStream.Dispose();
+        mutableStream?.Dispose();
       }
 
       return immutableStream;

@@ -238,6 +238,7 @@ namespace VSS.TRex.Tests
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build();
 
       var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
