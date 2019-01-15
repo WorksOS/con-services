@@ -98,26 +98,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public ScheduleResult ScheduleSnakepitJob(
       [FromServices] ISchedulerProxy scheduler,
-      [FromQuery] Guid projectUid,
-      [FromQuery] string fileName,
-      [FromQuery] string machineNames,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] CoordType coordType = CoordType.Northeast)
+      [FromQuery] string fileName
+      )
     {
       //The URL to get the export data is in snakepit construct url from configuration
       var snakepitHost = ConfigStore.GetValueString("SNAKEPIT_HOST", null);
       if (!string.IsNullOrEmpty(snakepitHost))
       {
-        var exportDataUrl = $"{HttpContext.Request.Scheme}://{snakepitHost}/export?projectUid={projectUid}&fileName={fileName}&coordType={coordType}";
-
-        if (filterUid.HasValue)
-        {
-          exportDataUrl = $"{exportDataUrl}&filterUid={filterUid}";
-        }
-        if (!string.IsNullOrEmpty(machineNames))
-        {
-          exportDataUrl = $"{exportDataUrl}&machineNames={machineNames}";
-        }
+        var exportDataUrl = $"{HttpContext.Request.Scheme}://{snakepitHost}/export{HttpContext.Request.QueryString.ToString()}";
 
         return ScheduleJob(exportDataUrl, fileName, scheduler, 3 * FIVE_MIN_SCHEDULER_TIMEOUT);
       }
