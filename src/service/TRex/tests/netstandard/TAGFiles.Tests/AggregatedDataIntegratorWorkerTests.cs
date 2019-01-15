@@ -101,7 +101,6 @@ namespace TAGFiles.Tests
       converters.Length.Should().Be(expectedFileCount);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
 
@@ -122,8 +121,8 @@ namespace TAGFiles.Tests
         MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
       };
       worker.ProcessTask(ProcessedTasks);
-      
-      // The number of TAG files processing in one aggregation epoch is limited
+
+      // The number of TAG files processing in one aggregation epoch is limited by MaxMappedTagFilesToProcessPerAggregationEpoch
       ProcessedTasks.Count.Should().Be(maxTAGFilesPerAggregation);
 
       // Check the set of TAG files created the expected number of sub grids

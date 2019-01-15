@@ -13,7 +13,7 @@ namespace TAGFiles.Tests
             //Verify the no-arg constructor fails
             try
             {
-                TAGReader stream = new TAGReader();
+                TAGReader _ = new TAGReader();
 
                 Assert.True(false);
             }
