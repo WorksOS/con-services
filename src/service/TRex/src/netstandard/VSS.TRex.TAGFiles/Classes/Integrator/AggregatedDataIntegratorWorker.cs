@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
+    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
 
     private AggregatedDataIntegratorWorker()
     {
@@ -97,7 +97,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       ProcessedTasks.Clear();
 
       // Set capacity to maximum expected size to prevent List resizing while assembling tasks
-      ProcessedTasks.Capacity = _maxMappedTagFilesToProcessPerAggregationEpoch;
+      ProcessedTasks.Capacity = MaxMappedTagFilesToProcessPerAggregationEpoch;
 
       try
       {
@@ -152,11 +152,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // list to allow the TAG file processors to prepare additional TAG files
           // while this set is being integrated into the model.                    
 
-          if (TasksToProcess.Count > 0)
+          while (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
+                 TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
+          {
+             ProcessedTasks.Add(task);
+          }
+
+      /*    if (TasksToProcess.Count > 0)
           {
             for (int I = 0; I < TasksToProcess.Count; I++)
             {
-              if (ProcessedTasks.Count < _maxMappedTagFilesToProcessPerAggregationEpoch)
+              if (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch)
               {
                 if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
                   ProcessedTasks.Add(task);
@@ -166,7 +172,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 break;
               }
             }
-          }
+          }*/
 
           Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
 

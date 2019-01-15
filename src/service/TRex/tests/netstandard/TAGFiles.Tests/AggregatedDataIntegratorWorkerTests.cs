@@ -91,12 +91,14 @@ namespace TAGFiles.Tests
     }
 
     [Theory]
-    [InlineData("Dimensions2018-CaseMachine")]
-    public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet(string tagFileCollectionFolder)
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 9)]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet(string tagFileCollectionFolder, int expectedFileCount, int maxTAGFilesPerAggregation, int expectedSubGridCount)
     {
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
         .ToList().OrderBy(x => x).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+
+      converters.Length.Should().Be(expectedFileCount);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
@@ -115,14 +117,17 @@ namespace TAGFiles.Tests
       // Construct an integration worker and ask it to perform the integration
       List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
-      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
+      {
+        MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
+      };
       worker.ProcessTask(ProcessedTasks);
       
       // The number of TAG files processing in one aggregation epoch is limited
-      ProcessedTasks.Count.Should().Be(VSS.TRex.Common.Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH /*converters.Length*/);
+      ProcessedTasks.Count.Should().Be(maxTAGFilesPerAggregation);
 
-      // The first tranche of aggregated TAG file only modified 3 sub grids in the target site model
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(3);
+      // Check the set of TAG files created the expected number of sub grids
+      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubGridCount);
     }
 
     [Fact]

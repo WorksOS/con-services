@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
@@ -49,6 +50,17 @@ namespace VSS.TRex.Tests.TestFixtures
       numDeleted = 0;
       numUpdated = 0;
       numBytesWritten = 0;
+    }
+
+    /// <summary>
+    /// Override the look-aside get semantics into the transaction writes so that gets don't read through into the
+    /// null cache reference in the underlying base class.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public override TV Get(TK key)
+    {
+      return PendingTransactedWrites.TryGetValue(key, out TV value) ? value : throw new KeyNotFoundException($"Key {key} not found");
     }
   }
 

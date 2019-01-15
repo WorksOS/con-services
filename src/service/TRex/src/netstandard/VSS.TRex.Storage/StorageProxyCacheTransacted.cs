@@ -16,7 +16,7 @@ namespace VSS.TRex.Storage
         private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
 
         private readonly HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
-        private readonly Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
+        protected readonly Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
 
         private long BytesWritten { get; set; }
 

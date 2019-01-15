@@ -578,7 +578,7 @@ namespace VSS.TRex.SiteModels
             // The SiteModelID read from the FS file does not match the ID expected.
 
             // RPW 31/1/11: This used to be an error with it's own error code. This is now
-            // changed to a warning, but loading of the sitemodel is allowed. This
+            // changed to a warning, but loading of the site model is allowed. This
             // is particularly useful for testing purposes where copying around projects
             // is much quicker than reprocessing large sets of TAG files
 
