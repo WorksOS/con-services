@@ -199,7 +199,7 @@ constructor(
     this.getProjectExtents();
     this.getExistenceMapSubGridCount();
     this.getSurveyedSurfaces();
-    this.getDesigns();
+    this.getDesignSurfaces();
     this.getMachines();
     this.getMachineDesigns();
     this.getSiteProofingRuns();
@@ -476,52 +476,41 @@ constructor(
       this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 
-  public addADummyDesign(): void {
+  public addADummyDesignSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
 
-    this.projectService.addDesign(this.projectUid, descriptor).subscribe(
+    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
-        this.getDesigns();
+        this.getDesignSurfaces();
       });
   }
 
-  public addNewDesign(): void {
+  public addNewDesignSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
     descriptor.offset = 0;
 
-    this.projectService.addDesign(this.projectUid, descriptor).subscribe(
+    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
-        this.getDesigns();
+        this.getDesignSurfaces();
       });
   }
 
-  //public addNewDesignFromS3(): void {
-  //  var descriptor = new DesignDescriptor();
-  //  descriptor.fileName = this.designFileName;
-  //  descriptor.designId = this.designUID;
 
-  //  this.projectService.addDesignFromS3(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
-  //    uid => {
-  //      this.newDesignGuid = uid.designId;
-  //      this.getDesigns();
-  //    });
-  //}
-
-    public getDesigns(): void {
+  public getDesignSurfaces(): void {
     var result: Design[] = [];
-    this.projectService.getDesigns(this.projectUid).subscribe(
+    this.projectService.getDesignSurfaces(this.projectUid).subscribe(
       designs => {
         designs.forEach(design => result.push(design));
         this.designs = result;
       });  
     }
 
-  public deleteDesign(design: Design): void {
-    this.projectService.deleteDesign(this.projectUid, design.id).subscribe(x =>
+  public deleteDesignSurface(design: Design): void {
+    this.projectService.deleteDesignSurface(this.projectUid, design.id).subscribe(x =>
       this.designs.splice(this.designs.indexOf(design), 1));
   }
 

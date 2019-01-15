@@ -90,29 +90,29 @@ export class ProjectService {
   public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<SurveyedSurface> {
     return this.executePostRequest<SurveyedSurface>
     ('addSurveyedSurface',
-      `surveyedsurfaces/${projectUid}?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,
+      `designs/${projectUid}/SurveyedSurface?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,
       null);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
-    return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `surveyedsurfaces/${projectUid}`);
+    return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `designs/${projectUid}/SurveyedSurface`);
   }
 
   public deleteSurveyedSurface(projectUid: string, surveyedSurfaceId: string): Observable<any> {
-    return this.executeDeleteRequest<any>('deleteSurveyedSurface', `surveyedsurfaces/${projectUid}/${surveyedSurfaceId}`);
+    return this.executeDeleteRequest<any>('deleteSurveyedSurface', `designs/${projectUid}/SurveyedSurface/${surveyedSurfaceId}`);
   }
 
-  public addDesign(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
+  public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}`, null);
+      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileName=${descriptor.fileName}`, null);
   }
 
-  public getDesigns(projectUid: string): Observable<Design[]> {
-    return this.executeRequest<Design[]>('getDesigns', `designs/${projectUid}`);
+  public getDesignSurfaces(projectUid: string): Observable<Design[]> {
+    return this.executeRequest<Design[]>('getDesignSurfaces', `designs/${projectUid}/DesignSurface`);
   }
 
-  public deleteDesign(projectUid: string, designId: string): Observable<any> {
-    return this.executeDeleteRequest<any>('deleteDesign', `designs/${projectUid}/${designId}`);
+  public deleteDesignSurface(projectUid: string, designId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteDesignSurface', `designs/${projectUid}/DesignSurface/${designId}`);
   }
 
   public getMachineDesigns(projectUid: string): Observable<MachineDesign[]> {

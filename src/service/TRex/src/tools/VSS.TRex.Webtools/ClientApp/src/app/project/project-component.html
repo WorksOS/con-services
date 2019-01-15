@@ -128,11 +128,11 @@ Composite elevation profiles:
   Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}
 </p>
 <br />
-<H3>Designs [{{designs.length}} in total]</H3>
+<H3>Design Surface [{{designs.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /></p>
-<p><button (click)=addNewDesign()>Add New Design</button>   <button (click)="addADummyDesign()">Add a dummy!</button></p>
+<p><button (click)=addNewDesignSurface()>Add New Design Surface</button>   <button (click)="addADummyDesignSurface()">Add a dummy!</button></p>
 <p *ngFor="let design of designs">
-  <button (click)="deleteDesign(design)">Delete</button>
+  <button (click)="deleteDesignSurface(design)">Delete</button>
   Design: {{ design.id }} with offset {{design.designDescriptor.offset}} from file {{design.designDescriptor.fileName}}
 </p>
 <br />
