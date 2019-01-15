@@ -1,7 +1,9 @@
 ﻿using System;
+using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Storage
@@ -30,11 +32,8 @@ namespace VSS.TRex.Storage
         /// </summary>
         private void EstablishCaches()
         {
-            spatialCache = new StorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>(
-                ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
-            nonSpatialCache =
-                new StorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>(
-                    ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+          spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+          nonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
         }
       
         /// <summary>
@@ -48,7 +47,7 @@ namespace VSS.TRex.Storage
             numBytesWritten = 0;
 
             try
-            {
+            {                
                 spatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
 
                 numDeleted += _numDeleted;

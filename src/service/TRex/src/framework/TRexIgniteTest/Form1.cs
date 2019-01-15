@@ -1222,7 +1222,7 @@ namespace TRexIgniteTest
                                            tagFileContent = new byte[0]
                                   };
 
-                td = TagFileRepository.GetTagfile(td);
+                td = TagFileRepository.GetTagFile(td);
                 MessageBox.Show($@"ProjectUID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
 
             }

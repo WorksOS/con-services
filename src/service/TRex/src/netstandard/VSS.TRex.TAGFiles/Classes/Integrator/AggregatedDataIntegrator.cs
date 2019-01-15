@@ -13,9 +13,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// </summary>
         public ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess { get; set; } = new ConcurrentQueue<AggregatedDataIntegratorTask>();
 
-        //     FPendingFilesInterlock : TCriticalSection;
-
-        // FProcessEvent is used to wake up this processing thread when somthing arrives
+        // FProcessEvent is used to wake up this processing thread when something arrives
         // into the FFilesToProcess list
         //      FProcessEvent : TSimpleEvent;
 
@@ -27,7 +25,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // the snippet processor is ready to shutdown.
         //      FShutdownReadyEvent : TSimpleEvent;
 
-        //      FPendingFilesToBeProcessed : TStringList;
         private int PendingFilesToBeProcessedCount;
 
         private int OutstandingCellPasses;
@@ -36,7 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         //      FNumberOfTasksBeingProcessed : Integer;
         //      FRemainingNumberOfTasksBeingProcessed : Integer;
 
-        //      FWorkers : Array of TSVOICAggregatedDataIntegratorWorkerThread;
+        //      FWorkers : Array of AggregatedDataIntegratorWorkerThread;
 
         //    public
         //      property ShutdownReadyEvent : TSimpleEvent read FShutdownReadyEvent;
@@ -50,10 +47,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                       IMachine machine,
                                       IServerSubGridTree aggregatedCellPasses,
                                       int aggregatedCellPassCount,
-                                      IProductionEventLists aggregatedMachineEvents /*,
-                                    const ATaskFinalizer : TAggregationTaskFinalizer*/)
+                                      IProductionEventLists aggregatedMachineEvents)
         {
-            AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask()
+            AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask
             {
                 TargetSiteModel = siteModel,
                 TargetSiteModelID = siteModel.ID,
@@ -61,29 +57,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 TargetMachineID = machine.ID,
                 AggregatedCellPasses = aggregatedCellPasses,
                 AggregatedMachineEvents = aggregatedMachineEvents,
-                //Finalizer = ATaskFinalizer,
                 AggregatedCellPassCount = aggregatedCellPassCount
             };
-
-            //NewTeask.Finalizer.FinalizedTask = NewTask,
 
             IncrementOutstandingCellPasses(aggregatedCellPassCount);
             System.Threading.Interlocked.Add(ref TotalCellPassesProcessed, aggregatedCellPassCount);
 
             TasksToProcess.Enqueue(NewTask);
 
-            /*
-            if VLPDSvcLocations.VLPDTagProc_PerformIsFileInPendingCheckOnTAGFileSubmission then
-    if Assigned(ATaskFinalizer) then
-      begin
-        FPendingFilesInterlock.Acquire;
-            try
-          FPendingFilesToBeProcessed.Add(ATaskFinalizer.FileName);
-        finally
-          FPendingFilesInterlock.Release;
-            end;
-            end;
-*/
             System.Threading.Interlocked.Increment(ref PendingFilesToBeProcessedCount);
 
             // FProcessEvent.SetEvent;
@@ -97,10 +78,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // tasks to process list.
         //      function RemoveTaskFromProcessList(const Task: TSVOICAggregatedDataIntegratorTask): Boolean;
 
-        //      Procedure RemoveFileFromPendingList(const AFileName : TFileName);
-
-        //      Function IsFileInPendingList(const AFileName : TFileName) : Boolean;
-
         // CountOfTasksToProcess returns the number of tasks remaining in the
         // tasks to process list. This is a thread safe call, multiple threads may safely add
         // files to the list in a concurrent fashion if required.
@@ -108,7 +85,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         public AggregatedDataIntegrator()
         {
-
         }
 
         //        Function SystemMonitorString : String;
@@ -125,8 +101,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // CanAcceptMoreAggregatedCellPasses keeps track of whether the buffer of cell
         // passes currently pending integration into the database can accept more cell passes
         public bool CanAcceptMoreAggregatedCellPasses => true;
-
-        // Procedure GetPendingFileList(const FileList : TStringList);
 
         public void IncrementOutstandingCellPasses(int Increment) => System.Threading.Interlocked.Add(ref OutstandingCellPasses, Increment);
     }

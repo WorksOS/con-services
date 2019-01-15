@@ -12,7 +12,7 @@ namespace VSS.TRex.Storage
     /// <typeparam name="TV"></typeparam>
     public class StorageProxyCache<TK, TV> : IStorageProxyCache<TK, TV>
     {
-        private ICache<TK, TV> Cache;
+        private readonly ICache<TK, TV> Cache;
       
         public string Name
         {
