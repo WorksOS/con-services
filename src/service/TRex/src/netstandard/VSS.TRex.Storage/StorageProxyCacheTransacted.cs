@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage
 {
@@ -11,14 +11,14 @@ namespace VSS.TRex.Storage
     /// </summary>
     /// <typeparam name="TK"></typeparam>
     /// <typeparam name="TV"></typeparam>
-    public class StorageProxyCacheTransacted<TK, TV> : StorageProxyCache<TK, TV>
+    public class StorageProxyCacheTransacted<TK, TV> : StorageProxyCache<TK, TV>, IStorageProxyCacheTransacted<TK, TV>
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
 
-        private HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
-        private Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
+        private readonly HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
+        private readonly Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
 
-        public long BytesWritten { get; set; }
+        private long BytesWritten { get; set; }
 
         public StorageProxyCacheTransacted(ICache<TK, TV> cache) : base(cache)
         {
