@@ -114,8 +114,6 @@ namespace TestUtility
 
       var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
       ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
-      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc = ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc.ToUniversalTime();
-      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc = ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc.ToUniversalTime();
 
       try
       {

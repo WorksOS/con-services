@@ -54,8 +54,8 @@ namespace VSS.TRex.SubGrids
 
     private SubGridTreeBitmapSubGridBits _sieveBitmask;
 
-    ISubGrid _subGrid;
-    IServerLeafSubGrid _subGridAsLeaf;
+    private ISubGrid _subGrid;
+    private IServerLeafSubGrid _subGridAsLeaf;
 
     private FilteredValueAssignmentContext _assignmentContext;
     private ISubGridSegmentIterator _segmentIterator;
@@ -78,7 +78,7 @@ namespace VSS.TRex.SubGrids
 
 
     /// <summary>
-    /// Constructor for the subgrid retriever helper
+    /// Constructor for the sub grid retriever helper
     /// </summary>
     /// <param name="sitemodel"></param>
     /// <param name="storageProxy"></param>
@@ -127,7 +127,7 @@ namespace VSS.TRex.SubGrids
 
       // Create and configure the assignment context which is used to contain
       // a filtered pass and its attendant machine events and target values
-      // prior to assignment to the client subgrid.
+      // prior to assignment to the client sub grid.
       _assignmentContext = new FilteredValueAssignmentContext();
     }
 
@@ -260,7 +260,7 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <summary>
-    /// Retrieves cell values for a subgrid stripe at a time. Currently deprecated in favour of RetriveSubGridCell()
+    /// Retrieves cell values for a sub grid stripe at a time. Currently deprecated in favour of RetrieveSubGridCell()
     /// </summary>
     /// <param name="StripeIndex"></param>
     /// <returns></returns>
@@ -271,7 +271,7 @@ namespace VSS.TRex.SubGrids
 
       // bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
-      // Iterate over the cells in the subgrid applying the filter and assigning the requested information into the subgrid
+      // Iterate over the cells in the sub grid applying the filter and assigning the requested information into the sub grid
 
       //if (Debug_ExtremeLogSwitchD)
       //    Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {CellX}x{CellY}");
@@ -398,7 +398,7 @@ namespace VSS.TRex.SubGrids
               // operation is intended to locate cell passes belonging to superseded
               // layers, in which case they are not considered for providing the
               // requested value. However, if there is no filter is in effect, then the
-              // global latest information for the subgrid may be consulted first
+              // global latest information for the sub grid may be consulted first
               // to see if the appropriate values came from the last physically collected
               // cell pass in the cell. Note that the tracking of latest values is
               // also true for time, so that the time recorded in the latest values structure
@@ -469,7 +469,7 @@ namespace VSS.TRex.SubGrids
                       // This cannot be answered here
                       break;
                     default:
-                      Debug.Assert(false, "Unimplemented data type for subgrid requiring lift processing results");
+                      Debug.Assert(false, "Unimplemented data type for sub grid requiring lift processing results");
                       break;
                   }
                 }
@@ -580,10 +580,10 @@ namespace VSS.TRex.SubGrids
 
     /// <summary>
     /// PruneSubGridRetrievalHere determines if there is no point continuing the
-    /// process of retrieving the subgrid due to the impossibility of returning any
-    /// valid values for any cells in the subgrid due to a combination of filter
-    /// settings and flags set in the subgrid that denote the types of data that
-    /// are, or are not, contained in the subgrid.
+    /// process of retrieving the sub grid due to the impossibility of returning any
+    /// valid values for any cells in the sub grid due to a combination of filter
+    /// settings and flags set in the sub grid that denote the types of data that
+    /// are, or are not, contained in the sub grid.
     /// </summary>
     /// <returns></returns>
     private bool PruneSubGridRetrievalHere()
@@ -673,14 +673,14 @@ namespace VSS.TRex.SubGrids
 
         _profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
-        _profiler.Configure(_siteModel, _pdExistenceMap, _gridDataType, _filter.AttributeFilter, _filter.SpatialFilter,
+        _profiler.Configure(ProfileStyle.CellPasses, _siteModel, _pdExistenceMap, _gridDataType, new FilterSet(_filter),
             null, null, _populationControl, new CellPassFastEventLookerUpper(_siteModel));
 
         _cellProfile = new ProfileCell();
 
         // Create and configure the assignment context which is used to contain
         // a filtered pass and its attendant machine events and target values
-        // prior to assignment to the client subgrid.
+        // prior to assignment to the client sub grid.
         _assignmentContext.CellProfile = _cellProfile;
       }
 
@@ -706,7 +706,7 @@ namespace VSS.TRex.SubGrids
             _useLastPassGrid = true;
           }
 
-          // First get the subgrid we are interested in
+          // First get the sub grid we are interested in
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
           _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, CellX, CellY, _level, false, false);
@@ -717,15 +717,15 @@ namespace VSS.TRex.SubGrids
           {
             // This should never really happen, but we'll be polite about it
             Log.LogWarning(
-              $"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubgrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
+              $"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
             return ServerRequestResult.SubGridNotFound;
           }
 
-          // Now process the contents of that subgrid into the subgrid to be returned to the client.
+          // Now process the contents of that sub grid into the sub grid to be returned to the client.
 
           if (!_subGrid.IsLeafSubGrid()) // It's a leaf node
           {
-            Log.LogInformation("Requests of node subgrids in the server subgrid are not yet supported");
+            Log.LogInformation("Requests of node sub grids in the server sub grid are not yet supported");
             return Result;
           }
 
@@ -735,7 +735,7 @@ namespace VSS.TRex.SubGrids
             return Result;
           }
 
-        // SIGLogMessage.PublishNoODS(Nil, Format('Getting subgrid leaf at %dx%d', [CellX, CellY]), slmcDebug);
+        // SIGLogMessage.PublishNoODS(Nil, Format('Getting sub grid leaf at %dx%d', [CellX, CellY]), slmcDebug);
 
         _subGridAsLeaf = (IServerLeafSubGrid)_subGrid;
         _globalLatestCells = _subGridAsLeaf.Directory.GlobalLatestCells;
@@ -768,7 +768,7 @@ namespace VSS.TRex.SubGrids
           // TODO Add when cell left build settings supported
           // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
 
-          // Determine if a sieve filter is required for the subgrid where the sieve matches
+          // Determine if a sieve filter is required for the sub grid where the sieve matches
           // the X and Y pixel world size (used for WMS tile computation)
           _subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -791,7 +791,7 @@ namespace VSS.TRex.SubGrids
             //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
             //  Log.LogDebug($"Performing stripe iteration at {CellX}x{CellY}");
 
-            // Iterate over the stripes in the subgrid processing each one in turn.
+            // Iterate over the stripes in the sub grid processing each one in turn.
             for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
               RetrieveSubGridStripe(I);
 

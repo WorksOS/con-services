@@ -194,7 +194,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     }
 
 
-    private const string BinaryTestFilename = "TestFiles\\TestBinary.ttm";
+    private const string BinaryTestFilename = "TestFiles/TestBinary.ttm";
     [DeploymentItem(BinaryTestFilename)]
     [TestMethod]
     public void TestPostBinaryDataWithNoContentType()

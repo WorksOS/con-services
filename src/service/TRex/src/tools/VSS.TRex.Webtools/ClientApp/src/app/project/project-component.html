@@ -52,12 +52,21 @@
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
 
-<H3>Profiling points</H3>
+<H3>Profiling Points</H3>
 <p>
   <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">First point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
   <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">Second point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
   Points in profile: {{numPointInProfile}}
 </p>
+
+<H3>Summary Volumes Profiling Points</H3>
+<p>
+  <label><input type="checkbox" [(ngModel)]="updateFirstPointLocationSV">First point X:</label><input type="number" [(ngModel)]="svFirstPointX" /> Y:<input type="number" [(ngModel)]="svFirstPointY" />
+  <label><input type="checkbox" [(ngModel)]="updateSecondPointLocationSV">Second point X:</label><input type="number" [(ngModel)]="svSecondPointX" /> Y:<input type="number" [(ngModel)]="svSecondPointY" />
+  Points in profile: {{numPointInProfile}}
+</p>
+
+
 
 <p>
   Design to profile: <input type="text" [(ngModel)]="designProfileUid">

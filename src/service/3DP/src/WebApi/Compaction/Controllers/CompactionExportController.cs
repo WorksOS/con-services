@@ -249,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="restrictOutput">Output .CSV file is restricted to 65535 rows if it is true.</param>
     /// <param name="rawDataOutput">Column headers in an output .CSV file's are in the dBase format.</param>
     /// <param name="fileName">Output file name.</param>
-    /// <param name="filterUid">The filter Uid to apply to the export results</param>
+    /// <param name="filterUid">The filter uid to apply to the export results</param>
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
     public async Task<FileResult> GetExportReportMachinePasses(
@@ -311,7 +311,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project unique identifier.</param>
     /// <param name="fileName">Output file name.</param>
     /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
-    /// <param name="filterUid">The filter Uid to apply to the export results</param>
+    /// <param name="filterUid">The filter uid to apply to the export results</param>
     [Route("api/v2/export/surface")]
     [HttpGet]
     public async Task<FileResult> GetExportReportSurface(

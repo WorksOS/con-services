@@ -16,7 +16,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -77,6 +77,7 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
+      VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI();
 
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);

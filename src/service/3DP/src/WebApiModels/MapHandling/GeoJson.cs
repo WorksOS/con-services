@@ -1,34 +1,55 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
   /// <summary>
   /// Classes that are the model for the GeoJSON for design boundaries.
   /// </summary>
-  /// 
-  public class Geometry
+  public class GeoJson
   {
-    public string type { get; set; }
-    public List<List<List<double>>> coordinates { get; set; }
-  }
+    internal class FeatureType
+    {
+      public const string FEATURE = "Feature";
+      public const string FEATURE_COLLECTION = "FeatureCollection";
+    }
 
-  public class Properties
-  {
-    public string name { get; set; }
+    [JsonProperty(PropertyName = "type")]
+    public string Type { get; set; }
+    
+    [JsonProperty(PropertyName = "features")]
+    public List<Feature> Features { get; set; }
   }
 
   public class Feature
   {
-    public string type { get; set; }
-    public Geometry geometry { get; set; }
-    public Properties properties { get; set; }
+    [JsonProperty(PropertyName = "type")]
+    public string Type { get; set; }
+
+    [JsonProperty(PropertyName = "geometry")]
+    public Geometry Geometry { get; set; }
+
+    [JsonProperty(PropertyName = "properties")]
+    public Properties Properties { get; set; }
   }
 
-  public class RootObject
+  public class Geometry
   {
-    public string type { get; set; }
-    public List<Feature> features { get; set; }
+    internal class Types
+    {
+      public const string MULTI_LINE_STRING = "MultiLineString";
+    }
+
+    [JsonProperty(PropertyName = "type")]
+    public string Type { get; set; }
+
+    [JsonProperty(PropertyName = "coordinates")]
+    public List<List<double[]>> Coordinates { get; set; }
   }
 
+  public class Properties
+  {
+    [JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+  }
 }

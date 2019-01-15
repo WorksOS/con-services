@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.ResultHandling
+﻿namespace VSS.Productivity3D.Common.ResultHandling
 {
   public enum MissingTargetDataResultType
   {

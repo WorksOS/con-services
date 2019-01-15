@@ -1,6 +1,4 @@
-﻿using System;
-using VSS.TRex.Servers.Compute;
-using Xunit;
+﻿using Xunit;
 
 namespace VSS.TRex.Tests.Servers.Server
 {

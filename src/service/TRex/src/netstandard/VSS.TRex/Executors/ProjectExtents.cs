@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Executors

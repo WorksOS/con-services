@@ -37,9 +37,9 @@ namespace VSS.Tile.Service.Common.Models
     public DisplayMode? mode { get; private set; }
     public string language { get; private set; }
     public ProjectData project { get; private set; }
-    public byte[] productionData { get; private set; }
     public MapParameters mapParameters { get; set; }
     public IDictionary<string, string> customHeaders { get; set; }
+    public List<WGSPoint> geoJsonPoints { get; set; }
 
     /// <summary>
     /// Create instance of TileGenerationRequest
@@ -65,7 +65,8 @@ namespace VSS.Tile.Service.Common.Models
       string language,
       ProjectData project,
       MapParameters mapParameters,
-      IDictionary<string, string> customHeaders
+      IDictionary<string, string> customHeaders,
+      List<WGSPoint> geoJsonPoints
       )
     {
       return new TileGenerationRequest
@@ -90,7 +91,8 @@ namespace VSS.Tile.Service.Common.Models
         language = language ?? "en-US",
         project = project,
         mapParameters = mapParameters,
-        customHeaders = customHeaders
+        customHeaders = customHeaders,
+        geoJsonPoints = geoJsonPoints
       };
     }
 

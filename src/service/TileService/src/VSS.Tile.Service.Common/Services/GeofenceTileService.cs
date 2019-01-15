@@ -23,6 +23,7 @@ namespace VSS.Tile.Service.Common.Services
     const int DEFAULT_CUSTOM_BOUNDARY_COLOR = 0xF4511E;
     const int DEFAULT_DESIGN_BOUNDARY_COLOR = 0x008DBD;
     const int DEFAULT_ALIGNMENT_BOUNDARY_COLOR = 0xFF0000;
+    private const int GEOJSON_BOUNDARY_COLOR = 0x000000;
 
     public GeofenceTileService(ILoggerFactory logger)
     {
@@ -78,6 +79,27 @@ namespace VSS.Tile.Service.Common.Services
     public byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites)
     {
       return GetGeofencesBitmap(parameters, sites, true);
+    }
+
+    /// <summary>
+    /// Gets a map tile with the geoJson boundary drawn on it.
+    /// </summary>
+    /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
+    /// <param name="points">The points from the geoJson</param>
+    /// <returns></returns>
+    public byte[] GetGeoJsonBitmap(MapParameters parameters, List<WGSPoint> points)
+    {
+      byte[] geofenceImage = null;
+
+      if (points != null && points.Any())
+      {
+        using (Image<Rgba32> bitmap = new Image<Rgba32>(parameters.mapWidth, parameters.mapHeight))
+        {
+          DrawGeofence(parameters, bitmap, "Geofence GeoJson", points, GEOJSON_BOUNDARY_COLOR, true);        
+          geofenceImage = bitmap.BitmapToByteArray();
+        }
+      }
+      return geofenceImage;
     }
 
     /// <summary>
@@ -171,6 +193,7 @@ namespace VSS.Tile.Service.Common.Services
   public interface IGeofenceTileService
   {
     byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites);
+    byte[] GetGeoJsonBitmap(MapParameters parameters, List<WGSPoint> points);
     byte[] GetBoundariesBitmap(MapParameters parameters, IEnumerable<GeofenceData> customBoundaries);
     byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<WGSPoint>> filterPoints, FilterBoundaryType boundaryType);
   }

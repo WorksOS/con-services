@@ -4,12 +4,12 @@ using VSS.TRex.Types;
 namespace VSS.TRex.SubGridTrees.Client.Interfaces
 {
     /// <summary>
-    /// Factory interface used to implement concrete client leaf subgrid factory for use by processing
-    /// and other business logic that needs to create client leaf subgrids of varying kinds.
-    /// This factory may will eventually use dependency injection to derive the varieties of leaf subgrids
+    /// Factory interface used to implement concrete client leaf sub grid factory for use by processing
+    /// and other business logic that needs to create client leaf sub grids of varying kinds.
+    /// This factory may will eventually use dependency injection to derive the varieties of leaf sub grids
     /// that can be produced
     /// </summary>
-    public interface IClientLeafSubgridFactory
+    public interface IClientLeafSubGridFactory
     {
         /// <summary>
         /// Register a type implementing IClientLeafSubGrid against a grid data type for the factory to 
@@ -20,14 +20,28 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor);
 
         /// <summary>
-        /// Construct a concrete instance of a subgrid implementing the IClientLeafSubGrid interface based
+        /// Construct a concrete instance of a sub grid implementing the IClientLeafSubGrid interface based
         /// on the role it should play according to the grid data type requested. All aspects of leaf ownership
-        /// by a subgrid tree, parentage, level, cell size, index origin offset are delegated responsibilities
+        /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
         /// of the caller or a derived factory class
         /// </summary>
         /// <param name="gridDataType"></param>
-        /// <returns>An appropriate instance derived from ClientLeafSubgrid</returns>
+        /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
         IClientLeafSubGrid GetSubGrid(GridDataType gridDataType);
+
+        /// <summary>
+        /// Construct a concrete instance of a sub grid implementing the IClientLeafSubGrid interface based
+        /// on the role it should play according to the grid data type requested. All aspects of leaf ownership
+        /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
+        /// of the caller or a derived factory class
+        /// </summary>
+        /// <param name="gridDataType"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="level"></param>
+        /// <param name="originX"></param>
+        /// <param name="originY"></param>
+        /// <returns>An appropriate instance derived from ClientLeafSubGrid configured with supplied cell size, tree level and origin</returns>
+        IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, uint originX, uint originY);
 
         void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid);
         void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrid, int count);

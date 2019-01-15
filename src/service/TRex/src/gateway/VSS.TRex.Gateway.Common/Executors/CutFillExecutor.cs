@@ -41,9 +41,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      // TODO: Configure design settings
-      //var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
-
       // TODO: Configure lift build settings
       //var liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
 
@@ -54,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        DesignID = request.DesignDescriptor.Uid ?? Guid.Empty,
+        DesignID = request.DesignDescriptor.FileUid ?? Guid.Empty,
         Offsets = request.CutFillTolerances
       });
 

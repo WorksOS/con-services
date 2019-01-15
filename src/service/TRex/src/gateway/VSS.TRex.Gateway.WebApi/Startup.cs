@@ -10,13 +10,13 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -43,17 +43,22 @@ namespace VSS.TRex.Gateway.WebApi
       // Add framework services.
       var storageProxyFactory = new StorageProxyFactory();
 
-      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
-      services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
-      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage()));
-      services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
-      services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
+      DIBuilder.New(services)
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(storageProxyFactory))
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage())))
+
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor()))
+
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()));
+
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
-      services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
-      services.AddSingleton<IDesignManager>(factory => new DesignManager());
 
       services.AddOpenTracing(builder =>
       {
@@ -79,7 +84,6 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
-
     }
 
     /// <summary>

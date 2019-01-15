@@ -34,10 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as CMVRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CMVRequest>();
+        var request = CastRequestObjectTo<CMVRequest>(item);
 
         if (!request.IsCustomCMVTargets || !bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
           useTrexGateway = false;

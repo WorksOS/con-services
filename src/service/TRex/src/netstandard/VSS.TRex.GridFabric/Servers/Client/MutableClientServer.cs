@@ -22,7 +22,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 
-namespace VSS.TRex.Servers.Client
+namespace VSS.TRex.GridFabric.Servers.Client
 {
   /// <summary>
   /// Defines a representation of a client able to request TRex related compute operations using

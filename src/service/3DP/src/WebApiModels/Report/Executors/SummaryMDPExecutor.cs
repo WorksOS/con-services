@@ -35,11 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as MDPRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<MDPRequest>();
-
+        var request = CastRequestObjectTo<MDPRequest>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
 
         if (useTrexGateway)
@@ -63,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           ConvertSettings(request.MdpSettings),
           raptorFilter,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
-          out TMDPSummary mdpSummary);
+          out var mdpSummary);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(mdpSummary);
@@ -80,7 +76,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
 
     private MDPSummaryResult ConvertResult(TMDPSummary summary)
     {

@@ -23,11 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       try
       {
-        var request = item as GetEditDataRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<GetEditDataRequest>();
-
+        var request = CastRequestObjectTo<GetEditDataRequest>(item);
         TDesignName[] designNames;
         TDesignLayer[] layers;
 

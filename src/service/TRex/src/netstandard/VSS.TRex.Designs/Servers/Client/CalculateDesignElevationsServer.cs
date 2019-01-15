@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.Designs.Servers.Client

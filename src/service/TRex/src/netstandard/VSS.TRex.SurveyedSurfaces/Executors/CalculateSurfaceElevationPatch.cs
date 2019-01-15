@@ -8,14 +8,13 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SurveyedSurfaces.Executors
 {
   /// <summary>
-  /// Calculate a surface patch for a subgrid by querying a set of supplied surveyed surfaces and extracting
+  /// Calculate a surface patch for a sub grid by querying a set of supplied surveyed surfaces and extracting
   /// earliest, latest or composite elevation information from those surveyed surfaces
   /// </summary>
   public class CalculateSurfaceElevationPatch
@@ -23,17 +22,17 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateSurfaceElevationPatch>();
 
     /// <summary>
-    /// Local reference to the client subgrid factory
+    /// Local reference to the client sub grid factory
     /// </summary>
-    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+    private IClientLeafSubGridFactory ClientLeafSubGridFactory
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
     /// Private reference to the arguments provided to the executor
     /// </summary>
-    private SurfaceElevationPatchArgument Args { get; set; }
+    private ISurfaceElevationPatchArgument Args { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -46,7 +45,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// Constructor for the executor accepting the arguments for its operation
     /// </summary>
     /// <param name="args"></param>
-    public CalculateSurfaceElevationPatch(SurfaceElevationPatchArgument args) : this()
+    public CalculateSurfaceElevationPatch(ISurfaceElevationPatchArgument args) : this()
     {
       Args = args;
     }
@@ -56,7 +55,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// </summary>
     /// <param name="CalcResult"></param>
     /// <returns></returns>
-    private IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid */ Calc(out DesignProfilerRequestResult CalcResult)
+    private IClientLeafSubGrid Calc(out DesignProfilerRequestResult CalcResult)
     {
       CalcResult = DesignProfilerRequestResult.UnknownError;
 
@@ -133,7 +132,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                 long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
                 double Offset = ThisSurveyedSurface.Get_DesignDescriptor().Offset;
 
-                // Walk across the subgrid checking for a design elevation for each appropriate cell
+                // Walk across the sub grid checking for a design elevation for each appropriate cell
                 // based on the processing bit mask passed in
                 Args.ProcessingMap.ForEachSetBit((x, y) =>
                 {
@@ -235,7 +234,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid*/ Execute()
+    public IClientLeafSubGrid Execute()
     {
       try
       {
@@ -243,8 +242,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         try
         {
           // Calculate the patch of elevations and return it
-          IClientLeafSubGrid /*ClientHeightAndTimeLeafSubGrid*/
-            result = Calc(out DesignProfilerRequestResult CalcResult);
+          IClientLeafSubGrid result = Calc(out DesignProfilerRequestResult CalcResult);
 
           if (result == null)
           {

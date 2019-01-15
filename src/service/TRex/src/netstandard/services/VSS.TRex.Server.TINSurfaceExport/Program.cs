@@ -63,6 +63,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
       .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+      .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
@@ -73,7 +74,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
-      .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+      .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
       .Build()
       .Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
       .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
@@ -113,7 +114,6 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
         typeof(VSS.TRex.Pipelines.PipelineProcessor),
-        typeof(VSS.TRex.Profiling.CellLiftBuilder),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
         typeof(VSS.TRex.Services.Designs.DesignsService),
         typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),
