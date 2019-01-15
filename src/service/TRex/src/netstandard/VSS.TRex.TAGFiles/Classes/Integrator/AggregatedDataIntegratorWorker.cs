@@ -268,7 +268,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             {
               //Update machine last known value (events) from integrated model before saving
               int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
-              if (Comparison < 1)
+              if (Comparison == -1)
               {
                 MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
 
