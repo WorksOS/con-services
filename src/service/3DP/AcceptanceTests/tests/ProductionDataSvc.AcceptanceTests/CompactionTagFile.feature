@@ -47,6 +47,6 @@ Scenario Outline: TagFile Direct Submission - Bad Request
   | NullFileName    | -1        | 400      |
   | NullData        | -1        | 400      |
   | FilenameTooLong | -1        | 400      |
-  | NullProjectUid  | 8        | 400      |
+  | NullProjectUid  | 8         | 400      |
   | NullMachineId   | 8         | 400      |
   | NullBoundary    | 8         | 400      |
