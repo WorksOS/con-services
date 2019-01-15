@@ -117,5 +117,24 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(temperatureSummaryRequest) as TemperatureSummaryResult);
     }
+
+    /// <summary>
+    /// Get CCA summary from production data for the specified project and date range.
+    /// </summary>
+    /// <param name="ccaSummaryRequest"></param>
+    /// <returns></returns>
+    [Route("api/v1/cca/summary")]
+    [HttpPost]
+    public CCASummaryResult PostCcaSummary([FromBody] CCASummaryRequest ccaSummaryRequest)
+    {
+      Log.LogInformation($"{nameof(PostCcaSummary)}: {Request.QueryString}");
+
+      ccaSummaryRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryCCAExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(ccaSummaryRequest) as CCASummaryResult);
+    }
   }
 }
