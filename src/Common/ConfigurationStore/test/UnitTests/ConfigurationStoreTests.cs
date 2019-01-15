@@ -96,7 +96,7 @@ namespace VSS.ConfigurationStore.UnitTests
     public void ReturnsNegativeWhenInvalidInteger()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(-1,configuration.GetValueInt("KAFKA_PORT"));
+      Assert.AreEqual(int.MinValue, configuration.GetValueInt("KAFKA_PORT"));
     }
 
     [TestMethod]

@@ -131,7 +131,7 @@ namespace VSS.TCCFileAccess.UnitTests
     public async Task CanUploadFile()
     {
       const string folderName = "/barney";
-      const string filename = "unittest.json";
+      const string filename = "unittest1.json";
 
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
@@ -155,7 +155,7 @@ namespace VSS.TCCFileAccess.UnitTests
     public async Task CanDownloadFile()
     {
       const string folderName = "/barney";
-      const string filename = "unittest.json";
+      const string filename = "unittest1.json";
 
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
@@ -209,7 +209,7 @@ namespace VSS.TCCFileAccess.UnitTests
     public async Task CanDeleteFile()
     {
       const string folderName = "/barney";
-      const string filename = "unittest.json";
+      const string filename = "unittest1.json";
 
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
@@ -251,7 +251,7 @@ namespace VSS.TCCFileAccess.UnitTests
     public async Task CanDeleteFolder()
     {
       const string folderPath = "/unittest/folder";
-      const string filename = "unittest.json";
+      const string filename = "unittest1.json";
 
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
@@ -305,6 +305,8 @@ namespace VSS.TCCFileAccess.UnitTests
     }
 
     [TestMethod]
+    [Ignore]
+    //This test can be ignored since tile generatiion is being moved across to DataOcean
     public async Task CanDoExportToWebFormat()
     {
       const string srcPath = "/FileJobUnitTest/CERA.bg.dxf";

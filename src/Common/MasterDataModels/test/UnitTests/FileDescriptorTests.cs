@@ -28,9 +28,9 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var desc = FileDescriptor.CreateFileDescriptor("1", "132465", "55644", "FILE.FILE");
       desc.Validate();
-      Assert.AreEqual("/132465/55644", desc.path);
-      Assert.AreEqual("FILE.FILE", desc.fileName);
-      Assert.AreEqual("1", desc.filespaceId);
+      Assert.AreEqual("/132465/55644", desc.Path);
+      Assert.AreEqual("FILE.FILE", desc.FileName);
+      Assert.AreEqual("1", desc.FilespaceId);
     }
 
     [TestMethod]
