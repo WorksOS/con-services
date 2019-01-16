@@ -12,13 +12,8 @@
     <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
     <Platforms>x64</Platforms>
     <PackageTags>vss-productivity3d-service</PackageTags>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Update="Views;Areas\**\Views;log4net.xml;docker-compose.yml;docker-compose.debug.yml;Dockerfile.debug;Dockerfile;.dockerignore">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

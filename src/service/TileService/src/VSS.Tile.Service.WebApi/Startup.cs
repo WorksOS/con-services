@@ -61,7 +61,7 @@ namespace VSS.Tile.Service.WebApi
 
       services.AddSingleton<CacheInvalidationService>();
 
-      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+   //   services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
       services.AddOpenTracing(builder =>
       {
