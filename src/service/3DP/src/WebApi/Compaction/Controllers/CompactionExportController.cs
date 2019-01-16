@@ -98,6 +98,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public ScheduleResult ScheduleSnakepitJob(
       [FromServices] ISchedulerProxy scheduler,
+      [FromQuery] Guid projectUid,
       [FromQuery] string fileName
       )
     {
@@ -164,13 +165,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private ScheduleResult ScheduleJob(string exportDataUrl, string fileName, ISchedulerProxy scheduler, int? timeout=null)
     {
-      var configStoreTimeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
-
-      if (0 < configStoreTimeout && timeout == null)
+      if (timeout == null)
       {
-        timeout = configStoreTimeout;
+        var configStoreTimeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
+        timeout = 0 < configStoreTimeout ? configStoreTimeout : FIVE_MIN_SCHEDULER_TIMEOUT;
       }
-      timeout = timeout ?? FIVE_MIN_SCHEDULER_TIMEOUT;
 
       var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
 
