@@ -1,3 +1,4 @@
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -17,6 +18,10 @@ spec:
             args: ["LandfillDatasync.netcore.dll"]
             envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+                name: {{ $configName }}
+            - configMapRef:
+                name: {{ .Values.globalConfig }}
+            - secretRef:
+                name: {{ .Values.globalConfig }}-secret
             imagePullPolicy: Always
           restartPolicy: Never
