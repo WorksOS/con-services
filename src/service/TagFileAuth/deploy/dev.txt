@@ -7,7 +7,7 @@ MYSQL_ROOT_PASSWORD: R58Kper%5
 KAFKA_URI: 10.97.97.32
 KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: TagFileAuth-Datafeed
-KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAsset,VSS.Interfaces.Events.MasterData.IDeviceEvent
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAssetEvent,VSS.Interfaces.Events.MasterData.IDeviceEvent
 KAFKA_TOPIC_NAME_SUFFIX: -Dev
 KAFKA_OFFSET: latest
 CUSTOM_INIT_SCRIPT: zookeeper_check.sh
