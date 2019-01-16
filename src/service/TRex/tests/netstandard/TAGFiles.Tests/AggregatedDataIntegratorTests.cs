@@ -3,8 +3,8 @@ using System;
 using VSS.TRex.Events;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
-using Xunit;
 using VSS.TRex.Tests.TestFixtures;
+using Xunit;
 
 namespace TAGFiles.Tests
 {
