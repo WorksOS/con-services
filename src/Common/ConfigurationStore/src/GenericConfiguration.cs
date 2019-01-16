@@ -84,7 +84,7 @@ namespace VSS.ConfigurationStore
         log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
-          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: true);
+          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: false);
 
         configuration = configBuilder.Build();
       }
@@ -142,7 +142,7 @@ namespace VSS.ConfigurationStore
       lock (kubernetesInitLock)
       {
         var localConfig = new ConfigurationBuilder().AddEnvironmentVariables().SetBasePath(PathToConfigFile())
-          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: true).Build();
+          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: false).Build();
 
         bool.TryParse(localConfig["UseKubernetes"], out var result);
         if (result && kubernetesInitialized == KubernetesState.NotInitialized)

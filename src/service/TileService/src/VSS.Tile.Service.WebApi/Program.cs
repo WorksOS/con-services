@@ -15,7 +15,7 @@ namespace VSS.Tile.Service.WebApi
     public static void Main(string[] args)
     {
       var kestrelConfig = new ConfigurationBuilder()
-        .AddJsonFile("kestrelsettings.json", true, false)
+        .AddJsonFile("kestrelsettings.json", true, reloadOnChange: false)
         .Build();
 
       Log4NetAspExtensions.ConfigureLog4Net(Startup.LOGGER_REPO_NAME);
