@@ -168,7 +168,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (timeout == null)
       {
         var configStoreTimeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
-        timeout = 0 < configStoreTimeout ? configStoreTimeout : FIVE_MIN_SCHEDULER_TIMEOUT;
+        timeout = configStoreTimeout <= 0 ? configStoreTimeout : FIVE_MIN_SCHEDULER_TIMEOUT;
       }
 
       var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
