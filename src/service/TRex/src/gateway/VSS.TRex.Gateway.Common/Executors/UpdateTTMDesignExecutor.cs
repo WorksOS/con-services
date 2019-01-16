@@ -62,12 +62,13 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# UpdateTTMDesignExecutor. Update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        bool removedOk;
-        if (request.FileType == ImportedFileType.SurveyedSurface)
+        bool removedOk = false;
+        if (request.FileType == ImportedFileType.DesignSurface)
         {
           removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
         }
-        else
+
+        if (request.FileType == ImportedFileType.SurveyedSurface)
         {
           removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
         }

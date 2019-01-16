@@ -53,6 +53,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
       services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
       services.AddSingleton<IDesignManager>(factory => new DesignManager());

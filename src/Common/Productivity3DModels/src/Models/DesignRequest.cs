@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Models.Models
 
           )
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name extension must be ttm"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name extension incorrect"));
       }
 
       if (!Guid.TryParseExact(DesignUid.ToString(), "D", out Guid _) || DesignUid == Guid.Empty)

@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       var designFileDescriptorList = new List<DesignFileDescriptor>();
       if (fileType != null && !(fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.SurveyedSurface || fileType == ImportedFileType.Alignment))
       { 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface or SurveyedSurface"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
       }
 
       if ((DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid)) == null)

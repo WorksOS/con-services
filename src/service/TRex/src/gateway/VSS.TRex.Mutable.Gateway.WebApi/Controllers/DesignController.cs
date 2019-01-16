@@ -115,15 +115,11 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(designRequest.ProjectUid, false);
-      if (sm == null)
-      {
-        return new ContractExecutionResult();
-      }
+      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
 
       if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
+        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete.");
       }
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
@@ -152,7 +148,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
       }
 
-      if (fileType == ImportedFileType.DesignSurface)
+      if (fileType == ImportedFileType.SurveyedSurface)
       {
         var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
         designFileDescriptorList = designSurfaceList.Select(designSurface =>

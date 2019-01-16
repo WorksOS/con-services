@@ -69,6 +69,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
       services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
       services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
+      services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
       services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));

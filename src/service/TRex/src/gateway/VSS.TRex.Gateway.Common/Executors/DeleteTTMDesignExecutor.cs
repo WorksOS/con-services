@@ -56,7 +56,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         log.LogInformation($"#In# DeleteTTMDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
         bool removedOk;
-        if (request.FileType == ImportedFileType.SurveyedSurface)
+        if (request.FileType == ImportedFileType.DesignSurface)
         {
           removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
         }
