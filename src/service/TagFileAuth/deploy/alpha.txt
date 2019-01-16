@@ -1,4 +1,4 @@
 MYSQL_DATABASE_NAME: VSS-TagFileAuth-Alpha
 KAFKA_GROUP_NAME: TagFileAuth-Consumer-Alpha-3
-KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAsset,VSS.Interfaces.Events.MasterData.IDeviceEvent
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAssetEvent,VSS.Interfaces.Events.MasterData.IDeviceEvent
 JAEGER_SERVICE_NAME: Alpha TagFileAuth Service API
