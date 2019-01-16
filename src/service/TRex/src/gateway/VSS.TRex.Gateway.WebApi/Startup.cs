@@ -11,7 +11,6 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
@@ -41,13 +40,10 @@ namespace VSS.TRex.Gateway.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       // Add framework services.
-      var storageProxyFactory = new StorageProxyFactory();
-
       DIBuilder.New(services)
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Add(x => x.AddSingleton<IStorageProxyFactory>(storageProxyFactory))
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
 
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor()))

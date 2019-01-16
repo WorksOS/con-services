@@ -58,6 +58,8 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .Continue()
 
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+
         // Add the factories for the storage proxy caches, both standard and transacted, for spatial and non spatial caches in TRex
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>
         (factory => (ignite, mutability) => null))
@@ -84,12 +86,12 @@ namespace VSS.TRex.Tests.TestFixtures
           .AddLogging()
           .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
 
-          .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
           .Add(x => AddProxyCacheFactoriesToDI())
 
           .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
           .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
+          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
           .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
 
@@ -102,7 +104,6 @@ namespace VSS.TRex.Tests.TestFixtures
 
           .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
 
-          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
           .Complete();
       }
     }
