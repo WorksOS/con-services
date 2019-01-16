@@ -105,6 +105,15 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
+    /// Sends a request to get CCA Summary statistics from the TRex database.
+    /// </summary>
+    /// <param name="ccaSummaryRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<CCASummaryResult> SendCCASummaryRequest(CCASummaryRequest ccaSummaryRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
     /// Sends a request to get production data tile from the TRex database.
     /// </summary>
     /// <param name="tileRequest"></param>
