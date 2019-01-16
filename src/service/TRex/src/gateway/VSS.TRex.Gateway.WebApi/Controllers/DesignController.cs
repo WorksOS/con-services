@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
@@ -45,7 +46,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid{projectUid} fileType: {fileType}");
 
       var designFileDescriptorList = new List<DesignFileDescriptor>();
-      if (fileType != null && !(fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.SurveyedSurface))
+      if (fileType != null && !(fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.SurveyedSurface || fileType == ImportedFileType.Alignment))
       { 
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface or SurveyedSurface"));
       }
@@ -73,6 +74,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         {
           designFileDescriptorList.AddRange(designSurfaceList.Select(designSurface =>
               AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+            .ToList());
+        }
+      }
+
+      if (fileType == null || fileType == ImportedFileType.Alignment)
+      {
+        var designAlignmentList = DIContext.Obtain<IAlignmentManager>().List(projectUid);
+        if (designAlignmentList != null)
+        {
+          designFileDescriptorList.AddRange(designAlignmentList.Select(designAlignment =>
+              AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designAlignment))
             .ToList());
         }
       }

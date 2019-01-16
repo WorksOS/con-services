@@ -9,6 +9,8 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -97,6 +99,9 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
+
+      services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
+      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager());
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));

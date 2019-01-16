@@ -22,6 +22,8 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.SiteModels;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -70,6 +72,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
       services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
+      services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
+      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager());
 
       services.AddOpenTracing(builder =>
       {

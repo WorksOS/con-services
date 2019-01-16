@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
@@ -56,9 +57,16 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
       }
 
+      if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<AddTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<AddDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Build<AddSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(designRequest));
     }
 
@@ -80,11 +88,19 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
       }
 
+      if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<UpdateTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+
       return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<UpdateDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designRequest));
-    }
+          RequestExecutorContainer
+            .Build<UpdateSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
 
 
     /// <summary>
@@ -110,9 +126,17 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
       }
 
+      if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<DeleteTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<DeleteDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Build<DeleteSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(designRequest));
     }
 
@@ -128,12 +152,20 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
       }
 
-      var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
-      designFileDescriptorList = designSurfaceList.Select(designSurface =>
-          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+      if (fileType == ImportedFileType.DesignSurface)
+      {
+        var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
+        designFileDescriptorList = designSurfaceList.Select(designSurface =>
+            AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+          .ToList();
+        return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
+      }
+
+      var designAlignmentList = DIContext.Obtain<IAlignmentManager>().List(projectUid);
+      designFileDescriptorList = designAlignmentList.Select(designAlignment =>
+          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designAlignment))
         .ToList();
       return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
-
     }
   }
 }

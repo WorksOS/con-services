@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -59,12 +59,16 @@ export class ProjectComponent {
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
 
+  public alignments: Alignment[] = [];
+  public alignmentFileName: string = "";
+  public newAlignmentGuid: string = "";
+
+  public designs: DesignSurface[] = [];
   public designFileName: string = "";
   public designOffset: number = 0.0;
   public designUID: string = "";
 
   public newDesignGuid: string = "";
-  public designs: Design[] = [];
   public machineDesigns: MachineDesign[] = [];
   public siteProofingRuns: SiteProofingRun[] = [];
 
@@ -200,6 +204,7 @@ constructor(
     this.getExistenceMapSubGridCount();
     this.getSurveyedSurfaces();
     this.getDesignSurfaces();
+    this.getAlignments();
     this.getMachines();
     this.getMachineDesigns();
     this.getSiteProofingRuns();
@@ -440,11 +445,11 @@ constructor(
 
   public addADummySurveyedSurface(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
-
+    descriptor.fileName = "C:/temp/SomeFile.ttm";
+    descriptor.offset = 0;
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
       uid => {
-        this.newSurveyedSurfaceGuid = uid.id;
+        this.newSurveyedSurfaceGuid = uid.designId;
         this.getSurveyedSurfaces();
       });
   }
@@ -453,33 +458,31 @@ constructor(
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.surveyedSurfaceFileName;
     descriptor.offset = this.surveyedSurfaceOffset;
-
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
-        this.newSurveyedSurfaceGuid = uid.id;
+        this.newSurveyedSurfaceGuid = uid.designId;
         this.getSurveyedSurfaces();
       });
-
   }
 
   public getSurveyedSurfaces(): void {
     var result: SurveyedSurface[] = [];
     this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
       surveyedSurfaces => {
-        surveyedSurfaces.forEach(ss => result.push(ss));
+        surveyedSurfaces.forEach(surveyedSurface => result.push(surveyedSurface));
         this.surveyedSurfaces = result;
       });  
   }
 
   public deleteSurveyedSurface(surveyedSurface : SurveyedSurface): void {
-    this.projectService.deleteSurveyedSurface(this.projectUid, surveyedSurface.id).subscribe(x =>
-      this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
+    this.projectService.deleteSurveyedSurface(this.projectUid, surveyedSurface.id).subscribe(
+      uid => this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 
   public addADummyDesignSurface(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
-
+    descriptor.fileName = "C:/temp/SomeFile.ttm";
+    descriptor.offset = 0;
     this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
@@ -491,7 +494,6 @@ constructor(
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
     descriptor.offset = 0;
-
     this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
@@ -499,9 +501,8 @@ constructor(
       });
   }
 
-
   public getDesignSurfaces(): void {
-    var result: Design[] = [];
+    var result: DesignSurface[] = [];
     this.projectService.getDesignSurfaces(this.projectUid).subscribe(
       designs => {
         designs.forEach(design => result.push(design));
@@ -509,9 +510,45 @@ constructor(
       });  
     }
 
-  public deleteDesignSurface(design: Design): void {
-    this.projectService.deleteDesignSurface(this.projectUid, design.id).subscribe(x =>
-      this.designs.splice(this.designs.indexOf(design), 1));
+  public deleteDesignSurface(design: DesignSurface): void {
+    this.projectService.deleteDesignSurface(this.projectUid, design.id).subscribe(
+      uid => this.designs.splice(this.designs.indexOf(design), 1));
+  }
+
+  public addADummyAlignment(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = "C:/temp/SomeFile.svl";
+    descriptor.offset = 0;
+    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+      uid => {
+        this.newAlignmentGuid = uid.designId;
+        this.getAlignments();
+      });
+  }
+
+  public addNewAlignment(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = this.alignmentFileName;
+    descriptor.offset = 0;
+    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+      uid => {
+        this.newAlignmentGuid = uid.designId;
+        this.getAlignments();
+      });
+  }
+
+  public getAlignments(): void {
+    var result: Alignment[] = [];
+    this.projectService.getAlignments(this.projectUid).subscribe(
+      alignments => {
+        alignments.forEach(alignment => result.push(alignment));
+        this.alignments = result;
+      });
+  }
+
+  public deleteAlignment(alignment: Alignment): void {
+    this.projectService.deleteAlignment(this.projectUid, alignment.id).subscribe(
+      uid => this.alignments.splice(this.alignments.indexOf(alignment), 1));
   }
 
   public getMachineDesigns(): void {

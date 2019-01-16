@@ -8,13 +8,6 @@ namespace VSS.TRex.Alignments.Interfaces
   public interface IAlignment
   {
     /// <summary>
-    /// Readonly property exposing the Alignment ID
-    /// </summary>`
-    Guid ID { get; set; }
-
-    DesignDescriptor Get_DesignDescriptor();
-
-    /// <summary>
     /// Serialises state to a binary writer
     /// </summary>
     /// <param name="writer"></param>
@@ -32,6 +25,13 @@ namespace VSS.TRex.Alignments.Interfaces
     /// </summary>
     /// <param name="reader"></param>
     void Read(BinaryReader reader);
+
+    /// <summary>
+    /// The internal identifier of the design
+    /// </summary>
+    Guid ID { get; }
+
+    DesignDescriptor Get_DesignDescriptor();
 
     /// <summary>
     /// Returns the real world 3D enclosing extents for the Alignment topology, including any configured vertical offset

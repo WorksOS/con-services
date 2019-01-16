@@ -7,6 +7,8 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -54,6 +56,8 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
       services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
+      services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
+      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager());
 
       services.AddOpenTracing(builder =>
       {

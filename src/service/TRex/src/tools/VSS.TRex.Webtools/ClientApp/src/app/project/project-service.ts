@@ -6,12 +6,11 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS, SiteProofingRun } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS, SiteProofingRun } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
-
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -87,11 +86,9 @@ export class ProjectService {
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
   }
 
-  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<SurveyedSurface> {
-    return this.executePostRequest<SurveyedSurface>
-    ('addSurveyedSurface',
-      `designs/${projectUid}/SurveyedSurface?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,
-      null);
+  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<DesignDescriptor> {
+    return this.executePostRequest<DesignDescriptor>
+    ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,null);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
@@ -107,12 +104,25 @@ export class ProjectService {
       ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileName=${descriptor.fileName}`, null);
   }
 
-  public getDesignSurfaces(projectUid: string): Observable<Design[]> {
-    return this.executeRequest<Design[]>('getDesignSurfaces', `designs/${projectUid}/DesignSurface`);
+  public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
+    return this.executeRequest<DesignSurface[]>('getDesignSurfaces', `designs/${projectUid}/DesignSurface`);
   }
 
   public deleteDesignSurface(projectUid: string, designId: string): Observable<any> {
     return this.executeDeleteRequest<any>('deleteDesignSurface', `designs/${projectUid}/DesignSurface/${designId}`);
+  }
+
+  public addAlignment(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
+    return this.executePostRequest<DesignDescriptor>
+      ('addAlignment', `designs/${projectUid}/Alignment?fileName=${descriptor.fileName}`, null);
+  }
+
+  public getAlignments(projectUid: string): Observable<Alignment[]> {
+    return this.executeRequest<Alignment[]>('getAlignments', `designs/${projectUid}/Alignment`);
+  }
+
+  public deleteAlignment(projectUid: string, designId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteAlignment', `designs/${projectUid}/Alignment/${designId}`);
   }
 
   public getMachineDesigns(projectUid: string): Observable<MachineDesign[]> {

@@ -16,7 +16,7 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
     /// </summary>
-    BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+    private readonly BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
 
     /// <summary>
     /// Serialises state to a binary writer
@@ -78,6 +78,8 @@ namespace VSS.TRex.Alignments
     /// </summary>
     public Alignment()
     {
+      extents = new BoundingWorldExtent3D();
+      DesignDescriptor = new DesignDescriptor();
     }
 
     /// <summary>
@@ -94,21 +96,21 @@ namespace VSS.TRex.Alignments
     /// </summary>
     /// <param name="iD">The unque identifier for the Alignment in this site model</param>
     /// <param name="designDescriptor"></param>
-    /// <param name="extents"></param>
+    /// <param name="extents_"></param>
     public Alignment(Guid iD,
       DesignDescriptor designDescriptor,
-      BoundingWorldExtent3D extents)
+      BoundingWorldExtent3D extents_)
     {
       ID = iD;
       DesignDescriptor = designDescriptor;
-      this.extents = extents;
+      extents = extents_;
     }
 
     /// <summary>
     /// Produces a deep clone of the Alignment
     /// </summary>
     /// <returns></returns>
-    public IAlignment Clone() => new Alignment(ID, DesignDescriptor, new BoundingWorldExtent3D(extents));
+    public IAlignment Clone() => new Alignment(ID, DesignDescriptor, new BoundingWorldExtent3D(Extents));
 
     /// <summary>
     /// ToString() for Alignment
@@ -117,7 +119,7 @@ namespace VSS.TRex.Alignments
     public override string ToString()
     {
       return
-        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{extents}]";
+        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
     }
 
     public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
@@ -129,9 +131,10 @@ namespace VSS.TRex.Alignments
     /// <returns></returns>
     public bool Equals(IAlignment other)
     {
-      return (ID == other.ID) &&
+      return (other != null) && 
+             (ID == other.ID) &&
              DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
-             (extents.Equals(other.Extents));
+             (Extents.Equals(other.Extents));
     }
   }
 }

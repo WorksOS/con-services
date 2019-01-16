@@ -102,7 +102,7 @@ namespace VSS.TRex.Alignments
     public IAlignment Add(Guid siteModelUid, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
       IAlignments alignments = Load(siteModelUid);
-      IAlignment newAlignment = alignments.AddAlignmentDetails(Guid.NewGuid(), designDescriptor, extents);
+      IAlignment newAlignment = alignments.AddAlignmentDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(siteModelUid, alignments);
 
       return newAlignment;

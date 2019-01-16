@@ -7,6 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -16,7 +17,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class DeleteDesignExecutor : RequestExecutorContainer
+  public class DeleteSVLDesignExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// TagFileExecutor
@@ -24,7 +25,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    public DeleteDesignExecutor(IConfigurationStore configStore,
+    public DeleteSVLDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
@@ -32,7 +33,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public DeleteDesignExecutor()
+    public DeleteSVLDesignExecutor()
     {
     }
 
@@ -53,20 +54,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       try
       {
-        log.LogInformation($"#In# DeleteDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#In# DeleteSVLDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        bool removedOk;
-        if (request.FileType == ImportedFileType.SurveyedSurface)
+        if (!DIContext.Obtain<IAlignmentManager>().Remove(request.ProjectUid, request.DesignUid))
         {
-          removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
-        }
-        else
-        {
-          removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
-        }
-        if (!removedOk)
-        {
-          log.LogError($"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+          log.LogError($"#Out# DeleteSVLDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
           return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
         }
 
@@ -76,19 +68,17 @@ namespace VSS.TRex.Gateway.Common.Executors
           try
           {
             File.Delete(localPathAndFileName);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
           }
           catch (Exception)
           {
             // ignored
           }
         }
-        log.LogInformation($"#Out# DeleteDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#Out# DeleteSVLDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
       catch (Exception e)
       {
-        log.LogError(e, $"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
+        log.LogError(e, $"#Out# DeleteSVLDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 

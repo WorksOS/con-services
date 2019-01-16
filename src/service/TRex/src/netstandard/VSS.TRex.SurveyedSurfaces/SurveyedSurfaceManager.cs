@@ -103,7 +103,7 @@ namespace VSS.TRex.SurveyedSurfaces
     public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
     {
       ISurveyedSurfaces ss = Load(siteModelUid);
-      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(Guid.NewGuid(), designDescriptor, asAtDate, extents);
+      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
       Store(siteModelUid, ss);
 
       return newSurveyedSurface;

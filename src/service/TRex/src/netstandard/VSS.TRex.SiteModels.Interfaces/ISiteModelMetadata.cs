@@ -13,5 +13,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     int MachineCount { get; set; }
     int DesignCount { get; set; }
     int SurveyedSurfaceCount { get; set; }
+    int AlignmentCount { get; set; }
   }
 }

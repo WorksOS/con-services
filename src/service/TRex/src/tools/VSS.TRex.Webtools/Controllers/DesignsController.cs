@@ -100,8 +100,13 @@ namespace VSS.TRex.Webtools.Controllers
         throw new ArgumentException($"Invalid siteModelUid (you need to have selected one first): {siteModelUid}");
 
       if (string.IsNullOrEmpty(fileName) || 
-          !Path.HasExtension(fileName) || 
+          !Path.HasExtension(fileName) ||
+         (importedFileTypeEnum != ImportedFileType.Alignment && 
           (string.Compare(Path.GetExtension(fileName), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
+          ||
+         (importedFileTypeEnum == ImportedFileType.Alignment &&
+          (string.Compare(Path.GetExtension(fileName), ".svl", StringComparison.OrdinalIgnoreCase) != 0))
+        )
         throw new ArgumentException($"Invalid [path]filename: {fileName}");
 
       if (!System.IO.File.Exists(fileName))
@@ -226,20 +231,21 @@ namespace VSS.TRex.Webtools.Controllers
       // Invoke the service to add the alignment
       try
       {
-        // Load the file and extract its extents
-        // todoJeannie AlignmentDesign
-        TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-        TTM.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
+        // Load the file and extract its extents?
+        AlignmentDesign alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
+        alignmentDesign.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
 
+        // todo when SDK avail
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
-        TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
-        TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+        alignmentDesign.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+        alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new design for the site model
         var design = DIContext.Obtain<IAlignmentManager>()
           .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), extents);
 
-        //DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+        // todo when SDK avail
+        //DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, alignmentDesign.SubgridOverlayIndex());
       }
       catch (Exception e)
       {

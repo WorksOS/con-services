@@ -113,8 +113,6 @@ namespace VSS.TRex.Alignments
       IAlignment alignment = new Alignment(alignmentUid, designDescriptor, extents);
       Add(alignment);
 
-      Sort();
-
       return alignment;
     }
 

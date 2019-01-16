@@ -75,13 +75,13 @@
   <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
 </p>
 <p>
-Production elevation profiles:
+  Production elevation profiles:
   <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
   <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
   <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
   <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
 </p><p>
-Composite elevation profiles:
+  Composite elevation profiles:
   <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
   <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
   <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
@@ -134,6 +134,13 @@ Composite elevation profiles:
 <p *ngFor="let design of designs">
   <button (click)="deleteDesignSurface(design)">Delete</button>
   Design: {{ design.id }} with offset {{design.designDescriptor.offset}} from file {{design.designDescriptor.fileName}}
+</p>
+<H3>Alignment [{{alignments.length}} in total]</H3>
+<p>Design File Name: <input [(ngModel)]="alignmentFileName" type="text" value="" /></p>
+<p><button (click)=addNewAlignment()>Add New Alignment</button>   <button (click)="addADummyAlignment()">Add a dummy!</button></p>
+<p *ngFor="let alignment of alignments">
+  <button (click)="deleteAlignment(alignment)">Delete</button>
+  Alignment: {{ alignment.id }} from file {{alignment.designDescriptor.fileName}}
 </p>
 <br />
 <H3>Machine Events</H3>
