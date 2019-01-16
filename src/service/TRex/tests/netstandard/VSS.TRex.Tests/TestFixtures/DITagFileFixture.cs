@@ -100,6 +100,16 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
+    public static TAGFileConverter ReadTAGFile(string subFolder, string fileName)
+    {
+      var converter = new TAGFileConverter();
+
+      Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", subFolder, fileName), FileMode.Open, FileAccess.Read)),
+        "Converter execute returned false");
+
+      return converter;
+    }
+
     public static TAGFileConverter ReadTAGFileFullPath(string fileName)
     {
       var converter = new TAGFileConverter();
