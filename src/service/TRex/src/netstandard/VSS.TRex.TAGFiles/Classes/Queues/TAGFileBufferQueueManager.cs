@@ -13,7 +13,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     /// <summary>
     /// Responsible for management of querying the TAG file buffer queue for work to do.
-    /// Utilises Ignite continuous queries and needs to be instantiated in context, unlike the grid deployed service model
+    /// Utilizes Ignite continuous queries and needs to be instantiated in context, unlike the grid deployed service model
     /// </summary>
     public class TAGFileBufferQueueManager : IDisposable
     {
@@ -28,7 +28,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// Local Ignite resource reference
         /// </summary>
-        private IIgnite ignite;
+        private readonly IIgnite ignite;
 
         /// <summary>
         /// No-arg constructor. Instantiates the continuous query and performs initial scan of elements that the remote filter 
@@ -70,7 +70,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back to the local scan query rather than intercepted by the remote filter");
             }
 
-            Log.LogInformation("Completed TAG file buffer queue manager initialisation");
+            Log.LogInformation("Completed TAG file buffer queue manager initialization");
         }
 
         public void Dispose()

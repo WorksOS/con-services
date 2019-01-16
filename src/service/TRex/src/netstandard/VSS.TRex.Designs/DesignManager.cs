@@ -37,7 +37,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Loads the set of designs for a sitemodel. If none exist and empty list is returned.
+    /// Loads the set of designs for a site model. If none exist and empty list is returned.
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <returns></returns>
@@ -47,10 +47,11 @@ namespace VSS.TRex.Designs
       {
         ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
-        IDesigns designs = DIContext.Obtain<IDesigns>();
+        IDesigns designs = null;
 
         if (ms != null)
         {
+          designs = DIContext.Obtain<IDesigns>();
           using (ms)
           {
             designs.FromStream(ms);
@@ -83,7 +84,7 @@ namespace VSS.TRex.Designs
         WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), designs);
         WriteStorageProxy.Commit();
 
-        // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
+        // Notify the mutable and immutable grid listeners that attributes of this site model have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, designsChanged: true);
       }
@@ -94,7 +95,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Add a new design to a sitemodel
+    /// Add a new design to a site model
     /// </summary>
     /// <param name="SiteModelID"></param>
     /// <param name="designDescriptor"></param>
@@ -109,7 +110,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Returns the list of all designs known for the sitemodel
+    /// Returns the list of all designs known for the site model
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <returns></returns>

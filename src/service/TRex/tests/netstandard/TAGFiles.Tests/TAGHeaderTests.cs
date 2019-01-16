@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using Xunit;
 

@@ -70,11 +70,11 @@ namespace TAGFiles.Tests
             var TimeInterpolator1 = new SimpleTriangle(T00, T01, T10);
             var TimeInterpolator2 = new SimpleTriangle(T01, T11, T10);
 
-            // Compute swath with full cell pass on the front (blade) mesurement location
+            // Compute swath with full cell pass on the front (blade) measurement location
             bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, PassType.Front, MachineSide.None);
 
             // Did the swathing operation succeed?
-            Assert.True(swathResult, "Performaswathing failed");
+            Assert.True(swathResult, "Perform swathing failed");
 
             // Did it produce the expected set of swathed cells?
             Assert.Equal(1, grid.Root.CountChildren());
