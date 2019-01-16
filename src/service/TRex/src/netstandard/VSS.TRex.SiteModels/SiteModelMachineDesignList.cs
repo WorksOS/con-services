@@ -24,7 +24,7 @@ namespace VSS.TRex.SiteModels
     // maintain an actual Index along with the name, in case items get sorted or something
     private int GetLastId()
     {
-      return this.Count > 0 ? this.Max(x => x.Id) : -1;
+      return Count > 0 ? this.Max(x => x.Id) : -1;
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Serialise the list of machine designs using the given writer
+    /// Serialize the list of machine designs using the given writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels
     public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     /// <summary>
-    /// Deserialises the list of machine designs using the given reader
+    /// Deserializes the list of machine designs using the given reader
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
@@ -100,7 +100,7 @@ namespace VSS.TRex.SiteModels
     
     /// <summary>
     /// Loads the content of the machine designs list from the persistent store. If there is no item in the persistent store containing
-    /// machine designs for this sitemodel them return an empty list.
+    /// machine designs for this site model them return an empty list.
     /// </summary>
     public void LoadFromPersistentStore()
     {

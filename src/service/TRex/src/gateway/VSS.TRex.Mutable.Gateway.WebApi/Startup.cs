@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,6 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
@@ -51,24 +49,25 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
-      // Add framework services.
-      var storageProxyFactory = new StorageProxyFactory();
+      DIBuilder.New(services)
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
 
-      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
-      services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
-      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.MutableGridStorage()));
-      services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
-      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager()))
+
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
+        .Add(x => x.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps()));
+
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
-      services.AddSingleton<IDesignManager>(factory => new DesignManager());
-      services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
-      services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
-      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
-      services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       services.AddOpenTracing(builder =>

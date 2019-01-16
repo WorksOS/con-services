@@ -36,6 +36,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
     private readonly IPreferenceProxy prefProxy;
     private readonly IProductionDataRequestFactory requestFactory;
+    private const int FIVE_MIN_SCHEDULER_TIMEOUT = 300000;
     
     /// <summary>
     /// The TRex Gateway proxy for use by executor.
@@ -88,6 +89,35 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return ScheduleJob(exportDataUrl, fileName, scheduler);
     }
 
+
+
+    /// <summary>
+    /// Schedules the snakepit export job and returns JobId.
+    /// </summary>
+    [Route("api/v2/export/snakepit/schedulejob")]
+    [HttpGet]
+    public ScheduleResult ScheduleSnakepitJob(
+      [FromServices] ISchedulerProxy scheduler,
+      [FromQuery] Guid projectUid,
+      [FromQuery] string fileName
+      )
+    {
+      //The URL to get the export data is in snakepit construct url from configuration
+      var snakepitHost = ConfigStore.GetValueString("SNAKEPIT_HOST", null);
+      if (!string.IsNullOrEmpty(snakepitHost))
+      {
+        var exportDataUrl = $"{HttpContext.Request.Scheme}://{snakepitHost}/export{HttpContext.Request.QueryString.ToString()}";
+
+        return ScheduleJob(exportDataUrl, fileName, scheduler, 3 * FIVE_MIN_SCHEDULER_TIMEOUT);
+      }
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(
+          ContractExecutionStatesEnum.InternalProcessingError,
+          "Missing SNAKEPIT_HOST environment variable"
+          )
+      );
+    }
+
     /// <summary>
     /// Schedules the Machine passes export job and returns JobId.
     /// </summary>
@@ -133,10 +163,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Schedule an export job wit the scheduler
     /// </summary>
-    private ScheduleResult ScheduleJob(string exportDataUrl, string fileName, ISchedulerProxy scheduler)
+    private ScheduleResult ScheduleJob(string exportDataUrl, string fileName, ISchedulerProxy scheduler, int? timeout=null)
     {
-      var timeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
-      if (timeout == 0) timeout = 300000;//5 mins default
+      if (timeout == null)
+      {
+        var configStoreTimeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
+        timeout = configStoreTimeout > 0 ? configStoreTimeout : FIVE_MIN_SCHEDULER_TIMEOUT;
+      }
+
       var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
 
       return WithServiceExceptionTryExecute(() => new ScheduleResult

@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Apache.Ignite.Core;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Storage.Utilities;
@@ -36,11 +37,8 @@ namespace VSS.TRex.Storage
 
     private void EstablishCaches()
     {
-      spatialCache = new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(
-        ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
-      nonSpatialCache =
-        new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
-          ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+      nonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
     }
 
     /// <summary>

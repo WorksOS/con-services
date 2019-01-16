@@ -61,7 +61,7 @@ namespace VSS.TRex.Server.Reports
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-      .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+      .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
