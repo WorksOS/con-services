@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes;
@@ -177,7 +176,7 @@ namespace TAGFiles.Tests
 
       Assert.Equal(100, (byte)sink.ICCCALeftRearValues.GetLatest());
 
-      // Test value ussets correctly on an empty value
+      // Test value asserts correctly on an empty value
       Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0)),
           "Matcher process function returned false");
 
@@ -231,7 +230,7 @@ namespace TAGFiles.Tests
 
       Assert.Equal(1100, (short)sink.ICCCVValues.GetLatest());
 
-      // Test value ussets correctly on an empty value
+      // Test value asserts correctly on an empty value
       Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitInt, 0)),
           "Matcher process function returned false");
 

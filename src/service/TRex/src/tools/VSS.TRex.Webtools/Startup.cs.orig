@@ -74,6 +74,10 @@ namespace VSS.TRex.Webtools
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
+<<<<<<< HEAD
+      services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
+=======
+>>>>>>> origin/master
       VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
       serviceProvider = services.BuildServiceProvider();

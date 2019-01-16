@@ -1,13 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nito.AsyncEx;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Types;
 using Xunit;
 
 namespace TAGFiles.Tests
