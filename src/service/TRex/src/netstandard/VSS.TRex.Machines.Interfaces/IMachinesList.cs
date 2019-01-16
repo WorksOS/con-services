@@ -22,8 +22,8 @@ namespace VSS.TRex.Machines.Interfaces
     IMachine Locate(string name, bool isJohnDoeMachine);
 
     /// <summary>
-    // Locate finds the machine in the list whose name matches the given ID
-    // It returns NIL if there is no matching machine
+    /// Locate finds the machine in the list whose name matches the given ID
+    /// It returns NIL if there is no matching machine
     /// </summary>
     /// <param name="id"></param>
     /// <param name="isJohnDoeMachine"></param>
@@ -43,13 +43,13 @@ namespace VSS.TRex.Machines.Interfaces
     IMachine LocateByMachineHardwareID(string hardwareID);
 
     /// <summary>
-    /// Deserialises the list of machines using the given reader
+    /// Deserializes the list of machines using the given reader
     /// </summary>
     /// <param name="reader"></param>
     void Read(BinaryReader reader);
 
     /// <summary>
-    /// Serialise the list of machine using the given writer
+    /// Serialize the list of machine using the given writer
     /// </summary>
     /// <param name="writer"></param>
     void Write(BinaryWriter writer);

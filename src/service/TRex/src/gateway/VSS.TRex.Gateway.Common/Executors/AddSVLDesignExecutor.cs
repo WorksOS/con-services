@@ -27,7 +27,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
     public AddSVLDesignExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
+      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
 
@@ -66,7 +66,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
+          return new ContractExecutionResult((int) RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
         // todo when SDK avail
@@ -75,13 +75,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
 
-          // Create the new alignment in our site model
-          var designAlignment = DIContext.Obtain<IAlignmentManager>()
-            .Add(request.ProjectUid,
+        // Create the new alignment in our site model
+        var designAlignment = DIContext.Obtain<IAlignmentManager>()
+          .Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             extents);
 
-        // todo when SDK avail
+        // todo possibly, when SDK avail
         /* var existanceMaps = DIContext.Obtain<IExistenceMaps>();
           existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubgridOverlayIndex());
           */
@@ -91,12 +91,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"#Out# AddSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int) RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
-      return new ContractExecutionResult(); 
+      return new ContractExecutionResult();
     }
-    
+
     /// <summary>
     /// Processes the request asynchronously.
     /// </summary>

@@ -20,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         //        SiteModel SiteModelReference { get; set; }
         IServerLeafSubGrid SubGrid { get; set; }
 
-        void CurrentSubgridSegmentDestroyed();
+        void CurrentSubGridSegmentDestroyed();
         void InitialiseIterator();
         bool MoveNext();
         bool MoveToFirstSubGridSegment();

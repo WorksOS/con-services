@@ -27,7 +27,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
     public UpdateSVLDesignExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
+      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
 
@@ -59,19 +59,19 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         if (!DIContext.Obtain<IAlignmentManager>().Remove(request.ProjectUid, request.DesignUid))
         {
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
+          return new ContractExecutionResult((int) RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
         }
 
         // load core file from s3 to local
         var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
-        var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName });
+        var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
 
         AlignmentDesign alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = alignmentDesign.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# UpdateSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
+          return new ContractExecutionResult((int) RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
         // todo when SDK avail
@@ -79,14 +79,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         alignmentDesign.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-
         // Create the new alignment in our site model
         var designAlignment = DIContext.Obtain<IAlignmentManager>()
           .Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             extents);
 
-        // todo when SDK avail
+        // todo possibly, when SDK avail
         /* var existanceMaps = DIContext.Obtain<IExistenceMaps>();
           existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubgridOverlayIndex());
           */
@@ -96,7 +95,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"#Out# UpdateSVLDesignExecutor. Update of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToUpdateDesign, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int) RequestErrorStatus.DesignImportUnableToUpdateDesign, e.Message);
       }
 
       return new ContractExecutionResult();

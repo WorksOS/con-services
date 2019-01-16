@@ -18,8 +18,6 @@ namespace VSS.TRex.Designs
 
   public class AlignmentDesign : DesignBase
   {
-    // todoJeannie should this be named 'RoadingDesign' or something more generic?
-
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     private double _minHeight;
@@ -27,7 +25,7 @@ namespace VSS.TRex.Designs
     private readonly double _cellSize;
     private readonly ISubGridTreeBitMask _subgridIndex;
 
-    public byte[] Data { get; set; } // todoJeannie assuming here there will be some kind of SDK model
+    public byte[] Data { get; set; } // assuming here there will be some kind of SDK model
 
     public OptimisedSpatialIndexSubGridTree SpatialIndexOptimised { get; private set; }
     private static readonly float[,] kNullPatch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];

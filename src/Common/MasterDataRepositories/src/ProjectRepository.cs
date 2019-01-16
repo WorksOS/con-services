@@ -534,7 +534,7 @@ namespace VSS.MasterData.Repositories
             var localEndDate = project.LastActionedUTC.ToLocalDateTime(existing.LandfillTimeZone);
             if (localEndDate != null)
             {
-              project.EndDate = localEndDate.Value;
+              project.EndDate = localEndDate.Value.Date;
               const string update =
                 @"UPDATE Project                
                   SET IsDeleted = 1,
@@ -543,7 +543,7 @@ namespace VSS.MasterData.Repositories
                   WHERE ProjectUID = @ProjectUID";
               upsertedCount = await ExecuteWithAsyncPolicy(update, project);
               Log.LogDebug(
-                $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+                $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID} new endDate: {project.EndDate}");
             }
             else
             {

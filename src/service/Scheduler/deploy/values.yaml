@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 environment: alpha
 
+globalConfig: 3dapp-alpha
+
 rootDomain: k8s.vspengg.com
 
 replicaCount: 1

@@ -40,6 +40,10 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
         imagePullPolicy: Always
         ports:
         - containerPort: 80 

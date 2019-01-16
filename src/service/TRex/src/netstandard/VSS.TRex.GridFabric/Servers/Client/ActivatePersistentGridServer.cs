@@ -6,7 +6,7 @@ using System.Threading;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.TRex.Servers.Client
+namespace VSS.TRex.GridFabric.Servers.Client
 {
     /// <summary>
     /// This class simply marks the named grid as being active when executed

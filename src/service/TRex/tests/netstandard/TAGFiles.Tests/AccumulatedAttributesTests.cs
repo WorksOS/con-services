@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
 using VSS.TRex.Types;
 using Xunit;
@@ -74,7 +73,7 @@ namespace TAGFiles.Tests
             object value = null;
 
             Assert.True(attrs.GetValueAtDateTime(new DateTime(2000, 1, 1, 1, 1, 0), out value) && (int) value== 1, 
-                          "Failed to locate first attribute with preceeding time");
+                          "Failed to locate first attribute with preceding time");
 
             Assert.True(attrs.GetValueAtDateTime(new DateTime(2000, 1, 1, 1, 1, 1), out value) && (int)value == 1,
                           "Failed to locate first attribute with exact time");

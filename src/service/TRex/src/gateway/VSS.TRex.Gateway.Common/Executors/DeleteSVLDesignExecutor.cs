@@ -9,11 +9,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

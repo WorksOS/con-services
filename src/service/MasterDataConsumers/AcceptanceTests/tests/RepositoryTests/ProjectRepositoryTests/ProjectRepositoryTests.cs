@@ -5,6 +5,7 @@ using RepositoryTests.Internal;
 using System;
 using System.Linq;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -1275,6 +1276,8 @@ namespace RepositoryTests.ProjectRepositoryTests
       g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+
+      project.EndDate = (project.LastActionedUTC.ToLocalDateTime(ProjectTimezones.PacificAuckland) ?? DateTime.UtcNow.Date).Date;
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
 
       CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);

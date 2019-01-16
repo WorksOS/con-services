@@ -102,7 +102,7 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       if (!CleavingSegment.HasAllPasses)
       {
-        Log.LogError($"Cannot cleave a subgrid ({Owner.Moniker()}) without its cell passes");
+        Log.LogError($"Cannot cleave a sub grid ({Owner.Moniker()}) without its cell passes");
         return false;
       }
 
@@ -131,7 +131,7 @@ namespace VSS.TRex.SubGridTrees.Server
       DateTime OldEndTime = CleavingSegment.SegmentInfo.EndTime;
 
       // Record the segment that was cleaved in the list of those that need to be removed
-      // when the subgrid is next persisted (but only if it has previously been persisted
+      // when the sub grid is next persisted (but only if it has previously been persisted
       // to disk). If not, it is only in memory and can represent one part of the set
       // of cloven segments waiting for persistence.
       if (CleavingSegment.SegmentInfo.ExistsInPersistentStore)
@@ -189,7 +189,7 @@ namespace VSS.TRex.SubGridTrees.Server
       Owner.Directory.SegmentDirectory.Insert(
         Owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo) + 1, NewSegmentInfo);
 
-      // Add the new created segment into the segment list for the subgrid
+      // Add the new created segment into the segment list for the sub grid
       PassesData.Add(NewSegment);
 
       // Tidy up, marking both segments as dirty, and not existing in the persistent data store!
@@ -207,7 +207,7 @@ namespace VSS.TRex.SubGridTrees.Server
           if (!DataStoreInstance.GridDataCache.SubGridSegmentTouched(NewSegment))
           {
                SIGLogMessage.PublishNoODS(Self,
-                  Format('Failed to touch newly created segment in segment cleaving for subgrid %s [%s]', [
+                  Format('Failed to touch newly created segment in segment cleaving for sub grid %s [%s]', [
                       CleavingSegment.Owner.Moniker, CleavingSegment.ToString]), slmcException);
               return true;
           }
