@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
     /// </summary>
-    private IMemoryCache FilterCache => HttpContext.RequestServices.GetService<IMemoryCache>();
+    private IDataCache FilterCache => HttpContext.RequestServices.GetService<IDataCache>();
 
     /// <summary>
     /// Gets the service exception handler.
@@ -323,7 +324,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // Filter models are immutable except for their Name.
       // This service doesn't consider the Name in any of it's operations so we don't mind if our
       // cached object is out of date in this regard.
-      if (filterUid.HasValue && FilterCache.TryGetValue(filterUid, out FilterResult cachedFilter))
+      var cachedFilter = filterUid.HasValue ? FilterCache.Get<FilterResult>(filterUid.Value.ToString()) : null;
+      if (cachedFilter != null)
       {
         await ApplyDateRange(projectUid, cachedFilter);
 
@@ -387,7 +389,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 
-            FilterCache.Set(filterUid, raptorFilter, filterCacheOptions);
+            // The filter will be removed from memory and recalculated to ensure we have the latest filter on any relevant changes
+            var filterTags = new List<string>()
+            {
+              filterUid.Value.ToString(),
+              projectUid.ToString()
+            };
+
+            FilterCache.Set(filterUid.Value.ToString(), raptorFilter, filterTags, filterCacheOptions);
 
             return raptorFilter;
           }

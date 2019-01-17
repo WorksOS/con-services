@@ -50,7 +50,6 @@ namespace VSS.WebApi.Common
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       
       services.AddJaeger(ServiceName);
-      services.AddMemoryCache();
       
       Services = services;
       ConfigureAdditionalServices(services);
