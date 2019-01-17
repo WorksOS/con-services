@@ -18,7 +18,7 @@ namespace TAGFiles.Tests
     {
       // Setup the mutation hook to capture cell pass generation
       string cellPassFileName = Path.GetTempFileName();
-      var writer = new CellPassWriter(new StreamWriter(new FileStream(cellPassFileName, FileMode.CreateNew, FileAccess.ReadWrite)));
+      var writer = new CellPassWriter(new StreamWriter(new FileStream(cellPassFileName, FileMode.Open, FileAccess.ReadWrite)));
       hook.SetActions(writer); 
 
       // Read in the TAG file
