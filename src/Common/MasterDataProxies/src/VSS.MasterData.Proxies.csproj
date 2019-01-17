@@ -36,6 +36,8 @@
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -1,10 +1,15 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+
 namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
   ///  Describes preference data returned by the preference master data service.
   /// </summary>
-  public class UserPreferenceResult
+  public class UserPreferenceResult :  IMasterDataModel
   {
     /// <summary>
     /// THe preference key e.g. "global"
@@ -22,5 +27,10 @@ namespace VSS.MasterData.Models.ResultHandling
     /// Schema version
     /// </summary>
     public string SchemaVersion { get; set; }
+
+    public List<string> GetIdentifiers() => new List<string>()
+    {
+      PreferenceKeyUID
+    };
   }
 }

@@ -11,7 +11,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 {
   /// <summary>
   /// TAGProcessorStateBase implements a basic TAG value reader sink with all the
-  /// state informaiton read from tag files representing as-built and compaction
+  /// state information read from tag files representing as-built and compaction
   /// recorded information.
   /// </summary>
   public class TAGProcessorStateBase
@@ -549,6 +549,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
       }
       OnGrounds.Add(DataTime, value);
     }
+
     public virtual void SetICCCVValue(short value) => ICCCVValues.Add(DataTime, value);
     public virtual void SetICMachineSpeedValue(double value) => ICMachineSpeedValues.Add(DataTime, value);
     public virtual void SetICFrequency(ushort value) => ICFrequencys.Add(DataTime, value);
@@ -577,7 +578,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     /// <summary>
     /// TAG Processor state base constructor. 
-    /// Initialises the attribute consumers. All other state is intialised inline.
+    /// Initializes the attribute consumers. All other state is initialized inline.
     /// </summary>
     public TAGProcessorStateBase()
     {

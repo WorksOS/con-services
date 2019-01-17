@@ -91,7 +91,7 @@ namespace TAGFiles.Tests
     }
 
     [Theory]
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 10, 3)] // Take the first 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 10, 4)] // Take the first 10
     [InlineData("Dimensions2018-CaseMachine", 164, 164, 10, 10, 2)] // Take the next 10
     [InlineData("Dimensions2018-CaseMachine", 164, 164, 20, 10, 3)] // Take the next 10
     [InlineData("Dimensions2018-CaseMachine", 164, 164, 30, 10, 2)] // Take the next 10

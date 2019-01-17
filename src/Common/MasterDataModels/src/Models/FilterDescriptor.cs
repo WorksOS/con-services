@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Models.Models
@@ -7,7 +9,7 @@ namespace VSS.MasterData.Models.Models
   /// Describes a filter
   /// </summary>
   /// CustomerUid; UserUid and projectUid must be provided so shouldn't be returned
-  public class FilterDescriptor
+  public class FilterDescriptor : IMasterDataModel
   {
     /// <summary>
     /// Gets or sets the filter uid.
@@ -51,5 +53,10 @@ namespace VSS.MasterData.Models.Models
     {
       return 0;
     }
+
+    public List<string> GetIdentifiers() => new List<string>
+    {
+      FilterUid
+    };
   }
 }

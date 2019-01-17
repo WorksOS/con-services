@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -174,19 +175,19 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
 
       Assert.IsNull(cache.Get<string>(key));
 
-      CacheItem<string> CreateCacheItemFactory(ICacheEntry e, string d)
+      Task<CacheItem<string>> CreateCacheItemFactory(ICacheEntry e, string d)
       {
         dataCalledCount++;
-        return new CacheItem<string>(d, new List<string> { tag });
+        return Task.FromResult(new CacheItem<string>(d, new List<string> { tag }));
       }
 
       var result1 = cache.GetOrCreate(key, (e) => CreateCacheItemFactory(e, data1));
       var result2 = cache.GetOrCreate(key, (e) => CreateCacheItemFactory(e, data2));
 
       // The data is cached, so both calls should return the first data
-      Assert.AreEqual(result1, data1);
-      Assert.AreEqual(result2, data1);
-      Assert.AreEqual(result1, result2);
+      Assert.AreEqual(result1.Result, data1);
+      Assert.AreEqual(result2.Result, data1);
+      Assert.AreEqual(result1.Result, result2.Result);
 
       Assert.IsTrue(dataCalledCount == 1);
 
@@ -194,7 +195,7 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
 
       var result3 = cache.GetOrCreate(key, (e) => CreateCacheItemFactory(e, data3));
 
-      Assert.AreEqual(data3, result3);
+      Assert.AreEqual(data3, result3.Result);
       Assert.IsTrue(dataCalledCount == 2);
     }
 
@@ -268,6 +269,65 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
 
       Assert.IsTrue(cache.CacheKeys.Count == 0);
       Assert.IsTrue(cache.CacheTags.Count == 0);
+    }
+
+    [TestMethod]
+    public void Test_SetAsyncGetOrCreate()
+    {
+      var key = $"Test_SetAsyncGetOrCreate-1-{Guid.NewGuid()}";
+      var data = RandomString(64);
+
+      var cache = ServiceProvider.GetService<IDataCache>() as InMemoryDataCache;
+      Assert.IsNotNull(cache);
+
+      cache.Set(key, data, null);
+
+      var result = cache.Get<string>(key);
+
+      Assert.AreEqual(data, result);
+
+      var result2 = cache.GetOrCreate(key, e => Task.FromResult(new CacheItem<string>(data, null)));
+
+      Assert.AreEqual(data, result2.Result);
+
+    }
+
+
+    [TestMethod]
+    public void Test_TestTimeout()
+    {
+      var key = $"Test_SetAsyncGetOrCreate-1-{Guid.NewGuid()}";
+      var data = RandomString(64);
+
+      var dataCalledCount = 0;
+
+      var cache = ServiceProvider.GetService<IDataCache>();
+
+      Assert.IsNull(cache.Get<string>(key));
+
+      Task<CacheItem<string>> CreateCacheItemFactory(ICacheEntry e, string d)
+      {
+        dataCalledCount++;
+        e.AbsoluteExpirationRelativeToNow = TimeSpan.FromMilliseconds(500);
+        return Task.FromResult(new CacheItem<string>(d, null));
+      }
+
+      cache.GetOrCreate(key, (e) => CreateCacheItemFactory(e, data));
+      var result1 = cache.Get<string>(key);
+      Assert.AreEqual(data, result1);
+
+      Thread.Sleep(500);
+
+      var result2 = cache.Get<string>(key);
+      Assert.IsNull(result2);
+
+      cache.GetOrCreate(key, (e) => CreateCacheItemFactory(e, data));
+
+      var result3 = cache.Get<string>(key);
+      Assert.AreEqual(data, result3);
+
+
+      Assert.AreEqual(dataCalledCount, 2);
     }
 
     [TestMethod]

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Models.Models
@@ -6,7 +9,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   /// Describes an imported file for a project
   /// </summary>
-  public class FileData
+  public class FileData : IMasterDataModel
   {
     /// <summary>
     /// Gets or sets the Project uid.
@@ -125,5 +128,12 @@ namespace VSS.MasterData.Models.Models
     /// The maximum zoom level for DXF tiles
     /// </summary>
     public int MaxZoomLevel { get; set; }
+
+    public List<string> GetIdentifiers() => new List<string>
+    {
+      CustomerUid,
+      ImportedFileUid,
+      ProjectUid,
+    };
   }
 }
