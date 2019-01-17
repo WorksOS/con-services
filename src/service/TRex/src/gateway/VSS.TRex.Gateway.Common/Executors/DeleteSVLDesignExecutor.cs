@@ -14,7 +14,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class DeleteSVLDesignExecutor : RequestExecutorContainer
+  public class DeleteSVLDesignExecutor : BaseExecutor
   {
     /// <summary>
     /// TagFileExecutor
@@ -45,8 +45,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as DesignRequest;
       if (request == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        ThrowRequestTypeCastException<DesignRequest>();
+        return null; // to keep compiler happy
       }
 
       try
@@ -56,7 +56,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (!DIContext.Obtain<IAlignmentManager>().Remove(request.ProjectUid, request.DesignUid))
         {
           log.LogError($"#Out# DeleteSVLDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
+          throw CreateServiceException<DeleteSVLDesignExecutor>
+          (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+            RequestErrorStatus.DesignImportUnableToDeleteDesign);
         }
 
         var localPathAndFileName = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString(), request.FileName });
@@ -76,7 +78,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"#Out# DeleteSVLDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
+        throw CreateServiceException<DeleteSVLDesignExecutor>
+        (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+          RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 
       return new ContractExecutionResult(); 

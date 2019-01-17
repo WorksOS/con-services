@@ -18,7 +18,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class AddSVLDesignExecutor : RequestExecutorContainer
+  public class AddSVLDesignExecutor : BaseExecutor
   {
     /// <summary>
     /// TagFileExecutor
@@ -49,8 +49,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as DesignRequest;
       if (request == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        ThrowRequestTypeCastException<DesignRequest>();
+        return null; // to keep compiler happy
       }
 
       try
@@ -66,7 +66,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int) RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
+          throw CreateServiceException<AddSVLDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
         // todo when SDK avail
@@ -91,7 +93,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"#Out# AddSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int) RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
+        throw CreateServiceException<AddSVLDesignExecutor>
+          (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+            RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
       return new ContractExecutionResult();

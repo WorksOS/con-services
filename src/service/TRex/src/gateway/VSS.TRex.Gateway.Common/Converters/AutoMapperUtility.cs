@@ -223,7 +223,7 @@ namespace VSS.TRex.Gateway.Common.Converters
 
         CreateMap<Alignment, DesignFileDescriptor>()
           .ForMember(x => x.FileType,
-            opt => opt.UseValue(ImportedFileType.SurveyedSurface))
+            opt => opt.UseValue(ImportedFileType.Alignment))
           .ForMember(x => x.Name,
             opt => opt.MapFrom(f => f.DesignDescriptor.FileName))
           .ForMember(x => x.DesignUid,

@@ -23,7 +23,7 @@ using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class AddTTMDesignExecutor : RequestExecutorContainer
+  public class AddTTMDesignExecutor : BaseExecutor
   {
     /// <summary>
     /// TagFileExecutor
@@ -54,8 +54,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as DesignRequest;
       if (request == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        ThrowRequestTypeCastException<DesignRequest>();
+        return null; // to keep compiler happy
       }
 
       try
@@ -71,7 +71,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
+          throw CreateServiceException<AddTTMDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
         // This generates the 2 index files 
@@ -79,7 +81,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
+          throw CreateServiceException<AddTTMDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
         }
 
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
@@ -115,7 +119,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
+        throw CreateServiceException<AddTTMDesignExecutor>
+          (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+            RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
       return new ContractExecutionResult(); 

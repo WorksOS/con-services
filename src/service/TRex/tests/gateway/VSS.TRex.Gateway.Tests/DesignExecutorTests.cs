@@ -116,7 +116,7 @@ namespace VSS.TRex.Gateway.Tests
 
       var result = AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(design);
 
-      Assert.Equal(ImportedFileType.SurveyedSurface, result.FileType);
+      Assert.Equal(ImportedFileType.Alignment, result.FileType);
       Assert.Equal(fileName, result.Name);
       Assert.Equal(designUid.ToString(), result.DesignUid);
       Assert.Equal(extents.MaxX, result.Extents.MaxX);

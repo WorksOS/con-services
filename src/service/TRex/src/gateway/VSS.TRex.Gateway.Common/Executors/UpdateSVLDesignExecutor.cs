@@ -18,7 +18,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class UpdateSVLDesignExecutor : RequestExecutorContainer
+  public class UpdateSVLDesignExecutor : BaseExecutor
   {
     /// <summary>
     /// TagFileExecutor
@@ -49,8 +49,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as DesignRequest;
       if (request == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        ThrowRequestTypeCastException<DesignRequest>();
+        return null; // to keep compiler happy
       }
 
       try
@@ -59,7 +59,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         if (!DIContext.Obtain<IAlignmentManager>().Remove(request.ProjectUid, request.DesignUid))
         {
-          return new ContractExecutionResult((int) RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
+          throw CreateServiceException<UpdateSVLDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToDeleteDesign);
         }
 
         // load core file from s3 to local
@@ -71,7 +73,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# UpdateSVLDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int) RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
+          throw CreateServiceException<UpdateSVLDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
         // todo when SDK avail
@@ -95,7 +99,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"#Out# UpdateSVLDesignExecutor. Update of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int) RequestErrorStatus.DesignImportUnableToUpdateDesign, e.Message);
+        throw CreateServiceException<UpdateSVLDesignExecutor>
+          (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+            RequestErrorStatus.DesignImportUnableToUpdateDesign, e.Message);
       }
 
       return new ContractExecutionResult();
