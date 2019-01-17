@@ -73,7 +73,6 @@ namespace VSS.Tile.Service.WebApi
 
       services.AddJaeger(SERVICE_TITLE);
 
-      services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -122,7 +122,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddJaeger(SERVICE_TITLE);
 
       services.AddOpenTracing();
-      services.AddMemoryCache();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 

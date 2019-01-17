@@ -84,7 +84,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddMemoryCache();
 
       services.AddOpenTracing(builder =>
       {
