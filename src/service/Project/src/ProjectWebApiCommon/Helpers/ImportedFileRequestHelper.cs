@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using Jaeger.Thrift;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -14,6 +18,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -231,20 +236,29 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #region tiles
 
-    public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, string fileName,
-      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, ILogger log, 
-      IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy)
+    public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, 
+      string fileName, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, Guid importedFileUid, 
+      ILogger log, IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy, IRaptorProxy raptorProxy, 
+      IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, IDataOceanClient dataOceanClient, 
+      IConfigurationStore configStore)
     { 
-      if (importedFileType == ImportedFileType.Linework)
+      if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.Alignment)
       {
         if (string.Compare(Path.GetExtension(coordSysFileName), ".dc", StringComparison.OrdinalIgnoreCase) != 0)
         {
-          log.LogWarning($"Cannot generate DXF tiles because coordinate system file type is not dc");
+          log.LogWarning($"Cannot generate DXF tiles for {fileName} because coordinate system file type is not dc");
         }
         else
         {
           try
           {
+            //For alignment files get the generated DXF from Raptor and save to DataOcean
+            if (importedFileType == ImportedFileType.Alignment)
+            {
+              fileName = await CreateGeneratedDxfFile(customerUid, projectUid, importedFileUid, raptorProxy, headers, 
+                log, serviceExceptionHandler, authn, dataOceanClient, configStore);
+            }
+
             var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}{Path.DirectorySeparatorChar}";
             var dxfFileName = $"{dataOceanPath}{fileName}";
             var dcFileName = $"{dataOceanPath}{coordSysFileName}";
@@ -266,7 +280,44 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
     }
 
-    #endregion
+    private static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, IDictionary<string, string> headers,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, IDataOceanClient dataOceanClient, IConfigurationStore configStore)
+    {
+      var generatedName = string.Empty;
+      //Get generated DXF file from Raptor
+      var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
+      //GradefulWebRequest should throw an exception if the web api call fails but just in case...
+      if (dxfContents != null && dxfContents.Length > 0)
+      {
+        //Unzip it and save to DataOcean 
+        using (var archive = new ZipArchive(dxfContents))
+        {
+          if (archive.Entries.Count == 1)
+          {
+            generatedName = archive.Entries[0].Name;
+            var dataOceanRootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+            if (string.IsNullOrEmpty(dataOceanRootFolder))
+            {
+              serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
+            }
+            using (var stream = archive.Entries[0].Open() as DeflateStream)
+            using (var ms = new MemoryStream())
+            {
+              // Unzip the file, copy to memory 
+              stream.CopyTo(ms);
+              ms.Seek(0, SeekOrigin.Begin);
+              await DataOceanHelper.WriteFileToDataOcean(
+                ms, dataOceanRootFolder, customerUid, projectUid.ToString(),
+               generatedName, false, null, log, serviceExceptionHandler, dataOceanClient, authn);
+            }
+          }
+        }
+      }
+
+      return generatedName;
     }
+
+    #endregion
+  }
 
 }

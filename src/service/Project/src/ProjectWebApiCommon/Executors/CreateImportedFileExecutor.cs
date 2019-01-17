@@ -90,11 +90,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
 
         //Generate DXF tiles
-        if (createimportedfile.ImportedFileType == ImportedFileType.Linework)
+        if (createimportedfile.ImportedFileType == ImportedFileType.Linework || createimportedfile.ImportedFileType == ImportedFileType.Alignment)
         {
           await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, createimportedfile.ProjectUid, customerUid,
             createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
-            project.CoordinateSystemFileName, log, customHeaders, tileServiceProxy);
+            project.CoordinateSystemFileName, createImportedFileEvent.ImportedFileUID, log, customHeaders, tileServiceProxy,
+            raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);
         }
 
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())

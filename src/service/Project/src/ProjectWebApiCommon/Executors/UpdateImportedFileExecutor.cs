@@ -71,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         existing.MaxZoomLevel = addFileResult.MaxZoomLevel;
 
         //Generate DXF tiles
-        if (updateImportedFile.ImportedFileType == ImportedFileType.Linework)
+        if (updateImportedFile.ImportedFileType == ImportedFileType.Linework || updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
           var project =
             await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log,
@@ -79,7 +79,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
           await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, updateImportedFile.ProjectUid, customerUid,
             updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
-            project.CoordinateSystemFileName, log, customHeaders, tileServiceProxy);
+            project.CoordinateSystemFileName, updateImportedFile.ImportedFileUid, log, customHeaders, tileServiceProxy,
+            raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);
         }
       }
 
