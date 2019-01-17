@@ -55,23 +55,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     }
 
     /// <inheritdoc />
-    public string GenerateUniqueId() => $"{DateTime.Now.Ticks.GetHashCode():X}";
-
-    /// <inheritdoc />
     public void DeleteFile(string filename)
     {
       if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return;
 
-      try
-      {
-        log.LogDebug($"Deleting temporary linework file '{filename}'");
+      log.LogDebug($"Deleting temporary linework file '{filename}'");
 
-        _ = Task.Run(() => File.Delete(filename));
-      }
-      catch (Exception ex)
+      Task.Run(() => File.Delete(filename)).ContinueWith(t =>
       {
-        log.LogInformation($"Failed to delete temporary linework file '{filename}', error: {ex.GetBaseException().Message}");
-      }
+        if (t.Exception != null)
+        {
+          log.LogError($"Failed to delete temporary linework file '{filename}', error: {t.Exception.GetBaseException().Message}");
+        }
+      });
     }
 
     /// <summary>

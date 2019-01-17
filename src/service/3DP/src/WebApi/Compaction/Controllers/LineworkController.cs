@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
-      requestDto.Filename = fileUploadUtility.GenerateUniqueId();
+      requestDto.Filename = Guid.NewGuid().ToString();
 
       var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 

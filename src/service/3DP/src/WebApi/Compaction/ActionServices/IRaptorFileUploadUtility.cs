@@ -13,11 +13,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     (bool success, string message) UploadFile(FileDescriptor fileDescriptor, byte[] fileData);
 
     /// <summary>
-    /// Returns a unique hash id for use with creating unique monikers shorter than a standard Guid.
-    /// </summary>
-    string GenerateUniqueId();
-
-    /// <summary>
     /// Asynchrously and safely deletes a file.
     /// </summary>
     /// <remarks>
