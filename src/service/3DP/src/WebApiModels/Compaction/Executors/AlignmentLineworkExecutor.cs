@@ -23,27 +23,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
       {
-        var result = CallTRexEndpoint(request);
-
-        return result;
+        return ProcessWithTRex(request);
       }
 
-      if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"))
-      {
-        var result = CallRaptorEndpoint(request);
-
-        return result;
-      }
-
-      return ContractExecutionResult.ErrorResult();
+      return ProcessWithRaptor(request);     
     }
 
-    private AlignmentLineworkResult CallTRexEndpoint(AlignmentLineworkRequest request)
+    private AlignmentLineworkResult ProcessWithTRex(AlignmentLineworkRequest request)
     {
       throw new NotImplementedException("TRex Gateway not yet implemented for AlignmentLineworkExecutor");
     }
 
-    private AlignmentLineworkResult CallRaptorEndpoint(AlignmentLineworkRequest request)
+    private AlignmentLineworkResult ProcessWithRaptor(AlignmentLineworkRequest request)
     {
       const double ImperialFeetToMetres = 0.3048;
       const double USFeetToMetres = 0.304800609601;

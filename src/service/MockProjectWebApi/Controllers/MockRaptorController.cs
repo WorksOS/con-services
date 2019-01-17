@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -14,6 +15,16 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockRaptorController
   {
+    [HttpGet("api/v2/linework/alignment")]
+    public FileResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
+    {
+      //This is for Large Sites Road.svl
+      JObject base64ZippedDxf = JsonConvert.DeserializeObject<JObject>(
+        "UEsDBBQAAAAIADB6MU4pKBvEugEAAMgFAAApAAAATGFyZ2UgU2l0ZXMgUm9hZF9BbGlnbm1lbnRDZW50ZXJsaW5lJC5EWEbFlMGOnDAMhu9IvAOHni3HIbFzZGezKhIL7cCudo49Vuqp73+oA1lgt8xMb0WIxIntL/6dmarCshjjaWqHviyqisria2we4zkZoSy+dO3zc5u2jDoi4PyoSR/N1bd5u++rn9g/KjUbH/lT89DFMW/NRt7omstyLtzNdf1BR04IHb3anNZ9WZyGfmr7l+Fl3KCa7yDzOF2WOe7mut78/vnj1y57/T6astC3ctlmk9dpGSubY+FpKesz/Eb5UQ89tasA34bu0rX9fCJZak01JrpVzemo1lUMvzjeb8drPE/xbcdIIeRDADbi1ihDxoH4mu8EstTgkXAfaKA2ntbAMX5XEbLRnE8H9eVUBF5YtlSGa5CAS6rUEevBsUe2uSM2ADnrDJNJV8FpLvEQ5gfR75W7zRbNHNjSvgzNXYtsbAuOBH3I7NkhwU0QzHBiA7ZGFUSC/UT/n+0Vy8BJuU1accCUVLodKAGcC24fqErVdKW9mmK6pvGdO5Y0JsiVmKWwNOXtx5lkF4at2ls4VpzeARvcikMGT3o3/QHO4BWg176j/Qfgu1Z0rNVfwKA9kQNgSHfIHP19xOGpLP4AUEsBAhQAFAAAAAgAMHoxTikoG8S6AQAAyAUAACkAAAAAAAAAAAAAAAAAAAAAAExhcmdlIFNpdGVzIFJvYWRfQWxpZ25tZW50Q2VudGVybGluZSQuRFhGUEsFBgAAAAABAAEAVwAAAAECAAAAAA==");
+      var dxfZippedBytes = base64ZippedDxf.ToObject<byte[]>();
+      return new FileStreamResult(new MemoryStream(dxfZippedBytes), "application/zip");
+    }
+
     [Route("api/v2/mock/export/veta")]
     [HttpGet]
     public async Task<FileResult> GetMockVetaExportData(
