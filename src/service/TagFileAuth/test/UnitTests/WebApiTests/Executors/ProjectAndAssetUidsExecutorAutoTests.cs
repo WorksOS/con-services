@@ -134,6 +134,12 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
+    public async Task TRexExecutor_Auto_Happy_StdPrj_Ec520Plus940_ignoreManual3dSub()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
     public async Task TRexExecutor_Auto_Sad_StdPrj_NoneFound()
     {
       var projectUid = Guid.NewGuid().ToString();
