@@ -151,11 +151,30 @@ namespace VSS.TRex.DI
     /// </summary>
     public static DIBuilder Continue(IServiceCollection serviceCollection) => Instance ?? New(serviceCollection);
 
-    public DIBuilder Remove<T>()
+    /// <summary>
+    /// Removes a single instance of a registered DI service type in DIContext. The first located instance of the supplied type is removed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public DIBuilder RemoveSingle<T>()
     {
       var serviceDescriptor = Instance.ServiceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
       if (serviceDescriptor != null)
         Instance.ServiceCollection.Remove(serviceDescriptor);
+
+      return Instance;
+    }
+
+    /// <summary>
+    /// Removes all instances of a registered DI service type in DIContext. The first located instance of the supplied type is removed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public DIBuilder RemoveAll<T>()
+    {
+      var serviceDescriptors = Instance.ServiceCollection.Where(descriptor => descriptor.ServiceType == typeof(T));
+      foreach (var service in serviceDescriptors)
+        Instance.ServiceCollection.Remove(service);
 
       return Instance;
     }

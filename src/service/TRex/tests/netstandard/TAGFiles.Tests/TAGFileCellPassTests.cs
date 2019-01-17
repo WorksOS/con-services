@@ -11,13 +11,13 @@ namespace TAGFiles.Tests
 {
   public class TAGFileCellPassTests : IClassFixture<DITagFileFixture>
   {
-    private static readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+    private readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
     [Fact]
     public void Test_TAGFileCellPassGeneration_Default()
     {
       // Setup the mutation hook to capture cell pass generation
-      string cellPassFileName = $@"c:\temp\TRex-UnitTests-TAGFiles-CellPasses-{DateTime.Now.Ticks}.txt";
+      string cellPassFileName = Path.GetTempFileName();
       var writer = new CellPassWriter(new StreamWriter(new FileStream(cellPassFileName, FileMode.CreateNew, FileAccess.ReadWrite)));
       hook.SetActions(writer); 
 
