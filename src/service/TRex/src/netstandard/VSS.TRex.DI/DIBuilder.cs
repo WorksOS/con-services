@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,17 @@ using VSS.Log4Net.Extensions;
 
 namespace VSS.TRex.DI
 {
+/*  public static class ServiceCollectionExtensions
+  {
+    public static IServiceCollection Remove<T>(this IServiceCollection services)
+    {
+      var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
+      if (serviceDescriptor != null) services.Remove(serviceDescriptor);
+
+      return services;
+    }
+  }*/
+
   /// <summary>
   /// Provides a builder for Direct Injection requirements of a service
   /// </summary>
@@ -149,5 +161,14 @@ namespace VSS.TRex.DI
     /// Allow continuation of building the DI context
     /// </summary>
     public static DIBuilder Continue(IServiceCollection serviceCollection) => Instance ?? New(serviceCollection);
+
+    public DIBuilder Remove<T>()
+    {
+      var serviceDescriptor = Instance.ServiceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
+      if (serviceDescriptor != null)
+        Instance.ServiceCollection.Remove(serviceDescriptor);
+
+      return Instance;
+    }
   }
 }

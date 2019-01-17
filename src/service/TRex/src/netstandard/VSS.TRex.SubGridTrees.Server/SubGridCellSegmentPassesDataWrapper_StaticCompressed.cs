@@ -447,6 +447,17 @@ namespace VSS.TRex.SubGridTrees.Server
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
+        /// <summary>
+        /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="position"></param>
+        public void RemovePass(uint X, uint Y, int position)
+        {
+          throw new InvalidOperationException("Immutable cell pass segment.");
+        }
+
         public void Write(BinaryWriter writer)
         {
             writer.Write(FirstRealCellPassTime.ToBinary());
