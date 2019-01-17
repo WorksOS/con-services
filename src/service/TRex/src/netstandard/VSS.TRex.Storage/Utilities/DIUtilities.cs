@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
@@ -19,6 +17,8 @@ namespace VSS.TRex.Storage.Utilities
     private static void AddDIEntries()
     {
       DIBuilder.Continue()
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>
         (factory => (ignite, mutability) => new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
 

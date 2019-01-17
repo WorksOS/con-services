@@ -19,19 +19,23 @@ namespace LandfillDatasync.netcore
     private readonly ILog Log;
     private readonly I_3dpmAuthN authn;
 
-    public DataSynchronizer(ILog logger)
+    public DataSynchronizer(ILog logger, IConfigurationStore configurationStore)
     {
       Log = logger;
-      authn = new _3dpmAuthN(new GenericConfiguration(new NullLoggerFactory()),
-        new TPaasProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+      authn = new _3dpmAuthN(configurationStore,
+        new TPaasProxy(configurationStore, new NullLoggerFactory()),
         new Logger<_3dpmAuthN>(new NullLoggerFactory()));
     }
+
+    public Guid? CustomerUid { get; set; }
 
     //private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
     private List<Project> GetListOfProjectsToRetrieve()
     {
-      return LandfillDb.GetListOfAvailableProjects();
+      return CustomerUid.HasValue 
+        ? LandfillDb.GetListOfAvailableProjects(CustomerUid.Value) 
+        : LandfillDb.GetListOfAvailableProjects();
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ namespace TAGFiles.Tests
     /// </summary>
     public class TAGFileBufferQueueServiceTests
     {
-        private static MutableClientServer TAGClientServer = null;
+        private static MutableClientServer TAGClientServer;
         private static IIgnite ignite;
 
         private static void EnsureServer()
@@ -40,7 +40,7 @@ namespace TAGFiles.Tests
         }
 
         [Fact(Skip = "Requires live Ignite node")]
-        public void Test_TAGFileBufferQueueServiceTests_Deployinh()
+        public void Test_TAGFileBufferQueueServiceTests_Deploying()
         {
             EnsureServer();
 
