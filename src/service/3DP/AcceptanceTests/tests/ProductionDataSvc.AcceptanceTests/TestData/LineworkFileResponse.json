@@ -1,7 +1,7 @@
 {
   "NullFileData": {
     "Code": -1,
-    "Message": "Filedata cannot be null"
+    "Message": "File data cannot be null"
   },
   "OutOfRangeDxfUnit": {
     "Code": -1,
