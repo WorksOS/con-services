@@ -15,7 +15,7 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockRaptorController
   {
-    [HttpGet("api/v2/linework/alignment")]
+    [HttpGet("api/v2/mock/linework/alignment")]
     public FileResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
     {
       //This is for Large Sites Road.svl
