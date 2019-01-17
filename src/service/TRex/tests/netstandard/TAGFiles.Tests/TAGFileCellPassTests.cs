@@ -24,7 +24,7 @@ namespace TAGFiles.Tests
       // Read in the TAG file
       DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
 
-      // Close the writer and clean up the DI context
+      // Close the writer and remove actions from the hook
       hook.ClearActions();
       writer.Close();
 
