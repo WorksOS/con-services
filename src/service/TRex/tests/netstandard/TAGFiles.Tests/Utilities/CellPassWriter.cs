@@ -17,7 +17,7 @@ namespace TAGFiles.Tests.Utilities
     /// <summary>
     /// Controls whether to output short form pass information (just location and time), or full pass information
     /// </summary>
-    public bool ShortFormOutput { get; set } = true;
+    public bool ShortFormOutput { get; set; } = true;
 
     public CellPassWriter(TextWriter writer)
     {
