@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using DesignProfilerDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
@@ -9,10 +8,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// </summary>
   public class AlignmentLineworkResult : ContractExecutionResult
   {
-    public AlignmentLineworkResult(TDesignProfilerRequestResult result, string message, Stream dxfData)
+    public AlignmentLineworkResult(Stream dxfData)
     {
-      Code = (int) result;
-      Message = message;
       DxfData = dxfData;
     }
 

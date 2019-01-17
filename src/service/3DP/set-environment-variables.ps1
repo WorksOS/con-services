@@ -47,7 +47,9 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}),
+  @{key = "ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"; value = "false"}),
+  @{key = "ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"; value = "true"})
   
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
@@ -68,7 +70,9 @@ $tccAndAwsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}),
+  @{key = "ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"; value = "false"}),
+  @{key = "ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"; value = "true"})
 
 # Used when running the collaborating services against a locally running MockWebApi service.
 $localhostEnvironmentVariables = @(
@@ -90,6 +94,8 @@ $localhostEnvironmentVariables = @(
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"; value = "false"}),
+  @{key = "ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"; value = "true"}),
   @{key = "MYSQL_SERVER_NAME_VSPDB"; value = "db"},
   @{key = "MYSQL_PORT"; value = "3306"},
   @{key = "MYSQL_USERNAME"; value = "root"},
@@ -123,7 +129,9 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}),
+  @{key = "ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"; value = "false"}),
+  @{key = "ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"; value = "true"})
 
 # Used when running 3DP service locally but connecting to /alpha deployed collaborating services
 $alphaCollaboratorsEnvironmentVariables = @(
@@ -144,7 +152,9 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}),
+  @{key = "ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"; value = "false"}),
+  @{key = "ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"; value = "true"})
 
 # Used when running 3DP service locally but connecting to /prod deployed collaborating services
 $prodCollaboratorsEnvironmentVariables = @(
@@ -165,7 +175,9 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}),
+  @{key = "ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"; value = "false"}),
+  @{key = "ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"; value = "true"})
 
 if ($environment -ieq "--dev" -or $environment -ieq "-d") {
   $environmentVariables = $devCollaboratorsEnvironmentVariables

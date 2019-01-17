@@ -21,14 +21,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       var request = CastRequestObjectTo<AlignmentLineworkRequest>(item);
 
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
       {
         var result = CallTRexEndpoint(request);
 
         return result;
       }
 
-      if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY"))
+      if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY_DESIGN_BOUNDARY"))
       {
         var result = CallRaptorEndpoint(request);
 
@@ -80,19 +80,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           interval, raptorUnits, 0), out var memoryStream, out var designProfilerResult);
 
 
-      string message = null;
       if (memoryStream == null || designProfilerResult != TDesignProfilerRequestResult.dppiOK)
       {
-        message =
-          $"Failed to generate DXF boundary for file {request.FileDescriptor.FileName} for project {request.ProjectUid}. Raptor error {designProfilerResult}";
-        log.LogWarning(message);
+        log.LogWarning($"Failed to generate DXF boundary for file {request.FileDescriptor.FileName} for project {request.ProjectUid}. Raptor error {designProfilerResult}");
+        throw CreateServiceException<AlignmentLineworkExecutor>((int)designProfilerResult);
       }
-      else
-      {
-        message = "Successfully generated DXF linework for alignment";
-      }
-
-      return new AlignmentLineworkResult(designProfilerResult, message, memoryStream);
+ 
+      return new AlignmentLineworkResult(memoryStream);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
