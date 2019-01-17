@@ -3,6 +3,8 @@
   public enum NotificationUidType
   {
     Project,
-    Customer
+    Customer,
+    User,
+    File
   }
 }
