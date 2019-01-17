@@ -81,7 +81,7 @@ namespace TAGFiles.Tests
       converter.Processor.OnGroundFlagSet.Should().Be(true);
 
       DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Unspecified);
-      converter.Processor.OnGrounds.GetOnGroundAtDateTime(theTime).Should().NotBe(OnGroundState.YesMachineSoftware);
+      converter.Processor.OnGrounds.GetOnGroundAtDateTime(theTime).Should().Be(OnGroundState.YesMachineSoftware);
     }
 
 
