@@ -22,6 +22,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -207,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
     /// </summary>
-    protected async Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, bool forProfile = false)
+    protected async Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, OperationType operation = OperationType.General)
     {
       if (!fileUid.HasValue)
       {
@@ -226,7 +227,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       foreach (var f in fileList)
       {
-        if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && (!forProfile || f.IsProfileSupportedFileType()))
+        bool operationSupported = true;
+        switch (operation)
+        {
+          case OperationType.Profiling:
+            operationSupported = f.IsProfileSupportedFileType();
+            break;
+          case OperationType.GeneratingDxf:
+            operationSupported = f.ImportedFileType == ImportedFileType.Alignment;
+            break;
+          default:
+            //All file types supported
+            break;
+        }
+        if (f.ImportedFileUid == fileUid.ToString() && f.IsActivated && operationSupported)
         {
           file = f;
 
@@ -238,7 +252,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Unable to access design file."));
+            "Unable to access design or alignment file."));
       }
 
       var tccFileName = file.Name;
@@ -249,7 +263,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
                       Path.GetExtension(tccFileName);
       }
-      
+
       var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 

@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -84,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
+      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
 
       FilterResult baseFilter = null;
       FilterResult topFilter = null;
@@ -99,10 +100,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           case VolumeCalcType.GroundToDesign:
             baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
             topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }
@@ -220,7 +221,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       foreach (Guid impFileUid in importedFileUid)
       {
-        var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, true);
+        var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, OperationType.Profiling);
 
         var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
             .ProjectId(projectId)
