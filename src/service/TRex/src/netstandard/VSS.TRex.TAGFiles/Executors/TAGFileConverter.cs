@@ -65,6 +65,12 @@ namespace VSS.TRex.TAGFiles.Executors
         public ProductionEventLists MachineTargetValueChangesAggregator { get; set; }
 
         /// <summary>
+        /// The processor used as the sink for values reader from the TAGfile by the TAG file reader.
+        /// Once the TAG file is converted, this contains the final state of the TAGProcessor state machine.
+        /// </summary>
+        public TAGProcessor Processor { get; set; }
+
+        /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public TAGFileConverter()
@@ -89,6 +95,8 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+
+        Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
       }
 
       /// <summary>
@@ -123,7 +131,6 @@ namespace VSS.TRex.TAGFiles.Executors
             {
                 Initialise();
 
-                TAGProcessor Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
                 TAGValueSink Sink = new TAGValueSink(Processor);
                 TAGReader Reader = new TAGReader(TAGData);
                 TAGFile TagFile = new TAGFile();
