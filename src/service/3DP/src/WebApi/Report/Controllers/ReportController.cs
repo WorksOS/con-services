@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Returns the ProjectUid (Guid) for a given ProjectId (long).
     /// </summary>
-    protected Task<Guid> GetLegacyProjectUid(long projectId)
+    protected Task<Guid> GetProjectUid(long projectId)
     {
       return ((RaptorPrincipal)User).GetProjectUid(projectId);
     }
@@ -356,7 +356,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
 
       if (useTrexGateway)
-        request.ProjectUid = new Guid("f13f2458-7890-424f-a995-4426a00771ae");//GetLegacyProjectUid(request.ProjectId ?? -1).Result;
+        request.ProjectUid = GetProjectUid(request.ProjectId ?? -1).Result;
 
       request.Validate();
 
