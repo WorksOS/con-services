@@ -36,7 +36,9 @@ namespace MockProjectWebApi
 
     public IConfigurationRoot Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container
+    /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddLogging();
@@ -58,12 +60,11 @@ namespace MockProjectWebApi
       serviceCollection = services;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      //loggerFactory.AddDebug();
-
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
       log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(Startup));
