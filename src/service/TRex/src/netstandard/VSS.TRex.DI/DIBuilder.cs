@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -149,5 +150,33 @@ namespace VSS.TRex.DI
     /// Allow continuation of building the DI context
     /// </summary>
     public static DIBuilder Continue(IServiceCollection serviceCollection) => Instance ?? New(serviceCollection);
+
+    /// <summary>
+    /// Removes a single instance of a registered DI service type in DIContext. The first located instance of the supplied type is removed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public DIBuilder RemoveSingle<T>()
+    {
+      var serviceDescriptor = Instance.ServiceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
+      if (serviceDescriptor != null)
+        Instance.ServiceCollection.Remove(serviceDescriptor);
+
+      return Instance;
+    }
+
+    /// <summary>
+    /// Removes all instances of a registered DI service type in DIContext. The first located instance of the supplied type is removed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public DIBuilder RemoveAll<T>()
+    {
+      var serviceDescriptors = Instance.ServiceCollection.Where(descriptor => descriptor.ServiceType == typeof(T));
+      foreach (var service in serviceDescriptors)
+        Instance.ServiceCollection.Remove(service);
+
+      return Instance;
+    }
   }
 }
