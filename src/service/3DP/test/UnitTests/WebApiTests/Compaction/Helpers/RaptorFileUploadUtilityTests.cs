@@ -2,7 +2,6 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,7 +45,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
     [TestMethod]
     public void UploadFile_should_return_When_filesize_exceeds_max_limit()
-    { 
+    {
       var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
       var filename = uploadUtility.GenerateUniqueId();
 
@@ -56,15 +55,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       var fileDescriptor = MasterData.Models.Models.FileDescriptor.CreateFileDescriptor("1", filePath, filename);
 
-      using (var stream = File.OpenRead(Path.Combine(fileDescriptor.Path, fileDescriptor.FileName)))
-      {
-        var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name));
+      var allBytes = File.ReadAllBytes(Path.Combine(fileDescriptor.Path, fileDescriptor.FileName));
+      (bool success, string message) = uploadUtility.UploadFile(fileDescriptor, allBytes);
 
-        (bool success, string message) = uploadUtility.UploadFile(fileDescriptor, file);
-
-        Assert.IsFalse(success);
-        Assert.IsNotNull(message);
-      }
+      Assert.IsFalse(success);
+      Assert.IsNotNull(message);
     }
   }
 }

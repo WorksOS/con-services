@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -31,13 +30,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get all boundaries from provided linework (DXF) file.
     /// </summary>
     [HttpPost("api/v2/linework/boundaries")]
-    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, DxfFileRequest requestDto)
+    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromBody] DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
-      
+
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
-      requestDto.Filename = fileUploadUtility.GenerateUniqueId() + "_" + requestDto.Filename;
+      requestDto.Filename = fileUploadUtility.GenerateUniqueId();
 
       var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 

@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -19,8 +19,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// </summary>
     private const int RAPTOR_CANARY_PROJECT_ID = 987654321;
 
+    private const string MOCK_FILE_REQUEST_ID = "123";
+
     public string Filename { get; }
-    public IFormFile FileData { get; }
+    public byte[] FileData { get; }
     public string FilespaceId { get; }
     public TVLPDDistanceUnits LineworkUnits { get; }
     public string CoordSystemFileName { get; }
@@ -32,12 +34,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     public LineworkRequest(DxfFileRequest fileRequest, string uploadPath)
     {
       ProjectId = RAPTOR_CANARY_PROJECT_ID;
-      FileDescriptor = FileDescriptor.CreateFileDescriptor(fileRequest.FilespaceId, uploadPath, fileRequest.Filename);
+      FileDescriptor = FileDescriptor.CreateFileDescriptor(MOCK_FILE_REQUEST_ID, uploadPath, fileRequest.Filename);
       CoordSystemFileName = fileRequest.CoordinateSystemName?.Trim();
       LineworkUnits = (TVLPDDistanceUnits)fileRequest.DxfUnits;
       Filename = fileRequest.Filename;
       FileData = fileRequest.FileData;
-      FilespaceId = fileRequest.FilespaceId;
+      FilespaceId = MOCK_FILE_REQUEST_ID;
     }
 
     public new LineworkRequest Validate()
@@ -51,7 +53,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
             "File data cannot be null"));
       }
 
-      // TODO (Aaron) Complete validation, filename, linework units, etc.
+      if (!Enum.IsDefined(typeof(TVLPDDistanceUnits), LineworkUnits))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Invalid DxfUnits value '{LineworkUnits}', out of range"));
+      }
 
       return this;
     }

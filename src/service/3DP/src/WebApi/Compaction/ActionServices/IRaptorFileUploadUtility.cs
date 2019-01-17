@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using VSS.MasterData.Models.Models;
+﻿using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {
@@ -11,7 +10,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     /// <summary>
     /// Uploads a file to the Raptor host.
     /// </summary>
-    (bool success, string message) UploadFile(FileDescriptor fileDescriptor, IFormFile fileData);
+    (bool success, string message) UploadFile(FileDescriptor fileDescriptor, byte[] fileData);
 
     /// <summary>
     /// Returns a unique hash id for use with creating unique monikers shorter than a standard Guid.

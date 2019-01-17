@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 
@@ -23,15 +22,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     }
 
     /// <inheritdoc />
-    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, IFormFile fileData)
+    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, byte[] fileData)
     {
-      if (fileDescriptor == null) return (false, "File descriptor cannot be null");
-      if (fileData == null) return (false, "File data cannot be null");
-
-      using (var ms = new MemoryStream())
+      using (var ms = new MemoryStream(fileData))
       {
-        fileData.CopyTo(ms);
-
         if (ms.Length > MAX_UPLOAD_SIZE_LIMIT)
         {
           return (success: false, message: $"File too large {ms.Length / 1024}kb; maximum allowed filesize is {MAX_UPLOAD_SIZE_LIMIT / 1024}kb.");
