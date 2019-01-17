@@ -7,17 +7,6 @@ using VSS.Log4Net.Extensions;
 
 namespace VSS.TRex.DI
 {
-/*  public static class ServiceCollectionExtensions
-  {
-    public static IServiceCollection Remove<T>(this IServiceCollection services)
-    {
-      var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
-      if (serviceDescriptor != null) services.Remove(serviceDescriptor);
-
-      return services;
-    }
-  }*/
-
   /// <summary>
   /// Provides a builder for Direct Injection requirements of a service
   /// </summary>
