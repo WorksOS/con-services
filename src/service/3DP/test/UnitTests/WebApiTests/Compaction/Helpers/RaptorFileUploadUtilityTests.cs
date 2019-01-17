@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void UploadFile_should_return_When_filesize_exceeds_max_limit()
     {
       var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-      var filename = uploadUtility.GenerateUniqueId();
+      var filename = Guid.NewGuid().ToString();
 
       Assert.IsNotNull(filePath);
 
