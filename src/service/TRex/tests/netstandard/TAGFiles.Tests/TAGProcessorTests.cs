@@ -24,7 +24,7 @@ namespace TAGFiles.Tests
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
-            Assert.True(processor != null);
+            Assert.NotNull(processor);
         }
 
         [Fact]

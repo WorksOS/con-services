@@ -9,7 +9,7 @@ KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: Landfill-Prod-July2018-1
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IProjectEvent.V2,VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IGeofenceEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1
 KAFKA_TOPIC_NAME_SUFFIX: 
-KAFKA_OFFSET: earliest
+KAFKA_OFFSET: Latest
 IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
 CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
 RAPTOR_V1_BASE_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0
@@ -23,7 +23,8 @@ newrelic: "true"
 TPAAS_APP_TOKENKEYS: WGtWczJoa1VDR041VEMyZG1hcnh4Y29BR1FnYTowMXV6dkNzbWtEUGtlWXZSeWVzZk1NbUFFamNh
 TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "true"
-NoOfDaysBackForCCA: "30"
-NoOfDaysBackForVolumes: "30"
+NoOfDaysBackForCCA: "7"
+NoOfDaysBackForVolumes: "7"
+LANDFILL_CUSTOMER_UID: ""
 TopOfWasteDesignFilename: TOW.ttm
 TCCfilespaceId: ucc083712-346e-466e-8cba-3c3eb0f9fb05
