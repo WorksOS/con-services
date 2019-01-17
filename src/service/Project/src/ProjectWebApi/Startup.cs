@@ -124,6 +124,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddOpenTracing();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddSingleton<CacheInvalidationService>();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       serviceProvider = services.BuildServiceProvider();
