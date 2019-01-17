@@ -9,8 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Cache.Models;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Proxies
@@ -20,18 +25,18 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class BaseProxy
   {
-    private readonly IMemoryCache cache;
+    private readonly IDataCache dataCache;
     private readonly static AsyncDuplicateLock memCacheLock = new AsyncDuplicateLock();
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
 
-    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
+    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache)
     {
       log = logger.CreateLogger<BaseProxy>();
       this.logger = logger;
       this.configurationStore = configurationStore;
-      this.cache = cache;
+      this.dataCache = dataCache;
     }
 
     /// <summary>
@@ -96,11 +101,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
+    protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, string queryParameters = null)
     {
       log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
-      return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
     /// <summary>
@@ -113,11 +118,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
+    protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
       log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
-      return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
     /// <summary>
@@ -129,10 +134,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
+    protected Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
-      return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method,
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method,
         streamPayload: payload);
     }
 
@@ -147,10 +152,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams"></param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
+    protected Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
       string route = null, IDictionary<string, string> queryParams = null, HttpMethod method = null)
     {
-      return await SendRequestInternal<T>(ExtractUrl(urlKey, route, string.Empty), customHeaders, method,
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, string.Empty), customHeaders, method,
         streamPayload: payload);
     }
 
@@ -176,18 +181,6 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    /// <summary>
-    ///   Gets a list of the specified items from the specified service. No caching.
-    /// </summary>
-    /// <param name="urlKey">The configuration store key for the URL</param>
-    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
-    /// <param name="route">Additional routing to add to the base URL (optional)</param>
-    /// <returns>List of items</returns>
-    private async Task<List<T>> GetMasterDataList<T>(string urlKey, IDictionary<string, string> customHeaders,
-      string route = null)
-    {
-      return await GetObjectsFromMasterdata<List<T>>(urlKey, customHeaders, string.Empty, route);
-    }
 
     /// <summary>
     ///   Gets an item from the specified service. No caching.
@@ -197,10 +190,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    protected async Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders,
+    protected Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders,
       string queryParams = null, string route = null)
     {
-      return await GetObjectsFromMasterdata<T>(urlKey, customHeaders, queryParams, route);
+      return GetObjectsFromMasterdata<T>(urlKey, customHeaders, queryParams, route);
     }
 
     /// <summary>
@@ -253,10 +246,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey,
-      IDictionary<string, string> customHeaders, string route = null)
+    protected Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey,
+      IDictionary<string, string> customHeaders, string route = null) where T : class, IMasterDataModel
     {
-      return await WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
+      return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => GetMasterDataItem<T>(urlKey, customHeaders, null, route));
     }
 
@@ -276,10 +269,9 @@ namespace VSS.MasterData.Proxies
     ///   or
     ///   Incorrect expiration time parameter
     /// </exception>
-    private async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey,
-      IDictionary<string, string> customHeaders, Func<Task<T>> action)
+    private async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IDictionary<string, string> customHeaders, Func<Task<T>> action) where T : class, IMasterDataModel
     {
-      if (cache == null)
+      if (dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       var cacheKey = GetCacheKey<T>(uid, userId);
       var opts = new MemoryCacheEntryOptions();
@@ -296,26 +288,31 @@ namespace VSS.MasterData.Proxies
           throw new InvalidOperationException("Incorrect expiration time parameter");
       }
 
-      T result =default(T);
+      T result = default(T);
 
       using (await memCacheLock.LockAsync(cacheKey))
       {
         if (!IfCacheNeedsToBeInvalidated(customHeaders))
-          return await cache.GetOrCreate(cacheKey, async entry =>
+        {
+          return await dataCache.GetOrCreate(cacheKey, async entry =>
           {
             entry.SetOptions(opts);
             log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
             result = await action.Invoke();
-            if (result != null) return result;
+            if (result != null)
+              return new CacheItem<T>(result, result.GetIdentifiers());
+
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                 "Unable to request data from a webapi"));
+
           });
+        }
 
         log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
         result = await action.Invoke();
         if (result != null)
-          return await cache.Set(cacheKey, Task.FromResult(result), opts); // Note: We have to store the result as a task, as if we use the 'GetOrCreate' method, it expects a task in the cache to be awaited.
+          return dataCache.Set(cacheKey, result, null, opts); 
           
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
@@ -335,31 +332,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetMasterDataItem<T>(string uid, string userId, TimeSpan cacheLifeKey, string urlKey,
-      IDictionary<string, string> customHeaders, string route = null)
+    protected Task<T> GetMasterDataItem<T>(string uid, string userId, TimeSpan cacheLifeKey, string urlKey,
+      IDictionary<string, string> customHeaders, string route = null) where T : class, IMasterDataModel
     {
-      return await WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
+      return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => GetMasterDataItem<T>(urlKey, customHeaders, null, route));
-    }
-
-
-    /// <summary>
-    ///   Gets a list of master data items for a customer.
-    ///   If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
-    /// </summary>
-    /// <param name="customerUid">The customer UID for the list to retrieve. Also the cache key.</param>
-    /// <param name="userId">The user ID, only required if caching per user</param>
-    /// <param name="cacheLifeKey">The configuration store key for how long to cache the list</param>
-    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
-    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-    /// <param name="route">Additional routing to add to the base URL (optional)</param>
-    /// <returns>List of Master data items</returns>
-    protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string userId, string cacheLifeKey,
-      string urlKey,
-      IDictionary<string, string> customHeaders, string route = null)
-    {
-      return await WithMemoryCacheExecute(customerUid, userId, cacheLifeKey, customHeaders,
-        () => GetMasterDataList<T>(urlKey, customHeaders, route));
     }
 
     /// <summary>
@@ -374,10 +351,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
-    protected async Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
-      IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
+    protected Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
+      IDictionary<string, string> customHeaders, string queryParams = null, string route = null) where T : class, IMasterDataModel
     {
-      return await WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
+      return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route));
     }
 
@@ -480,11 +457,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="userId">The user ID, only required if caching per user</param>
     protected void ClearCacheItem<T>(string uid, string userId)
     {
-      if (cache == null)
+      if (dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
       var cacheKey = GetCacheKey<T>(uid, userId);
       log.LogDebug($"Clearing item from cache: {cacheKey}");
-      cache.Remove(cacheKey);
+      dataCache.RemoveByKey(cacheKey);
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,6 +6,7 @@ using Nito.AsyncEx;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace TAGFiles.Tests
@@ -72,5 +73,17 @@ namespace TAGFiles.Tests
       result.All(x => x.ProcessedEpochCount == 1478).Should().Be(true);
       result.All(x => x.SiteModelGridAggregator.CountLeafSubgridsInMemory() == 12).Should().Be(true);
     }
+
+    [Fact]
+    public void Test_TAGFileConverter_OnGroundState()
+    {
+      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", "2652J085SW--CASE CX160C--121101215100.tag");
+      converter.Processor.OnGroundFlagSet.Should().Be(true);
+
+      DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Unspecified);
+      converter.Processor.OnGrounds.GetOnGroundAtDateTime(theTime).Should().Be(OnGroundState.YesMachineSoftware);
+    }
+
+
   }
 }

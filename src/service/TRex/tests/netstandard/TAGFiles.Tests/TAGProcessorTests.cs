@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
@@ -15,22 +14,24 @@ namespace TAGFiles.Tests
 {
         public class TAGProcessorTests : IClassFixture<DITagFileFixture>
     {
-        [Fact()]
+        [Fact]
         public void Test_TAGProcessor_Creation()
         {
             var SiteModel = new SiteModel();
-            var Machine = new VSS.TRex.Machines.Machine();
+            var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+
+            Assert.NotNull(processor);
         }
 
-        [Fact()]
+        [Fact]
         public void Test_TAGProcessor_ProcessEpochContext()
         {
             var SiteModel = new SiteModel();
-            var Machine = new VSS.TRex.Machines.Machine();
+            var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
@@ -61,11 +62,11 @@ namespace TAGFiles.Tests
             Assert.Equal(2, processor.ProcessedEpochCount);
         }
 
-        [Fact()]
+        [Fact]
         public void Test_TAGProcessor_DoPostProcessFileAction()
         {
             var SiteModel = new SiteModel();
-            var Machine = new VSS.TRex.Machines.Machine();
+            var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
@@ -97,7 +98,7 @@ namespace TAGFiles.Tests
                           "DoPostProcessFileAction did not set end recorded data event");
         }
 
-        [Fact()]
+        [Fact]
         public void Test_TAGProcessor_DoEpochPreProcessAction()
         {
             var SiteModel = new SiteModel();

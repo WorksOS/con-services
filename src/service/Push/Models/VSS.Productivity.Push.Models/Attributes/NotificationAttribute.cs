@@ -8,7 +8,7 @@ namespace VSS.Productivity.Push.Models.Attributes
   /// The Key and Type must be an exact match for this Attribute to be hit
   /// Note: The method signature *must be* 'void method(Guid uid)` where the Uid is for the Type in question
   /// </summary>
-  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+  [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
   public class NotificationAttribute : Attribute
   {
     /// <summary>

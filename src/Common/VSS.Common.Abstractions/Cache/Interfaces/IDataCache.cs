@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VSS.Common.Abstractions.Cache.Models;
 
@@ -22,7 +23,7 @@ namespace VSS.Common.Abstractions.Cache.Interfaces
     /// <param name="key">Cache key for the object</param>
     /// <param name="factory">The Function that will create the cached item, and tags if the item is not in cache</param>
     /// <returns>The item from cache, or from factory. Can return null if the factory returns null (No item will be cached)</returns>
-    TItem GetOrCreate<TItem>(string key, Func<ICacheEntry, CacheItem<TItem>> factory)  where TItem : class;
+    Task<TItem> GetOrCreate<TItem>(string key, Func<ICacheEntry, Task<CacheItem<TItem>>> factory)  where TItem : class;
 
     /// <summary>
     /// Set a cached item given a specified key, will create if it doesn't exist or override if it did exist

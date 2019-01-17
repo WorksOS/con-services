@@ -91,17 +91,23 @@ namespace TAGFiles.Tests
     }
 
     [Theory]
-    [InlineData("Dimensions2018-CaseMachine", 164, 164, 9)]
-    public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet(string tagFileCollectionFolder, int expectedFileCount, int maxTAGFilesPerAggregation, int expectedSubGridCount)
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 10, 4)] // Take the first 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 10, 10, 2)] // Take the next 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 20, 10, 3)] // Take the next 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 30, 10, 2)] // Take the next 10
+    [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 164, 9)] // Take the lot
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet(string tagFileCollectionFolder, 
+      int expectedFileCount, int maxTAGFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
     {
+      Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag").Length.Should().Be(expectedFileCount);
+
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
-        .ToList().OrderBy(x => x).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+        .ToList().OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
 
-      converters.Length.Should().Be(expectedFileCount);
+      converters.Length.Should().Be(numToTake);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
 
@@ -122,9 +128,8 @@ namespace TAGFiles.Tests
         MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
       };
       worker.ProcessTask(ProcessedTasks);
-      
-      // The number of TAG files processing in one aggregation epoch is limited
-      ProcessedTasks.Count.Should().Be(maxTAGFilesPerAggregation);
+
+      ProcessedTasks.Count.Should().Be(numToTake);
 
       // Check the set of TAG files created the expected number of sub grids
       targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubGridCount);

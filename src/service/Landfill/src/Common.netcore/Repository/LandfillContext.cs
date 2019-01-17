@@ -196,7 +196,11 @@ namespace Common.Repository
       });
     }
 
-    public static List<Project> GetListOfAvailableProjects()
+    /// <summary>
+    /// Get a list of Landfill Projects, will find ALL projects across all customer unless a customerUID is specified
+    /// </summary>
+    /// <param name="customerUid">Optional CustomerUID to find projects for</param>
+    public static List<Project> GetListOfAvailableProjects(Guid? customerUid = null)
     {
       return WithConnection(conn =>
       {
@@ -218,6 +222,10 @@ namespace Common.Repository
 		           JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
 		           JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
 	        WHERE p.fk_ProjectTypeID = 1 AND p.IsDeleted = 0";
+        if (customerUid.HasValue)
+        {
+          command = command + $" AND cp.fk_CustomerUID = '{customerUid.Value}'";
+        }
 
         using (var reader = MySqlHelper.ExecuteReader(conn, command))
         {

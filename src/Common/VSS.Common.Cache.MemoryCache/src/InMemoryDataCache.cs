@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -74,12 +75,12 @@ namespace VSS.Common.Cache.MemoryCache
     /// <param name="factory">The Function that will create the cached item, and tags if the item is not in cache</param>
     /// <exception cref="InvalidCastException">The item cached is not of the expected type</exception>
     /// <returns>The item from cache, or from factory. Can return null if the factory returns null (No item will be cached)</returns>
-    public TItem GetOrCreate<TItem>(string key, Func<ICacheEntry, CacheItem<TItem>> factory) where TItem : class
+    public async Task<TItem> GetOrCreate<TItem>(string key, Func<ICacheEntry, Task<CacheItem<TItem>>> factory) where TItem : class
     {
       var lowerKey = key.ToLower();
 
       // IF we have our item in cache, returned it
-      if (cache.TryGetValue(lowerKey, out var obj))
+      if (cache.TryGetValue(lowerKey, out var obj) && obj != null)
       {
         if(isLogEnabled)
           logger.LogTrace($"Fetching key {key} from cache has a hit, returned cached item");
@@ -96,12 +97,12 @@ namespace VSS.Common.Cache.MemoryCache
         });
 
         // Call the factory func passed in by the calling code, this should populate
-        var item = factory(entry);
+        var item = await factory(entry);
 
         if(isLogEnabled)
           logger.LogTrace($"Fetching key {key} from cache has a miss, creating a new item. Valid cache item: {item?.Value != null}");
 
-        if (item?.Value == null) 
+        if (item?.Value == null)
           return null;
 
         // When we set the value in the Memory Cache, it copies it - so we can safely dispose it
