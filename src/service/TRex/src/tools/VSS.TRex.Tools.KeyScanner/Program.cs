@@ -4,8 +4,6 @@ using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Servers.Client;
-using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Tools.KeyScanner
@@ -19,7 +17,7 @@ namespace VSS.TRex.Tools.KeyScanner
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build()
         .Add(x => x.AddSingleton(new ImmutableClientServer("Webtools-Immutable")))
         .Add(x => x.AddSingleton(new MutableClientServer("Webtools-Mutable")))

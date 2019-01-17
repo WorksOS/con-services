@@ -9,7 +9,7 @@ namespace TAGFiles.Tests
 {
     public class TAGFileBufferQueueManagerTests
     {
-        private static MutableClientServer TAGClientServer = null;
+        private static MutableClientServer TAGClientServer;
         private static IIgnite ignite;
 
         private static void EnsureServer()

@@ -69,7 +69,7 @@ namespace VSS.TRex.SiteModels
     public DateTime LastModifiedDate { get; set; }
 
     /// <summary>
-    /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
+    /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
     public bool IsTransient { get; private set; } = true;
 
@@ -163,14 +163,14 @@ namespace VSS.TRex.SiteModels
     public bool MachineTargetValuesLoaded => machinesTargetValues != null;
 
     /// <summary>
-    /// Provides a set of metadata attributes about this sitemodel
+    /// Provides a set of metadata attributes about this site model
     /// </summary>
     public ISiteModelMetadata MetaData => GetMetaData();
 
     private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 
     /// <summary>
-    /// SiteModelDesigns records all the designs that have been seen in this sitemodel.
+    /// SiteModelDesigns records all the designs that have been seen in this site model.
     /// Each site model designs records the name of the site model and the extents
     /// of the cell information that have been record for it.
     /// </summary>
@@ -187,7 +187,7 @@ namespace VSS.TRex.SiteModels
     private IDesigns designs;
 
     /// <summary>
-    /// Designs records all the design surfaces that have been imported into the sitemodel
+    /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
     public IDesigns Designs => designs ?? (designs = DIContext.Obtain<IDesignManager>().List(ID));
 
@@ -578,7 +578,7 @@ namespace VSS.TRex.SiteModels
             // The SiteModelID read from the FS file does not match the ID expected.
 
             // RPW 31/1/11: This used to be an error with it's own error code. This is now
-            // changed to a warning, but loading of the sitemodel is allowed. This
+            // changed to a warning, but loading of the site model is allowed. This
             // is particularly useful for testing purposes where copying around projects
             // is much quicker than reprocessing large sets of TAG files
 
@@ -712,7 +712,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Returns simple metadata about the sitemodel
+    /// Returns simple metadata about the site model
     /// </summary>
     /// <returns></returns>
     private SiteModelMetadata GetMetaData()

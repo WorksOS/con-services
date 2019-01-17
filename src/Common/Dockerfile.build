@@ -1,0 +1,6 @@
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk 
+
+COPY . /build/
+WORKDIR /build
+
+RUN dotnet build ./NugetPackages.sln --runtime linux-x64

@@ -1,11 +1,14 @@
-﻿using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   ///   Describes VL project
   /// </summary>
-  public class ProjectData 
+  public class ProjectData : IMasterDataModel
   {
     /// <summary>
     /// Gets or sets the project uid.
@@ -167,5 +170,14 @@ namespace VSS.MasterData.Models.Models
     /// </value>
     public bool IsArchived { get; set; }
 
+    public List<string> GetIdentifiers()
+    {
+      return new List<string>
+      {
+        CustomerUid,
+        ProjectUid,
+        SubscriptionUid,
+      };
+    }
   }
 }

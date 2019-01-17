@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
@@ -26,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
   public class AggregatedDataIntegratorWorker
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger< AggregatedDataIntegratorWorker>();
 
     /// <summary>
     /// A queue of the tasks this worker will process into the TRex data stores
@@ -34,7 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     private readonly ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess;
 
     /// <summary>
-    /// A bitmask sub grid tree that tracks all subgrids modified by the tasks this worker has processed
+    /// A bitmask sub grid tree that tracks all sub grids modified by the tasks this worker has processed
     /// </summary>
     private ISubGridTreeBitMask WorkingModelUpdateMap;
 
@@ -45,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
+    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
 
     private AggregatedDataIntegratorWorker()
     {
@@ -63,12 +62,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     }
 
     /// <summary>
-    /// Event that records a particular subgrid has been modified, identified by the address of a 
-    /// cell within that subgrid
+    /// Event that records a particular sub grid has been modified, identified by the address of a 
+    /// cell within that sub grid
     /// </summary>
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
-    private void SubgridHasChanged(uint CellX, uint CellY)
+    private void SubGridHasChanged(uint CellX, uint CellY)
     {
       WorkingModelUpdateMap.SetCell(CellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
         CellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel, true);
@@ -85,11 +84,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       EventIntegrator eventIntegrator = new EventIntegrator();
 
       /* The task contains a set of machine events and cell passes that need to be integrated into the
-        machine and sitemodel references in the task respectively. Machine events need to be integrated
+        machine and site model references in the task respectively. Machine events need to be integrated
         before the cell passes that reference them are integrated.
 
         All other tasks in the task list that contain aggregated machine events and cell passes
-        are integrated together into the machine events and sitemodel in one operation prior to
+        are integrated together into the machine events and site model in one operation prior to
         the modified information being committed to disk.
 
         A task is only said to be completed when all integrations and resulting updates are
@@ -98,7 +97,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       ProcessedTasks.Clear();
 
       // Set capacity to maximum expected size to prevent List resizing while assembling tasks
-      ProcessedTasks.Capacity = _maxMappedTagFilesToProcessPerAggregationEpoch;
+      ProcessedTasks.Capacity = MaxMappedTagFilesToProcessPerAggregationEpoch;
 
       try
       {
@@ -118,7 +117,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           storageProxy_Mutable.Clear();
 
-          // Note: This request for the SiteModel specifically asks for the mutable grid Sitemodel,
+          // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
           // and also explicitly provides the transactional storage proxy being used for processing the
           // data from TAG files into the model
           ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID, true);
@@ -139,7 +138,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           if (!(AnyMachineEvents || AnyCellPasses))
           {
-            Log.LogWarning($"Suspicious task with no cell passes or machine events in Sitemodel {Task.TargetSiteModelID}");
+            Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {Task.TargetSiteModelID}");
 
             return true;
           }
@@ -153,11 +152,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // list to allow the TAG file processors to prepare additional TAG files
           // while this set is being integrated into the model.                    
 
-          if (TasksToProcess.Count > 0)
+          while (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
+                 TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
+          {
+             ProcessedTasks.Add(task);
+          }
+
+      /*    if (TasksToProcess.Count > 0)
           {
             for (int I = 0; I < TasksToProcess.Count; I++)
             {
-              if (ProcessedTasks.Count < _maxMappedTagFilesToProcessPerAggregationEpoch)
+              if (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch)
               {
                 if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
                   ProcessedTasks.Add(task);
@@ -167,7 +172,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 break;
               }
             }
-          }
+          }*/
 
           Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
 
@@ -177,7 +182,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           {
             AggregatedDataIntegratorTask processedTask = ProcessedTasks[I];
 
-            // 'Include' the extents etc of each sitemodel being merged into 'task' into its extents and design change events
+            // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
             Task.TargetSiteModel.Include(processedTask.TargetSiteModel);
 
             // Integrate the machine events
@@ -187,7 +192,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             // Integrate the cell passes from all cell pass aggregators 
             SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
-            subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubgridHasChanged);
+            subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubGridHasChanged);
 
             //Update current DateTime with the latest one
             if (processedTask.TargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp) == -1)
@@ -206,14 +211,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             processedTask.AggregatedCellPasses = null;
           }
 
-          // Integrate the items present in the 'TargetSiteModel' into the real sitemodel
+          // Integrate the items present in the 'TargetSiteModel' into the real site model
           // read from the datamodel file itself, then synchronously write it to the DataModel
 
           IMachine MachineFromDM;
           IProductionEventLists SiteModelMachineTargetValues;
           lock (SiteModelFromDM)
           {
-            // 'Include' the extents etc of the 'task' each sitemodel being merged into the persistent database
+            // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
             SiteModelFromDM.Include(Task.TargetSiteModel);
 
             // Need to locate or create a matching machine in the site model.
@@ -262,14 +267,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.TargetSiteModel, SiteModelFromDM);
 
           // Integrate the machine events into the main site model. This requires the
-          // sitemodel interlock as aspects of the sitemodel state (machine) are being changed.
+          // site model interlock as aspects of the site model state (machine) are being changed.
           lock (SiteModelFromDM)
           {
             if (SiteModelMachineTargetValues != null)
             {
               //Update machine last known value (events) from integrated model before saving
               int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
-              if (Comparison < 1)
+              if (Comparison == -1)
               {
                 MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
 
@@ -300,11 +305,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
           try
           {
-            // This is a dirty map for the leaf subgrids and is stored as a bitmap grid
-            // with one level fewer that the subgrid tree it is representing, and
-            // with cells the size of the leaf subgrids themselves. As the cell coordinates
-            // we have been given are with respect to the subgrid, we must transform them
-            // into coordinates relevant to the dirty bitmap subgrid tree.
+            // This is a dirty map for the leaf sub grids and is stored as a bitmap grid
+            // with one level fewer that the sub grid tree it is representing, and
+            // with cells the size of the leaf sub grids themselves. As the cell coordinates
+            // we have been given are with respect to the sub grid, we must transform them
+            // into coordinates relevant to the dirty bitmap sub grid tree.
 
             WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
             {
@@ -312,7 +317,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               ID = SiteModelFromDM.ID
             };
 
-            // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
+            // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
             // ... first reliable the passes with the machine ID
             Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
             {
@@ -333,7 +338,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             // ... then integrate them
             SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
-            if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubgridHasChanged))
+            if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
             {
               return false;
             }
@@ -350,7 +355,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
             Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
-            // Advise the segment retirement manager of any segments/subgrids that needs to be retired as as result of this integration
+            // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
 
             if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
             {
@@ -396,7 +401,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               // Notify the site model in all contents in the grid that it's attributes have changed
               Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
 
-              // Notify the immutable grid listeners that attributes of this sitemodel have changed.
+              // Notify the immutable grid listeners that attributes of this site model have changed.
               var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
               sender.ModelAttributesChanged
               (targetGrid: SiteModelNotificationEventGridMutability.NotifyImmutable,

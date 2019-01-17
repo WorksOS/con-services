@@ -23,7 +23,6 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -62,7 +61,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-      .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+      .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
