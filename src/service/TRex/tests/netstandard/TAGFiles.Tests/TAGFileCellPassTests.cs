@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.Collections.Generic;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using TAGFiles.Tests.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -11,26 +11,28 @@ namespace TAGFiles.Tests
 {
   public class TAGFileCellPassTests : IClassFixture<DITagFileFixture>
   {
-    private readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
-
     [Fact]
-    public void Test_TAGFileCellPassGeneration_Default()
+    public void Test_TAGFileCellPassGeneration_CapturesCellPassCreation()
     {
+      var Lines = new List<string>();
+
       // Setup the mutation hook to capture cell pass generation
-      string cellPassFileName = Path.GetTempFileName();
-      var writer = new CellPassWriter(new StreamWriter(new FileStream(cellPassFileName, FileMode.CreateNew, FileAccess.ReadWrite)));
-      hook.SetActions(writer); 
+      ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+      Hook.Should().NotBe(null);
 
-      // Read in the TAG file
-      DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var passWriter = new CellPassWriter(x => Lines.Add(x));
+      Hook.SetActions(passWriter);
+      try
+      {
+        var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+        converter.ProcessedCellPassCount.Should().Be(16525);
+      }
+      finally
+      {
+        Hook.ClearActions();
+      }
 
-      // Close the writer and remove actions from the hook
-      hook.ClearActions();
-      writer.Close();
-
-      // Examine the result
-      var lines = File.ReadAllLines(cellPassFileName);
-      lines.Length.Should().Be(16525);
+      Lines.Count.Should().Be(16525);
     }
   }
 }
