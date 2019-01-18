@@ -30,8 +30,6 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITagFileFixture : IDisposable
   {
-    private static readonly object Lock = new object();
-
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
     public static TAGFileConverter ReadTAGFile(string fileName)
@@ -73,58 +71,55 @@ namespace VSS.TRex.Tests.TestFixtures
 
         // Add the factories for the storage proxy caches, both standard and transacted, for spatial and non spatial caches in TRex
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability) => null))
+          (factory => (ignite, mutability) => null))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability) => null))
+          (factory => (ignite, mutability) => null))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
+          (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))));
+          (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))));
     }
 
     public DITagFileFixture()
     {
-      lock (Lock)
-      {
-        var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
-        var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
+      var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
+      var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 
-        DIBuilder
-          .New()
-          .AddLogging()
-          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
 
-          .Add(x => AddProxyCacheFactoriesToDI())
+        .Add(x => AddProxyCacheFactoriesToDI())
 
-          .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
+        .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
-          .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
-          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
-          .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
 
-          .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
-          .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
-          .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
 
-          .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
-          .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
-          .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
 
-          // Register the hook used to capture cell pass mutation events while processing TAG files.
-          .Add(x => x.AddSingleton<ICell_NonStatic_MutationHook>(new Cell_NonStatic_MutationHook()))
+        // Register the hook used to capture cell pass mutation events while processing TAG files.
+        .Add(x => x.AddSingleton<ICell_NonStatic_MutationHook>(new Cell_NonStatic_MutationHook()))
 
-          .Complete();
-      }
+        .Complete();
     }
 
     public void Dispose()
     {
       DIBuilder.Eject();
-    } 
+    }
   }
 }
