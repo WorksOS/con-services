@@ -22,8 +22,8 @@ namespace VSS.TRex.SurveyedSurfaces
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurveyedSurfaceManager>();
 
-    private readonly IStorageProxy WriteStorageProxy;
-    private readonly IStorageProxy ReadStorageProxy;
+    private readonly IStorageProxy _writeStorageProxy;
+    private readonly IStorageProxy _readStorageProxy;
 
     private const string SURVEYED_SURFACE_STREAM_NAME = "SurveyedSurfaces";
 
@@ -32,20 +32,20 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public SurveyedSurfaceManager()
     {
-      WriteStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-      ReadStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+      _writeStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+      _readStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
     }
 
     /// <summary>
     /// Loads the set of surveyed surfaces for a sitemodel. If none exist and empty list is returned.
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelUid"></param>
     /// <returns></returns>
-    private ISurveyedSurfaces Load(Guid siteModelID)
+    private ISurveyedSurfaces Load(Guid siteModelUid)
     {
       try
       {
-        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
+        _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
 
         ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
 
@@ -74,18 +74,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Stores the list of surveyed surfaces for a site model
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="ss"></param>
-    private void Store(Guid siteModelID, ISurveyedSurfaces ss)
+    /// <param name="siteModelUid"></param>
+    /// <param name="surveyedSurfaces"></param>
+    private void Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
     {
       try
       {
-        WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream(), this);
-        WriteStorageProxy.Commit();
+        _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, surveyedSurfaces.ToStream(), this);
+        _writeStorageProxy.Commit();
 
         // Notify the  grid listeners that attributes of this sitemodel have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, surveyedSurfacesChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, surveyedSurfacesChanged: true);
       }
       catch (Exception e)
       {
@@ -96,15 +96,15 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Add a new surveyed surface to a sitemodel
     /// </summary>
-    /// <param name="SiteModelID"></param>
+    /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="asAtDate"></param>
     /// <param name="extents"></param>
-    public ISurveyedSurface Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
+    public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
     {
-      ISurveyedSurfaces ss = Load(SiteModelID);
-      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(Guid.NewGuid(), designDescriptor, asAtDate, extents);
-      Store(SiteModelID, ss);
+      ISurveyedSurfaces ss = Load(siteModelUid);
+      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
+      Store(siteModelUid, ss);
 
       return newSurveyedSurface;
     }
@@ -112,24 +112,24 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// List the surveyed surfaces for a site model
     /// </summary>
-    public ISurveyedSurfaces List(Guid SiteModelID)
+    public ISurveyedSurfaces List(Guid siteModelUid)
     {
-      Log.LogInformation($"Listing surveyed surfaces from site model {SiteModelID}");
+      Log.LogInformation($"Listing surveyed surfaces from site model {siteModelUid}");
 
-      return Load(SiteModelID);
+      return Load(siteModelUid);
     }
 
     /// <summary>
     /// Remove a given surveyed surface from a site model
     /// </summary>
-    /// <param name="SiteModelID"></param>
-    /// <param name="SurveySurfaceID"></param>
+    /// <param name="siteModelUid"></param>
+    /// <param name="surveySurfaceUid"></param>
     /// <returns></returns>
-    public bool Remove(Guid SiteModelID, Guid SurveySurfaceID)
+    public bool Remove(Guid siteModelUid, Guid surveySurfaceUid)
     {
-      ISurveyedSurfaces ss = Load(SiteModelID);
-      bool result = ss.RemoveSurveyedSurface(SurveySurfaceID);
-      Store(SiteModelID, ss);
+      ISurveyedSurfaces ss = Load(siteModelUid);
+      bool result = ss.RemoveSurveyedSurface(surveySurfaceUid);
+      Store(siteModelUid, ss);
 
       return result;
     }

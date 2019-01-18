@@ -74,6 +74,8 @@ services:
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
      - KAFKA_TOPIC_NAME_SUFFIX=-Alpha
      - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-tile/1.0
+     - NOTIFICATION_HUB_URL=http://push.alpha.eks.vspengg.com/notifications
+     - PUSH_NO_AUTHENTICATION_HEADER=true
     ports:
       - "4001:80"
 networks:

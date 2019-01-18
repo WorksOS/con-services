@@ -193,7 +193,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected bool IsDesignFileType(ImportedFileType importedFileType)
     {
       return importedFileType == ImportedFileType.DesignSurface ||
-             importedFileType == ImportedFileType.SurveyedSurface;
+             importedFileType == ImportedFileType.SurveyedSurface ||
+             importedFileType == ImportedFileType.Alignment;
     }
 
   }

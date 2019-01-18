@@ -45,13 +45,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (createimportedfile == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "shouldn't get here"); // to keep compiler happy
       }
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),  out var useRaptorGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
+        out var useRaptorGatewayDesignImport);
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
-                             createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface;
+                             createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface ||
+                             createimportedfile.ImportedFileType == ImportedFileType.Alignment;
 
       // need to write to Db prior to 
       //      notifying raptor, as raptor needs the legacyImportedFileID 
@@ -68,10 +71,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
         var result = await ImportedFileRequestHelper.NotifyTRexAddFile(createimportedfile.ProjectUid,
-          createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
-          createimportedfile.SurveyedUtc, 
-          log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy, projectRepo)
+            createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
+            createimportedfile.SurveyedUtc,
+            log, customHeaders, serviceExceptionHandler,
+            tRexImportFileProxy, projectRepo)
           .ConfigureAwait(false);
       }
 
@@ -101,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db   
+        //Need to update zoom levels in Db (Raptor - todo is this still needed (i.e. with new tiling process)?)  
         _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
             createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,

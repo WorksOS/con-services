@@ -24,53 +24,53 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="TimeStamp"></param>
+    /// <param name="timeStamp"></param>
     /// <returns></returns>
-    bool HasSurfaceLaterThan(DateTime TimeStamp);
+    bool HasSurfaceLaterThan(DateTime timeStamp);
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime.ToBinary() Int64
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="TimeStamp"></param>
+    /// <param name="timeStamp"></param>
     /// <returns></returns>
-    bool HasSurfaceLaterThan(long TimeStamp);
+    bool HasSurfaceLaterThan(long timeStamp);
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="TimeStamp"></param>
+    /// <param name="timeStamp"></param>
     /// <returns></returns>
-    bool HasSurfaceEarlierThan(DateTime TimeStamp);
+    bool HasSurfaceEarlierThan(DateTime timeStamp);
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime.ToBinary() Int64
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="TimeStamp"></param>
+    /// <param name="timeStamp"></param>
     /// <returns></returns>
-    bool HasSurfaceEarlierThan(long TimeStamp);
+    bool HasSurfaceEarlierThan(long timeStamp);
 
     /// <summary>
     /// Create a new surveyed surface in the list based on the provided details
     /// </summary>
-    /// <param name="ASurveyedSurfaceID"></param>
-    /// <param name="ADesignDescriptor"></param>
-    /// <param name="AAsAtDate"></param>
-    /// <param name="AExtents"></param>
+    /// <param name="surveyedSurfaceUid"></param>
+    /// <param name="designDescriptor"></param>
+    /// <param name="asAtDate"></param>
+    /// <param name="extents"></param>
     /// <returns></returns>
-    ISurveyedSurface AddSurveyedSurfaceDetails(Guid ASurveyedSurfaceID,
-      DesignDescriptor ADesignDescriptor,
-      DateTime AAsAtDate,
-      BoundingWorldExtent3D AExtents);
+    ISurveyedSurface AddSurveyedSurfaceDetails(Guid surveyedSurfaceUid,
+      DesignDescriptor designDescriptor,
+      DateTime asAtDate,
+      BoundingWorldExtent3D extents);
 
     /// <summary>
     /// Remove a given surveyed surface from the list of surveyed surfaces for a site model
     /// </summary>
-    /// <param name="ASurveyedSurfaceID"></param>
+    /// <param name="surveyedSurfaceUid"></param>
     /// <returns></returns>
-    bool RemoveSurveyedSurface(Guid ASurveyedSurfaceID);
+    bool RemoveSurveyedSurface(Guid surveyedSurfaceUid);
 
     /// <summary>
     /// Given a filter compute which of the surfaces in the list match any given time aspect
@@ -79,13 +79,13 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
     /// assumed to be the same.
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="surveyedSurfaceUid"></param>
     /// <param name="Filter"></param>
     /// <param name="ComparisonList"></param>
     /// <param name="FilteredSurveyedSurfaces"></param>
     /// <param name="OverallExistenceMap"></param>
     /// <returns></returns>
-    bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
+    bool ProcessSurveyedSurfacesForFilter(Guid surveyedSurfaceUid,
       ICombinedFilter Filter,
       ISurveyedSurfaces ComparisonList,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
@@ -94,6 +94,6 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// Locates a surveyed surface in the list with the given GUID
     /// </summary>
-    ISurveyedSurface Locate(Guid AID);
+    ISurveyedSurface Locate(Guid surveyedSurfaceUid);
   }
 }

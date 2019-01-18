@@ -9,6 +9,8 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -21,6 +23,8 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -74,10 +78,14 @@ namespace VSS.TRex.Webtools
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
-      VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
+      
+      Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
+
+      services.AddTransient<ISiteModelMetadata>(factory => new SiteModelMetadata()); // todoJeannie
+      services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());// todoJeannie
 
       services.AddTransient<ISiteModels>(factory => SwitchableGridContext.SwitchableSiteModelsContext());
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
@@ -95,6 +103,9 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
+
+      services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
+      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager());
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));

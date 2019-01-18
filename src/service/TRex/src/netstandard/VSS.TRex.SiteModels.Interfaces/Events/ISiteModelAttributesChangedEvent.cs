@@ -20,6 +20,8 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
     
     bool ProofingRunsModified { get; }
 
+    bool AlignmentsModified { get; }
+
     byte[] ExistenceMapChangeMask { get; }
   }
 }

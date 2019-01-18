@@ -16,7 +16,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class DeleteDesignExecutor : RequestExecutorContainer
+  public class DeleteTTMDesignExecutor : BaseExecutor
   {
     /// <summary>
     /// TagFileExecutor
@@ -24,7 +24,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    public DeleteDesignExecutor(IConfigurationStore configStore,
+    public DeleteTTMDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
@@ -32,7 +32,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public DeleteDesignExecutor()
+    public DeleteTTMDesignExecutor()
     {
     }
 
@@ -47,16 +47,16 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as DesignRequest;
       if (request == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        ThrowRequestTypeCastException<DesignRequest>();
+        return null; // to keep compiler happy
       }
 
       try
       {
-        log.LogInformation($"#In# DeleteDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#In# DeleteTTMDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
         bool removedOk;
-        if (request.FileType == ImportedFileType.SurveyedSurface)
+        if (request.FileType == ImportedFileType.DesignSurface)
         {
           removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
         }
@@ -66,8 +66,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
         if (!removedOk)
         {
-          log.LogError($"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
+          log.LogError($"#Out# DeleteTTMDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+          throw CreateServiceException<DeleteTTMDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToDeleteDesign);
         }
 
         var localPathAndFileName = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString(), request.FileName });
@@ -84,12 +86,15 @@ namespace VSS.TRex.Gateway.Common.Executors
             // ignored
           }
         }
-        log.LogInformation($"#Out# DeleteDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#Out# DeleteTTMDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
       catch (Exception e)
       {
-        log.LogError(e, $"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
+        log.LogError(e, $"#Out# DeleteTTMDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
+        throw CreateServiceException<DeleteTTMDesignExecutor>
+          (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+            RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 
       return new ContractExecutionResult(); 
