@@ -2,9 +2,9 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-datasync
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-ds
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-datasync
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-ds
 spec:
   schedule: {{ .Values.schedule }}
   jobTemplate:
@@ -13,7 +13,7 @@ spec:
         spec:    
           containers:
           - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag }}
-            name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-datasync
+            name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-ds
             command: ["dotnet"]
             args: ["LandfillDatasync.netcore.dll"]
             envFrom:

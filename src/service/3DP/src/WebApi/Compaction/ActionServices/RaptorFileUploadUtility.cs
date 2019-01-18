@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
@@ -12,50 +11,71 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
   {
     private const long MAX_UPLOAD_SIZE_LIMIT = 20971520; //1024 * 1024 * 20
 
-    private ILogger log;
-    private IConfigurationStore configStore;
-
-    private string GetUploadFolderRoot() => @"Z:\Temp\LineworkFileUploads\";
+    private readonly ILogger log;
 
     /// <summary>
     /// Creates a file upload service to push files to the Raptor AS Node.
     /// </summary>
-    public RaptorFileUploadUtility(ILoggerFactory logger, IConfigurationStore configurationStore)
+    public RaptorFileUploadUtility(ILoggerFactory logger)
     {
       log = logger.CreateLogger<RaptorFileUploadUtility>();
-      configStore = configurationStore;
     }
 
     /// <inheritdoc />
-    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, string fileDescriptorPathIdentifier, IFormFile fileData)
+    public (bool success, string message) UploadFile(FileDescriptor fileDescriptor, byte[] fileData)
     {
-      using (var ms = new MemoryStream())
+      using (var ms = new MemoryStream(fileData))
       {
-        fileData.CopyTo(ms);
-
         if (ms.Length > MAX_UPLOAD_SIZE_LIMIT)
         {
           return (success: false, message: $"File too large {ms.Length / 1024}kb; maximum allowed filesize is {MAX_UPLOAD_SIZE_LIMIT / 1024}kb.");
         }
 
-        using (var file = File.OpenWrite(MappedFileName(fileDescriptor, fileDescriptorPathIdentifier)))
-        {
-          if (ms.CanSeek) ms.Seek(0, SeekOrigin.Begin);
+        (bool folderCreated, string mappedFilenameResult) = MappedFileName(fileDescriptor);
 
-          ms.CopyTo(file);
+        if (!folderCreated) return (false, mappedFilenameResult);
+
+        try
+        {
+          using (var file = File.OpenWrite(mappedFilenameResult))
+          {
+            if (ms.CanSeek) ms.Seek(0, SeekOrigin.Begin);
+
+            ms.CopyTo(file);
+          }
+        }
+        catch (Exception ex)
+        {
+          log.LogError($"Error uploading file '{fileDescriptor.FileName}' to '{fileDescriptor.Path}': {ex.GetBaseException().Message}");
         }
 
+        log.LogDebug($"Successfully uploaded temporary linework file '{mappedFilenameResult}'");
         return (success: true, null);
       }
+    }
+
+    /// <inheritdoc />
+    public void DeleteFile(string filename)
+    {
+      if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return;
+
+      log.LogDebug($"Deleting temporary linework file '{filename}'");
+
+      Task.Run(() => File.Delete(filename)).ContinueWith(t =>
+      {
+        if (t.Exception != null)
+        {
+          log.LogError($"Failed to delete temporary linework file '{filename}', error: {t.Exception.GetBaseException().Message}");
+        }
+      });
     }
 
     /// <summary>
     /// Creates the filename mapped to the temporary upload location on the Raptor AS Node host.
     /// </summary>
-    public string MappedFileName(FileDescriptor fileDescriptor, string fileDescriptorPathIdentifier)
+    private (bool success, string mappedFilenameResult) MappedFileName(FileDescriptor fileDescriptor)
     {
-      var mappedPath = Path.Combine(GetUploadFolderRoot(), fileDescriptorPathIdentifier);
-      var dirInfo = new DirectoryInfo(mappedPath);
+      var dirInfo = new DirectoryInfo(fileDescriptor.Path);
 
       if (!dirInfo.Exists)
       {
@@ -65,12 +85,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
         }
         catch (Exception ex)
         {
-          log.LogWarning("Failed to create temporary upload folder {0}: {1}", mappedPath, ex.Message);
-          throw ex;
+          var errorMessage = $"Failed to create temporary upload folder '{dirInfo.FullName}', error: {ex.GetBaseException().Message}";
+          log.LogError(errorMessage);
+
+          return (false, errorMessage);
         }
       }
 
-      return Path.Combine(mappedPath, fileDescriptor.FileName);
+      return (true, Path.Combine(fileDescriptor.Path, fileDescriptor.FileName));
     }
   }
 }

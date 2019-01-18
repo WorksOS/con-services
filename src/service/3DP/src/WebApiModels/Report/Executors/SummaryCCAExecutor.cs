@@ -5,6 +5,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
@@ -31,6 +32,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<CCARequest>(item);
+
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
+
+        if (useTrexGateway)
+        {
+          var ccaSummaryRequest = new CCASummaryRequest(request.ProjectUid, request.Filter);
+
+          return trexCompactionDataProxy.SendCCASummaryRequest(ccaSummaryRequest, customHeaders).Result;
+        }
+
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
         bool success = raptorClient.GetCCASummary(request.ProjectId ?? -1,

@@ -51,7 +51,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
       var isDesignFileType = deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
-                             deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface;
+                             deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface ||
+                             deleteImportedFile.ImportedFileType == ImportedFileType.Alignment;
 
       DeleteImportedFileEvent deleteImportedFileEvent = null;
       if (useTrexGatewayDesignImport && isDesignFileType)

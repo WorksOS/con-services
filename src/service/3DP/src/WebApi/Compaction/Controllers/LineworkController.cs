@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,9 +17,9 @@ using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
-  /// Linework (DXF) file controller.
+  /// Linework file controller.
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class LineworkController : BaseController<LineworkController>
   {
     /// <inheritdoc />
@@ -26,29 +28,28 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     { }
 
     /// <summary>
-    /// Get all boundaries from provided linework (DXF) files.
+    /// Get all boundaries from provided linework (DXF) file.
     /// </summary>
     [HttpPost("api/v2/linework/boundaries")]
-    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, DxfFileRequest requestDto)
+    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromBody] DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
 
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
+      var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
+      requestDto.Filename = Guid.NewGuid().ToString();
 
-      var executorRequestObj = LineworkRequest
-                               .Create(requestDto, customerUid)
-                               .Validate();
+      var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
-      var (uploadSuccess, message) = fileUploadUtility.UploadFile(
-        executorRequestObj.FileDescriptor, 
-        customerUid,
-        executorRequestObj.FileData);
+      (bool uploadSuccess, string message) = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
 
       if (!uploadSuccess) return StatusCode((int)HttpStatusCode.BadRequest, message);
 
       var result = await RequestExecutorContainerFactory
-                         .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
+                         .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)
                          .ProcessAsync(executorRequestObj);
+
+      fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.FileDescriptor.Path, executorRequestObj.FileDescriptor.FileName));
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())

@@ -301,7 +301,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
-    public async Task CreateImportedFile_TRexHappyPath()
+    public async Task CreateImportedFile_TRexHappyPath_DesignSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
       // Controller uploads file to TCC and/or S3
@@ -382,7 +382,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
-    public async Task UpdateImportedFile_TRexHappyPath()
+    public async Task UpdateImportedFile_TRexHappyPath_DesignSurface()
     {     
       var customHeaders = new Dictionary<string, string>();
       var importedFileUid = Guid.NewGuid();
@@ -440,7 +440,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
-    public async Task DeleteImportedFile_TRexHappyPath()
+    public async Task DeleteImportedFile_TRexHappyPath_DesignSurface()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
       // Controller uploads file to TCC and/or S3
@@ -519,6 +519,5 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
       Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
     }
-
   }
 }

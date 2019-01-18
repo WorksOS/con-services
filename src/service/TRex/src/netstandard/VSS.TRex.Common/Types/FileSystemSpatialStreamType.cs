@@ -15,6 +15,7 @@
         Designs,
         Machines,
         MachineDesignNames,
-        ProofingRuns
+        ProofingRuns,
+        Alignments
     }
 }

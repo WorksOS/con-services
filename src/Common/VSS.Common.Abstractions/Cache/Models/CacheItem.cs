@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace VSS.Common.Abstractions.Cache.Models
 {
@@ -23,10 +24,14 @@ namespace VSS.Common.Abstractions.Cache.Models
     /// </summary>
     /// <param name="value">Value to be cached</param>
     /// <param name="tags">Can be null, which means no tags can be used to clear this item from cache - it must be removed via key or timeout</param>
-    public CacheItem(TItem value, List<string> tags)
+    public CacheItem(TItem value, IEnumerable<string> tags)
     {
       Value = value;
-      Tags = tags ?? new List<string>();
+      Tags = tags?
+               .Where(t => !string.IsNullOrEmpty(t))
+               .Distinct()
+               .ToList()
+             ?? new List<string>();
     }
   }
 }

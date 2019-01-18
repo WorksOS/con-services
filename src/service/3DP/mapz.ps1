@@ -9,10 +9,10 @@ $dir = Split-Path $scriptpath
 cd $dir
 Write-host "Running from folder $dir"
 
-$ASNIP = "10.97.96.134"
+$ASNIP = "dev-aslv01.vssengg.com"
 Write-host "ASNODEIP=$ASNIP"
 
-$IONIP = "10.97.96.92"
+$IONIP = "dev-iolv01.vssengg.com"
 Write-host "IONODEIP=$IONIP"
 
 $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
