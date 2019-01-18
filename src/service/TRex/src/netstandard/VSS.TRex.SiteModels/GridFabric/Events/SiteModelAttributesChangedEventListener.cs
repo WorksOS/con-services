@@ -28,7 +28,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
         public bool Invoke(Guid nodeId, ISiteModelAttributesChangedEvent message)
         {
-            Log.LogInformation($"Received notification site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified} ExistenceMapChangeMask:{message.ExistenceMapChangeMask != null}");
+            Log.LogInformation($"Received notification site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
 
             // Tell the SiteModels instance to reload the designated site model that has changed
             try

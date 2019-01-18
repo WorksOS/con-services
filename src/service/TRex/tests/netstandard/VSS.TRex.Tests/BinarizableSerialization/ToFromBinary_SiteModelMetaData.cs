@@ -26,7 +26,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         LastModifiedDate = DateTime.UtcNow,
         MachineCount = 10,
         DesignCount = 5,
-        SurveyedSurfaceCount = 3
+        SurveyedSurfaceCount = 3,
+        AlignmentCount = 1
       };
 
       var result = SimpleBinarizableInstanceTester.TestClass(argument, "Custom SiteModelMetadata not same after round trip serialisation");

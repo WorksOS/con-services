@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -14,6 +15,13 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockRaptorController
   {
+    [HttpGet("api/v2/mock/linework/alignment")]
+    public FileResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
+    {
+      var zipStream = new FileStream("Resources/Large Sites Road_AlignmentCenterline$.zip", FileMode.Open);
+      return new FileStreamResult(zipStream, "application/zip");
+    }
+
     [Route("api/v2/mock/export/veta")]
     [HttpGet]
     public async Task<FileResult> GetMockVetaExportData(
