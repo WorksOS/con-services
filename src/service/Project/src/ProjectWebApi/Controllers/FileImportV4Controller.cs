@@ -28,6 +28,8 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity.Push.Models.Notifications.Changes;
+using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -39,6 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class FileImportV4Controller : FileImportBaseController
   {
     private readonly ILoggerFactory logger;
+    private readonly INotificationHubClient notificationHubClient;
 
     /// <summary>
     /// File import controller v4
@@ -56,12 +59,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient)
     {
       this.logger = logger;
+      this.notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -552,6 +556,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           $"UpdateImportedFileV4. Update completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
 
+      await notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid))); 
+
       return importedFile;
     }
     
@@ -652,7 +658,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-        await NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult).ConfigureAwait(false);
+        var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+        var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
+
+        await Task.WhenAll(notificationTask, raptorTask);
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }

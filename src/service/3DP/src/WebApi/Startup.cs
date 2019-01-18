@@ -7,11 +7,16 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.WebApi.Common;
 using WebApiContrib.Core.Formatter.Protobuf;
@@ -69,9 +74,11 @@ namespace VSS.Productivity3D.WebApi
       });
 
       services.AddResponseCompression();
-      services.AddMemoryCache();
       services.AddCustomResponseCaching();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddSingleton<CacheInvalidationService>();
 
       /*services.AddOpenTracing(builder =>
       {

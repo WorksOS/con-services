@@ -7,10 +7,10 @@ namespace VSS.TRex.Cells
 {
     /// <summary>
     /// Cell_NonStatic represents cell instances stored in the compaction information grid.
-    /// The compaction information grid itself is modelled after the standard TGriddedGrid,
+    /// The compaction information grid itself is modeled after the standard TGriddedGrid,
     /// but is reimplemented rather than derived.
     /// An interesting point to note is that a cell knows very little about it's context
-    /// in the grid. It doesn't know who owns it, where it is or who its neighbours are.
+    /// in the grid. It doesn't know who owns it, where it is or who its neighbors are.
     /// These are all handled in upper layers which must provide such information to the
     /// cell as needed when requesting the cell perform certain operations or calculate
     /// certain quantities (such as calculating the current topmost height of the cell).
@@ -148,7 +148,7 @@ namespace VSS.TRex.Cells
         /// <param name="passIndex"></param>
         public void RemovePass(int passIndex)
         {
-            Debug.Assert(PassCount > passIndex, "Attempt to remove non-existant pass");
+            Debug.Assert(PassCount > passIndex, "Attempt to remove non-existent pass");
 
             if (PassCount > passIndex)
             {

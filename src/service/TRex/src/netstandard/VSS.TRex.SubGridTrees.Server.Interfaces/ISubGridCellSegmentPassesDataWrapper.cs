@@ -47,9 +47,17 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void ReplacePass(uint X, uint Y, int position, CellPass pass);
 
         /// <summary>
+        /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="position"></param>
+        void RemovePass(uint X, uint Y, int position);
+
+        /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
         /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
-        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
+        /// with the given time would be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>

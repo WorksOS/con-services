@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,8 @@ using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity.Push.Models.Notifications.Changes;
+using VSS.Productivity3D.Push.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -33,6 +36,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     private readonly IRequestFactory requestFactory;
 
+    private readonly INotificationHubClient notificationHubClient;
+
 
     /// <summary>
     /// Default constructor
@@ -50,13 +55,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IRequestFactory requestFactory
+      IRequestFactory requestFactory, INotificationHubClient notificationHubClient
       )
       : base(logger.CreateLogger<ProjectSettingsV4Controller>(), configStore, serviceExceptionHandler, 
           producer, raptorProxy, projectRepo)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;
+      this.notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -114,6 +120,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
+      await NotifyChanges(userId, request.projectUid);
+
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result;
     }
@@ -148,6 +156,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
+      await NotifyChanges(userId, request.projectUid);
+
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result;
     }
@@ -175,6 +185,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       log.LogResult(this.ToString(), projectUid, result);
       return result;
+    }
+
+    private Task NotifyChanges(string userUid, string projectUid)
+    {
+      // You'd like to think these are in the format of a guid, but a simple check will stop any cast exceptions
+
+      var userTask = Guid.TryParse(userUid, out var u) 
+        ? notificationHubClient.Notify(new UserChangedNotification(u)) 
+        : Task.CompletedTask;
+
+      var projectTask = Guid.TryParse(projectUid, out var p) 
+        ? notificationHubClient.Notify(new ProjectChangedNotification(p)) 
+        : Task.CompletedTask;
+
+      return Task.WhenAll(userTask, projectTask);
     }
   }
 }
