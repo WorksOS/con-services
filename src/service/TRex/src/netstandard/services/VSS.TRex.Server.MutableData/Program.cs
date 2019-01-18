@@ -114,7 +114,7 @@ namespace VSS.TRex.Server.MutableData
     {
       IConfigurationRoot configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
         .Build();
 
       Console.WriteLine("**** Configuration Settings ****");

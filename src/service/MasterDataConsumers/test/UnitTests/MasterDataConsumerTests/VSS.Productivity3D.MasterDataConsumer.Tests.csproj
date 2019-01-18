@@ -17,11 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
     <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
