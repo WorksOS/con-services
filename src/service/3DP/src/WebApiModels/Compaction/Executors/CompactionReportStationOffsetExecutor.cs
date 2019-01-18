@@ -37,13 +37,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET"), out var useTrexGateway);
 
-        MemoryStream responseData;
-        var success = 1;
-
         if (useTrexGateway)
         {
-          responseData =
-            (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
+          var responseData = trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
           return responseData.Length > 0
             ? ConvertStationOffsetResult(request, responseData)
             : CreateNullStationOffsetReturnedResult();

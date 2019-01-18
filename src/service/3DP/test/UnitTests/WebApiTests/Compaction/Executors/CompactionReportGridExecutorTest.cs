@@ -29,8 +29,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
   [TestClass]
   public class CompactionReportGridExecutorTest
   {
-    private static IServiceProvider serviceProvider;
-    private static ILoggerFactory logger;
+    private static IServiceProvider _serviceProvider;
+    private static ILoggerFactory _logger;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -44,9 +44,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, RaptorResult>();
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      _serviceProvider = serviceCollection.BuildServiceProvider();
 
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
     [TestMethod]
@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         Returns(0); // icsrrUnknownError
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object);
+        .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
 
@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       tRexProxy.Setup(x => x.SendGridReportRequest(request, It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, null, configStore: mockConfigStore.Object,
+        .Build<CompactionReportGridExecutor>(_logger, null, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
       var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         Returns(1); // icsrrNoError
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, raptorClient.Object);
+        .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object);
 
       var result = executor.Process(request) as CompactionReportResult;
 
