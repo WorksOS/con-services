@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
