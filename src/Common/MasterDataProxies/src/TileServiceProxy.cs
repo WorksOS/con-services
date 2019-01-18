@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client.Models;
@@ -12,7 +13,7 @@ namespace VSS.MasterData.Proxies
 {
   public class TileServiceProxy : BaseProxy, ITileServiceProxy
   {
-    public TileServiceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(
+    public TileServiceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(
       configurationStore, logger, cache)
     {
     }

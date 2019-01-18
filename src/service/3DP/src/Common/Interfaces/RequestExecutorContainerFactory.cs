@@ -24,25 +24,25 @@ namespace VSS.Productivity3D.Common.Interfaces
       ILogger log = null;
       if (logger != null)
       {
-        log = logger.CreateLogger<RequestExecutorContainer>();
+        log = logger.CreateLogger<TExecutor>();
       }
 
       var executor = new TExecutor();
 
       executor.Initialise(
-      log,
-      raptorClient,
-      tagProcessor,
-      configStore,
-      fileRepo,
-      tileGenerator,
-      fileList,
-      profileResultHelper,
-      transferProxy,
-      tRexTagFileProxy,
-      trexCompactionDataProxy,
-      customHeaders);
-
+        log,
+        raptorClient,
+        tagProcessor,
+        configStore,
+        fileRepo,
+        tileGenerator,
+        fileList,
+        profileResultHelper,
+        transferProxy,
+        tRexTagFileProxy,
+        trexCompactionDataProxy,
+        customHeaders);
+      
       return executor;
     }
   }

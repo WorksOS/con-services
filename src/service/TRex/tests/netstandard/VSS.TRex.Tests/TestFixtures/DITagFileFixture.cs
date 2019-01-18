@@ -20,6 +20,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Executors;
@@ -38,6 +39,16 @@ namespace VSS.TRex.Tests.TestFixtures
       var converter = new TAGFileConverter();
 
       Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read)),
+        "Converter execute returned false");
+
+      return converter;
+    }
+
+    public static TAGFileConverter ReadTAGFile(string subFolder, string fileName)
+    {
+      var converter = new TAGFileConverter();
+
+      Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", subFolder, fileName), FileMode.Open, FileAccess.Read)),
         "Converter execute returned false");
 
       return converter;
@@ -103,6 +114,9 @@ namespace VSS.TRex.Tests.TestFixtures
           .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
           .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
+
+          // Register the hook used to capture cell pass mutation events while processing TAG files.
+          .Add(x => x.AddSingleton<ICell_NonStatic_MutationHook>(new Cell_NonStatic_MutationHook()))
 
           .Complete();
       }

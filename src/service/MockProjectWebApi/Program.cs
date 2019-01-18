@@ -21,16 +21,6 @@ namespace MockProjectWebApi
 
     public static void Main(string[] args)
     {
-      //var host = new WebHostBuilder()
-      //    .UseKestrel()
-      //    .UseContentRoot(Directory.GetCurrentDirectory())
-      //    .UseIISIntegration()
-      //    .UseStartup<Startup>()
-      //    .UseUrls("http://0.0.0.0:5001")
-      //    .Build();
-
-      //host.Run();
-
       var config = new ConfigurationBuilder()
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
@@ -47,7 +37,6 @@ namespace MockProjectWebApi
           builder.SetMinimumLevel(LogLevel.Debug);
           builder.AddConfiguration(config);
         })
-       // .UseIISIntegration()
         .UseLibuv(opts =>
         {
           if (libuvConfigured)

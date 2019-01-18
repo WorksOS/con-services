@@ -25,6 +25,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -47,6 +48,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IHttpContextAccessor HttpContextAccessor;
 
+    private readonly INotificationHubClient notificationHubClient;
+
     /// <summary>
     /// 
     /// </summary>
@@ -68,13 +71,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient,ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient, authn)
     {
       this._logger = logger;
       this.HttpContextAccessor = httpContextAccessor;
+      this.notificationHubClient = notificationHubClient;
     }
 
     #region projects
@@ -175,6 +178,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
 
+      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
+
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
     }
@@ -219,15 +224,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Update Project
     /// </summary>
     /// <param name="projectRequest">UpdateProjectRequest model</param>
-    /// <param name="notificationHubClient"></param>
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("internal/v4/project")]
     [Route("api/v4/project")]
     [HttpPut]
-    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest, 
-      [FromServices] INotificationHubClient notificationHubClient)
+    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
     {
       if (projectRequest == null)
       {
@@ -255,8 +258,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in Raptor
       log.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectDescriptorChangedNotification(project.ProjectUID));
-      await raptorProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
+      var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      var raptorTask = raptorProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
+
+      await Task.WhenAll(notificationTask, raptorTask);
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -337,6 +342,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
+
+      if(Guid.TryParse(customerUid, out var c))
+        await notificationHubClient.Notify(new CustomerChangedNotification(c));
 
       log.LogInformation("DeleteProjectV4. Completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -450,6 +458,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #endregion geofences
-
   }
 }

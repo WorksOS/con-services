@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   /// Describes geofence data returned by the geofence master data service.
   /// </summary>
-  public class GeofenceData 
+  public class GeofenceData : IMasterDataModel
   {
     public string GeofenceName { get; set; }
 
@@ -46,5 +49,12 @@ namespace VSS.MasterData.Models.Models
     {
       return base.GetHashCode();
     }
+
+    public List<string> GetIdentifiers() => new List<string>()
+    {
+      CustomerUID.ToString(),
+      GeofenceUID.ToString(),
+      UserUID.ToString(),
+    };
   }
 }

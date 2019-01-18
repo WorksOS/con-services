@@ -42,19 +42,7 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     public override void SetupCallbacks()
     {
-      Connection.On<Notification>(nameof(INotificationHub.Notify), (key) =>
-      {
-        var methods = GetTypes(key.Type, key.Key);
-        foreach (var methodInfo in methods)
-        {
-          if (methodInfo.DeclaringType == null)
-            continue;
-
-          Invoke(methodInfo, key.Uid);
-         
-        }
-        Logger.LogInformation($"Got a notification with key {JsonConvert.SerializeObject(key)}");
-      }); 
+      Connection.On<Notification>(nameof(INotificationHub.Notify), ProcessNotification); 
     }
 
     /// <inheritdoc />
@@ -66,6 +54,27 @@ namespace VSS.Productivity3D.Push.Clients
       // We could queue this up if it becomes a problem
       Logger.LogWarning("Attempt to send message while client disconnected. Notification not sent.");
       return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Processes an incoming notification
+    /// </summary>
+    /// <param name="notification">The notification to be processed</param>
+    public void ProcessNotification(Notification notification)
+    {
+      if (notification == null)
+        return;
+
+      var methods = GetTypes(notification.Type, notification.Key);
+      foreach (var methodInfo in methods)
+      {
+        if (methodInfo.DeclaringType == null)
+          continue;
+
+        Invoke(methodInfo, notification.Uid);
+         
+      }
+      Logger.LogInformation($"Got a notification with key {JsonConvert.SerializeObject(notification)}");
     }
 
     /// <summary>

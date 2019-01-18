@@ -4,7 +4,7 @@ namespace VSS.TRex.Types
 {
     /// <summary>
     /// The different varieties of 'passes' that are tracked. Passes are made by the front axle/implement, rear axle/implement, 
-    /// vehilce track or vehicle wheel
+    /// vehicle track or vehicle wheel
     /// </summary>
     public enum PassType
     {

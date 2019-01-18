@@ -126,7 +126,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                             // Check to see if the blade-on-the-ground flag is set. if not, then we will not process this epoch.
                             // The reason for this is that there is no useful information for us while the blade is not on the ground.
                             // There is a counter-argument to this in that customers may use a supervisor system to do an initial
-                            // topo survey of the site, in which case this flag may not be set. Curently this is not supported.
+                            // topo survey of the site, in which case this flag may not be set. Currently this is not supported.
                             // If you want the data processed, set the blade-on-the-ground flag.
 
                             if (!(passType == PassType.Track || passType == PassType.Wheel))
