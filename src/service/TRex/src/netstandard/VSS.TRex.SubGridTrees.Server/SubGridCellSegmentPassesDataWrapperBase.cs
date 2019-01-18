@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public class SubGridCellSegmentPassesDataWrapperBase
     {
         /// <summary>
-        /// The count of cell passes residing in this subgrid segment
+        /// The count of cell passes residing in this sub grid segment
         /// </summary>
         public int SegmentPassCount { get; set; }
 
