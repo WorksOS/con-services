@@ -6,6 +6,7 @@ using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
 using Xunit.Gherkin.Quick;
+using Feature = Xunit.Gherkin.Quick.Feature;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {

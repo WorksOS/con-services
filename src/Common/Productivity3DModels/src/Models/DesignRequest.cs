@@ -50,9 +50,9 @@ namespace VSS.Productivity3D.Models.Models
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid must be provided"));
       }
 
-      if (FileType != ImportedFileType.DesignSurface && FileType != ImportedFileType.SurveyedSurface )
+      if (FileType != ImportedFileType.DesignSurface && FileType != ImportedFileType.SurveyedSurface && FileType != ImportedFileType.Alignment)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface or SurveyedSurface"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
       }
 
       if (FileName == null || string.IsNullOrEmpty(FileName))
@@ -61,10 +61,16 @@ namespace VSS.Productivity3D.Models.Models
       }
 
       var extention = Path.GetExtension(FileName);
-      if (string.IsNullOrEmpty(extention) 
-          || string.Compare(extention, ".ttm", StringComparison.OrdinalIgnoreCase) != 0)
+      if (string.IsNullOrEmpty(extention) ||
+          (FileType != ImportedFileType.Alignment &&
+           (string.Compare(extention, ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
+          ||
+          (FileType == ImportedFileType.Alignment &&
+           (string.Compare(extention, ".svl", StringComparison.OrdinalIgnoreCase) != 0))
+
+          )
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name extension must be ttm"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name extension incorrect"));
       }
 
       if (!Guid.TryParseExact(DesignUid.ToString(), "D", out Guid _) || DesignUid == Guid.Empty)

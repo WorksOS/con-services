@@ -19,31 +19,26 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<LineworkRequest>(item);
-
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
+      try
       {
-        var result = CallTRexEndpoint(request);
+        var request = CastRequestObjectTo<LineworkRequest>(item);
 
-        return result;
+        return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
+          ? ProcessForTRex(request)
+          : ProcessForRaptor(request);
       }
-
-      if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY"))
+      finally
       {
-        var result = CallRaptorEndpoint(request);
-
-        return result;
+        ContractExecutionStates.ClearDynamic();
       }
-
-      return ContractExecutionResult.ErrorResult();
     }
 
-    private DxfLineworkFileResult CallTRexEndpoint(LineworkRequest request)
+    private DxfLineworkFileResult ProcessForTRex(LineworkRequest request)
     {
       throw new NotImplementedException("TRex Gateway not yet implemented for LineworkFileExecutor");
     }
 
-    private DxfLineworkFileResult CallRaptorEndpoint(LineworkRequest request)
+    private DxfLineworkFileResult ProcessForRaptor(LineworkRequest request)
     {
       var returnResult = TASNodeErrorStatus.asneUnknown;
 
@@ -51,6 +46,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var customDescriptor = new TVLPDDesignDescriptor();
         customDescriptor.Init(0, string.Empty, string.Empty, request.FileDescriptor.Path, request.FileDescriptor.FileName, 0);
+
+        log.LogDebug($"{nameof(LineworkFileExecutor)}: {nameof(TVLPDDesignDescriptor)} = {JsonConvert.SerializeObject(customDescriptor)}");
 
         var args = new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
         {
@@ -79,8 +76,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      throw new NotImplementedException();
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

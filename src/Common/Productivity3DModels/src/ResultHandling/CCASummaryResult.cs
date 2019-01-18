@@ -1,4 +1,5 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
@@ -10,27 +11,32 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// The percentage of cells that are complete within the target bounds
     /// </summary>
-    public double completePercent { get; private set; }
+    [JsonProperty(PropertyName = "completePercent")]
+    public double CompletePercent { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are over-complete
     /// </summary>
-    public double overCompletePercent { get; private set; }
+    [JsonProperty(PropertyName = "overCompletePercent")]
+    public double OverCompletePercent { get; private set; }
 
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.
     /// </summary>
-    public short returnCode { get; private set; }
+    [JsonProperty(PropertyName = "returnCode")]
+    public short ReturnCode { get; private set; }
 
     /// <summary>
     /// The total area covered by non-null cells in the request area
     /// </summary>
-    public double totalAreaCoveredSqMeters { get; private set; }
+    [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
+    public double TotalAreaCoveredSqMeters { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are under complete
     /// </summary>
-    public double underCompletePercent { get; private set; }
+    [JsonProperty(PropertyName = "underCompletePercent")]
+    public double UnderCompletePercent { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -51,11 +57,11 @@ namespace VSS.Productivity3D.Models.ResultHandling
     {
       return new CCASummaryResult
       {
-        completePercent = completePercent,
-        overCompletePercent = overCompactedPercent,
-        returnCode = returnCode,
-        totalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-        underCompletePercent = underCompactedPercent
+        CompletePercent = completePercent,
+        OverCompletePercent = overCompactedPercent,
+        ReturnCode = returnCode,
+        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
+        UnderCompletePercent = underCompactedPercent
       };
     }
   }

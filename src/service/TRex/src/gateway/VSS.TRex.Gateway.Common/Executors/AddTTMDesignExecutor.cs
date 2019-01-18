@@ -23,7 +23,7 @@ using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class AddDesignExecutor : RequestExecutorContainer
+  public class AddTTMDesignExecutor : BaseExecutor
   {
     /// <summary>
     /// TagFileExecutor
@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    public AddDesignExecutor(IConfigurationStore configStore,
+    public AddTTMDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public AddDesignExecutor()
+    public AddTTMDesignExecutor()
     {
     }
 
@@ -54,31 +54,36 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as DesignRequest;
       if (request == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
-        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
+        ThrowRequestTypeCastException<DesignRequest>();
+        return null; // to keep compiler happy
       }
 
       try
       {
-        log.LogInformation($"#In# CreateDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#In# AddTTMDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
         // load core file from s3 to local
         var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
+        
         TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
-          log.LogError($"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
+          log.LogError($"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
+          throw CreateServiceException<AddTTMDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
         // This generates the 2 index files 
         designLoadResult = ttm.LoadFromFile(localPathAndFileName);
         if (designLoadResult != DesignLoadResult.Success)
         {
-          log.LogError($"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
-          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
+          log.LogError($"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
+          throw CreateServiceException<AddTTMDesignExecutor>
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+              RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
         }
 
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
@@ -109,18 +114,19 @@ namespace VSS.TRex.Gateway.Common.Executors
         S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
         S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
 
-        log.LogInformation($"#Out# CreateDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#Out# AddTTMDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
       catch (Exception e)
       {
-        log.LogError(e, $"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
+        log.LogError(e, $"#Out# AddTTMDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
+        throw CreateServiceException<AddTTMDesignExecutor>
+          (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
+            RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
       return new ContractExecutionResult(); 
     }
-
-
+    
     /// <summary>
     /// Processes the request asynchronously.
     /// </summary>

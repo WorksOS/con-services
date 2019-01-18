@@ -50,6 +50,12 @@ export class ProjectExtents {
     setCenterPosition(cx, cy) {
         this.panByDelta(cx - this.centerX(), cy - this.centerY());
     }
+    IncludeY(y) {
+        if (y < this.minY)
+            this.minY = y;
+        if (y > this.maxY)
+            this.maxY = y;
+    }
 }
 export class DesignDescriptor {
     constructor() {
@@ -61,7 +67,22 @@ export class DesignDescriptor {
         this.offset = 0;
     }
 }
-export class Design {
+export class SurveyedSurface {
+    constructor() {
+        this.id = "";
+        this.designDescriptor = new DesignDescriptor();
+        this.asAtDate = new Date();
+        this.extents = new ProjectExtents(0, 0, 0, 0);
+    }
+}
+export class DesignSurface {
+    constructor() {
+        this.id = "";
+        this.designDescriptor = new DesignDescriptor();
+        this.extents = new ProjectExtents(0, 0, 0, 0);
+    }
+}
+export class Alignment {
     constructor() {
         this.id = "";
         this.designDescriptor = new DesignDescriptor();
@@ -78,14 +99,6 @@ export class SiteProofingRun {
         this.name = "";
         this.startDate = new Date();
         this.endDate = new Date();
-    }
-}
-export class SurveyedSurface {
-    constructor() {
-        this.id = "";
-        this.designDescriptor = new DesignDescriptor();
-        this.asAtDate = new Date();
-        this.extents = new ProjectExtents(0, 0, 0, 0);
     }
 }
 export class Machine {
