@@ -18,7 +18,6 @@ namespace TAGFiles.Tests
 
       // Setup the mutation hook to capture cell pass generation
       ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
-      Hook.Should().NotBe(null);
 
       var passWriter = new CellPassWriter(x => Lines.Add(x));
       Hook.SetActions(passWriter);
