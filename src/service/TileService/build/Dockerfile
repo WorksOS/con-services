@@ -6,7 +6,7 @@ ARG SERVICE_PATH
 
 RUN dotnet publish ./$SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj -o /build/artifacts/VSS.Tile.Service.WebApi --framework netcoreapp2.1 --runtime linux-x64
 
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-runtime
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-aspnetcore-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
