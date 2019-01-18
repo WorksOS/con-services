@@ -109,7 +109,7 @@ namespace VSS.TRex.SiteModels
     public void Update(Guid siteModelID, 
       BoundingWorldExtent3D siteModelExtent = null,
       string name = null, string description = null, DateTime? lastModifiedDate = null,
-      int? machineCount = null, int? designCount = null, int? surveyedSurfaceCount = null)
+      int? machineCount = null, int? designCount = null, int? surveyedSurfaceCount = null, int? alignmentCount = null)
     {
       ISiteModelMetadata metaData;
       try
@@ -139,6 +139,7 @@ namespace VSS.TRex.SiteModels
 
       metaData.DesignCount = designCount ?? metaData.DesignCount;
       metaData.SurveyedSurfaceCount = surveyedSurfaceCount ?? metaData.SurveyedSurfaceCount;
+      metaData.AlignmentCount = alignmentCount ?? metaData.AlignmentCount;
       metaData.MachineCount = machineCount ?? metaData.MachineCount;
       metaData.LastModifiedDate = lastModifiedDate ?? metaData.LastModifiedDate;
 

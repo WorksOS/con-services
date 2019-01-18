@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -51,15 +53,28 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
       designRequest.Validate();
       GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
 
-      if (GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
+      if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
       }
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<AddDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designRequest));
+      if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<AddTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+
+      if (designRequest.FileType == ImportedFileType.Alignment)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<AddSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+
+      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
     }
 
 
@@ -75,15 +90,27 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
       designRequest.Validate();
       GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
 
-      if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
+      if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
       }
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<UpdateDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designRequest));
+      if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<UpdateTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+
+      if (designRequest.FileType == ImportedFileType.Alignment)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<UpdateSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
     }
 
 
@@ -99,21 +126,29 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(designRequest.ProjectUid, false);
-      if (sm == null)
+      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
+
+      if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
-        return new ContractExecutionResult();
+        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete.");
       }
 
-      if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
+      if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<DeleteTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
       }
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<DeleteDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(designRequest));
+      if (designRequest.FileType == ImportedFileType.Alignment)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<DeleteSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
     }
 
     private DesignListResult GetDesignsForSiteModel(Guid projectUid, ImportedFileType fileType)
@@ -128,12 +163,26 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
       }
 
-      var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
-      designFileDescriptorList = designSurfaceList.Select(designSurface =>
-          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+      if (fileType == ImportedFileType.SurveyedSurface)
+      {
+        var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
+        designFileDescriptorList = designSurfaceList.Select(designSurface =>
+            AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+          .ToList();
+        return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
+      }
+
+      var designAlignmentList = DIContext.Obtain<IAlignmentManager>().List(projectUid);
+      designFileDescriptorList = designAlignmentList.Select(designAlignment =>
+          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designAlignment))
         .ToList();
       return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
+    }
 
+    private bool DesignExists(Guid projectUid, ImportedFileType fileType, Guid designUid)
+    {
+      return GetDesignsForSiteModel(projectUid, fileType).DesignFileDescriptors.ToList()
+        .Exists(x => (string.Compare(x.DesignUid, designUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
     }
   }
 }

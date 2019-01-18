@@ -23,6 +23,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Alignments.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
@@ -176,22 +177,31 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public ISiteModelDesignList SiteModelDesigns => siteModelDesigns;
 
-    private ISurveyedSurfaces surveyedSurfaces;
+    /// <summary>
+    /// Designs records all the design surfaces that have been imported into the sitemodel
+    /// </summary>
+    private IDesigns _designs;
+
+    public IDesigns Designs => _designs ?? (_designs = DIContext.Obtain<IDesignManager>().List(ID));
+
+    public bool DesignsLoaded => _designs != null;
 
     // This is a list of TTM descriptors which indicate designs
     // that can be used as a snapshot of an actual ground surface at a specific point in time
-    public ISurveyedSurfaces SurveyedSurfaces => surveyedSurfaces ?? (surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
+    private ISurveyedSurfaces _surveyedSurfaces;
 
-    public bool SurveyedSurfacesLoaded => surveyedSurfaces != null;
+    public ISurveyedSurfaces SurveyedSurfaces => _surveyedSurfaces ?? (_surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
 
-    private IDesigns designs;
+    public bool SurveyedSurfacesLoaded => _surveyedSurfaces != null;
 
     /// <summary>
-    /// Designs records all the design surfaces that have been imported into the site model
+    /// alignments records all the alignment files that have been imported into the sitemodel
     /// </summary>
-    public IDesigns Designs => designs ?? (designs = DIContext.Obtain<IDesignManager>().List(ID));
+    private IAlignments _alignments;
+    public IAlignments Alignments => _alignments ?? (_alignments = DIContext.Obtain<IAlignmentManager>().List(ID));
 
-    public bool DesignsLoaded => designs != null;
+    public bool AlignmentsLoaded => _alignments != null;
+
 
     // The siteProofingRuns is the set of proofing runs that have been collected in this site model
     private ISiteProofingRunList siteProofingRuns;
@@ -329,12 +339,16 @@ namespace VSS.TRex.SiteModels
         ? originModel.ExistenceMap
         : null;
 
-      designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0
+      _designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0
         ? originModel.Designs
         : null;
 
-      surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
+      _surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
         ? originModel.SurveyedSurfaces
+        : null;
+
+      _alignments = originModel.AlignmentsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveAlignments) != 0
+        ? originModel.Alignments
         : null;
 
       machines = originModel.MachinesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachines) != 0
@@ -726,7 +740,8 @@ namespace VSS.TRex.SiteModels
         SiteModelExtent = SiteModelExtent,
         MachineCount = Machines?.Count ?? 0,
         DesignCount = Designs?.Count ?? 0,
-        SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0
+        SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0,
+        AlignmentCount = Alignments?.Count ?? 0,
       };
     }
   }

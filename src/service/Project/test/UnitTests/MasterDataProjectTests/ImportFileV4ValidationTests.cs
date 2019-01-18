@@ -233,6 +233,7 @@ namespace VSS.MasterData.ProjectTests
 
     [TestMethod]
     [DataRow(ImportedFileType.Alignment, "true", "false")]
+    [DataRow(ImportedFileType.Alignment, "false", "true")]
     [DataRow(ImportedFileType.DesignSurface, "true", "false")]
     [DataRow(ImportedFileType.DesignSurface, "true", "true")]
     [DataRow(ImportedFileType.DesignSurface, "false", "true")]
@@ -246,7 +247,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
-    [DataRow(ImportedFileType.Alignment, "false", "true")]
+    [DataRow(ImportedFileType.Alignment, "false", "false")]
     [DataRow(ImportedFileType.DesignSurface, "false", "false")]
     public void ValidateImportFile_EnvironmentVariables_UnHappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
     {

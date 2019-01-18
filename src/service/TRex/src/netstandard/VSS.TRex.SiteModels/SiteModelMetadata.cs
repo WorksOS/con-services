@@ -20,6 +20,7 @@ namespace VSS.TRex.SiteModels
     public int MachineCount { get; set; }
     public int DesignCount { get; set; }
     public int SurveyedSurfaceCount { get; set; }
+    public int AlignmentCount { get; set; }
 
 
     public override void ToBinary(IBinaryRawWriter writer)
@@ -37,6 +38,7 @@ namespace VSS.TRex.SiteModels
       writer.WriteInt(MachineCount);
       writer.WriteInt(DesignCount);
       writer.WriteInt(SurveyedSurfaceCount);
+      writer.WriteInt(AlignmentCount);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -60,6 +62,7 @@ namespace VSS.TRex.SiteModels
       MachineCount = reader.ReadInt();
       DesignCount = reader.ReadInt();
       SurveyedSurfaceCount = reader.ReadInt();
+      AlignmentCount = reader.ReadInt();
     }
   }
 }

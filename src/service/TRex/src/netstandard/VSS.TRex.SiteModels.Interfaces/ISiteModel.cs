@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -49,14 +50,17 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     ISiteModelDesignList SiteModelDesigns { get; }
 
-    ISurveyedSurfaces SurveyedSurfaces { get; }
-    bool SurveyedSurfacesLoaded { get; }
-
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
     IDesigns Designs { get; }
     bool DesignsLoaded { get; }
+
+    ISurveyedSurfaces SurveyedSurfaces { get; }
+    bool SurveyedSurfacesLoaded { get; }
+
+    IAlignments Alignments { get; }
+    bool AlignmentsLoaded { get; }
 
     /// <summary>
     /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this site model.

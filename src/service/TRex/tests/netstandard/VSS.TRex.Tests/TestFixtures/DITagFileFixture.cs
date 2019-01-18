@@ -4,6 +4,8 @@ using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.ConfigurationStore;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -112,6 +114,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
           .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
           .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+          .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager()))
 
           .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
 
