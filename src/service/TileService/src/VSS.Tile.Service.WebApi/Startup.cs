@@ -59,7 +59,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
 
-      services.AddSingleton<CacheInvalidationService>();
+      services.AddSingleton<Productivity3D.Push.Clients.CacheInvalidationService>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 

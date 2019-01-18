@@ -18,11 +18,11 @@ namespace MockProjectWebApi
     const string MIN_WORKER_THREADS = "MAX_WORKER_THREADS";
     const string MIN_IO_THREADS = "MIN_IO_THREADS";
     const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
-
+    
     public static void Main(string[] args)
     {
       var config = new ConfigurationBuilder()
-        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: true)
         .Build();
 
       var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);

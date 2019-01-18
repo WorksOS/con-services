@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <PackageId>VSS.MasterData.Repositories.netcore</PackageId>
     <Authors>Merino</Authors>
     <Company>VSS</Company>
     <Product>VSS.MasterData.Repositories.netcore</Product>
-    <Description>Shared lib to access Masterdata aspects in the DB</Description>
+    <Description>Shared lib to access MasterData aspects in the DB</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
     <PackageReference Include="NodaTime" Version="2.4.2" />

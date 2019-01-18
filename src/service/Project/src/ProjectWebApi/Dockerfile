@@ -1,4 +1,6 @@
-FROM microsoft/dotnet:2-runtime-jessie
+ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.1-sdk
+
+FROM ${APP_BUILD_IMAGE}
 
 # Set the Working Directory
 WORKDIR /app
