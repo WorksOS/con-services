@@ -98,9 +98,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 haveInterpolation = timeVal != Consts.NullDouble && heightVal != Consts.NullDouble;
 
                                 if (haveInterpolation)
-                                { 
-                                    _TheTime = DateTime.FromOADate(timeVal);
-                                    _TheHeight = (float)heightVal;
+                                {
+                                     _TheTime = DateTime.SpecifyKind(DateTime.FromOADate(timeVal), DateTimeKind.Utc);
+                                     _TheHeight = (float)heightVal;
                                 }
                             }
 
@@ -113,8 +113,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                                 if (haveInterpolation)
                                 {
-                                    _TheTime = DateTime.FromOADate(timeVal);
-                                    _TheHeight = (float)heightVal;
+                                     _TheTime = DateTime.SpecifyKind(DateTime.FromOADate(timeVal), DateTimeKind.Utc);
+                                     _TheHeight = (float)heightVal;
                                 }
                             }
                             
