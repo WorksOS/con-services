@@ -136,7 +136,7 @@ namespace VSS.TRex.Geometry
     {
       try
       {
-        if ((x < MinX) || (x > MaxX) || (y < MinY) || (y > MaxY))
+        if (x < MinX || x > MaxX || y < MinY || y > MaxY)
         {
           return false;
         }

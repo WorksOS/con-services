@@ -13,9 +13,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 {
     /// <summary>
     /// SwatherBase provides a base class for the process of computing swathing
-    /// information.Swathing is the general term for analysing a machine's activities
+    /// information.Swathing is the general term for analyzing a machine's activities
     /// and contributing relevant records (cell passes, events etc) to the production
-    /// server database.This class implements much of the infractructure relevant to
+    /// server database.This class implements much of the infrastructure relevant to
     ///swathing, but does not define the semantics of how the swathing is to be performed    
     /// </summary>
     public class SwatherBase
@@ -43,16 +43,16 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                           double gridX, double gridY,
                                           CellPass processedCellPass)
         {
-            // Arrange the subgrid that will house this cell pass.
+            // Arrange the sub grid that will house this cell pass.
             // This needs to happen if, and only if, we will actually add a cell
-            // pass to the subgrid. The reason for this restriction is that we may
-            // otherwise end up creating a new subgrid that never has any cell passes
+            // pass to the sub grid. The reason for this restriction is that we may
+            // otherwise end up creating a new sub grid that never has any cell passes
             // added to it.
 
-            // The grid we are populating is a in-memory grid (ie: not the actual subgrid database
-            // for this data model). Changes will not need to be synchronised with the main
-            // server interlock (ICServerModule.Server.AquireLock) and we may interact
-            // directly with the subgrid tree being populated
+            // The grid we are populating is a in-memory grid (ie: not the actual sub grid database
+            // for this data model). Changes will not need to be synchronized with the main
+            // server interlock (ICServerModule.Server.AcquireLock) and we may interact
+            // directly with the sub grid tree being populated
 
             IServerLeafSubGrid SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
 
@@ -68,7 +68,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
             SubGrid.Dirty = true;
 
-            // Find the location of the cell within the subgrid.
+            // Find the location of the cell within the sub grid.
             SubGrid.GetSubGridCellIndex(cellX, cellY, out byte SubGridCellX, out byte SubGridCellY);
 
             // Now add the pass to the cell information
