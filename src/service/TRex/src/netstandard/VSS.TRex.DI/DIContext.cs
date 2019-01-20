@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace VSS.TRex.DI
@@ -22,18 +23,25 @@ namespace VSS.TRex.DI
     }
 
     /// <summary>
-    /// Ejects the service provider collection from the TRex DI context.
+    /// Removes the service provider collection from the TRex DI context.
     /// </summary>
-    public static void Eject()
+    public static void Close()
     {
       ServiceProvider = null;
     }
 
     /// <summary>
     /// Obtain a service instance matching a provided type T
-    /// </summary>
+    ///  </summary>
     /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static T Obtain<T>() => ServiceProvider.GetService<T>();
+    /// <returns>The service implementing T. If there is no ServiceProvider available then return a default(T)</returns>
+    public static T Obtain<T>() => ServiceProvider == null ? default(T) : ServiceProvider.GetService<T>();
+
+    /// <summary>
+    /// Obtain all service instances matching a provided type T
+    ///  </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns>The services implementing T. If there is no ServiceProvider available then return null</returns>
+    public static IEnumerable<T> ObtainMany<T>() => ServiceProvider?.GetServices<T>();
   }
 }

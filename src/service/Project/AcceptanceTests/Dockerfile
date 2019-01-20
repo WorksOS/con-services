@@ -1,12 +1,8 @@
-FROM microsoft/dotnet:2.1-sdk
+ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.1-sdk
+
+FROM ${APP_BUILD_IMAGE}
 COPY . /app
 WORKDIR /app
-
-#RUN \
-#  apk update && \
-#  apk upgrade && \
-#  apk add bash && \
-#  rm -rf /var/cache/apk/*
 
 # Create the mount point to hold volume from host for test results
 VOLUME testresults

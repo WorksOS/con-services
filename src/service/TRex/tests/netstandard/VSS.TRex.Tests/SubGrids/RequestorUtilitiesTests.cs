@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.SubGrids
 
     public void Dispose()
     {
-      DIBuilder.Continue().Eject();
+      DIBuilder.Eject();
     }
   }
 
