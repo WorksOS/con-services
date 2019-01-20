@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -16,6 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     public class TerrainSwather : SwatherBase
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
+
+        private ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between
@@ -56,6 +59,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                 InterpolationFence.UpdateExtents();
                 InterpolationFence.GetExtents(out swathBounds.MinX, out swathBounds.MinY, out swathBounds.MaxX, out swathBounds.MaxY);
 
+                hook?.EmitNote($"Interpolation extents: {swathBounds.MinX:F3},{swathBounds.MinY:F3} --> {swathBounds.MaxX:F3},{swathBounds.MaxY:F3}");
+ 
                 // SIGLogMessage.PublishNoODS(Self,
                 //                            Format('Swathing over rectangle: (%.3f, %.3f) -> (%.3f, %.3f) [%.3f wide by %.3f tall]', {SKIP}
                 //                                   [fMinX, fMinY, fMaxX, fMaxY, fMaxX - fMinX, fMaxY - fMinY]),
@@ -79,6 +84,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                     return true;
                 }
 
+                hook?.EmitNote($"Swathing: {CellExtent.MinX},{CellExtent.MinY} --> {CellExtent.MaxX},{CellExtent.MaxY}");
                 // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
                 for (uint I = (uint)CellExtent.MinX; I < CellExtent.MaxX + 1; I++)
                 {
@@ -98,9 +104,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 haveInterpolation = timeVal != Consts.NullDouble && heightVal != Consts.NullDouble;
 
                                 if (haveInterpolation)
-                                { 
-                                    _TheTime = DateTime.FromOADate(timeVal);
-                                    _TheHeight = (float)heightVal;
+                                {
+                                     _TheTime = DateTime.SpecifyKind(DateTime.FromOADate(timeVal), DateTimeKind.Utc);
+                                     _TheHeight = (float)heightVal;
                                 }
                             }
 
@@ -113,8 +119,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                                 if (haveInterpolation)
                                 {
-                                    _TheTime = DateTime.FromOADate(timeVal);
-                                    _TheHeight = (float)heightVal;
+                                     _TheTime = DateTime.SpecifyKind(DateTime.FromOADate(timeVal), DateTimeKind.Utc);
+                                     _TheHeight = (float)heightVal;
                                 }
                             }
                             
