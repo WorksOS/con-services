@@ -12,6 +12,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void ReplacePass(uint X, uint Y, Cell_NonStatic cell, int position, CellPass pass);
     void RemovePass(uint X, uint Y, int passIndex);
 
+    void EmitNote(string note);
+
     void SetActions(ICell_NonStatic_MutationHook actions);
     void ClearActions();
   }

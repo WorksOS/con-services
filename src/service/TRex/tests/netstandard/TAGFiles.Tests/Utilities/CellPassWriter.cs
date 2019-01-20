@@ -31,20 +31,19 @@ namespace TAGFiles.Tests.Utilities
 
     public void AddPass(uint X, uint Y, Cell_NonStatic cell, CellPass pass, int position)
     {
-      var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd hh-mm-ss.fff}" : $"{pass}";
-      WriteToOutput($"AddPass {X}:{Y}->{passString}");
+      var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd HH-mm-ss.fff}" : $"{pass}";
+      WriteToOutput($"AddPass {X}:{Y}:{position}->{passString}");
     }
 
-    public void RemovePass(uint X, uint Y, int passIndex)
-    {
-      WriteToOutput($"RemovePass {X}:{Y}, Position:{passIndex}");
-    }
+    public void RemovePass(uint X, uint Y, int passIndex) => WriteToOutput($"RemovePass {X}:{Y}, Position:{passIndex}");
 
     public void ReplacePass(uint X, uint Y, Cell_NonStatic cell, int position, CellPass pass)
     {
-      var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd hh-mm-ss.fff}" : $"{pass}";
+      var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd HH-mm-ss.fff}" : $"{pass}";
       WriteToOutput($"ReplacePass {X}:{Y}:{position}->{passString}");
     }
+
+    public void EmitNote(string note) => WriteToOutput(note);
 
     public void SetActions(ICell_NonStatic_MutationHook actions)
     {

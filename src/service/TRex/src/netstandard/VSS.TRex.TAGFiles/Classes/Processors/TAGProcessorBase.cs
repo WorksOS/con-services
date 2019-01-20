@@ -79,9 +79,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ FRONT AXLE ----------------
             FrontLeftInterpolationFence = new Fence();
             FrontLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            FrontLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             FrontRightInterpolationFence = new Fence();
             FrontRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            FrontRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             for (int I = 0; I < 4; I++)
             {
@@ -99,10 +101,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ REAR AXLE ----------------
             RearLeftInterpolationFence = new Fence();
             RearLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            RearLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             RearRightInterpolationFence = new Fence();
             RearRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
-
+            RearRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
+      
             for (int I = 0; I < 4; I++)
             {
                 RearHeights[I] = new XYZ(0, 0, 0);
@@ -119,9 +123,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ Track ----------------
             TrackLeftInterpolationFence = new Fence();
             TrackLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            TrackLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             TrackRightInterpolationFence = new Fence();
             TrackRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            TrackRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             for (int I = 0; I < 4; I++)
             {
@@ -139,10 +145,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ Wheel ----------------
             WheelLeftInterpolationFence = new Fence();
             WheelLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            WheelLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             WheelRightInterpolationFence = new Fence();
             WheelRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
-
+            WheelRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
+                 
             for (int I = 0; I < 4; I++)
             {
                 WheelHeights[I] = new XYZ(0, 0, 0);
