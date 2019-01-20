@@ -54,7 +54,7 @@ if ($args -contains "--detach")
     $detach = "--detach"
 }
 
-Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach"
+Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach > c:\temp\output.log"
 
 if (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red
