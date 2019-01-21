@@ -75,7 +75,7 @@ namespace TAGFiles.Tests
       File.WriteAllLines(fn, Lines);
     }
 
-    [Theory]
+    [Theory(Skip="Run locally - mutation logs not currently source controlled due to size")]
     [InlineData("2652J085SW--CASE CX160C--121031183620.tag", "CellMutationLog-2652J085SW--CASE CX160C--121031183620.tag.txt")]
     [InlineData("2652J085SW--CASE CX160C--121101151938.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101151938.tag.txt")]
     [InlineData("2652J085SW--CASE CX160C--121101152438.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101152438.tag.txt")]
@@ -256,32 +256,6 @@ namespace TAGFiles.Tests
       }
 
       //File.WriteAllLines(Path.Combine(@"C:\temp\SavedMutationLogsFromTests\" + mutationLogFileName), Lines);
-
-      // Load the 'truth' mutation log
-      var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
-
-      CompareMutationLogs(Lines, mutationLogFileName, mutationLog);
-    }
-
-    [Theory]
-    [InlineData("2652J085SW--CASE CX160C--121107002047.tag", "CellMutationLog-2652J085SW--CASE CX160C--121107002047.tag.txt")]
-    [InlineData("2652J085SW--CASE CX160C--121101163256.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101163256.tag.txt")]
-    public void Test_TAGFileCellPassGeneration_CompareKnownCellPassConstruction_Dimensions2018CaseMachine_testing(string tagFileName, string mutationLogFileName)
-    {
-      var Lines = new List<string>();
-      ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
-
-      Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
-      try
-      {
-        DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", tagFileName);
-      }
-      finally
-      {
-        Hook.ClearActions();
-      }
-
-      //File.WriteAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName+".TestOutput.txt"), Lines);
 
       // Load the 'truth' mutation log
       var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
