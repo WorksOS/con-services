@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Cache.MemoryCache;
+using VSS.Common.Cache.Redis;
 using VSS.MasterData.Models.FIlters;
 
 namespace VSS.WebApi.Common
@@ -70,7 +71,7 @@ namespace VSS.WebApi.Common
       });
 
       services.AddMemoryCache();
-      services.AddSingleton<IDataCache, InMemoryDataCache>();
+      services.AddSingleton<IDataCache, RedisDataCache>();
 
       return services;
     }

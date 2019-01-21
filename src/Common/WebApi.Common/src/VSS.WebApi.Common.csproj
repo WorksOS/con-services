@@ -44,6 +44,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\VSS.Common.Cache.Redis\VSS.Common.Cache.Redis.csproj" />
   </ItemGroup>
 
 </Project>
