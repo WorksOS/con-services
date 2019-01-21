@@ -272,6 +272,7 @@ namespace TAGFiles.Tests
 
       foreach (var tagFileName in fileNames)
       {
+        var linesLogFileName = Path.Combine(Path.GetDirectoryName(tagFileName), $"CellMutationLog-{Path.GetFileName(tagFileName)}.txt.output");
         var mutationLogFileName = Path.Combine(Path.GetDirectoryName(tagFileName), $"CellMutationLog-{Path.GetFileName(tagFileName)}.txt");
 
         var Lines = new List<string>();
@@ -287,6 +288,7 @@ namespace TAGFiles.Tests
           Hook.ClearActions();
         }
 
+        File.WriteAllLines(linesLogFileName, Lines);
         CompareMutationLogs(Lines, mutationLogFileName, File.ReadAllLines(mutationLogFileName));
       }
     }
