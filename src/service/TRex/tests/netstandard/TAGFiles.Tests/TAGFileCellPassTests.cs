@@ -262,6 +262,34 @@ namespace TAGFiles.Tests
 
       CompareMutationLogs(Lines, mutationLogFileName, mutationLog);
     }
+
+    [Theory]
+    [InlineData(@"C:\Dev\VSS.Productivity3D.MonoRepo\src\service\TRex\tests\netstandard\TAGFiles.Tests\TestData\TAGFiles\Dimensions2018-CaseMachine")]
+    public void Test_TAGFileCellPassGeneration_CompareKnownCellPassConstruction_Folders(string folderName)
+    {
+      // Get list of TAG files
+      var fileNames = Directory.GetFiles(folderName, "*.tag");
+
+      foreach (var tagFileName in fileNames)
+      {
+        var mutationLogFileName = Path.Combine(Path.GetDirectoryName(tagFileName), $"CellMutationLog-{Path.GetFileName(tagFileName)}.txt");
+
+        var Lines = new List<string>();
+        ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+
+        Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
+        try
+        {
+          DITagFileFixture.ReadTAGFileFullPath(tagFileName);
+        }
+        finally
+        {
+          Hook.ClearActions();
+        }
+
+        CompareMutationLogs(Lines, mutationLogFileName, File.ReadAllLines(mutationLogFileName));
+      }
+    }
   }
 }
 
