@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.DI
 {
@@ -19,7 +20,12 @@ namespace VSS.TRex.DI
     /// <param name="serviceProvider"></param>
     public static void Inject(IServiceProvider serviceProvider)
     {
+      // Register the service provider with the overall TRex DI context
       ServiceProvider = serviceProvider;
+
+      // Advise the TRex Logger namespace of the logger factory to use in case
+      // DIBuilder.AddLogging was not used in the DI construction phase.
+      Logging.Logger.Inject(serviceProvider.GetService<ILoggerFactory>());
     }
 
     /// <summary>
