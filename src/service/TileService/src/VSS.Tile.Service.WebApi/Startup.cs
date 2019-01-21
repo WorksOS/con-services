@@ -66,7 +66,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
 
-      services.AddSingleton<CacheInvalidationService>();
+      services.AddSingleton<Productivity3D.Push.Clients.CacheInvalidationService>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 

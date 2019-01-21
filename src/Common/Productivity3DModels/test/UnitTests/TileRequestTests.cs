@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Models.UnitTests
 {
   public class TileRequestTests
   {
-    BoundingBox2DLatLon boundingBox2DLatLon = new BoundingBox2DLatLon(
+    readonly BoundingBox2DLatLon boundingBox2DLatLon = new BoundingBox2DLatLon(
       35.109149 * Coordinates.DEGREES_TO_RADIANS,
       -106.604076 * Coordinates.DEGREES_TO_RADIANS,
       35.39012 * Coordinates.DEGREES_TO_RADIANS,

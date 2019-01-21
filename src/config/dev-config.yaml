@@ -28,7 +28,7 @@ data:
   COORDSYSPOST_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem
   COORDSYSVALIDATE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem/validation
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
-  FILTER_API_URL: http://filter.dev.k8s.vspengg.com/api/v1
+  FILTER_API_URL: http://filter.dev.eks.vspengg.com/api/v1
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
   IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
   IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile

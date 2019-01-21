@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using TAGFiles.Tests.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -11,26 +14,59 @@ namespace TAGFiles.Tests
 {
   public class TAGFileCellPassTests : IClassFixture<DITagFileFixture>
   {
-    private readonly ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
-
-    [Fact]
-    public void Test_TAGFileCellPassGeneration_Default()
+    [Theory]
+    [InlineData("TestTAGFile.tag", 16525, 16525)]
+    [InlineData("TestTAGFile3.tag", 16525, 16525)]
+    public void Test_TAGFileCellPassGeneration_CapturesCellPassCreation(string fileName, int cellPassCount, int lineCount)
     {
+      var Lines = new List<string>();
+
       // Setup the mutation hook to capture cell pass generation
-      string cellPassFileName = Path.GetTempFileName();
-      var writer = new CellPassWriter(new StreamWriter(new FileStream(cellPassFileName, FileMode.CreateNew, FileAccess.ReadWrite)));
-      hook.SetActions(writer); 
+      ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
-      // Read in the TAG file
-      DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
+      try
+      {
+        var converter = DITagFileFixture.ReadTAGFile(fileName);
+        converter.ProcessedCellPassCount.Should().Be(cellPassCount);
+      }
+      finally
+      {
+        Hook.ClearActions();
+      }
 
-      // Close the writer and remove actions from the hook
-      hook.ClearActions();
-      writer.Close();
+      Lines.Count.Should().Be(lineCount);
 
-      // Examine the result
-      var lines = File.ReadAllLines(cellPassFileName);
-      lines.Length.Should().Be(16525);
+      // Temporarily save the file to capture it
+      var fn = Path.Combine(Path.GetTempPath(), fileName + ".MutationLog.txt");
+      File.WriteAllLines(fn, Lines);
+    }
+
+    [Theory]
+    [InlineData("2652J085SW--CASE CX160C--121107210953.tag", "CellMutationLog-2652J085SW--CASE CX160C--121107210953.tag.txt", 16525, 16525)]
+    public void Test_TAGFileCellPassGeneration_CompareKnownCellPassConstruction_Dimensions2018CaseMachine(string tagFileName, string mutationLogFileName, int cellPassCount, int lineCount)
+    {
+      var Lines = new List<string>();
+
+      //CellMutationLog-2652J085SW--CASE CX160C--121107210953.tag
+      // Setup the mutation hook to capture cell pass generation
+      ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+
+      Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
+      try
+      {
+        DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", tagFileName);
+      }
+      finally
+      {
+        Hook.ClearActions();
+      }
+
+      // Load the 'truth' mutation log
+      var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
+
+      for (int i = 0; i < Lines.Count; i++)
+        Lines[i].Should().Be(mutationLog[i]);
     }
   }
 }

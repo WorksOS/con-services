@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -9,29 +9,41 @@ namespace TAGFiles.Tests.Utilities
   /// </summary>
   public class CellPassWriter : ICellPassWriter
   {
-    public TextWriter Writer { get; set; }
+    /// <summary>
+    /// The supplied delegate to handle each formatted line representing a cell pass mutation action (add, remove, replace)
+    /// </summary>
+    public Action<string> WriteLine { get; set; }
 
-    public CellPassWriter(TextWriter writer)
+    /// <summary>
+    /// Controls whether to output short form pass information (just location and time), or full pass information
+    /// </summary>
+    public bool ShortFormOutput { get; set; } = true;
+
+    private void WriteToOutput(string line)
     {
-      Writer = writer;
+      WriteLine.Invoke(line);
+    }
+
+    public CellPassWriter(Action<string> writeLine)
+    {
+      WriteLine = writeLine;
     }
 
     public void AddPass(uint X, uint Y, Cell_NonStatic cell, CellPass pass, int position)
     {
-      Writer.WriteLine($"AddPass {X}:{Y}->{pass}");
+      var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd HH-mm-ss.fff}" : $"{pass}";
+      WriteToOutput($"AddPass {X}:{Y}:{position}->{passString}");
     }
 
-    public void RemovePass(uint X, uint Y, int passIndex)
-    {
-      Writer.WriteLine($"RemovePass {X}:{Y}, Position:{passIndex}");
-    }
+    public void RemovePass(uint X, uint Y, int passIndex) => WriteToOutput($"RemovePass {X}:{Y}, Position:{passIndex}");
 
     public void ReplacePass(uint X, uint Y, Cell_NonStatic cell, int position, CellPass pass)
     {
-      Writer.WriteLine($"ReplacePass {X}:{Y}:{position}->{pass}");
+      var passString = ShortFormOutput ? $"Time:{pass.Time:yyyy-MM-dd HH-mm-ss.fff}" : $"{pass}";
+      WriteToOutput($"ReplacePass {X}:{Y}:{position}->{passString}");
     }
 
-    public void Close() => Writer.Close();
+    public void EmitNote(string note) => WriteToOutput(note);
 
     public void SetActions(ICell_NonStatic_MutationHook actions)
     {
