@@ -3,8 +3,6 @@ services:
   webapi:
     build:
       context: ./artifacts/VSS.Productivity3D.Filter.WebApi
-      args:
-        - APP_BUILD_IMAGE=276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk
     env_file:
       - docker-compose-local.env
     volumes:
@@ -55,10 +53,7 @@ services:
     depends_on:
       - zookeeper
   accepttest:
-    build:
-      context: ./AcceptanceTests/deploy
-      args:
-        - APP_BUILD_IMAGE=microsoft/dotnet:2.1-sdk
+    build: ./AcceptanceTests/deploy
     env_file:
       - docker-compose-local.env
     volumes:
