@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Time;
+using VSS.TRex.Common.Time;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 {
@@ -22,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
             if (valueType.Name == TAGValueNames.kTagFileTimeTag)
             {
                 // Every time record marks the end of the collected data for an epoch
-                // Thus, we instruct the value sink to process its context whenever we recieve
+                // Thus, we instruct the value sink to process its context whenever we receive
                 // a time value.
                 if (state.HaveSeenATimeValue)
                 {

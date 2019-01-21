@@ -1,6 +1,6 @@
-﻿using VSS.TRex.TAGFiles.Classes.States;
+﻿using VSS.TRex.Common.Time;
+using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Time;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
 {

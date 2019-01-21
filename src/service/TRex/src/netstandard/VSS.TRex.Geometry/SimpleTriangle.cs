@@ -48,7 +48,7 @@
 
     /// <summary>
     /// Determine the elevation on the triangle at the location given by x and y. If the location is not
-    /// within the trianlge this will return Consts.NullDouble
+    /// within the triangle this will return Consts.NullDouble
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
