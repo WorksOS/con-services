@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using ASNodeDecls;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
@@ -35,14 +34,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as TileRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<TileRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        var request = CastRequestObjectTo<TileRequest>(item);
+        
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
           var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
 
@@ -66,8 +60,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
         out bool coordsAreGrid);
 
-      var baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-      var topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+      var baseFilter = RaptorConverters.ConvertFilter(request.Filter1);
+      var topFilter = RaptorConverters.ConvertFilter(request.Filter2);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
 
       var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);

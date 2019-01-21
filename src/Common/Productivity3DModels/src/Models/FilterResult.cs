@@ -8,6 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Utilities;
 
@@ -177,7 +178,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. Layer 3 is then the third layer from the
     /// datum elevation where each layer has a thickness defined by the layerThickness member.
     /// </summary>
-    [Range(ValidationConstants3D.MIN_LAYER_NUMBER, ValidationConstants3D.MAX_LAYER_NUMBER)]
+    [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? LayerNumber { get; private set; }
 
@@ -268,37 +269,37 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(ValidationConstants3D.MIN_TEMPERATURE, ValidationConstants3D.MAX_TEMPERATURE)]
+    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "temperatureRangeMin", Required = Required.Default)]
     public double? TemperatureRangeMin { get; private set; }
 
     /// <summary>
     /// The maximum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(ValidationConstants3D.MIN_TEMPERATURE, ValidationConstants3D.MAX_TEMPERATURE)]
+    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "temperatureRangeMax", Required = Required.Default)]
     public double? TemperatureRangeMax { get; private set; }
 
     /// <summary>
     /// The minimum pass count for a  pass count range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(ValidationConstants3D.MIN_PASS_COUNT, ValidationConstants3D.MAX_PASS_COUNT)]
+    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
     [JsonProperty(PropertyName = "passCountRangeMin", Required = Required.Default)]
     public int? PassCountRangeMin { get; private set; }
 
     /// <summary>
     /// The maximum pass count for a  pass count range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(ValidationConstants3D.MIN_PASS_COUNT, ValidationConstants3D.MAX_PASS_COUNT)]
+    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
     [JsonProperty(PropertyName = "passCountRangeMax", Required = Required.Default)]
     public int? PassCountRangeMax { get; private set; }
 
-    public bool isFilterContainsSSOnly { get; private set; } = false;
+    public bool isFilterContainsSSOnly { get; private set; }
 
     public bool IsFilterEmpty => isFilterEmpty();
 
     [JsonIgnore]
-    public DateRangeType? DateRangeType { get; private set; }
+    public DateRangeType? DateRangeType { get; }
 
     [JsonIgnore]
     public bool? AsAtDate { get; protected set; }
@@ -466,7 +467,7 @@ namespace VSS.Productivity3D.Models.Models
     }
 
     /// <summary>
-    /// Static constructor specifically for excluding surveyed surfaces only
+    /// Creates a new <see cref="FilterResult"/> specifically for excluding surveyed surfaces only.
     /// </summary>
     public static FilterResult CreateFilter(List<long> surveyedSurfaceExclusionList)
     {
@@ -571,7 +572,7 @@ namespace VSS.Productivity3D.Models.Models
       if (AsAtDate.HasValue)
       {
         bool valid = EndUtc.HasValue || DateRangeType.HasValue &&
-                     DateRangeType.Value != VSS.MasterData.Models.Internal.DateRangeType.Custom;//custom must have end UTC
+                     DateRangeType.Value != MasterData.Models.Internal.DateRangeType.Custom;//custom must have end UTC
         if (!valid)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -684,12 +685,12 @@ namespace VSS.Productivity3D.Models.Models
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Invalid temperature range filter. Minimum must be less than maximum."));
         }
-        if (TemperatureRangeMin.Value < ValidationConstants3D.MIN_TEMPERATURE || TemperatureRangeMin.Value > ValidationConstants3D.MAX_TEMPERATURE ||
-            TemperatureRangeMax.Value < ValidationConstants3D.MIN_TEMPERATURE || TemperatureRangeMax.Value > ValidationConstants3D.MAX_TEMPERATURE)
+        if (TemperatureRangeMin.Value < ValidationConstants.MIN_TEMPERATURE || TemperatureRangeMin.Value > ValidationConstants.MAX_TEMPERATURE ||
+            TemperatureRangeMax.Value < ValidationConstants.MIN_TEMPERATURE || TemperatureRangeMax.Value > ValidationConstants.MAX_TEMPERATURE)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              $"Invalid temperature range filter. Range must be between {ValidationConstants3D.MIN_TEMPERATURE} and {ValidationConstants3D.MAX_TEMPERATURE}."));
+              $"Invalid temperature range filter. Range must be between {ValidationConstants.MIN_TEMPERATURE} and {ValidationConstants.MAX_TEMPERATURE}."));
         }
       }
 
@@ -708,12 +709,12 @@ namespace VSS.Productivity3D.Models.Models
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Invalid pass count range filter. Minimum must be less than maximum."));
         }
-        if (PassCountRangeMin.Value < ValidationConstants3D.MIN_TEMPERATURE || PassCountRangeMin.Value > ValidationConstants3D.MAX_TEMPERATURE ||
-            PassCountRangeMax.Value < ValidationConstants3D.MIN_TEMPERATURE || PassCountRangeMax.Value > ValidationConstants3D.MAX_TEMPERATURE)
+        if (PassCountRangeMin.Value < ValidationConstants.MIN_TEMPERATURE || PassCountRangeMin.Value > ValidationConstants.MAX_TEMPERATURE ||
+            PassCountRangeMax.Value < ValidationConstants.MIN_TEMPERATURE || PassCountRangeMax.Value > ValidationConstants.MAX_TEMPERATURE)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              $"Invalid pass count range filter. Range must be between {ValidationConstants3D.MIN_PASS_COUNT} and {ValidationConstants3D.MAX_PASS_COUNT}."));
+              $"Invalid pass count range filter. Range must be between {ValidationConstants.MIN_PASS_COUNT} and {ValidationConstants.MAX_PASS_COUNT}."));
         }
       }
     }
@@ -850,10 +851,10 @@ namespace VSS.Productivity3D.Models.Models
     {
       if (!string.IsNullOrEmpty(ianaTimeZoneName) &&
           DateRangeType != null &&
-          DateRangeType != VSS.MasterData.Models.Internal.DateRangeType.Custom)
+          DateRangeType != MasterData.Models.Internal.DateRangeType.Custom)
       {
         // Force date range filters to be null if ProjectExtents is specified.
-        if (DateRangeType == VSS.MasterData.Models.Internal.DateRangeType.ProjectExtents)
+        if (DateRangeType == MasterData.Models.Internal.DateRangeType.ProjectExtents)
         {
           StartUtc = null;
           EndUtc = null;

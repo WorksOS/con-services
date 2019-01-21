@@ -17,6 +17,7 @@ services:
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ENABLE_CONNECTED_SITE_GATEWAY=false
      - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
+     - ENABLE_TREX_GATEWAY_LINEWORKFILE=false
      - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_GRIDREPORT=false
@@ -41,6 +42,7 @@ services:
      - SCHEDULED_JOB_TIMEOUT=900000
      - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
      - SHAREUNC=\\prod-iolv01.vssengg.com\ProductionData
+     - SNAKEPIT_HOST=snakepit.dev.k8s.vspengg.com
      - TCCBASEURL=https://www.myconnectedsite.com
      - TCCFILESPACEID=ucc083712-346e-466e-8cba-3c3eb0f9fb05
      - TCCFILESPACENAME=Vldatastore-Production
@@ -70,6 +72,8 @@ services:
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
      - KAFKA_TOPIC_NAME_SUFFIX=-3dpm
      - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-tile/1.0
+     - NOTIFICATION_HUB_URL=http://push.prod.k8s.services.myvisionlink.com/notifications
+     - PUSH_NO_AUTHENTICATION_HEADER=true
     ports:
       - "8080:80"
 networks:

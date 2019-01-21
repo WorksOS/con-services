@@ -434,7 +434,7 @@ namespace RepositoryTests
       {
         SubscriptionUID = kafkaCustomerSubscriptionEvent.SubscriptionUID.ToString(),
         CustomerUID = kafkaCustomerSubscriptionEvent.CustomerUID.ToString(),
-        ServiceTypeID = subscriptionRepo._serviceTypes[kafkaCustomerSubscriptionEvent.SubscriptionType].ID,
+        ServiceTypeID = subscriptionRepo.ServiceTypes[kafkaCustomerSubscriptionEvent.SubscriptionType].ID,
         StartDate = kafkaCustomerSubscriptionEvent.StartDate,
         EndDate = kafkaCustomerSubscriptionEvent.EndDate,
         LastActionedUTC = kafkaCustomerSubscriptionEvent.ActionUTC,

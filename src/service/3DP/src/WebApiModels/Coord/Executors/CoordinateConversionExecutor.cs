@@ -8,7 +8,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Coord.Executors
+namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {
   /// <summary>
   /// Coordinate conversion executor.
@@ -46,10 +46,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
       {
         try
         {
-          var request = item as CoordinateConversionRequest;
-
-          if (request == null)
-            ThrowRequestTypeCastException<CoordinateConversionRequest>();
+          var request = CastRequestObjectTo<CoordinateConversionRequest>(item);
 
           var latLongs = new TWGS84FenceContainer { FencePoints = request.conversionCoordinates.Select(cc => TWGS84Point.Point(cc.x, cc.y)).ToArray() };
 
@@ -80,11 +77,9 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
     /// <summary>
     /// Returns an instance of the ContractExecutionResult class as POST method execution result.
     /// </summary>
-    /// <returns>An instance of the ContractExecutionResult class.</returns>
-    /// 
     private ContractExecutionResult ExecutionResult(TCoordPoint[] pointList)
     {
-      TwoDConversionCoordinate[] convertedPoints = pointList != null ? pointList.Select(cp => TwoDConversionCoordinate.CreateTwoDConversionCoordinate(cp.X, cp.Y)).ToArray() : null;
+      TwoDConversionCoordinate[] convertedPoints = pointList?.Select(cp => TwoDConversionCoordinate.CreateTwoDConversionCoordinate(cp.X, cp.Y)).ToArray();
 
       return CoordinateConversionResult.CreateCoordinateConversionResult(convertedPoints);
     }

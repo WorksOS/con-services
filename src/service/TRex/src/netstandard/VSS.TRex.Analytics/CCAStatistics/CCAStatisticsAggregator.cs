@@ -68,72 +68,74 @@ namespace VSS.TRex.Analytics.CCAStatistics
     /// <param name="subGrids"></param>
     public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
     {
-      base.ProcessSubgridResult(subGrids);
-
-      // Loop through CCA array. Note processing is accumulative so values may already hold values.
-      foreach (IClientLeafSubGrid[] subGrid in subGrids)
+      lock (this)
       {
-        if ((subGrid?.Length ?? 0) == 0)
-          continue;
+        base.ProcessSubgridResult(subGrids);
 
-        if (subGrid[0] is ClientCCALeafSubGrid SubGrid)
+        // Loop through CCA array. Note processing is accumulative so values may already hold values.
+        foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          var currentTargetCCA = CellPassConsts.NullCCA;
+          if ((subGrid?.Length ?? 0) == 0)
+            continue;
 
-          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+          if (subGrid[0] is ClientCCALeafSubGrid SubGrid)
           {
-            var ccaValue = SubGrid.Cells[I, J];
+            var currentTargetCCA = CellPassConsts.NullCCA;
 
-            if (ccaValue.MeasuredCCA != CellPassConsts.NullCCA && ccaValue.MeasuredCCA < CellPassConsts.ThickLiftCCAValue) // Is there a measured value and not too thick to test?..
+            SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-              // Using the machine target values to check whether the target varies...
-              if (IsTargetValueConstant) // Do we need to test...
+              var ccaValue = SubGrid.Cells[I, J];
+
+              if (ccaValue.MeasuredCCA != CellPassConsts.NullCCA && ccaValue.MeasuredCCA < CellPassConsts.ThickLiftCCAValue) // Is there a measured value and not too thick to test?..
               {
-                if (ccaValue.TargetCCA != CellPassConsts.NullCCATarget && LastTargetCCA != CellPassConsts.NullCCATarget) // The values are all good to check..
-                  IsTargetValueConstant = LastTargetCCA == ccaValue.TargetCCA;  // Check whether the target value varies...
-              }
+                // Using the machine target values to check whether the target varies...
+                if (IsTargetValueConstant) // Do we need to test...
+                {
+                  if (ccaValue.TargetCCA != CellPassConsts.NullCCATarget && LastTargetCCA != CellPassConsts.NullCCATarget) // The values are all good to check..
+                    IsTargetValueConstant = LastTargetCCA == ccaValue.TargetCCA; // Check whether the target value varies...
+                }
 
-              if (LastTargetCCA != ccaValue.TargetCCA && ccaValue.TargetCCA != CellPassConsts.NullCCATarget)
-                LastTargetCCA = ccaValue.TargetCCA; // Holds last valid target value...
+                if (LastTargetCCA != ccaValue.TargetCCA && ccaValue.TargetCCA != CellPassConsts.NullCCATarget)
+                  LastTargetCCA = ccaValue.TargetCCA; // Holds last valid target value...
 
-              // Set the current target value...
-              if (currentTargetCCA != ccaValue.TargetCCA)
-                currentTargetCCA = ccaValue.TargetCCA;
+                // Set the current target value...
+                if (currentTargetCCA != ccaValue.TargetCCA)
+                  currentTargetCCA = ccaValue.TargetCCA;
 
-              if (currentTargetCCA != CellPassConsts.NullCCATarget)
-              {
-                SummaryCellsScanned++;
+                if (currentTargetCCA != CellPassConsts.NullCCATarget)
+                {
+                  SummaryCellsScanned++;
 
-                if (ccaValue.IsOvercompacted)
-                  CellsScannedOverTarget++;
-                else if (ccaValue.IsUndercompacted)
-                  CellsScannedUnderTarget++;
+                  if (ccaValue.IsOvercompacted)
+                    CellsScannedOverTarget++;
+                  else if (ccaValue.IsUndercompacted)
+                    CellsScannedUnderTarget++;
+                  else
+                    CellsScannedAtTarget++;
+                }
                 else
-                  CellsScannedAtTarget++;
+                {
+                  // We have data but no target data to do summary...
+                  MissingTargetValue = true; // Flag this to issue a warning to a user...
+                }
+
+                if (CCACellValueToDisplay(ccaValue.MeasuredCCA, LastTargetCCA, out var ccaPercentValue))
+                  IncrementCountOfTransition(ccaPercentValue); // CCA Summary is counted here...
+
+                // TODO: When CCA details is to be implemented...
+                //case ICDisplayMode of
+                //icdmCCA:
+                //Transitions.IncrementCountOfTransition(CCAValue.MeasuredCCA);
+
+                //icdmCCASummary:
+                //if CCACellValueToDisplay(CCAValue.MeasuredCCA, LastTargetCCA, ICDisplayMode, LiftBuildSettings, CCAPercentValue) then
+                //Transitions.IncrementCountOfTransition(CCAPercentValue);
+                //end;
               }
-              else
-              {
-                // We have data but no target data to do summary...
-                MissingTargetValue = true; // Flag this to issue a warning to a user...
-              }
-
-              if (CCACellValueToDisplay(ccaValue.MeasuredCCA, LastTargetCCA, out var ccaPercentValue))
-                IncrementCountOfTransition(ccaPercentValue); // CCA Summary is counted here...
-
-              // TODO: When CCA details is to be implemented...
-              //case ICDisplayMode of
-              //icdmCCA:
-              //Transitions.IncrementCountOfTransition(CCAValue.MeasuredCCA);
-
-              //icdmCCASummary:
-              //if CCACellValueToDisplay(CCAValue.MeasuredCCA, LastTargetCCA, ICDisplayMode, LiftBuildSettings, CCAPercentValue) then
-              //Transitions.IncrementCountOfTransition(CCAPercentValue);
-              //end;
-            }
-          });
+            });
+          }
         }
       }
     }
-
   }
 }

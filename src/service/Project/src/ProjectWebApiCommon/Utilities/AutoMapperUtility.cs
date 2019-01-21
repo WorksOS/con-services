@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using AutoMapper;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -91,7 +90,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
             .ForMember(dest => dest.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
             .ForMember(dest => dest.ImportedFileHistory, opt => opt.MapFrom(src => src.ImportedFileHistory.ImportedFileHistoryItems))
-            .ForMember(dest => dest.IsActivated, opt => opt.UseValue(true));
+            .ForMember(dest => dest.IsActivated, opt => opt.MapFrom(x => true));
           cfg.CreateMap<Repositories.DBModels.ImportedFileHistoryItem, Models.ImportedFileHistoryItem>()
             .ForMember(dest => dest.FileCreatedUtc, opt => opt.MapFrom(src => src.FileCreatedUtc))
             .ForMember(dest => dest.FileUpdatedUtc, opt => opt.MapFrom(src => src.FileUpdatedUtc));
@@ -108,14 +107,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.Code, opt => opt.Ignore())
             .ForMember(dest => dest.Message, opt => opt.Ignore());
           cfg.CreateMap<CreateProjectV2Request, CreateProjectEvent>()
-            .ForMember(dest => dest.CustomerID, opt => opt.UseValue(0))
+            .ForMember(dest => dest.CustomerID, opt => opt.MapFrom(x => 0))
             .ForMember(dest => dest.CustomerUID, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ProjectBoundary, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom((src => src.CoordinateSystem.Name)))
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.ActionUTC, opt => opt.UseValue(DateTime.UtcNow))
-            .ForMember(dest => dest.ReceivedUTC, opt => opt.UseValue(DateTime.UtcNow))
-            .ForMember(dest => dest.ProjectID, opt => opt.UseValue(0))
+            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
+            .ForMember(dest => dest.ReceivedUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
+            .ForMember(dest => dest.ProjectID, opt => opt.MapFrom(x => 0))
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore());
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()

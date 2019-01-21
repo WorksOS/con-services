@@ -9,7 +9,7 @@ namespace EventTests
   {
 
     [TestMethod]
-    public void Inject_A_Minimum_Create_Device_Event()
+    public void Inject_A_Minimum_Create_SNM940_Device_Event()
     {
       var msg = new Msg();
       var ts = new TestSupport { IsPublishToKafka = true };
@@ -23,6 +23,23 @@ namespace EventTests
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Device", "DeviceUID", 1, deviceUid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Device", "DeviceUID", "DeviceSerialNumber, DeviceState, DeviceType, DeviceUID", $"{deviceUid},Subscribed,SNM940,{deviceUid}", deviceUid);
+    }
+
+    [TestMethod]
+    public void Inject_A_Minimum_Create_EC520_Device_Event()
+    {
+      var msg = new Msg();
+      var ts = new TestSupport { IsPublishToKafka = true };
+      var mysql = new MySqlHelper();
+      var deviceUid = Guid.NewGuid();
+      msg.Title("Device Event 1", "Create Device Event ");
+      var eventArray = new[] {
+        "| EventType         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   |",
+       $"| CreateDeviceEvent | 0d+09:00:00 | {deviceUid}        | Subscribed  | EC520      | {deviceUid} | "};
+
+      ts.PublishEventCollection(eventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Device", "DeviceUID", 1, deviceUid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Device", "DeviceUID", "DeviceSerialNumber, DeviceState, DeviceType, DeviceUID", $"{deviceUid},Subscribed,EC520,{deviceUid}", deviceUid);
     }
 
     [TestMethod]

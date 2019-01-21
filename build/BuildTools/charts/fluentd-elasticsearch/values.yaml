@@ -3,24 +3,24 @@ image:
 ## Specify an imagePullPolicy (Required)
 ## It's recommended to change this to 'Always' if the image tag is 'latest'
 ## ref: http://kubernetes.io/docs/user-guide/images/#updating-images
-  tag: v2.3.1
+  tag: v2.3.2
   pullPolicy: IfNotPresent
 
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ##
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 500Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 200Mi
+resources: 
+   limits:
+     cpu: 300m
+     memory: 500Mi
+   requests:
+     cpu: 100m
+     memory: 200Mi
 
 elasticsearch:
   host: 'elasticsearch-client'
   port: 9200
-  buffer_chunk_limit: 2M
+  buffer_chunk_limit: 1M
   buffer_queue_limit: 1024
 
 rbac:

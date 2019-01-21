@@ -16,7 +16,6 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.Productivity3D.Filter.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -44,7 +43,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
@@ -84,7 +83,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddMemoryCache();
 
       services.AddOpenTracing(builder =>
       {
@@ -117,10 +115,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       app.UseCommon(SERVICE_TITLE);
       app.UseFilterMiddleware<FilterAuthentication>();
 
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseMiddleware<NewRelicMiddleware>();
-      }
+      //if (Configuration["newrelic"] == "true")
+      //{
+      //  app.UseMiddleware<NewRelicMiddleware>();
+      //}
 
       app.UseMvc();
 

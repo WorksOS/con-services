@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using WebApiTests.Models;
 using WebApiTests.Utilities;
 using Xunit.Gherkin.Quick;
 
@@ -11,13 +10,12 @@ namespace WebApiTests.StepDefinitions
     private string uri;
     private string responseRepositoryFileName;
     private Getter<byte[]> tileRequester;
-    private byte[] currentResponse;
     private string operation;
 
     [Given(@"The project thumbnail URI is ""(.*)"" for operation ""(.*)""")]
     public void GivenTheProjectThumbnailURIIs(string uri, string operation)
     {
-      this.uri = TileClientConfig.TileSvcBaseUri + uri;
+      this.uri = RestClient.TileServiceBaseUrl + uri;
       this.operation = operation;
     }
 
@@ -27,7 +25,7 @@ namespace WebApiTests.StepDefinitions
       responseRepositoryFileName = fileName;
     }
 
-    
+
     [When(@"I request a Report Tile for project UID ""(.*)""")]
     public void WhenIRequestAReportTileForProjectUID(string projectUid)
     {
@@ -36,11 +34,10 @@ namespace WebApiTests.StepDefinitions
       switch (operation)
       {
         case "png":
-          currentResponse = tileRequester.DoRequestWithStreamResponse(uri);
+          _ = tileRequester.SendRequest(uri, acceptHeader: MediaTypes.PNG);
           break;
         case "base64":
           tileRequester.DoValidRequest(HttpStatusCode.OK);
-          currentResponse = tileRequester.CurrentResponse;
           break;
       }
     }
@@ -49,7 +46,16 @@ namespace WebApiTests.StepDefinitions
     public void ThenTheResultingThumbnailShouldMatchFromTheResponseRepositoryWithinPercent(string responseName, string tolerance)
     {
       byte[] expectedResponse = tileRequester.ResponseRepo[responseName];
-      CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, currentResponse);
+
+      switch (operation)
+      {
+        case "png":
+          CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, tileRequester.ByteContent);
+          break;
+        case "base64":
+          CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, tileRequester.CurrentResponse);
+          break;
+      }
     }
   }
 }

@@ -245,7 +245,7 @@ namespace RepositoryTests
 
       var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 180,
         createProjectEvent.ProjectStartDate.AddDays(1),
-        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
+        (int)createProjectEvent.ProjectType, subscriptionContext.ServiceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
       var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(1, g.Result.Count(), "Unable to retrieve Project from ProjectRepo");
@@ -318,7 +318,7 @@ namespace RepositoryTests
 
       var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 50, 180,
         createProjectEvent.ProjectStartDate.AddDays(1),
-        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
+        (int)createProjectEvent.ProjectType, subscriptionContext.ServiceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
       var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(0, g.Result.Count(), "Should not retrieve Project from ProjectRepo");
@@ -390,7 +390,7 @@ namespace RepositoryTests
 
       var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 190,
         createProjectEvent.ProjectStartDate.AddDays(1),
-        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
+        (int)createProjectEvent.ProjectType, subscriptionContext.ServiceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
       var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(1, g.Result.Count(), "Unable to retrieve Project from ProjectRepo");
@@ -463,7 +463,7 @@ namespace RepositoryTests
 
       var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 180,
         createProjectEvent.ProjectStartDate.AddDays(1),
-        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes["Landfill"].ID); g.Wait();
+        (int)createProjectEvent.ProjectType, subscriptionContext.ServiceTypes["Landfill"].ID); g.Wait();
       var projects = g.Result;
       Assert.IsNotNull(g.Result, "Unable to call ProjectRepo");
       Assert.AreEqual(0, g.Result.Count(), "Should be no Projects retrieved from ProjectRepo");

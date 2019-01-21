@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace WebApiTests.Utilities
 {
@@ -20,14 +17,14 @@ namespace WebApiTests.Utilities
 
       for (var i = 1; i < parts.Length; i++)
       {
-        var dir = parts.Take(parts.Length - i)
-          .Aggregate((p1, p2) => $"{p1}{Path.DirectorySeparatorChar}{p2}");
+        var testPath = Path.Combine(filePath, folderName);
 
-        var testPath = Path.Combine(dir, folderName);
         if (Directory.Exists(testPath))
         {
           return testPath;
         }
+
+        filePath = Directory.GetParent(filePath).FullName;
       }
 
       return null;

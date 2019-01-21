@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TestUtility;
+using VSS.MasterData.Models.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace EventTests
@@ -207,9 +208,9 @@ namespace EventTests
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
-        "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
-        $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, {startDate}, {endDate}", //Expected
-        projectGuid);
+      "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
+      $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, {startDate}, {endDate}", //Expected
+      projectGuid);
     }
 
 
@@ -232,12 +233,15 @@ namespace EventTests
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+
+      var retrievedEventDate = DateTime.Parse(testSupport.GetEventDateFromArray(eventArray[0], eventArray[2]));
+      var localEndDate = (retrievedEventDate.ToLocalDateTime("Pacific/Auckland") ?? DateTime.UtcNow).Date;
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, IsDeleted, StartDate, EndDate", //Fields
-        $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, 1, {startDate}, {endDate}", //Expected
+        $"{projectName}, {projectId}, {(int)ProjectType.LandFill}, 1, {startDate}, {localEndDate}", //Expected
         projectGuid);
     }
-
+ 
 
     [TestMethod]
     public void Associate_Customer_With_Project()

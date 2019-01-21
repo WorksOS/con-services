@@ -23,6 +23,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Alignments.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
@@ -69,7 +70,7 @@ namespace VSS.TRex.SiteModels
     public DateTime LastModifiedDate { get; set; }
 
     /// <summary>
-    /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
+    /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
     public bool IsTransient { get; private set; } = true;
 
@@ -163,35 +164,44 @@ namespace VSS.TRex.SiteModels
     public bool MachineTargetValuesLoaded => machinesTargetValues != null;
 
     /// <summary>
-    /// Provides a set of metadata attributes about this sitemodel
+    /// Provides a set of metadata attributes about this site model
     /// </summary>
     public ISiteModelMetadata MetaData => GetMetaData();
 
     private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 
     /// <summary>
-    /// SiteModelDesigns records all the designs that have been seen in this sitemodel.
+    /// SiteModelDesigns records all the designs that have been seen in this site model.
     /// Each site model designs records the name of the site model and the extents
     /// of the cell information that have been record for it.
     /// </summary>
     public ISiteModelDesignList SiteModelDesigns => siteModelDesigns;
 
-    private ISurveyedSurfaces surveyedSurfaces;
-
-    // This is a list of TTM descriptors which indicate designs
-    // that can be used as a snapshot of an actual ground surface at a specific point in time
-    public ISurveyedSurfaces SurveyedSurfaces => surveyedSurfaces ?? (surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
-
-    public bool SurveyedSurfacesLoaded => surveyedSurfaces != null;
-
-    private IDesigns designs;
-
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the sitemodel
     /// </summary>
-    public IDesigns Designs => designs ?? (designs = DIContext.Obtain<IDesignManager>().List(ID));
+    private IDesigns _designs;
 
-    public bool DesignsLoaded => designs != null;
+    public IDesigns Designs => _designs ?? (_designs = DIContext.Obtain<IDesignManager>().List(ID));
+
+    public bool DesignsLoaded => _designs != null;
+
+    // This is a list of TTM descriptors which indicate designs
+    // that can be used as a snapshot of an actual ground surface at a specific point in time
+    private ISurveyedSurfaces _surveyedSurfaces;
+
+    public ISurveyedSurfaces SurveyedSurfaces => _surveyedSurfaces ?? (_surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
+
+    public bool SurveyedSurfacesLoaded => _surveyedSurfaces != null;
+
+    /// <summary>
+    /// alignments records all the alignment files that have been imported into the sitemodel
+    /// </summary>
+    private IAlignments _alignments;
+    public IAlignments Alignments => _alignments ?? (_alignments = DIContext.Obtain<IAlignmentManager>().List(ID));
+
+    public bool AlignmentsLoaded => _alignments != null;
+
 
     // The siteProofingRuns is the set of proofing runs that have been collected in this site model
     private ISiteProofingRunList siteProofingRuns;
@@ -329,12 +339,16 @@ namespace VSS.TRex.SiteModels
         ? originModel.ExistenceMap
         : null;
 
-      designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0
+      _designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0
         ? originModel.Designs
         : null;
 
-      surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
+      _surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
         ? originModel.SurveyedSurfaces
+        : null;
+
+      _alignments = originModel.AlignmentsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveAlignments) != 0
+        ? originModel.Alignments
         : null;
 
       machines = originModel.MachinesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachines) != 0
@@ -578,7 +592,7 @@ namespace VSS.TRex.SiteModels
             // The SiteModelID read from the FS file does not match the ID expected.
 
             // RPW 31/1/11: This used to be an error with it's own error code. This is now
-            // changed to a warning, but loading of the sitemodel is allowed. This
+            // changed to a warning, but loading of the site model is allowed. This
             // is particularly useful for testing purposes where copying around projects
             // is much quicker than reprocessing large sets of TAG files
 
@@ -712,7 +726,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Returns simple metadata about the sitemodel
+    /// Returns simple metadata about the site model
     /// </summary>
     /// <returns></returns>
     private SiteModelMetadata GetMetaData()
@@ -726,7 +740,8 @@ namespace VSS.TRex.SiteModels
         SiteModelExtent = SiteModelExtent,
         MachineCount = Machines?.Count ?? 0,
         DesignCount = Designs?.Count ?? 0,
-        SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0
+        SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0,
+        AlignmentCount = Alignments?.Count ?? 0,
       };
     }
   }

@@ -44,7 +44,7 @@
       DynamicAddwithOffset("Failed to get project uid", 34);
       DynamicAddwithOffset("GetProjectUid internal error", 35);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
-      DynamicAddwithOffset("Auto Import: Either Radio Serial or TCCOrgId must be provided", 37);
+      DynamicAddwithOffset("Auto Import: Either Radio Serial, ec520 Serial or TCCOrgId must be provided", 37);
       DynamicAddwithOffset("Unable to find the Project requested", 38);
       DynamicAddwithOffset("Manual Import: got asset. Unable to locate any valid project, or asset subscriptions", 39);
       DynamicAddwithOffset("Manual Import: no asset provided or identifyable. Unable to locate any valid project subscriptions", 40);

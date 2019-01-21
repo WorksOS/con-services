@@ -1,9 +1,13 @@
-﻿namespace VSS.MasterData.Models.Models
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+
+namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   ///   Describes VL customer
   /// </summary>
-  public class CustomerData 
+  public class CustomerData  : IMasterDataModel
   {
     /// <summary>
     /// Gets or sets the customer uid.
@@ -29,5 +33,9 @@
     /// </value>
     public string type { get; set; }
 
+    public List<string> GetIdentifiers() => new List<string>
+    {
+      uid
+    };
   }
 }

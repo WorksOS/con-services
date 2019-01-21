@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using ASNode.UserPreferences;
 using ASNodeDecls;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
@@ -58,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var userPreferences = new UserPreferenceData{ Language = "en-US" };
       var request = CompactionReportStationOffsetRequest.CreateRequest(
         0, null, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, userPreferences, "New Zealand Standard Time");
-      var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+      var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
       var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
       var TASNodeUserPreference = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);

@@ -84,7 +84,7 @@ namespace VSS.ConfigurationStore
         log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
-          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: true);
+          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: false);
 
         configuration = configBuilder.Build();
       }
@@ -142,7 +142,7 @@ namespace VSS.ConfigurationStore
       lock (kubernetesInitLock)
       {
         var localConfig = new ConfigurationBuilder().AddEnvironmentVariables().SetBasePath(PathToConfigFile())
-          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: true).Build();
+          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: false).Build();
 
         bool.TryParse(localConfig["UseKubernetes"], out var result);
         if (result && kubernetesInitialized == KubernetesState.NotInitialized)
@@ -167,7 +167,16 @@ namespace VSS.ConfigurationStore
           try
           {
             log.LogTrace("Connecting to kubernetes cluster");
-            var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
+            KubernetesClientConfiguration config = null;
+            if (string.IsNullOrWhiteSpace(KubernetesContext))
+            {
+              log.LogDebug("Using InCluster config");
+              config = KubernetesClientConfiguration.InClusterConfig();
+            }
+            else
+              config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
+
+
             var client = new Kubernetes(config);
 
             kubernetesConfig = new Dictionary<string, string>(client
@@ -179,7 +188,7 @@ namespace VSS.ConfigurationStore
           catch (Exception ex)
           {
             log.LogWarning(
-              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process.");
+              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process. at {ex.StackTrace}" );
             kubernetesInitialized = KubernetesState.Disabled;
             UseKubernetes = false;
           }

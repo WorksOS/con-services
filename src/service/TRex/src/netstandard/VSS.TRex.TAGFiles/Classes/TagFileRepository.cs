@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
@@ -11,20 +10,9 @@ using VSS.TRex.TAGFiles.Classes.Validator;
 namespace VSS.TRex.TAGFiles.Classes
 {
   /// <summary>
-  /// Archiving will intially write tag files to a local folder before another process either internal or external will move the files to a S3 bucket on Amazon
+  /// Archiving will initially write tag files to a local folder before another process either internal or external will move the files to a S3 bucket on Amazon
   /// Ideas. 
   /// </summary>
-
-  public class TagfileMetaData
-  {
-    [XmlAttribute]
-    public Guid? projectId;
-    public Guid? assetId;
-    public string tagFileName;
-    public string tccOrgId;
-    public bool IsJohnDoe;
-  }
-
 
   public static class TagFileRepository
   {
@@ -43,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes
     }
 
     /// <summary>
-    /// Achives successfully processed tagfiles for reprocessing when required
+    /// Archives successfully processed tag files for reprocessing when required
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
@@ -55,20 +43,20 @@ namespace VSS.TRex.TAGFiles.Classes
 
       string fType = "tagfile";
 
-      string ArchiveTagfilePath = Path.Combine(thePath, tagDetail.tagFileName);
+      string ArchiveTAGFilePath = Path.Combine(thePath, tagDetail.tagFileName);
 
-      // We dont keep dups in TRex
-      if (File.Exists(ArchiveTagfilePath))
-        File.Delete(ArchiveTagfilePath);
+      // We don't keep duplicates in TRex
+      if (File.Exists(ArchiveTAGFilePath))
+        File.Delete(ArchiveTAGFilePath);
 
       try
       {
-        using (FileStream file = new FileStream(ArchiveTagfilePath, FileMode.Create, System.IO.FileAccess.Write))
+        using (FileStream file = new FileStream(ArchiveTAGFilePath, FileMode.Create, System.IO.FileAccess.Write))
         {
           file.Write(tagDetail.tagFileContent, 0, tagDetail.tagFileContent.Length);
         }
 
-        Log.LogDebug($"Tagfile archived to {ArchiveTagfilePath}");
+        Log.LogDebug($"Tagfile archived to {ArchiveTAGFilePath}");
 
         /* This feature is not required in TRex. Plus not sure if under netcore the serializer is working probably so commented out for now
           leaving code here in case we change our minds in future
@@ -77,13 +65,13 @@ namespace VSS.TRex.TAGFiles.Classes
         if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING_METADATA", false))
         {
           fType = "metafile";
-          string ArchiveTagfileMetaDataPath = Path.ChangeExtension(ArchiveTagfilePath, ".xml");
+          string ArchiveTAGFileMetaDataPath = Path.ChangeExtension(ArchiveTAGFilePath, ".xml");
 
-          if (File.Exists(ArchiveTagfileMetaDataPath))
-            File.Delete(ArchiveTagfileMetaDataPath);
+          if (File.Exists(ArchiveTAGFileMetaDataPath))
+            File.Delete(ArchiveTAGFileMetaDataPath);
 
-          // Tagfile MetaData
-          TagfileMetaData tmd = new TagfileMetaData()
+          // TAG file MetaData
+          TAGFileMetaData tmd = new TAGFileMetaData()
           {
             projectId = tagDetail.projectId,
             assetId = tagDetail.assetId,
@@ -92,16 +80,16 @@ namespace VSS.TRex.TAGFiles.Classes
             IsJohnDoe = tagDetail.IsJohnDoe
           };
 
-          using (FileStream file = new FileStream(ArchiveTagfileMetaDataPath, FileMode.Create,
+          using (FileStream file = new FileStream(ArchiveTAGFileMetaDataPath, FileMode.Create,
                   System.IO.FileAccess.Write))
           {
-            new XmlSerializer(typeof(TagfileMetaData)).Serialize(file, tmd);
+            new XmlSerializer(typeof(TAGFileMetaData)).Serialize(file, tmd);
           }
           
 
         } */
 
-        // Another process should move tagfiles eventually to S3 bucket
+        // Another process should move tag files eventually to S3 bucket
 
         return true;
       }
@@ -120,36 +108,36 @@ namespace VSS.TRex.TAGFiles.Classes
     }
 
     /// <summary>
-    /// Returns tagfile content and meta data for an archived tagfile. Input requires filename and projectid
+    /// Returns tag file content and meta data for an archived tag file. Input requires filename and project id
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static TagFileDetail GetTagfile(TagFileDetail tagDetail)
+    public static TagFileDetail GetTagFile(TagFileDetail tagDetail)
     {
-      // just requires the projectid and tagfile name to be set
-      string ArchiveTagfilePath = Path.Combine(MakePath(tagDetail), tagDetail.tagFileName);
-      string ArchiveTagfileMetaDataPath = Path.ChangeExtension(ArchiveTagfilePath, ".xml");
+      // just requires the project id and tag file name to be set
+      string ArchiveTAGFilePath = Path.Combine(MakePath(tagDetail), tagDetail.tagFileName);
+      string ArchiveTAGFileMetaDataPath = Path.ChangeExtension(ArchiveTAGFilePath, ".xml");
 
-      if (!File.Exists(ArchiveTagfilePath))
+      if (!File.Exists(ArchiveTAGFilePath))
         return tagDetail;
 
-      using (FileStream file = new FileStream(ArchiveTagfilePath, FileMode.Open, FileAccess.Read))
+      using (FileStream file = new FileStream(ArchiveTAGFilePath, FileMode.Open, FileAccess.Read))
       {
         tagDetail.tagFileContent = new byte[(int)file.Length];
         file.Read(tagDetail.tagFileContent, 0, (int)file.Length);
       }
 
-      // load xml data ArchiveTagfileMetaDataPath and put into tagDetail
+      // load xml data ArchiveTagFileMetaDataPath and put into tagDetail
       // if using location only for metadata then you would have to extract it from the path
 
       var enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
-      if (enableArchivingMetadata && File.Exists(ArchiveTagfileMetaDataPath))
+      if (enableArchivingMetadata && File.Exists(ArchiveTAGFileMetaDataPath))
       {
-        FileStream ReadFileStream = new FileStream(ArchiveTagfileMetaDataPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        XmlSerializer SerializerObj = new XmlSerializer(typeof(TagfileMetaData));
+        FileStream ReadFileStream = new FileStream(ArchiveTAGFileMetaDataPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        XmlSerializer SerializerObj = new XmlSerializer(typeof(TAGFileMetaData));
 
         // Load the object saved above by using the Deserialize function
-        TagfileMetaData tmd = (TagfileMetaData)SerializerObj.Deserialize(ReadFileStream);
+        TAGFileMetaData tmd = (TAGFileMetaData)SerializerObj.Deserialize(ReadFileStream);
         tagDetail.IsJohnDoe = tmd.IsJohnDoe;
         tagDetail.projectId = tmd.projectId;
         tagDetail.assetId = tmd.assetId;

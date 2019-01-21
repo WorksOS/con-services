@@ -52,12 +52,21 @@
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
 
-<H3>Profiling points</H3>
+<H3>Profiling Points</H3>
 <p>
   <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">First point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
   <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">Second point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
   Points in profile: {{numPointInProfile}}
 </p>
+
+<H3>Summary Volumes Profiling Points</H3>
+<p>
+  <label><input type="checkbox" [(ngModel)]="updateFirstPointLocationSV">First point X:</label><input type="number" [(ngModel)]="svFirstPointX" /> Y:<input type="number" [(ngModel)]="svFirstPointY" />
+  <label><input type="checkbox" [(ngModel)]="updateSecondPointLocationSV">Second point X:</label><input type="number" [(ngModel)]="svSecondPointX" /> Y:<input type="number" [(ngModel)]="svSecondPointY" />
+  Points in profile: {{numPointInProfile}}
+</p>
+
+
 
 <p>
   Design to profile: <input type="text" [(ngModel)]="designProfileUid">
@@ -66,13 +75,13 @@
   <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
 </p>
 <p>
-Production elevation profiles:
+  Production elevation profiles:
   <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
   <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
   <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
   <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
 </p><p>
-Composite elevation profiles:
+  Composite elevation profiles:
   <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
   <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
   <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
@@ -119,12 +128,19 @@ Composite elevation profiles:
   Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}
 </p>
 <br />
-<H3>Designs [{{designs.length}} in total]</H3>
+<H3>Design Surface [{{designs.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /></p>
-<p><button (click)=addNewDesign()>Add New Design</button>   <button (click)="addADummyDesign()">Add a dummy!</button></p>
+<p><button (click)=addNewDesignSurface()>Add New Design Surface</button>   <button (click)="addADummyDesignSurface()">Add a dummy!</button></p>
 <p *ngFor="let design of designs">
-  <button (click)="deleteDesign(design)">Delete</button>
+  <button (click)="deleteDesignSurface(design)">Delete</button>
   Design: {{ design.id }} with offset {{design.designDescriptor.offset}} from file {{design.designDescriptor.fileName}}
+</p>
+<H3>Alignment [{{alignments.length}} in total]</H3>
+<p>Design File Name: <input [(ngModel)]="alignmentFileName" type="text" value="" /></p>
+<p><button (click)=addNewAlignment()>Add New Alignment</button>   <button (click)="addADummyAlignment()">Add a dummy!</button></p>
+<p *ngFor="let alignment of alignments">
+  <button (click)="deleteAlignment(alignment)">Delete</button>
+  Alignment: {{ alignment.id }} from file {{alignment.designDescriptor.fileName}}
 </p>
 <br />
 <H3>Machine Events</H3>

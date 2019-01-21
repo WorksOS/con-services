@@ -51,7 +51,7 @@ namespace LandfillService.WebApi.netcore
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", true, true)
+        .AddJsonFile("appsettings.json", true, reloadOnChange: false)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
 
       env.ConfigureLog4Net("log4net.xml", LoggerRepoName);

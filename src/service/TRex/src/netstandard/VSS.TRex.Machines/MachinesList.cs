@@ -118,7 +118,7 @@ namespace VSS.TRex.Machines
     public IMachine LocateByMachineHardwareID(string hardwareID) => Find(x => x.MachineHardwareID.Equals(hardwareID));
 
     /// <summary>
-    /// Serialise the list of machine using the given writer
+    /// Serialize the list of machine using the given writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -165,7 +165,7 @@ namespace VSS.TRex.Machines
 
     /// <summary>
     /// Loads the content of the machines list from the persistent store. If there is no item in the persistent store containing
-    /// machines for this sitemodel them return an empty list.
+    /// machines for this site model them return an empty list.
     /// </summary>
     public void LoadFromPersistentStore()
     {

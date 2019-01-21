@@ -21,9 +21,6 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
     <PackageReference Include="Xunit.Gherkin.Quick" Version="3.3.0" />
-    <PackageReference Include="XnaFan.ImageComparison.netcore" Version="2.0.5" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
-    <PackageReference Include="SixLabors.ImageSharp.drawing" Version="1.0.0-beta0005" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,16 +38,22 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\GeofenceThumbnailResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\MultiGeofenceThumbnailRequest.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="TestData\ProjectThumbnailResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="TestData\ReportTileResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="TestData\MultiGeofenceThumbnailResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

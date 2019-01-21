@@ -15,11 +15,11 @@ namespace TAGFiles.Tests
       // Get a list of all the TAG value string names from the TAGValueNames class that defines all the string constants
       List<string> valueNames = TAGValueNames.Names();
 
-      // Instantiate a TAGValueSink and ask it for the list of TAGs supproted
+      // Instantiate a TAGValueSink and ask it for the list of TAGs supported
       string[] instantiatedTAGs = new TAGValueSink(null).InstantiatedTAGs;
 
 //            Assert.True(false,"Instantiated TAGs! : {0}, compared to {1}", String.Join(", ", instantiatedTAGs), String.Join(", ", valueNames));
-      Assert.True(instantiatedTAGs != null || instantiatedTAGs.Length > 0, "No instantiated TAG!");
+      Assert.True(instantiatedTAGs?.Length > 0, "No instantiated TAG!");
 
       List<string> missing = new List<string>();
 

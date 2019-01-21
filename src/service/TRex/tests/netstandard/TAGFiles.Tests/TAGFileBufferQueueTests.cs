@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.Models;
 using Xunit;
@@ -16,7 +15,7 @@ namespace TAGFiles.Tests
 {
     public class TAGFileBufferQueueTests
     {
-        private static MutableClientServer TAGClientServer = null;
+        private static MutableClientServer TAGClientServer;
         private static IIgnite ignite;
 
         private static void EnsureServer()

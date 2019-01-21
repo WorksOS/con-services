@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+﻿using System;
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers.Filters
 {

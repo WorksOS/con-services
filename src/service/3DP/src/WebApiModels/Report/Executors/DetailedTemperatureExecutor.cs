@@ -17,16 +17,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as TemperatureDetailsRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<TemperatureDetailsRequest>();
-
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE"), out var useTrexGateway);
+      var request = CastRequestObjectTo<TemperatureDetailsRequest>(item);
 
       var temperatureTargets = request.Targets.Select(t => (int) t).ToArray(); // already converted to 10ths 
 
-      if (useTrexGateway)
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_TEMPERATURE"))
       {
         var temperatureDetailsRequest = new TemperatureDetailRequest(
           request.ProjectUid,
@@ -38,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         return new CompactionTemperatureDetailResult(temperatureDetailsResult);
       }
 
-      var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
+      var filter = RaptorConverters.ConvertFilter(request.Filter);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 

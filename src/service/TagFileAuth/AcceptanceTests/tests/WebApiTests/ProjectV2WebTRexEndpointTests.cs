@@ -49,7 +49,7 @@ namespace WebApiTests
         $"| CustomerProject      | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |                |                | {projectUid}  |          |                    |"};
       ts.PublishEventCollection(eventsArray);
      
-      var actualResult = CallWebApiGetProjectAndAssetUids(ts, projectUid.ToString(), 0, string.Empty, string.Empty, 11, 171, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectAndAssetUids(ts, projectUid.ToString(), 0, string.Empty, string.Empty, string.Empty, 11, 171, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(projectUid.ToString(), actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(string.Empty, actualResult.AssetUid, "AssetUid does not match");
       Assert.AreEqual(0, actualResult.Code, " result code of request doesn't match expected");
@@ -101,7 +101,7 @@ namespace WebApiTests
         $"| AssetSubscription | 0d+09:00:00 |               |           |                   |                   |                |                  |                |                |               |          |  {subscriptionUid} | {ts.AssetUid} | {projectStartDate} |"};
       ts.PublishEventCollection(eventsArray);
 
-      var actualResult = CallWebApiGetProjectAndAssetUids(ts, projectUid.ToString(), (int)deviceType, deviceUid.ToString(), string.Empty, 11, 171, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectAndAssetUids(ts, projectUid.ToString(), (int)deviceType, deviceUid.ToString(), string.Empty, string.Empty, 11, 171, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(projectUid.ToString(), actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(ts.AssetUid, actualResult.AssetUid, "AssetUid does not match");
       Assert.AreEqual(0, actualResult.Code, " result code of request doesn't match expected");
@@ -147,7 +147,7 @@ namespace WebApiTests
         $"| ProjectSubscription | 0d+09:00:00 |                  |              |                   |                   |                  |                  |                |                | {projectUid}  |  {subscriptionUid} | {projectStartDate} |"};
       ts.PublishEventCollection(eventsArray);
 
-      var actualResult = CallWebApiGetProjectAndAssetUids(ts, string.Empty, 0, string.Empty, tccOrg.ToString(), 11, 171, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectAndAssetUids(ts, string.Empty, 0, string.Empty, string.Empty, tccOrg.ToString(), 11, 171, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(projectUid.ToString(), actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(string.Empty, actualResult.AssetUid, "AssetUid does not match");
       Assert.AreEqual(0, actualResult.Code, " result code of request doesn't match expected");
@@ -166,10 +166,10 @@ namespace WebApiTests
     /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
     /// <param name="statusCode"></param>
     /// <returns>The project Uid result</returns>
-    private GetProjectAndAssetUidsResult CallWebApiGetProjectAndAssetUids(TestSupport ts, string projectUid, int deviceType, string radioSerial, string tccOrgUid, double latitude, double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
+    private GetProjectAndAssetUidsResult CallWebApiGetProjectAndAssetUids(TestSupport ts, string projectUid, int deviceType, string radioSerial, string ec520Serial, string tccOrgUid, double latitude, double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, tccOrgUid, latitude, longitude, timeOfPosition);
+      var request = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, latitude, longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v2/project/getUids";

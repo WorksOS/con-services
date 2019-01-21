@@ -19,7 +19,6 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
-using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -126,7 +125,7 @@ namespace TAGFiles.Tests
     {
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, 0, 0, timeOfPosition);
+      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
       var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, 0, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
@@ -159,7 +158,7 @@ namespace TAGFiles.Tests
     {
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, 0, 0, timeOfPosition);
+      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
       var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 3044, "Manual Import: cannot import to a Civil type project");
       SetupDITfa(true, moqRequest, moqResult);
 

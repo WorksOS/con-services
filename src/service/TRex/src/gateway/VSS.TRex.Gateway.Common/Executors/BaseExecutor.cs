@@ -18,7 +18,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 {
   public abstract class BaseExecutor : RequestExecutorContainer
   {
-    private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
+    private const string ERROR_MESSAGE_PRODUCTION_DATA = "Failed to get/update data requested by {0}";
+    private const string ERROR_MESSAGE_DESIGN_FILE = "Failed to get/update design file requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
 
     protected BaseExecutor()
@@ -247,16 +248,35 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.FailedToConfigureInternalPipeline);
       ContractExecutionStates.DynamicAddwithOffset("Failed to retrieve design file from storage.",
         (int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to add design to project.",
+        (int)RequestErrorStatus.DesignImportUnableToCreateDesign);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to update design in project.",
+        (int)RequestErrorStatus.DesignImportUnableToUpdateDesign);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to delete design from project.",
+        (int)RequestErrorStatus.DesignImportUnableToDeleteDesign);
     }
 
     protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)
     {
-      var errorMessage = string.Format(ERROR_MESSAGE, typeof(T).Name);
+      var errorMessage = string.Format(ERROR_MESSAGE_PRODUCTION_DATA, typeof(T).Name);
 
       if (resultStatus != RequestErrorStatus.OK)
         errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int) resultStatus));
 
       return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
+    }
+
+    protected ServiceException CreateServiceException<T>(HttpStatusCode statusCode, int contractExecutionStatesEnum, RequestErrorStatus resultStatus = RequestErrorStatus.OK, string detailedMessage = null)
+    {
+      var errorMessage = string.Format(ERROR_MESSAGE_DESIGN_FILE, typeof(T).Name);
+
+      if (resultStatus != RequestErrorStatus.OK)
+        errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int)resultStatus));
+      
+      if (!string.IsNullOrEmpty(detailedMessage))
+        errorMessage += $" ({detailedMessage})";
+
+      return new ServiceException(statusCode, new ContractExecutionResult(contractExecutionStatesEnum, errorMessage));
     }
   }
 }

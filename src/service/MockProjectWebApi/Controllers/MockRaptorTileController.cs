@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -12,7 +9,6 @@ using SixLabors.Primitives;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
-using System.Security.Cryptography;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -20,7 +16,7 @@ namespace MockProjectWebApi.Controllers
   {
     [Route("api/v2/productiondatatiles/png")]
     [HttpGet]
-    public async Task<FileResult> GetMockProductionDataTileRaw(
+    public FileResult GetMockProductionDataTileRaw(
       [FromQuery] string service,
       [FromQuery] string version,
       [FromQuery] string request,
@@ -137,7 +133,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v2/raptor/boundingbox")]
     [HttpGet]
-    public async Task<string> GetMockBoundingBox(
+    public string GetMockBoundingBox(
       [FromQuery] Guid projectUid,
       [FromQuery] TileOverlayType[] overlays,
       [FromQuery] Guid? filterUid,
@@ -188,7 +184,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v2/raptor/designboundarypoints")]
     [HttpGet]
-    public async Task<PointsListResult> GetMockDesignBoundaryPoints(
+    public PointsListResult GetMockDesignBoundaryPoints(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid designUid)
     {
@@ -222,7 +218,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v2/raptor/filterpoints")]
     [HttpGet]
-    public async Task<PointsListResult> GetMockFilterPoints(
+    public PointsListResult GetMockFilterPoints(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid filterUid)
     {
@@ -233,7 +229,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v2/raptor/filterpointslist")]
     [HttpGet]
-    public async Task<PointsListResult> GetMockFilterPointsList(
+    public PointsListResult GetMockFilterPointsList(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? baseUid,
@@ -323,7 +319,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v2/raptor/alignmentpoints")]
     [HttpGet]
-    public async Task<AlignmentPointsResult> GetMockAlignmentPoints(
+    public AlignmentPointsResult GetMockAlignmentPoints(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid alignmentUid)
     {
@@ -334,7 +330,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v2/raptor/alignmentpointslist")]
     [HttpGet]
-    public async Task<PointsListResult> GetMockAlignmentPointsList(
+    public PointsListResult GetMockAlignmentPointsList(
       [FromQuery] Guid projectUid)
     {
       Console.WriteLine($"GetMockAlignmentPointsList: {Request.QueryString}");

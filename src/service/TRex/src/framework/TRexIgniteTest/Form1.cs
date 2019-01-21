@@ -59,7 +59,7 @@ using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
-using VSS.TRex.Volumes;
+using VSS.TRex.Common;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -1222,7 +1222,7 @@ namespace TRexIgniteTest
                                            tagFileContent = new byte[0]
                                   };
 
-                td = TagFileRepository.GetTagfile(td);
+                td = TagFileRepository.GetTagFile(td);
                 MessageBox.Show($@"ProjectUID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
 
             }

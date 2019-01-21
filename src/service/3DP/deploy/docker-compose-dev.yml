@@ -4,7 +4,7 @@ services:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
     environment:
       - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
-      - ASNODEIP=10.97.96.134
+      - ASNODEIP=dev-aslv01.vssengg.com
       - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
       - AWS_SECRET_KEY=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
@@ -16,16 +16,17 @@ services:
       - ELEVATION_EXTENTS_CACHE_LIFE=00:30:00
       - ENABLE_CONNECTED_SITE_GATEWAY=false
       - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
+      - ENABLE_TREX_GATEWAY_LINEWORKFILE=false
       - ENABLE_TREX_GATEWAY_TAGFILE=false
       - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
       - ENABLE_TREX_GATEWAY_GRIDREPORT=false
-      - FILTER_API_URL=http://filter.dev.k8s.vspengg.com/api/v1
+      - FILTER_API_URL=http://filter.dev.eks.vspengg.com/api/v1
       - FILTER_CACHE_LIFE=00:15:00
       - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
       - GEOFENCE_CACHE_LIFE=00:15:00
       - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
       - IMPORTED_FILE_CACHE_LIFE=00:15:00
-      - IONODEIP=10.97.96.92
+      - IONODEIP=dev-iolv01.vssengg.com
       - LIBUV_THREAD_COUNT=32
       - LOG_MAX_CHAR=1000
       - MAX_IO_THREADS=1024
@@ -38,8 +39,9 @@ services:
       - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
       - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
       - SCHEDULED_JOB_TIMEOUT=900000
-      - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.dev.k8s.vspengg.com/internal/v1/export
+      - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.dev.eks.vspengg.com/internal/v1/export
       - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
+      - SNAKEPIT_HOST=snakepit.dev.k8s.vspengg.com
       - TCCBASEURL=https://www.myconnectedsite.com
       - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
       - TCCFILESPACENAME=vldatastore-dev
@@ -69,6 +71,8 @@ services:
       - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
       - KAFKA_TOPIC_NAME_SUFFIX=-Dev
       - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-tile/1.0
+      - NOTIFICATION_HUB_URL=http://push.dev.eks.vspengg.com/notifications
+      - PUSH_NO_AUTHENTICATION_HEADER=true
     ports:
      - "5001:80"
     restart: always

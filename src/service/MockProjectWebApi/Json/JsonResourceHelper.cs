@@ -17,25 +17,26 @@ namespace MockProjectWebApi.Json
       return jObj.ToString(Formatting.None);
     }
 
-    public static string GetUserPreferencesJson(string resourceName)
-    {
-      var jObj = GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
-      return jObj.ToString(Formatting.None);
-    }
-
     public static string GetGoldenDimensionsFilterJson(string resourceName)
     {
       var jObj = GetJsonFromEmbeddedResource($"Filters.GoldenDimensions.{resourceName}");
       return jObj.ToString(Formatting.None);
     }
+
     public static string GetDimensionsFilterJson(string resourceName)
     {
       var jObj = GetJsonFromEmbeddedResource($"Filters.Dimensions.{resourceName}");
       return jObj.ToString(Formatting.None);
     }
 
+    public static string GetUserPreferencesJson(string resourceName)
+    {
+      var jObj = GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
+      return jObj.ToString(Formatting.None);
+    }
+
     /// <summary>
-    /// Gets the color settings JSON for a given project Uid.
+    /// Gets the color settings JSON for a given project uid.
     /// </summary>
     public static JObject GetColorSettings(string projectUid)
     {

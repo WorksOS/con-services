@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -33,11 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as CMVRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CMVRequest>();
-
+        var request = CastRequestObjectTo<CMVRequest>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
 
         if (useTrexGateway)
@@ -53,8 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return trexCompactionDataProxy.SendCMVSummaryRequest(cmvSummaryRequest, customHeaders).Result;
         }
 
-        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
-          request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
         var raptorResult = raptorClient.GetCMVSummary(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCMVSummary),

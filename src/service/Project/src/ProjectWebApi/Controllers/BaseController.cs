@@ -167,14 +167,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         result = await action.Invoke().ConfigureAwait(false);
         log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
       }
-      catch (ServiceException)
+      catch (ServiceException se)
       {
+        log.LogError(se, $"Execution failed for: {action.GetMethodInfo().Name}. ");
         throw;
       }
       catch (Exception ex)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message);
+          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message, innerException: ex );
       }
       finally
       {

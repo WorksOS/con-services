@@ -8,11 +8,17 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
-    public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
+  public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
+        /// <summary>
+        /// A hook that may be used to gain notification of the add, replace and remove cell pass mutations in the cell pass stack
+        /// </summary>
+        private readonly ICell_NonStatic_MutationHook _mutationHook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+     
         public Cell_NonStatic[,] PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         public SubGridCellSegmentPassesDataWrapper_NonStatic()
@@ -31,6 +37,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
         {
+            _mutationHook?.AddPass(X, Y, PassData[X, Y], pass, position);
+
             PassData[X, Y].AddPass(pass, position);
 
             SegmentPassCount++;
@@ -38,7 +46,21 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void ReplacePass(uint X, uint Y, int position, CellPass pass)
         {
+            _mutationHook?.ReplacePass(X, Y, PassData[X, Y], position, pass);
+
             PassData[X, Y].ReplacePass(position, pass);
+        }
+
+        /// <summary>
+        /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="position"></param>
+        public void RemovePass(uint X, uint Y, int position)
+        {
+           _mutationHook?.RemovePass(X, Y, position);
+           throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
         public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
@@ -49,7 +71,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
         /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
-        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
+        /// with the given time would be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -82,14 +104,13 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             });
 
-      // Read all the cells from the stream
+          // Read all the cells from the stream
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 int PassCount_ = PassCounts[i, j];
 
                 if (PassCount_ > 0)
                 {
-                    // TODO: Revisit static cell pass support for reading contexts
                     AllocatePasses(i, j, (uint)PassCount_);
                     Read(i, j, reader);
 
@@ -113,7 +134,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
@@ -155,8 +176,8 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets asre an 
-        /// optimisation for read requests on compressed static cell pass representations
+        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets are an 
+        /// optimization for read requests on compressed static cell pass representations
         /// </summary>
         /// <returns></returns>
         public BitArray GetMachineIDSet() => null;
@@ -203,7 +224,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             });
 
-      // write all the cell passess to the stream, avoiding those cells that do not have any passes
+      // write all the cell passes to the stream, avoiding those cells that do not have any passes
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) => 
             {
                 if (PassCount(i, j) > 0)

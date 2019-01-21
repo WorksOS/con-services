@@ -1,17 +1,17 @@
-﻿using ASNodeDecls;
+﻿using System;
+using System.IO;
+using ASNodeDecls;
 using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -54,15 +54,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
     }
 
-    private ContractExecutionResult CreateNullGridReturnedResult()
+    private static ContractExecutionResult CreateNullGridReturnedResult()
     {
-      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "Null grid stream returned");
+      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null grid stream returned");
     }
 
     private ContractExecutionResult ProcessWithRaptor(CompactionReportGridRequest request)
     {
-      var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
       var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
@@ -71,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
         request.ProjectId ?? -1,
-        (int) CompactionReportType.Grid,
+        (int)CompactionReportType.Grid,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataReport),
         RaptorConverters.DesignDescriptor(request.DesignFile),
@@ -82,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.ReportMDP,
         request.ReportPassCount,
         request.ReportTemperature,
-        (int) request.GridReportOption,
+        (int)request.GridReportOption,
         request.StartNorthing,
         request.StartEasting,
         request.EndNorthing,
@@ -123,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       reportPackager.GridReport.TemperatureReport = request.ReportTemperature;
 
       log.LogDebug($"{nameof(ConvertGridResult)}: Retrieving response data");
-      
+
       reportPackager.ReadFromStream(stream);
 
       var gridRows = new GridRow[reportPackager.GridReport.NumberOfRows];

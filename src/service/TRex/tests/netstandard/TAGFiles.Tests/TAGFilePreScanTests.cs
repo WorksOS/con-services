@@ -35,7 +35,7 @@ namespace TAGFiles.Tests
       TAGFilePreScan preScan = new TAGFilePreScan();
 
       Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"), FileMode.Open, FileAccess.Read)),
-          "Prescan execute returned false");
+          "Pre-scan execute returned false");
 
       preScan.ProcessedEpochCount.Should().Be(1478);
       preScan.ReadResult.Should().Be(TAGReadResult.NoError);

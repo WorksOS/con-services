@@ -1,8 +1,8 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime AS base
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-runtime AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime AS build
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-runtime AS build
 WORKDIR /src
 COPY ["src/WebApi/VSS.Productivity3D.FileAccess.WebAPI.csproj", "src/WebApi/"]
 COPY ["src/WebApiModels/VSS.Productivity3D.FileAccess.WebAPI.Models.csproj", "src/WebApiModels/"]

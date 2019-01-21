@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
@@ -46,12 +45,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     {
       try
       {
-        var request = item as ProjectFileDescriptor;
+        var request = CastRequestObjectTo<ProjectFileDescriptor>(item);
+        var fileType = request.FileType;
 
-        if (request == null)
-          ThrowRequestTypeCastException<ProjectFileDescriptor>();
-
-        var fileType = request.FileType;   //FileUtils.GetFileType(request.File.fileName);
         log.LogDebug($"FileType is: {fileType}");
 
         if (fileType == ImportedFileType.DesignSurface ||
@@ -73,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
                 "Failed to delete generated files"));
           }
           //Delete tiles 
-          string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+          string generatedName = FileUtils.GeneratedFileName(request.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
           await tileGenerator.DeleteDxfTiles(request.ProjectId.Value, generatedName, request.File).ConfigureAwait(false);
         }
 
@@ -122,12 +118,12 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     /// <returns>True if the file is successfully deleted, false otherwise</returns>
     private async Task<bool> DeleteGeneratedFile(long projectId, FileDescriptor fileDescr, string suffix, string extension)
     {
-      string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
+      string generatedName = FileUtils.GeneratedFileName(fileDescr.FileName, suffix, extension);
       log.LogDebug("Deleting generated file {0}", generatedName);
-      var fullName = string.Format("{0}/{1}", fileDescr.path, generatedName);
-      if (await fileRepo.FileExists(fileDescr.filespaceId, fullName))
+      var fullName = string.Format("{0}/{1}", fileDescr.Path, generatedName);
+      if (await fileRepo.FileExists(fileDescr.FilespaceId, fullName))
       {
-        if (!await fileRepo.DeleteFile(fileDescr.filespaceId, fullName))
+        if (!await fileRepo.DeleteFile(fileDescr.FilespaceId, fullName))
         {
           log.LogWarning("Failed to delete file {0} for project {1}", generatedName, projectId);
           throw new ServiceException(HttpStatusCode.BadRequest,

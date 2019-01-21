@@ -172,7 +172,7 @@ namespace VSS.TRex.Rendering
         // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
         // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
-        // Perform the subgrid query and processing to render the tile
+        // Perform the sub grid query and processing to render the tile
         processor.Process();
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)

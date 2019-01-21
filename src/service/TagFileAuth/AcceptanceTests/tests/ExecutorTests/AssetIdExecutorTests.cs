@@ -17,7 +17,7 @@ namespace ExecutorTests
     {
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
 
       GetAssetIdRequest assetIdRequest =
         GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
@@ -41,7 +41,7 @@ namespace ExecutorTests
       Guid owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -70,7 +70,7 @@ namespace ExecutorTests
       Guid? owningCustomerUid = Guid.NewGuid();
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -101,7 +101,7 @@ namespace ExecutorTests
       Guid? owningCustomerUid = null;
       Guid deviceUid = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUid;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -134,7 +134,7 @@ namespace ExecutorTests
       Guid? owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -165,7 +165,7 @@ namespace ExecutorTests
       Guid? owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -271,7 +271,7 @@ namespace ExecutorTests
       Guid? assetCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -309,7 +309,7 @@ namespace ExecutorTests
       Guid? assetCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -347,7 +347,7 @@ namespace ExecutorTests
       Guid? assetCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -388,7 +388,7 @@ namespace ExecutorTests
       Guid? owningCustomerUID = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -432,7 +432,7 @@ namespace ExecutorTests
       Guid? customerUid = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, customerUid, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -479,7 +479,7 @@ namespace ExecutorTests
       Guid? customerUid = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, customerUid, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
@@ -523,7 +523,7 @@ namespace ExecutorTests
       Guid? customerUid = Guid.NewGuid();
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID;
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      DeviceTypeEnum deviceType = DeviceTypeEnum.SNM940;
       var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, customerUid, deviceUID,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");

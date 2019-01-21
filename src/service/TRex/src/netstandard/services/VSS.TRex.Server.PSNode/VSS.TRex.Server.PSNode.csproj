@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -137,6 +137,7 @@
     <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
       <Private>true</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGrids.Interfaces\VSS.TRex.SubGrids.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SubGrids\VSS.TRex.SubGrids.csproj">
       <Private>true</Private>
     </ProjectReference>

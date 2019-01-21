@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
@@ -67,8 +69,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.ValidationError, 24));
       }
 
-      // if the number is not in enum then it returns the number
-      var isDeviceTypeValid = (((DeviceTypeEnum) deviceType).ToString() != deviceType.ToString());
+      var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.EC520 };
+      var isDeviceTypeValid = allowedDeviceTypes.Contains(deviceType);
 
       // rule changed to match cgen --> if a manualDeviceType, allow a radioSerial, EVEN  though the radioSerial is NEVER used
       if (!string.IsNullOrEmpty(radioSerial) && (!isDeviceTypeValid))

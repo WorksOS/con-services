@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -59,12 +59,16 @@ export class ProjectComponent {
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
 
+  public alignments: Alignment[] = [];
+  public alignmentFileName: string = "";
+  public newAlignmentGuid: string = "";
+
+  public designs: DesignSurface[] = [];
   public designFileName: string = "";
   public designOffset: number = 0.0;
   public designUID: string = "";
 
   public newDesignGuid: string = "";
-  public designs: Design[] = [];
   public machineDesigns: MachineDesign[] = [];
   public siteProofingRuns: SiteProofingRun[] = [];
 
@@ -149,12 +153,22 @@ export class ProjectComponent {
 
   public updateFirstPointLocation: boolean = false;
   public updateSecondPointLocation: boolean = false;
+  public updateFirstPointLocationSV: boolean = false;
+  public updateSecondPointLocationSV: boolean = false;
 
   public firstPointX: number = 0.0;
   public firstPointY: number = 0.0;
 
   public secondPointX: number = 0.0;
   public secondPointY: number = 0.0;
+
+  public svFirstPointX: number = 0.0;
+  public svFirstPointY: number = 0.0;
+
+  public svSecondPointX: number = 0.0;
+  public svSecondPointY: number = 0.0;
+
+
 
   public profileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public mouseProfileWorldStation: Number = 0.0;
@@ -166,7 +180,7 @@ export class ProjectComponent {
   public designProfileUid: string = ""
 
 constructor(
-    private projectService: ProjectService
+  private projectService: ProjectService
   ) { }
 
   ngOnInit() { 
@@ -189,7 +203,8 @@ constructor(
     this.getProjectExtents();
     this.getExistenceMapSubGridCount();
     this.getSurveyedSurfaces();
-    this.getDesigns();
+    this.getDesignSurfaces();
+    this.getAlignments();
     this.getMachines();
     this.getMachineDesigns();
     this.getSiteProofingRuns();
@@ -200,6 +215,7 @@ constructor(
 
   public setProjectToZero(): void {
     this.projectUid = "00000000-0000-0000-0000-000000000000";
+    localStorage.setItem("projectUid", undefined);
   }
 
   public getProjectExtents(): void {
@@ -249,7 +265,7 @@ constructor(
 
   public getTile() : void {
     // If there is no project bail...
-    if (this.projectUid === undefined)
+    if (!this.projectUid)
       return;
 
     // Make sure the displayed tile extents is updated
@@ -361,6 +377,18 @@ constructor(
     if (this.updateFirstPointLocation || this.updateSecondPointLocation) {
       this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
     }
+
+    // SV Profile
+    if (this.updateSecondPointLocationSV) {
+      this.userProfilePoint2SVG_CX = this.mousePixelX;
+      this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+    }
+
+    if (this.updateFirstPointLocationSV || this.updateSecondPointLocationSV) {
+      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+    }
+
+
   }
 
   public onMouseOver(event: any): void {
@@ -417,11 +445,11 @@ constructor(
 
   public addADummySurveyedSurface(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
-
+    descriptor.fileName = "C:/temp/SomeFile.ttm";
+    descriptor.offset = 0;
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
       uid => {
-        this.newSurveyedSurfaceGuid = uid.id;
+        this.newSurveyedSurfaceGuid = uid.designId;
         this.getSurveyedSurfaces();
       });
   }
@@ -430,76 +458,97 @@ constructor(
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.surveyedSurfaceFileName;
     descriptor.offset = this.surveyedSurfaceOffset;
-
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
-        this.newSurveyedSurfaceGuid = uid.id;
+        this.newSurveyedSurfaceGuid = uid.designId;
         this.getSurveyedSurfaces();
       });
-
   }
 
   public getSurveyedSurfaces(): void {
     var result: SurveyedSurface[] = [];
     this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
       surveyedSurfaces => {
-        surveyedSurfaces.forEach(ss => result.push(ss));
+        surveyedSurfaces.forEach(surveyedSurface => result.push(surveyedSurface));
         this.surveyedSurfaces = result;
       });  
   }
 
   public deleteSurveyedSurface(surveyedSurface : SurveyedSurface): void {
-    this.projectService.deleteSurveyedSurface(this.projectUid, surveyedSurface.id).subscribe(x =>
-      this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
+    this.projectService.deleteSurveyedSurface(this.projectUid, surveyedSurface.id).subscribe(
+      uid => this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 
-  public addADummyDesign(): void {
+  public addADummyDesignSurface(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
-
-    this.projectService.addDesign(this.projectUid, descriptor).subscribe(
+    descriptor.fileName = "C:/temp/SomeFile.ttm";
+    descriptor.offset = 0;
+    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
-        this.getDesigns();
+        this.getDesignSurfaces();
       });
   }
 
-  public addNewDesign(): void {
+  public addNewDesignSurface(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
     descriptor.offset = 0;
-
-    this.projectService.addDesign(this.projectUid, descriptor).subscribe(
+    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
-        this.getDesigns();
+        this.getDesignSurfaces();
       });
   }
 
-  //public addNewDesignFromS3(): void {
-  //  var descriptor = new DesignDescriptor();
-  //  descriptor.fileName = this.designFileName;
-  //  descriptor.designId = this.designUID;
-
-  //  this.projectService.addDesignFromS3(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
-  //    uid => {
-  //      this.newDesignGuid = uid.designId;
-  //      this.getDesigns();
-  //    });
-  //}
-
-    public getDesigns(): void {
-    var result: Design[] = [];
-    this.projectService.getDesigns(this.projectUid).subscribe(
+  public getDesignSurfaces(): void {
+    var result: DesignSurface[] = [];
+    this.projectService.getDesignSurfaces(this.projectUid).subscribe(
       designs => {
         designs.forEach(design => result.push(design));
         this.designs = result;
       });  
     }
 
-  public deleteDesign(design: Design): void {
-    this.projectService.deleteDesign(this.projectUid, design.id).subscribe(x =>
-      this.designs.splice(this.designs.indexOf(design), 1));
+  public deleteDesignSurface(design: DesignSurface): void {
+    this.projectService.deleteDesignSurface(this.projectUid, design.id).subscribe(
+      uid => this.designs.splice(this.designs.indexOf(design), 1));
+  }
+
+  public addADummyAlignment(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = "C:/temp/SomeFile.svl";
+    descriptor.offset = 0;
+    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+      uid => {
+        this.newAlignmentGuid = uid.designId;
+        this.getAlignments();
+      });
+  }
+
+  public addNewAlignment(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = this.alignmentFileName;
+    descriptor.offset = 0;
+    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+      uid => {
+        this.newAlignmentGuid = uid.designId;
+        this.getAlignments();
+      });
+  }
+
+  public getAlignments(): void {
+    var result: Alignment[] = [];
+    this.projectService.getAlignments(this.projectUid).subscribe(
+      alignments => {
+        alignments.forEach(alignment => result.push(alignment));
+        this.alignments = result;
+      });
+  }
+
+  public deleteAlignment(alignment: Alignment): void {
+    this.projectService.deleteAlignment(this.projectUid, alignment.id).subscribe(
+      uid => this.alignments.splice(this.alignments.indexOf(alignment), 1));
   }
 
   public getMachineDesigns(): void {
@@ -539,11 +588,27 @@ constructor(
       metadata => {
         metadata.forEach(data => result.push(data));
         this.allProjectsMetadata = result;
+        this.projectMetadata = this.allProjectsMetadata[this.getIndexOfSelectedProjectMetadata()];
+        this.projectUid = this.projectMetadata.id;
       });
+  }
+
+  private getIndexOfSelectedProjectMetadata(): number {
+    let projectUid = localStorage.getItem("projectUid");
+
+    for (var i = 0; i < this.allProjectsMetadata.length; i++) {
+      if (this.allProjectsMetadata[i].id === projectUid)
+        return i;
+    }
+
+    localStorage.setItem("projectUid", undefined);
+
+    return -1;
   }
 
   public projectMetadataChanged(event: any): void {
     this.projectUid = this.projectMetadata.id;
+    localStorage.setItem("projectUid", this.projectMetadata.id);
     this.selectProject();
   }
 
@@ -658,11 +723,32 @@ constructor(
       this.drawProfileLineFromStartToEndPointsForProdData();
     }
 
+    if (this.updateSecondPointLocationSV) {
+      this.svSecondPointX = this.mouseWorldX;
+      this.svSecondPointY = this.mouseWorldY;
+      this.updateSecondPointLocationSV = false; // Uncheck the second check box
+
+      this.userProfilePoint2SVG_CX = this.mousePixelX;
+      this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+
+      this.drawProfileLineFromStartToEndPointsForSummaryVolumes(); // call SV Profile method
+    }
+
     if (this.updateFirstPointLocation) {
       this.firstPointX = this.mouseWorldX;
       this.firstPointY = this.mouseWorldY;
       this.updateFirstPointLocation = false; // Uncheck the first check box
       this.updateSecondPointLocation = true; // Check the second check box
+
+      this.userProfilePoint1SVG_CX = this.mousePixelX;
+      this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
+    }
+
+    if (this.updateFirstPointLocationSV) { // Summary Volumes Profile
+      this.svFirstPointX = this.mouseWorldX;
+      this.svFirstPointY = this.mouseWorldY;
+      this.updateFirstPointLocationSV = false; // Uncheck the first check box
+      this.updateSecondPointLocationSV = true; // Check the second check box
 
       this.userProfilePoint1SVG_CX = this.mousePixelX;
       this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
@@ -731,7 +817,7 @@ constructor(
   // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
   // between all others
   public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
-    getValue: (point: any) => number, setResult:(theResult:string) => void) {
+    getValue: (point: any) => number, setResult: (theResult: string) => void) {
     return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => this.ProcessProfileDataVectorToSVGPolyLine(points, getValue, setResult));
   }
@@ -745,9 +831,52 @@ constructor(
       });
   }
 
-  public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
-    return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
+
+  public drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
+    var profileCanvasHeight: number = 500.0;
+    var profileCanvasWidth: number = 1000.0;
+
+    var result: string = "";
+    var first: boolean = true;
+
+    return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => {
+        var stationRange: number = points[points.length - 1].station - points[0].station;
+        var stationRatio: number = profileCanvasWidth / stationRange;
+
+        var minZ: number = 100000.0;
+        var maxZ: number = -100000.0;
+        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
+        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+
+        var zRange = maxZ - minZ;
+        var zRatio = profileCanvasHeight / zRange;
+
+        points.forEach(point => {
+          if (point.z < -100000) {
+            // It's a gap...
+            first = true;
+          }
+          else {
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+            first = false;
+          }
+        });
+
+        this.profilePath = result;
+        this.numPointInProfile = result.length;
+        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+      });
+  }
+
+
+  public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
+     this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
+  } 
+
+  public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
+  return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
+    .subscribe(points => {
         this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
         this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
         this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);

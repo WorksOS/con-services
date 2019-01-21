@@ -22,12 +22,10 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public class TAGFileConverter
     {
-      private static ILogger Log = Logger.CreateLogger<TAGFileConverter>();
-
-        //private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logger.CreateLogger<TAGFileConverter>();
 
         /// <summary>
-        /// The overall result of processign the TAG information in the file
+        /// The overall result of processing the TAG information in the file
         /// </summary>
         public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
 
@@ -37,7 +35,7 @@ namespace VSS.TRex.TAGFiles.Executors
         public int ProcessedEpochCount { get; set; }
 
         /// <summary>
-        /// The numebr of cell passes generated from the cell data
+        /// The number of cell passes generated from the cell data
         /// </summary>
         public int ProcessedCellPassCount { get; set; }
 
@@ -53,18 +51,24 @@ namespace VSS.TRex.TAGFiles.Executors
         public IMachine Machine { get; set; }
 
         /// <summary>
-        // SiteModelGridAggregator is an object that aggregates all the cell passes generated while processing the file. 
-        // These are then integrated into the primary site model in a single step at a later point in processing
+        /// SiteModelGridAggregator is an object that aggregates all the cell passes generated while processing the file. 
+        /// These are then integrated into the primary site model in a single step at a later point in processing
         /// </summary>
         public IServerSubGridTree SiteModelGridAggregator { get; set; }
 
         /// <summary>
-        // MachineTargetValueChangesAggregator is an object that aggregates all the
-        // machine state events of interest that we encounter while processing the
-        // file. These are then integrated into the machine events in a single step
-        // at a later point in processing
+        /// MachineTargetValueChangesAggregator is an object that aggregates all the
+        /// machine state events of interest that we encounter while processing the
+        /// file. These are then integrated into the machine events in a single step
+        /// at a later point in processing
         /// </summary>
         public ProductionEventLists MachineTargetValueChangesAggregator { get; set; }
+
+        /// <summary>
+        /// The processor used as the sink for values reader from the TAGfile by the TAG file reader.
+        /// Once the TAG file is converted, this contains the final state of the TAGProcessor state machine.
+        /// </summary>
+        public TAGProcessor Processor { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
@@ -91,6 +95,8 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+
+        Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
       }
 
       /// <summary>
@@ -125,7 +131,6 @@ namespace VSS.TRex.TAGFiles.Executors
             {
                 Initialise();
 
-                TAGProcessor Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
                 TAGValueSink Sink = new TAGValueSink(Processor);
                 TAGReader Reader = new TAGReader(TAGData);
                 TAGFile TagFile = new TAGFile();

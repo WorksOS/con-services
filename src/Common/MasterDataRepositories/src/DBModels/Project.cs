@@ -16,6 +16,11 @@ namespace VSS.MasterData.Repositories.DBModels
     public string Description { get; set; }
 
     public string ProjectTimeZone { get; set; }
+
+    // This should really be named ProjectTimeZoneIana.
+    //     It is required for all projects, not just landfill.
+    //     ProjectTimeZone is in Windows StandardTime name,
+    //         which the UI,and ProjectSvc limit to a known set (contained in PreferencesTimeZones.cs).
     public string LandfillTimeZone { get; set; }
 
     // start and end are actually only date with no time component. However C# has no date-only.
