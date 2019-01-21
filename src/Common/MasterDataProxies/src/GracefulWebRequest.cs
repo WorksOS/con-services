@@ -55,6 +55,12 @@ namespace VSS.MasterData.Proxies
             if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
               log.LogWarning($"Can't add header {customHeader.Key}");
         }
+
+        if (!x.Headers.Contains("Accept"))
+        {
+          if (!x.Headers.TryAddWithoutValidation("Accept", "*/*"))
+            log.LogWarning("Can't add Accept header");
+        }
       }
 
       // If we retry a request that uses a stream payload, it will not reset the position to 0

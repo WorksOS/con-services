@@ -99,7 +99,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return new Dictionary<string, string>
       {
         {"Content-Type", "application/json"},
-        {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"}
+        {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"},
+        {"Accept", "*/*" }
       };
     }
     
