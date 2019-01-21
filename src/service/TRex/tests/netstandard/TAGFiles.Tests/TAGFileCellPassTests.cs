@@ -8,13 +8,45 @@ using TAGFiles.Tests.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Types;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
   public class TAGFileCellPassTests : IClassFixture<DITagFileFixture>
   {
+    private void CompareMutationLogs(List<string> Lines, string mutationLogFileName, string[] mutationLog)
+    {
+      for (int i = 0; i < Lines.Count; i++)
+      {
+        string because = $"In file {mutationLogFileName} at line {i}";
+
+        var logSplit = mutationLog[i].Split(new[] { ' ', ':' });
+        var lineSplit = Lines[i].Split(new[] {' ', ':' });
+
+        // Check the mutation log 'command'
+        lineSplit[0].Should().Be(logSplit[0], because);
+
+        if (String.CompareOrdinal(lineSplit[0], "AddPass") == 0 || string.CompareOrdinal(lineSplit[0], "ReplacePass") == 0)
+        {
+          // Compare the components up to the date
+          for (int j = 1; j < logSplit.Length - 1; j++)
+            lineSplit[j].Should().Be(logSplit[j], because);
+
+          // Compare the date with a 1 millisecond tolerance
+          DateTime logDate = DateTime.ParseExact(logSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture);
+          DateTime lineDate = DateTime.ParseExact(lineSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture);
+
+          var span = logDate - lineDate;
+          Math.Abs(span.TotalMilliseconds).Should().BeLessThan(2.0, because + $" Line={Lines[i]}, mutationLog={mutationLog[i]}");
+        }
+        else
+        {
+          // Generic assertion of line equality
+          Lines[i].Should().Be(mutationLog[i], because);
+        }
+      }
+    }
+
     [Theory(Skip = "Cell pass count and line count dependent on varying mutation log schema for now")]
     [InlineData("TestTAGFile.tag", 16525, 16525)]
     [InlineData("TestTAGFile3.tag", 16525, 16525)]
@@ -223,49 +255,12 @@ namespace TAGFiles.Tests
         Hook.ClearActions();
       }
 
-      //var fn = Path.Combine(@"C:\Dev\VSS.Productivity3D.MonoRepo\src\service\TRex\tests\netstandard\TAGFiles.Tests\TestData\TAGFiles\Dimensions2018-CaseMachine\" + tagFileName + ".TestOutput.txt");
-      //var fn = Path.Combine(@"C:\temp\SavedMutationLogsFromTests\" + mutationLogFileName);      
-      //File.WriteAllLines(fn, Lines);
+      //File.WriteAllLines(Path.Combine(@"C:\temp\SavedMutationLogsFromTests\" + mutationLogFileName), Lines);
 
       // Load the 'truth' mutation log
-      //var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
-      var mutationLog = File.ReadAllLines(Path.Combine(@"C:\Dev\VSS.Productivity3D.MonoRepo\src\service\TRex\tests\netstandard\TAGFiles.Tests\TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
+      var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
 
       CompareMutationLogs(Lines, mutationLogFileName, mutationLog);
-    }
-
-    private void CompareMutationLogs(List<string> Lines, string mutationLogFileName, string[] mutationLog)
-    {
-      for (int i = 0; i < Lines.Count; i++)
-      {
-        string because = $"In file {mutationLogFileName} at line {i}";
-
-        var logSplit = mutationLog[i].Split(new[] { ' ', ':' });
-        var lineSplit = Lines[i].Split(new[] { ' ', ':' });
-
-        // Check the mutation log 'command'
-        lineSplit[0].Should().Be(logSplit[0], because);
-
-        if (string.Compare(lineSplit[0], "AddPass") == 0 || string.Compare(lineSplit[0], "ReplacePass") == 0)
-        {
-          // Compare the components up to the date
-          for (int j = 1; j < logSplit.Length - 1; j++)
-            lineSplit[j].Should().Be(logSplit[j], because);
-
-          // Compare the date with a 1 millisecond tolerance
-          TimeSpan tolerance = new TimeSpan(0, 0, 0, 0, 1);
-
-          DateTime logDate = DateTime.ParseExact(logSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture);
-          DateTime lineDate = DateTime.ParseExact(lineSplit.Last(), "yyyy-MM-dd-HH-mm-ss.fff", CultureInfo.InvariantCulture);
-
-          (logDate - lineDate).TotalMilliseconds.Should().BeLessThan(2, because);
-        }
-        else
-        {
-          // Generic assertion of line equality
-          Lines[i].Should().Be(mutationLog[i], because);
-        }
-      }
     }
 
     [Theory]
@@ -289,8 +284,7 @@ namespace TAGFiles.Tests
       //File.WriteAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName+".TestOutput.txt"), Lines);
 
       // Load the 'truth' mutation log
-      //var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
-      var mutationLog = File.ReadAllLines(Path.Combine(@"C:\Dev\VSS.Productivity3D.MonoRepo\src\service\TRex\tests\netstandard\TAGFiles.Tests\TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
+      var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
 
       CompareMutationLogs(Lines, mutationLogFileName, mutationLog);
     }
