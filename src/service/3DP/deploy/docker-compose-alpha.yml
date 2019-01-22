@@ -23,7 +23,7 @@ services:
      - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_GRIDREPORT=false
-     - FILTER_API_URL=http://filter.alpha.k8s.vspengg.com/api/v1
+     - FILTER_API_URL=http://filter.alpha.eks.vspengg.com/api/v1
      - FILTER_CACHE_LIFE=00:15:00
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
      - GEOFENCE_CACHE_LIFE=00:15:00
@@ -42,9 +42,9 @@ services:
      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4
      - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
      - SCHEDULED_JOB_TIMEOUT=900000
-     - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.alpha.k8s.vspengg.com/internal/v1/export
+     - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.alpha.eks.vspengg.com/internal/v1/export
      - SHAREUNC=\\alpha-iolv01.vssengg.com\ProductionData
-     - SNAKEPIT_HOST=snakepit.dev.k8s.vspengg.com
+     - SNAKEPIT_HOST=snakepit.dev.eks.vspengg.com
      - TCCBASEURL=https://www.myconnectedsite.com
      - TCCFILESPACEID=ua9bc5eaf-583a-44d3-b33b-24c035946ae2
      - TCCFILESPACENAME=Vldatastore-beta
@@ -55,7 +55,7 @@ services:
      - TCCSynchProjectBoundaryIssueFolder=Project Boundary (Issue)
      - TCCSynchSubscriptionIssueFolder=Subscription (Issue)
      - TCCUSERNAME=vlbeta
-     - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
+     - TREX_TAGFILE_API_URL=http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
      - TILE_RENDER_JOB_TIMEOUT=00:00:10
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14
@@ -66,8 +66,8 @@ services:
      - MYSQL_ROOT_PASSWORD="R58Kper%5"
      - MYSQL_USERNAME_BUILD="vssBuildUsr"
      - MYSQL_PASSWORD_BUILD="V$$8u1ld45er"
-     - MYSQL_CAP_DATABASE_NAME=VSS-Productivity3D-CAP-Alpha,
-     - MYSQL_CAP_TABLE_PREFIX=3dpm,
+     - MYSQL_CAP_DATABASE_NAME=VSS-Productivity3D-CAP-Alpha
+     - MYSQL_CAP_TABLE_PREFIX=3dpm
      - KAFKA_URI=10.97.97.32
      - KAFKA_PORT=9092
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
