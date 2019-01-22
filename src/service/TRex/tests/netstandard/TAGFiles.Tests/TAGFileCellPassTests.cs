@@ -14,9 +14,13 @@ namespace TAGFiles.Tests
 {
   public class TAGFileCellPassTests : IClassFixture<DITagFileFixture>
   {
-    private void CompareMutationLogs(List<string> Lines, string mutationLogFileName, string[] mutationLog)
+    private void CompareMutationLogs(List<string> Lines, string mutationLogFileName)
     {
-      for (int i = 0; i < Lines.Count; i++)
+      string[] mutationLog = File.ReadAllLines(mutationLogFileName);
+
+      var linesToScan = Math.Min(Lines.Count, mutationLog.Length);
+
+      for (int i = 0; i < linesToScan; i++)
       {
         string because = $"In file {mutationLogFileName} at line {i}";
 
@@ -45,6 +49,8 @@ namespace TAGFiles.Tests
           Lines[i].Should().Be(mutationLog[i], because);
         }
       }
+
+      Lines.Count.Should().Be(mutationLog.Length, "Mutation logs have different sizes - common lines only checked");
     }
 
     [Theory(Skip = "Cell pass count and line count dependent on varying mutation log schema for now")]
@@ -75,7 +81,7 @@ namespace TAGFiles.Tests
       File.WriteAllLines(fn, Lines);
     }
 
-    [Theory(Skip="Run locally - mutation logs not currently source controlled due to size")]
+    [Theory]//(Skip="Run locally - mutation logs not currently source controlled due to size")]
     [InlineData("2652J085SW--CASE CX160C--121031183620.tag", "CellMutationLog-2652J085SW--CASE CX160C--121031183620.tag.txt")]
     [InlineData("2652J085SW--CASE CX160C--121101151938.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101151938.tag.txt")]
     [InlineData("2652J085SW--CASE CX160C--121101152438.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101152438.tag.txt")]
@@ -257,10 +263,7 @@ namespace TAGFiles.Tests
 
       //File.WriteAllLines(Path.Combine(@"C:\temp\SavedMutationLogsFromTests\" + mutationLogFileName), Lines);
 
-      // Load the 'truth' mutation log
-      var mutationLog = File.ReadAllLines(Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
-
-      CompareMutationLogs(Lines, mutationLogFileName, mutationLog);
+      CompareMutationLogs(Lines, Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
     }
 
     [Theory]
@@ -289,7 +292,7 @@ namespace TAGFiles.Tests
         }
 
         File.WriteAllLines(linesLogFileName, Lines);
-        CompareMutationLogs(Lines, mutationLogFileName, File.ReadAllLines(mutationLogFileName));
+        CompareMutationLogs(Lines, mutationLogFileName);
       }
     }
   }
