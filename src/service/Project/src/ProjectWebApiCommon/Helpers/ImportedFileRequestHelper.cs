@@ -244,39 +244,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     { 
       if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.Alignment)
       {
-        if (string.Compare(Path.GetExtension(coordSysFileName), ".dc", StringComparison.OrdinalIgnoreCase) != 0)
+        try
         {
-          log.LogWarning($"Cannot generate DXF tiles for {fileName} because coordinate system file type is not dc");
-        }
-        else
-        {
-          try
+          //For alignment files get the generated DXF from Raptor and save to DataOcean
+          if (importedFileType == ImportedFileType.Alignment)
           {
-            //For alignment files get the generated DXF from Raptor and save to DataOcean
-            if (importedFileType == ImportedFileType.Alignment)
-            {
-              fileName = await CreateGeneratedDxfFile(customerUid, projectUid, importedFileUid, raptorProxy, headers, 
-                log, serviceExceptionHandler, authn, dataOceanClient, configStore);
-            }
+            fileName = await CreateGeneratedDxfFile(customerUid, projectUid, importedFileUid, raptorProxy, headers, 
+              log, serviceExceptionHandler, authn, dataOceanClient, configStore);
+          }
 
-            var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}{Path.DirectorySeparatorChar}";
-            var dxfFileName = $"{dataOceanPath}{fileName}";
-            var dcFileName = $"{dataOceanPath}{coordSysFileName}";
-            //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
-            var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
-            if (tileMetadata != null)
-            {
-              notificationResult.MinZoomLevel = tileMetadata.MinZoom;
-              notificationResult.MaxZoomLevel = tileMetadata.MaxZoom;
-            }
-          }
-          catch (Exception e)
+          var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}{Path.DirectorySeparatorChar}";
+          var dxfFileName = $"{dataOceanPath}{fileName}";
+          var dcFileName = $"{dataOceanPath}{coordSysFileName}";
+          //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
+          var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
+          if (tileMetadata != null)
           {
-            log.LogError(
-              $"FileImport GenerateDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
-            throw;
+            notificationResult.MinZoomLevel = tileMetadata.MinZoom;
+            notificationResult.MaxZoomLevel = tileMetadata.MaxZoom;
           }
         }
+        catch (Exception e)
+        {
+          log.LogError(
+            $"FileImport GenerateDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
+          throw;
+        }        
       }
     }
 

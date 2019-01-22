@@ -87,7 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <value>
     /// The custom customHeaders.
     /// </value>
-    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
+    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders(Request.Path.Value.Contains("internal"));
 
     /// <summary>
     /// Gets the customer uid from the current context

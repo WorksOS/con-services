@@ -29,9 +29,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public TileGenerationController(IPegasusClient pegasusClient)
+    public TileGenerationController(IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn)
     {
       this.pegasusClient = pegasusClient;
+      this.authn = authn;
     }
 
     /// <summary>
