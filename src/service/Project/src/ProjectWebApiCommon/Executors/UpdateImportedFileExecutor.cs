@@ -78,7 +78,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log,
               serviceExceptionHandler, projectRepo);
 
-          await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, updateImportedFile.ProjectUid, customerUid,
+          await ImportedFileRequestHelper.GenerateDxfTiles(
+            addFileResult, updateImportedFile.DataOceanRootFolder, updateImportedFile.ProjectUid, customerUid,
             updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
             project.CoordinateSystemFileName, updateImportedFile.ImportedFileUid, log, customHeaders, tileServiceProxy,
             raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);

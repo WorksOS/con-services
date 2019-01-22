@@ -149,7 +149,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileDescriptorSingleResult importedFile;
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
+        var createImportedFile = CreateImportedFile.Create(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
           fileDescriptor,
           importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
@@ -158,7 +158,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
-          fileEntry.createTime, fileEntry.modifyTime);
+          fileEntry.createTime, fileEntry.modifyTime,
+          DataOceanRootFolder);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -175,7 +176,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        var importedFileUpsertEvent = UpdateImportedFile.CreateUpdateImportedFile
+        var importedFileUpsertEvent = UpdateImportedFile.Create
         (
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
@@ -185,7 +186,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId
+          fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
+          DataOceanRootFolder
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

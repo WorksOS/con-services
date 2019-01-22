@@ -438,8 +438,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .ConfigureAwait(false);
       }
 
-      var createImportedFile = CreateImportedFile.CreateACreateImportedFile(projectUid, filename, fileDescriptor,
-          importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc);
+      var createImportedFile = CreateImportedFile.Create(projectUid, filename, fileDescriptor,
+          importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder);
 
        var importedFileResult = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -520,8 +520,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(projectUid), fileName,
-          fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc);
+        var createImportedFile = CreateImportedFile.Create(Guid.Parse(projectUid), fileName,
+          fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -537,13 +537,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        var importedFileUpsertEvent = UpdateImportedFile.CreateUpdateImportedFile(
+        var importedFileUpsertEvent = UpdateImportedFile.Create(
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileType,
           importedFileType == ImportedFileType.SurveyedSurface
             ? surveyedUtc
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
-          Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId
+          Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
+          DataOceanRootFolder
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

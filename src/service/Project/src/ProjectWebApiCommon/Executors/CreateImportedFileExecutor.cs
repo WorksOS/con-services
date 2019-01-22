@@ -95,7 +95,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         //Generate DXF tiles
         if (createimportedfile.ImportedFileType == ImportedFileType.Linework || createimportedfile.ImportedFileType == ImportedFileType.Alignment)
         {
-          await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, createimportedfile.ProjectUid, customerUid,
+          await ImportedFileRequestHelper.GenerateDxfTiles(
+            addFileResult, createimportedfile.DataOceanRootFolder, createimportedfile.ProjectUid, customerUid,
             createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
             project.CoordinateSystemFileName, createImportedFileEvent.ImportedFileUID, log, customHeaders, tileServiceProxy,
             raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);

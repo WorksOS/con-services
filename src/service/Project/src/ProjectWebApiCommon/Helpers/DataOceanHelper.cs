@@ -16,6 +16,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   public class DataOceanHelper
   {
     /// <summary>
+    /// Construct the path in DataOcean
+    /// </summary>
+    public static string DataOceanPath(string rootFolder, string customerUid, string projectUid)
+    {
+      return $"{Path.DirectorySeparatorChar}{rootFolder}{Path.DirectorySeparatorChar}{customerUid}{Path.DirectorySeparatorChar}{projectUid}";
+    }
+    /// <summary>
     /// Writes the importedFile to DataOcean
     ///   this may be a create or update, so ok if it already exists already
     /// </summary>
@@ -26,7 +33,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ITPaaSApplicationAuthentication authn)
     {
       var customHeaders = CustomHeaders(authn);
-      var dataOceanPath = $"{Path.DirectorySeparatorChar}{rootFolder}{Path.DirectorySeparatorChar}{customerUid}{Path.DirectorySeparatorChar}{projectUid}";
+      var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid);
       string dataOceanFileName = Path.GetFileName(pathAndFileName);
 
       //TODO: DataOcean has versions of files. We should leverage that rather than appending surveyed UTC to file name.

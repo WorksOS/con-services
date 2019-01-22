@@ -236,7 +236,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #region tiles
 
-    public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, 
+    public static async Task GenerateDxfTiles(AddFileResult notificationResult, string rootFolder, Guid projectUid, string customerUid, 
       string fileName, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, Guid importedFileUid, 
       ILogger log, IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy, IRaptorProxy raptorProxy, 
       IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, IDataOceanClient dataOceanClient, 
@@ -253,7 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               log, serviceExceptionHandler, authn, dataOceanClient, configStore);
           }
 
-          var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}{Path.DirectorySeparatorChar}";
+          var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
           var dxfFileName = $"{dataOceanPath}{fileName}";
           var dcFileName = $"{dataOceanPath}{coordSysFileName}";
           //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
