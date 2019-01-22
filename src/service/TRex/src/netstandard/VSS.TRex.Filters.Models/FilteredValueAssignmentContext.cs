@@ -50,7 +50,7 @@ namespace VSS.TRex.Filters.Models
         /// As many queries do not need access to probe positions the array is created
         /// only if InitialiseProbePositions() is called
         /// </summary>
-        public ProbePoint[,] ProbePositions;
+        public ProbePoint[,] ProbePositions { get; } = new ProbePoint[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// Constructor...
@@ -61,11 +61,6 @@ namespace VSS.TRex.Filters.Models
             PreviousFilteredValue.Clear();
             CellProfile = null;
 //          todo  LiftBuildSettings = Nil;
-        }
-
-        public void InitialiseProbePositions()
-        {
-            ProbePositions = new ProbePoint[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
         }
     }
 }

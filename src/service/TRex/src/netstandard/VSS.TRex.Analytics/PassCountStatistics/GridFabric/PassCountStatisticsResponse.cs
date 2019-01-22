@@ -62,7 +62,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
       return new PassCountStatisticsResult
       {
         IsTargetPassCountConstant = IsTargetValueConstant,
-        ConstantTargetPassCountRange = LastPassCountTargetRange,
+        ConstantTargetPassCountRange = IsTargetValueConstant ? LastPassCountTargetRange : new PassCountRangeRecord(0, 0),
         AboveTargetPercent = ValueOverTargetPercent,
         WithinTargetPercent = ValueAtTargetPercent,
         BelowTargetPercent = ValueUnderTargetPercent,

@@ -2,14 +2,14 @@
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
     public class TAGFileBufferQueueManagerTests
     {
-        private static MutableClientServer TAGClientServer = null;
+        private static MutableClientServer TAGClientServer;
         private static IIgnite ignite;
 
         private static void EnsureServer()

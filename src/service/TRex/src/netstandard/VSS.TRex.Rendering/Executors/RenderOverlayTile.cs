@@ -589,7 +589,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred", e);
+        Log.LogError(e, "Exception occurred");
         ResultStatus = RequestErrorStatus.Exception;
       }
 

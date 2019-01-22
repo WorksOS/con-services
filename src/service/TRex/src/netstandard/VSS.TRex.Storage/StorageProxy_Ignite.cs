@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Apache.Ignite.Core;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Storage.Utilities;
@@ -36,11 +37,8 @@ namespace VSS.TRex.Storage
 
     private void EstablishCaches()
     {
-      spatialCache = new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(
-        ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
-      nonSpatialCache =
-        new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
-          ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
+      nonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>()(ignite, Mutability);
     }
 
     /// <summary>
@@ -82,7 +80,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError("Exception performing mutability conversion:", e);
+          Log.LogError(e, "Exception performing mutability conversion:");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -134,7 +132,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError("Exception performing mutability conversion:", e);
+          Log.LogError(e, "Exception performing mutability conversion:");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -181,7 +179,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception occurred:", e);
+        Log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -231,7 +229,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception occurred:", e);
+        Log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -259,7 +257,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception E)
         {
-          Log.LogError("Exception occurred:", E);
+          Log.LogError(E, "Exception occurred:");
         }
 
         ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamName);

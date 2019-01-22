@@ -5,6 +5,7 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache.Affinity;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
+using VSS.TRex.Common.Utilities;
 using Xunit;
 
 namespace VSS.TRex.Tests.Affinity
@@ -29,7 +30,7 @@ namespace VSS.TRex.Tests.Affinity
             return result;
         }
 
-        public int GetPartition(object key) => Math.Abs(((NonSpatialAffinityKey)key).ProjectID.GetHashCode()) % Partitions;
+        public int GetPartition(object key) => Math.Abs(GuidHashCode.Hash(((NonSpatialAffinityKey)key).ProjectID)) % Partitions;
     }
 
     public struct NonSpatialAffinityKey

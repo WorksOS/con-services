@@ -7,13 +7,15 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.WebApi.Common;
 using WebApiContrib.Core.Formatter.Protobuf;
 
@@ -41,7 +43,7 @@ namespace VSS.Productivity3D.WebApi
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
-          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net(repoName: LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
@@ -70,9 +72,11 @@ namespace VSS.Productivity3D.WebApi
       });
 
       services.AddResponseCompression();
-      services.AddMemoryCache();
       services.AddCustomResponseCaching();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddSingleton<CacheInvalidationService>();
 
       /*services.AddOpenTracing(builder =>
       {
@@ -163,7 +167,7 @@ namespace VSS.Productivity3D.WebApi
       }
       catch (Exception e)
       {
-        log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
+        log.LogError(e, "Exception loading config");
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
       }

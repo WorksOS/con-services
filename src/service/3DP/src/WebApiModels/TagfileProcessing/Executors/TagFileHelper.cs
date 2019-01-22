@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       }
       catch (Exception e)
       {
-        log.LogError($"SendTagFileToTRex: returned exception: {e.Message}");
+        log.LogError(e, $"SendTagFileToTRex: returned exception");
       }
 
       return new ContractExecutionResult((int) TTAGProcServerProcessResult.tpsprUnknown);

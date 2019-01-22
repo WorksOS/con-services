@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Types;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
@@ -88,7 +89,7 @@ namespace VSS.TRex.Pipelines
 
         // public float FNoChangeVolumeTolerance;
 
-        public AreaControlSet AreaControlSet { get; set;  }
+        public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
 
         private bool pipelineCompleted;
 
@@ -164,8 +165,6 @@ namespace VSS.TRex.Pipelines
             // FPixelXWorldSize := 0.0;
             // FPixelYWorldSize := 0.0;
 
-            AreaControlSet = AreaControlSet.Null();
-
             // FLiftBuildSettings:= Nil;
 
             // FTimeToLiveSeconds:= kDefaultSubgridPipelineTimeToLiveSeconds;
@@ -240,7 +239,8 @@ namespace VSS.TRex.Pipelines
                 ProdDataMask = RequestAnalyser.ProdDataMask,
                 SurveyedSurfaceOnlyMask = RequestAnalyser.SurveydSurfaceOnlyMask,
                 Filters = FilterSet,
-                ReferenceDesignID = ReferenceDesignID
+                ReferenceDesignID = ReferenceDesignID,
+                AreaControlSet = AreaControlSet
             };
 
             var Response = requestor.Execute();

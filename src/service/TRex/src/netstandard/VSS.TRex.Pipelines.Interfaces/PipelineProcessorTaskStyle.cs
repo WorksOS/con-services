@@ -6,6 +6,7 @@
     AggregatedPipelined,
     SurfaceExport,
     PatchExport,
-    PVMRendering
+    PVMRendering,
+    GriddedReport
   }
 }

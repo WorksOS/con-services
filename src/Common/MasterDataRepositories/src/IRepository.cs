@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace VSS.MasterData.Repositories
 {
     public interface IRepository<in T>
     {
-        Task<int> StoreEvent(T deserializedObject);
+        Task<int> StoreEvent(T evt);
     }
 }

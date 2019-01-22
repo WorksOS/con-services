@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using ASNode.CMVChange.RPC;
+using ASNode.DXF.RequestBoundaries.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.GridReport.RPC;
@@ -470,33 +471,10 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <summary>
     /// Gets a gridded CSV export of the production data from Raptor
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="ReportType"></param>
-    /// <param name="ExternalDescriptor"></param>
-    /// <param name="DesignFile"></param>
-    /// <param name="Interval"></param>
-    /// <param name="ElevationReport"></param>
-    /// <param name="CutFillReport"></param>
-    /// <param name="CMVReport"></param>
-    /// <param name="MDPReport"></param>
-    /// <param name="PassCountReport"></param>
-    /// <param name="TemperatureReport"></param>
-    /// <param name="ReportOption"></param>
-    /// <param name="StartNorthing"></param>
-    /// <param name="StartEasting"></param>
-    /// <param name="EndNorthing"></param>
-    /// <param name="EndEasting"></param>
-    /// <param name="Direction"></param>
-    /// <param name="Filter"></param>
-    /// <param name="LiftBuildSettings"></param>
-    /// <param name="ICOptions"></param>
-    /// <param name="DataExport"></param>
-    /// <returns></returns>
     public int GetGriddedOrAlignmentCSVExport(long DataModelID, int ReportType, TASNodeRequestDescriptor ExternalDescriptor, TVLPDDesignDescriptor DesignFile, double Interval, bool ElevationReport, bool CutFillReport, bool CMVReport, bool MDPReport, bool PassCountReport, bool TemperatureReport, int ReportOption, double StartNorthing, double StartEasting, double EndNorthing, double EndEasting, double Direction, TICFilterSettings Filter, TICLiftBuildSettings LiftBuildSettings, TSVOICOptions ICOptions, out MemoryStream DataExport)
     {
       return client.GetGriddedOrAlignmentCSVExport(DataModelID, ReportType, ExternalDescriptor, DesignFile, Interval, ElevationReport, CutFillReport, CMVReport, MDPReport, PassCountReport, TemperatureReport, ReportOption, StartNorthing, StartEasting, EndNorthing, EndEasting, Direction, Filter, LiftBuildSettings, ICOptions, out DataExport);
     }
-
 
     public TASNodeErrorStatus GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
@@ -525,7 +503,6 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <param name="args">Set of the grid report parameters.</param>
     /// <param name="dataReport">The reports data.</param>
     /// <returns>The Raptor's request result code.</returns>
-    /// 
     public int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport)
     {
       return client.GetGridReport(args, out dataReport);
@@ -535,6 +512,12 @@ namespace VSS.Productivity3D.Common.Proxies
     public int GetReportStationOffset(TASNodeServiceRPCVerb_StationOffsetReport_Args args, out MemoryStream dataReport)
     {
       return client.GetStationOffsetReport(args, out dataReport);
+    }
+
+    /// <inheritdoc />
+    public TASNodeErrorStatus GetBoundariesFromLinework(TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args args, out TWGS84LineworkBoundary[] lineworkBoundaries)
+    {
+      return client.GetBoundariesFromLinework(args, out lineworkBoundaries);
     }
   }
 }

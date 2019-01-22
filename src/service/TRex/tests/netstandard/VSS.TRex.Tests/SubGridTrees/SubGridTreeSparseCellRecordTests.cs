@@ -8,7 +8,7 @@ using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTreeSparseCellRecordTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+        public class SubGridTreeSparseCellRecordTests : IClassFixture<DILoggingAndStorageProxyFixture>
   {
         [Fact]
         public void Test_SubGridTreeSparseCellRecord_Creation()

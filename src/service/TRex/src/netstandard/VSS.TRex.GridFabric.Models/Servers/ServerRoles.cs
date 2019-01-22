@@ -64,5 +64,10 @@
     /// A server responsible for decimating production elevation data into a TIN surface for export
     /// </summary>
     public const string TIN_SURFACE_EXPORT_ROLE = "TINSurfaceExport";
+
+    /// <summary>
+    /// A server responsible for assembling reporting queries, such as grid report, from production data
+    /// </summary>
+    public const string REPORTING_ROLE = "Reporting";
   }
 }

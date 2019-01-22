@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
 {
-  public class CalculateDesignProfileResponse : BaseRequestResponse
+  public class CalculateDesignProfileResponse : BaseDesignRequestResponse
   {
     private const byte VERSION_NUMBER = 1;
 

@@ -1,5 +1,6 @@
 ﻿using ASNodeRaptorReports;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Models.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {

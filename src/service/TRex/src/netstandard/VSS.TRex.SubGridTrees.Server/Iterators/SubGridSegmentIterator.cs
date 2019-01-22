@@ -7,19 +7,15 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
-    /// This supports the idea of iterating through the segments in a subgrid in a way that hides all the details
+    /// This supports the idea of iterating through the segments in a sub grid in a way that hides all the details
     /// of how this is done...
     /// </summary>
     public class SubGridSegmentIterator : ISubGridSegmentIterator
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridSegmentIterator));
 
-        // CurrentSubgridSegment is a reference to the current subgrid segment that the iterator is currently
-        // up to in the sub grid tree scan. 
-        private ISubGridCellPassesDataSegment CurrentSubgridSegment { get; set; } = null;
-
         // IterationState records the progress of the iteration by recording the path through
-        // the subgrid tree which marks the progress of the iteration
+        // the sub grid tree which marks the progress of the iteration
         public IIteratorStateIndex IterationState { get; set; } = new IteratorStateIndex();
 
         public IStorageProxy StorageProxy { get; set; }
@@ -27,13 +23,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool RetrieveLatestData { get; set; } = false;
         public bool RetrieveAllPasses { get; set; } = true;
 
-        protected ISubGridCellPassesDataSegment LocateNextSubgridSegmentInIteration()
+        protected ISubGridCellPassesDataSegment LocateNextSubGridSegmentInIteration()
         {
             ISubGridCellPassesDataSegment Result = null;
 
             if (IterationState.SubGrid == null)
             {
-                Log.LogCritical("No subgrid node assigned to iteration state");
+                Log.LogCritical("No sub grid node assigned to iteration state");
                 return null;
             }
 
@@ -62,7 +58,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     }
 
                     // This additional check to determine if the segment is defined
-                    // is necesary to check if an earlier thread through this code has
+                    // is necessary to check if an earlier thread through this code has
                     // already allocated the new segment
                     if (SegmentInfo.Segment == null)
                     {
@@ -91,7 +87,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
                   {
                     // This additional check to determine if the required storage classes
-                    // are present is necesary to check if an earlier thread through this code has
+                    // are present is necessary to check if an earlier thread through this code has
                     // already allocated them
 
                     if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
@@ -108,7 +104,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             // to link it into the cache segment MRU management
                             if (Result != null && Result.Owner.PresentInCache)
                             {
-                               DataStoreInstance.GridDataCache.SubgridSegmentTouched(Result);
+                               DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
                             }
                             */
                         }
@@ -122,7 +118,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             // independently remove it here
                             if (Result != null && Result.Owner.PresentInCache)
                             {
-                                DataStoreInstance.GridDataCache.SubgridSegmentTouched(Result);
+                                DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
                             }
                             */
 
@@ -143,16 +139,20 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return Result;
         }
 
+        // CurrentSubGridSegment is a reference to the current sub grid segment that the iterator is currently
+        // up to in the sub grid tree scan. 
+
         public ISubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
 
         // property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 
         /// <summary>
-        /// ReturnDirtyOnly allows the iterator to only return segments in the subgrid that are dirty
+        /// ReturnDirtyOnly allows the iterator to only return segments in the sub grid that are dirty
         /// </summary>
         public bool ReturnDirtyOnly { get; set; }
 
-        public IterationDirection IterationDirection { get { return IterationState.IterationDirection; } set { IterationState.IterationDirection = value; } }
+        public IterationDirection IterationDirection { get => IterationState.IterationDirection;  set => IterationState.IterationDirection = value;
+        }
 
         /// <summary>
         /// Allows the caller of the iterator to restrict the
@@ -161,7 +161,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool ReturnCachedItemsOnly { get; set; } = false;
 
         /// <summary>
-        ///  The subgrid whose segments are being iterated across
+        ///  The sub grid whose segments are being iterated across
         /// </summary>
         public IServerLeafSubGrid SubGrid
         {
@@ -187,7 +187,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             StorageProxy = storageProxy;
         }
 
-        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, ISubGridDirectory directory, IStorageProxy storageProxy) : this(subgrid, storageProxy)
+        public SubGridSegmentIterator(IServerLeafSubGrid subGrid, ISubGridDirectory directory, IStorageProxy storageProxy) : this(subGrid, storageProxy)
         {
             Directory = directory;
         }
@@ -196,7 +196,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool MoveNext() => CurrentSubGridSegment == null ? MoveToFirstSubGridSegment() : MoveToNextSubGridSegment();
 
-        // MoveToFirstSubGridSegment moves to the first segment in the subgrid
+        // MoveToFirstSubGridSegment moves to the first segment in the sub grid
         public bool MoveToFirstSubGridSegment()
         {
             NumberOfSegmentsScanned = 0;
@@ -206,10 +206,10 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return MoveToNextSubGridSegment();
         }
 
-        // MoveToNextSubGridSegment moves to the next segment in the subgrid
+        // MoveToNextSubGridSegment moves to the next segment in the sub grid
         public bool MoveToNextSubGridSegment()
         {
-            ISubGridCellPassesDataSegment SubGridSegment = LocateNextSubgridSegmentInIteration();
+            ISubGridCellPassesDataSegment SubGridSegment = LocateNextSubGridSegmentInIteration();
 
             if (SubGridSegment == null) // We are at the end of the iteration
             {
@@ -224,17 +224,17 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return true;
         }
 
-        public void CurrentSubgridSegmentDestroyed() => CurrentSubGridSegment = null;
+        public void CurrentSubGridSegmentDestroyed() => CurrentSubGridSegment = null;
 
         public void InitialiseIterator() => IterationState.Initialise();
 
         public bool IsFirstSegmentInTimeOrder => IterationState.Idx == 0;
 
         // SegmentListExtended advises the iterator that the segment list has grown to include
-        // new segments. The mening of this operation is that the segment the iterator is
-        // currently pointingh at is still valid, but some number of segments have been
+        // new segments. The meaning of this operation is that the segment the iterator is
+        // currently pointing at is still valid, but some number of segments have been
         // inserted into the list of segments. The iterator should continue from the current
-        // iterator location in the list, but note the additional number of sements in the list.
+        // iterator location in the list, but note the additional number of segments in the list.
         public void SegmentListExtended() => IterationState.SegmentListExtended();
 
         public int CurrentSegmentIndex => IterationState.Idx;

@@ -3,7 +3,7 @@
 namespace VSS.Tile.Service.Common.Models
 {
   /// <summary>
-  /// Classes that are the model for the GeoJSON for design boundaries.
+  /// Classes that are the model for the GeoJSON for geofence boundaries.
   /// </summary>
   /// 
   public class Geometry
@@ -29,5 +29,4 @@ namespace VSS.Tile.Service.Common.Models
     public string type { get; set; }
     public List<Feature> features { get; set; }
   }
-
 }

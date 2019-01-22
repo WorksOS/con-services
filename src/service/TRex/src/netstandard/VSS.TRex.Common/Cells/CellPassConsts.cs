@@ -112,6 +112,11 @@ namespace VSS.TRex.Common.CellPasses
     public const byte NullCCATarget = byte.MaxValue;
 
     /// <summary>
+    /// The CCA value, which a lift is marked as thick at.
+    /// </summary>
+    public const byte ThickLiftCCAValue = 120;
+
+    /// <summary>
     /// Null machine type value
     /// </summary>
     public const byte MachineTypeNull = 0;

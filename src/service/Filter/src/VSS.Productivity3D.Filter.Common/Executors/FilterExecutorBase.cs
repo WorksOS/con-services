@@ -44,9 +44,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Store the filter in the database and notify Raptor of a filter change
     /// </summary>
-    /// <typeparam name="T">The type of event</typeparam>
-    /// <param name="filterRequest">The filter data</param>
-    /// <param name="errorCodes">Error codes to use for exceptions</param>
     protected async Task<T> StoreFilterAndNotifyRaptor<T>(FilterRequestFull filterRequest, int[] errorCodes) where T : IFilterEvent
     {
       var filterEvent = default(T);
@@ -56,7 +53,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         filterEvent = AutoMapperUtility.Automapper.Map<T>(filterRequest);
         filterEvent.ActionUTC = DateTime.UtcNow;
 
-        var count = await ((IFilterRepository)Repository).StoreEvent(filterEvent).ConfigureAwait(false);
+        var count = await ((IFilterRepository)Repository).StoreEvent(filterEvent);
         if (count == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCodes[0]);
@@ -69,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
             return filterEvent;
           }
 
-          await NotifyRaptor(filterRequest);
+          _ = Task.Run(()=> NotifyRaptor(filterRequest));
         }
       }
       catch (Exception e)
@@ -94,15 +91,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       catch (ServiceException se)
       {
-        log.LogError(
-          $"FilterExecutorBase: RaptorServices failed with service exception. FilterUid:{filterRequest.FilterUid}. Exception Thrown: {se.Message}. ");
+        log.LogError(se, $"FilterExecutorBase: RaptorServices failed with service exception. FilterUid:{filterRequest.FilterUid}.");
         //rethrow this to surface it
         throw;
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"FilterExecutorBase: RaptorServices failed with exception. FilterUid:{filterRequest.FilterUid}. Exception Thrown: {e.Message}. ");
+        log.LogError(e, $"FilterExecutorBase: RaptorServices failed with exception. FilterUid:{filterRequest.FilterUid}.");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "raptorProxy.NotifyFilterChange", e.Message);
       }
 
@@ -120,6 +115,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected void SendToKafka(string filterUid, string payload, int errorCode)
     {
+      Task.Run(() => {
       try
       {
         producer.Send(kafkaTopicName,
@@ -132,6 +128,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode, e.Message);
       }
+      });
     }
   }
 }

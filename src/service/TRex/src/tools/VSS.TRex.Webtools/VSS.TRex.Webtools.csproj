@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1"/>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
@@ -28,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\fetch-data\fetch-data-model.ts" />
+    <None Remove="ClientApp\src\app\fetch-data\fetch-data.component.ts" />
+    <None Remove="ClientApp\src\app\fetch-data\fetch-data.service.ts" />
     <None Remove="ClientApp\src\app\grid-service-deployer\grid-service-deployer.service.ts" />
     <None Remove="ClientApp\src\app\grid-status\grid-model.ts" />
     <None Remove="ClientApp\src\app\grid-status\grid-status.service.ts" />
@@ -49,6 +52,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Alignments.Interfaces\VSS.TRex.Alignments.Interfaces.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj" />
@@ -63,6 +68,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\grid-service-deployer\grid-service-deployer.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\grid-status\grid-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\grid-status\grid-status.service.ts" />

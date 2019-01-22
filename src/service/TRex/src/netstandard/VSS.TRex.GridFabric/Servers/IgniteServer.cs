@@ -5,7 +5,7 @@ using System;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.Servers
+namespace VSS.TRex.GridFabric.Servers
 {
     /// <summary>
     /// A base class for deriving server and client instances that interact with the Ignite In Memory Data Grid
@@ -33,19 +33,11 @@ namespace VSS.TRex.Servers
         public string TRexNodeID = string.Empty;
 
         /// <summary>
-        /// Permits configuration of server specific parameters that influence the initialization of the server type
-        /// </summary>
-        public virtual void SetupServerSpecificConfiguration()
-        {
-        }
-
-        /// <summary>
         /// Default constructor for the TRex Ignite Server. This must be called in the base() constructor chain to ensure
         /// the server operating environment is correctly configured before instantiation of the server inner workings
         /// </summary>
         public IgniteServer()
         {
-            SetupServerSpecificConfiguration(); // Todo: Virtual member call in constructor
         }
 
         /// <summary>

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -43,17 +45,18 @@ namespace ExecutorTests.Internal
       ServiceProvider = new ServiceCollection()
         .AddLogging()
         .AddSingleton(loggerFactory)
-          .AddSingleton<IConfigurationStore, GenericConfiguration>()
-          .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
-          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
-          .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-          .AddTransient<IProjectListProxy, ProjectListProxy>()
-          .AddTransient<IFileListProxy, FileListProxy>()
-          .AddTransient<IRaptorProxy, RaptorProxy>()
-          .AddSingleton<IKafka, RdKafkaDriver>()
-          .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
-          .AddMemoryCache()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
+        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+        .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+        .AddTransient<IProjectListProxy, ProjectListProxy>()
+        .AddTransient<IFileListProxy, FileListProxy>()
+        .AddTransient<IRaptorProxy, RaptorProxy>()
+        .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
+        .AddMemoryCache()
+        .AddSingleton<IDataCache, InMemoryDataCache>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Common.Proxies
       }
       catch (Exception ex)
       {
-        log.LogWarning("Exception creating PDS TAG processor client. {0}", ex.Message);
+        log.LogWarning(ex, "Exception creating PDS TAG processor client");
         return null;
       }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -119,7 +118,7 @@ namespace VSS.TRex.Designs.Executors
             }
             catch (Exception E)
             {
-                Log.LogError("Execute: Exception: ", E);
+                Log.LogError(E, "Execute: Exception: ");
                 return null;
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -10,6 +11,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -29,6 +31,8 @@ namespace VSS.TRex.Profiling.Executors
     private readonly GridDataType ProfileTypeRequired;
     private readonly XYZ[] NEECoords;
     private readonly IFilterSet Filters;
+    private readonly ProfileStyle ProfileStyle;
+    private readonly VolumeComputationType VolumeType;	
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
@@ -50,17 +54,19 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="filters"></param>
     /// <param name="designUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
+    public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      Guid designUid, bool returnAllPassesAndLayers)
+      Guid designUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
+      ProfileStyle = profileStyle;
       ProjectID = projectID;
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
       Filters = filters;
       DesignUid = designUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -144,10 +150,15 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           Log.LogInformation("Creating IProfileBuilder");
-
           IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
+          if (Profiler == null)
+          {
+            Log.LogWarning($"Failed to create IProfileBuilder via DI");
+            return Response = new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedOnRequestProfile};
+          }
 
-          Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, design,
+
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design,
             /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
@@ -185,7 +196,7 @@ namespace VSS.TRex.Profiling.Executors
       }
       catch (Exception E)
       {
-        Log.LogError("Execute: Exception:", E);
+        Log.LogError(E, "Execute: Exception:");
       }
 
       return new ProfileRequestResponse<T>();

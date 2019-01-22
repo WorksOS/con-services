@@ -149,7 +149,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 }
                 catch (Exception E)
                 {
-                    Log.LogWarning($"Invalid tag file. Exception in TTagFile.ReadStream - FHeader.LoadFromStream:", E);
+                    Log.LogError(E, "Invalid tag file. Exception in TTagFile.ReadStream - FHeader.LoadFromStream:");
                     return TAGReadResult.InvalidDictionary;
                 }
 
@@ -179,7 +179,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 }
                 catch (Exception E)
                 {
-                    Log.LogWarning($"Exception in TagFile.ReadFile:", E);
+                    Log.LogWarning(E, "Exception in TagFile.ReadFile:");
                     return TAGReadResult.InvalidDictionary;
                 }
 
@@ -256,7 +256,7 @@ namespace VSS.TRex.TAGFiles.Classes
                     }
                     catch (Exception E)
                     {
-                        Log.LogError("Exception in TagFile.ReadFile while reading field value:", E);
+                        Log.LogError(E, "Exception in TagFile.ReadFile while reading field value:");
                         return TAGReadResult.InvalidValue;
                     }
                 }

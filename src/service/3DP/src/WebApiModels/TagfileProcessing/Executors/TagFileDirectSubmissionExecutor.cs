@@ -21,38 +21,28 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
   /// <summary>
   /// For submitting direct submitted TAG files to TRex and Raptor.
   /// for now: we will ALWAYS send to Raptor, but only send to TRex if configured.
-  ///          if TRex fails, then we will continue sending to Raptor
+  /// if TRex fails, then we will continue sending to Raptor
   /// </summary>
   public class TagFileDirectSubmissionExecutor : RequestExecutorContainer
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionTagFileRequest;
+      var request = CastRequestObjectTo<CompactionTagFileRequest>(item);
 
-      if (request == null)
-        ThrowRequestTypeCastException<CompactionTagFileRequest>();
+      var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY_TAGFILE");
+      var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY_TAGFILE");
 
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "3dPm Unknown exception.");
-
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out var useTrexGateway);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY"), out var useRaptorGateway);
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
 
       if (useTrexGateway)
       {
         request.Validate();
 
-        // gobbles any exception
         result = await CallTRexEndpoint(request).ConfigureAwait(false);
 
-        if (result.Code == 0)
-        {
-          log.LogDebug($"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'.");
-        }
-        else
-        {
-          log.LogDebug($"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
-        }
+        log.LogDebug(result.Code == 0
+          ? $"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'."
+          : $"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
       }
 
       if (useRaptorGateway)
@@ -95,7 +85,6 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             "No tag file processing server configured."));
-
       }
 
       return result;
@@ -131,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       }
       catch (Exception ex)
       {
-        log.LogError($"PostTagFile (Direct Raptor): exception {ex.Message}");
+        log.LogError(ex, "PostTagFile (Direct Raptor)");
         return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprUnknown));
       }
       finally
@@ -291,8 +280,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var nameWithoutTime = tagFileName.Substring(0, tagFileName.Length - 10);
       //TCC org ID is not provided with direct submission from machines
       var prefix = string.IsNullOrEmpty(tccOrgId) ? string.Empty : $"{tccOrgId}/";
+
       return $"{prefix}{parts[0]}{separator}{parts[1]}/{archiveFolder}/{nameWithoutTime}/{tagFileName}";
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");

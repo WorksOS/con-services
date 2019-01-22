@@ -45,7 +45,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         {
           var Executor = GetExecutor();
 
-          Executor.InitialiseComputeFunc();
           Executor.UnpackArgument(arg);
 
           result = Executor.Execute();
@@ -57,7 +56,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       }
       catch (Exception E)
       {
-        Log.LogError("Exception occurred:", E);
+        Log.LogError(E, "Exception occurred:");
 
         return new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Unknown};
       }

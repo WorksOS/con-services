@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -87,7 +87,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       // may be none, return success and empty list
       return new FilterDescriptorListResult
       {
-        FilterDescriptors = filters?.Select(filter => AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
+        FilterDescriptors = filters?
+          .Select(filter => AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter))
           .ToImmutableList()
       };
     }

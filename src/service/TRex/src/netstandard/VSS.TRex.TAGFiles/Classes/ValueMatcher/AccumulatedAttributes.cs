@@ -53,7 +53,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         {
           // If there are available entries to reuse, then reuse them...
           if (NumAttrs < list.Count)
-            list[NumAttrs - 1] = new AccumulatedAttribute(dateTime, value);
+            list[NumAttrs] = new AccumulatedAttribute(dateTime, value);
           else
             list.Add(new AccumulatedAttribute(dateTime, value));
 
@@ -97,13 +97,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
                 return true;
             }
 
-            for (int I = 0; I < NumAttrs - 1; I++)
+            for (int I = NumAttrs - 1; I >= 0; I--)
             {
-                if (dateTime >= list[I].dateTime && dateTime < list[I + 1].dateTime)
-                {
-                    value = list[I].value;
-                    return true;
-                }
+              if (dateTime >= list[I].dateTime)
+              {
+                value = list[I].value;
+                return true;
+              }
             }
             
             // It should not be possible to get here...

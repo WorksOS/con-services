@@ -17,7 +17,7 @@ namespace TestUtility
     /// </summary>
     public DesignListResult GetDesignsFromTrex(string customerUid, string projectUid, string jwt = null)
     {
-      string uri = Environment.GetEnvironmentVariable("TREX_IMPORTFILE_R_API_URL") + $"?projectUid={projectUid}";
+      string uri = Environment.GetEnvironmentVariable("TREX_IMPORTFILE_READ_API_URL") + $"?projectUid={projectUid}";
 
       var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid, jwt);
       var designs = JsonConvert.DeserializeObject<DesignListResult>(response);

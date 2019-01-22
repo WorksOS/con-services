@@ -3,11 +3,11 @@ using AutoMapper;
 using VSS.Productivity3D.Models.Models;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Alignments;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -92,11 +92,13 @@ namespace VSS.TRex.Gateway.Common.Converters
         {
           fence = new Fence();
           fence.Points = Automapper.Map<List<Point>, List<FencePoint>>(src.PolygonGrid);
+          fence.UpdateExtents();
         }
         else if (src.PolygonLL != null)
         {
           fence = new Fence();
           fence.Points = Automapper.Map<List<WGSPoint>, List<FencePoint>>(src.PolygonLL);
+          fence.UpdateExtents();
         }
 
         return new CellSpatialFilter
@@ -218,6 +220,18 @@ namespace VSS.TRex.Gateway.Common.Converters
             opt => opt.MapFrom(f => f.Extents))
           .ForMember(x => x.SurveyedUtc,
             opt => opt.MapFrom(f => f.AsAtDate));
+
+        CreateMap<Alignment, DesignFileDescriptor>()
+          .ForMember(x => x.FileType,
+            opt => opt.UseValue(ImportedFileType.Alignment))
+          .ForMember(x => x.Name,
+            opt => opt.MapFrom(f => f.DesignDescriptor.FileName))
+          .ForMember(x => x.DesignUid,
+            opt => opt.MapFrom(f => f.ID))
+          .ForMember(x => x.Extents,
+            opt => opt.MapFrom(f => f.Extents))
+          .ForMember(x => x.SurveyedUtc,
+            opt => opt.Ignore());
       }
     }
   }

@@ -14,13 +14,12 @@ namespace VSS.Productivity3D.Common.Executors
     {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as CellDatumRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<CellDatumRequest>();
+      var request = CastRequestObjectTo<CellDatumRequest>(item);
 
       if (GetCellDatumData(request, out var data))
+      {
         return ConvertCellDatumResult(data);
+      }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "No cell datum returned"));
@@ -28,7 +27,7 @@ namespace VSS.Productivity3D.Common.Executors
 
     protected virtual bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
     {
-      var raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId);
+      var raptorFilter = RaptorConverters.ConvertFilter(request.filter);
 
       return raptorClient.GetCellProductionData
       (request.ProjectId ?? -1,

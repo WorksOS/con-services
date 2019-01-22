@@ -22,7 +22,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 
-namespace VSS.TRex.Servers.Client
+namespace VSS.TRex.GridFabric.Servers.Client
 {
     /// <summary>
     /// Defines a representation of a client able to request TRex related compute operations using
@@ -123,7 +123,7 @@ namespace VSS.TRex.Servers.Client
           }
           catch (Exception e)
           {
-            Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:", e);
+            Log.LogError(e, $"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:");
             throw;
           }
           finally

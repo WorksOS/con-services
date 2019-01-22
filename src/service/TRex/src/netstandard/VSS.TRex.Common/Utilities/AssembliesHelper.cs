@@ -55,7 +55,7 @@ namespace VSS.TRex.Common.Utilities
         }
         catch (Exception ex)
         {
-          Log.LogError($"Exception raised while loading assembly {dll}", ex);
+          Log.LogError(ex, $"Exception raised while loading assembly {dll}");
         }
       }
 

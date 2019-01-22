@@ -31,6 +31,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
       : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository)
     {
+
       FileListProxy = fileListProxy;
     }
 
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     { }
 
     /// <summary>
-    /// Processes the UpsertFilter Request
+    /// Processes the PutFilter Request
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -57,14 +58,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       if (filterRequest.FilterType == FilterType.Transient)
       {
-        result = await ProcessTransient(filterRequest).ConfigureAwait(false);
+        result = await ProcessTransient(filterRequest);
       }
       else
       {
         // Hydrate the alignment and design filenames if present (persistent filters only).
         FilterFilenameUtil.GetFilterFileNames(log, serviceExceptionHandler, FileListProxy, filterRequest);
 
-        result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
+        result = await ProcessPersistent(filterRequest);
       }
 
       FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy, filterRequest.CustomHeaders);
@@ -72,16 +73,16 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       return result;
     }
 
-    private async Task<FilterDescriptorSingleResult> ProcessTransient(FilterRequestFull filterRequest)
+    private Task<FilterDescriptorSingleResult> ProcessTransient(FilterRequestFull filterRequest)
     {
       // if filterUid supplied, then exception as cannot update a transient filter
-      //   else create new one Note that can have duplicate transient name (i.e. "") per cust/prj/user
+      // else create new one Note that can have duplicate transient name (i.e. "") per cust/prj/user
       if (!string.IsNullOrEmpty(filterRequest.FilterUid))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 16);
       }
 
-      return await CreateFilter(filterRequest);
+      return CreateFilter(filterRequest);
     }
 
     private async Task<FilterDescriptorSingleResult> ProcessPersistent(FilterRequestFull filterRequest)
@@ -95,8 +96,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         existingPersistentFilters =
         (await ((IFilterRepository)Repository)
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, true)
-          .ConfigureAwait(false)).Where(f => f.FilterType == filterRequest.FilterType).ToList();
+          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, true))
+          .Where(f => f.FilterType == filterRequest.FilterType).ToList();
       }
       catch (Exception e)
       {
@@ -132,20 +133,19 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         filterRequest.FilterJson = existingFilter.FilterJson;
         var updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new[] { 17, 18 });
 
-        if (updateFilterEvent != null)
+        if (filterRequest.SendKafkaMessages && updateFilterEvent != null)
         {
           var payload = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent });
           SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);
         }
 
         return RetrieveFilter(updateFilterEvent);
-
       }
 
       if (filterRequest.FilterType == FilterType.Persistent)
       {
         var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
+          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase));
 
         if (filterOfSameName != null)
         {
@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, isTransient ? new[] { 19, 20 } : new[] { 24, 25 });
 
       //Only write to kafka for persistent filters
-      if (isTransient && createFilterEvent != null)
+      if (filterRequest.SendKafkaMessages && !isTransient && createFilterEvent != null)
       {
         var payload = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
         SendToKafka(createFilterEvent.FilterUID.ToString(), payload, 26);
@@ -179,11 +179,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Retrieve the filter just saved
     /// </summary>
-    private FilterDescriptorSingleResult RetrieveFilter<T>(T filterRequest)
+    private static FilterDescriptorSingleResult RetrieveFilter<T>(T filterRequest)
     {
-      var mappingResult = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filterRequest));
-
-      return mappingResult;
+      return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filterRequest));
     }
   }
 }

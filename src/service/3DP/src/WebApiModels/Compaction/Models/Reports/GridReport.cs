@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// 
     public static GridReport CreateGridReport(DateTime startTime, DateTime endTime, GridRow[] rows)
     {
-      return new GridReport { Rows = rows };
+      return new GridReport { StartTime = startTime, EndTime = endTime, Rows = rows };
     }
   }
 }

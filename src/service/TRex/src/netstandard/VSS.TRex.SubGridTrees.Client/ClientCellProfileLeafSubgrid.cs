@@ -5,7 +5,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
-using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -47,7 +46,7 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsEventDesignNameValues;
     }
 
-    public ClientCellProfileLeafSubgrid() : base()
+    public ClientCellProfileLeafSubgrid()
     {
       Initialise();
     }
@@ -131,8 +130,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      double v1, v2;
-
       void CalculateCMVChange(IProfileCell profileCell /*; Todo: Liftbuildsettings
       LiftBuildSettings : TICLiftBuildSettings*/)
       {
@@ -194,6 +191,13 @@ namespace VSS.TRex.SubGridTrees.Client
       }
 
       IProfileCell cellProfileFromContext = context.CellProfile as IProfileCell;
+
+      if (cellProfileFromContext == null)
+      {
+        Log.LogError($"{nameof(AssignFilteredValue)}: Error=CellProfile does not implement {nameof(IProfileCell)}.");
+        return;
+      }
+
       FilteredPassData LastPass = cellProfileFromContext.Passes.FilteredPassData[cellProfileFromContext.Passes.PassCount - 1];
 
       Cells[cellX, cellY].CellXOffset = context.ProbePositions[cellX, cellY].XOffset;
@@ -236,8 +240,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       CalculateCMVChange(cellProfileFromContext /* todo: , context.LiftBuildSettings*/);
       Cells[cellX, cellY].CCVChange = 0;
-      v2 = cellProfileFromContext.CellCCV;
-      v1 = cellProfileFromContext.CellPreviousMeasuredCCV;
+      short v2 = cellProfileFromContext.CellCCV;
+      short v1 = cellProfileFromContext.CellPreviousMeasuredCCV;
 
       if (v2 == CellPassConsts.NullCCV)
         Cells[cellX, cellY].CCVChange = CellPassConsts.NullCCV; // will force no result to show
@@ -248,7 +252,7 @@ namespace VSS.TRex.SubGridTrees.Client
         if (v1 == 0) // avoid div by 0 error
           Cells[cellX, cellY].CCVChange = 100; // %100 diff
         else
-          Cells[cellX, cellY].CCVChange = (float) (((v2 - v1) / v1) * 100);
+          Cells[cellX, cellY].CCVChange = (v2 - v1) / (float)v1 * 100;
       }
     }
 

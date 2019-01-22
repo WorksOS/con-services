@@ -6,7 +6,7 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;

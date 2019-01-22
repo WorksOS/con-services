@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Servers.Client;
 
 namespace VSS.TRex.Profiling.Servers.Client
 {

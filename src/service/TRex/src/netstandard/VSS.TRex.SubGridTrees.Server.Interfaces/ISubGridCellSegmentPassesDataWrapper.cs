@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         int SegmentPassCount { get; set; }
 
         /// <summary>
-        /// The number of cell passes present in the cell within this subgrid segment identified by X and Y in 
+        /// The number of cell passes present in the cell within this sub grid segment identified by X and Y in 
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -47,9 +47,17 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void ReplacePass(uint X, uint Y, int position, CellPass pass);
 
         /// <summary>
+        /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="position"></param>
+        void RemovePass(uint X, uint Y, int position);
+
+        /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
         /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
-        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
+        /// with the given time would be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -103,7 +111,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount);
 
         /// <summary>
-        /// Returns a full cell pass with all attributes from the cell passes within this segment for the cell identitifed by X and Y
+        /// Returns a full cell pass with all attributes from the cell passes within this segment for the cell identified by X and Y
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -136,8 +144,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void SetState(CellPass[,][] cellPasses);
 
         /// <summary>
-        /// Allows a caller to query the set of all cell passes in the wrapper as a subgrid array 
-        /// of cell pass stacks. Warning: Not all derivates may implement this behaviour with those that
+        /// Allows a caller to query the set of all cell passes in the wrapper as a sub grid array 
+        /// of cell pass stacks. Warning: Not all derivatives may implement this behaviour with those that
         /// do no throwing NotImplemented exceptions.
         /// </summary>
         /// <returns></returns>
@@ -150,14 +158,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool IsImmutable();
 
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
         void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
 
         /// <summary>
-        /// Calculates the time range covering all the cell passes within the given subgrid segment
+        /// Calculates the time range covering all the cell passes within the given sub grid segment
         /// </summary>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>

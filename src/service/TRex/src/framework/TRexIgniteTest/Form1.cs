@@ -59,7 +59,7 @@ using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
-using VSS.TRex.Volumes;
+using VSS.TRex.Common;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -1192,25 +1192,25 @@ namespace TRexIgniteTest
 		private void btnCustom_Click(object sender, EventArgs e)
 		{
 				// create some empty guids to customise
-				this.edtAssetID.Text = new Guid().ToString();
-				this.edtTCCOrgID.Text = new Guid().ToString();
-				this.edtProjectID.Text = new Guid().ToString();
+				edtAssetID.Text = new Guid().ToString();
+				edtTCCOrgID.Text = new Guid().ToString();
+				edtProjectID.Text = new Guid().ToString();
 		}
 
         private void btnGetMetaData_Click(object sender, EventArgs e)
         {
 
 
-            if (this.edtTagfile.Text == string.Empty)
+            if (edtTagfile.Text == string.Empty)
             {
                 MessageBox.Show(@"Missing tagfile");
                 return;
             }
             try
             {
-                string fileName = this.edtTagfile.Text;
-                Guid TheProject = (this.edtProjectID.Text == string.Empty) ? Guid.Empty : Guid.Parse(this.edtProjectID.Text);
-                Guid TheAsset = (this.edtAssetID.Text == string.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
+                string fileName = edtTagfile.Text;
+                Guid TheProject = (edtProjectID.Text == string.Empty) ? Guid.Empty : Guid.Parse(edtProjectID.Text);
+                Guid TheAsset = (edtAssetID.Text == string.Empty) ? Guid.Empty : Guid.Parse(edtAssetID.Text);
                 string TheFileName = Path.GetFileName(fileName);
 
                 TagFileDetail td = new TagFileDetail()
@@ -1222,7 +1222,7 @@ namespace TRexIgniteTest
                                            tagFileContent = new byte[0]
                                   };
 
-                td = TagFileRepository.GetTagfile(td);
+                td = TagFileRepository.GetTagFile(td);
                 MessageBox.Show($@"ProjectUID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
 
             }

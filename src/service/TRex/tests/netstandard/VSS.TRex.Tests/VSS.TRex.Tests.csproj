@@ -20,9 +20,9 @@
     </PackageReference>
     <PackageReference Include="Apache.Ignite" Version="2.6.0" />
     <PackageReference Include="FluentAssertions" Version="5.5.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="Moq" Version="4.10.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
@@ -39,6 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching.Interfaces\VSS.TRex.Caching.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching\VSS.TRex.Caching.csproj" />
@@ -67,6 +68,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Reports\VSS.TRex.Reports.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />

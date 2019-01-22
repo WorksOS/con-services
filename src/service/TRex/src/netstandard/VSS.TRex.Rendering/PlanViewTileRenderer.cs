@@ -5,6 +5,7 @@ using System.Reflection;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
@@ -164,14 +165,14 @@ namespace VSS.TRex.Rendering
         // Displayer.ICOptions  = ICOptions;
 
         // Se the skip-step area control cell selection parameters for this tile render
-        processor.Pipeline.AreaControlSet = new AreaControlSet(Displayer.MapView.XPixelSize,
-          Displayer.MapView.YPixelSize, 0, 0, 0, true);
+        processor.Pipeline.AreaControlSet = new AreaControlSet(true, Displayer.MapView.XPixelSize,
+          Displayer.MapView.YPixelSize, 0, 0, 0);
 
         // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
         // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
         // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
-        // Perform the subgrid query and processing to render the tile
+        // Perform the sub grid query and processing to render the tile
         processor.Process();
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
@@ -195,7 +196,7 @@ namespace VSS.TRex.Rendering
       }
       catch (Exception E)
       {
-        Log.LogError("ExecutePipeline raised Exception:", E);
+        Log.LogError(E, "ExecutePipeline raised Exception:");
       }
 
       return RequestErrorStatus.Unknown;

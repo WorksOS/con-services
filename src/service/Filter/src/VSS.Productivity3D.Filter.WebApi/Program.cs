@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System.IO;
+using System.Net;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.IO;
-using System.Net;
-using System.Net.Mime;
-using System.Reflection;
-using System.Threading;
 using VSS.Log4Net.Extensions;
 using VSS.WebApi.Common;
 
@@ -54,14 +51,14 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
-
-      var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-      log.LogInformation("3D Filter service starting");
-      log.LogInformation("*************CONFIGURATION DETAILS*******************");
-      foreach (DictionaryEntry entry in System.Environment.GetEnvironmentVariables())
-      {
-        log.LogInformation(entry.Key + ":" + entry.Value);
-      }
+      //This is useless as ComfigMap is being used
+      //var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+      //log.LogInformation("3D Filter service starting");
+      //log.LogInformation("*************CONFIGURATION DETAILS*******************");
+      //foreach (DictionaryEntry entry in System.Environment.GetEnvironmentVariables())
+      //{
+      //  log.LogInformation(entry.Key + ":" + entry.Value);
+      //}
 
       host.Run();
     }

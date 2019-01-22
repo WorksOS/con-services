@@ -25,40 +25,43 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			TargetMachineSpeed.Clear();
 	  }
 
-	  /// <summary>
-	  /// Processes a Speed subgrid into a Speed isopach and calculate the counts of cells where the Speed value
-	  /// fits into the requested bands, i.e. less than min target, between min and max targets, greater than max target
-	  /// </summary>
-	  /// <param name="subGrids"></param>
-	  public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
-	  {
-	    base.ProcessSubgridResult(subGrids);
+    /// <summary>
+    /// Processes a Speed subgrid into a Speed isopach and calculate the counts of cells where the Speed value
+    /// fits into the requested bands, i.e. less than min target, between min and max targets, greater than max target
+    /// </summary>
+    /// <param name="subGrids"></param>
+    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    {
+      lock (this)
+      {
+        base.ProcessSubgridResult(subGrids);
 
-	    // Works out the percentage each colour on the map represents
+        // Works out the percentage each colour on the map represents
 
-	    foreach (IClientLeafSubGrid[] subGrid in subGrids)
-	    {
-	      if (subGrid == null)
-	        continue;
+        foreach (IClientLeafSubGrid[] subGrid in subGrids)
+        {
+          if ((subGrid?.Length ?? 0) == 0)
+            continue;
 
-	      if (subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
-	      {
-	        SubGridUtilities.SubGridDimensionalIterator((I, J) =>
-	        {
-	          var SpeedRangeValue = SubGrid.Cells[I, J];
-	          if (SpeedRangeValue.Max != CellPassConsts.NullMachineSpeed) // is there a value to test
-	          {
-	            SummaryCellsScanned++;
-	            if (SpeedRangeValue.Max > TargetMachineSpeed.Max)
-	              CellsScannedOverTarget++;
-	            else if (SpeedRangeValue.Min < TargetMachineSpeed.Min && SpeedRangeValue.Max < TargetMachineSpeed.Min)
-	              CellsScannedUnderTarget++;
-	            else
-	              CellsScannedAtTarget++;
-	          }
-	        });
-	      }
-	    }
-	  }
-	}
+          if (subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
+          {
+            SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+            {
+              var SpeedRangeValue = SubGrid.Cells[I, J];
+              if (SpeedRangeValue.Max != CellPassConsts.NullMachineSpeed) // is there a value to test
+              {
+                SummaryCellsScanned++;
+                if (SpeedRangeValue.Max > TargetMachineSpeed.Max)
+                  CellsScannedOverTarget++;
+                else if (SpeedRangeValue.Min < TargetMachineSpeed.Min && SpeedRangeValue.Max < TargetMachineSpeed.Min)
+                  CellsScannedUnderTarget++;
+                else
+                  CellsScannedAtTarget++;
+              }
+            });
+          }
+        }
+      }
+    }
+  }
 }

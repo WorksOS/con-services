@@ -170,8 +170,6 @@ namespace VSS.TRex.Events
       return Find(value.Date, out index);
     }
 
-    //    property FileMajorVersion: Byte read FMajorVersion;
-    //    property FileMinorVersion: Byte read FMinorVersion;
     //    function UpgradeEventListFile(const FileStream : TStream;
     //                                  const InternalStream: TMemoryStream;
     //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;

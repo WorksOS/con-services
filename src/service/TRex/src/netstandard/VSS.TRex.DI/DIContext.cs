@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.DI
 {
@@ -18,22 +20,34 @@ namespace VSS.TRex.DI
     /// <param name="serviceProvider"></param>
     public static void Inject(IServiceProvider serviceProvider)
     {
+      // Register the service provider with the overall TRex DI context
       ServiceProvider = serviceProvider;
+
+      // Advise the TRex Logger namespace of the logger factory to use in case
+      // DIBuilder.AddLogging was not used in the DI construction phase.
+      Logging.Logger.Inject(serviceProvider.GetService<ILoggerFactory>());
     }
 
     /// <summary>
-    /// Ejects the service provider collection from the TRex DI context.
+    /// Removes the service provider collection from the TRex DI context.
     /// </summary>
-    public static void Eject()
+    public static void Close()
     {
       ServiceProvider = null;
     }
 
     /// <summary>
     /// Obtain a service instance matching a provided type T
-    /// </summary>
+    ///  </summary>
     /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static T Obtain<T>() => ServiceProvider.GetService<T>();
+    /// <returns>The service implementing T. If there is no ServiceProvider available then return a default(T)</returns>
+    public static T Obtain<T>() => ServiceProvider == null ? default(T) : ServiceProvider.GetService<T>();
+
+    /// <summary>
+    /// Obtain all service instances matching a provided type T
+    ///  </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns>The services implementing T. If there is no ServiceProvider available then return null</returns>
+    public static IEnumerable<T> ObtainMany<T>() => ServiceProvider?.GetServices<T>();
   }
 }

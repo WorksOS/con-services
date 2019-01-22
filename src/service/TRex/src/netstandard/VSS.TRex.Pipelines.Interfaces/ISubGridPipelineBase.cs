@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;

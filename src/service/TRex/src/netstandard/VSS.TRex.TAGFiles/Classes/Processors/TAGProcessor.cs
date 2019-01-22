@@ -105,7 +105,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         EndProofingName :
          Design == string.Empty ? "No Design" : Design;
 
-      DateTime localTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
+      DateTime localTime = StartProofingDataTime + Common.Time.GPS.GetLocalGMTOffset();
 
       EndProofingName = $"{tempStr} ({localTime:yyyy/MM/dd} {localTime:HH:mm:ss})";
 
@@ -712,10 +712,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       SiteModel.SiteModelExtent.Expand(SiteModelGridAggregator.CellSize / 2, SiteModelGridAggregator.CellSize / 2);
 
       // Update the design extent...
-      if (Design != string.Empty)
+      if (!string.IsNullOrEmpty(Design))
       {
-        // TODO readd when designs are implemented
-        // UpdateCurrentDesignExtent;
+        UpdateCurrentDesignExtent();
       }
     }
 

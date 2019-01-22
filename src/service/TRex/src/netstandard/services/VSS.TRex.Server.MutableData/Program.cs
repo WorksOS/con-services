@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -17,12 +18,11 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Servers.Compute;
+using VSS.TRex.GridFabric.Servers.Compute;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -41,7 +41,7 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
@@ -66,7 +66,9 @@ namespace VSS.TRex.Server.MutableData
 
         .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
-
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager()))
+        
        .Complete();
     }
 
@@ -116,7 +118,7 @@ namespace VSS.TRex.Server.MutableData
     {
       IConfigurationRoot configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
         .Build();
 
       Console.WriteLine("**** Configuration Settings ****");

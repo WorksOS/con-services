@@ -9,23 +9,23 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// Add a new surveyed surface to a sitemodel
     /// </summary>
-    /// <param name="SiteModelID"></param>
+    /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="asAtDate"></param>
     /// <param name="extents"></param>
-    ISurveyedSurface Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents);
+    ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents);
 
     /// <summary>
     /// List the surveyed surfaces for a site model
     /// </summary>
-    ISurveyedSurfaces List(Guid SiteModelID);
+    ISurveyedSurfaces List(Guid siteModelUid);
 
     /// <summary>
     /// Remove a given surveyed surface from a site model
     /// </summary>
-    /// <param name="SiteModelID"></param>
-    /// <param name="SurveySurfaceID"></param>
+    /// <param name="siteModelUid"></param>
+    /// <param name="surveySurfaceUid"></param>
     /// <returns></returns>
-    bool Remove(Guid SiteModelID, Guid SurveySurfaceID);
+    bool Remove(Guid siteModelUid, Guid surveySurfaceUid);
   }
 }

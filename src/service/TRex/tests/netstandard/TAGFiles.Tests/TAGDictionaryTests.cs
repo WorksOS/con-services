@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.TAGFiles.Classes;
+﻿using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Types;
 using Xunit;
 
@@ -21,7 +20,7 @@ namespace TAGFiles.Tests
         {
             TAGDictionary dict = new TAGDictionary();
 
-            Assert.True(dict != null && dict.Entries != null, "TAG file dictionary did not create as expected");
+            Assert.True(dict.Entries != null, "TAG file dictionary did not create as expected");
         }
     
         [Fact]

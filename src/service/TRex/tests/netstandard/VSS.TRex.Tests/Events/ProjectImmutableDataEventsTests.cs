@@ -6,8 +6,8 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.Events
     public void Test_ProjectImmutableSiteModelTest()
     {
       var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
-      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(DIContext.Obtain<IStorageProxy>());  
+      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(DIContext.Obtain<ISiteModels>().StorageProxy);  
       Assert.True(result, "unable to save SiteModel to Persistent store");
 
       var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);

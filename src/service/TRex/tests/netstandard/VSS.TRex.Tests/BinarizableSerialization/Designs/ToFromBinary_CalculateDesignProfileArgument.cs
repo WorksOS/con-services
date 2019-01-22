@@ -1,12 +1,11 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Geometry;
-//using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
 {
-  public class ToFromBinary_CalculateDesignProfileArgument //: IClassFixture<AnalyticsTestsDIFixture>
+  public class ToFromBinary_CalculateDesignProfileArgument 
   {
     [Fact]
     public void Test_CalculateDesignElevationPatchArgument_Simple()

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -9,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -67,6 +70,15 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       this.configStore = configStore;
       this.TRexCompactionDataProxy = TRexCompactionDataProxy;
     }
+
+    /// <summary>
+    /// Returns the ProjectUid (Guid) for a given ProjectId (long).
+    /// </summary>
+    protected Task<Guid> GetProjectUid(long projectId)
+    {
+      return ((RaptorPrincipal)User).GetProjectUid(projectId);
+    }
+
 
     /// <summary>
     /// Pings the export service root
@@ -341,9 +353,15 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
 
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
+
+      if (useTrexGateway)
+        request.ProjectUid = GetProjectUid(request.ProjectId ?? -1).Result;
+
       request.Validate();
+
       return
-        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger, raptorClient).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
           CCASummaryResult;
     }
   }

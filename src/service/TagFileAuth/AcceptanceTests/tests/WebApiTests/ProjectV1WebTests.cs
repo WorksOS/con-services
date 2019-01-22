@@ -4,6 +4,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using TestUtility;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
@@ -28,9 +29,9 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest1 | CAT      | XAT1         | 345D  | 10      | Excavators |                   |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest1           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |"};
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest1           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |"};
       ts.PublishEventCollection(deviceEventArray);
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
@@ -70,10 +71,10 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest1 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest2           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
-      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest2           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
@@ -113,10 +114,10 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest1 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest3           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
-      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest3           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 40.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
@@ -158,10 +159,10 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest1 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate |",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest4         |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
-      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate |",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest4         |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
@@ -202,9 +203,9 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest5 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest5           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest5           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
       };
       ts.PublishEventCollection(deviceEventArray);
 
@@ -246,9 +247,9 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest6 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest6         |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest6         |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
       };
       ts.PublishEventCollection(deviceEventArray);
 
@@ -292,9 +293,9 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest7 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest7           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest7           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
       };
       ts.PublishEventCollection(deviceEventArray);
 
@@ -338,10 +339,10 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest8 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest8           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
-      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest8           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
       var actualResult = CallWebApiGetProjectId(ts, -2, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
@@ -382,9 +383,9 @@ namespace WebApiTests
       $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV1WebTest9 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate |",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest9         |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |"};
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate |",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest9         |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |"};
       ts.PublishEventCollection(deviceEventArray);
       var actualResult = CallWebApiGetProjectId(ts, -2, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
       Assert.AreEqual(legacyProjectId, actualResult.projectId, " Legacy project id's do not match");
@@ -542,10 +543,10 @@ namespace WebApiTests
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[]
       {
-         "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-        $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectV1WebTest1           |               |              |                    |               |",
-        $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
-        $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"
+         "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+        $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV1WebTest1           |               |              |                    |               |",
+        $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+        $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"
       };
       ts.PublishEventCollection(deviceEventArray);
       return ts;

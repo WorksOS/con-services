@@ -96,13 +96,13 @@ namespace Common.netstandard.ApiClients
         }
         else
         {
-          Log.LogError("RaptorApiException while retrieving volumes: " + e.Message);
+          Log.LogError(e, "RaptorApiException while retrieving volumes");
           LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
         }
       }
       catch (Exception e)
       {
-        Log.LogError("Exception while retrieving volumes: " + e.Message);
+        Log.LogError(e, "Exception while retrieving volumes");
         LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
       }
     }
@@ -241,13 +241,13 @@ namespace Common.netstandard.ApiClients
         }
         else
         {
-          Log.LogError("RaptorApiException while retrieving CCA: " + e.Message);
+          Log.LogError(e, "RaptorApiException while retrieving CCA");
           LandfillDb.MarkCCANotRetrieved(project.projectUid, geofenceUid, date, machineId, liftId);
         }
       }
       catch (Exception e)
       {
-        Log.LogError("Exception while retrieving CCA: " + e.Message);
+        Log.LogError(e, "Exception while retrieving CCA");
         LandfillDb.MarkCCANotRetrieved(project.projectUid, geofenceUid, date, machineId, liftId);
       }
     }
@@ -277,11 +277,11 @@ namespace Common.netstandard.ApiClients
       catch (RaptorApiException e)
       {
         if (e.code == HttpStatusCode.BadRequest)
-          Log.LogWarning("RaptorApiException while retrieving machines & lifts: " + e.Message);
+          Log.LogWarning(e, "RaptorApiException while retrieving machines & lifts");
       }
       catch (Exception e)
       {
-        Log.LogError("Exception while retrieving machines & lifts: " + e.Message);
+        Log.LogError(e, "Exception while retrieving machines & lifts");
       }
 
       return new List<MachineLifts>();

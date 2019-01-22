@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS, SiteProofingRun } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS, SiteProofingRun } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -28,6 +28,7 @@ export class ProjectService {
     this.baseUrl = baseUrl;
   }
 
+  
   private executeRequest<T>(label: string, url: string): Observable<T> {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);
@@ -85,49 +86,43 @@ export class ProjectService {
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
   }
 
-  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<SurveyedSurface> {
-
-//    var newSurveyedSurface = new SurveyedSurface();
-
-//    newSurveyedSurface.descriptor = descriptor;
-//    newSurveyedSurface.asAtDate = asAtDate;
-//    newSurveyedSurface.extents = extents;
-
-//    return this.executePostRequest<string>
-//      ('addSurveyedSurface',
-//      `surveyedsurfaces/${projectUid}?newsurveyedsurface=${btoa(JSON.stringify(newSurveyedSurface))}`,
-//      null);
-
-    return this.executePostRequest<SurveyedSurface>
-    ('addSurveyedSurface',
-      `surveyedsurfaces/${projectUid}?fileName=${descriptor.fileName}&offset=${descriptor.offset}&asAtDate=${asAtDate.toISOString()}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`,
-      null);
+  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<DesignDescriptor> {
+    return this.executePostRequest<DesignDescriptor>
+    ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileName=${descriptor.fileName}&asAtDate=${asAtDate}`,null);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
-    return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `surveyedsurfaces/${projectUid}`);
+    return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `designs/${projectUid}/SurveyedSurface`);
   }
 
   public deleteSurveyedSurface(projectUid: string, surveyedSurfaceId: string): Observable<any> {
-    return this.executeDeleteRequest<any>('deleteSurveyedSurface', `surveyedsurfaces/${projectUid}/${surveyedSurfaceId}`);
+    return this.executeDeleteRequest<any>('deleteSurveyedSurface', `designs/${projectUid}/SurveyedSurface/${surveyedSurfaceId}`);
   }
 
-  public addDesign(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
+  public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-      ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`, null);
+      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileName=${descriptor.fileName}`, null);
   }
 
-  public addDesignFromS3(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
+  public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
+    return this.executeRequest<DesignSurface[]>('getDesignSurfaces', `designs/${projectUid}/DesignSurface`);
+  }
+
+  public deleteDesignSurface(projectUid: string, designId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteDesignSurface', `designs/${projectUid}/DesignSurface/${designId}`);
+  }
+
+  public addAlignment(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
     return this.executePostRequest<DesignDescriptor>
-    ('addDesign', `designs/${projectUid}/${descriptor.designId}?fileName=${descriptor.fileName}`, null);
+      ('addAlignment', `designs/${projectUid}/Alignment?fileName=${descriptor.fileName}`, null);
   }
 
-  public getDesigns(projectUid: string): Observable<Design[]> {
-    return this.executeRequest<Design[]>('getDesigns', `designs/${projectUid}`);
+  public getAlignments(projectUid: string): Observable<Alignment[]> {
+    return this.executeRequest<Alignment[]>('getAlignments', `designs/${projectUid}/Alignment`);
   }
 
-  public deleteDesign(projectUid: string, designId: string): Observable<any> {
-    return this.executeDeleteRequest<any>('deleteDesign', `designs/${projectUid}/${designId}`);
+  public deleteAlignment(projectUid: string, designId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteAlignment', `designs/${projectUid}/Alignment/${designId}`);
   }
 
   public getMachineDesigns(projectUid: string): Observable<MachineDesign[]> {
@@ -168,10 +163,19 @@ export class ProjectService {
   }
 
   public drawProfileLineForDesign(projectUid: string, designUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+    return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
 
   public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+    return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
+
+  public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {
+    return this.executeRequest<any[]>('drawProfileLineForCompositeHeights', `profiles/compositeelevations/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
+  public drawProfileLineForSummaryVolumes(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/volumes/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
 }

@@ -18,12 +18,12 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
-namespace VSS.TRex.Servers.Compute
+namespace VSS.TRex.GridFabric.Servers.Compute
 {
   /// <summary>
   /// Defines a representation of a server responsible for performing TRex related compute operations using
@@ -238,7 +238,7 @@ namespace VSS.TRex.Servers.Compute
       catch (Exception e)
       {
         Console.WriteLine($"Exception during creation of new Ignite node:\n {e}");
-        Log.LogError("Exception during creation of new Ignite node:", e);
+        Log.LogError(e, "Exception during creation of new Ignite node:");
         throw e;
       }
       finally

@@ -1,14 +1,14 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as builder
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.0
-RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.1
+RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.1
 
 
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-aspnetcore-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \

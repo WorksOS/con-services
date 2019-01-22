@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace VSS.MasterData.Proxies
 {
@@ -32,16 +34,20 @@ namespace VSS.MasterData.Proxies
       HttpContent content = null;
       if (requestStream != null)
       {
-        if ((customHeaders == null) || !customHeaders.ContainsKey("Content-Type") ||
-            (customHeaders.ContainsKey("Content-Type") &&
-             customHeaders["Content-Type"] == "application/json"))
+        const string DefaultContentType = "application/json";
+       
+        var contentType = MediaTypeHeaderValue.Parse(DefaultContentType);
+        if (customHeaders != null && customHeaders.ContainsKey(HeaderNames.ContentType))
         {
-          content = new StringContent(new StreamReader(requestStream).ReadToEnd(), Encoding.UTF8, "application/json");
+          if (MediaTypeHeaderValue.TryParse(customHeaders[HeaderNames.ContentType], out var ct))
+            contentType = ct;
+          else
+            log.LogWarning($"Failed to convert {customHeaders[HeaderNames.ContentType]} to a valid Content-Type.");
         }
-        else
-        {
-          content = new StreamContent(requestStream);
-        }
+        // The content coming in with already be encoded correctly (for strings, via Encoding.UTF8.GetBytes())
+        content = new StreamContent(requestStream);
+        content.Headers.ContentType = contentType;
+        
       }
 
       //Default to POST, nothing else is supported so far apart from PUT and GET

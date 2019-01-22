@@ -113,7 +113,7 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
             }
             catch (Exception E)
             {
-              Log.LogError($"Exception in {nameof(SerialiseIn)}:", E);
+              Log.LogError(E, $"Exception in {nameof(SerialiseIn)}:");
               return false;
             }
         }
@@ -156,7 +156,7 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
             }
             catch (Exception E)
             {
-              Log.LogError($"Exception in {nameof(Read)}:", E);
+              Log.LogError(E, $"Exception in {nameof(Read)}:");
               return false;
             }
         }

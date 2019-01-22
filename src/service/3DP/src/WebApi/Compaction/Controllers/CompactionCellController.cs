@@ -24,23 +24,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionCellController : BaseController<CompactionCellController>
   {
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
     protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CompactionCellController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy)
       : base(configStore, fileListProxy, settingsManager)
     {
-      this.raptorClient = raptorClient;
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
@@ -77,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, raptorClient).Process(request) as CompactionCellDatumResult;
+      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient).Process(request) as CompactionCellDatumResult;
     }
 
     /// <summary>
@@ -119,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Build<CompactionPatchV2Executor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(patchRequest));
 
       return Ok(v2PatchRequestResponse);

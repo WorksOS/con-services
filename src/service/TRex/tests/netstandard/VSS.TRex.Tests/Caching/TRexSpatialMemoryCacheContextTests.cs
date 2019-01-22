@@ -7,7 +7,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexSpatialMemoryCacheContextTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+  public class TRexSpatialMemoryCacheContextTests : IClassFixture<DILoggingAndStorageProxyFixture>
   {
     [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_Default()

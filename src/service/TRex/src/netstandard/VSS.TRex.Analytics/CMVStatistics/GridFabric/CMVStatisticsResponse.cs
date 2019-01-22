@@ -61,7 +61,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
       return new CMVStatisticsResult
       {
         IsTargetCMVConstant = IsTargetValueConstant,
-        ConstantTargetCMV = LastTargetCMV,
+        ConstantTargetCMV = IsTargetValueConstant ? LastTargetCMV : (short)-1,
         AboveTargetPercent = ValueOverTargetPercent,
         WithinTargetPercent = ValueAtTargetPercent,
         BelowTargetPercent = ValueUnderTargetPercent,

@@ -17,13 +17,13 @@ using VSS.TRex.Common.Serialisation;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
-namespace VSS.TRex.Servers.Compute
+namespace VSS.TRex.GridFabric.Servers.Compute
 {
   /// <summary>
   /// Defines a representation of a server responsible for performing TRex related compute operations using
@@ -153,13 +153,13 @@ namespace VSS.TRex.Servers.Compute
         LocalAddress = "127.0.0.1",
         LocalPort = 48500,
 
-        IpFinder = new TcpDiscoveryStaticIpFinder()
+        IpFinder = new TcpDiscoveryStaticIpFinder
         {
-          Endpoints = new[] { "127.0.0.1:48500..48509" }
+          Endpoints = new[] { "127.0.0.1:48500..48502" }
         }
       };
 
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      cfg.CommunicationSpi = new TcpCommunicationSpi
       {
         LocalAddress = "127.0.0.1",
         LocalPort = 48100,
@@ -272,7 +272,7 @@ namespace VSS.TRex.Servers.Compute
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception during creation of new Ignite node:", e);
+        Log.LogError(e, "Exception during creation of new Ignite node:");
         throw;
       }
       finally

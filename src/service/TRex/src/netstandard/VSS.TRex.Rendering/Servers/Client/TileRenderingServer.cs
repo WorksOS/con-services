@@ -1,8 +1,8 @@
 ﻿using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.GridFabric.Responses;
-using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.Rendering.Servers.Client
 {

@@ -8,6 +8,7 @@ using LandfillService.Common.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using VSS.Common.Cache.MemoryCache;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 
@@ -19,19 +20,23 @@ namespace LandfillDatasync.netcore
     private readonly ILog Log;
     private readonly I_3dpmAuthN authn;
 
-    public DataSynchronizer(ILog logger)
+    public DataSynchronizer(ILog logger, IConfigurationStore configurationStore)
     {
       Log = logger;
-      authn = new _3dpmAuthN(new GenericConfiguration(new NullLoggerFactory()),
-        new TPaasProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+      authn = new _3dpmAuthN(configurationStore,
+        new TPaasProxy(configurationStore, new NullLoggerFactory()),
         new Logger<_3dpmAuthN>(new NullLoggerFactory()));
     }
+
+    public Guid? CustomerUid { get; set; }
 
     //private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
     private List<Project> GetListOfProjectsToRetrieve()
     {
-      return LandfillDb.GetListOfAvailableProjects();
+      return CustomerUid.HasValue 
+        ? LandfillDb.GetListOfAvailableProjects(CustomerUid.Value) 
+        : LandfillDb.GetListOfAvailableProjects();
     }
 
     /// <summary>
@@ -55,7 +60,7 @@ namespace LandfillDatasync.netcore
                 new GenericConfiguration(new NullLoggerFactory()),
                 new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
                 new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                  new MemoryCache(new MemoryCacheOptions())), headers).GetProjectStatisticsAsync(userId, project).Result
+                    new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetProjectStatisticsAsync(userId, project).Result
               .startTime.Date;
           if (startDate < DateTime.Today.AddDays(noOfDaysVols))
             startDate = DateTime.Today.AddDays(noOfDaysVols);
@@ -104,7 +109,7 @@ namespace LandfillDatasync.netcore
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                new MemoryCache(new MemoryCacheOptions())), headers)
+                  new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers)
                     .GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
         }
       }
@@ -153,7 +158,7 @@ namespace LandfillDatasync.netcore
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                new MemoryCache(new MemoryCacheOptions())), headers).ConvertFromTimeZoneToMinutesOffset(project.timeZoneName);
+                new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).ConvertFromTimeZoneToMinutesOffset(project.timeZoneName);
           Log.InfoFormat("UpdateCCA: Processing projectID {0} name {1} timezone {2} with minutes offset {3}", project.id, project.name, project.timeZoneName, offsetMinutes);
           var projDate = utcDate.Date.AddMinutes(offsetMinutes);
           var nowDate = DateTime.UtcNow.Date.AddMinutes(offsetMinutes);
@@ -166,7 +171,7 @@ namespace LandfillDatasync.netcore
                   new GenericConfiguration(new NullLoggerFactory()),
                   new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
                   new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                    new MemoryCache(new MemoryCacheOptions())), headers)
+                      new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers)
                 .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
             Log.DebugFormat("UpdateCCA: ProcessCCA projectId {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
             ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
@@ -210,7 +215,7 @@ namespace LandfillDatasync.netcore
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                new MemoryCache(new MemoryCacheOptions())), headers).GetCCAInBackground(
+                new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetCCAInBackground(
               userId, project, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
           }
 
@@ -220,7 +225,7 @@ namespace LandfillDatasync.netcore
             new GenericConfiguration(new NullLoggerFactory()),
             new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
             new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-              new MemoryCache(new MemoryCacheOptions())), headers).GetCCAInBackground(
+              new InMemoryDataCache(new NullLoggerFactory(), new MemoryCache(new MemoryCacheOptions()))), headers).GetCCAInBackground(
             userId, project, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
         }
       }

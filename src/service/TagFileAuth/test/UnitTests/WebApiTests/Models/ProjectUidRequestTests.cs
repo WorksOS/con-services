@@ -23,7 +23,7 @@ namespace WebApiTests.Models
 
    [TestMethod]
    [DataRow(6, "rs45", 89, 179, 0)]
-    public void ValidateGetProjectUidRequest_ValidationHappPath(int deviceType, string radioSerial,
+    public void ValidateGetProjectUidRequest_ValidationHappyPath(int deviceType, string radioSerial,
       double latitude, double longitude, int errorCode)
     {
       var timeOfPosition = DateTime.UtcNow;

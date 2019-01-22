@@ -58,15 +58,69 @@ namespace WebApiTests.Executors
       };
 
       string assetUid = Guid.NewGuid().ToString();
+      string ec520Uid = Guid.NewGuid().ToString();
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 6, "radSer 450", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>()
+        {
+          new Subscription()
+          {
+            ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
+            StartDate = DateTime.UtcNow.AddYears(-1).Date,
+            EndDate = new DateTime(9999, 12, 31).Date
+          }
+        },
+        ec520Uid: ec520Uid,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
+        assetCustomerUid: assetCustomerUid,
+        assetCustomerSubs: new List<Subscription>(),
+        projectOfInterest: projectOfInterest,
+        intersectingProjects: new List<Project> {projectOfInterest},
+        customerTccOrg: (CustomerTccOrg) null,
+        expectedProjectUidResult: projectUid,
+        expectedAssetUidResult: assetUid,
+        expectedCodeResult: 0,
+        expectedMessageResult: "success"
+      );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Auto_Happy_StdPrj_Ec520()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new Project()
+      {
+        ProjectUID = projectUid,
+        ProjectType = ProjectType.Standard,
+        CustomerUID = projectCustomerUid,
+        StartDate = DateTime.UtcNow.AddDays(-4),
+        EndDate = DateTime.UtcNow.AddDays(3)
+      };
+
+      string assetUid = Guid.NewGuid().ToString();
+      string ec520Uid = Guid.NewGuid().ToString();
+      string assetCustomerUid = Guid.NewGuid().ToString();
+
+      await Execute
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid: projectUid,
+        projectCustomerUid: projectCustomerUid,
+        projectCustomerSubs: new List<Subscription>(),
+        assetUid: assetUid,
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetSubs: new List<Subscription>(),
+        ec520Uid: ec520Uid,
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Subs: new List<Subscription>()
         {
           new Subscription()
           {
@@ -78,11 +132,67 @@ namespace WebApiTests.Executors
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        assetDevice: new AssetDeviceIds {AssetUID = assetUid, OwningCustomerUID = assetCustomerUid},
-        customerTccOrg: (CustomerTccOrg) null,
+        intersectingProjects: new List<Project> { projectOfInterest },
+        customerTccOrg: (CustomerTccOrg)null,
         expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
+        expectedAssetUidResult: ec520Uid,
+        expectedCodeResult: 0,
+        expectedMessageResult: "success"
+      );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Auto_Happy_StdPrj_Ec520Plus940_ignoreManual3dSub()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new Project()
+      {
+        ProjectUID = projectUid,
+        ProjectType = ProjectType.Standard,
+        CustomerUID = projectCustomerUid,
+        StartDate = DateTime.UtcNow.AddDays(-4),
+        EndDate = DateTime.UtcNow.AddDays(3)
+      };
+
+      string assetUid = Guid.NewGuid().ToString();
+      string ec520Uid = Guid.NewGuid().ToString();
+      string assetCustomerUid = Guid.NewGuid().ToString();
+
+      await Execute
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM941, "snm941serial", "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+        projectUid: projectUid,
+        projectCustomerUid: projectCustomerUid,
+        projectCustomerSubs: new List<Subscription>(),
+        assetUid: assetUid,
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
+        assetSubs: new List<Subscription>(),
+        ec520Uid: ec520Uid,
+        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
+        ec520Subs: new List<Subscription>()
+        {
+          new Subscription()
+          {
+            ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
+            StartDate = DateTime.UtcNow.AddYears(-1).Date,
+            EndDate = new DateTime(9999, 12, 31).Date
+          }
+        },
+        assetCustomerUid: assetCustomerUid,
+        assetCustomerSubs: new List<Subscription>()
+        {
+          new Subscription()
+          {
+            ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring,
+            StartDate = DateTime.UtcNow.AddYears(-1).Date,
+            EndDate = new DateTime(9999, 12, 31).Date
+          }
+        },
+        projectOfInterest: projectOfInterest,
+        intersectingProjects: new List<Project> { projectOfInterest },
+        customerTccOrg: (CustomerTccOrg)null,
+        expectedProjectUidResult: projectUid,
+        expectedAssetUidResult: ec520Uid,
         expectedCodeResult: 0,
         expectedMessageResult: "success"
       );
@@ -103,14 +213,16 @@ namespace WebApiTests.Executors
       };
 
       string assetUid = Guid.NewGuid().ToString();
+      string ec520Uid = Guid.NewGuid().ToString();
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 6, "radSer 450", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
+        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>()
         {
           new Subscription()
@@ -120,11 +232,13 @@ namespace WebApiTests.Executors
             EndDate = new DateTime(9999, 12, 31).Date
           }
         },
+        ec520Uid: ec520Uid,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project>(),
-        assetDevice: new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         customerTccOrg: (CustomerTccOrg)null,
         expectedProjectUidResult: string.Empty, 
         expectedAssetUidResult: string.Empty,
@@ -151,11 +265,12 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 6, "radSer 450", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
+        assetDevice: (AssetDeviceIds)null, 
         assetSubs: new List<Subscription>()
         {
           new Subscription()
@@ -165,11 +280,13 @@ namespace WebApiTests.Executors
             EndDate = new DateTime(9999, 12, 31).Date
           }
         },
+        ec520Uid: String.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> { projectOfInterest },
-        assetDevice: (AssetDeviceIds) null,
         customerTccOrg: (CustomerTccOrg)null,
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -196,11 +313,12 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 6, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>()
         {
           new Subscription()
@@ -210,11 +328,13 @@ namespace WebApiTests.Executors
             EndDate = new DateTime(9999, 12, 31).Date
           }
         },
+        ec520Uid: String.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> { projectOfInterest },
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         customerTccOrg: (CustomerTccOrg)null, 
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -241,11 +361,12 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 6, "radSer 450", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-99)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-99)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>()
         {
           new Subscription()
@@ -255,11 +376,13 @@ namespace WebApiTests.Executors
             EndDate = new DateTime(9999, 12, 31).Date
           }
         },
+        ec520Uid: String.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project>(),
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         customerTccOrg: (CustomerTccOrg)null, 
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -290,17 +413,20 @@ namespace WebApiTests.Executors
       };
   
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: string.Empty, 
+        assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: String.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> { projectOfInterest },
-        assetDevice: (AssetDeviceIds) null,
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterest.CustomerUID},
         expectedProjectUidResult: projectUid,
         expectedAssetUidResult: string.Empty,
@@ -327,17 +453,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project>( ),
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterest.CustomerUID },
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -364,17 +493,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> { projectOfInterest },
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: (CustomerTccOrg) null,
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -401,17 +533,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project>(),
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterest.CustomerUID },
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -442,17 +577,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> { projectOfInterest },
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterest.CustomerUID },
         expectedProjectUidResult: projectUid,
         expectedAssetUidResult: string.Empty,
@@ -479,17 +617,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project>(),
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterest.CustomerUID },
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -516,17 +657,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> { projectOfInterest },
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: (CustomerTccOrg)null,
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -553,17 +697,20 @@ namespace WebApiTests.Executors
       };
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 0, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, "tccOrgId", 91, 181, projectOfInterest.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: string.Empty,
+        assetDevice: (AssetDeviceIds)null,
         assetSubs: new List<Subscription>(),
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project>(),
-        assetDevice: (AssetDeviceIds)null,
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterest.CustomerUID },
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -571,6 +718,7 @@ namespace WebApiTests.Executors
         expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
+    
     #endregion PMProjects
 
     [TestMethod]
@@ -602,11 +750,12 @@ namespace WebApiTests.Executors
       string assetCustomerUid = Guid.NewGuid().ToString();
 
       await Execute
-      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, 6, "radSer 450", "tccOrgId", 91, 181, projectOfInterestStd.StartDate.AddDays(1)),
+      (request: GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(string.Empty, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, "tccOrgId", 91, 181, projectOfInterestStd.StartDate.AddDays(1)),
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
         assetUid: assetUid,
+        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         assetSubs: new List<Subscription>()
         {
           new Subscription()
@@ -616,11 +765,13 @@ namespace WebApiTests.Executors
             EndDate = new DateTime(9999, 12, 31).Date
           }
         },
+        ec520Uid: string.Empty,
+        ec520Device: (AssetDeviceIds)null,
+        ec520Subs: new List<Subscription>(),
         assetCustomerUid: assetCustomerUid,
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterestStd,
         intersectingProjects: new List<Project> { projectOfInterestStd, projectOfInterestPM, },
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
         customerTccOrg: new CustomerTccOrg { CustomerUID = projectOfInterestPM.CustomerUID },
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
@@ -632,9 +783,11 @@ namespace WebApiTests.Executors
 
     private async Task Execute(GetProjectAndAssetUidsRequest request,
       string projectUid, string projectCustomerUid, List<Subscription> projectCustomerSubs,
-      string assetUid, List<Subscription> assetSubs, string assetCustomerUid, List<Subscription> assetCustomerSubs,
+      string assetUid, AssetDeviceIds assetDevice, List<Subscription> assetSubs, 
+      string ec520Uid, AssetDeviceIds ec520Device, List<Subscription> ec520Subs, 
+      string assetCustomerUid, List<Subscription> assetCustomerSubs,
       Project projectOfInterest, List<Project> intersectingProjects,
-      AssetDeviceIds assetDevice, CustomerTccOrg customerTccOrg,
+      CustomerTccOrg customerTccOrg,
       string expectedProjectUidResult, string expectedAssetUidResult, int expectedCodeResult,
       string expectedMessageResult
     )
@@ -644,13 +797,15 @@ namespace WebApiTests.Executors
       _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), It.IsAny<DateTime?>()))
         .ReturnsAsync(enumIntersectingProjects);
 
-      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(request.RadioSerial, It.IsAny<string>())).ReturnsAsync(assetDevice);
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(request.Ec520Serial, It.IsAny<string>())).ReturnsAsync(ec520Device);
 
       _subscriptionRepo.Setup(d => d.GetProjectBasedSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>()))
         .ReturnsAsync(projectCustomerSubs);
       _subscriptionRepo.Setup(d => d.GetProjectBasedSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>()))
         .ReturnsAsync(assetCustomerSubs);
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(ec520Uid, It.IsAny<DateTime>())).ReturnsAsync(ec520Subs);
 
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 

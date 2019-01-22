@@ -1,5 +1,6 @@
 ﻿using ASNodeRaptorReports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
         Temperature = 21
       };
 
-      var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, 0, null, true, true, true, true, true, true, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+      var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, true, true, true, true, true, true, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
       var result = GridRow.CreateRow(gridRow, request);
 
       Assert.AreEqual(gridRow.Northing, result.Northing);

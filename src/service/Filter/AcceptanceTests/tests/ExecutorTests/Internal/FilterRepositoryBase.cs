@@ -40,7 +40,7 @@ namespace ExecutorTests.Internal
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
-        new ProjectData() { ProjectUid = projectUid ?? Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUid = projectUid ?? Guid.NewGuid().ToString() },
         new FilterRequest
         {
           FilterUid = filterUid ?? Guid.NewGuid().ToString(),

@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
-  public class ProjectSettingsDataResult : BaseDataResult
+  public class ProjectSettingsDataResult : BaseDataResult, IMasterDataModel
   {
     /// <summary>
     /// The projectUid
@@ -18,5 +21,9 @@ namespace VSS.MasterData.Models.ResultHandling
     [JsonProperty(PropertyName = "settings")]
     public JObject Settings { get; set; }
 
+    public List<string> GetIdentifiers() => new List<string>()
+    {
+      ProjectUid
+    };
   }
 }

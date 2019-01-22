@@ -19,21 +19,21 @@ using VSS.TRex.Common.Utilities;
 namespace VSS.TRex.Volumes
 {
     /// <summary>
-    /// Defines an aggregator that summaries simple volumes information for subgrids
+    /// Defines an aggregator that summaries simple volumes information for sub grids
     /// </summary>
     public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// Defines a subgrid full of null values to run through the volumes engine in cases when 
-        /// one of the two subgrids is not available to allow for correctly tracking of statistics
+        /// Defines a sub grid full of null values to run through the volumes engine in cases when 
+        /// one of the two sub grids is not available to allow for correctly tracking of statistics
         /// </summary>
-        private static ClientHeightLeafSubGrid NullHeightSubgrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
+        private static readonly ClientHeightLeafSubGrid NullHeightSubgrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
 
         // CoverageMap maps the area of cells that we have considered and successfully
         // computed volume information from
-        public SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
+        public readonly SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
 
         // NoChangeMap maps the area of cells that we have considered and found to have
         // had no height change between to two surfaces considered
@@ -44,7 +44,7 @@ namespace VSS.TRex.Volumes
         /// </summary>
         public IDesign ActiveDesign { get; set; }
 
-        // References necessary for correct summarisation of aggregated state
+        // References necessary for correct summarization of aggregated state
 
         // public LiftBuildSettings        : TICLiftBuildSettings; = null;
 
@@ -52,7 +52,7 @@ namespace VSS.TRex.Volumes
 
         public bool RequiresSerialisation { get; set; } = true;
 
-        // The sum of the aggregated summarised information relating to volumes summary based reports
+        // The sum of the aggregated summarized information relating to volumes summary based reports
 
         // CellsUsed records how many cells were used in the volume calculation
         public long CellsUsed { get; set; }
@@ -105,10 +105,10 @@ namespace VSS.TRex.Volumes
 
         public SimpleVolumesCalculationsAggregator()
         {
-            // NOTE: This aggregator state is now single threaded in the context of processing subgrid
+            // NOTE: This aggregator state is now single threaded in the context of processing sub grid
             // information into it as the processing threads access independent sub-state aggregators which
             // are aggregated together to form the final aggregation result. However, in contexts that do support
-            // threaded access to this structure the FRequiresSerialisation flag should be set
+            // threaded access to this structure the RequiresSerialisation flag should be set
 
             // if Assigned(Source) then
             //    Initialise(Source);
@@ -153,21 +153,21 @@ namespace VSS.TRex.Volumes
                                                           ClientHeightLeafSubGrid TopScanSubGrid)
         {
             // DesignHeights represents all the valid spot elevations for the cells in the
-            // subgrid being processed
+            // sub grid being processed
             IClientHeightLeafSubGrid DesignHeights = null;
             DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
             // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;
 
-            // Query the patch of elevations from the surface model for this subgrid
+            // Query the patch of elevations from the surface model for this sub grid
             ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(),
             CellSize, out DesignHeights, out ProfilerRequestResult);
             
             if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
                 ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
             {
-                Log.LogError($"Design profiler subgrid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
+                Log.LogError($"Design profiler sub grid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
                 return;
             }
 
@@ -339,7 +339,7 @@ namespace VSS.TRex.Volumes
       }
       */
 
-      // Record the bits for this subgrid in the coverage map by requesting the whole subgrid
+      // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
       // of bits from the leaf level and setting it in one operation under an exclusive lock
       if (!Bits.IsEmpty())
             {
@@ -366,7 +366,7 @@ namespace VSS.TRex.Volumes
         }
 
         /// <summary>
-        /// Summarises the client height grids derived from subgrid processing into the running volumes aggregation state
+        /// Summarises the client height grids derived from sub grid processing into the running volumes aggregation state
         /// </summary>
         /// <param name="subGrids"></param>
         public void SummariseSubgridResult(IClientLeafSubGrid[][] subGrids)
@@ -381,9 +381,9 @@ namespace VSS.TRex.Volumes
                     if (subGridResult == null)
                       continue;
 
-                    // We have a subgrid from the Production Database. If we are processing volumes
-                    // between two filters, then there will be a second subgrid in the sungrids array.
-                    // By convention BaseSubgrid is always the first subgrid in the array,
+                    // We have a sub grid from the Production Database. If we are processing volumes
+                    // between two filters, then there will be a second sub grid in the sub grids array.
+                    // By convention BaseSubGrid is always the first sub grid in the array,
                     // regardless of whether it really forms the 'top' or 'bottom' of the interval.
 
                     IClientLeafSubGrid TopSubGrid;
@@ -416,7 +416,7 @@ namespace VSS.TRex.Volumes
         /// <returns></returns>
         public override string ToString()
         {
-            return $"VolumeType:{VolumeType}, Cellsize:{CellSize}, CoverageArea:{CoverageArea}, Bounding:{BoundingExtents}, " +
+            return $"VolumeType:{VolumeType}, CellSize:{CellSize}, CoverageArea:{CoverageArea}, Bounding:{BoundingExtents}, " +
                 $"Volume:{Volume}, Cut:{CutFillVolume.CutVolume}, Fill:{CutFillVolume.FillVolume}, " +
                 $"Cells Used/Discarded/Scanned:{CellsUsed}/{CellsDiscarded}/{CellsScanned}, ReferenceDesign:{DesignDescriptor}";
         }
@@ -463,7 +463,7 @@ namespace VSS.TRex.Volumes
         }
 
         /// <summary>
-        /// Implement the subgrids request aggregator method to process subgrid results...
+        /// Implement the sub grids request aggregator method to process sub grid results...
         /// </summary>
         /// <param name="subGrids"></param>
         public void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)

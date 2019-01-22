@@ -33,8 +33,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
-      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
+    public CompactionSummaryDataController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+      : base(configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
     { }
 
     /// <summary>
@@ -52,7 +52,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, _) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionCmvSummaryResult());
       }
@@ -103,12 +104,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var mdpSettings = SettingsManager.CompactionMdpSettings(projectSettings);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionMdpSummaryResult());
       }
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+
       var projectId = await GetLegacyProjectId(projectUid);
       var request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
@@ -153,12 +156,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionPassCountSummaryResult());
       }
-
-      var request = await GetPassCountRequest(projectUid, filterUid, true);
+      
+      var request = await GetPassCountRequest(projectUid, filterUid, filter, isSummary: true);
       request.Validate();
 
       try
@@ -201,7 +205,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionTemperatureSummaryResult());
       }
@@ -210,11 +215,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings, false);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
+
       var projectId = await GetLegacyProjectId(projectUid);
-      TemperatureRequest request = new TemperatureRequest(projectId, projectUid, null,
-        temperatureSettings, liftSettings, filter, -1, null, null, null);
+      var request = new TemperatureRequest(projectId, projectUid, null, temperatureSettings, liftSettings, filter, -1, null, null, null);
+
       request.Validate();
+
       try
       {
         var result = RequestExecutorContainerFactory
@@ -259,12 +266,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
+      var (isValidFilterForProjectExtents, filter) = await ValidateFilterAgainstProjectExtents(projectUid, filterUid);
+      if (!isValidFilterForProjectExtents)
       {
         return Ok(new CompactionSpeedSummaryResult());
       }
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      if (filter == null) await GetCompactionFilter(projectUid, filterUid);
 
       SummarySpeedRequest request = new SummarySpeedRequest(projectId, projectUid, null, liftSettings, filter, -1);
       request.Validate();
@@ -300,9 +308,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
     /// <param name="summaryDataHelper">Volume Summary helper.</param>
-    /// <param name="projectUid">The project Uid.</param>
-    /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
-    /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="baseUid">The uid for the base surface, either a filter or design.</param>
+    /// <param name="topUid">The uid for the top surface, either a filter or design.</param>
     [ProjectVerifier]
     [Route("api/v2/volumes/summary")]
     [HttpGet]

@@ -253,7 +253,6 @@ namespace VSS.TRex.Tests.Filters
             filter.IsSpatial = true;
             filter.Fence = new Fence();
             filter.Fence.SetExtents(0, 0, 1, 1);
-            filter.Fence.UpdateExtents();
 
             Assert.True(filter.IsPositionInSelection(0.5, 0.5), "Cell location is IN the fence not OUT of it");
             Assert.False(filter.IsCellInSelection(10, 10), "Cell location is OUT of the fence not IN it");

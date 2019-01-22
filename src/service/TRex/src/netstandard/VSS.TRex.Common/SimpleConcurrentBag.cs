@@ -11,7 +11,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// The internal container holding elements in the list
     /// </summary>
-    private List<T> Items = new List<T>();
+    private readonly List<T> Items = new List<T>();
 
     /// <summary>
     /// The number of items contained in the simple concurrent bag
@@ -93,7 +93,7 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
-    /// Remove an item from the concurrent bag. If no item is available to be removed then return falue, true otherwise
+    /// Remove an item from the concurrent bag. If no item is available to be removed then return value, true otherwise
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>

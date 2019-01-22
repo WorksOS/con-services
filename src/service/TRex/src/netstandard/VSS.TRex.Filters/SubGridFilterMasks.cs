@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Filters.Interfaces;
+﻿using System;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -124,10 +125,6 @@ namespace VSS.TRex.Filters
                                         SubGridTreeBitmapSubGridBits PDMask,
                                         SubGridTreeBitmapSubGridBits FilterMask)
         {
-            // TODO: No design alignment mask support... RequestResult: TDesignProfilerRequestResult;
-            // SubGridTreeBitmapSubGridBits AlignMask;
-            // Fence DesignBoundary = null;
-
             bool Result = true;
 
             ConstructSubgridSpatialAndPositionalMask(SubGridAsLeaf, SiteModel, Filter,
@@ -138,57 +135,25 @@ namespace VSS.TRex.Filters
             // then a filled mask should be supplied...
             PDMask.AndWith(CellOverrideMask);
 
-            /* TODO - Design/alignment masks not yet supported
             // If the filter contains a design mask filter then compute this and AND it with the
             // mask calculated in the step above to derive the final required filter mask
-
             if (Filter != null && Filter.SpatialFilter.HasAlignmentDesignMask())
             {
                 if (Filter.SpatialFilter.AlignmentFence.IsNull()) // Should have been done in ASNode but if not
-                {
-                    RemoveDesignBoundaryFence = true;
-                    RequestResult = DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService.RequestDesignFilterBoundary
-                        (Construct_CalculateDesignFilterBoundary_Args
-                        (SiteModel.ID,
-                         Filter.SpatialFilter.ReferenceDesign,
-                         Filter.SpatialFilter.StartStation, Filter.SpatialFilter.EndStation,
-                         Filter.SpatialFilter.LeftOffset, Filter.SpatialFilter.RightOffset,
-                         dfbrtList),
-                        DesignBoundary);
-                }
-                else
-                {
-                    RequestResult = dppiOK; // boundary fence lookup work has been done in ASNode
-                }
-                DesignBoundary = Filter.SpatialFilter.AlignmentFence;
-            }
-
-            if (RequestResult == dppiOK)
-            {
-                AlignMask = FilterMask;
-
+                    throw new ArgumentException($"Spatial filter does not contained pre-prepared alignment fence for design {Filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
+              
                 // Go over set bits and determine if they are in Design fence boundary
-                //with SubGridAsLeaf, SiteModel.Grid do
-                AlignMask.ForEachSetBit((X, Y) =>
+                FilterMask.ForEachSetBit((X, Y) =>
                 {
-                    double CX, CY;
-                    SiteModel.Grid.GetCellCenterPosition((uint)(SubGridAsLeaf.OriginX + X), (uint)(SubGridAsLeaf.OriginY + Y), out CX, out CY);
-                    if (!DesignBoundary.IncludesPoint(CX, CY))
+                    SiteModel.Grid.GetCellCenterPosition((uint) (SubGridAsLeaf.OriginX + X), (uint) (SubGridAsLeaf.OriginY + Y), out var CX, out var CY);
+                    if (!Filter.SpatialFilter.AlignmentFence.IncludesPoint(CX, CY))
                     {
-                        AlignMask.ClearBit(X, Y); // remove interest as its not in design boundary
+                        FilterMask.ClearBit(X, Y); // remove interest as its not in design boundary
                     }
                 });
+            }
 
-                FilterMask.Assign(AlignMask); // update filter mask after design boundary filter applied
-                PDMask.AndWith(FilterMask);
-            }
-            else
-            {
-                Result = false;
-                SIGLogMessage.PublishNoODS(Nil, Format('Call to RequestDesignFilterBoundary in ICRetrieveSubgrid.ConstructSubgridCellFilterMask returned error result %s for %s.',
-                                                [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), slmcError);
-            }
-            */
+            PDMask.AndWith(FilterMask);           
 
             return Result;
         }

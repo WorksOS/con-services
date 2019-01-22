@@ -47,7 +47,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
       var isDesignFileType = importedFileType == ImportedFileType.DesignSurface ||
-                             importedFileType == ImportedFileType.SurveyedSurface;
+                             importedFileType == ImportedFileType.SurveyedSurface ||
+                             importedFileType == ImportedFileType.Alignment;
       if (!useRaptorGatewayDesignImport &&
           !(useTrexGatewayDesignImport && isDesignFileType))
       {

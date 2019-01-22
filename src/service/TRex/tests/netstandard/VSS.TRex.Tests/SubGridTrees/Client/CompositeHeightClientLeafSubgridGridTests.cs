@@ -15,14 +15,14 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var cell = new SubGridCellCompositeHeightsRecord();
       cell.Clear();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
     }
 
     [Fact]
     public void Test_NullCell()
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
 
       clientGrid.Cells[0, 0] = clientGrid.NullCell();
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VSS.TRex.Common
+﻿namespace VSS.TRex.Common
 {
   public static class Consts
   {
@@ -14,17 +12,17 @@ namespace VSS.TRex.Common
     /// <summary>
     /// IEEE single/float null value
     /// </summary>
-    public const float NullSingle = Single.MaxValue;
+    public const float NullSingle = float.MaxValue;
 
     /// <summary>
     /// IEEE single/float null value
     /// </summary>
-    public const float NullFloat = Single.MaxValue;
+    public const float NullFloat = float.MaxValue;
 
     /// <summary>
     /// IEEE double null value
     /// </summary>
-    public const double NullDouble = NullReal; //Double.MaxValue;
+    public const double NullDouble = NullReal;
 
     /// <summary>
     /// Value representing a null height encoded as an IEEE single
@@ -32,7 +30,7 @@ namespace VSS.TRex.Common
     public const float NullHeight = -3.4E38f;
 
     // Value representing a null machine speed encoded as an IEEE ushort
-    public const ushort NullMachineSpeed = UInt16.MaxValue;
+    public const ushort NullMachineSpeed = ushort.MaxValue;
 
     /// <summary>
     /// Null ID for a design reference descriptor ID

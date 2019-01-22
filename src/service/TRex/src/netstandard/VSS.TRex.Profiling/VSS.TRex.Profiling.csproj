@@ -25,6 +25,7 @@
     <ProjectReference Include="..\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGrids.Interfaces\VSS.TRex.SubGrids.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />

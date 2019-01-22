@@ -12,12 +12,12 @@ using VSS.TRex.Common.Utilities;
 namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
-    /// This is a static, immutable, version of the cell and cell passes that make up a subgrid segment
+    /// This is a static, immutable, version of the cell and cell passes that make up a sub grid segment
     /// </summary>
     public class SubGridCellSegmentPassesDataWrapper_Static : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
         /// <summary>
-        /// CallPasses is a single collection of cell passes stored within this subgrid cell segment.
+        /// CallPasses is a single collection of cell passes stored within this sub grid cell segment.
         /// </summary>
         private CellPass[] CellPasses;
 
@@ -85,7 +85,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Shift all the cell pass information into the private arrays, setting the cell pass offsets for 
             // each cell to reference the correct set of cell passes in the collated array.
             uint runningPassCount = 0;
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 PassData[i, j].CellPassOffset = runningPassCount;
 
@@ -116,6 +116,17 @@ namespace VSS.TRex.SubGridTrees.Server
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
+        /// <summary>
+        /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="position"></param>
+        public void RemovePass(uint X, uint Y, int position)
+        {
+            throw new InvalidOperationException("Immutable cell pass segment.");
+        }
+
         public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passNumber];
@@ -124,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
         /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
-        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
+        /// with the given time would be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -164,7 +175,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 if (PassCounts[i, j] > 0)
                 {
-                    // TODO: Revisit static cell pass support for reading contexts
                     AllocatePasses(i, j, (uint)PassCounts[i, j]);
                     Read(i, j, reader);
 
@@ -194,7 +204,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>

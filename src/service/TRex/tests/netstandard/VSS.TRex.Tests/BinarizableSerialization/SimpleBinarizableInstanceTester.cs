@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
       var result = binObj.Deserialize<T>();
-
+      
       if (failureMsg != "")
         result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else

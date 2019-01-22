@@ -63,8 +63,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     {
       return new TemperatureStatisticsResult
       {
-        MinimumTemperature = LastTempRangeMin,
-        MaximumTemperature = LastTempRangeMax,
+        MinimumTemperature = IsTargetValueConstant ? LastTempRangeMin : 0.0,
+        MaximumTemperature = IsTargetValueConstant ? LastTempRangeMax : 0.0,
         IsTargetTemperatureConstant = IsTargetValueConstant,
         BelowTargetPercent = ValueUnderTargetPercent,
         WithinTargetPercent = ValueAtTargetPercent,

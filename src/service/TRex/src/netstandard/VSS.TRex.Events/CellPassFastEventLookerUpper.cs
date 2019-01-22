@@ -26,7 +26,7 @@ namespace VSS.TRex.Events
     values looked up for particular events for that machine.
 
     In this way, a single linear pass of the cell passes is sufficient to perform all
-    required loopkups in a way that minimises the number of required full event lookups.
+    required lookups in a way that minimizes the number of required full event lookups.
 
     Each time the engine is invoked it increments a stamp which is used to indicate if particular
     values in the state relate to the current pass of cell event lookups. This is used to remove
@@ -42,7 +42,7 @@ namespace VSS.TRex.Events
 
   public class CellPassFastEventLookerUpper : ICellPassFastEventLookerUpper
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<CellPassFastEventLookerUpper>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CellPassFastEventLookerUpper>();
 
     private int Stamp;
 
@@ -81,7 +81,7 @@ namespace VSS.TRex.Events
     }
 
     public void PopulateFilteredValues(FilteredPassData[] passes, int firstPassIndex, int lastPassIndex, 
-      IFilteredValuePopulationControl populationControl, bool ignoreBussinessRulesRules)
+      IFilteredValuePopulationControl populationControl, bool ignoreBusinessRulesRules)
     {
       if (firstPassIndex == -1 || lastPassIndex == -1)
         return; // Nothing to do
@@ -230,7 +230,7 @@ namespace VSS.TRex.Events
           TrackingState.EventVibrationState = TrackingState.EventVibrationState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventVibrationState = TrackingState.EventVibrationState;
 
-          if (!ignoreBussinessRulesRules && passes[I].EventValues.EventVibrationState != VibrationState.On)
+          if (!ignoreBusinessRulesRules && passes[I].EventValues.EventVibrationState != VibrationState.On)
             passes[I].FilteredPass.SetFieldsForVibeStateOff();
         }
 

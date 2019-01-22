@@ -12,13 +12,8 @@
     <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
     <Platforms>x64</Platforms>
     <PackageTags>vss-productivity3d-service</PackageTags>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Update="Views;Areas\**\Views;log4net.xml;docker-compose.yml;docker-compose.debug.yml;Dockerfile.debug;Dockerfile;.dockerignore">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
@@ -45,17 +40,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.3" />    
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
@@ -71,6 +60,9 @@
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
+    <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
   </ItemGroup>
@@ -78,7 +70,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.2.0" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>

@@ -63,7 +63,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
       return new MDPStatisticsResult
       {
         IsTargetMDPConstant = IsTargetValueConstant,
-        ConstantTargetMDP = LastTargetMDP,
+        ConstantTargetMDP = IsTargetValueConstant ? LastTargetMDP : (short)-1,
         AboveTargetPercent = ValueOverTargetPercent,
         WithinTargetPercent = ValueAtTargetPercent,
         BelowTargetPercent = ValueUnderTargetPercent,

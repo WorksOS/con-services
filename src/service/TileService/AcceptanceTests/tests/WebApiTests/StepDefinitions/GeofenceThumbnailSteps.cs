@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using System.Net;
 using WebApiTests.Models;
 using WebApiTests.Utilities;
@@ -7,20 +8,22 @@ using Xunit.Gherkin.Quick;
 
 namespace WebApiTests.StepDefinitions
 {
-  [FeatureFile("GeofenceThumbnail.feature")]//path relative to output folder
+  [FeatureFile("GeofenceThumbnail.feature")] //path relative to output folder
   public sealed class GeofenceThumbnailSteps : StepsBase
   {
     private string uri;
     private string responseRepositoryFileName;
-    private Getter<byte[]> tileRequester;
-    private byte[] currentResponse;
+    private string requestRepositoryFileName;
     private string operation;
+    private Getter<byte[]> tileRequester;
     private Getter<MultipleThumbnailsResult> multiTileRequester;
+    private Poster<RootObject, MultipleThumbnailsResult> geoJsonTileRequester;
+
 
     [Given(@"The geofence thumbnail URI is ""(.*)"" for operation ""(.*)""")]
     public void GivenTheGeofenceThumbnailURIIs(string uri, string operation)
     {
-      this.uri = TileClientConfig.TileSvcBaseUri + uri;
+      this.uri = RestClient.TileServiceBaseUrl + uri;
       this.operation = operation;
     }
 
@@ -30,21 +33,28 @@ namespace WebApiTests.StepDefinitions
       responseRepositoryFileName = fileName;
     }
 
-    [When(@"I request a Report Tile for geofence UID ""(.*)""")]
-    public void WhenIRequestAReportTileForGeofenceUID(string geofenceUid)
+    [And(@"the expected request is in the ""(.*)"" respository")]
+    public void GivenTheExpectedRequestIsInTheRespository(string fileName)
+    {
+      requestRepositoryFileName = fileName;
+    }
+
+    [When(@"I request a Thumbnail for geofence UID ""(.*)""")]
+    public void WhenIRequestAThumbnailForGeofenceUID(string geofenceUid)
     {
       uri += $"?geofenceUid={geofenceUid}";
       tileRequester = new Getter<byte[]>(uri, responseRepositoryFileName);
       switch (operation)
       {
         case "png":
-          currentResponse = tileRequester.DoRequestWithStreamResponse(uri);
+          _ = tileRequester.SendRequest(uri, acceptHeader: MediaTypes.PNG);
           break;
         case "base64":
           tileRequester.DoValidRequest(HttpStatusCode.OK);
-          currentResponse = tileRequester.CurrentResponse;
           break;
-        default: Assert.True(false, TEST_FAIL_MESSAGE); break;
+        default:
+          Assert.True(false, TEST_FAIL_MESSAGE);
+          break;
       }
     }
 
@@ -52,26 +62,68 @@ namespace WebApiTests.StepDefinitions
     public void ThenTheResultingThumbnailShouldMatchFromTheResponseRepositoryWithinPercent(string responseName, string tolerance)
     {
       byte[] expectedResponse = tileRequester.ResponseRepo[responseName];
-      CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, currentResponse);
+
+      switch (operation)
+      {
+        case "png":
+          {
+            CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, tileRequester.ByteContent);
+            break;
+          }
+        case "base64":
+          {
+            CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, tileRequester.CurrentResponse);
+            break;
+          }
+      }
+
     }
 
-    [When(@"I request multiple Report Tiles")]
-    public void WhenIRequestMultipleReportTiles()
+    [When(@"I request multiple Thumbnails")]
+    public void WhenIRequestMultipleThumbnails()
     {
       multiTileRequester = new Getter<MultipleThumbnailsResult>(uri, responseRepositoryFileName);
       switch (operation)
       {
         case "multiple":
-          multiTileRequester.DoRequest(uri, HttpStatusCode.OK);
+          multiTileRequester.SendRequest(uri, acceptHeader: MediaTypes.PNG);
           break;
-        default: Assert.True(false, TEST_FAIL_MESSAGE); break;
+        default:
+          Assert.True(false, TEST_FAIL_MESSAGE);
+          break;
       }
     }
 
     [Then(@"The result should match ""(.*)"" from the response repository")]
     public void ThenTheResultShouldMatchFromTheResponseRepository(string responseName)
     {
-      multiTileRequester.CurrentResponse.Should().Be(multiTileRequester.ResponseRepo[responseName]);
+      switch (operation)
+      {
+        case "multiple":
+          multiTileRequester.CurrentResponse.Should().Be(multiTileRequester.ResponseRepo[responseName]);
+          break;
+        case "geojson":
+          geoJsonTileRequester.CurrentResponse.Should().Be(geoJsonTileRequester.ResponseRepo[responseName]);
+          break;
+        default:
+          Assert.True(false, TEST_FAIL_MESSAGE);
+          break;
+      }
+    }
+
+    [When(@"I request a Thumbnail for ""(.*)"" from the request repository expecting ""(.*)""")]
+    public void WhenIRequestAThumbnailForFromTheRequestRepositoryExpecting(string requestName, string httpStatusCode)
+    {
+      var statusCode = Enum.Parse<HttpStatusCode>(httpStatusCode);
+      geoJsonTileRequester = new Poster<RootObject, MultipleThumbnailsResult>(uri, requestRepositoryFileName, responseRepositoryFileName);
+      geoJsonTileRequester.DoRequest(requestName, statusCode);
+    }
+
+    [Then(@"I should get error code (.*) and message ""(.*)""")]
+    public void ThenIShouldGetErrorCodeAndMessage(int errorCode, string message)
+    {
+      Assert.Equal(errorCode, geoJsonTileRequester.CurrentResponse?.Code);
+      Assert.Equal(message, geoJsonTileRequester.CurrentResponse?.Message);
     }
   }
 }

@@ -3,6 +3,8 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.Common;
+
 
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {

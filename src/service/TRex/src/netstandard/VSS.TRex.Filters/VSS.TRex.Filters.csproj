@@ -14,6 +14,7 @@
     <ProjectReference Include="..\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
     <ProjectReference Include="..\VSS.TRex.Events\VSS.TRex.Events.csproj" />
     <ProjectReference Include="..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj" />

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -21,7 +22,7 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class GeofenceProxy : BaseProxy, IGeofenceProxy
   {
-    public GeofenceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(
+    public GeofenceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(
         configurationStore, logger, cache)
     {
     }

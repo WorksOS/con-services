@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -29,7 +30,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         ProdDataMaskBytes = new byte[]{ 1, 5, 3, 7 },
         SurveyedSurfaceOnlyMaskBytes = new byte[] { 0, 4, 1, 2 },
         MessageTopic = "Who cares",
-        IncludeSurveyedSurfaceInformation = true
+        IncludeSurveyedSurfaceInformation = true,
+        AreaControlSet = new AreaControlSet(true, 12345, 6789, 3344, 5566, 44)
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom SubGridsRequestArgument not same after round trip serialisation");

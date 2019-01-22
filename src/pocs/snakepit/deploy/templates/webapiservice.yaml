@@ -1,0 +1,13 @@
+{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $name }}
+spec:
+  selector:
+    app: {{ $name }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP

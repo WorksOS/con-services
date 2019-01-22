@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         customerRepository = customerRepository as CustomerRepository, projectRepository = projectRepository as ProjectRepository,
         subscriptionsRepository = subscriptionsRepository as SubscriptionRepository,
         producer = producer, kafkaTopicName = kafkaTopicName};
-      dataRepository = new DataRepository(logger, configStore, assetRepository, deviceRepository, 
+        dataRepository = new DataRepository(logger, configStore, assetRepository, deviceRepository, 
         customerRepository, projectRepository, 
         subscriptionsRepository,
         producer, kafkaTopicName);

@@ -5,7 +5,7 @@ using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
 {
-  public class DesignFilterSubGridMaskResponse : BaseRequestResponse
+  public class DesignFilterSubGridMaskResponse : BaseDesignRequestResponse
   {
     private const byte VERSION_NUMBER = 1;
 

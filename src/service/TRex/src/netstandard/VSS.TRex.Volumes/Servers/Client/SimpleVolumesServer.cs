@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Servers.Client;
+﻿using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;

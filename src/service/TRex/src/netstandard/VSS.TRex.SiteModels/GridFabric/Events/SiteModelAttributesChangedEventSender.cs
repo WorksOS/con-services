@@ -33,6 +33,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <param name="surveyedSurfacesChanged"></param>
     /// <param name="machineDesignsModified"></param>
     /// <param name="proofingRunsModified"></param>
+    /// <param name="alignmentsChanged"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,
@@ -43,7 +44,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       bool machinesChanged = false,
       bool machineTargetValuesChanged = false,
       bool machineDesignsModified = false,
-      bool proofingRunsModified = false)
+      bool proofingRunsModified = false,
+      bool alignmentsChanged = false)
     {
       try
       {
@@ -59,7 +61,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
           MachinesModified = machinesChanged,
           MachineTargetValuesModified = machineTargetValuesChanged,
           MachineDesignsModified = machineDesignsModified,
-          ProofingRunsModified = proofingRunsModified
+          ProofingRunsModified = proofingRunsModified,
+          AlignmentsModified = alignmentsChanged,
         };
 
         if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)
@@ -70,7 +73,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred sending model attributes changed notification:", e);
+        Log.LogError(e, "Exception occurred sending model attributes changed notification:");
       }
     }
   }

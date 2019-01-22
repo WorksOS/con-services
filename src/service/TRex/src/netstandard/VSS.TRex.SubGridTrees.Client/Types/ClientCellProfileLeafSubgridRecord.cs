@@ -106,7 +106,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       CellXOffset = reader.ReadSingle();
       CellYOffset = reader.ReadSingle();
       LastPassTime = DateTime.FromBinary(reader.ReadInt64());
-      PassCount = reader.ReadInt32(); // Todo: Is this too big?
+      PassCount = reader.ReadInt32();
       InternalSiteModelMachineIndex = reader.ReadInt16();
       LastPassValidRadioLatency = reader.ReadInt32();
       EventDesignNameID = reader.ReadInt32();

@@ -21,6 +21,11 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public IDictionary<string, string> CustomHeaders { get; set; }
 
+    /// <summary>
+    /// Determines whether CRUD operations should result in a Kafka message being sent.
+    /// </summary>
+    public bool SendKafkaMessages;
+
     public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {
       return new FilterRequestFull
@@ -40,17 +45,17 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public override void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid = false)
     {
-      if (string.IsNullOrEmpty(CustomerUid) || Guid.TryParse(CustomerUid, out Guid _) == false)
+      if (string.IsNullOrEmpty(CustomerUid) || Guid.TryParse(CustomerUid, out _) == false)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 27);
       }
 
-      if (string.IsNullOrEmpty(UserId) || (IsApplicationContext == false && Guid.TryParse(UserId, out Guid _) == false))
+      if (string.IsNullOrEmpty(UserId) || (IsApplicationContext == false && Guid.TryParse(UserId, out _) == false))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
       }
 
-      if (ProjectData == null || string.IsNullOrEmpty(ProjectUid) || Guid.TryParse(ProjectUid, out Guid _) == false)
+      if (ProjectData == null || string.IsNullOrEmpty(ProjectUid) || Guid.TryParse(ProjectUid, out _) == false)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }

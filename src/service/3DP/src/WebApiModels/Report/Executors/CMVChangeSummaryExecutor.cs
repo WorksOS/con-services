@@ -40,14 +40,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as CMVChangeSummaryRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CMVChangeSummaryRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
+        var request = CastRequestObjectTo<CMVChangeSummaryRequest>(item);
         
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_CMV"))
         {
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
           return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;
@@ -58,11 +53,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         TASNodeCMVChangeSettings settings = new TASNodeCMVChangeSettings(request.CMVChangeSummaryValues);
 
         var raptorResult = raptorClient.GetCMVChangeSummary(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtCMVChange),
           settings,
-          RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
-            new List<long>()),
+          RaptorConverters.ConvertFilter(request.Filter, overrideAssetIds: new List<long>()),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
           out var result);
 

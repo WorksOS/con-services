@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       }
       catch (Exception e)
       {
-        log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
+        log.LogError(e, "Exception loading config");
         throw new ServiceException(HttpStatusCode.InternalServerError,
                 new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, e.Message));
       }

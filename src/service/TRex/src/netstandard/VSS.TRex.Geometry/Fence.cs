@@ -43,10 +43,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    public FencePoint this[int index]
-    {
-      get { return Points[index]; }
-    }
+    public FencePoint this[int index] => Points[index];     
 
     /// <summary>
     /// The list of the points taking part in the fence
@@ -105,7 +102,7 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Set the min/max x/y values to inverted (invalid) values
     /// </summary>
-    protected void InitialiseMaxMins()
+    private void InitialiseMaxMins()
     {
       MinX = 1E10;
       MinY = 1E10;
@@ -126,7 +123,7 @@ namespace VSS.TRex.Geometry
         if (pt.Y < MinY) MinY = pt.Y;
         if (pt.X > MaxX) MaxX = pt.X;
         if (pt.Y > MaxY) MaxY = pt.Y;
-      };
+      }
     }
 
     /// <summary>
@@ -139,7 +136,7 @@ namespace VSS.TRex.Geometry
     {
       try
       {
-        if ((x < MinX) || (x > MaxX) || (y < MinY) || (y > MaxY))
+        if (x < MinX || x > MaxX || y < MinY || y > MaxY)
         {
           return false;
         }
@@ -178,7 +175,7 @@ namespace VSS.TRex.Geometry
           double pt2Y = pt2.Y;
 
           // Does the constant y line intersect the segment? 
-          if ((((y >= pt1Y) && (y < pt2Y)) || ((y <= pt1Y) && (y > pt2Y)))
+          if (((y >= pt1Y && y < pt2Y) || (y <= pt1Y && y > pt2Y))
               // Test if the intersection is to the left of test_x 
               && ((pt1X + (pt2.X - pt1X) * (y - pt1Y) / (pt2Y - pt1Y)) < x))
           {
@@ -188,18 +185,14 @@ namespace VSS.TRex.Geometry
             {
               double pt3Y = Points[(pointsCount + i - 2) % pointsCount].Y;
               if (Math.Sign(y - pt2Y) == Math.Sign(y - pt3Y))
-              {
                 continue;
-              }
             }
 
             if (y == pt2Y)
             {
               double pt3Y = Points[(i + 1) % pointsCount].Y;
               if ((Math.Sign(y - pt1Y) == Math.Sign(y - pt3Y)))
-              {
                 continue;
-              }
             }
 
             // Everything seems to be OK, so say we crossed... 
@@ -212,6 +205,7 @@ namespace VSS.TRex.Geometry
       }
       catch (Exception)
       {
+        // TODO add logging for exception
         // SIGLogMessage.PublishNoODS(Nil, Format('Maths error in IncludesPoint. X:%f Y:%f MinX:%f MaxY:%f MinY:%f MaxY:%f Error:%s', [X, Y, MinX, MaxX, MinY, MaxY, e.Message]), TSigLogMessageClass.slmcError);
         return false;
       }
@@ -378,7 +372,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Clear the fence to an initialised state
+    /// Clear the fence to an initialized state
     /// </summary>
     public void Clear()
     {

@@ -50,8 +50,22 @@ namespace VSS.Productivity3D.Push.Clients
     /// <inheritdoc />
     public Task Connect()
     {
+      if (string.IsNullOrWhiteSpace(UrlKey))
+      {
+        // This should be set in code
+        Logger.LogCritical($"No URL Key provided to Push Client - not starting");
+        return Task.CompletedTask;
+      }
+
+      var url = Configuration.GetValueString(UrlKey, string.Empty);
+      if (string.IsNullOrEmpty(url))
+      {
+        Logger.LogWarning($"Cannot find key {UrlKey} in settings, not connecting....");
+        return Task.CompletedTask;
+      }
+
       Connection = new HubConnectionBuilder()
-        .WithUrl(Configuration.GetValueString(UrlKey), options =>
+        .WithUrl(url, options =>
         {
           if (Configuration.GetValueBool("PUSH_NO_AUTHENTICATION_HEADER", false))
           {
@@ -94,7 +108,7 @@ namespace VSS.Productivity3D.Push.Clients
         }
         catch (HttpRequestException e)
         {
-          Logger.LogError($"Failed to connect due to exception '{e.Message}' - Is the Server online?");
+          Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
       }

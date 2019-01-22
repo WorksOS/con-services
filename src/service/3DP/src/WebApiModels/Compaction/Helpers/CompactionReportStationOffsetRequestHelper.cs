@@ -4,6 +4,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 
@@ -38,6 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       return CompactionReportStationOffsetRequest.CreateRequest(
         ProjectId,
+        ProjectUid,
         Filter,
         Filter != null ? Filter.Id ?? -1 : -1,
         liftBuildSettings,

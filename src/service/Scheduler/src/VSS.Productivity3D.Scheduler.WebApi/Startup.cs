@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
@@ -174,7 +174,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
+        log.LogError(ex, $"Scheduler.Configure: Unable to cleanup existing jobs");
         throw;
       }
     }
@@ -266,7 +266,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        log.LogError($"Scheduler: ConfigureHangfireUse: UseHangfireServer failed: {ex.Message}");
+        log.LogError(ex, $"Scheduler: ConfigureHangfireUse: UseHangfireServer failed");
         throw;
       }
     }

@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
+using VSS.TRex.Filters;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Executors
 {
@@ -29,14 +31,26 @@ namespace VSS.TRex.Profiling.Executors
 
       try
       {
+        if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
+        {
+          // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
+          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
+          {
+            return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
+          }
+        }
+
         ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute
         {
           ProfileTypeRequired = arg.ProfileTypeRequired,
+          ProfileStyle = arg.ProfileStyle,
           ProjectID = arg.ProjectID,
           Filters = arg.Filters,
           ReferenceDesignUID = arg.ReferenceDesignUID,
           ReturnAllPassesAndLayers = arg.ReturnAllPassesAndLayers,
-          TRexNodeID = arg.TRexNodeID
+          TRexNodeID = arg.TRexNodeID,
+          VolumeType = arg.VolumeType
+          
         };
 
         // Perform coordinate conversion on the argument before broadcasting it:

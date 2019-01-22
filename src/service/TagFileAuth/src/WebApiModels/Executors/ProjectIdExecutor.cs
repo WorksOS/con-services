@@ -95,7 +95,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //    must have valid assetID, which must have a 3d sub.
         if (customerAssetOwner != null && assetSubs != null && assetSubs.Any())
         {
-          var p = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude,
+          var p = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude,
+            request.longitude,
             request.timeOfPosition);
           var enumerable = p as IList<Project> ?? p.ToList();
           if (p != null && enumerable.Any())
@@ -118,8 +119,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
-            (int) ProjectType.ProjectMonitoring,
-            (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
+            (int) ProjectType.ProjectMonitoring, (int) ServiceTypeEnum.ProjectMonitoring);
           var enumerable = p as IList<Project> ?? p.ToList();
           if (p != null && enumerable.Any())
           {
@@ -141,7 +141,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
-            (int) ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
+            (int) ProjectType.LandFill, (int) ServiceTypeEnum.Landfill);
           if (p != null && p.Any())
           {
             potentialProjects = potentialProjects?.Concat(p) ?? p;
@@ -184,10 +184,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1,
             ContractExecutionStatesEnum.InternalProcessingError, 19));
       }
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new System.NotImplementedException();

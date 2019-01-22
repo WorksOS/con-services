@@ -110,8 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.Settings}. Exception Thrown: {e.Message}. ");
+        log.LogError(e, $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.Settings}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 70,
           "raptorProxy.ValidateProjectSettings", e.Message);
       }

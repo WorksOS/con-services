@@ -264,13 +264,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       try
       {
         ccFileExistsResult = await fileRepo
-          .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
+          .FileExists(fileDescriptor.FilespaceId, fileDescriptor.Path + '/' + fileDescriptor.FileName)
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+        log.LogError(e, $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}");
         return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists", e.Message);
       }
 
@@ -279,14 +278,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         bool ccDeleteFileResult = false;
         try
         {
-          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
-              fileDescriptor.path + '/' + fileDescriptor.fileName)
+          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.FilespaceId,
+              fileDescriptor.Path + '/' + fileDescriptor.FileName)
             .ConfigureAwait(false);
         }
         catch (Exception e)
         {
-          log.LogError(
-            $"DeleteFileFromTCCRepository DeleteFile failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+          log.LogError(e, $"DeleteFileFromTCCRepository DeleteFile failed with exception. importedFileUid:{importedFileUid}.");
           return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.DeleteFile", e.Message);
         }
 

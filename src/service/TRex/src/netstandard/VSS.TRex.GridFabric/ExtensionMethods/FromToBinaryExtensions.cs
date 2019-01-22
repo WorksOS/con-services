@@ -56,6 +56,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       item.Points = new List<FencePoint>(reader.ReadInt());
       for (int i = 0; i < item.Points.Capacity; i++)
          item.Points.Add(new FencePoint(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()));
+
+      item.UpdateExtents();
     }
 
     /// <summary>

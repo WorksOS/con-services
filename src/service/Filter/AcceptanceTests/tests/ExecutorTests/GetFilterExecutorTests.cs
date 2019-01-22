@@ -1,12 +1,12 @@
-﻿using ExecutorTests.Internal;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ExecutorTests.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
@@ -222,7 +222,7 @@ namespace ExecutorTests
       var projectListMock = new Mock<IProjectListProxy>();
       projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
 
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
 
@@ -270,7 +270,7 @@ namespace ExecutorTests
       var projectListMock = new Mock<IProjectListProxy>();
       projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
 
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -335,7 +335,7 @@ namespace ExecutorTests
       var projectListMock = new Mock<IProjectListProxy>();
       projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
 
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
 

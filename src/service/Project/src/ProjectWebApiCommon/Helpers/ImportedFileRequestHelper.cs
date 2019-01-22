@@ -44,8 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}. Exception Thrown: {e.Message}. ");
+        log.LogError(e, $"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}");
         if (isCreate)
           await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
               serviceExceptionHandler, projectRepo, true)
@@ -92,8 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"NotifyRaptorDeleteFile DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.");
+        log.LogError(e, $"NotifyRaptorDeleteFile DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} FileDescriptor:{fileDescriptor}");
         return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "raptorProxy.DeleteFile", e.Message);
       }
 
@@ -135,8 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"NotifyTRexAddFile AddFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName} exception: {e.Message}. ");
+        log.LogError(e, $"NotifyTRexAddFile AddFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName}");
 
         await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
           (projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
@@ -187,8 +184,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"NotifyTRexAddFile UpdateFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName} exception: {e.Message}. ");
+        log.LogError(e, $"NotifyTRexAddFile UpdateFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName}");
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImportFile.UpdateFile",
           e.Message);
@@ -221,8 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"NotifyTRexAddFile DeleteFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName} exception: {e.Message}. ");
+        log.LogError(e, $"NotifyTRexAddFile DeleteFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImporFile.DeleteFile",
           e.Message);
       }

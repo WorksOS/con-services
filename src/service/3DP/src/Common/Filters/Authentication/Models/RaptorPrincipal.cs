@@ -20,10 +20,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     private readonly IProjectListProxy projectProxy;
     private readonly IDictionary<string, string> authNContext;
     private static readonly ConcurrentDictionary<Guid, long> legacyProjectIdsCache;
+    private static readonly ConcurrentDictionary<long, Guid> ProjectUidsCache;
 
     static RaptorPrincipal()
     {
       legacyProjectIdsCache = new ConcurrentDictionary<Guid, long>();
+      ProjectUidsCache = new ConcurrentDictionary<long, Guid>();
     }
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
@@ -90,26 +92,55 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Gets the legacy Project Id (long) from a ProjectUid (Guid).
     /// </summary>
-    public async Task<long> GetLegacyProjectId(Guid projectUid)
+    public Task<long> GetLegacyProjectId(Guid projectUid)
     {
-      if (legacyProjectIdsCache.TryGetValue(projectUid, out var legacyId))
+      return legacyProjectIdsCache.TryGetValue(projectUid, out var legacyId)
+        ? Task.FromResult(legacyId)
+        : GetProjectId();
+
+      async Task<long> GetProjectId()
       {
-        return legacyId;
+        var project = await GetProject(projectUid);
+        var projectId = project.LegacyProjectId;
+
+        if (projectId > 0)
+        {
+          legacyProjectIdsCache.TryAdd(projectUid, projectId);
+
+          return projectId;
+        }
+
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
       }
-
-      var project = await GetProject(projectUid);
-      var projectId = project.LegacyProjectId;
-
-      if (projectId > 0)
-      {
-        legacyProjectIdsCache.TryAdd(projectUid, projectId);
-
-        return projectId;
-      }
-
-      throw new ServiceException(
-        HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
     }
+
+    /// <summary>
+    /// Gets the Project Uid (Guid) from a ProjectId (long).
+    /// </summary>
+    public Task<Guid> GetProjectUid(long projectId)
+    {
+      return ProjectUidsCache.TryGetValue(projectId, out var tempProjectUid)
+        ? Task.FromResult(tempProjectUid)
+        : GetProjectUid();
+
+      async Task<Guid> GetProjectUid()
+      {
+        var project = await GetProject(projectId);
+
+        if (Guid.TryParse(project.ProjectUid, out var projectUid))
+        {
+          ProjectUidsCache.TryAdd(projectId, projectUid);
+
+          return projectUid;
+        }
+
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project UID"));
+      }
+    }
+
   }
 }
