@@ -302,7 +302,11 @@ namespace VSS.TRex.SiteModels
 
     public bool MachinesLoaded => machines != null;
 
+    /// <summary>
+    /// Default ignoring invalid positions to true for TAG files processing into this site model.
+    /// </summary>
     public bool IgnoreInvalidPositions { get; set; } = true;
+
 
     public SiteModel()
     {
