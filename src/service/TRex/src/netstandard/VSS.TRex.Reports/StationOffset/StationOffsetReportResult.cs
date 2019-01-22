@@ -3,23 +3,23 @@ using System.IO;
 using System.Text;
 using VSS.Productivity3D.Models.Models.Reports;
 
-namespace VSS.TRex.Reports.Gridded
+namespace VSS.TRex.Reports.StationOffset
 {
   /// <summary>
   /// Contains the prepared result for the client to consume.
   /// 
   /// Note that this structure needs to be look like TRaptorReportsPackager
   ///   to be deserialized by it. One day... TRaptorReportsPackeger will
-  ///   go away and GriddedReportResult could be deserialised in 3dp using it instead.
+  ///   go away and StationOffsetReportResult could be deserialised in 3dp using it instead.
   /// </summary>
-  public class GriddedReportResult : IEquatable<GriddedReportResult>
+  public class StationOffsetReportResult : IEquatable<StationOffsetReportResult>
   {
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType; // == TRaptorReportType
-    public GriddedReportData GriddedData { get; set; }
+    public StationOffsetReportData GriddedData { get; set; }
 
 
-    public GriddedReportResult()
+    public StationOffsetReportResult()
     {
       Clear();
     }
@@ -28,14 +28,14 @@ namespace VSS.TRex.Reports.Gridded
     {
       ReturnCode = ReportReturnCode.NoError;
       ReportType = ReportType.None;
-      GriddedData = new GriddedReportData();
+      GriddedData = new StationOffsetReportData();
       GriddedData.Clear();
     }
 
-    public GriddedReportResult(ReportType reportType)
+    public StationOffsetReportResult(ReportType reportType)
     {
       ReportType = reportType;
-      GriddedData = new GriddedReportData();
+      GriddedData = new StationOffsetReportData();
     }
 
     public byte[] Write()
@@ -70,7 +70,7 @@ namespace VSS.TRex.Reports.Gridded
       }
     }
 
-    public bool Equals(GriddedReportResult other)
+    public bool Equals(StationOffsetReportResult other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -84,7 +84,7 @@ namespace VSS.TRex.Reports.Gridded
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((GriddedReportResult)obj);
+      return Equals((StationOffsetReportResult)obj);
     }
 
     public override int GetHashCode()

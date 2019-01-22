@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
   /// The request representation for getting production data from Raptor for a grid report.
   /// </summary>
   /// 
-  public class CompactionReportGridRequest : CompactionReportRequest
+  public class CompactionReportGridTRexRequest : CompactionReportTRexRequest
   {
     /// <summary>
     /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
@@ -29,25 +29,25 @@ namespace VSS.Productivity3D.Models.Models.Reports
     public GridReportOption GridReportOption { get; protected set; }
 
     /// <summary>
-    /// The Northing ordinate of the location to start gridding from
+    /// The Northing ordinate of the location to start the grid from
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public double StartNorthing { get; protected set; }
 
     /// <summary>
-    /// The Easting ordinate of the location to start gridding from
+    /// The Easting ordinate of the location to start the grid from
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public double StartEasting { get; protected set; }
 
     /// <summary>
-    /// The Northing ordinate of the location to end gridding at
+    /// The Northing ordinate of the location to end the grid at
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public double EndNorthing { get; protected set; }
 
     /// <summary>
-    /// The Easting ordinate of the location to end gridding at
+    /// The Easting ordinate of the location to end the grid at
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public double EndEasting { get; protected set; }
@@ -58,22 +58,19 @@ namespace VSS.Productivity3D.Models.Models.Reports
     [JsonProperty(Required = Required.Default)]
     public double Azimuth { get; protected set; }
 
-    protected CompactionReportGridRequest()
+    protected CompactionReportGridTRexRequest()
     { }
 
-    public static CompactionReportGridRequest CreateCompactionReportGridRequest(
-      long? projectId,
-      Guid? projectUid,
+    public static CompactionReportGridTRexRequest CreateCompactionReportGridTRexRequest(
+      Guid projectUid,
       FilterResult filter,
-      long filterId,
-      LiftBuildSettings liftBuildSettings,
       bool reportElevation,
-      bool reportCMV,
-      bool reportMDP,
+      bool reportCmv,
+      bool reportMdp,
       bool reportPassCount,
       bool reportTemperature,
       bool reportCutFill,
-      DesignDescriptor designFile,
+      Guid? cutFillDesignUid,
       double? gridInterval,
       GridReportOption gridReportOption,
       double startNorthing,
@@ -82,20 +79,17 @@ namespace VSS.Productivity3D.Models.Models.Reports
       double endEasting,
       double azimuth)
     {
-      return new CompactionReportGridRequest
+      return new CompactionReportGridTRexRequest
       {
-        ProjectId = projectId,
         ProjectUid = projectUid,
         Filter = filter,
-        FilterID = filterId,
-        LiftBuildSettings = liftBuildSettings,
         ReportElevation = reportElevation,
-        ReportCMV = reportCMV,
-        ReportMDP = reportMDP,
+        ReportCmv = reportCmv,
+        ReportMdp = reportMdp,
         ReportPassCount = reportPassCount,
         ReportTemperature = reportTemperature,
         ReportCutFill = reportCutFill,
-        DesignFile = designFile,
+        CutFillDesignUid = cutFillDesignUid,
         GridInterval = gridInterval ?? ValidationConstants3D.DEFAULT_SPACING_INTERVAL,
         GridReportOption = gridReportOption,
         StartNorthing = startNorthing,
@@ -133,7 +127,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       if (Azimuth < 0 || Azimuth > (2 * Math.PI))
       {
         // TODO (Aaron) Unreachable code; this check is already performed in the base class validation that occurs in the above base.Validate() call.
-        if (!(ReportPassCount || ReportTemperature || ReportMDP || ReportCutFill || ReportCMV || ReportElevation))
+        if (!(ReportPassCount || ReportTemperature || ReportMdp || ReportCutFill || ReportCmv || ReportElevation))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

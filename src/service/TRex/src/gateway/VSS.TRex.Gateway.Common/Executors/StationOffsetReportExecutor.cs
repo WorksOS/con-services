@@ -7,14 +7,14 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Reports.Gridded;
-using VSS.TRex.Reports.Gridded.GridFabric;
+using VSS.TRex.Reports.StationOffset;
+using VSS.TRex.Reports.StationOffset.GridFabric;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class GriddedReportExecutor : BaseExecutor
+  public class StationOffsetReportExecutor : BaseExecutor
   {
-    public GriddedReportExecutor(IConfigurationStore configStore, ILoggerFactory logger,
+    public StationOffsetReportExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
@@ -22,50 +22,48 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public GriddedReportExecutor()
+    public StationOffsetReportExecutor()
     {
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as CompactionReportGridTRexRequest;
+      var request = item as CompactionReportStationOffsetTRexRequest;
 
       if (request == null)
       {
-        ThrowRequestTypeCastException<CompactionReportGridTRexRequest>();
+        ThrowRequestTypeCastException<CompactionReportStationOffsetTRexRequest>();
         return null; // to keep compiler happy
       }
 
-        var siteModel = GetSiteModel(request.ProjectUid);
+      var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      GriddedReportRequest tRexRequest = new GriddedReportRequest();
+      StationOffsetReportRequest tRexRequest = new StationOffsetReportRequest();
 
-      GriddedReportRequestResponse response = tRexRequest.Execute(new GriddedReportRequestArgument
+      StationOffsetReportRequestResponse response = tRexRequest.Execute(new StationOffsetReportRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
         ReferenceDesignUID = request.CutFillDesignUid ?? Guid.Empty, // only present if ReportCutFill required
         ReportElevation = request.ReportElevation,
         ReportCutFill = request.ReportCutFill,
-        ReportCMV = request.ReportCmv,
-        ReportMDP = request.ReportMdp,
+        ReportCmv = request.ReportCmv,
+        ReportMdp = request.ReportMdp,
         ReportPassCount = request.ReportPassCount,
         ReportTemperature = request.ReportTemperature,
-        GridInterval = request.GridInterval,
-        GridReportOption = request.GridReportOption,
-        StartNorthing = request.StartNorthing,
-        StartEasting = request.StartEasting,
-        EndNorthing = request.EndNorthing,
-        EndEasting = request.EndEasting,
-        Azimuth = request.Azimuth
+        AlignmentDesignUid = request.AlignmentDesignUid,
+        CrossSectionInterval = request.CrossSectionInterval,
+        StartStation = request.StartStation,
+        EndStation = request.EndStation,
+        Offsets = request.Offsets
       });
 
-      var result = new GriddedReportResult()
+      var result = new StationOffsetReportResult()
       {
         ReturnCode = response.ReturnCode,
         ReportType = ReportType.Gridded,
-        GriddedData = new GriddedReportData()
+        GriddedData = new StationOffsetReportData()
         {
           ElevationReport = request.ReportElevation,
           CutFillReport = request.ReportCutFill,
@@ -73,10 +71,10 @@ namespace VSS.TRex.Gateway.Common.Executors
           MdpReport = request.ReportMdp,
           PassCountReport = request.ReportPassCount,
           TemperatureReport = request.ReportTemperature,
-          NumberOfRows = response.GriddedReportDataRowList.Count
+          NumberOfRows = response.StationOffsetReportDataRowList.Count
         }
       };
-      result.GriddedData.Rows.AddRange(response.GriddedReportDataRowList);
+      result.GriddedData.Rows.AddRange(response.StationOffsetReportDataRowList);
       return new GriddedReportDataResult(result.Write());
     }
 

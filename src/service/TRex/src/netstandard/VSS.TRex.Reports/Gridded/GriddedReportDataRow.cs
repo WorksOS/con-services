@@ -26,6 +26,13 @@ namespace VSS.TRex.Reports.Gridded
       double northing, double easting, double elevation,
       double cutFill, short cmv, short mdp, short passCount, short temperature)
     {
+      SetValues(northing, easting, elevation, cutFill, cmv, mdp, passCount, temperature);
+    }
+
+    public void SetValues(
+      double northing, double easting, double elevation,
+      double cutFill, short cmv, short mdp, short passCount, short temperature)
+    {
       Northing = northing;
       Easting = easting;
       Elevation = elevation;
@@ -61,7 +68,7 @@ namespace VSS.TRex.Reports.Gridded
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -77,7 +84,7 @@ namespace VSS.TRex.Reports.Gridded
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

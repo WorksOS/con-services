@@ -20,6 +20,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -99,18 +100,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var projectUid = Guid.NewGuid();
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
-        0, projectUid, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic,
-        0.0, 0.0, 0.0, 0.0, 0.0);
+        0, projectUid, null, -1, null, true, false, false, false, false, false, 
+        null, 4.0, GridReportOption.Automatic,
+        0.0, 0.0, 1.0, 2.0, 0.0);
 
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_GRIDREPORT")).Returns("true");
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"Grid report has not been implemented in Trex yet. ProjectUid: {projectUid}"));
+          $"Grid report failed somehow. ProjectUid: {projectUid}"));
+
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendGridReportRequest(request, It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendGridReportRequest(It.IsAny<CompactionReportGridTRexRequest>(), It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
+
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportGridExecutor>(_logger, null, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
