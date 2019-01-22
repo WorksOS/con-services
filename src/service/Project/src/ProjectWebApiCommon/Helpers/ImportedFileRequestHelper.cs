@@ -254,8 +254,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           }
 
           var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
-          var dxfFileName = $"{dataOceanPath}{fileName}";
-          var dcFileName = $"{dataOceanPath}{coordSysFileName}";
+          var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
+          var dcFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{coordSysFileName}";
           //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
           var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
           if (tileMetadata != null)
