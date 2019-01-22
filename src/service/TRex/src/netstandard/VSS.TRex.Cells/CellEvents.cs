@@ -26,7 +26,7 @@ namespace VSS.TRex.Cells
     public bool EventMinElevMapping { get; set; }
 
     /// <summary>
-    /// Is the machine is a defined avoisance zone
+    /// Is the machine is a defined avoidance zone
     /// </summary>
     public byte EventInAvoidZoneState { get; set; }
 
@@ -144,7 +144,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -167,7 +167,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
