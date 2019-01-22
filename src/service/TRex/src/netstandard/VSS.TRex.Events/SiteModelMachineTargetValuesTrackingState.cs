@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
@@ -49,8 +50,8 @@ namespace VSS.TRex.Events
     public AutoVibrationState EventAutoVibrationState;
     public SiteModelMachineTargetValueTrackingState<AutoVibrationState> EventAutoVibrationState_Tracking;
 
-    public bool MinElevMappingState;
-    public SiteModelMachineTargetValueTrackingState<bool> MinElevMappingState_Tracking;
+    public MinElevMappingState MinElevMappingState;
+    public SiteModelMachineTargetValueTrackingState<MinElevMappingState> MinElevMappingState_Tracking;
 
     public GPSAccuracyAndTolerance GPSAccuracyAndTolerance;
     public SiteModelMachineTargetValueTrackingState<GPSAccuracyAndTolerance> GPSAccuracyState_Tracking;
@@ -146,8 +147,8 @@ namespace VSS.TRex.Events
 
       if (populationControl.WantsEventMinElevMappingValues)
       {
-        MinElevMappingState = false;
-        MinElevMappingState_Tracking = new SiteModelMachineTargetValueTrackingState<bool>(MachineTargetValues, ProductionEventType.MinElevMappingStateChange);
+        MinElevMappingState = MinElevMappingState.LatestElevation;
+        MinElevMappingState_Tracking = new SiteModelMachineTargetValueTrackingState<MinElevMappingState>(MachineTargetValues, ProductionEventType.MinElevMappingStateChange);
       }
 
       if (populationControl.WantsEventICFlagsValues)

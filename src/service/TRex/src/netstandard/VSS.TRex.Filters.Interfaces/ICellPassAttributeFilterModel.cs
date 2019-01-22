@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces
@@ -47,7 +48,7 @@ namespace VSS.TRex.Filters.Interfaces
     VibrationState VibeState { get; set; }
     MachineDirection MachineDirection { get; set; }
     PassTypeSet PassTypeSet { get; set; }
-    bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
+    MinElevMappingState MinElevationMapping { get; set; }
     PositioningTech PositioningTech { get; set; }
     ushort GPSTolerance { get; set; }
     bool GPSAccuracyIsInclusive { get; set; }

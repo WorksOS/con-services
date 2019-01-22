@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
@@ -571,7 +572,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       }
     }
 
-    public override void SetMinElevMappingState(bool Value)
+    public override void SetMinElevMappingState(MinElevMappingState Value)
     {
       base.SetMinElevMappingState(Value);
 

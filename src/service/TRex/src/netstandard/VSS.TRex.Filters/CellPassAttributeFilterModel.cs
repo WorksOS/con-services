@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
 
@@ -69,7 +70,7 @@ namespace VSS.TRex.Filters
 
     public PassTypeSet PassTypeSet { get; set; }
 
-    public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
+    public MinElevMappingState MinElevationMapping { get; set; }
     public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
     public ushort GPSTolerance { get; set; } = CellPassConsts.NullGPSTolerance;
@@ -179,7 +180,7 @@ namespace VSS.TRex.Filters
     public ushort PasscountRangeMax { get; set; }
 
     /// <summary>
-    /// Serialise the state of the cell pass attribute filter using the FromToBinary serialization approach
+    /// Serialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -187,7 +188,7 @@ namespace VSS.TRex.Filters
       const byte VERSION_NUMBER = 1;
       writer.WriteByte(VERSION_NUMBER);
 
-      writer.WriteInt((int) RequestedGridDataType);
+      writer.WriteByte((byte) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
       writer.WriteBoolean(HasMachineFilter);
       writer.WriteBoolean(HasMachineDirectionFilter);
@@ -220,19 +221,19 @@ namespace VSS.TRex.Filters
       }
 
       writer.WriteInt(DesignNameID);
-      writer.WriteInt((int)VibeState);
-      writer.WriteInt((int)MachineDirection);
-      writer.WriteInt((int)PassTypeSet);
+      writer.WriteByte((byte)VibeState);
+      writer.WriteByte((byte)MachineDirection);
+      writer.WriteByte((byte)PassTypeSet);
 
-      writer.WriteBoolean(MinElevationMapping);
-      writer.WriteInt((int)PositioningTech);
+      writer.WriteByte((byte)MinElevationMapping);
+      writer.WriteByte((byte)PositioningTech);
       writer.WriteInt(GPSTolerance); // No WriteUShort is provided, use an int...
       writer.WriteBoolean(GPSAccuracyIsInclusive);
-      writer.WriteInt((int)GPSAccuracy);
+      writer.WriteByte((byte)GPSAccuracy);
       writer.WriteBoolean(GPSToleranceIsGreaterThan);
 
-      writer.WriteInt((int)ElevationType);
-      writer.WriteInt((int)GCSGuidanceMode);
+      writer.WriteByte((byte)ElevationType);
+      writer.WriteByte((byte)GCSGuidanceMode);
 
       writer.WriteBoolean(ReturnEarliestFilteredCellPass);
 
@@ -248,7 +249,7 @@ namespace VSS.TRex.Filters
       writer.WriteDouble(ElevationRangeTopElevationForCell);
       writer.WriteDouble(ElevationRangeBottomElevationForCell);
 
-      writer.WriteInt((int)LayerState);
+      writer.WriteByte((byte)LayerState);
       writer.WriteInt(LayerID);
 
       writer.WriteBoolean(SurveyedSurfaceExclusionList != null);
@@ -277,7 +278,7 @@ namespace VSS.TRex.Filters
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
-      RequestedGridDataType = (GridDataType)reader.ReadInt();
+      RequestedGridDataType = (GridDataType)reader.ReadByte();
       HasTimeFilter = reader.ReadBoolean();
       HasMachineFilter = reader.ReadBoolean();
       HasMachineDirectionFilter = reader.ReadBoolean();
@@ -310,19 +311,19 @@ namespace VSS.TRex.Filters
       }
 
       DesignNameID = reader.ReadInt();
-      VibeState = (VibrationState)reader.ReadInt();
-      MachineDirection = (MachineDirection)reader.ReadInt();
-      PassTypeSet = (PassTypeSet)reader.ReadInt();
+      VibeState = (VibrationState)reader.ReadByte();
+      MachineDirection = (MachineDirection)reader.ReadByte();
+      PassTypeSet = (PassTypeSet)reader.ReadByte();
 
-      MinElevationMapping = reader.ReadBoolean();
-      PositioningTech = (PositioningTech)reader.ReadInt();
+      MinElevationMapping = (MinElevMappingState)reader.ReadByte();
+      PositioningTech = (PositioningTech)reader.ReadByte();
       GPSTolerance = (ushort)reader.ReadInt();
       GPSAccuracyIsInclusive = reader.ReadBoolean();
-      GPSAccuracy = (GPSAccuracy)reader.ReadInt();
+      GPSAccuracy = (GPSAccuracy)reader.ReadByte();
       GPSToleranceIsGreaterThan = reader.ReadBoolean();
 
-      ElevationType = (ElevationType)reader.ReadInt();
-      GCSGuidanceMode = (MachineAutomaticsMode)reader.ReadInt();
+      ElevationType = (ElevationType)reader.ReadByte();
+      GCSGuidanceMode = (MachineAutomaticsMode)reader.ReadByte();
 
       ReturnEarliestFilteredCellPass = reader.ReadBoolean();
 
@@ -338,7 +339,7 @@ namespace VSS.TRex.Filters
       ElevationRangeTopElevationForCell = reader.ReadDouble();
       ElevationRangeBottomElevationForCell = reader.ReadDouble();
 
-      LayerState = (LayerState)reader.ReadInt();
+      LayerState = (LayerState)reader.ReadByte();
       LayerID = reader.ReadInt();
 
       if (reader.ReadBoolean())

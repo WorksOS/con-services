@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.Types;
@@ -283,9 +285,13 @@ namespace VSS.TRex.Tests
     {
       TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-      Assert.False(state.MinElevMapping);
-      state.SetMinElevMappingState(true);
-      Assert.True(state.MinElevMapping);
+      state.MinElevMapping.Should().Be(MinElevMappingState.LatestElevation);
+
+      state.SetMinElevMappingState(MinElevMappingState.MinimumElevation);
+      state.MinElevMapping.Should().Be(MinElevMappingState.MinimumElevation);
+
+      state.SetMinElevMappingState(MinElevMappingState.MaximumElevation);
+      state.MinElevMapping.Should().Be(MinElevMappingState.MaximumElevation);
     }
 
     [Fact()]

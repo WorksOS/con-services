@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -101,9 +102,9 @@ namespace VSS.TRex.Events
     /// <summary>
     /// Records the state of minimum elevation mapping on the machine at the time measurements were being made
     /// </summary>
-    public IProductionEvents<bool> MinElevMappingStateEvents
+    public IProductionEvents<MinElevMappingState> MinElevMappingStateEvents
     {
-      get => (IProductionEvents<bool>) GetEventList(ProductionEventType.MinElevMappingStateChange);
+      get => (IProductionEvents<MinElevMappingState>) GetEventList(ProductionEventType.MinElevMappingStateChange);
     }
 
     /// <summary>

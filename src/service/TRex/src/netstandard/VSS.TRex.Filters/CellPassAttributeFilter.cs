@@ -7,6 +7,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
@@ -672,7 +673,7 @@ namespace VSS.TRex.Filters
     public void ClearMinElevationMapping()
     {
       HasMinElevMappingFilter = false;
-      MinElevationMapping = false;
+      MinElevationMapping = MinElevMappingState.LatestElevation;
     }
 
     public void ClearPassType()
@@ -707,7 +708,7 @@ namespace VSS.TRex.Filters
       int DesignNameIDValue = Consts.kNoDesignNameID;
       VibrationState VibeStateValue = VibrationState.Invalid;
       MachineGear MachineGearValue = MachineGear.Null;
-      bool MinElevMappingValue = false;
+      MinElevMappingState MinElevMappingValue = MinElevMappingState.LatestElevation;
       GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
       PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
       MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
@@ -1334,7 +1335,7 @@ namespace VSS.TRex.Filters
 
       // Min elev mapping
       if (HasMinElevMappingFilter)
-        sb.Append($"MEM:{(MinElevationMapping ? 1 : 0)}");
+        sb.Append($"MEM:{(int)MinElevationMapping}");
 
       // Elevation type
       if (HasElevationTypeFilter)

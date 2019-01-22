@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Cells
@@ -21,9 +22,9 @@ namespace VSS.TRex.Cells
     public const ushort NullLayerID = ushort.MaxValue;
 
     /// <summary>
-    /// Is the machine performing minimum elevation mapping
+    /// The elevation mapping mode in use on the machine
     /// </summary>
-    public bool EventMinElevMapping { get; set; }
+    public MinElevMappingState EventMinElevMapping { get; set; }
 
     /// <summary>
     /// Is the machine is a defined avoisance zone
@@ -104,7 +105,7 @@ namespace VSS.TRex.Cells
       EventMachineGear = MachineGear.Neutral;
       EventMachineRMVThreshold = CellPassConsts.NullRMV;
       EventMachineAutomatics = MachineAutomaticsMode.Unknown;
-      EventMinElevMapping = false;
+      EventMinElevMapping = MinElevMappingState.LatestElevation;
       EventInAvoidZoneState = 0;
 
       MapReset_PriorDate = CellPassConsts.NullTime;
@@ -149,17 +150,17 @@ namespace VSS.TRex.Cells
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteBoolean(EventMinElevMapping);
+      writer.WriteByte((byte)EventMinElevMapping);
       writer.WriteByte(EventInAvoidZoneState);
       writer.WriteInt(EventDesignNameID);
-      writer.WriteInt((int)EventVibrationState);
-      writer.WriteInt((int)EventAutoVibrationState);
-      writer.WriteInt((int)EventMachineGear);
+      writer.WriteByte((byte)EventVibrationState);
+      writer.WriteByte((byte)EventAutoVibrationState);
+      writer.WriteByte((byte)EventMachineGear);
       writer.WriteShort(EventMachineRMVThreshold);
-      writer.WriteInt((int)EventMachineAutomatics);
-      writer.WriteInt((int)PositioningTechnology);
+      writer.WriteByte((byte)EventMachineAutomatics);
+      writer.WriteByte((byte)PositioningTechnology);
       writer.WriteInt(GPSTolerance);
-      writer.WriteInt((int)GPSAccuracy);
+      writer.WriteByte((byte)GPSAccuracy);
       writer.WriteLong(MapReset_PriorDate.ToBinary());
       writer.WriteInt(MapReset_DesignNameID);
       writer.WriteInt(LayerID);
@@ -172,22 +173,21 @@ namespace VSS.TRex.Cells
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      EventMinElevMapping = reader.ReadBoolean();
+      EventMinElevMapping = (MinElevMappingState)reader.ReadByte();
       EventInAvoidZoneState = reader.ReadByte();
       EventDesignNameID = reader.ReadInt();
-      EventVibrationState = (VibrationState)reader.ReadInt();
-      EventAutoVibrationState = (AutoVibrationState)reader.ReadInt();
-      EventMachineGear = (MachineGear)reader.ReadInt();
+      EventVibrationState = (VibrationState)reader.ReadByte();
+      EventAutoVibrationState = (AutoVibrationState)reader.ReadByte();
+      EventMachineGear = (MachineGear)reader.ReadByte();
       EventMachineRMVThreshold = reader.ReadShort();
-      EventMachineAutomatics = (MachineAutomaticsMode)reader.ReadInt();
-      PositioningTechnology = (PositioningTech)reader.ReadInt();
+      EventMachineAutomatics = (MachineAutomaticsMode)reader.ReadByte();
+      PositioningTechnology = (PositioningTech)reader.ReadByte();
       GPSTolerance = (ushort)reader.ReadInt();
-      GPSAccuracy = (GPSAccuracy)reader.ReadInt();
+      GPSAccuracy = (GPSAccuracy)reader.ReadByte();
       MapReset_PriorDate = DateTime.FromBinary(reader.ReadLong());
       MapReset_DesignNameID = reader.ReadInt();
       LayerID = (ushort)reader.ReadInt();
       EventFlags = reader.ReadByte();
     }
-
   }
 }

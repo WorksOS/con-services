@@ -1,4 +1,5 @@
-﻿using VSS.TRex.TAGFiles.Classes.States;
+﻿using VSS.TRex.Common.Types;
+using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
@@ -18,9 +19,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type == TAGDataType.t4bitUInt && (value == 0 || value == 1))
+            if (valueType.Type == TAGDataType.t8bitUInt && (value == 0 || value == 1 || value == 2))
             {
-                valueSink.SetMinElevMappingState(value == 1);
+                valueSink.SetMinElevMappingState((MinElevMappingState)value);
                 return true;
             }
 

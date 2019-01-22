@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -191,7 +192,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_MinElevMapping()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping true", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping true", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = MinElevMappingState.MinimumElevation; });
         }
 
         [Fact()]
@@ -387,7 +388,7 @@ namespace VSS.TRex.Tests.Filters
                                                             x => { x.HasMinElevMappingFilter = true; },
                                                             x => x.HasMinElevMappingFilter,
                                                             x => { x.ClearMinElevationMapping(); },
-                                                            x => !x.HasMinElevMappingFilter && x.MinElevationMapping == false);
+                                                            x => !x.HasMinElevMappingFilter && x.MinElevationMapping == MinElevMappingState.LatestElevation);
         }
 
         [Fact()]

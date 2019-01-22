@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;
@@ -270,7 +271,7 @@ namespace VSS.TRex.Tests.Caching
       var filter = MakeFilterWith(x =>
       {
         x.AttributeFilter.HasMinElevMappingFilter = true;
-        x.AttributeFilter.MinElevationMapping = true;
+        x.AttributeFilter.MinElevationMapping = MinElevMappingState.MinimumElevation;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:1", StringComparison.OrdinalIgnoreCase),
@@ -279,7 +280,7 @@ namespace VSS.TRex.Tests.Caching
       filter = MakeFilterWith(x =>
       {
         x.AttributeFilter.HasMinElevMappingFilter = true;
-        x.AttributeFilter.MinElevationMapping = false;
+        x.AttributeFilter.MinElevationMapping = MinElevMappingState.LatestElevation;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:0", StringComparison.OrdinalIgnoreCase),
