@@ -185,9 +185,6 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(
         $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
-      if (payload == null && method != HttpMethod.Get)
-        throw new ArgumentException("Can't have null payload with a non-GET method.");
-
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
       {
@@ -260,9 +257,6 @@ namespace VSS.MasterData.Proxies
 
       log.LogDebug(
         $"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
-
-      if (payload == null && (method == HttpMethod.Post || method == HttpMethod.Put))
-        throw new ArgumentException("Can't have null payload with a non-GET method.");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
