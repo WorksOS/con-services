@@ -1,6 +1,6 @@
 ﻿namespace VSS.Pegasus.Client.Models
 {
-  public enum PegasusUnits
+  public enum PegasusUnitsType
   {
     BritishYard,
     BritishChain,
@@ -18,5 +18,12 @@
     USSurveyFoot,
     USSurveyChain,
     USSurveyMile
+  }
+
+  public enum AngularUnitsType
+  {
+    Degree,
+    Grad,
+    Radian
   }
 }
