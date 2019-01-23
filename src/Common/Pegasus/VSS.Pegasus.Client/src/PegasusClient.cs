@@ -97,7 +97,19 @@ namespace VSS.Pegasus.Client
       var parentId = await dataOceanClient.GetFolderId(tileFolder, customHeaders);
 
       //1. Create an execution
-      var units = dxfUnitsType.ToString();
+      var pegasusUnits = PegasusUnits.Metre;
+      switch (dxfUnitsType)
+      {
+        case DxfUnitsType.Meters:
+          break;
+        case DxfUnitsType.UsSurveyFeet:
+          pegasusUnits = PegasusUnits.USSurveyFoot;
+          break;
+        case DxfUnitsType.ImperialFeet:
+          pegasusUnits = PegasusUnits.BritishFoot;
+          break;
+      }
+      var units = pegasusUnits.ToString();
       var createExecutionMessage = new CreateExecutionMessage
       {
         Execution = new PegasusExecution
@@ -114,7 +126,7 @@ namespace VSS.Pegasus.Client
             MultiFile = true,
             Public = false,
             Name = tileFolder,
-            AngularUnit = units,
+            //AngularUnit = "Degree", //one of Degree, Grad, Radian
             PlaneUnit = units,
             VerticalUnit = units
           }
