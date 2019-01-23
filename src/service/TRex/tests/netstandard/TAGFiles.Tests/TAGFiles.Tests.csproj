@@ -1043,6 +1043,21 @@
     <None Update="TestData\TAGFiles\Dimensions2018-CaseMachine\CellMutationLog-2652J085SW--CASE CX160C--121107210953.tag.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode\0247J009YU--TNZ 323F GS520--190115000234.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode\0247J009YU--TNZ 323F GS520--190115001235.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode\0247J009YU--TNZ 323F GS520--190115001735.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode\0247J009YU--TNZ 323F GS520--190115002235.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode\0247J009YU--TNZ 323F GS520--190115002735.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1058,6 +1073,10 @@
     <None Update="TestData\TAGFiles\TestTAGFile3.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestData\TAGFiles\ElevationMappingMode\" />
   </ItemGroup>
 
 </Project>
