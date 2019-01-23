@@ -121,7 +121,7 @@ namespace VSS.TRex.Filters
         HasLayerStateFilter ||
         HasMachineDirectionFilter ||
         HasMachineFilter ||
-        HasMinElevMappingFilter ||
+        HasElevationMappingModeFilter ||
         HasPassTypeFilter ||
         HasPositioningTechFilter ||
         HasTimeFilter ||
@@ -133,7 +133,7 @@ namespace VSS.TRex.Filters
         HasDesignFilter ||
         HasVibeStateFilter ||
         HasMachineDirectionFilter ||
-        HasMinElevMappingFilter ||
+        HasElevationMappingModeFilter ||
         HasGCSGuidanceModeFilter ||
         HasGPSAccuracyFilter ||
         HasGPSToleranceFilter ||
@@ -307,11 +307,11 @@ namespace VSS.TRex.Filters
         return Result;
 
       // Min elev mapping
-      Result = FlagCheck(HasMinElevMappingFilter, AFilter.HasMinElevMappingFilter);
+      Result = FlagCheck(HasElevationMappingModeFilter, AFilter.HasElevationMappingModeFilter);
       if (Result != 0)
         return Result;
 
-      if (HasMinElevMappingFilter) // Check the contents of the min elevation filter
+      if (HasElevationMappingModeFilter) // Check the contents of the min elevation filter
         Result = MinElevationMapping.CompareTo(AFilter.MinElevationMapping); // CompareValue(Ord(MinElevationMapping), Ord(AFilter.MinElevationMapping));
 
       if (Result != 0)
@@ -637,7 +637,7 @@ namespace VSS.TRex.Filters
       HasDesignFilter = Source.HasDesignFilter;
       HasVibeStateFilter = Source.HasVibeStateFilter;
       HasLayerStateFilter = Source.HasLayerStateFilter;
-      HasMinElevMappingFilter = Source.HasMinElevMappingFilter;
+      HasElevationMappingModeFilter = Source.HasElevationMappingModeFilter;
       HasElevationTypeFilter = Source.HasElevationTypeFilter;
       HasGCSGuidanceModeFilter = Source.HasGCSGuidanceModeFilter;
       HasGPSAccuracyFilter = Source.HasGPSAccuracyFilter;
@@ -672,8 +672,8 @@ namespace VSS.TRex.Filters
 
     public void ClearMinElevationMapping()
     {
-      HasMinElevMappingFilter = false;
-      MinElevationMapping = MinElevMappingState.LatestElevation;
+      HasElevationMappingModeFilter = false;
+      MinElevationMapping = ElevationMappingMode.LatestElevation;
     }
 
     public void ClearPassType()
@@ -708,7 +708,7 @@ namespace VSS.TRex.Filters
       int DesignNameIDValue = Consts.kNoDesignNameID;
       VibrationState VibeStateValue = VibrationState.Invalid;
       MachineGear MachineGearValue = MachineGear.Null;
-      MinElevMappingState MinElevMappingValue = MinElevMappingState.LatestElevation;
+      ElevationMappingMode ElevationMappingModeValue = ElevationMappingMode.LatestElevation;
       GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
       PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
       MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
@@ -787,11 +787,11 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        MinElevMappingValue = machineTargetValues.MinElevMappingStateEvents.GetValueAtDate(PassValue.Time, out _, MinElevMappingValue);
+        ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingModeValue);
 
-        if (MinElevationMapping != MinElevMappingValue)
+        if (MinElevationMapping != ElevationMappingModeValue)
           return false;
       }
 
@@ -895,9 +895,9 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventMinElevMapping)
+        if (MinElevationMapping != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1012,9 +1012,9 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventMinElevMapping)
+        if (MinElevationMapping != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1334,8 +1334,8 @@ namespace VSS.TRex.Filters
         sb.Append($"VS:{VibeState}");
 
       // Min elev mapping
-      if (HasMinElevMappingFilter)
-        sb.Append($"MEM:{(int)MinElevationMapping}");
+      if (HasElevationMappingModeFilter)
+        sb.Append($"EMM:{(int)MinElevationMapping}");
 
       // Elevation type
       if (HasElevationTypeFilter)

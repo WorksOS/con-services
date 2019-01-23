@@ -50,8 +50,8 @@ namespace VSS.TRex.Events
     public AutoVibrationState EventAutoVibrationState;
     public SiteModelMachineTargetValueTrackingState<AutoVibrationState> EventAutoVibrationState_Tracking;
 
-    public MinElevMappingState MinElevMappingState;
-    public SiteModelMachineTargetValueTrackingState<MinElevMappingState> MinElevMappingState_Tracking;
+    public ElevationMappingMode ElevationMappingModeState;
+    public SiteModelMachineTargetValueTrackingState<ElevationMappingMode> ElevationMappingModeState_Tracking;
 
     public GPSAccuracyAndTolerance GPSAccuracyAndTolerance;
     public SiteModelMachineTargetValueTrackingState<GPSAccuracyAndTolerance> GPSAccuracyState_Tracking;
@@ -145,10 +145,10 @@ namespace VSS.TRex.Events
         EventAutoVibrationState_Tracking = new SiteModelMachineTargetValueTrackingState<AutoVibrationState>(MachineTargetValues, ProductionEventType.AutoVibrationStateChange);
       }
 
-      if (populationControl.WantsEventMinElevMappingValues)
+      if (populationControl.WantsEventElevationMappingModeValues)
       {
-        MinElevMappingState = MinElevMappingState.LatestElevation;
-        MinElevMappingState_Tracking = new SiteModelMachineTargetValueTrackingState<MinElevMappingState>(MachineTargetValues, ProductionEventType.MinElevMappingStateChange);
+        ElevationMappingModeState = ElevationMappingMode.LatestElevation;
+        ElevationMappingModeState_Tracking = new SiteModelMachineTargetValueTrackingState<ElevationMappingMode>(MachineTargetValues, ProductionEventType.ElevationMappingModeStateChange);
       }
 
       if (populationControl.WantsEventICFlagsValues)

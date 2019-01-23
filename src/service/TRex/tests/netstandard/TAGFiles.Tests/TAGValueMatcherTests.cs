@@ -1015,23 +1015,23 @@ namespace TAGFiles.Tests
     }
 
     [Fact()]
-    public void Test_TAGValueMatcher_MinElevMapping()
+    public void Test_TAGValueMatcher_ElevationMappingMode()
     {
 
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
-      var matcher = new TAGMinElevMappingValueMatcher(sink, state);
+      var matcher = new TAGElevationMappingModeValueMatcher(sink, state);
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 0),
           "Matcher process function returned false");
-      sink.MinElevMapping.Should().Be(MinElevMappingState.LatestElevation);
+      sink.ElevationMappingMode.Should().Be(ElevationMappingMode.LatestElevation);
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 1),
           "Matcher process function returned false");
-      sink.MinElevMapping.Should().Be(MinElevMappingState.MinimumElevation);
+      sink.ElevationMappingMode.Should().Be(ElevationMappingMode.MinimumElevation);
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 2),
         "Matcher process function returned false");
-      sink.MinElevMapping.Should().Be(MinElevMappingState.MaximumElevation);
+      sink.ElevationMappingMode.Should().Be(ElevationMappingMode.MaximumElevation);
 
       Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 3),
           "Matcher process function returned false");

@@ -7,13 +7,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
     /// <summary>
     /// Handles the flag indicating when the machine is recording minimum elevation mapping information
     /// </summary>
-    public class TAGMinElevMappingValueMatcher : TAGValueMatcher
+    public class TAGElevationMappingModeValueMatcher : TAGValueMatcher
     {
-        public TAGMinElevMappingValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
+        public TAGElevationMappingModeValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
         {
         }
 
-        private static readonly string[] valueTypes = { TAGValueNames.kTagFileMinElevMappingFlag };
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileElevationMappingModeTag };
 
         public override string[] MatchedValueTypes() => valueTypes;
 
@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
         {
             if (valueType.Type == TAGDataType.t8bitUInt && (value == 0 || value == 1 || value == 2))
             {
-                valueSink.SetMinElevMappingState((MinElevMappingState)value);
+                valueSink.SetElevationMappingModeState((ElevationMappingMode)value);
                 return true;
             }
 

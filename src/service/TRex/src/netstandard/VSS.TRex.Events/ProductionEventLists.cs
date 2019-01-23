@@ -102,9 +102,9 @@ namespace VSS.TRex.Events
     /// <summary>
     /// Records the state of minimum elevation mapping on the machine at the time measurements were being made
     /// </summary>
-    public IProductionEvents<MinElevMappingState> MinElevMappingStateEvents
+    public IProductionEvents<ElevationMappingMode> ElevationMappingModeStateEvents
     {
-      get => (IProductionEvents<MinElevMappingState>) GetEventList(ProductionEventType.MinElevMappingStateChange);
+      get => (IProductionEvents<ElevationMappingMode>) GetEventList(ProductionEventType.ElevationMappingModeStateChange);
     }
 
     /// <summary>

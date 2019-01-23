@@ -24,10 +24,10 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// The elevation mapping mode in use on the machine
     /// </summary>
-    public MinElevMappingState EventMinElevMapping { get; set; }
+    public ElevationMappingMode EventElevationMappingMode { get; set; }
 
     /// <summary>
-    /// Is the machine is a defined avoisance zone
+    /// Is the machine is a defined avoidance zone
     /// </summary>
     public byte EventInAvoidZoneState { get; set; }
 
@@ -105,7 +105,7 @@ namespace VSS.TRex.Cells
       EventMachineGear = MachineGear.Neutral;
       EventMachineRMVThreshold = CellPassConsts.NullRMV;
       EventMachineAutomatics = MachineAutomaticsMode.Unknown;
-      EventMinElevMapping = MinElevMappingState.LatestElevation;
+      EventElevationMappingMode = ElevationMappingMode.LatestElevation;
       EventInAvoidZoneState = 0;
 
       MapReset_PriorDate = CellPassConsts.NullTime;
@@ -131,7 +131,7 @@ namespace VSS.TRex.Cells
       EventMachineGear = source.EventMachineGear;
       EventMachineRMVThreshold = source.EventMachineRMVThreshold;
       EventMachineAutomatics = source.EventMachineAutomatics;
-      EventMinElevMapping = source.EventMinElevMapping;
+      EventElevationMappingMode = source.EventElevationMappingMode;
       EventInAvoidZoneState = source.EventInAvoidZoneState;
 
       MapReset_PriorDate = source.MapReset_PriorDate;
@@ -150,7 +150,7 @@ namespace VSS.TRex.Cells
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte((byte)EventMinElevMapping);
+      writer.WriteByte((byte)EventElevationMappingMode);
       writer.WriteByte(EventInAvoidZoneState);
       writer.WriteInt(EventDesignNameID);
       writer.WriteByte((byte)EventVibrationState);
@@ -173,7 +173,7 @@ namespace VSS.TRex.Cells
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      EventMinElevMapping = (MinElevMappingState)reader.ReadByte();
+      EventElevationMappingMode = (ElevationMappingMode)reader.ReadByte();
       EventInAvoidZoneState = reader.ReadByte();
       EventDesignNameID = reader.ReadInt();
       EventVibrationState = (VibrationState)reader.ReadByte();

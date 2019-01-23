@@ -389,7 +389,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     // values maintained in a TAccumulatedAttributeList
     public byte ValidPosition { get; set; }
 
-    public MinElevMappingState MinElevMapping { get; set; }
+    public ElevationMappingMode ElevationMappingMode { get; set; }
     public byte InAvoidZone { get; set; }
 
     public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
@@ -559,7 +559,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public virtual void SetAgeOfCorrection(byte value) => AgeOfCorrections.Add(DataTime, value);
     public virtual void SetVolkelMeasRange(int value) => VolkelMeasureRanges.Add(DataTime, value);
     public virtual void SetVolkelMeasUtilRange(int value) => VolkelMeasureUtilRanges.Add(DataTime, value);
-    public virtual void SetMinElevMappingState(MinElevMappingState value) => MinElevMapping = value;
+    public virtual void SetElevationMappingModeState(ElevationMappingMode value) => ElevationMappingMode = value;
     public virtual void SetInAvoidZoneState(byte value) => InAvoidZone = value;
     public virtual void SetPositioningTechState(PositioningTech value) => PositioningTech = value;
     public virtual void SetGPSAccuracyState(GPSAccuracy AccValue, ushort LimValue)

@@ -266,29 +266,29 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-    public void Test_GetCacheFingerPrint_MinElevMapping_Present()
+    public void Test_GetCacheFingerPrint_ElevationMappingMode_Present()
     {
       var filter = MakeFilterWith(x =>
       {
-        x.AttributeFilter.HasMinElevMappingFilter = true;
-        x.AttributeFilter.MinElevationMapping = MinElevMappingState.MinimumElevation;
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.MinElevationMapping = ElevationMappingMode.MinimumElevation;
       });
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:1", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:1", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain min elevation mapping filter ID");
 
       filter = MakeFilterWith(x =>
       {
-        x.AttributeFilter.HasMinElevMappingFilter = true;
-        x.AttributeFilter.MinElevationMapping = MinElevMappingState.LatestElevation;
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.MinElevationMapping = ElevationMappingMode.LatestElevation;
       });
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:0", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:0", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain min elevation mapping filter ID");
     }
 
     [Fact]
-    public void Test_GetCacheFingerPrint_MinElevMapping_NotPresent()
+    public void Test_GetCacheFingerPrint_ElevationMappingMode_NotPresent()
     {
       var filter = new CombinedFilter();
 

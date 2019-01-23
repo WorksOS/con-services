@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.Types
         public const string kTagFileMapReset = "MAP_RESET";
         public const string kTagFileTargetLiftThickness = "TARGET_THICKNESS";
         public const string kTagFileOnGroundTag = "ON_GROUND";
-        public const string kTagFileMinElevMappingFlag = "MAPPING_MODE";
+        public const string kTagFileElevationMappingModeTag = "MAPPING_MODE";
         public const string kTagFileBladeOnGroundTag = "BLADE_ON_GROUND";
         public const string kTagFileICMDPTag = "MDP";
         public const string kTagFileICMDPTargetTag = "TARGET_MDP";

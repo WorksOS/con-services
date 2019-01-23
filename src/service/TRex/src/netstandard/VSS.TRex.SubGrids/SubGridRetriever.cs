@@ -168,7 +168,7 @@ namespace VSS.TRex.SubGrids
             if (_filter.AttributeFilter.HasElevationTypeFilter) 
               _assignmentContext.FilteredValue.PassCount = 1;
 
-            if (_filter.AttributeFilter.HasMinElevMappingFilter || (_filter.AttributeFilter.HasElevationTypeFilter &&
+            if (_filter.AttributeFilter.HasElevationMappingModeFilter || (_filter.AttributeFilter.HasElevationTypeFilter &&
                  _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
             {
               if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
@@ -532,7 +532,7 @@ namespace VSS.TRex.SubGrids
               ProcessCellPasses();
 
               if (_haveFilteredPass &&
-                  (_filter.AttributeFilter.HasMinElevMappingFilter ||
+                  (_filter.AttributeFilter.HasElevationMappingModeFilter ||
                    (_filter.AttributeFilter.HasElevationTypeFilter &&
                     (_filter.AttributeFilter.ElevationType == ElevationType.Highest ||
                      _filter.AttributeFilter.ElevationType == ElevationType.Lowest))))
@@ -695,7 +695,7 @@ namespace VSS.TRex.SubGrids
           if (_canUseGlobalLatestCells &&
               !_filter.AttributeFilter.HasElevationRangeFilter &&
               !_clientGrid.WantsLiftProcessingResults() &&
-              !_filter.AttributeFilter.HasMinElevMappingFilter &&
+              !_filter.AttributeFilter.HasElevationMappingModeFilter &&
               !(_filter.AttributeFilter.HasElevationTypeFilter &&
                 (_filter.AttributeFilter.ElevationType == ElevationType.Highest ||
                  _filter.AttributeFilter.ElevationType == ElevationType.Lowest)) &&

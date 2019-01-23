@@ -281,17 +281,17 @@ namespace VSS.TRex.Tests
     }
 
     [Fact()]
-    public void Test_TAGProcessorStateBase_SetMinElevMappingState()
+    public void Test_TAGProcessorStateBase_SetElevationMappingModeState()
     {
       TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-      state.MinElevMapping.Should().Be(MinElevMappingState.LatestElevation);
+      state.ElevationMappingMode.Should().Be(ElevationMappingMode.LatestElevation);
 
-      state.SetMinElevMappingState(MinElevMappingState.MinimumElevation);
-      state.MinElevMapping.Should().Be(MinElevMappingState.MinimumElevation);
+      state.SetElevationMappingModeState(ElevationMappingMode.MinimumElevation);
+      state.ElevationMappingMode.Should().Be(ElevationMappingMode.MinimumElevation);
 
-      state.SetMinElevMappingState(MinElevMappingState.MaximumElevation);
-      state.MinElevMapping.Should().Be(MinElevMappingState.MaximumElevation);
+      state.SetElevationMappingModeState(ElevationMappingMode.MaximumElevation);
+      state.ElevationMappingMode.Should().Be(ElevationMappingMode.MaximumElevation);
     }
 
     [Fact()]

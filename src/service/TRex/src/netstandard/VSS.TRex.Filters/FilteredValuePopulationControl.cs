@@ -22,7 +22,7 @@ namespace VSS.TRex.Filters
     public bool WantsEventMachineCompactionRMVJumpThreshold { get; set; }
     public bool WantsEventMachineAutomaticsValues { get; set; }
     public bool WantsEventMapResetValues { get; set; }
-    public bool WantsEventMinElevMappingValues { get; set; }
+    public bool WantsEventElevationMappingModeValues { get; set; }
     public bool WantsEventInAvoidZoneStateValues { get; set; }
     public bool WantsEventGPSAccuracyValues { get; set; }
     public bool WantsEventPositioningTechValues { get; set; }
@@ -49,7 +49,7 @@ namespace VSS.TRex.Filters
              WantsEventMachineCompactionRMVJumpThreshold ||
              WantsEventMachineAutomaticsValues ||
              WantsEventMapResetValues ||
-             WantsEventMinElevMappingValues ||
+             WantsEventElevationMappingModeValues ||
              WantsEventInAvoidZoneStateValues ||
              WantsEventGPSAccuracyValues ||
              WantsEventPositioningTechValues ||
@@ -76,7 +76,7 @@ namespace VSS.TRex.Filters
       WantsEventMachineCompactionRMVJumpThreshold = false;
       WantsEventMachineAutomaticsValues = false;
       WantsEventMapResetValues = false;
-      WantsEventMinElevMappingValues = false;
+      WantsEventElevationMappingModeValues = false;
       WantsEventInAvoidZoneStateValues = false;
       WantsEventGPSAccuracyValues = false;
       WantsEventPositioningTechValues = false;
@@ -103,7 +103,7 @@ namespace VSS.TRex.Filters
       WantsEventMachineCompactionRMVJumpThreshold = true;
       WantsEventMachineAutomaticsValues = true;
       WantsEventMapResetValues = true;
-      WantsEventMinElevMappingValues = true;
+      WantsEventElevationMappingModeValues = true;
       WantsEventInAvoidZoneStateValues = true;
       WantsEventGPSAccuracyValues = true;
       WantsEventPositioningTechValues = true;
@@ -131,7 +131,7 @@ namespace VSS.TRex.Filters
              ((WantsEventMachineCompactionRMVJumpThreshold ? 1 : 0) * 0x100) |
              ((WantsEventMachineAutomaticsValues ? 1 : 0) * 0x200) |
              ((WantsEventMapResetValues ? 1 : 0) * 0x400) |
-             ((WantsEventMinElevMappingValues ? 1 : 0) * 0x800) |
+             ((WantsEventElevationMappingModeValues ? 1 : 0) * 0x800) |
              ((WantsEventInAvoidZoneStateValues ? 1 : 0) * 0x1000) |
              ((WantsEventGPSAccuracyValues ? 1 : 0) * 0x2000) |
              ((WantsEventPositioningTechValues ? 1 : 0) * 0x4000) |
@@ -159,7 +159,7 @@ namespace VSS.TRex.Filters
       WantsEventMachineCompactionRMVJumpThreshold = (flags & 0x100) != 0;
       WantsEventMachineAutomaticsValues = (flags & 0x200) != 0;
       WantsEventMapResetValues = (flags & 0x400) != 0;
-      WantsEventMinElevMappingValues = (flags & 0x800) != 0;
+      WantsEventElevationMappingModeValues = (flags & 0x800) != 0;
       WantsEventInAvoidZoneStateValues = (flags & 0x1000) != 0;
       WantsEventGPSAccuracyValues = (flags & 0x2000) != 0;
       WantsEventPositioningTechValues = (flags & 0x4000) != 0;
@@ -274,9 +274,9 @@ namespace VSS.TRex.Filters
          profileTypeRequired == GridDataType.RMV ||
          profileTypeRequired == GridDataType.Frequency ||
          profileTypeRequired == GridDataType.Amplitude);
-      WantsEventMinElevMappingValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventMinElevMappingValues) != 0 ||
-        passFilter.HasMinElevMappingFilter;
+      WantsEventElevationMappingModeValues =
+        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventElevationMappingModeValues) != 0 ||
+        passFilter.HasElevationMappingModeFilter;
       WantsEventInAvoidZoneStateValues =
         false; // (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsInAvoidZoneStateValues) != 0 || passFilter.HasAvoidZoneStateFilter;
       WantsEventGPSAccuracyValues =
@@ -334,7 +334,7 @@ namespace VSS.TRex.Filters
                                         profileTypeRequired == GridDataType.Frequency ||
                                         profileTypeRequired == GridDataType.Amplitude);
 
-      WantsEventMinElevMappingValues = passFilter.HasMinElevMappingFilter;
+      WantsEventElevationMappingModeValues = passFilter.HasElevationMappingModeFilter;
       WantsEventInAvoidZoneStateValues = false; // todo passFilter.HasAvoidZoneStateFilter;
       WantsEventGPSAccuracyValues = passFilter.HasGPSAccuracyFilter || passFilter.HasGPSToleranceFilter;
       WantsEventPositioningTechValues = passFilter.HasPositioningTechFilter;

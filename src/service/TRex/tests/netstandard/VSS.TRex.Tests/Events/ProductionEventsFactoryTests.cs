@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.Events
     [InlineData(ProductionEventType.MachineAutomaticsChange, typeof(ProductionEvents<MachineAutomaticsMode>))]
     [InlineData(ProductionEventType.MachineRMVJumpValueChange, typeof(ProductionEvents<short>))]
     [InlineData(ProductionEventType.ICFlagsChange, typeof(ProductionEvents<byte>))]
-    [InlineData(ProductionEventType.MinElevMappingStateChange, typeof(ProductionEvents<MinElevMappingState>))]
+    [InlineData(ProductionEventType.ElevationMappingModeStateChange, typeof(ProductionEvents<ElevationMappingMode>))]
     [InlineData(ProductionEventType.GPSAccuracyChange, typeof(ProductionEvents<GPSAccuracyAndTolerance>))]
     [InlineData(ProductionEventType.PositioningTech, typeof(ProductionEvents<PositioningTech>))]
     [InlineData(ProductionEventType.TempWarningLevelMinChange, typeof(ProductionEvents<ushort>))]

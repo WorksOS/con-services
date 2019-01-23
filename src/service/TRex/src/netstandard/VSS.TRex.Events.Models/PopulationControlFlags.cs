@@ -20,7 +20,7 @@ namespace VSS.TRex.Events.Models
     WantsEventMachineCompactionRMVJumpThreshold = 0x100,
     WantsEventMachineAutomaticsValues = 0x200,
     WantsEventMapResetValues = 0x400,
-    WantsEventMinElevMappingValues = 0x800,
+    WantsEventElevationMappingModeValues = 0x800,
     WantsEventInAvoidZoneStateValues = 0x1000,
     WantsEventGPSAccuracyValues = 0x2000,
     WantsEventPositioningTechValues = 0x4000,

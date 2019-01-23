@@ -26,7 +26,7 @@ namespace VSS.TRex.Filters
     public bool HasDesignFilter { get; set; }
     public bool HasVibeStateFilter { get; set; }
     public bool HasLayerStateFilter { get; set; }
-    public bool HasMinElevMappingFilter { get; set; }
+    public bool HasElevationMappingModeFilter { get; set; }
     public bool HasElevationTypeFilter { get; set; }
     public bool HasGCSGuidanceModeFilter { get; set; }
     public bool HasGPSAccuracyFilter { get; set; }
@@ -70,7 +70,7 @@ namespace VSS.TRex.Filters
 
     public PassTypeSet PassTypeSet { get; set; }
 
-    public MinElevMappingState MinElevationMapping { get; set; }
+    public ElevationMappingMode MinElevationMapping { get; set; }
     public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
     public ushort GPSTolerance { get; set; } = CellPassConsts.NullGPSTolerance;
@@ -195,7 +195,7 @@ namespace VSS.TRex.Filters
       writer.WriteBoolean(HasDesignFilter);
       writer.WriteBoolean(HasVibeStateFilter);
       writer.WriteBoolean(HasLayerStateFilter);
-      writer.WriteBoolean(HasMinElevMappingFilter);
+      writer.WriteBoolean(HasElevationMappingModeFilter);
       writer.WriteBoolean(HasElevationTypeFilter);
       writer.WriteBoolean(HasGCSGuidanceModeFilter);
       writer.WriteBoolean(HasGPSAccuracyFilter);
@@ -285,7 +285,7 @@ namespace VSS.TRex.Filters
       HasDesignFilter = reader.ReadBoolean();
       HasVibeStateFilter = reader.ReadBoolean();
       HasLayerStateFilter = reader.ReadBoolean();
-      HasMinElevMappingFilter = reader.ReadBoolean();
+      HasElevationMappingModeFilter = reader.ReadBoolean();
       HasElevationTypeFilter = reader.ReadBoolean();
       HasGCSGuidanceModeFilter = reader.ReadBoolean();
       HasGPSAccuracyFilter = reader.ReadBoolean();
@@ -315,7 +315,7 @@ namespace VSS.TRex.Filters
       MachineDirection = (MachineDirection)reader.ReadByte();
       PassTypeSet = (PassTypeSet)reader.ReadByte();
 
-      MinElevationMapping = (MinElevMappingState)reader.ReadByte();
+      MinElevationMapping = (ElevationMappingMode)reader.ReadByte();
       PositioningTech = (PositioningTech)reader.ReadByte();
       GPSTolerance = (ushort)reader.ReadInt();
       GPSAccuracyIsInclusive = reader.ReadBoolean();

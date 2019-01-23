@@ -17,7 +17,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool WantsEventMachineCompactionRMVJumpThreshold { get; set; }
     bool WantsEventMachineAutomaticsValues { get; set; }
     bool WantsEventMapResetValues { get; set; }
-    bool WantsEventMinElevMappingValues { get; set; }
+    bool WantsEventElevationMappingModeValues { get; set; }
     bool WantsEventInAvoidZoneStateValues { get; set; }
     bool WantsEventGPSAccuracyValues { get; set; }
     bool WantsEventPositioningTechValues { get; set; }

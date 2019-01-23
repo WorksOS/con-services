@@ -58,7 +58,7 @@ namespace VSS.TRex.Events.Interfaces
     /// <summary>
     /// Records the state of minimum elevation mapping on the machine at the time measurements were being made
     /// </summary>
-    IProductionEvents<MinElevMappingState> MinElevMappingStateEvents { get; }
+    IProductionEvents<ElevationMappingMode> ElevationMappingModeStateEvents { get; }
 
     /// <summary>
     /// Records the state of GPSAccuracy and accompanying GPSTolerance on the machine at the time measurements were being made
