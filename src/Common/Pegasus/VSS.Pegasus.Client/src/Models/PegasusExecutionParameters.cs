@@ -20,9 +20,9 @@ namespace VSS.Pegasus.Client.Models
     [JsonProperty(PropertyName = "tile_order", Required = Required.Default)]
     public string TileOrder { get; set; }
     [JsonProperty(PropertyName = "multifile", Required = Required.Default)]
-    public bool MultiFile { get; set; }
+    public string MultiFile { get; set; }
     [JsonProperty(PropertyName = "public", Required = Required.Default)]
-    public bool Public { get; set; }
+    public string Public { get; set; }
     [JsonProperty(PropertyName = "angular_unit", Required = Required.Default)]
     public string AngularUnit { get; set; }
     [JsonProperty(PropertyName = "plane_unit", Required = Required.Default)]
