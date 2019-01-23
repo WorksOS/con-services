@@ -145,7 +145,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -168,7 +168,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

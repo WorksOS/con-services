@@ -73,9 +73,9 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private int _ControlStateTilt = MachineControlStateFlags.NullGCSControlState;
     private int _ControlStateSideShift = MachineControlStateFlags.NullGCSControlState;
 
-    // FAutomaticesMode records the machine automatic control state as defined by
+    // FAutomaticsMode records the machine automatic control state as defined by
     // the 5 GCS900 control state flag sets. It is currently defined as a simple
-    // on/off switch. The UpdateAutomaticsMode method examines the individial
+    // on/off switch. The UpdateAutomaticsMode method examines the individual
     // control states and sets the value of this accordingly.
     MachineAutomaticsMode _AutomaticsMode = MachineAutomaticsMode.Unknown;
 
