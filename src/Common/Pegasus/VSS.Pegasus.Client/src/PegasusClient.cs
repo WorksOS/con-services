@@ -86,7 +86,7 @@ namespace VSS.Pegasus.Client
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
 
-      //Create the top level tiles folder
+      //Create the top level tiles folder and get the generated tiles folder name
       string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
       var success = await dataOceanClient.MakeFolder(tileFolderFullName, customHeaders);
       if (!success)
@@ -95,8 +95,10 @@ namespace VSS.Pegasus.Client
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create tiles folder {tileFolderFullName}"));
       }
       var parentId = await dataOceanClient.GetFolderId(tileFolderFullName, customHeaders);
+      var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
+      var tileFolderName = parts[parts.Length - 1];
 
-      //1. Create an execution
+      //Get the Pegasus units
       var pegasusUnits = PegasusUnitsType.Metre;
       switch (dxfUnitsType)
       {
@@ -109,9 +111,8 @@ namespace VSS.Pegasus.Client
           pegasusUnits = PegasusUnitsType.BritishFoot;
           break;
       }
-      //Get the generated tiles folder name
-      var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
-      var tileFolderName = parts[parts.Length - 1];
+
+      //1. Create an execution
       var createExecutionMessage = new CreateExecutionMessage
       {
         Execution = new PegasusExecution
@@ -151,8 +152,8 @@ namespace VSS.Pegasus.Client
       Log.LogDebug($"Starting execution for {dxfFileName}");
       var executionRoute = $"{baseRoute}/{executionResult.Execution.Id}";
       var startExecutionRoute = $"{executionRoute}/start";
-      var result = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
-      if (result == null)
+      var startResult = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
+      if (startResult == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to start execution for {dxfFileName}"));
@@ -166,7 +167,7 @@ namespace VSS.Pegasus.Client
       {
         if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
         executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get, null, 3, false);
-        success = executionResult.Execution.ExecutionStatus == ExecutionStatus.FINISHED;
+        success = executionResult.Execution.ExecutionStatus == ExecutionStatus.FINISHED || executionResult.Execution.ExecutionStatus == ExecutionStatus.SUCCEEDED;
         done = success || executionResult.Execution.ExecutionStatus == ExecutionStatus.FAILED;
         Log.LogDebug($"Execution status {executionResult.Execution.ExecutionStatus} for {dxfFileName}");
       }
@@ -184,7 +185,15 @@ namespace VSS.Pegasus.Client
 
       if (success)
       {
-        //4. Get the zoom range from the tile metdata file 
+        /*
+         Can't delete as not mutable
+
+        //4. Delete the execution
+        Log.LogDebug($"Deleting execution for {dxfFileName}");
+        await gracefulClient.ExecuteRequest($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Delete, null, 3, false);
+        */
+
+        //5. Get the zoom range from the tile metdata file 
         Log.LogDebug($"Getting tiles metadata for {dxfFileName}");
         var metadataFileName = new DataOceanFileUtil(dxfFileName).TilesMetadataFileName;
         var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders);

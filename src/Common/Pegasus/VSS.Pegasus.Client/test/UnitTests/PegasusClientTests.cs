@@ -243,7 +243,7 @@ namespace VSS.Pegasus.Client.UnitTests
     [Fact]
     public void CanGenerateDxfTilesSuccess()
     {
-      var result = CanGenerateDxfTiles(ExecutionStatus.FINISHED).Result;
+      var result = CanGenerateDxfTiles(ExecutionStatus.SUCCEEDED).Result;
       Assert.NotNull(result);
       Assert.NotNull(result.Extents);
       Assert.NotNull(result.Extents.CoordSystem);

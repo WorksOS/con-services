@@ -6,6 +6,7 @@
     QUEUED,
     EXECUTING,
     FAILED,
-    FINISHED
+    FINISHED,
+    SUCCEEDED
   }
 }
