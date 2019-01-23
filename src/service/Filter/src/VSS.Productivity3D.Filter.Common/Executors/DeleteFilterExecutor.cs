@@ -58,9 +58,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(filter)}");
 
-      DeleteFilterEvent deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(filterRequest, new int[] { 12, 13 });
+      var deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(filterRequest, new int[] { 12, 13 });
+
       //Only write to kafka for persistent filters
-      if (deleteEvent != null && filter.FilterType != FilterType.Transient)
+      if (filterRequest.SendKafkaMessages && deleteEvent != null && filter.FilterType != FilterType.Transient)
       {
         var payload = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteEvent });
         SendToKafka(deleteEvent.FilterUID.ToString(), payload, 14);
