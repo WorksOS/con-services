@@ -67,9 +67,6 @@ namespace VSS.MasterData.Proxies
       // Causing an empty body to be sent (which is invalid for POST requests).
       if (requestStream != null && requestStream.CanSeek)
         requestStream.Seek(0, SeekOrigin.Begin);
-      
-      if (requestStream == null && (method == HttpMethod.Post || method == HttpMethod.Put))
-        throw new ArgumentException($"Empty body for POST/PUT request {nameof(requestStream)}");
 
       if (method == HttpMethod.Get)
         return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
