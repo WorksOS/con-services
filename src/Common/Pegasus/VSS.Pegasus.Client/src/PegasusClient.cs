@@ -87,14 +87,14 @@ namespace VSS.Pegasus.Client
       }
 
       //Create the top level tiles folder
-      string tileFolder = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
-      var success = await dataOceanClient.MakeFolder(tileFolder, customHeaders);
+      string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
+      var success = await dataOceanClient.MakeFolder(tileFolderFullName, customHeaders);
       if (!success)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create tiles folder {tileFolder}"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create tiles folder {tileFolderFullName}"));
       }
-      var parentId = await dataOceanClient.GetFolderId(tileFolder, customHeaders);
+      var parentId = await dataOceanClient.GetFolderId(tileFolderFullName, customHeaders);
 
       //1. Create an execution
       var pegasusUnits = PegasusUnitsType.Metre;
@@ -109,6 +109,9 @@ namespace VSS.Pegasus.Client
           pegasusUnits = PegasusUnitsType.BritishFoot;
           break;
       }
+      //Get the generated tiles folder name
+      var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
+      var tileFolderName = parts[parts.Length - 1];
       var createExecutionMessage = new CreateExecutionMessage
       {
         Execution = new PegasusExecution
@@ -124,7 +127,7 @@ namespace VSS.Pegasus.Client
             TileOrder = TILE_ORDER,
             MultiFile = "true",
             Public = "false",
-            Name = tileFolder,
+            Name = tileFolderName,
             AngularUnit = AngularUnitsType.Degree.ToString(),
             PlaneUnit = pegasusUnits.ToString(),
             VerticalUnit = pegasusUnits.ToString()
