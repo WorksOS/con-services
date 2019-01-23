@@ -302,8 +302,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(projectUid, tRexRequest.ProjectUid, "projectUid not mapped correctly");
       Assert.AreEqual(apiRequest.Filter, tRexRequest.Filter, "Filter not mapped correctly");
       Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
-      Assert.AreEqual(apiRequest.ReportCMV, tRexRequest.ReportCMV, "ReportCMV not mapped correctly");
-      Assert.AreEqual(apiRequest.ReportMDP, tRexRequest.ReportMDP, "ReportMDP not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportCMV, tRexRequest.ReportCmv, "ReportCMV not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportMDP, tRexRequest.ReportMdp, "ReportMDP not mapped correctly");
       Assert.AreEqual(apiRequest.ReportTemperature, tRexRequest.ReportTemperature, "ReportTemperature not mapped correctly");
       Assert.AreEqual(apiRequest.ReportCutFill, tRexRequest.ReportCutFill, "ReportCutFill not mapped correctly");
       Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
@@ -359,8 +359,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(projectUid, tRexRequest.ProjectUid, "projectUid not mapped correctly");
       Assert.AreEqual(apiRequest.Filter, tRexRequest.Filter, "Filter not mapped correctly");
       Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
-      Assert.AreEqual(apiRequest.ReportCMV, tRexRequest.ReportCMV, "ReportCMV not mapped correctly");
-      Assert.AreEqual(apiRequest.ReportMDP, tRexRequest.ReportMDP, "ReportMDP not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportCMV, tRexRequest.ReportCmv, "ReportCmv not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportMDP, tRexRequest.ReportMdp, "ReportMdp not mapped correctly");
       Assert.AreEqual(apiRequest.ReportTemperature, tRexRequest.ReportTemperature, "ReportTemperature not mapped correctly");
       Assert.AreEqual(apiRequest.ReportCutFill, tRexRequest.ReportCutFill, "ReportCutFill not mapped correctly");
       Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");

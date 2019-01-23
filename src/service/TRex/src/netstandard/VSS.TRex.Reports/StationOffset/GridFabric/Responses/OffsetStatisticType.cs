@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Reports.StationOffset
+﻿namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   public enum OffsetStatisticType
   {

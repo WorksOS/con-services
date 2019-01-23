@@ -2,17 +2,18 @@
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common;
+using VSS.TRex.GridFabric.Interfaces;
 
-namespace VSS.TRex.Reports.StationOffset.GridFabric
+namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   /// <summary>
   /// The response returned from the StationOffset request executor that contains the response code and the set of
-  /// subgrids extracted for the StationOffset report in question
+  /// sub grids extracted for the StationOffset report in question
   /// </summary>
-  public class StationOffsetReportRequestResponse : SubGridsPipelinedResponseBase
+  public class StationOffsetReportRequestResponse : SubGridsPipelinedResponseBase, IAggregateWith<StationOffsetReportRequestResponse>
   {
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
-    public ReportType ReportType;       // == TRaptorReportType
+    private ReportType ReportType;       // == TRaptorReportType
     public List<StationOffsetReportDataRow> StationOffsetReportDataRowList;
 
     public StationOffsetReportRequestResponse()
@@ -20,7 +21,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
       Clear();
     }
 
-    public void Clear()
+    private void Clear()
     {
       ReturnCode = ReportReturnCode.NoError;
       ReportType = ReportType.StationOffset;
@@ -28,7 +29,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -44,7 +45,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
@@ -60,6 +61,16 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
         row.FromBinary(reader);
         StationOffsetReportDataRowList.Add(row);
       }
+    }
+
+    /// <summary>
+    /// Aggregate new stationOffsets into this set and return the result.
+    /// </summary>
+    /// <param name="other"></param>
+    public StationOffsetReportRequestResponse AggregateWith(StationOffsetReportRequestResponse other)
+    {
+      StationOffsetReportDataRowList.AddRange(other.StationOffsetReportDataRowList);
+      return this;
     }
   }
 }

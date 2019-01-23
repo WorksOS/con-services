@@ -3,7 +3,7 @@ using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Reports.Gridded;
 
-namespace VSS.TRex.Reports.StationOffset
+namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   // todoJeannie move GriddedReportDataRow to a common path?
   public class OffsetStatistics : GriddedReportDataRow, IEquatable<OffsetStatistics>

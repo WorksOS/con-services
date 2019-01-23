@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace VSS.TRex.Reports.StationOffset
+namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   /// <summary>
   /// Contains the prepared result for the client to consume

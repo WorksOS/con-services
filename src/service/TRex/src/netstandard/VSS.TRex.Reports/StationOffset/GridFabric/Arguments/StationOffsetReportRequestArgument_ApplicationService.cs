@@ -2,12 +2,12 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 
-namespace VSS.TRex.Reports.StationOffset.GridFabric
+namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
 {
   /// <summary>
   /// The argument to be supplied to the grid request
   /// </summary>
-  public class StationOffsetReportRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<StationOffsetReportRequestArgument>
+  public class StationOffsetReportRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument, IEquatable<StationOffsetReportRequestArgument_ApplicationService>
   {
     /// <summary>
     /// Include the measured elevation at the sampled location
@@ -45,7 +45,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
     public bool ReportCutFill { get; set; }
 
     /// <summary>
-    /// This design contains the centerline which will be sampled along
+    /// This design contains the center line which will be sampled along
     /// </summary>
     public Guid AlignmentDesignUid { get; set; }
 
@@ -56,25 +56,25 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
     public double CrossSectionInterval { get; set; }
 
     /// <summary>
-    /// Start point along the centreline in the AlignmentUid design
+    /// Start point along the center line in the AlignmentUid design
     /// </summary>
     /// 
     public double StartStation { get; set; }
 
     /// <summary>
-    /// End point along the centreline in the AlignmentUid design
+    /// End point along the center line in the AlignmentUid design
     /// </summary>
     /// 
     public double EndStation { get; set; }
 
     /// <summary>
-    /// Offsets left and right (or on) the centreline in the AlignmentUid design
+    /// Offsets left and right (or on) the center line in the AlignmentUid design
     /// </summary>
     /// 
     public double[] Offsets { get; set; }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -95,7 +95,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
@@ -115,7 +115,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
       Offsets = reader.ReadDoubleArray();
     }
 
-    public bool Equals(StationOffsetReportRequestArgument other)
+    public bool Equals(StationOffsetReportRequestArgument_ApplicationService other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -138,7 +138,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportRequestArgument) obj);
+      return Equals((StationOffsetReportRequestArgument_ApplicationService) obj);
     }
 
     public override int GetHashCode()

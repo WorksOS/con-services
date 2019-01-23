@@ -50,6 +50,9 @@ namespace VSS.TRex.Server.Reports
       {
         case PipelineProcessorTaskStyle.GriddedReport:
           return new GriddedReportTask();
+        // todoJeannie not a pipelineTask
+        //case PipelineProcessorTaskStyle.StationOffsetReport:
+        //  return new StationOffsetReportTask();
         default:
           return null;
       }

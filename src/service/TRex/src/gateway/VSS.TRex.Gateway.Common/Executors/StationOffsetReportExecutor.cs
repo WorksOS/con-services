@@ -7,8 +7,9 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Reports.StationOffset;
-using VSS.TRex.Reports.StationOffset.GridFabric;
+using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
+using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
+using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -39,9 +40,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      StationOffsetReportRequest tRexRequest = new StationOffsetReportRequest();
+      StationOffsetReportRequest_ApplicationService tRexRequest = new StationOffsetReportRequest_ApplicationService();
 
-      StationOffsetReportRequestResponse response = tRexRequest.Execute(new StationOffsetReportRequestArgument
+      StationOffsetReportRequestResponse response = tRexRequest.Execute(new StationOffsetReportRequestArgument_ApplicationService
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -62,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var result = new StationOffsetReportResult()
       {
         ReturnCode = response.ReturnCode,
-        ReportType = ReportType.Gridded,
+        ReportType = ReportType.StationOffset,
         GriddedData = new StationOffsetReportData()
         {
           ElevationReport = request.ReportElevation,
