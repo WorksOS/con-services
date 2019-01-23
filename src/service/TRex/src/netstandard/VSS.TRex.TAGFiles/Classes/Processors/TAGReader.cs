@@ -14,7 +14,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     private const byte NYBBLES_PER_UNICODE_CHAR = 4;
 
     // The stream provided in the constructor to read the TAG information from
-    private Stream stream;
+    private readonly Stream stream;
 
     /// <summary>
     /// The current nybble being read from the stream. 
@@ -101,14 +101,14 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Read an ANSI char from the stream. The result is returned as a byte as
     /// c# does not have a native ANSI type
     /// </summary>
-    private byte /*ANSIChar*/ ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
+    private byte ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
 
     /// <summary>
     /// Read an ANSI string from the stream. The result is returned as a byte array as
     /// c# does not have a native ANSI type
     /// </summary>
     /// <returns></returns>
-    public byte[] /*String*/ ReadANSIString()
+    public byte[] ReadANSIString()
     {
       byte b;
       int count = 0;
@@ -230,7 +230,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     /// <summary>
     /// Read a variable integer from the stream. A variable int uses a variable number of nybbles in te
-    /// stream to define the integer with the number of nybbles designeted per the TAG file schema.
+    /// stream to define the integer with the number of nybbles designated per the TAG file schema.
     /// </summary>
     /// <param name="varInt"></param>
     /// <returns></returns>

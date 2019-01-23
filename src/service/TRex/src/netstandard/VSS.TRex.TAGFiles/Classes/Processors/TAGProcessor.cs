@@ -599,10 +599,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       }
     }
 
-    /*
+    protected override bool IgnoreInvalidPositions() => SiteModel.IgnoreInvalidPositions;
 
+    /*
    function MaxEpochInterval: Double; override;
-   function IgnoreInvalidPositions: Boolean; override;
+
 
    procedure SetICSonic3D                  (const Value :Byte                  ); override;
    procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;
