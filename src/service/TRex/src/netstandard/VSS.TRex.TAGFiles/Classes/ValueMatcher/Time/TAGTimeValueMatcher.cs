@@ -26,8 +26,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
                 // a time value.
                 if (state.HaveSeenATimeValue)
                 {
-                    if (!valueSink.ProcessEpochContext())
-                        return false;
+                    valueSink.ProcessEpochContext();
                 }
 
                 switch (valueType.Type)
