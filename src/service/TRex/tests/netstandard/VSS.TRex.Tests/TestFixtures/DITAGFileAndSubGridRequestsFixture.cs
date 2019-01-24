@@ -1,22 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
+    public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
+    public static ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
+
     public DITAGFileAndSubGridRequestsFixture() : base()
     {
+      // Provide the surveyed surface request mock
+      Mock<ISurfaceElevationPatchRequest> surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
+      surfaceElevationPatchRequest.Setup(x => x.Execute(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(new ClientHeightAndTimeLeafSubGrid());
+      SurfaceElevationPatchRequest = surfaceElevationPatchRequest.Object;
+
+      // Provide the mocks for spatial caching
+      Mock<ITRexSpatialMemoryCacheContext> tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
+      TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
+
+      Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
+      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
+
       DIBuilder
-        .Continue();
-      //.Add()
+        .Continue()
+        .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
+        .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
+        .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
+        .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+
+        // Register the mock factory for surface elevation requests
+        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => surfaceElevationPatchRequest.Object))
+
+        .Complete();
     }
 
     public void Dispose()

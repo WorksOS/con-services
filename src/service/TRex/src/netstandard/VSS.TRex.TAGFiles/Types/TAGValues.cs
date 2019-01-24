@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Types
     /// </summary>
     public static class TAGValueNames
     {
-        public const string kTagFileTimeTag  = "TIME";
+        public const string kTagFileTimeTag = "TIME";
         public const string kTagFileWeekTag = "WEEK";
 
         public const string kTagFileCorrectionAgeTag = "AGE";
