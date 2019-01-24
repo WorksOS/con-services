@@ -51,8 +51,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 
                 state.HaveSeenATimeValue = true;
             }
-
-            if (valueType.Name == TAGValueNames.kTagFileWeekTag)
+            else if (valueType.Name == TAGValueNames.kTagFileWeekTag)
             {
                 if (valueType.Type != TAGDataType.t16bitUInt)
                 {

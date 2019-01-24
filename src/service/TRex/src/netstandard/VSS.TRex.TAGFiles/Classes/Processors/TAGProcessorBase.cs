@@ -425,7 +425,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     // then we continue and process the epoch as if the position information
                     // within it is 'valid'.
 
-                  if (IgnoreInvalidPositions()) return false; // Don't process this interval...
+                  if (IgnoreInvalidPositions()) return true; // Set true so time delta is updated for epoch
                 }
 
                 if (!HaveFirstEpoch)
