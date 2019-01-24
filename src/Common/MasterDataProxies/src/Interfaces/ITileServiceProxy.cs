@@ -7,6 +7,6 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface ITileServiceProxy
   {
-    Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders);
+    Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders, int timeoutMins);
   }
 }

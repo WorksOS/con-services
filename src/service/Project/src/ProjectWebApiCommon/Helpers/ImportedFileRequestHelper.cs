@@ -256,8 +256,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
           var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
           var dcFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{coordSysFileName}";
+          const string PEGASUS_EXECUTION_TIMEOUT_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
+          var executionTimeout = configStore.GetValueInt(PEGASUS_EXECUTION_TIMEOUT_KEY, 5);//minutes
           //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
-          var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
+          var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers, executionTimeout);
           if (tileMetadata != null)
           {
             notificationResult.MinZoomLevel = tileMetadata.MinZoom;

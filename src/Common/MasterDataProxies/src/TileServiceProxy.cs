@@ -19,7 +19,7 @@ namespace VSS.MasterData.Proxies
     }
 
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType,
-      IDictionary<string, string> customHeaders)
+      IDictionary<string, string> customHeaders, int timeoutMins)
     {
       log.LogDebug($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
 
@@ -31,7 +31,7 @@ namespace VSS.MasterData.Proxies
       var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       TileMetadata response = await SendRequest<TileMetadata>("TILE_INTERNAL_BASE_URL",
-        string.Empty, customHeaders, "/generatedxftiles", HttpMethod.Get, queryParams);
+        string.Empty, customHeaders, "/generatedxftiles", HttpMethod.Get, queryParams, timeoutMins, 1);
 
       return response;
     }
