@@ -116,7 +116,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         // cache. If the level of the returned sub grid matches the request level parameter
                         // then there is nothing more to do here.
                         if (subGrid.IsLeafSubGrid() &&
-                            ((leafSubGrid.HaveSubgridDirectoryDetails || leafSubGrid.Dirty) &&
+                            ((leafSubGrid.HasSubGridDirectoryDetails || leafSubGrid.Dirty) &&
                              leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData()) ||
                            (!subGrid.IsLeafSubGrid() && subGrid.Level == level))
                         {
@@ -125,7 +125,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     }
                 }
 
-                if ((!leafSubGrid.HaveSubgridDirectoryDetails && !leafSubGrid.Dirty) ||
+                if ((!leafSubGrid.HasSubGridDirectoryDetails && !leafSubGrid.Dirty) ||
                     !(leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData()))
                 {
                     // The requested cell is either not present in the sub grid tree (cache),
@@ -181,14 +181,14 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 // TODO Ignite special case - allow Dirty leaf sub grids to be returned
                 if (result == null)
                 {
-                    if (leafSubGrid.HaveSubgridDirectoryDetails && leafSubGrid.Dirty && leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData())
+                    if (leafSubGrid.HasSubGridDirectoryDetails && leafSubGrid.Dirty && leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData())
                     {
                         result = leafSubGrid;
                     }
                 }
 
                 // IGNITE: Last gasp - if the sub grid is in memory and has directory details then just return it
-                if (result == null && leafSubGrid.HaveSubgridDirectoryDetails)
+                if (result == null && leafSubGrid.HasSubGridDirectoryDetails)
                 {
                     result = leafSubGrid;
                 }
