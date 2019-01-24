@@ -333,7 +333,6 @@ namespace VSS.TRex.Filters
       if (Result != 0)
         return Result;
 
-
       // GCS Guidance mode
       Result = FlagCheck(HasGCSGuidanceModeFilter, AFilter.HasGCSGuidanceModeFilter);
       if (Result != 0)
