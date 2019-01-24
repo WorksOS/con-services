@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Schema;
-using VSS.TRex.Caching.Interfaces;
+﻿using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {

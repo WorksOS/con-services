@@ -40,14 +40,14 @@ namespace VSS.TRex.Profiling
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 
     /// <summary>
-    /// The storage proxy to use when requesting subgrids for profiling operations
+    /// The storage proxy to use when requesting sub grids for profiling operations
     /// </summary>
     private IStorageProxy storageProxy;
 
     protected IStorageProxy StorageProxy => storageProxy ?? (storageProxy = DIContext.Obtain<ISiteModels>().StorageProxy);
 
     /// <summary>
-    /// The subgrid of composite elevations calculate from the collection of surveyed surfaces
+    /// The sub grid of composite elevations calculate from the collection of surveyed surfaces
     /// relevant to the profiling query
     /// </summary>
     protected ClientCompositeHeightsLeafSubgrid CompositeHeightsGrid;
@@ -55,8 +55,8 @@ namespace VSS.TRex.Profiling
     protected IClientLeafSubGrid CompositeHeightsGridIntf;
 
     /// <summary>
-    /// The subgrid-by-subgrid filter mask used to control selection os surveyed surface
-    /// and other cell data for each subgrid
+    /// The sub grid-by-sub grid filter mask used to control selection os surveyed surface
+    /// and other cell data for each sub grid
     /// </summary>
     protected SubGridTreeBitmapSubGridBits FilterMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 

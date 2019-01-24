@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.SubGrids
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => null /*DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()*/)))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => null)))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
 
         .Complete();
@@ -68,6 +68,8 @@ namespace VSS.TRex.Tests.SubGrids
     public void Dispose()
     {
       DIBuilder.Eject();
+      TRexSpatialMemoryCacheContext = null;
+      TRexSpatialMemoryCacheContext = null;
     }
   }
 

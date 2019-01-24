@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.Caching.Interfaces;
@@ -17,28 +18,24 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
-    public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
-    public static ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
-
     public DITAGFileAndSubGridRequestsFixture() : base()
     {
       // Provide the surveyed surface request mock
       Mock<ISurfaceElevationPatchRequest> surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
       surfaceElevationPatchRequest.Setup(x => x.Execute(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(new ClientHeightAndTimeLeafSubGrid());
-      SurfaceElevationPatchRequest = surfaceElevationPatchRequest.Object;
 
       // Provide the mocks for spatial caching
       Mock<ITRexSpatialMemoryCacheContext> tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
-      TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
 
       Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
 
       DIBuilder
         .Continue()
+        .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
+        .Build()
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
-        .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
 
@@ -51,7 +48,7 @@ namespace VSS.TRex.Tests.TestFixtures
     public void Dispose()
     {
       DIBuilder.Eject();
-    }
+  }
 
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried
@@ -86,6 +83,9 @@ namespace VSS.TRex.Tests.TestFixtures
         MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
       };
       worker.ProcessTask(ProcessedTasks);
+
+      targetSiteModel.Should().NotBe(null);
+      ProcessedTasks.Count.Should().Be(_tagFiles.Count);
 
       return targetSiteModel;
     }
