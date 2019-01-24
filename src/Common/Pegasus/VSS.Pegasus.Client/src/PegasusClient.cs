@@ -190,8 +190,8 @@ namespace VSS.Pegasus.Client
         */
 
         //5. Get the zoom range from the tile metdata file 
-        Log.LogDebug($"Getting tiles metadata for {dxfFileName}");
         var metadataFileName = new DataOceanFileUtil(dxfFileName).TilesMetadataFileName;
+        Log.LogDebug($"Getting tiles metadata for {metadataFileName}");
         var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders);
 
         using (var sr = new StreamReader(stream))
