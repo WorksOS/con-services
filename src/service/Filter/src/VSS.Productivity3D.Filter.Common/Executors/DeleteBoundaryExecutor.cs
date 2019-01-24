@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       try
       {
-        if (deleteEvent != null)
+        if (request.SendKafkaMessages && deleteEvent != null)
         {
           producer.Send(kafkaTopicName,
             new List<KeyValuePair<string, string>>
