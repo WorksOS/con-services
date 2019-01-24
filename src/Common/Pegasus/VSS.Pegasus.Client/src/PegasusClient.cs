@@ -86,17 +86,12 @@ namespace VSS.Pegasus.Client
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
 
-      //Create the top level tiles folder and get the generated tiles folder name
+      //In DataOcean this is actually a multifile not a folder
       string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
-      var success = await dataOceanClient.MakeFolder(tileFolderFullName, customHeaders);
-      if (!success)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create tiles folder {tileFolderFullName}"));
-      }
-      var parentId = await dataOceanClient.GetFolderId(tileFolderFullName, customHeaders);
       var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
       var tileFolderName = parts[parts.Length - 1];
+      var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
+      var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);
 
       //Get the Pegasus units
       var pegasusUnits = PegasusUnitsType.Metre;
@@ -162,7 +157,8 @@ namespace VSS.Pegasus.Client
       //3. Monitor status of execution until done
       Log.LogDebug($"Monitoring execution status for {dxfFileName}");
       DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(executionTimeout);
-      bool done = false;
+      var done = false;
+      var success = true;
       while (!done && DateTime.Now <= endJob)
       {
         if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
