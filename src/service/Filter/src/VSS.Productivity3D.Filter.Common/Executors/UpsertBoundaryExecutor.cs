@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var createdCount = 0;
       try
       {
-        createdCount = await ((IGeofenceRepository) Repository).StoreEvent(createBoundaryEvent).ConfigureAwait(false);
+        createdCount = await ((IGeofenceRepository)Repository).StoreEvent(createBoundaryEvent).ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -82,19 +82,22 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 58);
       }
 
-      try
+      if (boundaryRequest.SendKafkaMessages)
       {
-        var payload = JsonConvert.SerializeObject(new { CreateBoundaryEvent = createBoundaryEvent });
+        try
+        {
+          var payload = JsonConvert.SerializeObject(new { CreateBoundaryEvent = createBoundaryEvent });
 
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
+          producer.Send(kafkaTopicName,
+            new List<KeyValuePair<string, string>>
+            {
               new KeyValuePair<string, string>(createBoundaryEvent.GeofenceUID.ToString(), payload)
-          });
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
+            });
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
+        }
       }
 
       //and associate it with the project
@@ -103,7 +106,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //The code check for association below is not needed until we can update a boundary
 
       //Boundary may be used in many filters but only create association between boundary and project once.
-      var retrievedAssociation = (await ((IProjectRepository) auxRepository)
+      var retrievedAssociation = (await ((IProjectRepository)auxRepository)
           .GetAssociatedGeofences(boundaryRequest.ProjectUid)
           .ConfigureAwait(false))
         .SingleOrDefault(a => a.GeofenceUID.ToString() == boundaryRequest.Request.BoundaryUid);
@@ -121,19 +124,22 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
         }
 
-        try
+        if (boundaryRequest.SendKafkaMessages)
         {
-          var payload = JsonConvert.SerializeObject(new { AssociateProjectBoundaryEvent = associateProjectGeofence });
+          try
+          {
+            var payload = JsonConvert.SerializeObject(new { AssociateProjectBoundaryEvent = associateProjectGeofence });
 
-          producer.Send(kafkaTopicName,
-            new List<KeyValuePair<string, string>>
-            {
+            producer.Send(kafkaTopicName,
+              new List<KeyValuePair<string, string>>
+              {
               new KeyValuePair<string, string>(associateProjectGeofence.GeofenceUID.ToString(), payload)
-            });
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
+              });
+          }
+          catch (Exception e)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
+          }
         }
       }
 

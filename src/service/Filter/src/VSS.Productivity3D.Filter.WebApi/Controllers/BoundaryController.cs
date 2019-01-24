@@ -51,12 +51,11 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <param name="projectUid">The Project Uid.</param>
     /// <param name="request">A serialized <see cref="BoundaryRequest"/> instance.</param>
     /// <returns>Returns an instance of <see cref="GeofenceDataSingleResult"/> for type <see cref="VSS.MasterData.Models.Models.GeofenceData"/>.</returns>
-    [Route("api/v1/boundary/{ProjectUid}")]
-    [HttpPut]
+    [HttpPut("api/v1/boundary/{ProjectUid}")]
     public async Task<GeofenceDataSingleResult> UpsertBoundary(string projectUid, [FromBody] BoundaryRequest request)
     {
       Log.LogInformation(
-        $"{ToString()}.UpsertBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} BoundaryRequest: {JsonConvert.SerializeObject(request)}");
+        $"{ToString()}.{nameof(UpsertBoundary)}: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} BoundaryRequest: {JsonConvert.SerializeObject(request)}");
 
       var requestFull = BoundaryRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
@@ -67,6 +66,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       requestFull.Validate(ServiceExceptionHandler);
       requestFull.Request.BoundaryPolygonWKT = GeofenceValidation.MakeGoodWkt(requestFull.Request.BoundaryPolygonWKT);
+      requestFull.SendKafkaMessages = false;
 
       var getResult = await BoundaryHelper.GetProjectBoundaries(
         Log, ServiceExceptionHandler, 
@@ -90,8 +90,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Deletes a Filter Boundary from the specified project.
     /// </summary>
     /// <returns>Returns an instance of <see cref="ContractExecutionResult"/>.</returns>
-    [Route("api/v1/boundary/{ProjectUid}")]
-    [HttpDelete]
+    [HttpDelete("api/v1/boundary/{ProjectUid}")]
     public async Task<ContractExecutionResult> DeleteBoundary(string projectUid, [FromQuery] string boundaryUid)
     {
       Log.LogInformation(
@@ -105,6 +104,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         boundaryUid);
 
       requestFull.Validate(ServiceExceptionHandler);
+      requestFull.SendKafkaMessages = false;
 
       var executor = RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger,
         ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectListProxy, RaptorProxy, Producer,
