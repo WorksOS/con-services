@@ -13,25 +13,61 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     GridDataType RequestedGridDataType { get; set; }
 
-    bool HasTimeFilter { get; set; }
-    bool HasMachineFilter { get; set; }
-    bool HasMachineDirectionFilter { get; set; }
-    bool HasDesignFilter { get; set; }
-    bool HasVibeStateFilter { get; set; }
-    bool HasLayerStateFilter { get; set; }
-    bool HasElevationMappingModeFilter { get; set; }
-    bool HasElevationTypeFilter { get; set; }
-    bool HasGCSGuidanceModeFilter { get; set; }
-    bool HasGPSAccuracyFilter { get; set; }
-    bool HasGPSToleranceFilter { get; set; }
-    bool HasPositioningTechFilter { get; set; }
-    bool HasLayerIDFilter { get; set; }
-    bool HasElevationRangeFilter { get; set; }
+    bool HasTimeFilter { get; }
+    void SetHasTimeFilter(bool state);
+
+    bool HasMachineFilter { get; }
+    void SetHasMachineFilter(bool state);
+
+    bool HasMachineDirectionFilter { get; }
+    void SetHasMachineDirectionFilter(bool state);
+
+    bool HasDesignFilter { get; }
+    void SetHasDesignFilter(bool state);
+
+    bool HasVibeStateFilter { get; }
+    void SetHasVibeStateFilter(bool state);
+
+    bool HasLayerStateFilter { get; }
+    void SetHasLayerStateFilter(bool state);    
+
+    bool HasElevationMappingModeFilter { get; }
+    void SetHasElevationMappingModeFilter(bool state);
+
+    bool HasElevationTypeFilter { get; }
+    void SetHasElevationTypeFilter(bool state);
+
+    bool HasGCSGuidanceModeFilter { get; }
+    void SetHasGCSGuidanceModeFilter(bool state);
+
+    bool HasGPSAccuracyFilter { get; }
+    void SetHasGPSAccuracyFilter(bool state);
+
+    bool HasGPSToleranceFilter { get; }
+    void SetHasGPSToleranceFilter(bool state);
+
+    bool HasPositioningTechFilter { get; }
+    void SetHasPositioningTechFilter(bool state);
+
+    bool HasLayerIDFilter { get; }
+    void SetHasLayerIDFilter(bool state);
+
+    bool HasElevationRangeFilter { get; }
+    void SetHasElevationRangeFilter(bool state);
+
     bool HasPassTypeFilter { get; set; }
-    bool HasCompactionMachinesOnlyFilter { get; set; }
-    bool HasTemperatureRangeFilter { get; set; }
+    void SetHasPassTypeFilter(bool state);
+
+    bool HasCompactionMachinesOnlyFilter { get; }
+    void SetHasCompactionMachinesOnlyFilter(bool state);
+
+    bool HasTemperatureRangeFilter { get; }
+    void SetHasTemperatureRangeFilter(bool state);
+
+    bool HasPassCountRangeFilter { get; }
+    void SetHasPassCountRangeFilter(bool state);
+
     bool FilterTemperatureByLastPass { get; set; }
-    bool HasPassCountRangeFilter { get; set; }
 
     /// <summary>
     /// The earliest time that a measured cell pass must have to be included in the filter

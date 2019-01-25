@@ -72,14 +72,15 @@ namespace VSS.TRex.Gateway.Common.Converters
       {
         var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value;
     
-        return new CellPassAttributeFilter
+        var filter = new CellPassAttributeFilter
         {
           ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
-          HasElevationTypeFilter = true,
           ElevationType = returnEarliestFilteredCellPass ? Types.ElevationType.First : Types.ElevationType.Last,
           SurveyedSurfaceExclusionList = null //done afterwards
         };
-  
+
+        filter.SetHasElevationTypeFilter(true);
+        return filter;
       }
     }
 

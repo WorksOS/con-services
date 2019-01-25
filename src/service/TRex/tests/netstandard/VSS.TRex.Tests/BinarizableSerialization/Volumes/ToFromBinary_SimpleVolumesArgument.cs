@@ -28,7 +28,6 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Volumes
         AttributeFilter = new CellPassAttributeFilter
         {
           ReturnEarliestFilteredCellPass = true,
-          HasElevationTypeFilter = true,
           ElevationType = ElevationType.First
         },
 
@@ -39,18 +38,21 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Volumes
             Fence = new Fence(BoundingWorldExtent3D.Inverted())
           }
       };
+      FromFilter.AttributeFilter.SetHasElevationTypeFilter(true);
+        
 
       CombinedFilter ToFilter = new CombinedFilter()
       {
         AttributeFilter = new CellPassAttributeFilter()
         {
           ReturnEarliestFilteredCellPass = false,
-          HasElevationTypeFilter = true,
           ElevationType = ElevationType.Last
         },
 
         SpatialFilter = FromFilter.SpatialFilter
       };
+      FromFilter.AttributeFilter.SetHasElevationTypeFilter(true);
+
       var argument = new SimpleVolumesRequestArgument()
       {
         ProjectID = Guid.NewGuid(),

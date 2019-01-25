@@ -64,12 +64,12 @@ namespace VSS.TRex.Filters
     /// </summary>
     public object /*ISiteModel*/ SiteModel
     {
-      get { return siteModel; }
-      set { siteModel = (ISiteModel) value; }
+      get => siteModel; 
+      set => siteModel = (ISiteModel) value; 
     }
 
     /// <summary>
-    /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
+    /// A sub grid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
     public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
@@ -84,16 +84,19 @@ namespace VSS.TRex.Filters
     /// </summary>
     public BitArray MachineIDSet { get; set; }
 
-    public bool AnyFilterSelections { get; set; }
+    private bool _anyFilterSelections;
+    public bool AnyFilterSelections => _prepared ? _anyFilterSelections : Prepare() && _anyFilterSelections;
 
-    public bool AnyMachineEventFilterSelections { get; set; }
+    private bool _anyMachineEventFilterSelections;
+    public bool AnyMachineEventFilterSelections => _prepared ? _anyMachineEventFilterSelections : Prepare() && _anyMachineEventFilterSelections;
 
-    public bool AnyNonMachineEventFilterSelections { get; set; }
+    private bool _anyNonMachineEventFilterSelections;
+    public bool AnyNonMachineEventFilterSelections => _prepared ? _anyNonMachineEventFilterSelections : Prepare() && _anyNonMachineEventFilterSelections;
 
-    /// <summary>
-    /// Default no-arg constructor the produces a filter with all aspects set to their defaults
-    /// </summary>
-    public CellPassAttributeFilter()
+  /// <summary>
+  /// Default no-arg constructor the produces a filter with all aspects set to their defaults
+  /// </summary>
+  public CellPassAttributeFilter()
     {
       ClearFilter();
     }
@@ -107,9 +110,9 @@ namespace VSS.TRex.Filters
     /// Performs operations that prepares the filter for active use. Prepare() must be called prior to
     /// active use of the filter.
     /// </summary>
-    public void Prepare()
+    private bool Prepare()
     {
-      AnyFilterSelections =
+      _anyFilterSelections =
         HasCompactionMachinesOnlyFilter ||
         HasDesignFilter ||
         HasElevationRangeFilter ||
@@ -129,7 +132,7 @@ namespace VSS.TRex.Filters
         HasTemperatureRangeFilter ||
         HasPassCountRangeFilter;
 
-      AnyMachineEventFilterSelections =
+      _anyMachineEventFilterSelections =
         HasDesignFilter ||
         HasVibeStateFilter ||
         HasMachineDirectionFilter ||
@@ -141,7 +144,7 @@ namespace VSS.TRex.Filters
         HasLayerIDFilter ||
         HasPassTypeFilter;
 
-      AnyNonMachineEventFilterSelections =
+      _anyNonMachineEventFilterSelections =
         HasTimeFilter ||
         HasMachineFilter ||
         HasElevationRangeFilter ||
@@ -149,6 +152,9 @@ namespace VSS.TRex.Filters
         HasTemperatureRangeFilter;
 
       InitialiseMachineIDsSet();
+
+      _prepared = true;
+      return true;
     }
 
     // Clear all the elements of the filter to a null state
@@ -171,11 +177,14 @@ namespace VSS.TRex.Filters
       ClearTemperatureRange();
       ClearPassCountRange();
       ClearElevationRangeFilterInitialisation();
-      AnyFilterSelections = false;
-      AnyMachineEventFilterSelections = false;
-      AnyNonMachineEventFilterSelections = false;
       ReturnEarliestFilteredCellPass = false;
       FilterTemperatureByLastPass = false;
+
+      _anyFilterSelections = false;
+      _anyMachineEventFilterSelections = false;
+      _anyNonMachineEventFilterSelections = false;
+
+      _prepared = false;
     }
 
     public void ClearVibeState()
@@ -630,7 +639,7 @@ namespace VSS.TRex.Filters
       //      FElevationRangeBottomElevationForCell, FElevationRangeDesignElevations
 
 
-      HasTimeFilter = Source.HasTimeFilter;
+      SetHasTimeFilter(Source.HasTimeFilter);
       HasMachineFilter = Source.HasMachineFilter;
       HasMachineDirectionFilter = Source.HasMachineDirectionFilter;
       HasDesignFilter = Source.HasDesignFilter;

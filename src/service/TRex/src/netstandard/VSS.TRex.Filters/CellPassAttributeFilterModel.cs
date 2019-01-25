@@ -14,37 +14,149 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
   {
+    protected bool _prepared = false;
+
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at
     /// the time this filter is asked filter cell passes.
     /// </summary>
     public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
-    public bool HasTimeFilter { get; set; }
-    public bool HasMachineFilter { get; set; }
-    public bool HasMachineDirectionFilter { get; set; }
-    public bool HasDesignFilter { get; set; }
-    public bool HasVibeStateFilter { get; set; }
-    public bool HasLayerStateFilter { get; set; }
-    public bool HasElevationMappingModeFilter { get; set; }
-    public bool HasElevationTypeFilter { get; set; }
-    public bool HasGCSGuidanceModeFilter { get; set; }
-    public bool HasGPSAccuracyFilter { get; set; }
-    public bool HasGPSToleranceFilter { get; set; }
-    public bool HasPositioningTechFilter { get; set; }
-    public bool HasLayerIDFilter { get; set; }
-    public bool HasElevationRangeFilter { get; set; }
-    public bool HasPassTypeFilter { get; set; }
+    public bool HasTimeFilter { get; protected set; }
 
-    public virtual bool IsTimeRangeFilter() => false;
+    public void SetHasTimeFilter(bool state)
+    {
+      HasTimeFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasMachineFilter { get; protected set; }
+
+    public void SetHasMachineFilter(bool state)
+    {
+      HasMachineFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasMachineDirectionFilter { get; protected set; }
+
+    public void SetHasMachineDirectionFilter(bool state)
+    {
+      HasMachineDirectionFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasDesignFilter { get; protected set; }
+
+    public void SetHasDesignFilter(bool state)
+    {
+      HasDesignFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasVibeStateFilter { get; protected set; }
+    public void SetHasVibeStateFilter(bool state)
+    {
+      HasVibeStateFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasLayerStateFilter { get; protected set; }
+    public void SetHasLayerStateFilter(bool state)
+    {
+      HasLayerStateFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasElevationMappingModeFilter { get; protected set; }
+    public void SetHasElevationMappingModeFilter(bool state)
+    {
+      HasElevationMappingModeFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasElevationTypeFilter { get; protected set; }
+    public void SetHasElevationTypeFilter(bool state)
+    {
+      HasElevationTypeFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasGCSGuidanceModeFilter { get; protected set; }
+    public void SetHasGCSGuidanceModeFilter(bool state)
+    {
+      HasGCSGuidanceModeFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasGPSAccuracyFilter { get; protected set; }
+    public void SetHasGPSAccuracyFilter(bool state)
+    {
+      HasGPSAccuracyFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasGPSToleranceFilter { get; set; }
+    public void SetHasGPSToleranceFilter(bool state)
+    {
+      HasGPSToleranceFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasPositioningTechFilter { get; set; }
+    public void SetHasPositioningTechFilter(bool state)
+    {
+      HasPositioningTechFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasLayerIDFilter { get; set; }
+    public void SetHasLayerIDFilter(bool state)
+    {
+      HasLayerIDFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasElevationRangeFilter { get; set; }
+    public void SetHasElevationRangeFilter(bool state)
+    {
+      HasElevationRangeFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasPassTypeFilter { get; set; }
+    public void SetHasPassTypeFilter(bool state)
+    {
+      HasPassTypeFilter = state;
+      _prepared = false;
+    }
 
     public bool HasCompactionMachinesOnlyFilter { get; set; }
+    public void SetHasCompactionMachinesOnlyFilter(bool state)
+    {
+      HasCompactionMachinesOnlyFilter = state;
+      _prepared = false;
+    }
 
     public bool HasTemperatureRangeFilter { get; set; }
+    public void SetHasTemperatureRangeFilter(bool state)
+    {
+      HasTemperatureRangeFilter = state;
+      _prepared = false;
+    }
+
+    public bool HasPassCountRangeFilter { get; set; }
+    public void SetHasPassCountRangeFilter(bool state)
+    {
+      HasPassCountRangeFilter = state;
+      _prepared = false;
+    }
+
+
 
     public bool FilterTemperatureByLastPass { get; set; }
 
-    public bool HasPassCountRangeFilter { get; set; }
+    public virtual bool IsTimeRangeFilter() => false;
 
     // Time based filtering members
     /// <summary>
