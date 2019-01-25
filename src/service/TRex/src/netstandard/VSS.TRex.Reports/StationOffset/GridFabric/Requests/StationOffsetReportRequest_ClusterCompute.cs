@@ -10,9 +10,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
   /// </summary>
   public class StationOffsetReportRequest_ClusterCompute
     : GenericPSNodeBroadcastRequest
-      <StationOffsetReportRequestArgument_ClusterCompute, 
-        StationOffsetReportRequestComputeFunc_ClusterCompute, 
-        StationOffsetReportRequestResponse>
+      <StationOffsetReportRequestArgument_ClusterCompute, StationOffsetReportRequestComputeFunc_ClusterCompute, StationOffsetReportRequestResponse_ClusterCompute>
   {
   }
 }

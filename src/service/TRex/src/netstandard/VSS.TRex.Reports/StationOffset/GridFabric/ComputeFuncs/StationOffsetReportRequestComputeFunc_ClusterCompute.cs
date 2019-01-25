@@ -10,11 +10,11 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
   /// <summary>
   /// The logic Ignite executes on cluster compute nodes for profile requests
   /// </summary>
-  public class StationOffsetReportRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute, StationOffsetReportRequestResponse> 
+  public class StationOffsetReportRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute, StationOffsetReportRequestResponse_ClusterCompute> 
   {
     private static ILogger Log = Logging.Logger.CreateLogger<StationOffsetReportRequestComputeFunc_ClusterCompute>();
 
-    public StationOffsetReportRequestResponse Invoke(StationOffsetReportRequestArgument_ClusterCompute arg)
+    public StationOffsetReportRequestResponse_ClusterCompute Invoke(StationOffsetReportRequestArgument_ClusterCompute arg)
     {
       Log.LogInformation("In StationOffsetReportRequestComputeFunc_ClusterCompute.Invoke()");
 

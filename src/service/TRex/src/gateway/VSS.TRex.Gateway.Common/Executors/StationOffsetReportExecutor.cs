@@ -42,7 +42,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       StationOffsetReportRequest_ApplicationService tRexRequest = new StationOffsetReportRequest_ApplicationService();
 
-      StationOffsetReportRequestResponse response = tRexRequest.Execute(new StationOffsetReportRequestArgument_ApplicationService
+      StationOffsetReportRequestResponse_ApplicationService response = tRexRequest.Execute(new StationOffsetReportRequestArgument_ApplicationService
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -64,7 +64,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ReturnCode = response.ReturnCode,
         ReportType = ReportType.StationOffset,
-        GriddedData = new StationOffsetReportData()
+        GriddedData = new StationOffsetReportData_ApplicationService()
         {
           ElevationReport = request.ReportElevation,
           CutFillReport = request.ReportCutFill,

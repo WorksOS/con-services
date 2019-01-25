@@ -45,7 +45,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
     public void CutFillResult_Streaming_Successful()
     {
       // When Response returned via MasterData Proxies,
-      //  it is converted to byte[], then stream then filestream, then back
+      //  it is converted to byte[], then stream then file stream, then back
       var original = new GriddedReportResult(ReportType.Gridded);
       var griddedDataRow = new GriddedReportDataRow()
       {
@@ -70,14 +70,14 @@ namespace VSS.TRex.Tests.Reports.Gridded
       var copyOfOrig = new GriddedReportResult();
       copyOfOrig.Read(byteArrayOfOriginal);
 
-      // GracefullWebReq
+      // Graceful WebReq
       var fileStream = new FileStreamResult(new MemoryStream(byteArrayOfOriginal), "application/octet-stream");
       var memoryStream = (MemoryStream)fileStream.FileStream;
       var resultFromStream = new GriddedReportResult();
 
       resultFromStream.Read(memoryStream.ToArray());
 
-      Assert.True(original.ReportType == resultFromStream.ReportType, "Invalid report type");
+      Assert.True(ReportType.Gridded == resultFromStream.ReportType, "Invalid report type");
       Assert.True(original.GriddedData.Rows.Count == resultFromStream.GriddedData.Rows.Count, "Invalid number of rows");
       Assert.Equal(original, resultFromStream);
     }

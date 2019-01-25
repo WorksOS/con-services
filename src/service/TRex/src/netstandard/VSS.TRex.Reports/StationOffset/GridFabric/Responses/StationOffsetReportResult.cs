@@ -16,7 +16,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
   {
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType; // == TRaptorReportType
-    public StationOffsetReportData GriddedData { get; set; }
+    public StationOffsetReportData_ApplicationService GriddedData { get; set; }
 
 
     public StationOffsetReportResult()
@@ -28,14 +28,14 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     {
       ReturnCode = ReportReturnCode.NoError;
       ReportType = ReportType.None;
-      GriddedData = new StationOffsetReportData();
+      GriddedData = new StationOffsetReportData_ApplicationService();
       GriddedData.Clear();
     }
 
     public StationOffsetReportResult(ReportType reportType)
     {
       ReportType = reportType;
-      GriddedData = new StationOffsetReportData();
+      GriddedData = new StationOffsetReportData_ApplicationService();
     }
 
     public byte[] Write()

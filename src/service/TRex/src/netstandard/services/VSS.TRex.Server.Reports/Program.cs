@@ -24,6 +24,8 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGrids;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -50,9 +52,6 @@ namespace VSS.TRex.Server.Reports
       {
         case PipelineProcessorTaskStyle.GriddedReport:
           return new GriddedReportTask();
-        // todoJeannie not a pipelineTask
-        //case PipelineProcessorTaskStyle.StationOffsetReport:
-        //  return new StationOffsetReportTask();
         default:
           return null;
       }
@@ -82,6 +81,7 @@ namespace VSS.TRex.Server.Reports
       .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
       .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+      .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
 
       .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 

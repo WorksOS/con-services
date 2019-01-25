@@ -1,13 +1,20 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Filters;
-using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -20,24 +27,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeStationOffsetReportExecutor_ClusterCompute>();
 
-    private StationOffsetReportRequestArgument_ClusterCompute requestArgument;
-    //private readonly Guid ProjectID;
-    //private readonly GridDataType ProfileTypeRequired;
-    //private readonly XYZ[] NEECoords;
-    //private readonly IFilterSet Filters;
-    //private readonly ProfileStyle ProfileStyle;
-    //private readonly VolumeComputationType VolumeType;	
-
-    //private const int INITIAL_PROFILE_LIST_SIZE = 1000;
-
-    //// todo LiftBuildSettings: TICLiftBuildSettings;
-    //// ExternalRequestDescriptor: TASNodeRequestDescriptor;
-
-    //private readonly Guid DesignUid;
-    //private bool ReturnAllPassesAndLayers;
-
-    //private ISubGridSegmentCellPassIterator CellPassIterator;
-    //private ISubGridSegmentIterator SegmentIterator;
+    private readonly StationOffsetReportRequestArgument_ClusterCompute requestArgument;
 
     /// <summary>
     /// Constructs the stationOffset executor
@@ -52,13 +42,11 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     /// Executes the stationOffset logic in the cluster compute context where each cluster node processes its fraction of the work and returns the
     /// results to the application service context
     /// </summary>
-    public StationOffsetReportRequestResponse Execute()
+    public StationOffsetReportRequestResponse_ClusterCompute Execute()
     {
-      StationOffsetReportRequestResponse response = null;
+      StationOffsetReportRequestResponse_ClusterCompute response = null;
       try
       {
-        // var ProfileCells = new List<T>(INITIAL_PROFILE_LIST_SIZE);
-
         try
         {
           // Note: Start/end point lat/lon fields have been converted into grid local coordinate system by this point
@@ -67,33 +55,12 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           else
             Log.LogInformation($"#In#: DataModel {requestArgument.ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
 
-          ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
-
-          if (siteModel == null)
-          {
-            Log.LogWarning($"Failed to locate site model {requestArgument.ProjectID}");
-            return response = new StationOffsetReportRequestResponse {ResultStatus = RequestErrorStatus.NoSuchDataModel};
-          }
-
-          // Obtain the sub grid existence map for the project
-          ISubGridTreeBitMask existenceMap = siteModel.ExistenceMap;
-
-          if (existenceMap == null)
-          {
-            Log.LogWarning($"Failed to locate production data existence map from sitemodel {requestArgument.ProjectID}");
-            return response = new StationOffsetReportRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
-          }
-
-          ICellSpatialFilter CellFilter = requestArgument.Filters.Filters[0].SpatialFilter;
-          ICellPassAttributeFilter PassFilter = requestArgument.Filters.Filters[0].AttributeFilter;
-
-          // todoJeannie for each requestArg.Point, get subgrid and extract values from productionData into response
           return response = GetProductionData();
         }
         finally
         {
           Log.LogInformation(
-            $"#Out# Execute: DataModel {requestArgument.ProjectID} complete for stationOffset report. #Result#:{response?.ResultStatus ?? RequestErrorStatus.Exception} with {response?.StationOffsetReportDataRowList?.Count ?? 0} points");
+            $"#Out# Execute: DataModel {requestArgument.ProjectID} complete for stationOffset report. #Result#:{response?.ResultStatus ?? RequestErrorStatus.Exception} with {response?.StationOffsetRows.Count ?? 0} offsets");
         }
       }
       catch (Exception E)
@@ -101,7 +68,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         Log.LogError(E, "Execute: Exception:");
       }
 
-      return new StationOffsetReportRequestResponse();
+      return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.NoResultReturned};
     }
 
 
@@ -109,172 +76,118 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     /// For each point in the list, get the subgrid and extract productionData at the station/offset i.e pointOfInterest
     ///    This could be optimized to get any poi from each subgrid before disposal
     /// </summary>
-    private StationOffsetReportRequestResponse GetProductionData()
+    private StationOffsetReportRequestResponse_ClusterCompute GetProductionData()
     {
-      foreach (var poi in requestArgument.Points)
+      var result = new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.Unknown};
+
+      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
+      if (siteModel == null)
       {
-        //ClientGrid.Clear;
-
-        //// get cell address
-        //SiteModel.Grid.CalculateIndexOfCellContainingPosition(Args.NEECoords[I].X, Args.NEECoords[I].Y, CellAddress.X, CellAddress.Y);
-
-        //CellAddress.ProdDataRequested : = FProdDataExistenceMap.Map[CellAddress.X SHR kSubGridIndexBitsPerLevel, CellAddress.Y SHR kSubGridIndexBitsPerLevel];
-        //CellAddress.SurveyedSurfaceDataRequested : = True;
-
-        //// using the celladdress get the index of cell in clientgrid
-        //ClientGrid.GetOTGLeafSubGridCellIndex(CellAddress.X, CellAddress.Y, SubGridX, SubGridY);
-
-        //CellOverrideMask.Clear;
-        //CellOverrideMask.SetBit(SubGridX, SubGridY); // using cell index turn on bit for cell we are interested in
-
-        //LockTokenName := Format('OffsetProfiling %d', [GetCurrentThreadID]);
-        //LockToken := LockTokenManager.FindToken(LockTokenName);
-        //if LockToken = -1 then
-        //LockToken := LockTokenManager.AcquireToken(LockTokenName)
-        //else
-        //begin
-        //ServerResult := icsrrFailedToLock;
-        //SIGLogMessage.PublishNoODS(Self, Format('Lock token name (%s) used for TPSNodeServiceRPCVerb_RequestOffset_Execute instance matches an existing lock token', [LockTokenName]), slmcError);
-        //Exit;
-        //end;
-
-        //CellProfile := TOffsetProfileCell.Create;
-        //CellProfile.Sequence : = trunc(Args.NEECoords[I].Z); // its only a integer anyway
-
-        //try
-
-        //// this is where we get the data
-        //DummyControlSet.Init(0, 0, 0, 0, 0, True);
-
-        //if Assigned(ClientGrid) then
-        //ServerResult := TSubGridRequestor.RequestSubGridInternal(Nil,
-        //PassFilter,
-        //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary,
-        //CellFilter,
-        //False,
-        //T2DBoundingIntegerExtent.Create(0, 0, 0, 0),
-        //SiteModel,
-        //CellAddress.X, CellAddress.Y,
-        //SiteModel.Grid.NumLevels,
-        //Args.LiftBuildSettings,
-        //LockToken,
-        //CellAddress.ProdDataRequested,
-        //CellAddress.SurveyedSurfaceDataRequested,
-        //ClientGrid,
-        //CellOverrideMask,
-        //DummyControlSet)
-        //else
-        //SIGLogMessage.PublishNoODS(Self, Format('TPSNodeServiceRPCVerb_RequestOffset_Execute: Failed to create a client subgrid of type %d', [RequestGridDataType]), slmcError);
-
-        //finally
-        //LockTokenManager.ReleaseToken(LockTokenName);
-        //end;
-
-        //if ServerResult = icsrrNoError then
-        //  begin
-
-        //ExtractRequiredValues(stationOffsetReportRequestArgument, subGrid);
-        //CellProfile.Elevation : = TICClientSubGridTreeLeaf_CellProfile(ClientGrid).Cells[SubGridX, SubGridY].Height;
-        //CellProfile.CMV : = TICClientSubGridTreeLeaf_CellProfile(ClientGrid).Cells[SubGridX, SubGridY].LastPassValidCCV;
-        //CellProfile.MDP : = TICClientSubGridTreeLeaf_CellProfile(ClientGrid).Cells[SubGridX, SubGridY].LastPassValidMDP;
-        //CellProfile.PassCount : = TICClientSubGridTreeLeaf_CellProfile(ClientGrid).Cells[SubGridX, SubGridY].PassCount;
-        //CellProfile.Temperature : = TICClientSubGridTreeLeaf_CellProfile(ClientGrid).Cells[SubGridX, SubGridY].LastPassValidTemperature;
-
-        //CellProfile.CutFill : = kICNullHeight;
-        //if Args.CutFillReport and(CellProfile.Elevation<> kICNullHeight)
-        //then
-        //  begin
-        //    HaveDesignElevationDataForThisSubgrid := Assigned(DesignSubgridExistanceMap) and
-        //    DesignSubgridExistanceMap.Cells[CellAddress.X SHR kSubGridIndexBitsPerLevel,
-        //      CellAddress.Y SHR kSubGridIndexBitsPerLevel];
-        //    if HaveDesignElevationDataForThisSubgrid then
-        //      with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
-        //        begin
-        //          DesignResult := RequestDesignElevationSpot(Construct_CalculateDesignElevationSpot_Args(SiteModel.ID,
-        //              Args.NEECoords[I].X,
-        //              Args.NEECoords[I].Y,
-        //              SiteModel.Grid.CellSize,
-        //              Args.DesignDescriptor),
-        //            DesignElevation);
-        //          if (DesignResult = dppiOK) and
-        //          DesignElevation.Success then
-        //          if DesignElevation.Height<> kICNullHeight then
-        //          CellProfile.CutFill : = CellProfile.Elevation - DesignElevation.Height;
-        //        end;
-        //  end;
-        //end;
-
-        //Packager.CellList.Add(CellProfile);
-        //end;
+        Log.LogError($"Failed to locate site model {requestArgument.ProjectID}");
+        return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.NoSuchDataModel};
       }
-      return new StationOffsetReportRequestResponse { ResultStatus = RequestErrorStatus.Unknown };
+
+      ISubGridTreeBitMask existenceMap = siteModel.ExistenceMap;
+      if (existenceMap == null)
+      {
+        Log.LogError($"Failed to locate production data existence map from site model {requestArgument.ProjectID}");
+        return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
+      }
+
+      var utilities = DIContext.Obtain<IRequestorUtilities>();
+      var requestors = utilities.ConstructRequestors(siteModel,
+        utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, true, GridDataType.HeightAndTime),
+        AreaControlSet.CreateAreaControlSet(), existenceMap);
+
+      // Obtain the primary partition map to allow this request to determine the elements it needs to process
+      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+      SubGridTreeBitmapSubGridBits cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+      foreach (var point in requestArgument.Points)
+      {
+        // Determine the on-the-ground cell 
+        siteModel.Grid.CalculateIndexOfCellContainingPosition(point.Easting, point.Northing, out uint OTGCellX, out uint OTGCellY);
+
+        var thisSubGridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+
+        if (!primaryPartitionMap[thisSubGridOrigin.ToSpatialPartitionDescriptor()])
+          continue;
+
+        // Reach into the sub-grid request layer and retrieve an appropriate sub-grid
+        cellOverrideMask.Clear();
+        cellOverrideMask.SetBit(OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
+        requestors[0].CellOverrideMask = cellOverrideMask;
+
+        // using the cell address get the index of cell in clientGrid
+        ClientCellProfileLeafSubgrid clientGrid = new ClientCellProfileLeafSubgrid();
+        ServerRequestResult request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true, clientGrid);
+        if (request != ServerRequestResult.NoError)
+        {
+          Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {result}");
+          continue;
+        }
+
+        var hydratedPoint = ExtractRequiredValues(requestArgument, point, clientGrid, OTGCellX, OTGCellY);
+        result.StationOffsetRows.Add(hydratedPoint);
+      }
+
+      result.ResultStatus = RequestErrorStatus.OK;
+      return result;
     }
 
 
-    //    //private List<StationOffsetReportDataRow> ExtractRequiredValues(StationOffsetReportRequestArgument stationOffsetReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
-    //    //{
-    //    //  var result = new List<StationOffsetReportDataRow>();
-    //    //  IClientHeightLeafSubGrid designHeights = null;
+    private StationOffsetRow ExtractRequiredValues(StationOffsetReportRequestArgument_ClusterCompute requestArgument,
+      StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, uint OTGCellX, uint OTGCellY)
+    {
+      clientGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
+      ClientCellProfileLeafSubgridRecord cell = clientGrid.Cells[OTGCellX, OTGCellY];
 
-    //    //  if (_stationOffsetReportRequestArgument.ReferenceDesignUID != Guid.Empty)
-    //    //  {
-    //    //    IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_stationOffsetReportRequestArgument.ProjectID).Designs.Locate(_stationOffsetReportRequestArgument.ReferenceDesignUID);
-    //    //    if (cutFillDesign == null)
-    //    //    {
-    //    //      throw new ArgumentException($"Design {_stationOffsetReportRequestArgument.ReferenceDesignUID} not a recognised design in project {_stationOffsetReportRequestArgument.ProjectID}");
-    //    //    }
+      var result = new StationOffsetRow(point.Station, point.Offset, cell.CellYOffset + subgridWorldOriginY, cell.CellXOffset + subgridWorldOriginX);
+      IClientHeightLeafSubGrid designHeights = null;
 
-    //    //    cutFillDesign.GetDesignHeights(_stationOffsetReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
-    //    //      subGrid.CellSize, out designHeights, out var errorCode);
+      if (requestArgument.ReferenceDesignUID != Guid.Empty)
+      {
+        IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID).Designs.Locate(requestArgument.ReferenceDesignUID);
+        if (cutFillDesign == null)
+        {
+          throw new ArgumentException($"Design {requestArgument.ReferenceDesignUID} not a recognized design in project {requestArgument.ProjectID}");
+        }
 
-    //    //    if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
-    //    //    {
-    //    //      string errorMessage;
-    //    //      if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-    //    //      {
-    //    //        errorMessage = "StationOffset Report. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.";
-    //    //        Log.LogInformation(errorMessage);
-    //    //      }
-    //    //      else
-    //    //      {
-    //    //        errorMessage = $"StationOffset Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.";
-    //    //        Log.LogWarning(errorMessage);
-    //    //      }
-    //    //    }
-    //    //  }
+        cutFillDesign.GetDesignHeights(requestArgument.ProjectID, clientGrid.OriginAsCellAddress(),
+          clientGrid.CellSize, out designHeights, out var errorCode);
 
-    //    //  subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
-    //    //  SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-    //    //  {
-    //    //    var cell = subGrid.Cells[x, y];
+        if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
+        {
+          string errorMessage;
+          if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+          {
+            errorMessage = "StationOffset Report. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.";
+            Log.LogInformation(errorMessage);
+          }
+          else
+          {
+            errorMessage = $"StationOffset Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.";
+            Log.LogWarning(errorMessage);
+          }
+        }
+      }
 
-    //    //    if (cell.PassCount == 0) // Nothing for us to do, as cell is not in our areaControlSet...
-    //    //      return;
+      if (cell.PassCount == 0) // Nothing for us to do, as cell is not in our areaControlSet...
+        return result;
 
-    //    //    // todoJeannie
-    //    //    //result.Add(new StationOffsetReportDataRow
-    //    //    //{
-    //    //    //  Easting = cell.CellXOffset + subgridWorldOriginX,
-    //    //    //  Northing = cell.CellYOffset + subgridWorldOriginY,
-    //    //    //  Elevation = stationOffsetReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
-    //    //    //  CutFill = (stationOffsetReportRequestArgument.ReportCutFill && (designHeights != null) &&
-    //    //    //             designHeights.Cells[x, y] != Consts.NullHeight)
-    //    //    //    ? cell.Height - designHeights.Cells[x, y]
-    //    //    //    : Consts.NullHeight,
+      result.Elevation = requestArgument.ReportElevation ? cell.Height : Consts.NullHeight;
+      result.CutFill = (requestArgument.ReportCutFill && (designHeights != null) &&
+                        designHeights.Cells[OTGCellX, OTGCellY] != Consts.NullHeight)
+        ? cell.Height - designHeights.Cells[OTGCellX, OTGCellY]
+        : Consts.NullHeight;
 
-    //    //    //  // CCV is equiv to CMV in this instance
-    //    //    //  Cmv = (short) (stationOffsetReportRequestArgument.ReportCmv ? cell.LastPassValidCCV : CellPassConsts.NullCCV),
-    //    //    //  Mdp = (short) (stationOffsetReportRequestArgument.ReportMdp ? cell.LastPassValidMDP : CellPassConsts.NullMDP),
-    //    //    //  PassCount = (short) (stationOffsetReportRequestArgument.ReportPassCount ? cell.PassCount : CellPassConsts.NullPassCountValue),
-    //    //    //  Temperature = (short) (stationOffsetReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : CellPassConsts.NullMaterialTemperatureValue)
-    //    //    //});
-    //    //  });
+      // CCV is equiv to CMV in this instance
+      result.Cmv = (short) (requestArgument.ReportCmv ? cell.LastPassValidCCV : CellPassConsts.NullCCV);
+      result.Mdp = (short) (requestArgument.ReportMdp ? cell.LastPassValidMDP : CellPassConsts.NullMDP);
+      result.PassCount = (short) (requestArgument.ReportPassCount ? cell.PassCount : CellPassConsts.NullPassCountValue);
+      result.Temperature = (short) (requestArgument.ReportTemperature ? cell.LastPassValidTemperature : CellPassConsts.NullMaterialTemperatureValue);
 
-    //    //  return result;
-    //    //}
-    //  }
-    //}
-
-
+      return result;
+    }
   }
 }

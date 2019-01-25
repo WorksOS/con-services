@@ -8,17 +8,17 @@ namespace VSS.TRex.Common.Types
   /// </summary>
   public class StationOffsetPoint : IEquatable<StationOffsetPoint>
   {
-    private double Station { get; set; }
+    public double Station { get; set; }
 
-    private double Offset { get; set; }
+    public double Offset { get; set; }
 
     /// <summary>
     /// Offsets left and right (or on) the center line in the AlignmentUid design
     /// </summary>
     /// 
-    private double Northing { get; set; }
+    public double Northing { get; set; }
 
-    private double Easting { get; set; }
+    public double Easting { get; set; }
 
     public StationOffsetPoint()
     {

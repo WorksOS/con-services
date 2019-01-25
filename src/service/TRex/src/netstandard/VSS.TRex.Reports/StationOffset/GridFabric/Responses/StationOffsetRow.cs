@@ -1,44 +1,54 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
-  // todoJeannie move GriddedReportDataRow to a common path?
   public class StationOffsetRow : GriddedReportDataRow, IEquatable<StationOffsetRow>
   {
-    private double Offset { get; set; }
+    public double Station { get; set; }
 
-    // station is obsolete (as its in derived class StationOffsetReportDataRow),
-    //   however it's required for reading in raptor-common 3dp code
-    private double Station { get; set; } 
+    public double Offset { get; set; }
 
     public StationOffsetRow()
     {
     }
 
     public StationOffsetRow
-    (double offset, double station, double northing, double easting, double elevation,
+    (double station, double offset, double northing, double easting, double elevation,
       double cutFill, short cmv, short mdp, short passCount, short temperature)
     {
-      Offset = offset;
+      SetValues(station, offset, northing, easting, elevation, cutFill, cmv, mdp, passCount, temperature);
+    }
+
+    public StationOffsetRow(double station, double offset,double northing, double easting)
+    {
+      SetValues(station, offset, northing, easting, Consts.NullHeight, Consts.NullHeight, CellPassConsts.NullCCV, CellPassConsts.NullMDP, (short) CellPassConsts.NullPassCountValue, (short) CellPassConsts.NullMaterialTemperatureValue);
+    }
+
+    public void SetValues(double station, double offset, double northing, double easting, double elevation,
+      double cutFill, short cmv, short mdp, short passCount, short temperature)
+    {
       Station = station;
+      Offset = offset;
       base.SetValues(northing, easting, elevation, cutFill, cmv, mdp, passCount, temperature);
     }
 
     public new void Write(BinaryWriter writer)
     {
       base.Write(writer);
-      writer.Write(Offset);
       writer.Write(Station);
+      writer.Write(Offset);
     }
 
     public new void Read(BinaryReader reader)
     {
       base.Read(reader);
-      Offset = reader.ReadDouble();
       Station = reader.ReadDouble();
+      Offset = reader.ReadDouble();
     }
 
     /// <summary>
@@ -48,8 +58,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public new void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
-      writer.WriteDouble(Offset);
       writer.WriteDouble(Station);
+      writer.WriteDouble(Offset);
     }
 
     /// <summary>
@@ -59,15 +69,17 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public new void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
-      Offset = reader.ReadDouble();
       Station = reader.ReadDouble();
+      Offset = reader.ReadDouble();
     }
 
     public bool Equals(StationOffsetRow other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return Offset.Equals(other.Offset);
+      return base.Equals(other) &&
+          Station.Equals(other.Station) &&
+          Offset.Equals(other.Offset);
     }
 
     public override bool Equals(object obj)
@@ -83,8 +95,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       unchecked
       {
         int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ Offset.GetHashCode();
         hashCode = (hashCode * 397) ^ Station.GetHashCode();
+        hashCode = (hashCode * 397) ^ Offset.GetHashCode();
         return hashCode;
       }
     }

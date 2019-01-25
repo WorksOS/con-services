@@ -7,9 +7,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class StationOffsetReportDataRows : List<StationOffsetReportDataRow>, IEquatable<StationOffsetReportDataRows>
+  public class StationOffsetReportDataRows_ApplicationService : List<StationOffsetReportDataRow_ApplicationService>, IEquatable<StationOffsetReportDataRows_ApplicationService>
   {
-    public StationOffsetReportDataRows()
+    public StationOffsetReportDataRows_ApplicationService()
     {
     }
 
@@ -25,13 +25,13 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     {
       for (int i = 0; i < numberOfRows; i++)
       {
-        var grdr = new StationOffsetReportDataRow();
-        grdr.Read(reader);
-        Add(grdr);
+        var temp = new StationOffsetReportDataRow_ApplicationService();
+        temp.Read(reader);
+        Add(temp);
       }
     }
 
-    public bool Equals(StationOffsetReportDataRows other)
+    public bool Equals(StationOffsetReportDataRows_ApplicationService other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -50,7 +50,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportDataRows) obj);
+      return Equals((StationOffsetReportDataRows_ApplicationService) obj);
     }
 
     public override int GetHashCode()

@@ -6,10 +6,10 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class StationOffsetReportData : IEquatable<StationOffsetReportData>
+  public class StationOffsetReportData_ApplicationService : IEquatable<StationOffsetReportData_ApplicationService>
   {
     public int NumberOfRows { get; set; }
-    public StationOffsetReportDataRows Rows { get; set; }
+    public StationOffsetReportDataRows_ApplicationService Rows { get; set; }
     public bool ElevationReport { get; set; }
     public bool CutFillReport { get; set; }
     public bool CmvReport { get; set; }
@@ -18,14 +18,14 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public bool TemperatureReport { get; set; }
 
 
-    public StationOffsetReportData()
+    public StationOffsetReportData_ApplicationService()
     {
       Clear();
     }
 
     public void Clear()
     {
-      Rows = new StationOffsetReportDataRows();
+      Rows = new StationOffsetReportDataRows_ApplicationService();
       NumberOfRows = Rows.Count;
       ElevationReport = false;
       CutFillReport = false;
@@ -60,7 +60,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       TemperatureReport = reader.ReadBoolean();
     }
 
-    public bool Equals(StationOffsetReportData other)
+    public bool Equals(StationOffsetReportData_ApplicationService other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -79,7 +79,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportData)obj);
+      return Equals((StationOffsetReportData_ApplicationService)obj);
     }
 
     public override int GetHashCode()

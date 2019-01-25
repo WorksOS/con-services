@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -17,7 +18,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
   ///     along the station at requested intervals and offsets
   ///     from the alignment design
   /// </summary>
-  public class ComputeStationOffsetReportExecutor_ApplicationService
+  public class ComputeStationOffsetReportExecutor_ApplicationService : SubGridsPipelinedResponseBase
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeStationOffsetReportExecutor_ApplicationService>();
 
@@ -27,7 +28,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     /// <summary>
     /// Executes the profiler
     /// </summary>
-    public StationOffsetReportRequestResponse Execute(StationOffsetReportRequestArgument_ApplicationService arg)
+    public StationOffsetReportRequestResponse_ApplicationService Execute(StationOffsetReportRequestArgument_ApplicationService arg)
     {
       Log.LogInformation($"Start {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}");
 
@@ -38,7 +39,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           // Prepare the filters for use in stationOffset operations. Failure to prepare any filter results in this request terminating
           if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
           {
-            return new StationOffsetReportRequestResponse { ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
+            return new StationOffsetReportRequestResponse_ApplicationService { ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }
         }
 
@@ -59,18 +60,17 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         };
 
         var alignmentDesign = DIContext.Obtain<IAlignmentManager>().List(argClusterCompute.ProjectID).Locate(arg.AlignmentDesignUid);
-
-        // todoJeannie should sitemodel extents and filters factor into point list,
-        //     or are they only factored in during clusterCompute
         argClusterCompute.Points = alignmentDesign.GetOffsetPointsInNEE(arg.CrossSectionInterval, arg.StartStation, arg.EndStation, arg.Offsets);
-        Log.LogInformation($"{nameof(StationOffsetReportRequestResponse)}: pointCount: {argClusterCompute.Points.Count}");
+        Log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}");
         // todoJeannie what if zero points?
 
         var request = new StationOffsetReportRequest_ClusterCompute();
-        StationOffsetReportRequestResponse stationOffsetReportRequestResponse = request.Execute(argClusterCompute);
+        var clusterComputeResponse = request.Execute(argClusterCompute);
         
         // Return the core package to the caller
-        return stationOffsetReportRequestResponse;
+        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService();
+        applicationResponse.LoadStationOffsets(clusterComputeResponse.StationOffsetRows);
+        return applicationResponse;
       }
       finally
       {

@@ -12,12 +12,12 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
   /// The StationOffset compute function responsible for coordinating sub grids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
-  public class StationOffsetReportRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ApplicationService, StationOffsetReportRequestResponse>
+  public class StationOffsetReportRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ApplicationService, StationOffsetReportRequestResponse_ApplicationService>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
 
-    public StationOffsetReportRequestResponse Invoke(StationOffsetReportRequestArgument_ApplicationService arg)
+    public StationOffsetReportRequestResponse_ApplicationService Invoke(StationOffsetReportRequestArgument_ApplicationService arg)
     {
       Log.LogInformation($"Start {nameof(StationOffsetReportRequestComputeFunc_ApplicationService)}");
 
