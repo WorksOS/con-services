@@ -6,7 +6,7 @@ namespace VSS.DataOcean.Client
   public class DataOceanFileUtil
   {
     public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
-    public const string DXF_FILE_EXTENSION = ".DXF";
+    public const string DXF_FILE_EXTENSION = ".dxf";
 
     public string FileName { get; private set; }
     public string FilePath { get; private set; }
@@ -20,7 +20,7 @@ namespace VSS.DataOcean.Client
       FileName = fileName;
       FilePath = path;
       FullFileName = $"{path}{Path.DirectorySeparatorChar}{fileName}";
-      if (Path.GetExtension(fileName).ToUpper() != DXF_FILE_EXTENSION)
+      if (Path.GetExtension(fileName).ToLower() != DXF_FILE_EXTENSION)
       {
         throw new ArgumentException($"Only DXF files are supported. {fileName} is not a DXF file.");
       }
