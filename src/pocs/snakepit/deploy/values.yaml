@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 environment: dev
 
-rootDomain: k8s.vspengg.com
+rootDomain: eks.vspengg.com
 
 replicaCount: 1
 
@@ -28,4 +28,4 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: 3600
     nginx.ingress.kubernetes.io/proxy-send-timeout: 3600
     nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
-    external-dns.alpha.kubernetes.io/target: endpoints.k8s.vspengg.com
+    external-dns.alpha.kubernetes.io/target: endpoints.eks.vspengg.com
