@@ -55,7 +55,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool HasElevationRangeFilter { get; }
     void SetHasElevationRangeFilter(bool state);
 
-    bool HasPassTypeFilter { get; set; }
+    bool HasPassTypeFilter { get; }
     void SetHasPassTypeFilter(bool state);
 
     bool HasCompactionMachinesOnlyFilter { get; }
@@ -66,6 +66,7 @@ namespace VSS.TRex.Filters.Interfaces
 
     bool HasPassCountRangeFilter { get; }
     void SetHasPassCountRangeFilter(bool state);
+
 
     bool FilterTemperatureByLastPass { get; set; }
 

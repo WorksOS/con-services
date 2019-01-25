@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true after adding time filter");
 
             filter.ClearFilter();
-            filter.HasPositioningTechFilter = true;
+            filter.SetHasPositioningTechFilter(true);
 
             Assert.True(filter.AnyFilterSelections, "AnyFilterSelections not true");
             Assert.True(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
@@ -103,7 +103,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_CompactionMachines()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("CompactionMachinesOnly", x => { x.HasCompactionMachinesOnlyFilter = true; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("CompactionMachinesOnly", x => { x.SetHasCompactionMachinesOnlyFilter(true); });
         }
 
         [Fact()]
@@ -118,7 +118,7 @@ namespace VSS.TRex.Tests.Filters
             Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationRange_Design",
                 x =>
                 {
-                    x.HasElevationRangeFilter = true;
+                    x.SetHasElevationRangeFilter(true);
                     x.ElevationRangeDesignUID = Guid.Empty;
                     x.ElevationRangeOffset = 10;
                     x.ElevationRangeThickness = 1;
@@ -127,7 +127,7 @@ namespace VSS.TRex.Tests.Filters
             Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationRange_Level",
                 x =>
                 {
-                    x.HasElevationRangeFilter = true;
+                    x.SetHasElevationRangeFilter(true); 
                     x.ElevationRangeLevel = 100;
                     x.ElevationRangeOffset = 10;
                     x.ElevationRangeThickness = 1;
@@ -155,13 +155,13 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_GPSTolerance()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("GPSTolerance", x => { x.HasGPSToleranceFilter = true; x.GPSTolerance = 1000; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("GPSTolerance", x => { x.SetHasGPSToleranceFilter(true); x.GPSTolerance = 1000; });
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_LayerID()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("LayerID", x => { x.HasLayerIDFilter = true; x.LayerID = 10; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("LayerID", x => { x.SetHasLayerIDFilter(true); x.LayerID = 10; });
         }
 
         [Fact()]
@@ -196,18 +196,18 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_PassType()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Front; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Rear; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Track; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Wheel; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Front | PassTypeSet.Rear | PassTypeSet.Wheel | PassTypeSet.Track; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.SetHasPassTypeFilter(true); x.PassTypeSet = PassTypeSet.Front; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.SetHasPassTypeFilter(true); x.PassTypeSet = PassTypeSet.Rear; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.SetHasPassTypeFilter(true); x.PassTypeSet = PassTypeSet.Track; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.SetHasPassTypeFilter(true); x.PassTypeSet = PassTypeSet.Wheel; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.SetHasPassTypeFilter(true); x.PassTypeSet = PassTypeSet.Front | PassTypeSet.Rear | PassTypeSet.Wheel | PassTypeSet.Track; });
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_PositioningTech()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech GPS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = PositioningTech.GPS; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech UTS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = PositioningTech.UTS; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech GPS", x => { x.SetHasPositioningTechFilter(true); x.PositioningTech = PositioningTech.GPS; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech UTS", x => { x.SetHasPositioningTechFilter(true); x.PositioningTech = PositioningTech.UTS; });
         }
 
         [Fact()]
@@ -221,7 +221,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_Temperature()
         {
-          Test_CellPassAttributeFilter_CompareTo_Aspect("Temperature", x => { x.HasTemperatureRangeFilter = true; x.MaterialTemperatureMin = 10;
+          Test_CellPassAttributeFilter_CompareTo_Aspect("Temperature", x => { x.SetHasTemperatureRangeFilter(true); x.MaterialTemperatureMin = 10;
                                                                          x.MaterialTemperatureMax = 40;
                                                                        });
         }
@@ -231,7 +231,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_CompareTo_PassCountRange()
         {
           Test_CellPassAttributeFilter_CompareTo_Aspect("PassCountRange", x => {
-                                                                         x.HasPassCountRangeFilter = true; x.PasscountRangeMin = 1;
+                                                                         x.SetHasPassCountRangeFilter(true); x.PasscountRangeMin = 1;
                                                                          x.PasscountRangeMax = 4;
                                                                        });
         }
@@ -251,7 +251,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearElevationRange()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Design",
-                                                            x => { x.HasElevationRangeFilter = true;
+                                                            x => { x.SetHasElevationRangeFilter(true);
                                                                    x.ElevationRangeDesignUID = Guid.NewGuid();
                                                                    x.ElevationRangeOffset = 10;
                                                                    x.ElevationRangeThickness = 1;
@@ -262,7 +262,7 @@ namespace VSS.TRex.Tests.Filters
 
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Level",
                                                             x => {
-                                                                x.HasElevationRangeFilter = true;
+                                                                x.SetHasElevationRangeFilter(true);
                                                                 x.ElevationRangeLevel = 100;
                                                                 x.ElevationRangeOffset = 10;
                                                                 x.ElevationRangeThickness = 1;
@@ -317,7 +317,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearLayerID()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("LayerID",
-                                                            x => { x.HasLayerIDFilter = true; x.LayerID = 42; },
+                                                            x => { x.SetHasLayerIDFilter(true); x.LayerID = 42; },
                                                             x => x.HasLayerIDFilter && x.LayerID == 42,
                                                             x => { x.ClearLayerID(); },
                                                             x => !x.HasLayerIDFilter && x.LayerID == CellEvents.NullLayerID);
@@ -342,7 +342,7 @@ namespace VSS.TRex.Tests.Filters
           filter2.ClearFilter();
           filter1.MaterialTemperatureMin = 10;
           filter1.MaterialTemperatureMax = 30;
-          filter1.HasTemperatureRangeFilter = true;
+          filter1.SetHasTemperatureRangeFilter(true);
           filter1.FilterTemperatureByLastPass = true;
           Assert.Equal(-1, filter1.CompareTo(filter2));
           filter2.Assign(filter1);
@@ -353,7 +353,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearCompactionMachineOnlyRestriction()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Compaction only",
-                                                            x => { x.HasCompactionMachinesOnlyFilter = true; },
+                                                            x => { x.SetHasCompactionMachinesOnlyFilter(true); },
                                                             x => x.HasCompactionMachinesOnlyFilter,
                                                             x => { x.ClearCompactionMachineOnlyRestriction(); },
                                                             x => !x.HasCompactionMachinesOnlyFilter);
@@ -393,7 +393,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearPassType()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("PassType",
-                                                            x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Front | PassTypeSet.Rear; },
+                                                            x => { x.SetHasPassTypeFilter(true); x.PassTypeSet = PassTypeSet.Front | PassTypeSet.Rear; },
                                                             x => x.HasPassTypeFilter,
                                                             x => { x.ClearPassType(); },
                                                             x => !x.HasPassTypeFilter && x.PassTypeSet == PassTypeSet.None);
@@ -403,7 +403,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearPositioningTech()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("PositioningTech",
-                                                            x => { x.HasPositioningTechFilter = true; x.PositioningTech = PositioningTech.GPS; },
+                                                            x => { x.SetHasPositioningTechFilter(true); x.PositioningTech = PositioningTech.GPS; },
                                                             x => x.HasPositioningTechFilter,
                                                             x => { x.ClearPositioningTech(); },
                                                             x => !x.HasPositioningTechFilter);

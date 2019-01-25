@@ -96,56 +96,56 @@ namespace VSS.TRex.Filters
       _prepared = false;
     }
 
-    public bool HasGPSToleranceFilter { get; set; }
+    public bool HasGPSToleranceFilter { get; protected set; }
     public void SetHasGPSToleranceFilter(bool state)
     {
       HasGPSToleranceFilter = state;
       _prepared = false;
     }
 
-    public bool HasPositioningTechFilter { get; set; }
+    public bool HasPositioningTechFilter { get; protected set; }
     public void SetHasPositioningTechFilter(bool state)
     {
       HasPositioningTechFilter = state;
       _prepared = false;
     }
 
-    public bool HasLayerIDFilter { get; set; }
+    public bool HasLayerIDFilter { get; protected set; }
     public void SetHasLayerIDFilter(bool state)
     {
       HasLayerIDFilter = state;
       _prepared = false;
     }
 
-    public bool HasElevationRangeFilter { get; set; }
+    public bool HasElevationRangeFilter { get; protected set; }
     public void SetHasElevationRangeFilter(bool state)
     {
       HasElevationRangeFilter = state;
       _prepared = false;
     }
 
-    public bool HasPassTypeFilter { get; set; }
+    public bool HasPassTypeFilter { get; protected set; }
     public void SetHasPassTypeFilter(bool state)
     {
       HasPassTypeFilter = state;
       _prepared = false;
     }
 
-    public bool HasCompactionMachinesOnlyFilter { get; set; }
+    public bool HasCompactionMachinesOnlyFilter { get; protected set; }
     public void SetHasCompactionMachinesOnlyFilter(bool state)
     {
       HasCompactionMachinesOnlyFilter = state;
       _prepared = false;
     }
 
-    public bool HasTemperatureRangeFilter { get; set; }
+    public bool HasTemperatureRangeFilter { get; protected set; }
     public void SetHasTemperatureRangeFilter(bool state)
     {
       HasTemperatureRangeFilter = state;
       _prepared = false;
     }
 
-    public bool HasPassCountRangeFilter { get; set; }
+    public bool HasPassCountRangeFilter { get; protected set; }
     public void SetHasPassCountRangeFilter(bool state)
     {
       HasPassCountRangeFilter = state;

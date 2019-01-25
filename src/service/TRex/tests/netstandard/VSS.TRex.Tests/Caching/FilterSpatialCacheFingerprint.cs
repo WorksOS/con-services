@@ -118,7 +118,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasPassTypeFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasPassTypeFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasPassTypeFilter(true));
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
