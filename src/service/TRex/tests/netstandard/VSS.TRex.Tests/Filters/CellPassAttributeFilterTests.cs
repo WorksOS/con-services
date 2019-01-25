@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Filters
 
             Assert.True(filter.AnyFilterSelections, "AnyFilterSelections not true");
             Assert.True(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
-            Assert.True(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true");
+            Assert.False(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections true");
         }
       
         [Fact(Skip = "Not Implemented")]
