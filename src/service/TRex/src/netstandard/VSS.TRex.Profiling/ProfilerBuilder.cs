@@ -17,7 +17,7 @@ namespace VSS.TRex.Profiling
   /// </summary>
   public class ProfilerBuilder<T> : IProfilerBuilder<T> where T: class, IProfileCellBase, new()
   {
-    private static readonly IProfilerBuilderFactory<T> factory = DI.DIContext.Obtain<IProfilerBuilderFactory<T>>();
+    private readonly IProfilerBuilderFactory<T> factory = DI.DIContext.Obtain<IProfilerBuilderFactory<T>>();
 
     /// <summary>
     /// Builder responsible for constructing cell vector from profile line

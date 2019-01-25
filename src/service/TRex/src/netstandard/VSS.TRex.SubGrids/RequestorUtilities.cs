@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// The DI injected factory to created requests for surveyed surface information
     /// </summary>
-    private static Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
+    private Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 
     /// <summary>

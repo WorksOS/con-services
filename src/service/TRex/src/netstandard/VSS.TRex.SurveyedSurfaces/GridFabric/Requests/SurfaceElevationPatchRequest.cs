@@ -6,7 +6,6 @@ using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
