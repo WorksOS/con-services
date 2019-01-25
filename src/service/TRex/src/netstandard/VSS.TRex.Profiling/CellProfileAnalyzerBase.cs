@@ -25,18 +25,16 @@ namespace VSS.TRex.Profiling
   /// </summary>
   public abstract class CellProfileAnalyzerBase<T> : ICellProfileAnalyzer<T> where T : class, IProfileCellBase
   {
-    //private static ILogger Log = Logging.Logger.CreateLogger<CellProfileAnalyzerBase<T>>();
-
     /// <summary>
-    /// Local reference to the client subgrid factory
+    /// Local reference to the client sub grid factory
     /// </summary>
     // ReSharper disable once StaticMemberInGenericType
-    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
+    private IClientLeafSubGridFactory clientLeafSubGridFactory;
 
     protected IClientLeafSubGridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
-    protected static Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory =
+    protected Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory =
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 
     /// <summary>
