@@ -278,10 +278,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// Epochs with larger intervals are not processed.
         /// </summary>
         /// <returns></returns>
-        protected virtual double MaxEpochInterval()
-        {
-            return kMaxEpochInterval;
-        }
+        protected virtual double MaxEpochInterval() => kMaxEpochInterval;
 
         /// <summary>
         /// Ignore invalid positions encountered in the TAG value data.
@@ -357,11 +354,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public virtual bool ProcessFile(string filename)
-        {
-            return false; // Not implemented
-        }
-
+        public virtual bool ProcessFile(string filename) => false; // Not implemented
+        
         /// <summary>
         /// Performs any required processing of the state acquired for the current time epoch in teh TAG values
         /// </summary>
@@ -413,16 +407,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             try
             {
-                if (!base.ProcessEpochContext())
-                {
-                    return false;
-                }
-
-                if (!DoEpochPreProcessAction())
-                {
-                    return false;
-
-                }
+                if (!base.ProcessEpochContext()) return false;
+                if (!DoEpochPreProcessAction()) return false;
 
                 // Check to see if we have a position that is of good enough quality to use.
                 if (ValidPosition == 0)
@@ -439,10 +425,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     // then we continue and process the epoch as if the position information
                     // within it is 'valid'.
 
-                    if (IgnoreInvalidPositions())  // Don't process this interval...
-                    {
-                        return false;
-                    }
+                  if (IgnoreInvalidPositions()) return false; // // Don't process this interval...
                 }
 
                 if (!HaveFirstEpoch)
@@ -580,9 +563,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     {
                       // Process the quadrilateral formed by the two epochs
                       if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
-                      {
                         return false;
-                      }
                     }
                   }
                 }

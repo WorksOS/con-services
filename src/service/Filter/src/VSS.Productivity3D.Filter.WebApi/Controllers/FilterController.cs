@@ -140,10 +140,12 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7, "Missing filters");
       }
 
-      var project = await GetProjectForUser(User, projectUid);
+      var projectTask = GetProjectForUser(User, projectUid);
       var newFilters = new List<FilterDescriptor>();
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var username = (User.Identity as GenericIdentity)?.Name;
+
+      var project = await projectTask;
 
       foreach (var filterRequest in request.FilterRequests)
       {

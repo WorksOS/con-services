@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.Time
+namespace VSS.TRex.Common.Time
 {
     /// <summary>
     /// Utility functions related to GPS time
@@ -36,7 +36,7 @@ namespace VSS.TRex.Time
 
         /// <summary>
         /// Takes a time defined as a GPS week number and a count of elapsed milliseconds within that week
-        /// and convertes it to a DateTime with respect to the .Net time origin
+        /// and converts it to a DateTime with respect to the .Net time origin
         /// </summary>
         /// <param name="weekNumber"></param>
         /// <param name="milliSecondsInWeek"></param>
@@ -56,7 +56,7 @@ namespace VSS.TRex.Time
         }
 
         /// <summary>
-        /// Converts a DateTime into the GPS Week and milli-seconds in week relative to the GPS time origin
+        /// Converts a DateTime into the GPS Week and milliseconds in week relative to the GPS time origin
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="weekNumber"></param>
