@@ -34,22 +34,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
-
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET"), out var useTrexGateway);
-
-        MemoryStream responseData;
-        var success = 1;
 
         if (useTrexGateway)
         {
-          responseData =
-            (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
+#endif
+          var responseData = (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
+
           return responseData.Length > 0
             ? ConvertStationOffsetResult(request, responseData)
             : CreateNullStationOffsetReturnedResult();
+#if RAPTOR
         }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "Null stationOffset stream returned");
     }
-
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(CompactionReportStationOffsetRequest request)
     {
       var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       throw CreateServiceException<CompactionReportStationOffsetExecutor>();
     }
-
+#endif
 
     private CompactionReportResult ConvertStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
     {
@@ -151,7 +151,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+#if RAPTOR
 using ASNodeDecls;
 using ASNodeRaptorReports;
+#endif
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -33,20 +35,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportGridRequest>();
-
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_GRIDREPORT"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
           // change CompactionReportGridRequest when DesignDescription DataOcean requirements are known.
           //   also projectid and filterId not required by TRex
           var responseData = trexCompactionDataProxy.SendGridReportRequest(request, customHeaders).Result;
           return responseData.Length > 0
             ? ConvertGridResult(request, responseData)
             : CreateNullGridReturnedResult();
+#if RAPTOR
         }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
@@ -58,7 +63,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null grid stream returned");
     }
-
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(CompactionReportGridRequest request)
     {
       var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
@@ -103,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       throw CreateServiceException<CompactionReportGridExecutor>();
     }
-
+#endif
     private CompactionReportResult ConvertGridResult(CompactionReportGridRequest request, Stream stream)
     {
       log.LogDebug($"{nameof(ConvertGridResult)}");
@@ -147,7 +152,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

@@ -4,8 +4,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+#if RAPTOR
 using TAGProcServiceDecls;
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -34,7 +36,9 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
+#endif
     }
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
@@ -85,8 +89,9 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Failed to process tagfile with error: Automatic tag file submissions cannot include boundary fence."));
         }
-
+#if RAPTOR
         return CallRaptorEndpoint(tagFileRequest);
+#endif
       }
 
       return result;
@@ -105,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       //     else exception
       return returnResult;
     }
-
+#if RAPTOR
     private ContractExecutionResult CallRaptorEndpoint(TagFileRequestLegacy tfRequest)
     {
       try
@@ -161,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         ContractExecutionStates.ClearDynamic();
       }
     }
-    
+#endif    
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");

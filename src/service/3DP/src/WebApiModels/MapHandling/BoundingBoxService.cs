@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+#if RAPTOR
 using DesignProfilerDecls;
+using VLPDDecls;
+#endif
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -30,13 +32,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
+#if RAPTOR
     private readonly IASNodeClient raptorClient;
+#endif
 
-    public BoundingBoxService(ILoggerFactory logger, IASNodeClient raptor)
+    public BoundingBoxService(ILoggerFactory logger
+#if RAPTOR
+      , IASNodeClient raptor
+#endif
+      )
     {
       log = logger.CreateLogger<BoundingBoxService>();
       this.logger = logger;
+#if RAPTOR
       raptorClient = raptor;
+#endif
     }
 
     /// <summary>
@@ -207,7 +217,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           //Also use project boundary extents if fail to get production data extents or not doing production data tiles
           //e.g. project thumbnails or user has requested project boundary overlay
-          var projectPoints = RaptorConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
+          var projectPoints = CommonConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
           var projectMinLat = projectPoints.Min(p => p.Lat);
           var projectMinLng = projectPoints.Min(p => p.Lon);
           var projectMaxLat = projectPoints.Max(p => p.Lat);
@@ -257,11 +267,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns></returns>
     public CoordinateConversionResult GetProductionDataExtents(long projectId, List<long> excludedIds)
     {
+#if RAPTOR
       ProjectStatisticsResult statsResult = null;
       try
       {
         ProjectStatisticsRequest statsRequest =
           ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+
         statsResult =
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(statsRequest) as ProjectStatisticsResult;
@@ -286,9 +298,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient)
         .Process(coordRequest) as CoordinateConversionResult;
       return coordResult;   
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
- 
+
     /// <summary>
     /// Gets a list of polygons representing the design surface boundary. 
     /// The boundary may consist of a number of polygons.
@@ -330,6 +346,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A GeoJSON representation of the design boundary</returns>
     private string GetDesignBoundary(long projectId, DesignDescriptor designDescriptor)
     {
+#if RAPTOR
       MemoryStream memoryStream = null;
       try
       {
@@ -370,6 +387,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       {
         memoryStream?.Close();
       }
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>

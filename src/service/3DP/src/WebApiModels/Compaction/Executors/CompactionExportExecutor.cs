@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+#if RAPTOR
 using ASNodeDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -35,22 +37,38 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<ExportReport>(item);
-        
-        if (UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") && request?.ExportType == ExportTypes.SurfaceExport)
+
+        if (
+#if RAPTOR
+          UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") && 
+#endif
+          request?.ExportType == ExportTypes.SurfaceExport)
         {
-          var cmvChangeDetailsRequest = new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
+
+          var cmvChangeDetailsRequest =
+            new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
 
           return trexCompactionDataProxy.SendSurfaceExportRequest(cmvChangeDetailsRequest, customHeaders).Result;
+#if !RAPTOR
+        }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+
+        }
+#else
         }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
     }
-
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(ExportReport request)
     {
       var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
@@ -83,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       throw CreateServiceException<CompactionExportExecutor>(dataexport.ReturnCode);
     }
-
+#endif
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)
     {
       string prodFolder = configStore.GetValueString("RaptorProductionDataFolder");
@@ -93,7 +111,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddExportErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

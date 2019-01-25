@@ -34,6 +34,32 @@
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">    
+    <Compile Remove=".\Compaction\Executors\CompactionCellDatumExecutor.cs" />
+    <Compile Remove=".\Compaction\Executors\CompactionPatchExecutor.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorGet.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorPost.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateConversionExecutor.cs" />
+    <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
+    <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\CCAColorPaletteExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPost.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPut.cs" />
+    <Compile Remove=".\Report\Executors\CompactionCellDatumExecutor.cs" />
+    <Compile Remove=".\Report\Executors\ElevationStatisticsExecutor.cs" />
+    <Compile Remove=".\Report\Executors\ElevationStatisticsExecutor.cs" />
+    <Compile Remove=".\Report\Executors\ExportReportExecutor.cs" />
+    <Compile Remove=".\Report\Executors\SummaryVolumesExecutor.cs" />    
+  </ItemGroup>
+
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
@@ -55,7 +81,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

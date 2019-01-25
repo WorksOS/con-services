@@ -29,8 +29,24 @@
     <PackageReference Include="NodaTime" Version="2.4.2" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
+    <!--<PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />-->
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">    
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
+    <!--<Compile Include=".\Proxies\RaptorConverters.cs" />
+    <Compile Include=".\Executors\CellDatumExecutor.cs" />-->
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+    <Compile Remove=".\Proxies\RaptorConverters.cs" />
+    <Compile Remove=".\Executors\CellDatumExecutor.cs" />
+    <Compile Remove=".\Interfaces\IASNodeClient.cs" />
+    <Compile Remove=".\Interfaces\ITagProcessor.cs" />
+    <Compile Remove=".\Proxies\ASNodeClient.cs" />
+    <Compile Remove=".\Proxies\TAGProcessor.cs" />
+    <Compile Remove=".\ResultHandling\RaptorResult.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,7 +62,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ResponseCaching\src\Microsoft.AspNetCore.ResponseCaching\Microsoft.AspNetCore.ResponseCaching.csproj" />
   </ItemGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
@@ -66,6 +82,7 @@
     <WarningsAsErrors />
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,7 +92,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -92,6 +109,7 @@
     <Reference Update="System.Xml.Linq">
       <Private>true</Private>
     </Reference>
-  </ItemGroup>
-
+  </ItemGroup>  
+    
+  
 </Project>

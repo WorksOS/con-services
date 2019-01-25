@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -20,15 +23,23 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
+#if RAPTOR
     private readonly IASNodeClient raptorClient;
+#endif
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public CoordinateSystemController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public CoordinateSystemController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
     }
 
@@ -41,7 +52,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -53,7 +69,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -67,7 +88,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       ProjectID request = new ProjectID(projectId);
 
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -82,7 +108,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       ProjectID request = new ProjectID(projectId, projectUid);
 
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -94,7 +125,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient).Process(request) as CoordinateConversionResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+#if RAPTOR
 using ShineOn.Rtl;
 using TAGProcServiceDecls;
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -67,7 +69,9 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     public async Task NonDirectTagFileSubmitter_ConnectedSite_Switch()
     {
       var mockTagProcessor = new Mock<ITagProcessor>();
+#if RAPTOR
       var mockRaptorClient = new Mock<IASNodeClient>();
+#endif
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor(
             It.IsAny<string>(), It.IsAny<MemoryStream>(), It.IsAny<long>(), It.IsAny<TDateTime>(),

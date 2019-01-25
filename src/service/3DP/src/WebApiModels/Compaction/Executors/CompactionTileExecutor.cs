@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+#if RAPTOR
 using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
+#endif
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -35,9 +37,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<TileRequest>(item);
-        
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
+#endif
           var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
 
           using (var ms = new MemoryStream())
@@ -45,16 +48,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             fileResult.CopyTo(ms);
             return new TileResult(ms.ToArray());
           }
-        }
+#if RAPTOR
+      }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
     }
-
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(TileRequest request)
     {
       RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
@@ -121,10 +126,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       log.LogDebug("Raptor result for Tile: " + raptorResult);
       return new TileResult(tile.ToArray(), raptorResult != TASNodeErrorStatus.asneOK);
     }
+#endif
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }
