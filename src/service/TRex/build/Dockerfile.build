@@ -29,15 +29,15 @@ RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.
 
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
-RUN cp -r /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
-COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.6.0.jar /trex/libs/
+RUN cp -r /root/.nuget/packages/apache.ignite/2.7.0/libs/ /trex/libs/
+#COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.7.0.jar /trex/libs/
 # This is a vss specific build of ignite with java implementation of affinity functions
 COPY ./$SERVICE_PATH/build/ignite-corex.jar /trex/libs/
 WORKDIR /trex/libs/
 RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar
 RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar
 RUN wget http://central.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
-RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.6.0/ignite-log4j-2.6.0.jar
+RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
 
 
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
