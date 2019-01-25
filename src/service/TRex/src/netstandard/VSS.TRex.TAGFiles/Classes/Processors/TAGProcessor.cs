@@ -105,7 +105,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         EndProofingName :
          Design == string.Empty ? "No Design" : Design;
 
-      DateTime localTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
+      DateTime localTime = StartProofingDataTime + Common.Time.GPS.GetLocalGMTOffset();
 
       EndProofingName = $"{tempStr} ({localTime:yyyy/MM/dd} {localTime:HH:mm:ss})";
 
@@ -599,10 +599,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       }
     }
 
-    /*
+    protected override bool IgnoreInvalidPositions() => SiteModel.IgnoreInvalidPositions;
 
+    /*
    function MaxEpochInterval: Double; override;
-   function IgnoreInvalidPositions: Boolean; override;
+
 
    procedure SetICSonic3D                  (const Value :Byte                  ); override;
    procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;

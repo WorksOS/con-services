@@ -23,7 +23,7 @@ using VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher.Time;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Time;
+using VSS.TRex.Common.Time;
 using VSS.TRex.Types;
 using Xunit;
 

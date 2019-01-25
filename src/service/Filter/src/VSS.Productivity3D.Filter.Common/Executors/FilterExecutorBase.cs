@@ -44,9 +44,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Store the filter in the database and notify Raptor of a filter change
     /// </summary>
-    /// <typeparam name="T">The type of event</typeparam>
-    /// <param name="filterRequest">The filter data</param>
-    /// <param name="errorCodes">Error codes to use for exceptions</param>
     protected async Task<T> StoreFilterAndNotifyRaptor<T>(FilterRequestFull filterRequest, int[] errorCodes) where T : IFilterEvent
     {
       var filterEvent = default(T);
@@ -69,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
             return filterEvent;
           }
 
-          await NotifyRaptor(filterRequest);
+          _ = Task.Run(()=> NotifyRaptor(filterRequest));
         }
       }
       catch (Exception e)
@@ -118,6 +115,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected void SendToKafka(string filterUid, string payload, int errorCode)
     {
+      Task.Run(() => {
       try
       {
         producer.Send(kafkaTopicName,
@@ -130,6 +128,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode, e.Message);
       }
+      });
     }
   }
 }
