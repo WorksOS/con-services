@@ -5,12 +5,18 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Machines.Interfaces;
+using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Factories;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 
@@ -41,6 +47,21 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+
+        // Register the factories for cell profiling support
+        .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(new ProfilerBuilderFactory<ProfileCell>()))
+        .Add(x => x.AddSingleton<IProfilerBuilderFactory<SummaryVolumeProfileCell>>(new ProfilerBuilderFactory<SummaryVolumeProfileCell>()))
+        .Add(x => x.AddTransient<IProfilerBuilder<ProfileCell>>(factory => new ProfilerBuilder<ProfileCell>()))
+        .Add(x => x.AddTransient<IProfilerBuilder<SummaryVolumeProfileCell>>(factory => new ProfilerBuilder<SummaryVolumeProfileCell>()))
+
+        // Register the factory for the CellProfileAnalyzer for detailed cell pass/lift cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<ProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)))
+
+        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder) => new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder)))
+
         .Complete();
     }
 
