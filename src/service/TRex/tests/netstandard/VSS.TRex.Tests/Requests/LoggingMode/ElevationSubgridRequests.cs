@@ -261,6 +261,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       var siteModel = CreateSiteModelWithSingleCellForTesting();
 
+      // Create a time range filter than bounds he time of the second added cell pass by 1 second before and after
       var filter = new CombinedFilter();
       filter.AttributeFilter.SetHasTimeFilter(true);
       filter.AttributeFilter.StartTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(-1);

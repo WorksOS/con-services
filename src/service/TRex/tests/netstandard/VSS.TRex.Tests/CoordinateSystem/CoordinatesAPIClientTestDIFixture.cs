@@ -25,6 +25,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     public void Dispose()
-    { }
+    {
+      DIBuilder.Eject();
+    }
   }
 }

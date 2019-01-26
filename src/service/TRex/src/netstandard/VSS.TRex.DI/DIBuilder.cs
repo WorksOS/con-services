@@ -129,6 +129,14 @@ namespace VSS.TRex.DI
     public static void Eject()
     {
       DIContext.Close();
+
+      if (Instance != null)
+      {
+        Instance.ServiceCollection.Clear();
+        Instance.ServiceCollection = null;
+        Instance.ServiceProvider = null;
+      }
+
       Instance = null;
     }
 
