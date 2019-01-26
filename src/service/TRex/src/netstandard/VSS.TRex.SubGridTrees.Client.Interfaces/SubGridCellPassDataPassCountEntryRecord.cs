@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 
-namespace VSS.TRex.SubGridTrees.Client.Types
+namespace VSS.TRex.SubGridTrees.Client.Interfaces
 {
   /// <summary>
   /// Contains measured and target Pass Count values as well as previous measured and target CMV values.
@@ -27,12 +26,12 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// <returns></returns>
     public static int IndicativeSizeInBytes() => USHORT_TYPES_COUNT * sizeof(ushort);
 
-      /// <summary>
-      ///  Constructor with arguments.
-      /// </summary>
-      /// <param name="measuredPassCount"></param>
-      /// <param name="targetPassCount"></param>
-      public SubGridCellPassDataPassCountEntryRecord(ushort measuredPassCount, ushort targetPassCount)
+    /// <summary>
+    ///  Constructor with arguments.
+    /// </summary>
+    /// <param name="measuredPassCount"></param>
+    /// <param name="targetPassCount"></param>
+    public SubGridCellPassDataPassCountEntryRecord(ushort measuredPassCount, ushort targetPassCount)
     {
       MeasuredPassCount = measuredPassCount;
       TargetPassCount = targetPassCount;
@@ -73,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     public static SubGridCellPassDataPassCountEntryRecord NullValue = Null();
 
     /// <summary>
-    /// Implements the business logic to create the null value for this cell valuye type
+    /// Implements the business logic to create the null value for this cell value type
     /// </summary>
     /// <returns></returns>
     private static SubGridCellPassDataPassCountEntryRecord Null()
