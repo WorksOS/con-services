@@ -257,7 +257,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     }
 
     [Fact]
-    public void Test_ElevationSubGridRequests_RequestElevationSubGrids_SingleCell_QueryWithAsAtFilter_IncludesOnlySecondPass()
+    public void Test_ElevationSubGridRequests_RequestElevationSubGrids_SingleCell_QueryWithTimeRangeFilter_IncludesOnlySecondPass()
     {
       var siteModel = CreateSiteModelWithSingleCellForTesting();
 
@@ -268,11 +268,16 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
 
-      var subGrid = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
       // Check cell has has second height selected
       // Assumption: Elevation mode filtering has no impact on this scenario
-      subGrid.Cells[0, 0].Should().Be(MAXIMUM_HEIGHT + HEIGHT_DECREMENT);
+      subGridHeight.Cells[0, 0].Should().Be(MAXIMUM_HEIGHT + HEIGHT_DECREMENT);
+
+      var subGridPassCount = RequestAllSubGridsForSingleCellTesting<IClientPassCountLeafSubGrid>(siteModel, requestors, GridDataType.PassCount).First();
+
+      // Check only a single cell was selected as a result of the time range filter
+      subGridPassCount.Cells[0, 0].MeasuredPassCount.Should().Be(1);
     }
   }
 }
