@@ -89,8 +89,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
           log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
-        createImportedFileEvent.MinZoomLevel = addFileResult.MinZoomLevel;
-        createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
 
         //Generate DXF tiles
         if (createimportedfile.ImportedFileType == ImportedFileType.Linework || createimportedfile.ImportedFileType == ImportedFileType.Alignment)
@@ -100,12 +98,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
             project.CoordinateSystemFileName, createImportedFileEvent.ImportedFileUID, log, customHeaders, tileServiceProxy,
             raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);
+
+          createImportedFileEvent.MinZoomLevel = addFileResult.MinZoomLevel;
+          createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
         }
 
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db (Raptor - todo is this still needed (i.e. with new tiling process)?)  
+        //Need to update zoom levels in Db  
         _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
             createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,

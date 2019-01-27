@@ -68,8 +68,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             serviceExceptionHandler, raptorProxy,
             projectRepo)
           .ConfigureAwait(false);
-        existing.MinZoomLevel = addFileResult.MinZoomLevel;
-        existing.MaxZoomLevel = addFileResult.MaxZoomLevel;
 
         //Generate DXF tiles
         if (updateImportedFile.ImportedFileType == ImportedFileType.Linework || updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
@@ -83,6 +81,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
             project.CoordinateSystemFileName, updateImportedFile.ImportedFileUid, log, customHeaders, tileServiceProxy,
             raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);
+
+          existing.MinZoomLevel = addFileResult.MinZoomLevel;
+          existing.MaxZoomLevel = addFileResult.MaxZoomLevel;
         }
       }
 
