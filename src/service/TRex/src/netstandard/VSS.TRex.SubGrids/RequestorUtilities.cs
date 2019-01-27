@@ -29,12 +29,12 @@ namespace VSS.TRex.SubGrids
 
     private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
-    private ITRexSpatialMemoryCache _SubGridCache;
+    private ITRexSpatialMemoryCache _subGridCache;
 
     /// <summary>
     /// The DI injected TRex spatial memory cache for general sub grid results
     /// </summary>
-    private ITRexSpatialMemoryCache SubGridCache => _SubGridCache ?? (_SubGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
+    private ITRexSpatialMemoryCache SubGridCache => _subGridCache ?? (_subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
      
     /// <summary>
     /// The DI injected factory to create requestor instances

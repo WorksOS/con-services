@@ -5,7 +5,7 @@
   /// Currently the only implemented states on Earthworks are LatestElevation and
   /// MinimumElevation.
   /// </summary>
-  public enum ElevationMappingMode
+  public enum ElevationMappingMode : byte
   {
     /// <summary>
     /// The recorded elevation is used to create a new cell pass at that point in time on the Earthworks system

@@ -4,10 +4,10 @@
     /// Internal mapping of remaining GPSMode flag bits into usable fields in the cell pass structure
     /// The last 4 bits of GPSStore byte are flags. Zero based
     /// </summary>
-    public enum GPSFlagBits
-    {
+    public enum GPSFlagBits : byte
+  {
         /// <summary>
-        ///  bit 5 of 8, 0=fullpass,1=halfpass
+        ///  bit 5 of 8, 0=full pass,1=half pass
         /// </summary>
         GPSSBitHalfPass = 4,
 
