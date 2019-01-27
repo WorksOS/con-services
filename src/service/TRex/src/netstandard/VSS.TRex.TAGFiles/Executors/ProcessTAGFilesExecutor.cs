@@ -51,7 +51,7 @@ namespace VSS.TRex.TAGFiles.Executors
                     {
                         converter.Execute(fs);
 
-                        Log.LogInformation($"#Progress# TAG file generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
+                        Log.LogInformation($"#Progress# TAG file {item.FileName} generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
                     }
 
                     converter.SiteModel.ID = ProjectID;

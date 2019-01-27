@@ -26,8 +26,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
                 // a time value.
                 if (state.HaveSeenATimeValue)
                 {
-                    if (!valueSink.ProcessEpochContext())
-                        return false;
+                    valueSink.ProcessEpochContext();
                 }
 
                 switch (valueType.Type)
@@ -51,8 +50,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 
                 state.HaveSeenATimeValue = true;
             }
-
-            if (valueType.Name == TAGValueNames.kTagFileWeekTag)
+            else if (valueType.Name == TAGValueNames.kTagFileWeekTag)
             {
                 if (valueType.Type != TAGDataType.t16bitUInt)
                 {
