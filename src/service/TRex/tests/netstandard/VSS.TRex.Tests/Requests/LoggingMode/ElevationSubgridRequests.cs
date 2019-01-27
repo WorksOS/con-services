@@ -242,9 +242,14 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       var siteModel = CreateSiteModelWithSingleCellForTesting();
 
-      var filter = new CombinedFilter();
-      filter.AttributeFilter.SetHasTimeFilter(true);
-      filter.AttributeFilter.EndTime = BASE_TIME;
+      var filter = new CombinedFilter
+      {
+        AttributeFilter =
+        {
+          HasTimeFilter = true,
+          EndTime = BASE_TIME
+        }
+      };
 
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] {filter});
 
@@ -262,10 +267,15 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var siteModel = CreateSiteModelWithSingleCellForTesting();
 
       // Create a time range filter than bounds he time of the second added cell pass by 1 second before and after
-      var filter = new CombinedFilter();
-      filter.AttributeFilter.SetHasTimeFilter(true);
-      filter.AttributeFilter.StartTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(-1);
-      filter.AttributeFilter.EndTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(1);
+      var filter = new CombinedFilter
+      {
+        AttributeFilter =
+        {
+          HasTimeFilter = true,
+          StartTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(-1),
+          EndTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(1)
+        }
+      };
 
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
 

@@ -22,137 +22,203 @@ namespace VSS.TRex.Filters
     /// </summary>
     public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
-    public bool HasTimeFilter { get; protected set; }
-
-    public void SetHasTimeFilter(bool state)
-    {
-      HasTimeFilter = state;
-      _prepared = false;
+    private bool _HasTimeFilter;
+    public bool HasTimeFilter {
+      get => _HasTimeFilter;
+      set
+      {
+        _HasTimeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasMachineFilter { get; protected set; }
-
-    public void SetHasMachineFilter(bool state)
+    private bool _HasMachineFilter;
+    public bool HasMachineFilter
     {
-      HasMachineFilter = state;
-      _prepared = false;
+      get => _HasMachineFilter;
+      set
+      {
+        _HasMachineFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasMachineDirectionFilter { get; protected set; }
-
-    public void SetHasMachineDirectionFilter(bool state)
+    private bool _HasMachineDirectionFilter;
+    public bool HasMachineDirectionFilter
     {
-      HasMachineDirectionFilter = state;
-      _prepared = false;
+      get => _HasMachineDirectionFilter;
+      set
+      {
+        _HasMachineDirectionFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasDesignFilter { get; protected set; }
-
-    public void SetHasDesignFilter(bool state)
+    private bool _HasDesignFilter;
+    public bool HasDesignFilter
     {
-      HasDesignFilter = state;
-      _prepared = false;
+      get => _HasDesignFilter;
+      set
+      {
+        _HasDesignFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasVibeStateFilter { get; protected set; }
-    public void SetHasVibeStateFilter(bool state)
+    private bool _HasVibeStateFilter;
+    public bool HasVibeStateFilter
     {
-      HasVibeStateFilter = state;
-      _prepared = false;
+      get => _HasVibeStateFilter;
+      set
+      {
+        _HasVibeStateFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasLayerStateFilter { get; protected set; }
-    public void SetHasLayerStateFilter(bool state)
+    private bool _HasLayerStateFilter;
+    public bool HasLayerStateFilter
     {
-      HasLayerStateFilter = state;
-      _prepared = false;
+      get => _HasLayerStateFilter;
+      set
+      {
+        _HasLayerStateFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasElevationMappingModeFilter { get; protected set; }
-    public void SetHasElevationMappingModeFilter(bool state)
+    private bool _HasElevationMappingModeFilter;
+    public bool HasElevationMappingModeFilter
     {
-      HasElevationMappingModeFilter = state;
-      _prepared = false;
+      get => _HasElevationMappingModeFilter;
+      set
+      {
+        _HasElevationMappingModeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasElevationTypeFilter { get; protected set; }
-    public void SetHasElevationTypeFilter(bool state)
+    private bool _HasElevationTypeFilter;
+    public bool HasElevationTypeFilter
     {
-      HasElevationTypeFilter = state;
-      _prepared = false;
+      get => _HasElevationTypeFilter;
+      set
+      {
+        _HasElevationTypeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasGCSGuidanceModeFilter { get; protected set; }
-    public void SetHasGCSGuidanceModeFilter(bool state)
+    private bool _HasGCSGuidanceModeFilter;
+
+    public bool HasGCSGuidanceModeFilter
     {
-      HasGCSGuidanceModeFilter = state;
-      _prepared = false;
+      get => _HasGCSGuidanceModeFilter;
+      set
+      {
+        _HasGCSGuidanceModeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasGPSAccuracyFilter { get; protected set; }
-    public void SetHasGPSAccuracyFilter(bool state)
+    private bool _HasGPSAccuracyFilter;
+    public bool HasGPSAccuracyFilter
     {
-      HasGPSAccuracyFilter = state;
-      _prepared = false;
+      get => _HasGPSAccuracyFilter;
+      set
+      {
+        _HasGPSAccuracyFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasGPSToleranceFilter { get; protected set; }
-    public void SetHasGPSToleranceFilter(bool state)
+    private bool _HasGPSToleranceFilter;
+    public bool HasGPSToleranceFilter
     {
-      HasGPSToleranceFilter = state;
-      _prepared = false;
+      get => _HasGPSToleranceFilter;
+      set
+      {
+        _HasGPSToleranceFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasPositioningTechFilter { get; protected set; }
-    public void SetHasPositioningTechFilter(bool state)
+    private bool _HasPositioningTechFilter;
+    public bool HasPositioningTechFilter
     {
-      HasPositioningTechFilter = state;
-      _prepared = false;
+      get => _HasPositioningTechFilter;
+      set
+      {
+        _HasPositioningTechFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasLayerIDFilter { get; protected set; }
-    public void SetHasLayerIDFilter(bool state)
+    private bool _HasLayerIDFilter;
+    public bool HasLayerIDFilter
     {
-      HasLayerIDFilter = state;
-      _prepared = false;
+      get => _HasLayerIDFilter;
+      set
+      {
+        _HasLayerIDFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasElevationRangeFilter { get; protected set; }
-    public void SetHasElevationRangeFilter(bool state)
+    private bool _HasElevationRangeFilter;
+    public bool HasElevationRangeFilter
     {
-      HasElevationRangeFilter = state;
-      _prepared = false;
+      get => _HasElevationRangeFilter;
+      set
+      {
+        _HasElevationRangeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasPassTypeFilter { get; protected set; }
-    public void SetHasPassTypeFilter(bool state)
+    private bool _HasPassTypeFilter;
+    public bool HasPassTypeFilter
     {
-      HasPassTypeFilter = state;
-      _prepared = false;
+      get => _HasPassTypeFilter;
+      set
+      {
+        _HasPassTypeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasCompactionMachinesOnlyFilter { get; protected set; }
-    public void SetHasCompactionMachinesOnlyFilter(bool state)
+    private bool _HasCompactionMachinesOnlyFilter;
+    public bool HasCompactionMachinesOnlyFilter
     {
-      HasCompactionMachinesOnlyFilter = state;
-      _prepared = false;
+      get => _HasCompactionMachinesOnlyFilter;
+      set
+      {
+        _HasCompactionMachinesOnlyFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasTemperatureRangeFilter { get; protected set; }
-    public void SetHasTemperatureRangeFilter(bool state)
+    private bool _HasTemperatureRangeFilter;
+    public bool HasTemperatureRangeFilter
     {
-      HasTemperatureRangeFilter = state;
-      _prepared = false;
+      get => _HasTemperatureRangeFilter;
+      set
+      {
+        _HasTemperatureRangeFilter = value;
+        _prepared = false;
+      }
     }
 
-    public bool HasPassCountRangeFilter { get; protected set; }
-    public void SetHasPassCountRangeFilter(bool state)
+    private bool _HasPassCountRangeFilter;
+    public bool HasPassCountRangeFilter
     {
-      HasPassCountRangeFilter = state;
-      _prepared = false;
+      get => _HasPassCountRangeFilter;
+      set
+      {
+        _HasPassCountRangeFilter = value;
+        _prepared = false;
+      }
     }
-
-
 
     public bool FilterTemperatureByLastPass { get; set; }
 

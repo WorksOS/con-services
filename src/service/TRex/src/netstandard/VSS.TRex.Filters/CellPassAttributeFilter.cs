@@ -639,7 +639,7 @@ namespace VSS.TRex.Filters
       //      FElevationRangeBottomElevationForCell, FElevationRangeDesignElevations
 
 
-      SetHasTimeFilter(Source.HasTimeFilter);
+      HasTimeFilter = Source.HasTimeFilter;
       HasMachineFilter = Source.HasMachineFilter;
       HasMachineDirectionFilter = Source.HasMachineDirectionFilter;
       HasDesignFilter = Source.HasDesignFilter;

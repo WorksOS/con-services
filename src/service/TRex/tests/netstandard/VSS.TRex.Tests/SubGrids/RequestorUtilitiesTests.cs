@@ -301,10 +301,15 @@ namespace VSS.TRex.Tests.SubGrids
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
       {
-        var filter = new CombinedFilter();
-        filter.AttributeFilter.SetHasTimeFilter(true);
-        filter.AttributeFilter.StartTime = DateTime.MinValue;
-        filter.AttributeFilter.EndTime = DateTime.Now;
+        var filter = new CombinedFilter
+        {
+          AttributeFilter =
+          {
+            HasTimeFilter = true,
+            StartTime = DateTime.MinValue,
+            EndTime = DateTime.Now
+          }
+        };
         return filter;
       }).ToArray();
       IFilterSet filterSet = new FilterSet(filters);

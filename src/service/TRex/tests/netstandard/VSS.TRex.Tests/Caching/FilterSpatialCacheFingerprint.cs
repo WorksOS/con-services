@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasCompactionMachinesOnlyFilter(true);
+        x.AttributeFilter.HasCompactionMachinesOnlyFilter = true;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("CMO:1", StringComparison.OrdinalIgnoreCase),
@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_RestrictFilteredDataToCompactorsOnly_NotPresent()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasCompactionMachinesOnlyFilter(false));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = false);
 
       Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("CMO", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains compactor restriction ID");
@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasDesignFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasDesignFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasDesignFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasMachineFilter(true);
+        x.AttributeFilter.HasMachineFilter = true;
         x.AttributeFilter.MachineIDs = new short[] {0};      
       });
 
@@ -82,7 +82,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasMachineDirectionFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasMachineDirectionFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasMachineDirectionFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -91,7 +91,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasVibeStateFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasVibeStateFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasVibeStateFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -100,7 +100,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasCompactionMachinesOnlyFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasCompactionMachinesOnlyFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -109,7 +109,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasGPSAccuracyFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasGPSAccuracyFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasGPSAccuracyFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -118,7 +118,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasPassTypeFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasPassTypeFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasPassTypeFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -128,7 +128,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasTemperatureRangeFilter()
     {
-      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.SetHasTemperatureRangeFilter(true));
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasTemperatureRangeFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -148,7 +148,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasTimeFilter(true);
+        x.AttributeFilter.HasTimeFilter = true;
         x.AttributeFilter.StartTime = new DateTime(1111);
         x.AttributeFilter.EndTime = new DateTime(2222);
       });
@@ -171,7 +171,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasDesignFilter(true);
+        x.AttributeFilter.HasDesignFilter = true;
         x.AttributeFilter.DesignNameID = 123;
       });
 
@@ -193,7 +193,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasMachineFilter(true);
+        x.AttributeFilter.HasMachineFilter = true;
         x.AttributeFilter.MachineIDs = new short[] {1, 12, 23};
       });
 
@@ -215,7 +215,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasMachineDirectionFilter(true);
+        x.AttributeFilter.HasMachineDirectionFilter = true;
         x.AttributeFilter.MachineDirection = MachineDirection.Forward;
       });
 
@@ -237,7 +237,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasVibeStateFilter(true);
+        x.AttributeFilter.HasVibeStateFilter = true;
         x.AttributeFilter.VibeState = VibrationState.On;
       });
 
@@ -259,7 +259,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasElevationMappingModeFilter(true);
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
         x.AttributeFilter.MinElevationMapping = ElevationMappingMode.MinimumElevation;
       });
 
@@ -268,7 +268,7 @@ namespace VSS.TRex.Tests.Caching
 
       filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasElevationMappingModeFilter(true);
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
         x.AttributeFilter.MinElevationMapping = ElevationMappingMode.LatestElevation;
       });
 
@@ -290,7 +290,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasElevationTypeFilter(true);
+        x.AttributeFilter.HasElevationTypeFilter = true;
         x.AttributeFilter.ElevationType = ElevationType.Last;
       });
 
@@ -312,7 +312,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasGCSGuidanceModeFilter(true);
+        x.AttributeFilter.HasGCSGuidanceModeFilter = true;
         x.AttributeFilter.GCSGuidanceMode = MachineAutomaticsMode.Manual;
       });
 
@@ -334,7 +334,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasGPSAccuracyFilter(true);
+        x.AttributeFilter.HasGPSAccuracyFilter = true;
         x.AttributeFilter.GPSAccuracy = GPSAccuracy.Fine;
         x.AttributeFilter.GPSAccuracyIsInclusive = true;
 
@@ -345,7 +345,7 @@ namespace VSS.TRex.Tests.Caching
 
       filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasGPSAccuracyFilter(true);
+        x.AttributeFilter.HasGPSAccuracyFilter = true;
         x.AttributeFilter.GPSAccuracy = GPSAccuracy.Fine;
         x.AttributeFilter.GPSAccuracyIsInclusive = false;
 
@@ -369,7 +369,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasGPSToleranceFilter(true);
+        x.AttributeFilter.HasGPSToleranceFilter = true;
         x.AttributeFilter.GPSTolerance = 123;
         x.AttributeFilter.GPSToleranceIsGreaterThan = true;
       });
@@ -379,7 +379,7 @@ namespace VSS.TRex.Tests.Caching
 
       filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasGPSToleranceFilter(true);
+        x.AttributeFilter.HasGPSToleranceFilter = true;
         x.AttributeFilter.GPSTolerance = 123;
         x.AttributeFilter.GPSToleranceIsGreaterThan = false;
 
@@ -403,7 +403,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasPositioningTechFilter(true);
+        x.AttributeFilter.HasPositioningTechFilter = true;
         x.AttributeFilter.PositioningTech = PositioningTech.UTS;
       });
 
@@ -427,7 +427,7 @@ namespace VSS.TRex.Tests.Caching
 
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasElevationRangeFilter(true);
+        x.AttributeFilter.HasElevationRangeFilter = true;
         x.AttributeFilter.ElevationRangeDesignUID = designGuid;
         x.AttributeFilter.ElevationRangeOffset = 123.456;
         x.AttributeFilter.ElevationRangeThickness = 1.234;
@@ -440,7 +440,7 @@ namespace VSS.TRex.Tests.Caching
 
       filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasElevationRangeFilter(true);
+        x.AttributeFilter.HasElevationRangeFilter = true;
         x.AttributeFilter.ElevationRangeLevel = 123.456;
         x.AttributeFilter.ElevationRangeOffset = 456.789;
         x.AttributeFilter.ElevationRangeThickness = 2.345;
@@ -466,7 +466,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasLayerStateFilter(true); 
+        x.AttributeFilter.HasLayerStateFilter = true;
         x.AttributeFilter.LayerState = LayerState.On;
       });
 
@@ -488,7 +488,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasLayerIDFilter(true);
+        x.AttributeFilter.HasLayerIDFilter = true;
         x.AttributeFilter.LayerID = 1234;
       });
 
@@ -510,7 +510,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasTemperatureRangeFilter(true);
+        x.AttributeFilter.HasTemperatureRangeFilter = true;
         x.AttributeFilter.MaterialTemperatureMin = 123;
         x.AttributeFilter.MaterialTemperatureMax = 456;
         x.AttributeFilter.FilterTemperatureByLastPass = true;
@@ -521,7 +521,7 @@ namespace VSS.TRex.Tests.Caching
 
       filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasTemperatureRangeFilter(true);
+        x.AttributeFilter.HasTemperatureRangeFilter = true;
         x.AttributeFilter.MaterialTemperatureMin = 123;
         x.AttributeFilter.MaterialTemperatureMax = 456;
         x.AttributeFilter.FilterTemperatureByLastPass = false;
@@ -546,7 +546,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.SetHasPassCountRangeFilter(true);
+        x.AttributeFilter.HasPassCountRangeFilter = true;
         x.AttributeFilter.PasscountRangeMin = 2;
         x.AttributeFilter.PasscountRangeMax = 11;
       });
