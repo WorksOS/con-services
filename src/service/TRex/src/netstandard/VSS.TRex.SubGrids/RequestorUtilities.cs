@@ -39,12 +39,12 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// The DI injected factory to create requestor instances
     /// </summary>
-    private Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>();
+    private readonly Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>();
 
     /// <summary>
     /// The DI injected factory to created requests for surveyed surface information
     /// </summary>
-    private Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
+    private readonly Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 
     /// <summary>

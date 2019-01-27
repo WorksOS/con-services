@@ -28,11 +28,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
-    // ReSharper disable once StaticMemberInGenericType
-    private IClientLeafSubGridFactory clientLeafSubGridFactory;
-
-    protected IClientLeafSubGridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
+    protected IClientLeafSubGridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
     protected Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory =
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();

@@ -45,7 +45,7 @@ namespace TAGFiles.Tests
 
   public class TAGValueMatcherTests
   {
-    private static void InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state)
+    private void InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state)
     {
       sink = new TAGProcessorStateBase_Test(); // TAGProcessorStateBase();
       state = new TAGValueMatcherState();
