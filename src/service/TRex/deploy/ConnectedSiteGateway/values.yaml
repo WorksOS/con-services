@@ -3,7 +3,7 @@
 
 environment: dev
 
-rootDomain: k8s.vspengg.com
+rootDomain: eks.vspengg.com
 
 serviceAccountName: trex
 
