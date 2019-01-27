@@ -82,7 +82,7 @@ namespace VSS.TRex.Tests.TestFixtures
           (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>
-          (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))));
+          (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability)))));
     }
 
     public DITagFileFixture()

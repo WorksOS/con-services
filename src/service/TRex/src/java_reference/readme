@@ -1,0 +1,3 @@
+This java source is for reference.
+They are java implmentations of the C# affinity functions for trex until ignite bug # is fixed
+These are compiled and exist in the ignite-corex.jar in build folder.

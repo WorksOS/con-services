@@ -23,13 +23,13 @@ namespace VSS.TRex.Storage.Utilities
         (factory => (ignite, mutability) => new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability) => new StorageProxyCache<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
+        (factory => (ignite, mutability) => new StorageProxyCache<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>
         (factory => (ignite, mutability) => new StorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>
-        (factory => (ignite, mutability) => new StorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))));
+        (factory => (ignite, mutability) => new StorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability)))));
     }
 
     /// <summary>
