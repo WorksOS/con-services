@@ -56,7 +56,13 @@ namespace VSS.WebApi.Common
     /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      if (!context.Request.Path.Value.Contains("/swagger/") && !InternalConnection(context))
+      if (context.Request.Path.Value.Contains("/swagger/") || context.Request.Path.Value.Contains("/cache/"))
+      {
+        await _next(context);
+        return;
+      } 
+
+      if (!InternalConnection(context))
       {
         bool isApplicationContext = false;
         string applicationName = string.Empty;
