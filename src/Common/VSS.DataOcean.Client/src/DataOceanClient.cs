@@ -100,10 +100,14 @@ namespace VSS.DataOcean.Client
     /// <returns></returns>
     public async Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders=null)
     {
-      Log.LogDebug($"PutFile: {Path.Combine(path,filename)}");
+      var fullName = Path.Combine(path, filename);
+      Log.LogDebug($"PutFile: {fullName}");
 
       var success = false;
       var parentFolder = await GetFolderMetadata(path, true, customHeaders);
+      //Delete any existing file. To avoid 2 traversals just try it anyway without checking for existance.
+      await DeleteFile(fullName, customHeaders);
+
       //1. Create the file
       var createResult = await CreateFile(filename, parentFolder?.Id, customHeaders);
       var newFile = createResult?.File;
@@ -156,9 +160,10 @@ namespace VSS.DataOcean.Client
       {
         var route = $"/api/files/{result.Id}";
         await gracefulClient.ExecuteRequest($"{dataOceanBaseUrl}{route}", null, customHeaders, HttpMethod.Delete, null, 3, false);
+        return true;
       }
 
-      return true;
+      return false;
     }
 
     /// <summary>
@@ -271,9 +276,19 @@ namespace VSS.DataOcean.Client
 
       var filename = Path.GetFileName(fullName);
       var result = await BrowseFile(filename, parentFolder?.Id, customHeaders);
-      if (result?.Files?.Count == 1)
+      int? count = result?.Files?.Count;
+      if (count == 1)
       {
         return result.Files[0];
+      }
+
+      if (count == 0)
+      {
+        Log.LogInformation($"File {fullName} not found");
+      }
+      else if (count > 1)
+      {
+        Log.LogWarning($"Multiple copies of file {fullName} found");
       }
 
       return null;

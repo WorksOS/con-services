@@ -46,7 +46,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         log.LogInformation(
           $"WriteFileToDataOcean: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
-        // check for exists first to avoid an misleading exception in our logs.
         folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
         if (folderAlreadyExists == false)
           await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);

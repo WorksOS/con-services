@@ -92,6 +92,8 @@ namespace VSS.Pegasus.Client
       var tileFolderName = parts[parts.Length - 1];
       var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
       var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);
+      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
+      await dataOceanClient.DeleteFile(tileFolderFullName, customHeaders);
 
       //Get the Pegasus units
       var pegasusUnits = PegasusUnitsType.Metre;
