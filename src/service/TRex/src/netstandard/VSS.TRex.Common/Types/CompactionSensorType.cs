@@ -1,10 +1,10 @@
 ﻿namespace VSS.TRex.Types
 {
     /// <summary>
-    /// The type of cvompaction sensor on the machine reporting compaction values
+    /// The type of compaction sensor on the machine reporting compaction values
     /// </summary>
-    public enum CompactionSensorType
-    {
+    public enum CompactionSensorType : byte
+  {
         /// <summary>
         /// No sensor installed
         /// </summary>

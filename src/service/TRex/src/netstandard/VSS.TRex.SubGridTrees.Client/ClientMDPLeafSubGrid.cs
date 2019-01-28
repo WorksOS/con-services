@@ -36,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetMDPValues |
-        PopulationControlFlags.WantsEventMinElevMappingValues;
+        PopulationControlFlags.WantsEventElevationMappingModeValues;
 
       _gridDataType = TRex.Types.GridDataType.MDP;
     }

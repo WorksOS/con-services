@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGridTrees.Client
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetCCVValues |
         PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold |
-        PopulationControlFlags.WantsEventMinElevMappingValues;
+        PopulationControlFlags.WantsEventElevationMappingModeValues;
 
       if (WantsPreviousCCVValue)
       {

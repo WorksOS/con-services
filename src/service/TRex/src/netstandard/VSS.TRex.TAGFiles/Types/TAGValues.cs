@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.Types
     /// </summary>
     public static class TAGValueNames
     {
-        public const string kTagFileTimeTag  = "TIME";
+        public const string kTagFileTimeTag = "TIME";
         public const string kTagFileWeekTag = "WEEK";
 
         public const string kTagFileCorrectionAgeTag = "AGE";
@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.Types
         public const string kTagFileMapReset = "MAP_RESET";
         public const string kTagFileTargetLiftThickness = "TARGET_THICKNESS";
         public const string kTagFileOnGroundTag = "ON_GROUND";
-        public const string kTagFileMinElevMappingFlag = "MIN_ELEV_MAP";
+        public const string kTagFileElevationMappingModeTag = "MAPPING_MODE";
         public const string kTagFileBladeOnGroundTag = "BLADE_ON_GROUND";
         public const string kTagFileICMDPTag = "MDP";
         public const string kTagFileICMDPTargetTag = "TARGET_MDP";

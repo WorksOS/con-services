@@ -6,7 +6,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 {
     /// <summary>
-    /// Handles the blade of ground flag as reported fom the amchine
+    /// Handles the blade of ground flag as reported fom the machine
     /// </summary>
     public class TAGBladeOnGroundValueMatcher : TAGValueMatcher
     {
@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
                 return false;
             }
 
-            if (!Enum.IsDefined(typeof(OnGroundState), (int)value))
+            if (!Enum.IsDefined(typeof(OnGroundState), (byte)value))
             {
                 return false;
             }

@@ -1,10 +1,10 @@
 ﻿namespace VSS.TRex.Types
 {
     /// <summary>
-    /// MachineType describes the individual type of machines that are recognised by name
+    /// MachineType describes the individual type of machines that are recognized by name
     /// </summary>
-    public enum MachineType
-    {
+    public enum MachineType : byte
+  {
         Dozer = 23,
         Grader = 24,
         Excavator = 25,

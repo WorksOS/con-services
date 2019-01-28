@@ -27,10 +27,9 @@ namespace VSS.TRex.SubGridTrees.Server
       private static ILogger Log = Logging.Logger.CreateLogger("ServerSubGridTreeLeaf");
 
         /// <summary>
-        /// Does this subgrid contain directory information for all the subgrids that exist within it?
+        /// Does this sub grid contain directory information for all the segments that exist within it?
         /// </summary>
-        private bool haveSubgridDirectoryDetails;
-        public bool HaveSubgridDirectoryDetails { get { return haveSubgridDirectoryDetails; } }
+        public bool HasSubGridDirectoryDetails => Directory.SegmentDirectory.Count > 0; 
 
         /// <summary>
         /// The date time of the last observed cell pass within this subgrid
@@ -651,8 +650,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
             Result = Directory.Write(writer);
 
-            haveSubgridDirectoryDetails = Result;
-
             return Result;
         }
 
@@ -696,8 +693,6 @@ namespace VSS.TRex.SubGridTrees.Server
             // long CellPassStacksDataSize;
 
             bool Result = false;
-
-            haveSubgridDirectoryDetails = false;
 
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker))
             {
@@ -743,9 +738,9 @@ namespace VSS.TRex.SubGridTrees.Server
               Log.LogError($"Subgrid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker}, found {Header.Identifier}]).");
             }
 
-            if (Result)
+            if (!Result)
             {
-                haveSubgridDirectoryDetails = true;
+                Directory.Clear();
             }
 
             return Result;

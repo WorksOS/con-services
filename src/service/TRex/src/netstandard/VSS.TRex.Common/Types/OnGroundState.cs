@@ -4,8 +4,8 @@
     /// The known information about if the blade is in contact with the ground, and the 
     /// mechanism used to report that state
     /// </summary>
-    public enum OnGroundState
-    {
+    public enum OnGroundState : byte
+  {
         No,
         YesLegacy,
         YesMachineConfig,

@@ -6,7 +6,6 @@ using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
@@ -28,12 +27,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         private readonly ITRexSpatialMemoryCacheContext _context;
 
         /// <summary>
-        /// Local reference to the client sub grid factory
+        /// Reference to the client sub grid factory
         /// </summary>
-        private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 
-        private IClientLeafSubGridFactory ClientLeafSubGridFactory
-          => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
+        private readonly IClientLeafSubGridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
         /// <summary>
         /// The static compute function used for surface elevation patch requests
