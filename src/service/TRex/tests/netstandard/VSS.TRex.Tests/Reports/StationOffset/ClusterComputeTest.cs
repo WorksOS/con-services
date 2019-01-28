@@ -9,6 +9,7 @@ using VSS.TRex.Reports.StationOffset.Executors;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Reports.StationOffset
@@ -53,6 +54,9 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       });
 
       var result = executor.Execute();
+
+      result.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      result.StationOffsetRows.Count.Should().Be(points.Count);
     }
   }
 }
