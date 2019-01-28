@@ -45,12 +45,13 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       var request = CastRequestObjectTo<CompactionTagFileRequestExtended>(item);
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
-
+#if RAPTOR
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TAGFILE"), out var useTrexGateway);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_TAGFILE"), out var useRaptorGateway);
 
       if (useTrexGateway)
       {
+#endif
         request.Validate();
 
         result = await CallTRexEndpoint(request).ConfigureAwait(false);
@@ -64,6 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           log.LogDebug(
             $"PostTagFile (NonDirect TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
         }
+#if RAPTOR
       }
 
       if (useRaptorGateway)
@@ -89,11 +91,11 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Failed to process tagfile with error: Automatic tag file submissions cannot include boundary fence."));
         }
-#if RAPTOR
-        return CallRaptorEndpoint(tagFileRequest);
-#endif
-      }
 
+        return CallRaptorEndpoint(tagFileRequest);
+
+      }
+#endif
       return result;
     }
 
@@ -166,7 +168,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         ContractExecutionStates.ClearDynamic();
       }
     }
-#endif    
+#endif
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");

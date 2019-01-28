@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 
@@ -11,6 +13,7 @@ namespace VSS.Productivity3D.Common.Models
   /// </summary>
   public static class FileDescriptorExtensions
   {
+#if RAPTOR
     /// <summary>
     /// Creates a Raptor design file descriptor
     /// </summary>
@@ -27,7 +30,7 @@ namespace VSS.Productivity3D.Common.Models
       return __Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, descriptor.FilespaceId, descriptor.Path, descriptor.FileName,
         offset);
     }
-
+#endif
     /// <summary>
     /// Gets the TCC filespace name. The name is stored in an environment variable.
     /// </summary>

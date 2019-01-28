@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
+#if RAPTOR
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
-using Microsoft.Extensions.Logging;
 using VLPDDecls;
+#endif
+using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -21,7 +26,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   /// </summary>
   public class ExportRequestHelper : DataRequestBase, IExportRequestHandler
   {
+#if RAPTOR
     private IASNodeClient raptorClient;
+#endif
     private UserPreferenceData userPreferences;
     private ProjectData projectDescriptor;
 
@@ -38,13 +45,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
     }
-
+#if RAPTOR
     public ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
       this.raptorClient = raptorClient;
       return this;
     }
-
+#endif
     public ExportRequestHelper SetUserPreferences(UserPreferenceData userPrefs)
     {
       userPreferences = userPrefs;
@@ -72,6 +79,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
+#if !RAPTOR
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#else
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
@@ -127,8 +138,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         fileName,
         exportType,
         ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));
+#endif
     }
 
+#if RAPTOR
     private static string StripInvalidCharacters(string str)
     {
       // Remove all invalid characters except of the underscore...
@@ -181,5 +194,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
+#endif
   }
 }

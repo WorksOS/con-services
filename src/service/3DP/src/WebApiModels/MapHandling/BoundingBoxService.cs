@@ -1,4 +1,4 @@
-﻿using System;
+﻿  using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Net;
 #if RAPTOR
 using DesignProfilerDecls;
 using VLPDDecls;
+using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 #endif
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,7 +18,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
@@ -408,6 +408,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,
       double startStation=0, double endStation=0, double leftOffset=0, double rightOffset=0)
     {
+#if RAPTOR
       var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
       log.LogDebug($"GetAlignmentPoints: projectId={projectId}, alignment={description}");
       List<WGSPoint> alignmentPoints = null;
@@ -459,6 +460,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         }
       }
       return alignmentPoints;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -469,6 +474,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>The statio range</returns>
     public AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor)
     {
+#if RAPTOR
       if (alignDescriptor == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -496,8 +502,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       }
 
       return result;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
-
   }
 
 

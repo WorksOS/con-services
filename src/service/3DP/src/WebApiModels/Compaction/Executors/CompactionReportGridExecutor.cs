@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           //   also projectid and filterId not required by TRex
           var responseData = trexCompactionDataProxy.SendGridReportRequest(request, customHeaders).Result;
           return responseData.Length > 0
-            ? ConvertGridResult(request, responseData)
+            ? ConvertTRexGridResult(request, responseData)
             : CreateNullGridReturnedResult();
 #if RAPTOR
         }
@@ -63,6 +64,32 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null grid stream returned");
     }
+
+    private CompactionReportResult ConvertTRexGridResult(CompactionReportGridRequest request, Stream stream)
+    {
+      log.LogDebug($"{nameof(ConvertTRexGridResult)}: Retrieving response data from TRex");
+
+      var griddedReportResult = new GriddedReportResult(ReportType.Gridded);
+      griddedReportResult.Read((stream as MemoryStream)?.ToArray());
+
+      var gridRows = new GridRow[griddedReportResult.GriddedData.NumberOfRows];
+
+      // Populate an array of grid rows from the data
+      for (var i = 0; i < griddedReportResult.GriddedData.NumberOfRows; i++)
+        gridRows[i] = GridRow.CreateRow(griddedReportResult.GriddedData.Rows[i], request);
+
+      var startTime = request.Filter != null && request.Filter.StartUtc.HasValue
+        ? request.Filter.StartUtc.Value
+        : DateTime.Now;
+      var endTime = request.Filter != null && request.Filter.EndUtc.HasValue
+        ? request.Filter.EndUtc.Value
+        : DateTime.Now;
+
+      var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
+
+      return CompactionReportResult.CreateExportDataResult(gridReport, 1);
+    }
+
 #if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(CompactionReportGridRequest request)
     {
@@ -108,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       throw CreateServiceException<CompactionReportGridExecutor>();
     }
-#endif
+
     private CompactionReportResult ConvertGridResult(CompactionReportGridRequest request, Stream stream)
     {
       log.LogDebug($"{nameof(ConvertGridResult)}");
@@ -149,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       return CompactionReportResult.CreateExportDataResult(gridReport, 1);
     }
-
+#endif
     protected sealed override void ProcessErrorCodes()
     {
 #if RAPTOR

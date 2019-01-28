@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+#if RAPTOR
 using ASNodeDecls;
 using ASNodeRaptorReports;
+#endif
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -43,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           var responseData = (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
 
           return responseData.Length > 0
-            ? ConvertStationOffsetResult(request, responseData)
+            ? ConvertTRexStationOffsetResult(request, responseData)
             : CreateNullStationOffsetReturnedResult();
 #if RAPTOR
         }
@@ -62,6 +66,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "Null stationOffset stream returned");
     }
+
+    private CompactionReportResult ConvertTRexStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
+    {
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+    }
+
 #if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(CompactionReportStationOffsetRequest request)
     {
@@ -112,7 +123,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       throw CreateServiceException<CompactionReportStationOffsetExecutor>();
     }
-#endif
 
     private CompactionReportResult ConvertStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
     {
@@ -148,6 +158,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
+#endif
 
     protected sealed override void ProcessErrorCodes()
     {

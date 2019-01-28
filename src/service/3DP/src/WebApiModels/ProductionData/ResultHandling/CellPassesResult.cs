@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
-using SVOICDecls;
-using SVOSiteVisionDecls;
 using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
@@ -131,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// <summary>
       /// Is the compactor using automatic vibration control
       /// </summary>
-      public TICAutoState eventAutoVibrationState;
+      public AutoStateType eventAutoVibrationState;
 
       /// <summary>
       /// The ID of the design loaded machine. This is a foreign key into the design collection maintained in the project.
@@ -146,12 +145,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// <summary>
       /// The GCS automatics control mode - manual (indicate only) or automatics (blade control)
       /// </summary>
-      public TGCSAutomaticsMode eventMachineAutomatics;
+      public GCSAutomaticsModeType eventMachineAutomatics;
 
       /// <summary>
       /// The gear the machine is in
       /// </summary>
-      public TICMachineGear eventMachineGear;
+      public MachineGearType eventMachineGear;
 
       /// <summary>
       /// The RMV threshold reported by the machine. Values above this level are interpreted as decoupled (the compactor drum is bouncing)
@@ -161,17 +160,17 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// <summary>
       /// Is the machine implemnent (drum, blade, bucket etc) in contact with the ground when the measurement is made. If not decoupled, a compactor drum is considered to be on the groudn by definition.
       /// </summary>
-      public TICOnGroundState eventOnGroundState;
+      public OnGroundStateType eventOnGroundState;
 
       /// <summary>
       /// Is the compactor drum in a vibratory state?
       /// </summary>
-      public TICVibrationState eventVibrationState;
+      public VibrationStateType eventVibrationState;
 
       /// <summary>
       /// The GSP accuracy mode the GCS system is operating under. Fine, medium and coarse relate to accuracy ranges which may be millimeters at the Fine end, and meters are the coarse end.
       /// </summary>
-      public TICGPSAccuracy gPSAccuracy;
+      public GPSAccuracyType gPSAccuracy;
 
       /// <summary>
       /// The GPS tolerance, or error limit, of GPS positions being used. This is a value in the range 0..2^14-1 millimeters.
@@ -196,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// <summary>
       /// The positioning technology used to collect the implement (drum, blade etc) position. The current values are GPS or UTS (Universal Total Station)
       /// </summary>
-      public TICPositioningTech positioningTech;
+      public PositioningTechType positioningTech;
 
       /// <summary>
       /// A set of bit flags that indicate avoidance zone transgression states. Not currently implemented. Documented elsewhere.

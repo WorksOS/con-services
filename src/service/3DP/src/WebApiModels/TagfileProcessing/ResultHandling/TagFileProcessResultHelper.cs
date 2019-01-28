@@ -1,5 +1,4 @@
-﻿using TAGProcServiceDecls;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
@@ -11,7 +10,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
     public string Type { get; }
     public bool? Continuable { get; }
 
-    public TagFileProcessResultHelper(TTAGProcServerProcessResult resultCode) : this()
+    public TagFileProcessResultHelper(TAGProcServerProcessResultCode resultCode) : this()
     {
       Code = (int) resultCode;
 
@@ -34,127 +33,127 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
     }
 
     private static (int code, string message, string type, bool? continuable) MapProcessResult(
-      TTAGProcServerProcessResult resultCode)
+      TAGProcServerProcessResultCode resultCode)
     {
       const string temporary = "Temporary";
       const string permanent = "Permanent";
 
       switch (resultCode)
       {
-        case TTAGProcServerProcessResult.tpsprOK:
+        case TAGProcServerProcessResultCode.OK:
         {
           return (code: (int) resultCode, message: ContractExecutionResult.DefaultMessage, type: permanent,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprUnknown:
+        case TAGProcServerProcessResultCode.Unknown:
         {
           return (code: (int) resultCode, message: "Tagfile Unknown error.", type: temporary, continuable: false);
         }
-        case TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure:
+        case TAGProcServerProcessResultCode.OnSubmissionBaseConnectionFailure:
         {
           return (code: (int) resultCode, message: "OnSubmissionBase. Connection Failure.", type: temporary,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnSubmissionVerbConnectionFailure:
+        case TAGProcServerProcessResultCode.OnSubmissionVerbConnectionFailure:
         {
           return (code: (int) resultCode, message: "OnSubmissionVerb. Connection Failure.", type: temporary,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnSubmissionResultConnectionFailure:
+        case TAGProcServerProcessResultCode.OnSubmissionResultConnectionFailure:
         {
           return (code: (int) resultCode, message: "OnSubmissionResult. Connection Failure.", type: temporary,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprFileReaderCorruptedTAGFileData:
+        case TAGProcServerProcessResultCode.FileReaderCorruptedTAGFileData:
         {
           return (code: (int) resultCode, message: "The TAG file was found to be corrupted on its pre-processing scan.",
             type: permanent,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineUnknownMachine:
+        case TAGProcServerProcessResultCode.OnChooseMachineUnknownMachine:
         {
           return (code: (int) resultCode, message: "OnChooseMachine. Unknown Machine AssetID.", type: temporary,
             continuable: false);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidTagFile:
+        case TAGProcServerProcessResultCode.OnChooseMachineInvalidTagFile:
         {
           return (code: (int) resultCode, message: "OnChooseMachine. Invalid TagFile on selecting machine AssetID.",
             type: permanent,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions:
+        case TAGProcServerProcessResultCode.OnChooseMachineInvalidSubscriptions:
         {
           return (code: (int) resultCode, message: "OnChooseMachine. Machine Subscriptions Invalid.", type: temporary,
             continuable: false);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineUnableToDetermineMachine:
+        case TAGProcServerProcessResultCode.OnChooseMachineUnableToDetermineMachine:
         {
           return (code: (int) resultCode, message: "OnChooseMachine. Unable To Determine Machine.", type: temporary,
             continuable: false);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel:
+        case TAGProcServerProcessResultCode.OnChooseDataModelUnableToDetermineDataModel:
         {
           return (code: (int) resultCode, message: "OnChooseDataModel. Unable To Determine DataModel.", type: temporary,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
+        case TAGProcServerProcessResultCode.OnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
         {
           return (code: (int) resultCode, message: "OnChooseDataModel. Could Not Convert DataModel Boundary To Grid.",
             type: temporary,
             continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelNoGridEpochsFoundInTAGFile:
+        case TAGProcServerProcessResultCode.OnChooseDataModelNoGridEpochsFoundInTAGFile:
         {
           return (code: (int) resultCode, message: "OnChooseDataModel. No GridEpochs Found In TAGFile.",
             type: permanent, continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
+        case TAGProcServerProcessResultCode.OnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
         {
           return (code: (int) resultCode,
             message: "OnChooseDataModel. Supplied DataModel Boundary Contains Insufficient Vertices.",
             type: temporary, continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
+        case TAGProcServerProcessResultCode.OnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
         {
           return (code: (int) resultCode,
             message: "OnChooseDataModel. First Epoch Blade Position Does Not Lie Within Project Boundary.",
             type: temporary, continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprFailedEventDateValidation:
+        case TAGProcServerProcessResultCode.FailedEventDateValidation:
         {
           return (code: (int) resultCode, message: "OnOverrideEvent. Failed on event's date validation.",
             type: string.Empty,
             continuable: null);
         }
-        case TTAGProcServerProcessResult.tpsprInvalidTagFileSubmissionMessageType:
+        case TAGProcServerProcessResultCode.InvalidTagFileSubmissionMessageType:
         {
           return (code: (int) resultCode, message: "OnProcessTAGFile. Invalid tag file submission message type.",
             type: string.Empty,
             continuable: null);
         }
-        case TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingFolderForDataModel:
+        case TAGProcServerProcessResultCode.TAGFileAlreadyExistsInProcessingFolderForDataModel:
         {
           return (code: (int) resultCode,
             message: "OnProcessTAGFile. TAG file already exists in data model's processing folder.",
             type: permanent, continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingArchivalQueueForDataModel:
+        case TAGProcServerProcessResultCode.TAGFileAlreadyExistsInProcessingArchivalQueueForDataModel:
         {
           return (code: (int) resultCode,
             message: "OnProcessTAGFile. TAG file already exists in data model's processing archival queue.",
             type: permanent, continuable: true);
         }
-        case TTAGProcServerProcessResult.tpsprServiceStopped:
+        case TAGProcServerProcessResultCode.ServiceStopped:
         {
           return (code: (int) resultCode, message: "OnProcessTAGFile. Service has been stopped.", type: temporary,
             continuable: false);
         }
-        case TTAGProcServerProcessResult.tpsprFailedValidation:
+        case TAGProcServerProcessResultCode.FailedValidation:
         {
           return (code: (int) resultCode, message: "OnOverrideEvent. Failed on target data validation.",
             type: string.Empty, continuable: null);
         }
-        case TTAGProcServerProcessResult.tpsprTFAServiceError:
+        case TAGProcServerProcessResultCode.TFAServiceError:
         {
           return (code: (int) resultCode, message: "TFA service error. Can not request Project or Asset from TFA.",
             type: temporary,
@@ -326,31 +325,31 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
 
 
         // Raptor and B&A only (not supported for TRex)
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel:
+        //case TTAGProcServerProcessResult.OnChooseDataModelUnableToDetermineDataModel:
 
         // Raptor only
         // Raptor only
-        //case TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure:
-        //case TTAGProcServerProcessResult.tpsprOnSubmissionVerbConnectionFailure:
-        //case TTAGProcServerProcessResult.tpsprOnSubmissionResultConnectionFailure:
-        //case TTAGProcServerProcessResult.tpsprOnChooseMachineUnknownMachine:
-        //case TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidTagFile:
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelNoGridEpochsFoundInTAGFile:
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
-        //case TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingArchivalQueueForDataModel:
-        //case TTAGProcServerProcessResult.tpsprInvalidTagFileSubmissionMessageType:
+        //case TTAGProcServerProcessResult.OnSubmissionBaseConnectionFailure:
+        //case TTAGProcServerProcessResult.OnSubmissionVerbConnectionFailure:
+        //case TTAGProcServerProcessResult.OnSubmissionResultConnectionFailure:
+        //case TTAGProcServerProcessResult.OnChooseMachineUnknownMachine:
+        //case TTAGProcServerProcessResult.OnChooseMachineInvalidTagFile:
+        //case TTAGProcServerProcessResult.OnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
+        //case TTAGProcServerProcessResult.OnChooseDataModelNoGridEpochsFoundInTAGFile:
+        //case TTAGProcServerProcessResult.OnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
+        //case TTAGProcServerProcessResult.OnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
+        //case TTAGProcServerProcessResult.TAGFileAlreadyExistsInProcessingArchivalQueueForDataModel:
+        //case TTAGProcServerProcessResult.InvalidTagFileSubmissionMessageType:
 
         // unrelated to tagfiles - to do with lift/design overide. shouldn't be returned at all
-        //case TTAGProcServerProcessResult.tpsprFailedValidation:
+        //case TTAGProcServerProcessResult.FailedValidation:
 
         // no longer applicable with TRex: no more OnChooseMachine or OnChooseDataModel
-        //case TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions:
+        //case TTAGProcServerProcessResult.OnChooseMachineInvalidSubscriptions:
         //{
         //  return (message: "OnChooseMachine. Machine Subscriptions Invalid.", type: temporary, continuable: false);
         //}
-        //case TTAGProcServerProcessResult.tpsprOnChooseMachineUnableToDetermineMachine:
+        //case TTAGProcServerProcessResult.OnChooseMachineUnableToDetermineMachine:
         //{
         //  return (message: "OnChooseMachine. Unable To Determine Machine.", type: temporary, continuable: false);
         //}

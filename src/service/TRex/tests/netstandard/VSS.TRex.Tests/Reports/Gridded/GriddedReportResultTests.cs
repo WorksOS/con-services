@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Reports.Gridded;
 using Xunit;
 
