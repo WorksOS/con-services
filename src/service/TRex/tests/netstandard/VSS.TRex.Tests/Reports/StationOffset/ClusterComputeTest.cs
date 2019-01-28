@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Remotion.Linq.Clauses.ResultOperators;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.Executors;
@@ -57,6 +58,30 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       result.ResultStatus.Should().Be(RequestErrorStatus.OK);
       result.StationOffsetRows.Count.Should().Be(points.Count);
+    }
+
+    [Fact(Skip = "Not complete")]
+    public void Test_CalculationFromTAGFileDerivedModel_ShouldHaveNoStationOffsetResults()
+    {
+      var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive"), "*.tag").ToArray();
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var processedTasks);
+
+      // Ask for a point that does not exist in the model the response should be a row with null values (???)
+      var executor = new ComputeStationOffsetReportExecutor_ClusterCompute
+      (new StationOffsetReportRequestArgument_ClusterCompute
+      {
+        ProjectID = siteModel.ID,
+        Filters = new FilterSet(new CombinedFilter()),
+        Points = new List<StationOffsetPoint>{new StationOffsetPoint(0, 0, 0, 0)},
+        ReportElevation = true
+      });
+
+      var result = executor.Execute();
+
+      result.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      result.StationOffsetRows.Count.Should().Be(1);
+
+      result.StationOffsetRows[0].Elevation.Should().Be(Consts.NullDouble);
     }
   }
 }
