@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Types;
@@ -10,7 +11,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
   /// </summary>
   public class L2ConnectedSiteMessage : AbstractConnectedSiteMessage, IL2ConnectedSiteMessage
   {
-    private const string API_ROUTE = "status/in/v1/GCS900";
+    private const string API_ROUTE = "status/in/v1/";
 
     public override DateTime? Timestamp { get; set; }
     public string DesignName { get; set; }
@@ -18,15 +19,15 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
     public string AppVersion { get; set; }
     public string AppName { get { return "GCS900"; } }
     public string AssetNickname { get; set; }
-    public override string Route { get => $"{API_ROUTE}-{HardwareID}"; }
+    public override string Route { get => $"{API_ROUTE}{MachineSerialUtilities.MapSerialToModel(HardwareID)}-{HardwareID}"; }
 
     public L2ConnectedSiteMessage() { }
 
     public L2ConnectedSiteMessage(TAGFilePreScan tagFilePrescan)
     {
       Timestamp = tagFilePrescan.SeedTimeUTC;
-      Lattitude = tagFilePrescan.SeedLatitude;
-      Longitude = tagFilePrescan.SeedLongitude;
+      Lattitude = tagFilePrescan.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLatitude.Value) : 0;
+      Longitude = tagFilePrescan.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLongitude.Value) : 0;
       Height = tagFilePrescan.SeedHeight;
       HardwareID = tagFilePrescan.HardwareID;
       AssetNickname = tagFilePrescan.MachineID;

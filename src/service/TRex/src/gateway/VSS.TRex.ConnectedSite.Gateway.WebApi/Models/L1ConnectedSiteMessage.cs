@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
 using VSS.TRex.TAGFiles.Executors;
 
@@ -9,8 +10,8 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
   /// </summary>
   public class L1ConnectedSiteMessage : AbstractConnectedSiteMessage, IL1ConnectedSiteMessage
   {
-    private const string API_ROUTE = "positions/in/v1/GCS900";
-    public override string Route { get => $"{API_ROUTE}-{HardwareID}"; }
+    private const string API_ROUTE = "positions/in/v1/";
+    public override string Route { get => $"{API_ROUTE}{MachineSerialUtilities.MapSerialToModel(HardwareID)}-{HardwareID}"; }
     public override DateTime? Timestamp { get; set; }
 
     public L1ConnectedSiteMessage() { }
@@ -18,8 +19,8 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
     public L1ConnectedSiteMessage(TAGFilePreScan tagFilePrescan)
     {
       Timestamp = tagFilePrescan.SeedTimeUTC;
-      Lattitude = tagFilePrescan.SeedLatitude;
-      Longitude = tagFilePrescan.SeedLongitude;
+      Lattitude = tagFilePrescan.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLatitude.Value) : 0;
+      Longitude = tagFilePrescan.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLongitude.Value) : 0;
       Height = tagFilePrescan.SeedHeight;
       HardwareID = tagFilePrescan.HardwareID;
     }
