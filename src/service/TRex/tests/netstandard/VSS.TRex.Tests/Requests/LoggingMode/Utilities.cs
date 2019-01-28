@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 
@@ -23,7 +25,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       // Create the site model and machine etc to aggregate the processed TAG file into
 
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
 
       // Add the lowest pass elevation mapping event occurring after a last pass mapping event
       siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValueAtDate(baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation);
@@ -81,6 +83,41 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         return true;
       });
       totalCells.Should().Be(1);
+
+      return siteModel;
+    }
+
+    public static ISiteModel ConstructModelForTestsWithTwoExcavatorMachineTAGFiles(out List<AggregatedDataIntegratorTask> processedTasks)
+    {
+      const int expectedSubgrids = 4;
+      const int expectedEvents = 2;
+      const int expectedNonNullCells = 427;
+
+      var corePath = Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive");
+      var tagFiles = new[]
+      {
+        Path.Combine(corePath, "0187J008YU--TNZ 323F GS520--190123002153.tag"),
+        Path.Combine(corePath, "0187J008YU--TNZ 323F GS520--190123002153.tag")
+      };
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out processedTasks);
+
+      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubgrids);
+
+      // Ensure there are two appropriate elevation mapping mode events
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(expectedEvents);
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(0, out var eventDate, out var eventState);
+      eventState.Should().Be(ElevationMappingMode.LatestElevation);
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.LastStateValue().Should().Be(ElevationMappingMode.MinimumElevation);
+
+      // Count the number of non-null elevation cells per the sub grid pass dta existence maps
+      long totalCells = 0;
+      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(),
+        subGrid =>
+        {
+          totalCells += ((IServerLeafSubGrid)subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
+          return true;
+        });
+      totalCells.Should().Be(expectedNonNullCells);
 
       return siteModel;
     }

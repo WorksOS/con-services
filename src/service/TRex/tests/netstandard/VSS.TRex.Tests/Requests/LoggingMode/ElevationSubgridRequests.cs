@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -40,52 +36,17 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
     private const int PASSES_IN_DECREMENTING_ELEVATION_LIST = 3;
 
-    private ISiteModel ConstructModelForTestsWithTwoExcavatorMachineTAGFiles(out List<AggregatedDataIntegratorTask> processedTasks)
-    {
-      const int expectedSubgrids = 4;
-      const int expectedEvents = 2;
-      const int expectedNonNullCells = 427;
-
-      var corePath = Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive");
-      var tagFiles = new[]
-      {
-        Path.Combine(corePath, "0187J008YU--TNZ 323F GS520--190123002153.tag"),
-        Path.Combine(corePath, "0187J008YU--TNZ 323F GS520--190123002153.tag")
-      };
-      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out processedTasks);
-
-      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubgrids);
-
-      // Ensure there are two appropriate elevation mapping mode events
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(expectedEvents);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(0, out var eventDate, out var eventState);
-      eventState.Should().Be(ElevationMappingMode.LatestElevation);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.LastStateValue().Should().Be(ElevationMappingMode.MinimumElevation);
-
-      // Count the number of non-null elevation cells per the sub grid pass dta existence maps
-      long totalCells = 0;
-      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(),
-        subGrid => 
-        {
-          totalCells += ((IServerLeafSubGrid) subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
-          return true;
-        });
-      totalCells.Should().Be(expectedNonNullCells);
-
-      return siteModel;
-     }
-
     [Fact]
     public void Test_ElevationSubGridRequests_ModelConstruction()
     {
-      var siteModel = ConstructModelForTestsWithTwoExcavatorMachineTAGFiles(out var processedTasks);
+      var siteModel = Utilities.ConstructModelForTestsWithTwoExcavatorMachineTAGFiles(out var processedTasks);
       siteModel.Should().NotBeNull();
     }
 
     [Fact]
     public void Test_ElevationSubGridRequests_RequestElevationSubGrids_NoSurveyedSurfaces_NoFilter()
     {
-      var siteModel = ConstructModelForTestsWithTwoExcavatorMachineTAGFiles(out var processedTasks);
+      var siteModel = Utilities.ConstructModelForTestsWithTwoExcavatorMachineTAGFiles(out var processedTasks);
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
