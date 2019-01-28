@@ -314,7 +314,7 @@ namespace VSS.MasterData.Proxies
         log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
         result = await action.Invoke();
         if (result != null)
-          return dataCache.Set(cacheKey, result, null, opts); 
+          return dataCache.Set(cacheKey, result, result.GetIdentifiers(), opts); 
           
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
