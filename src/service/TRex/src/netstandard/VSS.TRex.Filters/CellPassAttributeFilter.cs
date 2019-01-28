@@ -52,7 +52,7 @@ namespace VSS.TRex.Filters
    */
 
   /// <summary>
-  /// TICGridDataFilter provides filtering support for grid data requested by the client
+  /// CellPassAttributeFilter provides filtering support for grid data requested by the client
   /// </summary>
   public class CellPassAttributeFilter : CellPassAttributeFilterModel, ICellPassAttributeFilter
   {
@@ -520,7 +520,6 @@ namespace VSS.TRex.Filters
       GPSAccuracyIsInclusive = false;
     }
 
-
     public void ClearTemperatureRange()
     {
       HasTemperatureRangeFilter = false;
@@ -709,19 +708,12 @@ namespace VSS.TRex.Filters
       EndTime = DateTime.MaxValue;
     }
 
+    static readonly GPSAccuracyAndTolerance NullGPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
+
     // Returns true if the specified pass meets the set filter (if any)
     // FilterPass determines if a single pass conforms to the current filtering configuration
     public bool FilterPass(ref CellPass PassValue)
     {
-      int DesignNameIDValue = Consts.kNoDesignNameID;
-      VibrationState VibeStateValue = VibrationState.Invalid;
-      MachineGear MachineGearValue = MachineGear.Null;
-      ElevationMappingMode ElevationMappingModeValue = ElevationMappingMode.LatestElevation;
-      GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
-      PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
-      MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
-      ushort LayerIDStateValue = ushort.MaxValue; // ID of current layer
-
       if (!AnyFilterSelections)
       {
         // There are no constrictive filter criteria - all cell passes pass the filter
@@ -764,15 +756,15 @@ namespace VSS.TRex.Filters
 
       if (HasDesignFilter)
       {
-        DesignNameIDValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, DesignNameIDValue);
+        int DesignNameIDValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, Consts.kNoDesignNameID);
 
-        if ((DesignNameIDValue != Consts.kAllDesignsNameID) && (DesignNameID != DesignNameIDValue))
+        if (DesignNameIDValue != Consts.kAllDesignsNameID && DesignNameID != DesignNameIDValue)
           return false;
       }
 
       if (HasVibeStateFilter)
       {
-        VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out _, VibeStateValue);
+        VibrationState VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out _, VibrationState.Invalid);
 
         if (VibeState != VibeStateValue)
           return false;
@@ -780,7 +772,7 @@ namespace VSS.TRex.Filters
 
       if (HasGCSGuidanceModeFilter)
       {
-        GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, GCSGuidanceModeValue);
+        MachineAutomaticsMode GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, MachineAutomaticsMode.Unknown);
 
         if (GCSGuidanceMode != GCSGuidanceModeValue)
           return false;
@@ -788,7 +780,7 @@ namespace VSS.TRex.Filters
 
       if (HasMachineDirectionFilter)
       {
-        MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out _, MachineGearValue);
+        MachineGear MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out _, MachineGear.Null);
 
         if (((MachineDirection == MachineDirection.Forward && !TRex.Machines.Machine.MachineGearIsForwardGear(MachineGearValue))) ||
             ((MachineDirection == MachineDirection.Reverse && !TRex.Machines.Machine.MachineGearIsReverseGear(MachineGearValue))))
@@ -797,7 +789,7 @@ namespace VSS.TRex.Filters
 
       if (HasElevationMappingModeFilter)
       {
-        ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingModeValue);
+        ElevationMappingMode ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingMode.LatestElevation);
 
         if (MinElevationMapping != ElevationMappingModeValue)
           return false;
@@ -805,7 +797,7 @@ namespace VSS.TRex.Filters
 
       if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
       {
-        GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out _, GPSAccuracyAndToleranceValue);
+        GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out _, NullGPSAccuracyAndToleranceValue);
 
         if (HasGPSAccuracyFilter && GPSAccuracy != GPSAccuracyAndToleranceValue.GPSAccuracy && !GPSAccuracyIsInclusive)
           return false;
@@ -822,7 +814,7 @@ namespace VSS.TRex.Filters
 
       if (HasPositioningTechFilter)
       {
-        PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out _, PositioningTechStateValue);
+        PositioningTech PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out _, PositioningTech.Unknown);
 
         if (PositioningTech != PositioningTechStateValue)
           return false;
@@ -831,7 +823,7 @@ namespace VSS.TRex.Filters
       // Filter on LayerID
       if (HasLayerIDFilter)
       {
-        LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out _, LayerIDStateValue);
+        ushort LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out _, ushort.MaxValue);
         if (LayerID != LayerIDStateValue)
           return false;
       }
@@ -1452,8 +1444,8 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Converts an array of Guids representing machine identifiers into a BitArray encoding a bit set of
-    /// internal machine IDs relative to this sitemodel
+    /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
+    /// internal machine IDs relative to this site model
     /// </summary>
     public void InitialiseMachineIDsSet()
     {
@@ -1542,7 +1534,7 @@ namespace VSS.TRex.Filters
     {
       // Certain types of grid attribute data requests may need us to select
       // a pass that is not the latest pass in the pass list. Such an instance is
-      // when request CCV value where null CCV values are passed over in favour of
+      // when request CCV value where null CCV values are passed over in favor of
       // non-null CCV values in passes that are older in the pass list for the cell.
 
       // Important: Also see the CalculateLatestPassDataForPassStack() function in
