@@ -11,11 +11,10 @@ namespace VSS.TRex.Storage
   /// </summary>
   public static class StorageProxy
   {
-    // Get the storage proxy factory from the DI context
-    private static IStorageProxyFactory Factory = DIContext.Obtain<IStorageProxyFactory>();
-
     public static IStorageProxy Instance(StorageMutability mutability)
     {
+      var Factory = DIContext.Obtain<IStorageProxyFactory>();
+
       switch (mutability)
       {
         case StorageMutability.Mutable: return Factory?.Storage(StorageMutability.Mutable);

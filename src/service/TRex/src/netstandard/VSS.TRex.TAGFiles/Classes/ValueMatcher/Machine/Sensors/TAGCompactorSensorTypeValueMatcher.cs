@@ -17,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!Enum.IsDefined(typeof(CompactionSensorType), (int)value))
+            if (!Enum.IsDefined(typeof(CompactionSensorType), (byte)value))
             {
                 return false;
             }

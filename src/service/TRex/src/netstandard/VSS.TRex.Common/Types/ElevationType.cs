@@ -4,8 +4,8 @@
     /// Elevation type controls the cell pass from which to select an elevation when a set of cell passes has been 
     /// selected by a filter.
     /// </summary>
-    public enum ElevationType
-    {
+    public enum ElevationType : byte
+  {
         /// <summary>
         /// Elevation of the last measured call pass (latest date)
         /// </summary>

@@ -42,7 +42,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
             List<Type> matchers = TypesHelper.FindAllDerivedTypes<TAGValueMatcher>();
 
             // Iterate through those types and create each on in turn, query the TAG types from it that the matcher supports and
-            // then register the value matcher instance against those TAGs to allwo the TAG file processor to locate matcher for 
+            // then register the value matcher instance against those TAGs to allow the TAG file processor to locate matcher for 
             // TAGS
             foreach (Type t in matchers)
             {

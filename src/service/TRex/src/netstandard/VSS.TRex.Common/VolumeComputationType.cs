@@ -3,8 +3,8 @@
     /// <summary>
     /// Denotes the different types of volume computations that may be performed
     /// </summary>
-    public enum VolumeComputationType
-    {
+    public enum VolumeComputationType : byte
+  {
         /// <summary>
         /// No volume computation type (null)
         /// </summary>

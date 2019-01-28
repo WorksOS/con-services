@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Types;
 
@@ -30,7 +31,7 @@ namespace VSS.TRex.Events
         case ProductionEventType.MachineAutomaticsChange: return new ProductionEvents<MachineAutomaticsMode>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (MachineAutomaticsMode)r.ReadByte());
         case ProductionEventType.MachineRMVJumpValueChange: return new ProductionEvents<short>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadInt16());
         case ProductionEventType.ICFlagsChange: return new ProductionEvents<byte>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadByte());
-        case ProductionEventType.MinElevMappingStateChange: return new ProductionEvents<bool>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadBoolean());
+        case ProductionEventType.ElevationMappingModeStateChange: return new ProductionEvents<ElevationMappingMode>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (ElevationMappingMode)r.ReadByte());
 
         case ProductionEventType.GPSAccuracyChange:
           return new ProductionEvents<GPSAccuracyAndTolerance>(machineID, siteModelID, eventType,

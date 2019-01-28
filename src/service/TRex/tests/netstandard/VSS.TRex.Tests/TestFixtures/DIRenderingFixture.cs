@@ -8,18 +8,13 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DIRenderingFixture : IDisposable
   {
-    private static object Lock = new object();
-
     public DIRenderingFixture()
     {
-      lock (Lock)
-      {
-        DIBuilder
-          .New()
-          .AddLogging()
-          .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
-          .Complete();
-      }
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
+        .Complete();
     }
 
     public void Dispose()

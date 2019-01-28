@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Client.Types;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;

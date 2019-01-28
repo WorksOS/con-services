@@ -3,7 +3,7 @@
 
 environment: dev
 
-rootDomain: k8s.vspengg.com
+rootDomain: eks.vspengg.com
 
 serviceAccountName: trex
 
@@ -59,7 +59,7 @@ mutableData:
       memory: 1.6Gi
   storageSize: 10Gi
   environment:
-    tfaProjectV2ApiUrl: "http://tagfileauth.dev.k8s.vspengg.com/api/v2/project"
+    tfaProjectV2ApiUrl: "http://tagfileauth.dev.eks.vspengg.com/api/v2/project"
     enableTfa: true
     enableTagFileArchiving: false
     enableTagFileArchivingMetadata: false

@@ -19,7 +19,7 @@ const httpOptions = {
 
 @Injectable()
 export class UploadDataService {
-  tagUploadUrl = 'http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles';  // URL to web api
+  tagUploadUrl = 'http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles';  // URL to web api
   private handleError: HandleError;
 
   constructor(

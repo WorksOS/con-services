@@ -24,7 +24,7 @@
         MachineAutomaticsChange = 0x0000000E,
         MachineRMVJumpValueChange = 0x0000000F,
         ICFlagsChange = 0x00000010,
-        MinElevMappingStateChange = 0x00000011,
+        ElevationMappingModeStateChange = 0x00000011,
         GPSAccuracyChange = 0x00000012,
         PositioningTech = 0x00000013,
         // Avoidance zones not supported

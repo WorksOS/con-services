@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
-    /// Base class for any subgrid derivative that contains data at the bottom layer of a sub grid tree
+    /// Base class for any sub grid derivative that contains data at the bottom layer of a sub grid tree
     /// </summary>
     public class LeafSubGridBase : SubGrid
     {
@@ -13,11 +13,11 @@ namespace VSS.TRex.SubGridTrees
         /// required persistence.
         /// </summary>
         protected bool latestCellPassesOutOfDate;
-        public bool LatestCellPassesOutOfDate { get { return latestCellPassesOutOfDate; } }
+        public bool LatestCellPassesOutOfDate => latestCellPassesOutOfDate;
 
         public override void SetDirty(bool value)
         {
-            Debug.Assert(value, "Can only mark subgrid as dirty via public interface (not unset it!)");
+            Debug.Assert(value, "Can only mark sub grid as dirty via public interface (not unset it!)");
 
             base.SetDirty(value);
 
