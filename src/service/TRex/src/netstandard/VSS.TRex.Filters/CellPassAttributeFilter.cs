@@ -321,7 +321,7 @@ namespace VSS.TRex.Filters
         return Result;
 
       if (HasElevationMappingModeFilter) // Check the contents of the min elevation filter
-        Result = MinElevationMapping.CompareTo(AFilter.MinElevationMapping); // CompareValue(Ord(MinElevationMapping), Ord(AFilter.MinElevationMapping));
+        Result = ElevationMappingMode.CompareTo(AFilter.ElevationMappingMode); // CompareValue(Ord(ElevationMappingMode), Ord(AFilter.ElevationMappingMode));
 
       if (Result != 0)
         return Result;
@@ -595,7 +595,7 @@ namespace VSS.TRex.Filters
       MachineDirection = Source.MachineDirection;
 
       PassTypeSet = Source.PassTypeSet;
-      MinElevationMapping = Source.MinElevationMapping;
+      ElevationMappingMode = Source.ElevationMappingMode;
 
       PositioningTech = Source.PositioningTech;
       GPSTolerance = Source.GPSTolerance;
@@ -680,7 +680,7 @@ namespace VSS.TRex.Filters
     public void ClearMinElevationMapping()
     {
       HasElevationMappingModeFilter = false;
-      MinElevationMapping = ElevationMappingMode.LatestElevation;
+      ElevationMappingMode = ElevationMappingMode.LatestElevation;
     }
 
     public void ClearPassType()
@@ -791,7 +791,7 @@ namespace VSS.TRex.Filters
       {
         ElevationMappingMode ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingMode.LatestElevation);
 
-        if (MinElevationMapping != ElevationMappingModeValue)
+        if (ElevationMappingMode != ElevationMappingModeValue)
           return false;
       }
 
@@ -897,7 +897,7 @@ namespace VSS.TRex.Filters
 
       if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventElevationMappingMode)
+        if (ElevationMappingMode != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1014,7 +1014,7 @@ namespace VSS.TRex.Filters
 
       if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventElevationMappingMode)
+        if (ElevationMappingMode != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1335,7 +1335,7 @@ namespace VSS.TRex.Filters
 
       // Min elev mapping
       if (HasElevationMappingModeFilter)
-        sb.Append($"EMM:{(int)MinElevationMapping}");
+        sb.Append($"EMM:{(int)ElevationMappingMode}");
 
       // Elevation type
       if (HasElevationTypeFilter)
