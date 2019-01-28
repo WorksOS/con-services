@@ -1,16 +1,26 @@
 ﻿using System.Collections.Generic;
+using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Types;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   public class StationOffsetReportRequestResponse_ClusterCompute : SubGridsPipelinedResponseBase, IAggregateWith<StationOffsetReportRequestResponse_ClusterCompute>
   {
+    public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
+    public ReportType ReportType;       // == TRaptorReportType
     public List<StationOffsetRow> StationOffsetRows;
 
     public StationOffsetReportRequestResponse_ClusterCompute()
     {
+      Clear();
+    }
+
+    public void Clear()
+    {
+      ReturnCode = ReportReturnCode.NoError;
+      ReportType = ReportType.StationOffset;
       StationOffsetRows = new List<StationOffsetRow>();
     }
 
@@ -22,6 +32,41 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     {
       this.StationOffsetRows.AddRange(other.StationOffsetRows);
       return this;
+    }
+
+    /// <summary>
+    /// Serializes content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      base.ToBinary(writer);
+      writer.WriteInt((int)ReturnCode);
+      writer.WriteInt((int)ReportType);
+      writer.WriteInt(StationOffsetRows.Count);
+      for (int i = 0; i < StationOffsetRows.Count; i++)
+      {
+        StationOffsetRows[i].ToBinary(writer);
+      }
+    }
+
+    /// <summary>
+    /// Serializes content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      base.FromBinary(reader);
+      ReturnCode = (ReportReturnCode)reader.ReadInt();
+      ReportType = (ReportType)reader.ReadInt();
+      var griddedRowsCount = reader.ReadInt();
+      StationOffsetRows = new List<StationOffsetRow>();
+      for (int i = 0; i < griddedRowsCount; i++)
+      {
+        var row = new StationOffsetRow();
+        row.FromBinary(reader);
+        StationOffsetRows.Add(row);
+      }
     }
   }
 }

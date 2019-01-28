@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Alignments;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
@@ -18,7 +18,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
   ///     along the station at requested intervals and offsets
   ///     from the alignment design
   /// </summary>
-  public class ComputeStationOffsetReportExecutor_ApplicationService : SubGridsPipelinedResponseBase
+  public class ComputeStationOffsetReportExecutor_ApplicationService // : SubGridsPipelinedResponseBase
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeStationOffsetReportExecutor_ApplicationService>();
 
@@ -62,7 +62,10 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         var alignmentDesign = DIContext.Obtain<IAlignmentManager>().List(argClusterCompute.ProjectID).Locate(arg.AlignmentDesignUid);
         argClusterCompute.Points = alignmentDesign.GetOffsetPointsInNEE(arg.CrossSectionInterval, arg.StartStation, arg.EndStation, arg.Offsets);
         Log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}");
-        // todoJeannie what if zero points?
+        if (argClusterCompute.Points.Count == 0)
+        {
+          return new StationOffsetReportRequestResponse_ApplicationService() {ReturnCode = ReportReturnCode.NoData};
+        }
 
         var request = new StationOffsetReportRequest_ClusterCompute();
         var clusterComputeResponse = request.Execute(argClusterCompute);
