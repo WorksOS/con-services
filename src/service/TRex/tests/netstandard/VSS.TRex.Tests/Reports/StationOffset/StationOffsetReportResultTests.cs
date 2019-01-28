@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.TRex.Common;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using Xunit;
 
@@ -253,6 +254,18 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       Assert.True(ReportType.StationOffset == resultFromStream.ReportType, "Invalid report type");
       Assert.True(original.GriddedData.Rows.Count == resultFromStream.GriddedData.Rows.Count, "Invalid number of rows");
       Assert.Equal(original, resultFromStream);
+    }
+
+    [Fact]
+    public void LoadOffsetsNoOffsets_Failed()
+    {
+      var stationOffsetDataRowManual = new StationOffsetReportDataRow_ApplicationService();
+      Assert.Equal(double.MinValue, stationOffsetDataRowManual.Station);
+      Assert.NotNull(stationOffsetDataRowManual.Offsets);
+      Assert.Equal(0, stationOffsetDataRowManual?.Offsets.Count);
+      Assert.NotNull(stationOffsetDataRowManual.Minimum);
+      Assert.NotNull(stationOffsetDataRowManual.Maximum);
+      Assert.NotNull(stationOffsetDataRowManual.Average);
     }
 
   }

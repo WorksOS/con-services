@@ -35,8 +35,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     private void SetValues(double station = double.MinValue, List<StationOffsetRow> offsets = null)
     {
       Station = station;
-      Offsets = new List<StationOffsetRow>(); // todoJeannie what should this be if no offsets?
-      Minimum = new OffsetStatistics_ApplicationService(); // todoJeannie what should this be if no offsets?
+      Offsets = new List<StationOffsetRow>();
+      Minimum = new OffsetStatistics_ApplicationService();
       Maximum = new OffsetStatistics_ApplicationService();
       Average = new OffsetStatistics_ApplicationService();
       if (offsets != null)
@@ -53,7 +53,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 
     private OffsetStatistics_ApplicationService CalculateMinimum(List<StationOffsetRow> offsets)
     {
-      // todoJeannie what should these default to if no offsets?
       return new OffsetStatistics_ApplicationService()
       {
         Northing = 0,
@@ -69,7 +68,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 
     private OffsetStatistics_ApplicationService CalculateMaximum(List<StationOffsetRow> offsets)
     {
-      // todoJeannie what should these default to if no offsets?
       return new OffsetStatistics_ApplicationService()
       {
         Northing = 0,
@@ -85,7 +83,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 
     private OffsetStatistics_ApplicationService CalculateAverage(List<StationOffsetRow> offsets)
     {
-      // todoJeannie what should these default to if no offsets?
       return new OffsetStatistics_ApplicationService()
       {
         Northing = 0,
@@ -123,6 +120,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
         offset.Read(reader);
         Offsets.Add(offset);
       }
+
       Minimum.Read(reader);
       Maximum.Read(reader);
       Average.Read(reader);
