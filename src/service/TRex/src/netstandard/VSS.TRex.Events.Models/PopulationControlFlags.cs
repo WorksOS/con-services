@@ -3,10 +3,10 @@
 namespace VSS.TRex.Events.Models
 {
   /// <summary>
-  /// A set of bit flag enum values to encode a set of 'wants' subgrids have with respect to machine events
+  /// A set of bit flag enum values to encode a set of 'wants' sub grids have with respect to machine events
   /// </summary>
   [Flags]
-  public enum PopulationControlFlags
+  public enum PopulationControlFlags : uint
   {
     None = 0x0,
     WantsTargetCCVValues = 0x1,

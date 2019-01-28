@@ -19,7 +19,10 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type == TAGDataType.t8bitUInt && (value == 0 || value == 1 || value == 2))
+            if (valueType.Type == TAGDataType.t8bitUInt && 
+                (value == (byte)ElevationMappingMode.LatestElevation || 
+                 value == (byte)ElevationMappingMode.MinimumElevation || 
+                 value == (byte)ElevationMappingMode.MaximumElevation))
             {
                 valueSink.SetElevationMappingModeState((ElevationMappingMode)value);
                 return true;

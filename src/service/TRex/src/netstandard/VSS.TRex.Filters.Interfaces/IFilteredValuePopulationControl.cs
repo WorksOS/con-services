@@ -47,7 +47,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// Converts the set of event population flags into a bit-flagged integer
     /// </summary>
     /// <returns></returns>
-    int GetFlags();
+    uint GetFlags();
 
     /// <summary>
     /// Converts a bit-flagged integer into the set of event population flags
