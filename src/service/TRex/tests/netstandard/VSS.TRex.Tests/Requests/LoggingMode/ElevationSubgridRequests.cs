@@ -173,17 +173,13 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       var siteModel = Utilities.CreateSiteModelWithSingleCellForTesting(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
-      var filter = new CombinedFilter
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        AttributeFilter =
-        {
-          HasTimeFilter = true,
-          EndTime = BASE_TIME
-        }
-      };
+        x.AttributeFilter.HasTimeFilter = true;
+        x.AttributeFilter.EndTime = BASE_TIME;
+      });
 
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] {filter});
-
       var subGrid = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
       // Check cell has has first height selected
@@ -198,18 +194,15 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var siteModel = Utilities.CreateSiteModelWithSingleCellForTesting(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       // Create a time range filter than bounds he time of the second added cell pass by 1 second before and after
-      var filter = new CombinedFilter
+
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        AttributeFilter =
-        {
-          HasTimeFilter = true,
-          StartTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(-1),
-          EndTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(1)
-        }
-      };
+        x.AttributeFilter.HasTimeFilter = true;
+        x.AttributeFilter.StartTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(-1);
+        x.AttributeFilter.EndTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(1);
+      });
 
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
-
       var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
       // Check cell has has second height selected
@@ -220,6 +213,60 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Check only a single cell was selected as a result of the time range filter
       subGridPassCount.Cells[0, 0].MeasuredPassCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithElevationMappingModeFilter_LastPassOnly()
+    {
+      var siteModel = Utilities.CreateSiteModelWithSingleCellForTesting(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+
+      var filter = CombinedFilter.MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.LatestElevation;
+      });
+
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+
+      // Check cell has no height selected as no cell pass matches LastPassElevation mode
+      subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
+    }
+
+    [Fact]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithElevationMappingModeFilter_MinimumElevationOnly()
+    {
+      var siteModel = Utilities.CreateSiteModelWithSingleCellForTesting(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+
+      var filter = CombinedFilter.MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MinimumElevation;
+      }); 
+
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+
+      // Check cell has no height selected as no cell pass matches minimum elevation mode
+      subGridHeight.Cells[0, 0].Should().Be(MINIMUM_HEIGHT);
+    }
+
+    [Fact]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithElevationMappingModeFilter_MaximumElevationOnly()
+    {
+      var siteModel = Utilities.CreateSiteModelWithSingleCellForTesting(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+
+      var filter = CombinedFilter.MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MaximumElevation;
+      });
+
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+
+      // Check cell has no height selected as no cell pass matches Maximum elevation mode
+      subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
     }
   }
 }
