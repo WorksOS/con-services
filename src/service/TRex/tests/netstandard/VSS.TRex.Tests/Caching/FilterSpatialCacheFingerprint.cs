@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;
@@ -7,17 +8,6 @@ namespace VSS.TRex.Tests.Caching
 {
   public class FilterSpatialCacheFingerprint
   {
-    /// <summary>
-    ///  Handy helper function to make a configured filter
-    /// </summary>
-    /// <param name="configure"></param>
-    /// <returns></returns>
-    private CombinedFilter MakeFilterWith(Action<CombinedFilter> configure)
-    {
-      var combinedFilter = new CombinedFilter();
-      configure(combinedFilter);
-      return combinedFilter;
-    }
     [Fact]
     public void Test_GetCacheFingerPrint_Default()
     {
@@ -29,7 +19,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_IncludeEarliestCellPass_Present()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.ReturnEarliestFilteredCellPass = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.ReturnEarliestFilteredCellPass = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("REFCP:1", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain earliest filtered cell pass ID");
@@ -38,7 +28,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_IncludeEarliestCellPass_NotPresent()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.ReturnEarliestFilteredCellPass = false);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.ReturnEarliestFilteredCellPass = false);
 
       Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("REFCP", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains earliest filtered cell pass ID");
@@ -47,7 +37,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_RestrictFilteredDataToCompactorsOnly_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasCompactionMachinesOnlyFilter = true;
       });
@@ -59,7 +49,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_RestrictFilteredDataToCompactorsOnly_NotPresent()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = false);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = false);
 
       Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("CMO", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains compactor restriction ID");
@@ -70,7 +60,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasDesignFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasDesignFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasDesignFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -79,7 +69,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasMachineFilter()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasMachineFilter = true;
         x.AttributeFilter.MachineIDs = new short[] {0};      
@@ -92,7 +82,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasMachineDirectionFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasMachineDirectionFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasMachineDirectionFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -101,7 +91,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasVibeStateFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasVibeStateFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasVibeStateFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -110,7 +100,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasCompactionMachinesOnlyFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -119,7 +109,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasGPSAccuracyFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasGPSAccuracyFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasGPSAccuracyFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -128,7 +118,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasPassTypeFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasPassTypeFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasPassTypeFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -138,7 +128,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasTemperatureRangeFilter()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.HasTemperatureRangeFilter = true);
+      var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.HasTemperatureRangeFilter = true);
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain ExcludeSurveyedSurfaces ID");
@@ -156,7 +146,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_TimeFilter_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasTimeFilter = true;
         x.AttributeFilter.StartTime = new DateTime(1111);
@@ -179,7 +169,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_DesignFilter_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasDesignFilter = true;
         x.AttributeFilter.DesignNameID = 123;
@@ -201,7 +191,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_MachineFilter_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasMachineFilter = true;
         x.AttributeFilter.MachineIDs = new short[] {1, 12, 23};
@@ -223,7 +213,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_MachineDirection_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasMachineDirectionFilter = true;
         x.AttributeFilter.MachineDirection = MachineDirection.Forward;
@@ -245,7 +235,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_VibeState_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasVibeStateFilter = true;
         x.AttributeFilter.VibeState = VibrationState.On;
@@ -265,40 +255,40 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-    public void Test_GetCacheFingerPrint_MinElevMapping_Present()
+    public void Test_GetCacheFingerPrint_ElevationMappingMode_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.HasMinElevMappingFilter = true;
-        x.AttributeFilter.MinElevationMapping = true;
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.MinElevationMapping = ElevationMappingMode.MinimumElevation;
       });
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:1", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:1", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain min elevation mapping filter ID");
 
-      filter = MakeFilterWith(x =>
+      filter = CombinedFilter.MakeFilterWith(x =>
       {
-        x.AttributeFilter.HasMinElevMappingFilter = true;
-        x.AttributeFilter.MinElevationMapping = false;
+        x.AttributeFilter.HasElevationMappingModeFilter = true;
+        x.AttributeFilter.MinElevationMapping = ElevationMappingMode.LatestElevation;
       });
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:0", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:0", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain min elevation mapping filter ID");
     }
 
     [Fact]
-    public void Test_GetCacheFingerPrint_MinElevMapping_NotPresent()
+    public void Test_GetCacheFingerPrint_ElevationMappingMode_NotPresent()
     {
       var filter = new CombinedFilter();
 
-      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MEM:", StringComparison.OrdinalIgnoreCase),
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains vibe state ID");
     }
 
     [Fact]
     public void Test_GetCacheFingerPrint_ElevationType_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationTypeFilter = true;
         x.AttributeFilter.ElevationType = ElevationType.Last;
@@ -320,7 +310,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_GuidanceMode_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGCSGuidanceModeFilter = true;
         x.AttributeFilter.GCSGuidanceMode = MachineAutomaticsMode.Manual;
@@ -342,7 +332,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_GPSAccuracy_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGPSAccuracyFilter = true;
         x.AttributeFilter.GPSAccuracy = GPSAccuracy.Fine;
@@ -353,7 +343,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GA:1-Fine", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain GPS Accuracy filter ID");
 
-      filter = MakeFilterWith(x =>
+      filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGPSAccuracyFilter = true;
         x.AttributeFilter.GPSAccuracy = GPSAccuracy.Fine;
@@ -377,7 +367,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_GPSTolerance_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGPSToleranceFilter = true;
         x.AttributeFilter.GPSTolerance = 123;
@@ -387,7 +377,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GT:1-123", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain GPS Tolerance filter ID");
 
-      filter = MakeFilterWith(x =>
+      filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGPSToleranceFilter = true;
         x.AttributeFilter.GPSTolerance = 123;
@@ -411,7 +401,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_PositiongTech_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasPositioningTechFilter = true;
         x.AttributeFilter.PositioningTech = PositioningTech.UTS;
@@ -435,7 +425,7 @@ namespace VSS.TRex.Tests.Caching
     {
       Guid designGuid = Guid.Parse("12345678-1234-1234-1234-123456781234");
 
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationRangeFilter = true;
         x.AttributeFilter.ElevationRangeDesignUID = designGuid;
@@ -448,7 +438,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:12345678-1234-1234-1234-123456781234-123.456-1.234", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain elevation range filter ID");
 
-      filter = MakeFilterWith(x =>
+      filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationRangeFilter = true;
         x.AttributeFilter.ElevationRangeLevel = 123.456;
@@ -474,7 +464,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_LayerState_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasLayerStateFilter = true;
         x.AttributeFilter.LayerState = LayerState.On;
@@ -496,7 +486,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_LayerID_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasLayerIDFilter = true;
         x.AttributeFilter.LayerID = 1234;
@@ -518,7 +508,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_TemperatureRange_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasTemperatureRangeFilter = true;
         x.AttributeFilter.MaterialTemperatureMin = 123;
@@ -529,7 +519,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("TR:123-456-1", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain temperature range filter ID");
 
-      filter = MakeFilterWith(x =>
+      filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasTemperatureRangeFilter = true;
         x.AttributeFilter.MaterialTemperatureMin = 123;
@@ -554,7 +544,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_PassCountRange_Present()
     {
-      var filter = MakeFilterWith(x =>
+      var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasPassCountRangeFilter = true;
         x.AttributeFilter.PasscountRangeMin = 2;

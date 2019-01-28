@@ -94,10 +94,10 @@ namespace VSS.TRex.SubGrids.Executors
 
     private ITRexSpatialMemoryCache subGridCache;
 
-    /// <summary>
-    /// The DI injected TRex spatial memory cache for general sub grid results
-    /// </summary>
-    private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
+    // <summary>
+    // The DI injected TRex spatial memory cache for general sub grid results
+    // </summary>
+   // private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
 
     /// <summary>
     /// Cleans an array of client leaf sub grids by repatriating them to the client leaf sub grid factory

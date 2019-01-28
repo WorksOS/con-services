@@ -3,8 +3,8 @@
     /// <summary>
     /// The technology used to provide the reported positions used to process cell passes
     /// </summary>
-    public enum PositioningTech
-    {
+    public enum PositioningTech : byte
+  {
         /// <summary>
         /// Positions are derived using Global Positioning Systems
         /// </summary>

@@ -50,7 +50,7 @@ namespace VSS.TRex.HttpClients.RequestHandlers
 
         return await base.SendAsync(request, cancellationToken);
       }
-      catch (ArgumentNullException ex)
+      catch (NullReferenceException ex)
       {
         throw new TPaaSAuthenticatedRequestHandlerException("Bearer could not be obtained, have you DI'd the TPaaSAppCreds Client?", ex);
       }

@@ -3,15 +3,15 @@
     /// <summary>
     /// Type of GPS position used for location information available for a cell pass
     /// </summary>
-    public enum GPSMode
-    {
+    public enum GPSMode : byte
+  {
         /// <summary>
-        /// Old, unrealiable, GPS mode
+        /// Old, unreliable, GPS mode
         /// </summary>
         Old = 0,
 
         /// <summary>
-        /// Automonous (low accuracy) GPS mode
+        /// Autononous (low accuracy) GPS mode
         /// </summary>
         AutonomousPosition = 1,
 

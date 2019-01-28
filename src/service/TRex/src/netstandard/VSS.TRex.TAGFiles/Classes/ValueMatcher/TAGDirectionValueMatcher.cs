@@ -27,7 +27,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
             // Direction value in tag file is 1-based
 
-            if (!Enum.IsDefined(typeof(MachineDirection), (int)(value - 1)))
+            if (!Enum.IsDefined(typeof(MachineDirection), (byte)(value - 1)))
             {
                 return false;
             }

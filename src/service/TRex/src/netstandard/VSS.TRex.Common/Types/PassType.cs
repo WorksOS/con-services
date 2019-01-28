@@ -6,8 +6,8 @@ namespace VSS.TRex.Types
     /// The different varieties of 'passes' that are tracked. Passes are made by the front axle/implement, rear axle/implement, 
     /// vehicle track or vehicle wheel
     /// </summary>
-    public enum PassType
-    {
+    public enum PassType : byte
+  {
         /// <summary>
         /// Pass measured at the front axle or machine implement (eg: blade or drum). This is the default value.
         /// </summary>

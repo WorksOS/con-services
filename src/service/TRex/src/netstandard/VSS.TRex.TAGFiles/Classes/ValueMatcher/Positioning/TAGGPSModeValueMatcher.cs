@@ -20,7 +20,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!Enum.IsDefined(typeof(GPSMode), (int)value))
+            if (!Enum.IsDefined(typeof(GPSMode), (byte)value))
             {
                 return false;
             }

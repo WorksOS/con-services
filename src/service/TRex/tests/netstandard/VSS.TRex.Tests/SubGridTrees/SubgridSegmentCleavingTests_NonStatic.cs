@@ -20,9 +20,9 @@ namespace VSS.TRex.Tests.SubGridTrees
 {
     public class SubgridSegmentCleavingTests_NonStatic : IClassFixture<DILoggingFixture>
   {
-        private static DateTime startTime = new DateTime(2000, 1, 1, 0, 0, 0);
+        private DateTime startTime = new DateTime(2000, 1, 1, 0, 0, 0);
 
-        private static IServerLeafSubGrid MakeSubgridWith10240CellPassesAtOneSecondIntervals()
+        private IServerLeafSubGrid MakeSubgridWith10240CellPassesAtOneSecondIntervals()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
             subGrid.AllocateLeafFullPassStacks();

@@ -5,3 +5,4 @@ PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
 JAEGER_SERVICE_NAME: Dev Project Service API 
 ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
 ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
+FILTER_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0

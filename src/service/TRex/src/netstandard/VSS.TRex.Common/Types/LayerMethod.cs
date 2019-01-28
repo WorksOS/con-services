@@ -3,8 +3,8 @@
     /// <summary>
     /// The layer detection mode to be used for layers analysis of cell passes within a cell
     /// </summary>
-    public enum LayerMethod
-    {
+    public enum LayerMethod : byte
+  {
           Invalid,
           OffsetFromBench,
           OffsetFromDesign,

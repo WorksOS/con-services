@@ -8,7 +8,7 @@ using SixLabors.Primitives;
 
 namespace XnaFan.ImageComparison.Netcore
 {
-    public static class ExtensionMethods
+  public static class ExtensionMethods
     {
         //the font to use for the DifferenceImages
         private static readonly Font DefaultFont = SystemFonts.CreateFont(SystemFonts.Collection.Families.First().Name, 6);
@@ -178,18 +178,14 @@ namespace XnaFan.ImageComparison.Netcore
                 {
                   img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.Black, point));
                 }
-                catch (ArgumentOutOfRangeException e)
-                {
-                }
+                catch (ArgumentOutOfRangeException) { }
                 point = new PointF((int) (x * cellsize + cellsize / 2 - size.Width / 2),
                   (int) (y * cellsize + cellsize / 2 - size.Height / 2));
                 try
                 {
                   img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.White, point));
                 }
-                catch (ArgumentOutOfRangeException e)
-                {
-                }
+                catch (ArgumentOutOfRangeException) { }
               }
             }
         }

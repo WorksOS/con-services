@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.Types
 {
-  public enum MissingTargetDataResultType
+  public enum MissingTargetDataResultType : byte
   {
     /// <summary>
     /// 0 - No problems due to missing target data could still be no data however.

@@ -7,6 +7,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
@@ -63,12 +64,12 @@ namespace VSS.TRex.Filters
     /// </summary>
     public object /*ISiteModel*/ SiteModel
     {
-      get { return siteModel; }
-      set { siteModel = (ISiteModel) value; }
+      get => siteModel; 
+      set => siteModel = (ISiteModel) value; 
     }
 
     /// <summary>
-    /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
+    /// A sub grid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
     public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
@@ -83,16 +84,19 @@ namespace VSS.TRex.Filters
     /// </summary>
     public BitArray MachineIDSet { get; set; }
 
-    public bool AnyFilterSelections { get; set; }
+    private bool _anyFilterSelections;
+    public bool AnyFilterSelections => _prepared ? _anyFilterSelections : Prepare() && _anyFilterSelections;
 
-    public bool AnyMachineEventFilterSelections { get; set; }
+    private bool _anyMachineEventFilterSelections;
+    public bool AnyMachineEventFilterSelections => _prepared ? _anyMachineEventFilterSelections : Prepare() && _anyMachineEventFilterSelections;
 
-    public bool AnyNonMachineEventFilterSelections { get; set; }
+    private bool _anyNonMachineEventFilterSelections;
+    public bool AnyNonMachineEventFilterSelections => _prepared ? _anyNonMachineEventFilterSelections : Prepare() && _anyNonMachineEventFilterSelections;
 
-    /// <summary>
-    /// Default no-arg constructor the produces a filter with all aspects set to their defaults
-    /// </summary>
-    public CellPassAttributeFilter()
+  /// <summary>
+  /// Default no-arg constructor the produces a filter with all aspects set to their defaults
+  /// </summary>
+  public CellPassAttributeFilter()
     {
       ClearFilter();
     }
@@ -106,9 +110,9 @@ namespace VSS.TRex.Filters
     /// Performs operations that prepares the filter for active use. Prepare() must be called prior to
     /// active use of the filter.
     /// </summary>
-    public void Prepare()
+    private bool Prepare()
     {
-      AnyFilterSelections =
+      _anyFilterSelections =
         HasCompactionMachinesOnlyFilter ||
         HasDesignFilter ||
         HasElevationRangeFilter ||
@@ -120,7 +124,7 @@ namespace VSS.TRex.Filters
         HasLayerStateFilter ||
         HasMachineDirectionFilter ||
         HasMachineFilter ||
-        HasMinElevMappingFilter ||
+        HasElevationMappingModeFilter ||
         HasPassTypeFilter ||
         HasPositioningTechFilter ||
         HasTimeFilter ||
@@ -128,11 +132,11 @@ namespace VSS.TRex.Filters
         HasTemperatureRangeFilter ||
         HasPassCountRangeFilter;
 
-      AnyMachineEventFilterSelections =
+      _anyMachineEventFilterSelections =
         HasDesignFilter ||
         HasVibeStateFilter ||
         HasMachineDirectionFilter ||
-        HasMinElevMappingFilter ||
+        HasElevationMappingModeFilter ||
         HasGCSGuidanceModeFilter ||
         HasGPSAccuracyFilter ||
         HasGPSToleranceFilter ||
@@ -140,7 +144,7 @@ namespace VSS.TRex.Filters
         HasLayerIDFilter ||
         HasPassTypeFilter;
 
-      AnyNonMachineEventFilterSelections =
+      _anyNonMachineEventFilterSelections =
         HasTimeFilter ||
         HasMachineFilter ||
         HasElevationRangeFilter ||
@@ -148,6 +152,9 @@ namespace VSS.TRex.Filters
         HasTemperatureRangeFilter;
 
       InitialiseMachineIDsSet();
+
+      _prepared = true;
+      return true;
     }
 
     // Clear all the elements of the filter to a null state
@@ -170,11 +177,14 @@ namespace VSS.TRex.Filters
       ClearTemperatureRange();
       ClearPassCountRange();
       ClearElevationRangeFilterInitialisation();
-      AnyFilterSelections = false;
-      AnyMachineEventFilterSelections = false;
-      AnyNonMachineEventFilterSelections = false;
       ReturnEarliestFilteredCellPass = false;
       FilterTemperatureByLastPass = false;
+
+      _anyFilterSelections = false;
+      _anyMachineEventFilterSelections = false;
+      _anyNonMachineEventFilterSelections = false;
+
+      _prepared = false;
     }
 
     public void ClearVibeState()
@@ -306,11 +316,11 @@ namespace VSS.TRex.Filters
         return Result;
 
       // Min elev mapping
-      Result = FlagCheck(HasMinElevMappingFilter, AFilter.HasMinElevMappingFilter);
+      Result = FlagCheck(HasElevationMappingModeFilter, AFilter.HasElevationMappingModeFilter);
       if (Result != 0)
         return Result;
 
-      if (HasMinElevMappingFilter) // Check the contents of the min elevation filter
+      if (HasElevationMappingModeFilter) // Check the contents of the min elevation filter
         Result = MinElevationMapping.CompareTo(AFilter.MinElevationMapping); // CompareValue(Ord(MinElevationMapping), Ord(AFilter.MinElevationMapping));
 
       if (Result != 0)
@@ -331,7 +341,6 @@ namespace VSS.TRex.Filters
       Result = FlagCheck(ExcludeSurveyedSurfaces(), AFilter.ExcludeSurveyedSurfaces());
       if (Result != 0)
         return Result;
-
 
       // GCS Guidance mode
       Result = FlagCheck(HasGCSGuidanceModeFilter, AFilter.HasGCSGuidanceModeFilter);
@@ -636,7 +645,7 @@ namespace VSS.TRex.Filters
       HasDesignFilter = Source.HasDesignFilter;
       HasVibeStateFilter = Source.HasVibeStateFilter;
       HasLayerStateFilter = Source.HasLayerStateFilter;
-      HasMinElevMappingFilter = Source.HasMinElevMappingFilter;
+      HasElevationMappingModeFilter = Source.HasElevationMappingModeFilter;
       HasElevationTypeFilter = Source.HasElevationTypeFilter;
       HasGCSGuidanceModeFilter = Source.HasGCSGuidanceModeFilter;
       HasGPSAccuracyFilter = Source.HasGPSAccuracyFilter;
@@ -671,8 +680,8 @@ namespace VSS.TRex.Filters
 
     public void ClearMinElevationMapping()
     {
-      HasMinElevMappingFilter = false;
-      MinElevationMapping = false;
+      HasElevationMappingModeFilter = false;
+      MinElevationMapping = ElevationMappingMode.LatestElevation;
     }
 
     public void ClearPassType()
@@ -707,7 +716,7 @@ namespace VSS.TRex.Filters
       int DesignNameIDValue = Consts.kNoDesignNameID;
       VibrationState VibeStateValue = VibrationState.Invalid;
       MachineGear MachineGearValue = MachineGear.Null;
-      bool MinElevMappingValue = false;
+      ElevationMappingMode ElevationMappingModeValue = ElevationMappingMode.LatestElevation;
       GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
       PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
       MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
@@ -786,11 +795,11 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        MinElevMappingValue = machineTargetValues.MinElevMappingStateEvents.GetValueAtDate(PassValue.Time, out _, MinElevMappingValue);
+        ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingModeValue);
 
-        if (MinElevationMapping != MinElevMappingValue)
+        if (MinElevationMapping != ElevationMappingModeValue)
           return false;
       }
 
@@ -894,9 +903,9 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventMinElevMapping)
+        if (MinElevationMapping != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1011,9 +1020,9 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventMinElevMapping)
+        if (MinElevationMapping != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1333,8 +1342,8 @@ namespace VSS.TRex.Filters
         sb.Append($"VS:{VibeState}");
 
       // Min elev mapping
-      if (HasMinElevMappingFilter)
-        sb.Append($"MEM:{(MinElevationMapping ? 1 : 0)}");
+      if (HasElevationMappingModeFilter)
+        sb.Append($"EMM:{(int)MinElevationMapping}");
 
       // Elevation type
       if (HasElevationTypeFilter)

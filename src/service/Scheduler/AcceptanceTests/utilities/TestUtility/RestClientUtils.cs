@@ -28,7 +28,7 @@ namespace TestUtility
     /// <returns></returns>
     public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null)
     {
-      Log.Info(resourceUri, Log.ContentType.ApiSend);
+      Console.WriteLine(resourceUri);
       var msg = new Msg();
       msg.DisplayWebApi(httpMethod, resourceUri, string.Empty, payloadData);
       var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid);                   

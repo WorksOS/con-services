@@ -43,7 +43,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool HasAllCellPasses();
         bool HasLatestData();
         bool LatestCellPassesOutOfDate { get; }
-        bool HaveSubgridDirectoryDetails { get; }
+        bool HasSubGridDirectoryDetails { get; }
 
         void AddPass(uint cellX, uint cellY, CellPass Pass);
 

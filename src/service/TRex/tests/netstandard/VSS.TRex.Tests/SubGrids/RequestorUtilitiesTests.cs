@@ -43,7 +43,8 @@ namespace VSS.TRex.Tests.SubGrids
       TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
 
       Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
-      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
+      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(TRexSpatialMemoryCacheContext);
+      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
 
       DIBuilder
         .New()
@@ -53,13 +54,13 @@ namespace VSS.TRex.Tests.SubGrids
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
         // Register the mock factory for surface elevation requests
-        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => surfaceElevationPatchRequest.Object))
+        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => SurfaceElevationPatchRequest))
 
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => null /*DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()*/)))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => null)))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
 
         .Complete();
@@ -67,7 +68,9 @@ namespace VSS.TRex.Tests.SubGrids
 
     public void Dispose()
     {
-      DIBuilder.Continue().Eject();
+      DIBuilder.Eject();
+      SurfaceElevationPatchRequest = null;
+      TRexSpatialMemoryCacheContext = null;
     }
   }
 
@@ -298,10 +301,15 @@ namespace VSS.TRex.Tests.SubGrids
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
       {
-        var filter = new CombinedFilter();
-        filter.AttributeFilter.HasTimeFilter = true;
-        filter.AttributeFilter.StartTime = DateTime.MinValue;
-        filter.AttributeFilter.EndTime = DateTime.Now;
+        var filter = new CombinedFilter
+        {
+          AttributeFilter =
+          {
+            HasTimeFilter = true,
+            StartTime = DateTime.MinValue,
+            EndTime = DateTime.Now
+          }
+        };
         return filter;
       }).ToArray();
       IFilterSet filterSet = new FilterSet(filters);

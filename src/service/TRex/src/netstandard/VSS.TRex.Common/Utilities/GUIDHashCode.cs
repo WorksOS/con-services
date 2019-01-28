@@ -9,21 +9,38 @@ namespace VSS.TRex.Common.Utilities
   public static class GuidHashCode
   {
     /// <summary>
-    /// Performs a byte-wise hash of the content of the GUID. Unfortunately this is not as fast as the .Net
-    /// implementation which uses an unsafe context XOR of the four internal integers contained in the GUID
-    /// (which is in itself may not not stable due to hardware big/little Endianness). However, it's intent
-    /// is essentially the same.
+    /// Not as fast at the .Net implementation but is consistent with the java implementation.
+    /// Weird byte orders to deal with the funky sequence the bytes come out of the the Guid.ToByteArray method
     /// </summary>
     /// <param name="g"></param>
     /// <returns></returns>
     public static int Hash(Guid g)
     {
-      byte[] b = g.ToByteArray();
+      byte[] bytes = g.ToByteArray();
 
-      return ((b[0]  << 24) | (b[1]  << 16) | (b[2]  << 8) | b[3]) ^
-             ((b[4]  << 24) | (b[5]  << 16) | (b[6]  << 8) | b[7]) ^
-             ((b[8]  << 24) | (b[9]  << 16) | (b[10] << 8) | b[11]) ^
-             ((b[12] << 24) | (b[13] << 16) | (b[14] << 8) | b[15]);
+      var msb = new byte[] {
+        bytes[6],
+        bytes[7],
+        bytes[4],
+        bytes[5],
+        bytes[0],
+        bytes[1],
+        bytes[2],
+        bytes[3] };
+
+      var lsb = new byte[] {
+        bytes[15],
+        bytes[14],
+        bytes[13],
+        bytes[12],
+        bytes[11],
+        bytes[10],
+        bytes[9],
+        bytes[8]
+        };
+
+      long hilo = BitConverter.ToInt64(msb, 0) ^ BitConverter.ToInt64(lsb, 0);
+      return ((int)(hilo >> 32)) ^ (int)hilo;
     }
   }
 }

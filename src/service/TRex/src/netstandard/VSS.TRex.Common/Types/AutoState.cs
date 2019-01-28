@@ -3,7 +3,7 @@
     /// <summary>
     /// The state of machine control automatic drum vibration
     /// </summary>
-    public enum AutoVibrationState
+    public enum AutoVibrationState : byte
     {
         /// <summary>l
         /// Automatics are off

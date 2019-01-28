@@ -12,21 +12,12 @@ namespace VSS.TRex.Tests.Profiling
 {
   public class ProfileBuilderTests_Fixture : IDisposable
   {
-    private static Object Lock = new object();
-
-    public static Mock<IProfilerBuilderFactory<ProfileCell>> factory;
-    public static Mock<ICellLiftBuilder> newCellLiftBuilder;
-    public static Mock<ICellProfileBuilder<ProfileCell>> newCellProfileBuilder;
-    public static Mock<ICellProfileAnalyzer<ProfileCell>> newProfileLiftBuilder;
-
     public ProfileBuilderTests_Fixture()
     {
-      lock (Lock)
-      {
-        factory = new Mock<IProfilerBuilderFactory<ProfileCell>>();
-        newCellLiftBuilder = new Mock<ICellLiftBuilder>();
-        newCellProfileBuilder = new Mock<ICellProfileBuilder<ProfileCell>>();
-        newProfileLiftBuilder = new Mock<ICellProfileAnalyzer<ProfileCell>>();
+        var factory = new Mock<IProfilerBuilderFactory<ProfileCell>>();
+        var newCellLiftBuilder = new Mock<ICellLiftBuilder>();
+        var newCellProfileBuilder = new Mock<ICellProfileBuilder<ProfileCell>>();
+        var newProfileLiftBuilder = new Mock<ICellProfileAnalyzer<ProfileCell>>();
 
         factory.Setup(mk => mk.NewCellLiftBuilder(null, GridDataType.All, null, null, null))
           .Returns(newCellLiftBuilder.Object);
@@ -34,12 +25,17 @@ namespace VSS.TRex.Tests.Profiling
         factory.Setup(mk => mk.NewCellProfileAnalyzer(ProfileStyle.CellPasses, null, null, null, null, null, It.IsAny<ICellLiftBuilder>()))
           .Returns(newProfileLiftBuilder.Object);
 
-        DIBuilder.New().Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(factory.Object)).Complete();
-      }
+        DIBuilder
+          .New()
+          .Add(x => x.AddSingleton<ICellLiftBuilder>(newCellLiftBuilder.Object))
+          .Add(x => x.AddSingleton<ICellProfileBuilder<ProfileCell>>(newCellProfileBuilder.Object))
+          .Add(x => x.AddSingleton<ICellProfileAnalyzer<ProfileCell>>(newProfileLiftBuilder.Object))
+          .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(factory.Object)).Complete();
     }
 
     public void Dispose()
     {
+      DIBuilder.Eject();
     }
   }
 
@@ -61,10 +57,10 @@ namespace VSS.TRex.Tests.Profiling
       var builder = new ProfilerBuilder<ProfileCell>();
       builder.Configure(ProfileStyle.CellPasses, null, null, GridDataType.All, null, null, null, null, null);
 
-      Assert.True(builder.CellLiftBuilder == ProfileBuilderTests_Fixture.newCellLiftBuilder.Object, "Cell lift builder not expected one");
-      Assert.True(builder.CellProfileBuilder == ProfileBuilderTests_Fixture.newCellProfileBuilder.Object,
+      Assert.True(builder.CellLiftBuilder == DIContext.Obtain<ICellLiftBuilder>(), "Cell lift builder not expected one");
+      Assert.True(builder.CellProfileBuilder == DIContext.Obtain<ICellProfileBuilder<ProfileCell>>(),
         "Cell profile builder not expected one");
-      Assert.True(builder.CellProfileAnalyzer == ProfileBuilderTests_Fixture.newProfileLiftBuilder.Object,
+      Assert.True(builder.CellProfileAnalyzer == DIContext.Obtain<ICellProfileAnalyzer<ProfileCell>>(),
         "Profile lift builder not expected one");
     }
   }

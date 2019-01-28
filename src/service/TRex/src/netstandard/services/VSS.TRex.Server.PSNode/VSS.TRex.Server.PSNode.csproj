@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -189,7 +189,7 @@
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="build" Condition="'$(SolutionDir)'!='*Undefined*'">
-    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.6.0\libs" />
+    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.7.0\libs" />
   </Target>
 
 </Project>

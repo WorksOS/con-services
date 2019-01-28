@@ -10,6 +10,9 @@
 
 #>
 <# #>
+
+Write-Host "Setting common variables" -ForegroundColor DarkGray
+
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_PORT", "3306", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_USERNAME", "root", "Machine")

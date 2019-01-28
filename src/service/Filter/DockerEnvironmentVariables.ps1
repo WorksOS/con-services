@@ -35,7 +35,7 @@ function SetEnvironmentVariableLocalhost {
 }
 
 function SetEnvironmentVariableDevServer {
-    Write-Host "Setting environment variables for DEV server..."
+    Write-Host "Setting environment variables for DEV server" -ForegroundColor DarkGray
 
     [Environment]::SetEnvironmentVariable("MYSQL_ROOT_PASSWORD", "d3vRDS1234_", "Machine")
     [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB", "rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com", "Machine")
@@ -49,19 +49,18 @@ function SetEnvironmentVariableDevServer {
     [Environment]::SetEnvironmentVariable("IMPORTED_FILE_API_URL", "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles", "Machine")
 }
 
-Write-Host "Setting common variables..."
+Write-Host "Setting common variables" -ForegroundColor DarkGray
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-Productivity3D-Filter", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_PORT", "3306", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_USERNAME", "root", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
 
 
-if ($args -ccontains "--devserver" -Or $args -ccontains "-d") {
+IF ($args -ccontains "--devserver" -Or $args -ccontains "-d") {
     SetEnvironmentVariableDevServer
 }
-else {
+ELSE {
     SetEnvironmentVariableLocalhost
 }
 
-Write-Host "Done." -ForegroundColor "darkcyan"
 [Console]::ResetColor()

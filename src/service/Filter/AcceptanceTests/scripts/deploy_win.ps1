@@ -1,6 +1,6 @@
 Set-Location $PSScriptRoot/../
 
-Remove-Item -Path ./Deploy -Recurse -Force
+Remove-Item -Path ./Deploy -Recurse -Force -ErrorAction Ignore
 
 New-Item -ItemType directory ./Deploy | out-null
 New-Item -ItemType directory ./Deploy/TestResults | out-null
@@ -13,6 +13,6 @@ Copy-Item ./scripts/rm_cr.sh ./Deploy
 Set-Location ./Tests
 
 Write-Host "Publishing acceptance test projects" -ForegroundColor DarkGray
-Invoke-Expression "dotnet publish WebApiTests/WebApiTests.csproj -o ..\..\deploy\WebApiTests -f netcoreapp2.0"
-Invoke-Expression "dotnet publish ExecutorTests/ExecutorTests.csproj -o ..\..\deploy\ExecutorTests -f netcoreapp2.0"
-Invoke-Expression "dotnet publish RepositoryTests/RepositoryTests.csproj -o ..\..\deploy\RepositoryTests -f netcoreapp2.0"
+Invoke-Expression "dotnet publish WebApiTests/WebApiTests.csproj -o ..\..\deploy\WebApiTests -f netcoreapp2.1"
+Invoke-Expression "dotnet publish ExecutorTests/ExecutorTests.csproj -o ..\..\deploy\ExecutorTests -f netcoreapp2.1"
+Invoke-Expression "dotnet publish RepositoryTests/RepositoryTests.csproj -o ..\..\deploy\RepositoryTests -f netcoreapp2.1"

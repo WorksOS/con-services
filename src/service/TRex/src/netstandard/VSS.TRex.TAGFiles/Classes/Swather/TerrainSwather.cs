@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -16,6 +17,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     public class TerrainSwather : SwatherBase
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
+
+        private ICell_NonStatic_MutationHook hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between
@@ -56,6 +59,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                 InterpolationFence.UpdateExtents();
                 InterpolationFence.GetExtents(out swathBounds.MinX, out swathBounds.MinY, out swathBounds.MaxX, out swathBounds.MaxY);
 
+                hook?.EmitNote($"Interpolation extents: {swathBounds.MinX:F3},{swathBounds.MinY:F3} --> {swathBounds.MaxX:F3},{swathBounds.MaxY:F3}");
+ 
                 // SIGLogMessage.PublishNoODS(Self,
                 //                            Format('Swathing over rectangle: (%.3f, %.3f) -> (%.3f, %.3f) [%.3f wide by %.3f tall]', {SKIP}
                 //                                   [fMinX, fMinY, fMaxX, fMaxY, fMaxX - fMinX, fMaxY - fMinY]),
@@ -79,50 +84,65 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                     return true;
                 }
 
-                // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
-                for (uint I = (uint)CellExtent.MinX; I < CellExtent.MaxX + 1; I++)
+                if (hook != null)
                 {
-                    for (uint J = (uint)CellExtent.MinY; J < CellExtent.MaxY + 1; J++)
+                  hook.EmitNote($"Swathing: {CellExtent.MinX},{CellExtent.MinY} --> {CellExtent.MaxX},{CellExtent.MaxY}");
+
+                  // Emit count of cells matching quad boundary
+                  int cellCount = 0;
+
+                  // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
+                  for (uint I = (uint) CellExtent.MinX; I <= CellExtent.MaxX; I++)
+                  {
+                    for (uint J = (uint) CellExtent.MinY; J <= CellExtent.MaxY; J++)
                     {
-                        Grid.GetCellCenterPosition((uint)I, (uint)J, out double GridX, out double GridY);
+                      Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
+
+                      if (InterpolationFence.IncludesPoint(GridX, GridY))
+                        cellCount++;
+                    }
+                  }
+
+                  hook.EmitNote($"Potential CellCount={cellCount}");
+                }
+
+                // Scan the rectangle of grid cells, checking which of those fall within the quadrilateral
+                for (uint I = (uint)CellExtent.MinX; I <= CellExtent.MaxX; I++)
+                {
+                    for (uint J = (uint)CellExtent.MinY; J <= CellExtent.MaxY; J++)
+                    {
+                        Grid.GetCellCenterPosition(I, J, out double GridX, out double GridY);
 
                         if (InterpolationFence.IncludesPoint(GridX, GridY))
                         {
-                            bool haveInterpolation = false;
+                            double timeVal = Consts.NullDouble;
+                            double heightVal = Consts.NullDouble;
 
-                            if (/*!haveInterpolation && */TimeInterpolator1.IncludesPoint(GridX, GridY)) 
+                            if (TimeInterpolator1.IncludesPoint(GridX, GridY)) 
                             {
-                                double timeVal = TimeInterpolator1.InterpolateHeight(GridX, GridY);
-                                double heightVal = HeightInterpolator1.InterpolateHeight(GridX, GridY);
-
-                                haveInterpolation = timeVal != Consts.NullDouble && heightVal != Consts.NullDouble;
-
-                                if (haveInterpolation)
-                                { 
-                                    _TheTime = DateTime.FromOADate(timeVal);
-                                    _TheHeight = (float)heightVal;
-                                }
+                                timeVal = TimeInterpolator1.InterpolateHeight(GridX, GridY);
+                                heightVal = HeightInterpolator1.InterpolateHeight(GridX, GridY);
+                            }
+                            else if (TimeInterpolator2.IncludesPoint(GridX, GridY)) 
+                            {
+                                timeVal = TimeInterpolator2.InterpolateHeight(GridX, GridY);
+                                heightVal = HeightInterpolator2.InterpolateHeight(GridX, GridY);
                             }
 
-                            if (!haveInterpolation && TimeInterpolator2.IncludesPoint(GridX, GridY)) 
-                            {
-                                double timeVal = TimeInterpolator2.InterpolateHeight(GridX, GridY);
-                                double heightVal = HeightInterpolator2.InterpolateHeight(GridX, GridY);
-
-                                haveInterpolation = timeVal != Consts.NullDouble && heightVal != Consts.NullDouble;
-
-                                if (haveInterpolation)
-                                {
-                                    _TheTime = DateTime.FromOADate(timeVal);
-                                    _TheHeight = (float)heightVal;
-                                }
-                            }
-                            
+                            bool haveInterpolation = timeVal != Consts.NullDouble && heightVal != Consts.NullDouble;
                             if (!haveInterpolation)
                             {
                                 continue;  // We do not want to record this pass in this cell
                             }
 
+                            _TheTime = DateTime.SpecifyKind(DateTime.FromOADate(timeVal), DateTimeKind.Utc);
+                            _TheHeight = (float)heightVal;
+
+                            //if (_TheTime.ToString("yyyy-MM-dd HH-mm-ss.fff") == "2012-11-07 00-12-38.330")
+                            //{
+                            //  double d = TimeInterpolator2.InterpolateHeight(GridX, GridY);                                   
+                            //}
+                            
                             // Check to see if the blade-on-the-ground flag is set. if not, then we will not process this epoch.
                             // The reason for this is that there is no useful information for us while the blade is not on the ground.
                             // There is a counter-argument to this in that customers may use a supervisor system to do an initial
@@ -197,6 +217,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 //                            Format('Committing cell pass at %dx%d to model', {SKIP}
                                 //                                   [I, J]),
                                 //                            slmcDebug);
+
+                                //if (ProcessedCellPass.Time.ToString("yyyy-MM-dd HH-mm-ss.fff") == "2012-11-07 00-12-38.330")
+                                //  ProcessedCellPass = ProcessedCellPass;
 
                                 CommitCellPassToModel(I, J, GridX, GridY, ProcessedCellPass);
                             }
