@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
   {
     public GeofenceType GeofenceType => GeofenceType.Filter;
     public BoundaryRequest Request { get; set; }
-
+    
     /// <summary>
     /// Returns a new instance of <see cref="BoundaryRequestFull"/> using the provided inputs.
     /// </summary>

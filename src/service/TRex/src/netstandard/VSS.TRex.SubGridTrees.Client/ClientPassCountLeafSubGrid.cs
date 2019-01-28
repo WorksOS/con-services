@@ -3,9 +3,7 @@ using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
@@ -14,10 +12,10 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// The content of each cell in a Pass Count client leaf sub grid. Each cell stores an elevation only.
   /// </summary>
-  public class ClientPassCountLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataPassCountEntryRecord>
+  public class ClientPassCountLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataPassCountEntryRecord>, IClientPassCountLeafSubGrid
   {
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientPassCountLeafSubGrid()
     {
@@ -25,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Pass Count subgrids require lift processing...
+    /// Pass Count sub grids require lift processing...
     /// </summary>
     /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
@@ -38,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientPassCountLeafSubGrid()

@@ -15,6 +15,7 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Linq;
+using VSS.Common.Cache.MemoryCache;
 
 namespace ExecutorTests
 {
@@ -294,7 +295,7 @@ namespace ExecutorTests
       var projectListMock = new Mock<IProjectListProxy>();
       projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
 
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorListResult;
 
@@ -357,7 +358,7 @@ namespace ExecutorTests
       var projectListMock = new Mock<IProjectListProxy>();
       projectListMock.Setup(x => x.GetProjectsV4(events[0].CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
 
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
       var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
@@ -424,7 +425,7 @@ namespace ExecutorTests
       var projectListMock = new Mock<IProjectListProxy>();
       projectListMock.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
 
-      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new MemoryCache(new MemoryCacheOptions()));
+      var projectProxy = new ProjectListProxy(this.ConfigStore, this.Logger, new InMemoryDataCache(this.Logger, new MemoryCache(new MemoryCacheOptions())));
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorListResult;
 
@@ -438,7 +439,5 @@ namespace ExecutorTests
         Assert.IsTrue(DateTime.TryParse(filterObj.startUtc.ToString(), out DateTime _));
       Assert.IsTrue(DateTime.TryParse(filterObj.endUtc.ToString(), out DateTime _));
     }
-
- 
   }
 }

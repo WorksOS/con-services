@@ -126,14 +126,18 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Clears out any established DI context returning a empty TRex DI builder & context.
     /// </summary>
-    public DIBuilder Eject()
+    public static void Eject()
     {
-      DIContext.Eject();
+      DIContext.Close();
 
-      ServiceProvider = null;
-      ServiceCollection = new ServiceCollection();
+      if (Instance != null)
+      {
+        Instance.ServiceCollection.Clear();
+        Instance.ServiceCollection = null;
+        Instance.ServiceProvider = null;
+      }
 
-      return this;
+      Instance = null;
     }
 
     /// <summary>

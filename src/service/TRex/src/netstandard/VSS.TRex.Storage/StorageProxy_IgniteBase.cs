@@ -18,7 +18,7 @@ namespace VSS.TRex.Storage
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_IgniteBase>();
 
-    private static readonly IMutabilityConverter MutabilityConverter = DIContext.Obtain<IMutabilityConverter>();
+    private readonly IMutabilityConverter MutabilityConverter = DIContext.Obtain<IMutabilityConverter>();
 
     protected readonly IIgnite ignite;
 

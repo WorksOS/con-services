@@ -7,8 +7,8 @@ namespace VSS.TRex.Types
     /// vehilce track or vehicle wheel
     /// </summary>
     [Flags]
-    public enum PassTypeSet
-    {
+    public enum PassTypeSet : byte
+  {
         /// <summary>
         /// Null value - no pass types set
         /// </summary>

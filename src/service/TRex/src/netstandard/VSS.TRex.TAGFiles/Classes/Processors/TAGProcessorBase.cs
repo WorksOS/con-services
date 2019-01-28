@@ -79,9 +79,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ FRONT AXLE ----------------
             FrontLeftInterpolationFence = new Fence();
             FrontLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            FrontLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             FrontRightInterpolationFence = new Fence();
             FrontRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            FrontRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             for (int I = 0; I < 4; I++)
             {
@@ -99,10 +101,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ REAR AXLE ----------------
             RearLeftInterpolationFence = new Fence();
             RearLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            RearLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             RearRightInterpolationFence = new Fence();
             RearRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
-
+            RearRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
+      
             for (int I = 0; I < 4; I++)
             {
                 RearHeights[I] = new XYZ(0, 0, 0);
@@ -119,9 +123,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ Track ----------------
             TrackLeftInterpolationFence = new Fence();
             TrackLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            TrackLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             TrackRightInterpolationFence = new Fence();
             TrackRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            TrackRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             for (int I = 0; I < 4; I++)
             {
@@ -139,10 +145,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             //------------ Wheel ----------------
             WheelLeftInterpolationFence = new Fence();
             WheelLeftInterpolationFence.SetRectangleFence(0, 0, 1, 1);
+            WheelLeftInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
 
             WheelRightInterpolationFence = new Fence();
             WheelRightInterpolationFence.SetRectangleFence(0, 0, 1, 1);
-
+            WheelRightInterpolationFence.IsRectangle = false; // Remove rectangle flag as usage context is arbitrary quadrilaterals
+                 
             for (int I = 0; I < 4; I++)
             {
                 WheelHeights[I] = new XYZ(0, 0, 0);
@@ -270,10 +278,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// Epochs with larger intervals are not processed.
         /// </summary>
         /// <returns></returns>
-        protected virtual double MaxEpochInterval()
-        {
-            return kMaxEpochInterval;
-        }
+        protected virtual double MaxEpochInterval() => kMaxEpochInterval;
 
         /// <summary>
         /// Ignore invalid positions encountered in the TAG value data.
@@ -349,11 +354,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public virtual bool ProcessFile(string filename)
-        {
-            return false; // Not implemented
-        }
-
+        public virtual bool ProcessFile(string filename) => false; // Not implemented
+        
         /// <summary>
         /// Performs any required processing of the state acquired for the current time epoch in teh TAG values
         /// </summary>
@@ -405,16 +407,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             try
             {
-                if (!base.ProcessEpochContext())
-                {
-                    return false;
-                }
-
-                if (!DoEpochPreProcessAction())
-                {
-                    return false;
-
-                }
+                if (!base.ProcessEpochContext()) return false;
+                if (!DoEpochPreProcessAction()) return false;
 
                 // Check to see if we have a position that is of good enough quality to use.
                 if (ValidPosition == 0)
@@ -431,10 +425,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     // then we continue and process the epoch as if the position information
                     // within it is 'valid'.
 
-                    if (IgnoreInvalidPositions())  // Don't process this interval...
-                    {
-                        return false;
-                    }
+                  if (IgnoreInvalidPositions()) return false; // // Don't process this interval...
                 }
 
                 if (!HaveFirstEpoch)
@@ -572,9 +563,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     {
                       // Process the quadrilateral formed by the two epochs
                       if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
-                      {
                         return false;
-                      }
                     }
                   }
                 }

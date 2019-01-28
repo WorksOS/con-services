@@ -25,6 +25,11 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     public Action<uint, uint, int> RemovePassAction { get; set; } = null;
 
+    /// <summary>
+    /// Emits an arbitrary note to the mutation hook
+    /// </summary>
+    public Action<string> EmitNoteAction { get; set; } = null;
+
     // Default constructor for the mutation hook.
     public Cell_NonStatic_MutationHook()
     {
@@ -38,11 +43,13 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <param name="removeAction"></param>
     public Cell_NonStatic_MutationHook(Action<uint, uint, Cell_NonStatic, CellPass, int> addPassAction,
       Action<uint, uint, Cell_NonStatic, int, CellPass> replaceAction,
-      Action<uint, uint, int> removeAction)
+      Action<uint, uint, int> removeAction,
+      Action<string> emitNoteAction)
     {
       AddPassAction = addPassAction;
       ReplacePassAction = replaceAction;
       RemovePassAction = removeAction;
+      EmitNoteAction = emitNoteAction;
     }
 
     public Cell_NonStatic_MutationHook(ICell_NonStatic_MutationHook actions) : this()
@@ -86,11 +93,21 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       RemovePassAction?.Invoke(X, Y, passIndex);
     }
 
+    /// <summary>
+    /// Emits a note string to the mutation hook
+    /// </summary>
+    /// <param name="note"></param>
+    public virtual void EmitNote(string note)
+    {
+      EmitNoteAction?.Invoke(note);
+    }
+
     public void SetActions(ICell_NonStatic_MutationHook actions)
     {
       AddPassAction = actions.AddPass;
       RemovePassAction = actions.RemovePass;
       ReplacePassAction = actions.ReplacePass;
+      EmitNoteAction = actions.EmitNote;
     }
 
     public void ClearActions()
@@ -98,6 +115,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       AddPassAction = null;
       RemovePassAction = null;
       ReplacePassAction = null;
+      EmitNoteAction = null;
     }
   }
 }

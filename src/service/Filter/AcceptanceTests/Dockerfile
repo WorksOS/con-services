@@ -1,6 +1,4 @@
-ARG APP_BUILD_IMAGE=276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-sdk
-
-FROM ${APP_BUILD_IMAGE}
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk
 COPY . /app
 WORKDIR /app
 

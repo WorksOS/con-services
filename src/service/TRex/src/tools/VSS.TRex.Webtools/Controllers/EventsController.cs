@@ -40,7 +40,7 @@ namespace VSS.TRex.Webtools.Controllers
         (ProductionEventType.MachineAutomaticsChange, "Machine Automatics"),
         (ProductionEventType.MachineRMVJumpValueChange, "RMV Jump"),
         (ProductionEventType.ICFlagsChange, "IC Flags"),
-        (ProductionEventType.MinElevMappingStateChange, "Min Elevation Mapping"),
+        (ProductionEventType.ElevationMappingModeStateChange, "Min Elevation Mapping"),
         (ProductionEventType.GPSAccuracyChange, "GPS Accuracy"),
         (ProductionEventType.PositioningTech, "Positioning Tech"),
         (ProductionEventType.TempWarningLevelMinChange, "Min Temp Warning Level"),

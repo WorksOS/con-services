@@ -3,8 +3,8 @@
     /// <summary>
     ///  The direction the machine is moving in 
     /// </summary>
-    public enum MachineDirection
-    {
+    public enum MachineDirection : byte
+  {
         /// <summary>
         /// Machine is moving in machine defined forward direction
         /// </summary>

@@ -1,18 +1,18 @@
 ﻿namespace VSS.TRex.SubGridTrees.Types
 {
     /// <summary>
-    /// When construcing a path through a subgrid tree to a subgrid, use the following mode to control
+    /// When constructing a path through a sub grid tree to a sub grid, use the following mode to control
     /// how the path is followed and/or constructed as required
     /// </summary>
-    public enum SubGridPathConstructionType
-    {
+    public enum SubGridPathConstructionType : byte
+  {
         /// <summary>
-        /// Creates an appropriate leaf subgrid, if none exists
+        /// Creates an appropriate leaf sub grid, if none exists
         /// </summary>
         CreateLeaf,
 
         /// <summary>
-        /// Creates internal node subgrids to level above leaf subgrid, but does not create the leaf
+        /// Creates internal node sub grids to level above leaf sub grid, but does not create the leaf
         /// </summary>
         CreatePathToLeaf,
 

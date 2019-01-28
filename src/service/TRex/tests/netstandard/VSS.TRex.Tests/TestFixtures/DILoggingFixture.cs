@@ -10,25 +10,20 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
-    private static object Lock = new object();
-
     public DILoggingFixture()
     {
-      lock (Lock)
-      {
-        DIBuilder
-          .New()
-          .AddLogging()
-          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-          .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
-          .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
-          .Complete();
-      }
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
+        .Complete();
     }
 
     public void Dispose()
     {
-      DIBuilder.Continue().Eject();
+      DIBuilder.Eject();
     }
   }
 }
