@@ -100,7 +100,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
-      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
       SubGridTreeBitmapSubGridBits cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       foreach (var point in requestArgument.Points)
@@ -108,14 +108,18 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         // Determine the on-the-ground cell 
         siteModel.Grid.CalculateIndexOfCellContainingPosition(point.Easting, point.Northing, out uint OTGCellX, out uint OTGCellY);
 
-        var thisSubGridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        var thisSubGridOrigin = new SubGridCellAddress(OTGCellX, OTGCellY);
 
         if (!primaryPartitionMap[thisSubGridOrigin.ToSpatialPartitionDescriptor()])
           continue;
 
+        // Get the sub grid relative cell location
+        uint cellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+        uint cellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+
         // Reach into the sub-grid request layer and retrieve an appropriate sub-grid
         cellOverrideMask.Clear();
-        cellOverrideMask.SetBit(OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
+        cellOverrideMask.SetBit(cellX, cellY);
         requestors[0].CellOverrideMask = cellOverrideMask;
 
         // using the cell address get the index of cell in clientGrid
@@ -127,7 +131,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           continue;
         }
 
-        var hydratedPoint = ExtractRequiredValues(requestArgument, point, clientGrid, OTGCellX, OTGCellY);
+        var hydratedPoint = ExtractRequiredValues(requestArgument, point, clientGrid, cellX, cellY);
         result.StationOffsetRows.Add(hydratedPoint);
       }
 
@@ -137,10 +141,10 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
 
     private StationOffsetRow ExtractRequiredValues(StationOffsetReportRequestArgument_ClusterCompute requestArgument,
-      StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, uint OTGCellX, uint OTGCellY)
+      StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, uint cellX, uint cellY)
     {
       clientGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
-      ClientCellProfileLeafSubgridRecord cell = clientGrid.Cells[OTGCellX, OTGCellY];
+      ClientCellProfileLeafSubgridRecord cell = clientGrid.Cells[cellX, cellY];
 
       var result = new StationOffsetRow(point.Station, point.Offset, cell.CellYOffset + subgridWorldOriginY, cell.CellXOffset + subgridWorldOriginX);
       IClientHeightLeafSubGrid designHeights = null;
@@ -177,8 +181,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       result.Elevation = requestArgument.ReportElevation ? cell.Height : Consts.NullHeight;
       result.CutFill = (requestArgument.ReportCutFill && (designHeights != null) &&
-                        designHeights.Cells[OTGCellX, OTGCellY] != Consts.NullHeight)
-        ? cell.Height - designHeights.Cells[OTGCellX, OTGCellY]
+                        designHeights.Cells[cellX, cellY] != Consts.NullHeight)
+        ? cell.Height - designHeights.Cells[cellX, cellY]
         : Consts.NullHeight;
 
       // CCV is equiv to CMV in this instance
