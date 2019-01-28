@@ -190,11 +190,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}";
       callbackUrl += $"&awsFilePath={WebUtility.UrlEncode(s3Path)}";
 
+      var executionTimeout = configStore.GetValueInt("PEGASUS_EXECUTION_TIMEOUT_MINS", 5) * 60000;//minutes converted to millisecs
       var request = new ScheduleJobRequest
       {
         Filename = file.flowFilename,
         Method = "GET", // match the internal upload Method
         Url = callbackUrl,
+        Timeout = executionTimeout
       };
       request.SetStringPayload(string.Empty);
 
