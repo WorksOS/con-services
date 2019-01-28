@@ -39,7 +39,7 @@ def export():
         landfill_algorithm = LandfillAlgorithm()
         log.debug("Generating snakepit report")
         landfill_report = landfill_algorithm.generate_report(pass_count_export.get_veta_export())
-        log.debug("Snakepit report generated")
+        log.debug("Snakepit report generated with length {}".format(landfill_report.tell()))
         landfill_report.seek(0)
         log.debug("Returning generated report")
         return send_file(landfill_report,
