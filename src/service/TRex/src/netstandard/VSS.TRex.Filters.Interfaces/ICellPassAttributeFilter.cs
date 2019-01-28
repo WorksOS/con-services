@@ -21,11 +21,10 @@ namespace VSS.TRex.Filters.Interfaces
 
     bool LastRecordedCellPassSatisfiesFilter { get; }
 
-    bool AnyFilterSelections { get; set; }
-    bool AnyMachineEventFilterSelections { get; set; }
-    bool AnyNonMachineEventFilterSelections { get; set; }
+    bool AnyFilterSelections { get; }
+    bool AnyMachineEventFilterSelections { get; }
+    bool AnyNonMachineEventFilterSelections { get; }
 
-    void Prepare();
     void ClearFilter();
     void ClearVibeState();
 
@@ -79,12 +78,12 @@ namespace VSS.TRex.Filters.Interfaces
       object /*IProfileCell*/ profileCell
     );
 
-    void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY);
+    void InitaliaseFilteringForCell(byte ASubGridCellX, byte ASubGridCellY);
     void InitialiseElevationRangeFilter(IClientHeightLeafSubGrid DesignElevations);
 
     /// <summary>
     /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
-    /// internal machine IDs relative to this sitemodel
+    /// internal machine IDs relative to this site model
     /// </summary>
     void InitialiseMachineIDsSet();
 
@@ -123,7 +122,7 @@ namespace VSS.TRex.Filters.Interfaces
 
     /// <summary>
     /// Creates a fingerprint of the attribute filter based on the content of the filter that
-    /// has a differentiated bearing on the use of cached general subgrid results
+    /// has a differentiated bearing on the use of cached general sub grid results
     /// </summary>
     /// <returns></returns>
     string SpatialCacheFingerprint();

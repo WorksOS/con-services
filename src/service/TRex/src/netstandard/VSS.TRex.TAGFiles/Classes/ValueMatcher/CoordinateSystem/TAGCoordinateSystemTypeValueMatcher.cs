@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
                 return false;
             }
 
-            if (!Enum.IsDefined(typeof(CoordinateSystemType), (int)value))
+            if (!Enum.IsDefined(typeof(CoordinateSystemType), (byte)value))
             {
                 return false;
             }

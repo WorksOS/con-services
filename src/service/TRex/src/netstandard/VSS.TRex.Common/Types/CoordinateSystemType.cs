@@ -3,8 +3,8 @@
     /// <summary>
     /// The type of coordinate system used to define the location written into TAG positioning values
     /// </summary>
-    public enum CoordinateSystemType
-    {
+    public enum CoordinateSystemType : byte
+  {
         /// <summary>
         /// No coordinate system is defined (should never happen)
         /// </summary>
@@ -16,7 +16,7 @@
         CSIB,
 
         /// <summary>
-        /// Automatic coordinate system. This is a system using the Universal Tranverse Mercator projection zone the machine is located in
+        /// Automatic coordinate system. This is a system using the Universal Transverse Mercator projection zone the machine is located in
         /// </summary>
         ACS
     }

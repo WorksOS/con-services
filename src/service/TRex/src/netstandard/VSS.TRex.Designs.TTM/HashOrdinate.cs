@@ -3,7 +3,7 @@
   /// <summary>
   /// Defines the basis for hashed coordinates used to index TriVertex instances
   /// </summary>
-  public enum HashOrdinate
+  public enum HashOrdinate : byte
   {
     /// <summary>
     /// The X ordinate is used for hashing

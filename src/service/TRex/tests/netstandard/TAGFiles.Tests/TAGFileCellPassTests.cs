@@ -81,7 +81,7 @@ namespace TAGFiles.Tests
       File.WriteAllLines(fn, Lines);
     }
 
-    [Theory]//(Skip="Run locally - mutation logs not currently source controlled due to size")]
+    [Theory(Skip="Run locally - mutation logs not currently source controlled due to size")]
     [InlineData("2652J085SW--CASE CX160C--121031183620.tag", "CellMutationLog-2652J085SW--CASE CX160C--121031183620.tag.txt")]
     [InlineData("2652J085SW--CASE CX160C--121101151938.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101151938.tag.txt")]
     [InlineData("2652J085SW--CASE CX160C--121101152438.tag", "CellMutationLog-2652J085SW--CASE CX160C--121101152438.tag.txt")]
@@ -266,7 +266,7 @@ namespace TAGFiles.Tests
       CompareMutationLogs(Lines, Path.Combine("TestData", "TagFiles", "Dimensions2018-CaseMachine", mutationLogFileName));
     }
 
-    [Theory]
+    [Theory(Skip="No mutation log")]
     [InlineData(@"C:\Dev\VSS.Productivity3D.MonoRepo\src\service\TRex\tests\netstandard\TAGFiles.Tests\TestData\TAGFiles\Dimensions2018-CaseMachine")]
     public void Test_TAGFileCellPassGeneration_CompareKnownCellPassConstruction_Folders(string folderName)
     {

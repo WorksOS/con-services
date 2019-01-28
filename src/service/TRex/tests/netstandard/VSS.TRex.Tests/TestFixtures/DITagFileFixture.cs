@@ -48,8 +48,8 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", subFolder, fileName), FileMode.Open, FileAccess.Read)),
-        "Converter execute returned false");
+      var fn = Path.Combine("TestData", "TAGFiles", subFolder, fileName);
+      Assert.True(converter.Execute(new FileStream(fn, FileMode.Open, FileAccess.Read)), "Converter execute returned false");
 
       return converter;
     }

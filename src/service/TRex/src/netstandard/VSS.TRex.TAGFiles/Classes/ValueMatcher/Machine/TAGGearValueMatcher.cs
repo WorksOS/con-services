@@ -22,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
                 return false;
             }
 
-            if (!Enum.IsDefined(typeof(MachineGear), (int)value))
+            if (!Enum.IsDefined(typeof(MachineGear), (byte)value))
             {
                 return false;
             }

@@ -9,7 +9,7 @@ namespace VSS.TRex.Common.Utilities
   public static class GuidHashCode
   {
     /// <summary>
-    /// Not as fast at the .Net implemnentation but is consistant with the java implementation.
+    /// Not as fast at the .Net implementation but is consistent with the java implementation.
     /// Weird byte orders to deal with the funky sequence the bytes come out of the the Guid.ToByteArray method
     /// </summary>
     /// <param name="g"></param>

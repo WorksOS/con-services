@@ -17,7 +17,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool WantsEventMachineCompactionRMVJumpThreshold { get; set; }
     bool WantsEventMachineAutomaticsValues { get; set; }
     bool WantsEventMapResetValues { get; set; }
-    bool WantsEventMinElevMappingValues { get; set; }
+    bool WantsEventElevationMappingModeValues { get; set; }
     bool WantsEventInAvoidZoneStateValues { get; set; }
     bool WantsEventGPSAccuracyValues { get; set; }
     bool WantsEventPositioningTechValues { get; set; }
@@ -47,7 +47,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// Converts the set of event population flags into a bit-flagged integer
     /// </summary>
     /// <returns></returns>
-    int GetFlags();
+    uint GetFlags();
 
     /// <summary>
     /// Converts a bit-flagged integer into the set of event population flags

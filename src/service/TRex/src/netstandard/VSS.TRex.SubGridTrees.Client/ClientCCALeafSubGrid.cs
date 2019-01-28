@@ -34,7 +34,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetCCAValues |
-        PopulationControlFlags.WantsEventMinElevMappingValues;
+        PopulationControlFlags.WantsEventElevationMappingModeValues;
 
       _gridDataType = TRex.Types.GridDataType.CCA;
     }

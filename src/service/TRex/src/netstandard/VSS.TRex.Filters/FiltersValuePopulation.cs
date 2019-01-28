@@ -102,9 +102,9 @@ namespace VSS.TRex.Filters
         */
       }
 
-      if (PopulationControl.WantsEventMinElevMappingValues)
-        filteredPass.EventValues.EventMinElevMapping =
-          values.MinElevMappingStateEvents.GetValueAtDate(_Time, out int _);
+      if (PopulationControl.WantsEventElevationMappingModeValues)
+        filteredPass.EventValues.EventElevationMappingMode =
+          values.ElevationMappingModeStateEvents.GetValueAtDate(_Time, out int _);
 
       if (PopulationControl.WantsEventInAvoidZoneStateValues)
       {

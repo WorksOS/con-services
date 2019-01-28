@@ -3,8 +3,8 @@
     /// <summary>
     /// Controls whether any layer analysis is applied to cell passes in cells queried from the data model
     /// </summary>
-    public enum LayerState
-    {
+    public enum LayerState : byte
+  {
         /// <summary>
         /// No layer analysis is performance
         /// </summary>
