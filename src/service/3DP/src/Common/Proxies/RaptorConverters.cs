@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if RAPTOR
+using ASNode.UserPreferences;
+using ASNode.ExportProductionDataCSV.RPC;
+#endif
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BoundingExtents;
@@ -93,38 +97,39 @@ namespace VSS.Productivity3D.Common.Proxies
     // ElevationPalette comes from WebMapCache.cs
     public static List<int> ElevationPalette()
     {
-      return new List<int> {
-              RGBToColor(255,0,0),
-              RGBToColor(225,60,0),
-              RGBToColor(255,90,0),
-              RGBToColor(255,130,0),
-              RGBToColor(255,170,0),
-              RGBToColor(255,200,0),
-              RGBToColor(255,220,0),
-              RGBToColor(250,230,0),
-              RGBToColor(220,230,0),
-              RGBToColor(210,230,0),
-              RGBToColor(200,230,0),
-              RGBToColor(180,230,0),
-              RGBToColor(150,230,0),
-              RGBToColor(130,230,0),
-              RGBToColor(100,240,0),
-              RGBToColor(0,255,0),
-              RGBToColor(0,240,100),
-              RGBToColor(0,230,130),
-              RGBToColor(0,230,150),
-              RGBToColor(0,230,180),
-              RGBToColor(0,230,200),
-              RGBToColor(0,230,210),
-              RGBToColor(0,220,220),
-              RGBToColor(0,200,230),
-              RGBToColor(0,180,240),
-              RGBToColor(0,150,245),
-              RGBToColor(0,120,250),
-              RGBToColor(0,90,255),
-              RGBToColor(0,70,255),
-              RGBToColor(0,0,255)
-            };
+      return new List<int>
+      {
+        RGBToColor(255, 0, 0),
+        RGBToColor(225, 60, 0),
+        RGBToColor(255, 90, 0),
+        RGBToColor(255, 130, 0),
+        RGBToColor(255, 170, 0),
+        RGBToColor(255, 200, 0),
+        RGBToColor(255, 220, 0),
+        RGBToColor(250, 230, 0),
+        RGBToColor(220, 230, 0),
+        RGBToColor(210, 230, 0),
+        RGBToColor(200, 230, 0),
+        RGBToColor(180, 230, 0),
+        RGBToColor(150, 230, 0),
+        RGBToColor(130, 230, 0),
+        RGBToColor(100, 240, 0),
+        RGBToColor(0, 255, 0),
+        RGBToColor(0, 240, 100),
+        RGBToColor(0, 230, 130),
+        RGBToColor(0, 230, 150),
+        RGBToColor(0, 230, 180),
+        RGBToColor(0, 230, 200),
+        RGBToColor(0, 230, 210),
+        RGBToColor(0, 220, 220),
+        RGBToColor(0, 200, 230),
+        RGBToColor(0, 180, 240),
+        RGBToColor(0, 150, 245),
+        RGBToColor(0, 120, 250),
+        RGBToColor(0, 90, 255),
+        RGBToColor(0, 70, 255),
+        RGBToColor(0, 0, 255)
+      };
     }
 
     private static List<ColorPalette> defaultColorPalette(DisplayMode mode)
@@ -144,40 +149,46 @@ namespace VSS.Productivity3D.Common.Proxies
           paletteList.Add(new ColorPalette(cs.elevationBelowColor, -1));
           for (int i = 0; i < colors.Count; i++)
           {
-            paletteList.Add(new ColorPalette((uint)colors[i], cs.elevationMinimum.value + i * step));
+            paletteList.Add(new ColorPalette((uint) colors[i], cs.elevationMinimum.value + i * step));
           }
+
           paletteList.Add(new ColorPalette(cs.elevationAboveColor, -1));
 
           palettes = paletteList;
           break;
 
         case DisplayMode.CCV:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.cmvMinimum.color, cs.cmvMinimum.value ),
-            new ColorPalette(cs.cmvTarget.color, 0.9 * cs.cmvTarget.value ),
-            new ColorPalette(cs.cmvTarget.color, 1.1 * cs.cmvTarget.value ),
-            new ColorPalette(cs.cmvMaximum.color, cs.cmvMaximum.value ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.cmvMinimum.color, cs.cmvMinimum.value),
+            new ColorPalette(cs.cmvTarget.color, 0.9 * cs.cmvTarget.value),
+            new ColorPalette(cs.cmvTarget.color, 1.1 * cs.cmvTarget.value),
+            new ColorPalette(cs.cmvMaximum.color, cs.cmvMaximum.value)
+          };
           break;
 
         case DisplayMode.CCVPercentChange:
 
         case DisplayMode.CCVPercent:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.cmvPercentMinimum.color, cs.cmvPercentMinimum.value ),
-            new ColorPalette(cs.cmvPercentTarget.color, 0.9 * cs.cmvPercentTarget.value ),
-            new ColorPalette(cs.cmvPercentTarget.color, 1.1 * cs.cmvPercentTarget.value ),
-            new ColorPalette(cs.cmvPercentMaximum.color, cs.cmvPercentMaximum.value ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.cmvPercentMinimum.color, cs.cmvPercentMinimum.value),
+            new ColorPalette(cs.cmvPercentTarget.color, 0.9 * cs.cmvPercentTarget.value),
+            new ColorPalette(cs.cmvPercentTarget.color, 1.1 * cs.cmvPercentTarget.value),
+            new ColorPalette(cs.cmvPercentMaximum.color, cs.cmvPercentMaximum.value)
+          };
           break;
 
         case DisplayMode.CMVChange:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(0, 0  ),
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(0, 0),
             new ColorPalette(65280, 10),
-            new ColorPalette(16776960, 20 ),
-            new ColorPalette(16744192, 40 ),
-            new ColorPalette(16711935, 80 ),
-            new ColorPalette(16711680, double.MaxValue )
-                    };
+            new ColorPalette(16776960, 20),
+            new ColorPalette(16744192, 40),
+            new ColorPalette(16711935, 80),
+            new ColorPalette(16711680, double.MaxValue)
+          };
           break;
 
         case DisplayMode.Latency:
@@ -187,14 +198,17 @@ namespace VSS.Productivity3D.Common.Proxies
           palettes = new List<ColorPalette>();
 
           for (int i = cs.passCountDetailColors.Count - 1; i >= 0; i--)
-            palettes.Insert(cs.passCountDetailColors.Count - i - 1, new ColorPalette(cs.passCountDetailColors[i].color, cs.passCountDetailColors[i].value));
+            palettes.Insert(cs.passCountDetailColors.Count - i - 1,
+              new ColorPalette(cs.passCountDetailColors[i].color, cs.passCountDetailColors[i].value));
           break;
 
         case DisplayMode.PassCountSummary:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.passCountMinimum.color, cs.passCountMinimum.value ),
-            new ColorPalette(cs.passCountTarget .color, cs.passCountTarget .value ),
-            new ColorPalette(cs.passCountMaximum.color, cs.passCountMaximum.value ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.passCountMinimum.color, cs.passCountMinimum.value),
+            new ColorPalette(cs.passCountTarget.color, cs.passCountTarget.value),
+            new ColorPalette(cs.passCountMaximum.color, cs.passCountMaximum.value)
+          };
           break;
 
         case DisplayMode.RMV:
@@ -216,10 +230,12 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.TemperatureSummary:
           // ajr14976
 
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.temperatureMinimumColor, 0 ),
-            new ColorPalette(cs.temperatureTargetColor, 1 ),
-            new ColorPalette(cs.temperatureMaximumColor, 2 ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.temperatureMinimumColor, 0),
+            new ColorPalette(cs.temperatureTargetColor, 1),
+            new ColorPalette(cs.temperatureMaximumColor, 2)
+          };
 
           break;
         case DisplayMode.GPSMode:
@@ -228,73 +244,90 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.CCVPercentSummary:
           // Hard code the summary Colors into a transitions palette for now to push it through the current pallete transfer machanism in 
           // the tile requests. The tile processor will unpack it into an appropriate structure on the Raptor side.
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.ccvSummaryCompleteLayerColor, 0 ),
-            new ColorPalette(cs.ccvSummaryWorkInProgressLayerColor, 1 ),
-            new ColorPalette(cs.ccvSummaryUndercompactedLayerColor, 2 ),
-            new ColorPalette(cs.ccvSummaryOvercompactedLayerColor, 3 ),
-            new ColorPalette(cs.ccvSummaryTooThickLayerColor, 4 ),
-            new ColorPalette(cs.ccvSummaryApprovedLayerColor, 5 )};
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.ccvSummaryCompleteLayerColor, 0),
+            new ColorPalette(cs.ccvSummaryWorkInProgressLayerColor, 1),
+            new ColorPalette(cs.ccvSummaryUndercompactedLayerColor, 2),
+            new ColorPalette(cs.ccvSummaryOvercompactedLayerColor, 3),
+            new ColorPalette(cs.ccvSummaryTooThickLayerColor, 4),
+            new ColorPalette(cs.ccvSummaryApprovedLayerColor, 5)
+          };
           break;
         case DisplayMode.CompactionCoverage:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.coverageColor, 0 ),
-            new ColorPalette(cs.surveyedSurfaceColor, 1 ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.coverageColor, 0),
+            new ColorPalette(cs.surveyedSurfaceColor, 1)
+          };
           break;
         case DisplayMode.TargetThicknessSummary:
         case DisplayMode.VolumeCoverage:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.volumeSummaryCoverageColor, 0 ),
-            new ColorPalette(cs.volumeSummaryVolumeColor, 1 ),
-            new ColorPalette(cs.volumeSummaryNoChangeColor, 2 ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.volumeSummaryCoverageColor, 0),
+            new ColorPalette(cs.volumeSummaryVolumeColor, 1),
+            new ColorPalette(cs.volumeSummaryNoChangeColor, 2)
+          };
           break;
         case DisplayMode.MDP:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.mdpMinimum.color, cs.mdpMinimum.value ),
-            new ColorPalette(cs.mdpTarget.color, 0.9 * cs.mdpTarget.value ),
-            new ColorPalette(cs.mdpTarget.color, 1.1 * cs.mdpTarget.value ),
-            new ColorPalette(cs.mdpMaximum.color, cs.mdpMaximum.value ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.mdpMinimum.color, cs.mdpMinimum.value),
+            new ColorPalette(cs.mdpTarget.color, 0.9 * cs.mdpTarget.value),
+            new ColorPalette(cs.mdpTarget.color, 1.1 * cs.mdpTarget.value),
+            new ColorPalette(cs.mdpMaximum.color, cs.mdpMaximum.value)
+          };
           break;
         case DisplayMode.MDPPercent:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.mdpPercentMinimum.color, cs.mdpPercentMinimum.value ),
-            new ColorPalette(cs.mdpPercentTarget.color, 0.9 * cs.mdpPercentTarget.value ),
-            new ColorPalette(cs.mdpPercentTarget.color, 1.1 * cs.mdpPercentTarget.value ),
-            new ColorPalette(cs.mdpPercentMaximum.color, cs.mdpPercentMaximum.value ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.mdpPercentMinimum.color, cs.mdpPercentMinimum.value),
+            new ColorPalette(cs.mdpPercentTarget.color, 0.9 * cs.mdpPercentTarget.value),
+            new ColorPalette(cs.mdpPercentTarget.color, 1.1 * cs.mdpPercentTarget.value),
+            new ColorPalette(cs.mdpPercentMaximum.color, cs.mdpPercentMaximum.value)
+          };
           break;
         case DisplayMode.MDPSummary:
         case DisplayMode.MDPPercentSummary:
           // Hard code the summary Colors into a transitions palette for now to push it through the current pallete transfer machanism in 
           // the tile requests. The tile processor will unpack it into an appropriate structure on the Raptor side.
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.mdpSummaryCompleteLayerColor, 0 ),
-            new ColorPalette(cs.mdpSummaryWorkInProgressLayerColor, 1 ),
-            new ColorPalette(cs.mdpSummaryUndercompactedLayerColor, 2 ),
-            new ColorPalette(cs.mdpSummaryOvercompactedLayerColor, 3 ),
-            new ColorPalette(cs.mdpSummaryTooThickLayerColor, 4 ),
-            new ColorPalette(cs.mdpSummaryApprovedLayerColor, 5 )};
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.mdpSummaryCompleteLayerColor, 0),
+            new ColorPalette(cs.mdpSummaryWorkInProgressLayerColor, 1),
+            new ColorPalette(cs.mdpSummaryUndercompactedLayerColor, 2),
+            new ColorPalette(cs.mdpSummaryOvercompactedLayerColor, 3),
+            new ColorPalette(cs.mdpSummaryTooThickLayerColor, 4),
+            new ColorPalette(cs.mdpSummaryApprovedLayerColor, 5)
+          };
           break;
         case DisplayMode.MachineSpeed:
           palettes = new List<ColorPalette>();
 
           for (int i = cs.machineSpeedColors.Count - 1; i >= 0; i--)
-            palettes.Insert(cs.machineSpeedColors.Count - i - 1, new ColorPalette(cs.machineSpeedColors[i].color, cs.machineSpeedColors[i].value));
+            palettes.Insert(cs.machineSpeedColors.Count - i - 1,
+              new ColorPalette(cs.machineSpeedColors[i].color, cs.machineSpeedColors[i].value));
           break;
         case DisplayMode.TargetSpeedSummary:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(cs.machineSpeedMinimumColor, 0 ),
-            new ColorPalette(cs.machineSpeedTargetColor, 1 ),
-            new ColorPalette(cs.machineSpeedMaximumColor, 2 ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(cs.machineSpeedMinimumColor, 0),
+            new ColorPalette(cs.machineSpeedTargetColor, 1),
+            new ColorPalette(cs.machineSpeedMaximumColor, 2)
+          };
           break;
         case DisplayMode.TemperatureDetail:
-          palettes = new List<ColorPalette> {
-            new ColorPalette(0x01579B, 0 ),
-            new ColorPalette(0x039BE5, 500 ),
-            new ColorPalette(0xB3E5FC, 1000 ),
-            new ColorPalette(0x8BC34A, 1500 ),
-            new ColorPalette(0xFFCDD2, 2000 ),
-            new ColorPalette(0xE57373, 2500 ),
-            new ColorPalette(0xD50000, 3000 ) };
+          palettes = new List<ColorPalette>
+          {
+            new ColorPalette(0x01579B, 0),
+            new ColorPalette(0x039BE5, 500),
+            new ColorPalette(0xB3E5FC, 1000),
+            new ColorPalette(0x8BC34A, 1500),
+            new ColorPalette(0xFFCDD2, 2000),
+            new ColorPalette(0xE57373, 2500),
+            new ColorPalette(0xD50000, 3000)
+          };
           break;
       }
 
@@ -306,19 +339,19 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       foreach (TMachineDetail machineDetail in machineIDs)
         yield return
-            MachineDetails.Create(machineDetail.ID, machineDetail.Name, machineDetail.IsJohnDoeMachine);
+          MachineDetails.Create(machineDetail.ID, machineDetail.Name, machineDetail.IsJohnDoeMachine);
     }
 
     public static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
-              extents.MinX,
-              extents.MinY,
-              extents.MinZ,
-              extents.MaxX,
-              extents.MaxY,
-              extents.MaxZ
-              );
+        extents.MinX,
+        extents.MinY,
+        extents.MinZ,
+        extents.MaxX,
+        extents.MaxY,
+        extents.MaxZ
+      );
     }
 
     public static DisplayMode convertDisplayMode(TICDisplayMode mode)
@@ -338,14 +371,19 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmTemperatureSummary: return DisplayMode.TemperatureSummary;
         case TICDisplayMode.icdmGPSMode: return DisplayMode.GPSMode;
         case TICDisplayMode.icdmCCVSummary: return DisplayMode.CCVSummary;
-        case TICDisplayMode.icdmCCVPercentSummary: return DisplayMode.CCVPercentSummary;   // This is a synthetic display mode for CCV summary
-        case TICDisplayMode.icdmPassCountSummary: return DisplayMode.PassCountSummary;    // This is a synthetic display mode for Pass Count summary
-        case TICDisplayMode.icdmCompactionCoverage: return DisplayMode.CompactionCoverage;  // This ia a synthetic display mode for Compaction Coverage
-        case TICDisplayMode.icdmVolumeCoverage: return DisplayMode.VolumeCoverage;      // This is a synthetic display mode for Volumes Coverage
+        case TICDisplayMode.icdmCCVPercentSummary:
+          return DisplayMode.CCVPercentSummary; // This is a synthetic display mode for CCV summary
+        case TICDisplayMode.icdmPassCountSummary:
+          return DisplayMode.PassCountSummary; // This is a synthetic display mode for Pass Count summary
+        case TICDisplayMode.icdmCompactionCoverage:
+          return DisplayMode.CompactionCoverage; // This ia a synthetic display mode for Compaction Coverage
+        case TICDisplayMode.icdmVolumeCoverage:
+          return DisplayMode.VolumeCoverage; // This is a synthetic display mode for Volumes Coverage
         case TICDisplayMode.icdmMDP: return DisplayMode.MDP;
         case TICDisplayMode.icdmMDPSummary: return DisplayMode.MDPSummary;
         case TICDisplayMode.icdmMDPPercent: return DisplayMode.MDPPercent;
-        case TICDisplayMode.icdmMDPPercentSummary: return DisplayMode.MDPPercentSummary;   // This is a synthetic display mode for MDP summary
+        case TICDisplayMode.icdmMDPPercentSummary:
+          return DisplayMode.MDPPercentSummary; // This is a synthetic display mode for MDP summary
         case TICDisplayMode.icdmCellProfile: return DisplayMode.CellProfile;
         case TICDisplayMode.icdmCellPasses: return DisplayMode.CellPasses;
         case TICDisplayMode.icdmMachineSpeed: return DisplayMode.MachineSpeed;
@@ -379,14 +417,19 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.TemperatureSummary: return TICDisplayMode.icdmTemperatureSummary;
         case DisplayMode.GPSMode: return TICDisplayMode.icdmGPSMode;
         case DisplayMode.CCVSummary: return TICDisplayMode.icdmCCVSummary;
-        case DisplayMode.CCVPercentSummary: return TICDisplayMode.icdmCCVPercentSummary;   // This is a synthetic display mode for CCV summary
-        case DisplayMode.PassCountSummary: return TICDisplayMode.icdmPassCountSummary;    // This is a synthetic display mode for Pass Count summary
-        case DisplayMode.CompactionCoverage: return TICDisplayMode.icdmCompactionCoverage;  // This ia a synthetic display mode for Compaction Coverage
-        case DisplayMode.VolumeCoverage: return TICDisplayMode.icdmVolumeCoverage;      // This is a synthetic display mode for Volumes Coverage
+        case DisplayMode.CCVPercentSummary:
+          return TICDisplayMode.icdmCCVPercentSummary; // This is a synthetic display mode for CCV summary
+        case DisplayMode.PassCountSummary:
+          return TICDisplayMode.icdmPassCountSummary; // This is a synthetic display mode for Pass Count summary
+        case DisplayMode.CompactionCoverage:
+          return TICDisplayMode.icdmCompactionCoverage; // This ia a synthetic display mode for Compaction Coverage
+        case DisplayMode.VolumeCoverage:
+          return TICDisplayMode.icdmVolumeCoverage; // This is a synthetic display mode for Volumes Coverage
         case DisplayMode.MDP: return TICDisplayMode.icdmMDP;
         case DisplayMode.MDPSummary: return TICDisplayMode.icdmMDPSummary;
         case DisplayMode.MDPPercent: return TICDisplayMode.icdmMDPPercent;
-        case DisplayMode.MDPPercentSummary: return TICDisplayMode.icdmMDPPercentSummary;   // This is a synthetic display mode for MDP summary
+        case DisplayMode.MDPPercentSummary:
+          return TICDisplayMode.icdmMDPPercentSummary; // This is a synthetic display mode for MDP summary
         case DisplayMode.CellProfile: return TICDisplayMode.icdmCellProfile;
         case DisplayMode.CellPasses: return TICDisplayMode.icdmCellPasses;
         case DisplayMode.MachineSpeed: return TICDisplayMode.icdmMachineSpeed;
@@ -420,16 +463,22 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       return new TWGS84FenceContainer
       {
-        FencePoints = fence.Points.ToList().ConvertAll(p => new TWGS84Point { Lat = p.Lat, Lon = p.Lon }).ToArray()
+        FencePoints = fence.Points.ToList().ConvertAll(p => new TWGS84Point
+        {
+          Lat = p.Lat,
+          Lon = p.Lon
+        }).ToArray()
       };
     }
 
-    private static TICFilterSettings DefaultRaptorFilter => new TICFilterSettings { LayerMethod = TFilterLayerMethod.flmAutoMapReset };
+    private static TICFilterSettings DefaultRaptorFilter => new TICFilterSettings
+      {LayerMethod = TFilterLayerMethod.flmAutoMapReset};
 
     /// <summary>
     /// Convert <see cref="FilterResult"/> filter object to a Raptor compatible <see cref="TICFilterSettings"/> filter.
     /// </summary>
-    public static TICFilterSettings ConvertFilter(FilterResult filterResult, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
+    public static TICFilterSettings ConvertFilter(FilterResult filterResult, DateTime? overrideStartUTC = null,
+      DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
     {
       if (filterResult == null) return DefaultRaptorFilter;
 
@@ -461,18 +510,32 @@ namespace VSS.Productivity3D.Common.Proxies
       // Currently the Raptor code only supports filtering on a single Machine Design
       if (filterResult.OnMachineDesignId.HasValue)
       {
-        filter.DesignNameID = (int)filterResult.OnMachineDesignId.Value; // (Aaron) Possible mismatch here, OnMachineDesignId is a long?. Won't fit into int...
+        filter.DesignNameID =
+          (int) filterResult.OnMachineDesignId
+            .Value; // (Aaron) Possible mismatch here, OnMachineDesignId is a long?. Won't fit into int...
         filter.SetDesignNameCellpassState(true);
       }
 
       if (filterResult.AssetIDs != null && filterResult.AssetIDs.Count > 0)
       {
-        assetList = (from a in filterResult.AssetIDs select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
+        assetList = (from a in filterResult.AssetIDs
+          select new TMachineDetail
+          {
+            Name = string.Empty,
+            ID = a,
+            IsJohnDoeMachine = false
+          }).ToList();
       }
 
       if (filterResult.ContributingMachines != null && filterResult.ContributingMachines.Count > 0)
       {
-        var machineList = (from c in filterResult.ContributingMachines select new TMachineDetail { Name = c.MachineName, ID = c.AssetId, IsJohnDoeMachine = c.IsJohnDoe }).ToList();
+        var machineList = (from c in filterResult.ContributingMachines
+          select new TMachineDetail
+          {
+            Name = c.MachineName,
+            ID = c.AssetId,
+            IsJohnDoeMachine = c.IsJohnDoe
+          }).ToList();
         if (assetList == null)
           assetList = machineList;
         else
@@ -483,7 +546,13 @@ namespace VSS.Productivity3D.Common.Proxies
       {
         if (assetList == null)
         {
-          assetList = (from a in overrideAssetIds select new TMachineDetail { Name = string.Empty, ID = a, IsJohnDoeMachine = false }).ToList();
+          assetList = (from a in overrideAssetIds
+            select new TMachineDetail
+            {
+              Name = string.Empty,
+              ID = a,
+              IsJohnDoeMachine = false
+            }).ToList();
         }
         else
         {
@@ -517,7 +586,8 @@ namespace VSS.Productivity3D.Common.Proxies
         //services where everything is radians we need to convert to decimal degrees here for the filter to match VL.
         foreach (WGSPoint p in filterResult.PolygonLL)
         {
-          filter.Fence.Add(new TFencePoint(p.Lon * Coordinates.RADIANS_TO_DEGREES, p.Lat * Coordinates.RADIANS_TO_DEGREES, 0));
+          filter.Fence.Add(new TFencePoint(p.Lon * Coordinates.RADIANS_TO_DEGREES,
+            p.Lat * Coordinates.RADIANS_TO_DEGREES, 0));
         }
 
         filter.SetPositionalCellSpatialSelectionState(true);
@@ -539,11 +609,14 @@ namespace VSS.Productivity3D.Common.Proxies
 
       if (filterResult.ForwardDirection.HasValue)
       {
-        filter.MachineDirection = filterResult.ForwardDirection.Value ? TICMachineDirection.mdForward : TICMachineDirection.mdReverse;
+        filter.MachineDirection = filterResult.ForwardDirection.Value
+          ? TICMachineDirection.mdForward
+          : TICMachineDirection.mdReverse;
         filter.SetMachineDirectionCellpassState(true);
       }
 
-      if (filterResult.AlignmentFile != null && filterResult.StartStation.HasValue && filterResult.EndStation.HasValue && filterResult.LeftOffset.HasValue && filterResult.RightOffset.HasValue)
+      if (filterResult.AlignmentFile != null && filterResult.StartStation.HasValue &&
+          filterResult.EndStation.HasValue && filterResult.LeftOffset.HasValue && filterResult.RightOffset.HasValue)
       {
         filter.ReferenceDesign = DesignDescriptor(filterResult.AlignmentFile);
         filter.StartStation = filterResult.StartStation.Value;
@@ -560,7 +633,9 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.LayerMethod = ConvertLayerMethod(filterResult.LayerType.Value);
         filter.LayerState = TICLayerState.lsOn;
 
-        if (filter.LayerMethod == TFilterLayerMethod.flmOffsetFromDesign || filter.LayerMethod == TFilterLayerMethod.flmOffsetFromBench || filter.LayerMethod == TFilterLayerMethod.flmOffsetFromProfile)
+        if (filter.LayerMethod == TFilterLayerMethod.flmOffsetFromDesign ||
+            filter.LayerMethod == TFilterLayerMethod.flmOffsetFromBench ||
+            filter.LayerMethod == TFilterLayerMethod.flmOffsetFromProfile)
         {
           if (filter.LayerMethod == TFilterLayerMethod.flmOffsetFromBench)
           {
@@ -570,9 +645,12 @@ namespace VSS.Productivity3D.Common.Proxies
           {
             filter.ElevationRangeDesign = DesignDescriptor(filterResult.LayerDesignOrAlignmentFile);
           }
+
           if (filterResult.LayerNumber.HasValue && filterResult.LayerThickness.HasValue)
           {
-            int layerNumber = filterResult.LayerNumber.Value < 0 ? filterResult.LayerNumber.Value + 1 : filterResult.LayerNumber.Value;
+            int layerNumber = filterResult.LayerNumber.Value < 0
+              ? filterResult.LayerNumber.Value + 1
+              : filterResult.LayerNumber.Value;
             filter.ElevationRangeOffset = layerNumber * filterResult.LayerThickness.Value;
             filter.ElevationRangeThickness = filterResult.LayerThickness.Value;
           }
@@ -581,6 +659,7 @@ namespace VSS.Productivity3D.Common.Proxies
             filter.ElevationRangeOffset = 0;
             filter.ElevationRangeThickness = 0;
           }
+
           filter.SetElevationRangeCellPassState(true);
         }
         else if (filter.LayerMethod == TFilterLayerMethod.flmTagfileLayerNumber)
@@ -598,7 +677,7 @@ namespace VSS.Productivity3D.Common.Proxies
       if (filterResult.GpsAccuracy.HasValue)
       {
         //TODO Do safe casting here
-        filter.GPSAccuracy = ((TICGPSAccuracy)filterResult.GpsAccuracy);
+        filter.GPSAccuracy = ((TICGPSAccuracy) filterResult.GpsAccuracy);
         filter.GPSAccuracyIsInclusive = filterResult.GpsAccuracyIsInclusive ?? false;
         filter.PassFilterSelections = filter.PassFilterSelections.Set(TICFilterPassSelection.icfsGPSAccuracy);
       }
@@ -609,11 +688,13 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptFront);
         filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptRear);
       }
+
       if (filterResult.TrackMapping.HasValue && filterResult.TrackMapping.Value)
       {
         filter.SetPassTypeState(true);
         filter.PassTypeSelections = filter.PassTypeSelections.Set(TICPassType.ptTrack);
       }
+
       if (filterResult.WheelTracking.HasValue && filterResult.WheelTracking.Value)
       {
         filter.SetPassTypeState(true);
@@ -635,7 +716,8 @@ namespace VSS.Productivity3D.Common.Proxies
 
       if ((filterResult != null) && (filterResult.SurveyedSurfaceExclusionList != null))
       {
-        filter.SurveyedSurfaceExclusionList = (from a in filterResult.SurveyedSurfaceExclusionList select new TSurveyedSurfaceID { SurveyedSurfaceID = a }).ToArray();
+        filter.SurveyedSurfaceExclusionList = (from a in filterResult.SurveyedSurfaceExclusionList
+          select new TSurveyedSurfaceID {SurveyedSurfaceID = a}).ToArray();
       }
 
       if (assetList != null)
@@ -644,18 +726,19 @@ namespace VSS.Productivity3D.Common.Proxies
         filter.SetDesignMachineCellpassState(true);
       }
 
-      filter.ReturnEarliestFilteredCellPass = (filterResult != null) && filterResult.ReturnEarliest.HasValue && filterResult.ReturnEarliest.Value;
+      filter.ReturnEarliestFilteredCellPass = (filterResult != null) && filterResult.ReturnEarliest.HasValue &&
+                                              filterResult.ReturnEarliest.Value;
 
       if (filterResult.AutomaticsType.HasValue)
       {
-        filter.GCSGuidanceMode = (TGCSAutomaticsMode)filterResult.AutomaticsType.Value;
+        filter.GCSGuidanceMode = (TGCSAutomaticsMode) filterResult.AutomaticsType.Value;
         filter.SetGCSGuidanceModeCellpassState(true);
       }
 
       if (filterResult.TemperatureRangeMin.HasValue && filterResult.TemperatureRangeMax.HasValue)
       {
-        filter.TemperatureRangeMin = (ushort)(filterResult.TemperatureRangeMin.Value * 10);
-        filter.TemperatureRangeMax = (ushort)(filterResult.TemperatureRangeMax.Value * 10);
+        filter.TemperatureRangeMin = (ushort) (filterResult.TemperatureRangeMin.Value * 10);
+        filter.TemperatureRangeMax = (ushort) (filterResult.TemperatureRangeMax.Value * 10);
         filter.SetTemperatureRangeState(true);
       }
 
@@ -671,9 +754,9 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TICLiftBuildSettings ConvertLift(LiftBuildSettings settings, TFilterLayerMethod layerMethod)
     {
-      var result = settings == null ?
-        new TSVOICOptions().GetLiftBuildSettings(layerMethod) :
-        new TICLiftBuildSettings
+      var result = settings == null
+        ? new TSVOICOptions().GetLiftBuildSettings(layerMethod)
+        : new TICLiftBuildSettings
         {
           CCVRange = ConvertCCVRange(settings.CCVRange),
           CCVSummarizeTopLayerOnly = settings.CCVSummarizeTopLayerOnly,
@@ -692,7 +775,8 @@ namespace VSS.Productivity3D.Common.Proxies
           OverridingMachineCCV = settings.OverridingMachineCCV ?? 0,
           OverridingMachineMDP = settings.OverridingMachineMDP ?? 0,
           OverridingTargetPassCountRange = ConvertTargetPassCountRange(settings.OverridingTargetPassCountRange),
-          OverridingTemperatureWarningLevels = ConvertTemperatureWarningLevels(settings.OverridingTemperatureWarningLevels),
+          OverridingTemperatureWarningLevels =
+            ConvertTemperatureWarningLevels(settings.OverridingTemperatureWarningLevels),
           IncludeSuperseded = settings.IncludeSupersededLifts ?? false,
           TargetLiftThickness = settings.LiftThicknessTarget?.TargetLiftThickness ?? SVOICDecls.__Global.kICNullHeight,
           AboveToleranceLiftThickness = settings.LiftThicknessTarget?.AboveToleranceLiftThickness ?? 0,
@@ -702,7 +786,7 @@ namespace VSS.Productivity3D.Common.Proxies
         };
 
       if (settings?.CCvSummaryType != null)
-        result.CCVSummaryTypes = result.CCVSummaryTypes.Set((int)settings.CCvSummaryType);
+        result.CCVSummaryTypes = result.CCVSummaryTypes.Set((int) settings.CCvSummaryType);
 
       return result;
     }
@@ -710,17 +794,47 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TCCVRangePercentage ConvertCCVRange(CCVRangePercentage range)
     {
-      return range == null ? new TCCVRangePercentage { Min = 0, Max = 100 } : new TCCVRangePercentage { Min = range.Min, Max = range.Max };
+      return range == null
+        ? new TCCVRangePercentage
+        {
+          Min = 0,
+          Max = 100
+        }
+        : new TCCVRangePercentage
+        {
+          Min = range.Min,
+          Max = range.Max
+        };
     }
 
     public static TMDPRangePercentage ConvertMDPRange(MDPRangePercentage range)
     {
-      return range == null ? new TMDPRangePercentage { Min = 0, Max = 100 } : new TMDPRangePercentage { Min = range.Min, Max = range.Max };
+      return range == null
+        ? new TMDPRangePercentage
+        {
+          Min = 0,
+          Max = 100
+        }
+        : new TMDPRangePercentage
+        {
+          Min = range.Min,
+          Max = range.Max
+        };
     }
 
     public static TTargetPassCountRange ConvertTargetPassCountRange(TargetPassCountRange range)
     {
-      return range == null ? new TTargetPassCountRange { Min = 1, Max = ushort.MaxValue } : new TTargetPassCountRange { Min = range.Min, Max = range.Max };
+      return range == null
+        ? new TTargetPassCountRange
+        {
+          Min = 1,
+          Max = ushort.MaxValue
+        }
+        : new TTargetPassCountRange
+        {
+          Min = range.Min,
+          Max = range.Max
+        };
     }
 
     public static TICLiftDetectionType ConvertLiftDetectionType(LiftDetectionType type)
@@ -748,7 +862,17 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TTemperatureWarningLevels ConvertTemperatureWarningLevels(TemperatureWarningLevels levels)
     {
-      return levels == null ? new TTemperatureWarningLevels { Min = 0, Max = 100 } : new TTemperatureWarningLevels { Min = levels.Min, Max = levels.Max };
+      return levels == null
+        ? new TTemperatureWarningLevels
+        {
+          Min = 0,
+          Max = 100
+        }
+        : new TTemperatureWarningLevels
+        {
+          Min = levels.Min,
+          Max = levels.Max
+        };
     }
 
     public static TICElevationType ConvertElevationType(ElevationType type)
@@ -780,12 +904,15 @@ namespace VSS.Productivity3D.Common.Proxies
       }
     }
 
-    public static TVLPDDesignDescriptor DesignDescriptor(long designID, string filespaceId, string path, string fileName, double offset)
+    public static TVLPDDesignDescriptor DesignDescriptor(long designID, string filespaceId, string path,
+      string fileName, double offset)
     {
-      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designID, "RaptorServices", filespaceId, path, fileName, offset);
+      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designID, "RaptorServices", filespaceId, path, fileName,
+        offset);
     }
 
-    public static TVLPDDesignDescriptor EmptyDesignDescriptor => DesignDescriptor(0, string.Empty, string.Empty, string.Empty, 0);
+    public static TVLPDDesignDescriptor EmptyDesignDescriptor =>
+      DesignDescriptor(0, string.Empty, string.Empty, string.Empty, 0);
 
     public static TVLPDDesignDescriptor DesignDescriptor(DesignDescriptor dd)
     {
@@ -818,6 +945,7 @@ namespace VSS.Productivity3D.Common.Proxies
         default: throw new Exception($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
       }
     }
+
     /// <summary>
     /// convertSurveyedSurfaceExlusionList
     /// </summary>
@@ -832,6 +960,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
       return result;
     }
+
     /// <summary>
     /// convertSurveyedSurfaceExlusionList
     /// </summary>
@@ -872,11 +1001,11 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     public static TSVOICOptions convertOptions(ColorSettingsFlags colorSettingsFlags,
-                                               LiftBuildSettings liftSettings,
-                                               double volumesNoChangeTolerance,
-                                               FilterLayerMethod filterLayerMethod,
-                                               DisplayMode mode,
-                                               bool setSummaryDataLayersVisibility)
+      LiftBuildSettings liftSettings,
+      double volumesNoChangeTolerance,
+      FilterLayerMethod filterLayerMethod,
+      DisplayMode mode,
+      bool setSummaryDataLayersVisibility)
     {
       TSVOICOptions options = new TSVOICOptions();
 
@@ -890,7 +1019,9 @@ namespace VSS.Productivity3D.Common.Proxies
           colorSettingsFlags.mdpSummaryWorkInProgressLayerVisible = true;
           colorSettingsFlags.mdpSummaryTooThickLayerVisible = true;
         }
-      };
+      }
+
+      ;
 
       if (colorSettingsFlags != null && liftSettings != null)
       {
@@ -898,14 +1029,16 @@ namespace VSS.Productivity3D.Common.Proxies
         // e.g. a user cmv override target setting value of 100 is actually has a value of 1000 in raptor
         // therefore some settings get multiplied by 10. Ideally it would have been stored in that precision but it's too late now
 
-        options.AbsoluteTargetCCV = liftSettings.OverridingMachineCCV.HasValue ? liftSettings.OverridingMachineCCV.Value : (short)0;
+        options.AbsoluteTargetCCV = liftSettings.OverridingMachineCCV.HasValue
+          ? liftSettings.OverridingMachineCCV.Value
+          : (short) 0;
         ////(short)Math.Round(liftSettings.overridingMachineCCV.Value * 10);
 
-        options.CCVDecouplingColour = (int)Colors.Black;
+        options.CCVDecouplingColour = (int) Colors.Black;
         options.CCVRange = ConvertCCVRange(liftSettings.CCVRange);
         options.CCVSummarizeTopLayerOnly = liftSettings.CCVSummarizeTopLayerOnly;
-        options.CCVTargetColour = (int)Colors.Green;
-        options.FirstPassThickness = (float)liftSettings.FirstPassThickness;
+        options.CCVTargetColour = (int) Colors.Green;
+        options.FirstPassThickness = (float) liftSettings.FirstPassThickness;
         switch (filterLayerMethod)
         {
           case FilterLayerMethod.None:
@@ -925,11 +1058,14 @@ namespace VSS.Productivity3D.Common.Proxies
             options.LiftDetectionType = TICLiftDetectionType.icldtAutoMapReset;
             break;
         }
+
         options.LiftThicknessMachine = !liftSettings.OverridingLiftThickness.HasValue;
         options.LiftThicknessType = ConvertLiftThicknessType(liftSettings.LiftThicknessType);
-        options.MaximumLiftThickness = liftSettings.OverridingLiftThickness.HasValue ? liftSettings.OverridingLiftThickness.Value : 0f;
+        options.MaximumLiftThickness = liftSettings.OverridingLiftThickness.HasValue
+          ? liftSettings.OverridingLiftThickness.Value
+          : 0f;
 
-        options.PassTargetColour = (int)Colors.Green;
+        options.PassTargetColour = (int) Colors.Green;
         options.TargetPassCountRange = ConvertTargetPassCountRange(liftSettings.OverridingTargetPassCountRange);
         options.UseMachineTargetCCV = !liftSettings.OverridingMachineCCV.HasValue;
         options.UseMachineTargetPass = liftSettings.OverridingTargetPassCountRange == null;
@@ -946,36 +1082,44 @@ namespace VSS.Productivity3D.Common.Proxies
         else
           options.TargetLiftThickness = SVOICDecls.__Global.kICNullHeight;
 
-        options.MinSpeedTarget = mode == DisplayMode.TargetSpeedSummary ? liftSettings.MachineSpeedTarget.MinTargetMachineSpeed : SVOICDecls.__Global.kICNullMachineSpeed;
-        options.MaxSpeedTarget = mode == DisplayMode.TargetSpeedSummary ? liftSettings.MachineSpeedTarget.MaxTargetMachineSpeed : SVOICDecls.__Global.kICNullMachineSpeed;
+        options.MinSpeedTarget = mode == DisplayMode.TargetSpeedSummary
+          ? liftSettings.MachineSpeedTarget.MinTargetMachineSpeed
+          : SVOICDecls.__Global.kICNullMachineSpeed;
+        options.MaxSpeedTarget = mode == DisplayMode.TargetSpeedSummary
+          ? liftSettings.MachineSpeedTarget.MaxTargetMachineSpeed
+          : SVOICDecls.__Global.kICNullMachineSpeed;
 
         switch (mode) // for summary modes make sure at least compaction is set
         {
           case DisplayMode.CCVSummary:
           case DisplayMode.CCVPercentSummary:
-            options.SetCCVSummaryTypeCompaction(true);  // always set
+            options.SetCCVSummaryTypeCompaction(true); // always set
             break;
 
           case DisplayMode.MDPSummary:
           case DisplayMode.MDPPercentSummary:
             options.SetMDPSummaryTypeCompaction(true); // always set
             break;
-        };
+        }
 
-        options.NoChangeVolumeTolerance = (float)volumesNoChangeTolerance;
+        ;
+
+        options.NoChangeVolumeTolerance = (float) volumesNoChangeTolerance;
 
         options.UseMachineTempWarningLevels = liftSettings.OverridingTemperatureWarningLevels == null;
         if (liftSettings.OverridingTemperatureWarningLevels != null)
         {
           options.TemperatureWarningLevels =
-              ConvertTemperatureWarningLevels(liftSettings.OverridingTemperatureWarningLevels);
+            ConvertTemperatureWarningLevels(liftSettings.OverridingTemperatureWarningLevels);
         }
 
-        options.AbsoluteTargetMDP = liftSettings.OverridingMachineMDP.HasValue ? liftSettings.OverridingMachineMDP.Value : (short)0;
+        options.AbsoluteTargetMDP = liftSettings.OverridingMachineMDP.HasValue
+          ? liftSettings.OverridingMachineMDP.Value
+          : (short) 0;
         //(short)Math.Round(liftSettings.overrideTargetMDPValue.Value * 10);
         options.MDPRange = ConvertMDPRange(liftSettings.MDPRange);
         options.MDPSummarizeTopLayerOnly = liftSettings.MDPSummarizeTopLayerOnly;
-        options.MDPTargetColour = (int)Colors.Green;
+        options.MDPTargetColour = (int) Colors.Green;
         options.UseMachineTargetMDP = !liftSettings.OverridingMachineMDP.HasValue;
         options.SetMDPSummaryTypeWIP(colorSettingsFlags.mdpSummaryWorkInProgressLayerVisible);
         options.SetMDPSummaryTypeThickness(colorSettingsFlags.mdpSummaryTooThickLayerVisible);
@@ -990,7 +1134,7 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     public static void convertGridOrLLBoundingBox(BoundingBox2DGrid grid, BoundingBox2DLatLon ll, out TWGS84Point bl,
-        out TWGS84Point tr, out bool coordsAreGrid)
+      out TWGS84Point tr, out bool coordsAreGrid)
     {
       coordsAreGrid = grid != null;
       if (coordsAreGrid)
@@ -1014,16 +1158,18 @@ namespace VSS.Productivity3D.Common.Proxies
     /// Ensures there is not a misconfigured topFilter for certain operations that involve design surfaces for tile rendering operations
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings topFilter,
-                                                                  DisplayMode mode,
-                                                                  VolumesType computeVolType)
+      DisplayMode mode,
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations that effect Cut/Fill, Volume and Thickness requests. 
       // If these requests invovle a design through the appropriate volume computation modes, the topFilter has no effect
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a top filter indication one of the comparative surfaces used by these requests
-      if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) || (mode == DisplayMode.TargetThicknessSummary))
+      if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) ||
+           (mode == DisplayMode.TargetThicknessSummary))
           &&
-          ((computeVolType == VolumesType.BetweenDesignAndFilter) || (computeVolType == VolumesType.BetweenFilterAndDesign)))
+          ((computeVolType == VolumesType.BetweenDesignAndFilter) ||
+           (computeVolType == VolumesType.BetweenFilterAndDesign)))
       {
         // Force topfilter (which is filter2) to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
@@ -1035,13 +1181,14 @@ namespace VSS.Productivity3D.Common.Proxies
     /// Ensures there is not a misconfigured topFilter for certain operations that involve design surfaces for volume computation operations
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings topFilter,
-                                                                  VolumesType computeVolType)
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume computations with respect to designs
       // If these requests invovle a design through the appropriate volume computation modes, the topFilter has no effect
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a top filter indication one of the comparative surfaces used by these requests
-      if ((computeVolType == VolumesType.BetweenDesignAndFilter) || (computeVolType == VolumesType.BetweenFilterAndDesign))
+      if ((computeVolType == VolumesType.BetweenDesignAndFilter) ||
+          (computeVolType == VolumesType.BetweenFilterAndDesign))
       {
         // Force topfilter (which is filter2) to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
@@ -1053,16 +1200,17 @@ namespace VSS.Productivity3D.Common.Proxies
     /// Ensures there is not a misconfigured filter2 for certain operations that involve design surfaces for tile rendering operations
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings filter1,
-                                                                  ref TICFilterSettings filter2,
-                                                                  DisplayMode mode,
-                                                                  VolumesType computeVolType)
+      ref TICFilterSettings filter2,
+      DisplayMode mode,
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations that effect Cut/Fill, Volume and Thickness requests. 
       // If these requests invovle a design through the appropriate volume computation modes, either the topFilter or the baseFilter
       // has no effect depending on the style of filter/design and design/filter chosen 
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a filter used by these requests
-      if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) || (mode == DisplayMode.TargetThicknessSummary)))
+      if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) ||
+           (mode == DisplayMode.TargetThicknessSummary)))
       {
         if (computeVolType == VolumesType.BetweenDesignAndFilter)
         {
@@ -1084,8 +1232,8 @@ namespace VSS.Productivity3D.Common.Proxies
     /// Ensures there is not a misconfigured topFilter or baseFilter for certain operations that involve design surfaces for volume computation operations
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings baseFilter,
-                                                                  ref TICFilterSettings topFilter,
-                                                                  VolumesType computeVolType)
+      ref TICFilterSettings topFilter,
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations respect to designs. 
       // If these requests invovle a design through the appropriate volume computation modes, either the topFilter or the baseFilter
@@ -1107,6 +1255,190 @@ namespace VSS.Productivity3D.Common.Proxies
         topFilter = new TICFilterSettings();
       }
     }
+#if RAPTOR
+    public static CoordinateSystemDatumMethodType convertCoordinateSystemDatumMethodType(
+      TCoordinateSystemDatumMethod type)
+    {
+      switch (type)
+      {
+        case TCoordinateSystemDatumMethod.csdmUnknown: return CoordinateSystemDatumMethodType.Unknown;
+        case TCoordinateSystemDatumMethod.csdmWGS84Datum: return CoordinateSystemDatumMethodType.WGS84Datum;
+        case TCoordinateSystemDatumMethod.csdmMolodenskyDatum: return CoordinateSystemDatumMethodType.MolodenskyDatum;
+        case TCoordinateSystemDatumMethod.csdmMultipleRegressionDatum:
+          return CoordinateSystemDatumMethodType.MultipleRegressionDatum;
+        case TCoordinateSystemDatumMethod.csdmSevenParameterDatum:
+          return CoordinateSystemDatumMethodType.SevenParameterDatum;
+        case TCoordinateSystemDatumMethod.csdmGridDatum: return CoordinateSystemDatumMethodType.GridDatum;
+        default: throw new Exception($"Unknown TCoordinateSystemDatumMethod type: {Convert.ToInt32(type)}");
+      }
+    }
 
+    public static CoordinateSystemGeoidMethodType convertCoordinateSystemGeoidMethodType(
+      TCoordinateSystemGeoidMethod type)
+    {
+      switch (type)
+      {
+        case TCoordinateSystemGeoidMethod.csgmUnknown: return CoordinateSystemGeoidMethodType.Unknown;
+        case TCoordinateSystemGeoidMethod.csgmGridGeoid: return CoordinateSystemGeoidMethodType.GridGeoid;
+        case TCoordinateSystemGeoidMethod.csgmConstantSeparationGeoid:
+          return CoordinateSystemGeoidMethodType.ConstantSeparationGeoid;
+        case TCoordinateSystemGeoidMethod.csgmSiteCalibratedGeoidRecord:
+          return CoordinateSystemGeoidMethodType.SiteCalibratedGeoidRecord;
+        default: throw new Exception($"Unknown TCoordinateSystemGeoidMethod type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static ProjectionParameter[] convertCoordinateSystemProjectionParameters(TProjectionParameters parameters)
+    {
+      return parameters.ProjectionParameters.Select(pp => new ProjectionParameter()
+      {
+        Name = pp.Name,
+        Value = pp.Value
+      }).ToArray();
+    }
+
+    public static AutoStateType convertAutoStateType(TICAutoState type)
+    {
+      switch (type)
+      {
+        case TICAutoState.asOff: return AutoStateType.Off;
+        case TICAutoState.asAuto: return AutoStateType.Auto;
+        case TICAutoState.asManual: return AutoStateType.Manual;
+        case TICAutoState.asUnknown: return AutoStateType.Unknown;
+        default: throw new Exception($"Unknown TICAutoState type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static GCSAutomaticsModeType convertGCSAutomaticsModeType(TGCSAutomaticsMode type)
+    {
+      switch (type)
+      {
+        case TGCSAutomaticsMode.amUnknown: return GCSAutomaticsModeType.Unknown;
+        case TGCSAutomaticsMode.amManual: return GCSAutomaticsModeType.Manual;
+        case TGCSAutomaticsMode.amAutomatics: return GCSAutomaticsModeType.Automatic;
+        default: throw new Exception($"Unknown TGCSAutomaticsMode type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static MachineGearType convertMachineGearType(TICMachineGear type)
+    {
+      switch (type)
+      {
+        case TICMachineGear.mgNeutral: return MachineGearType.Neutral;
+        case TICMachineGear.mgForward: return MachineGearType.Forward;
+        case TICMachineGear.mgReverse: return MachineGearType.Reverse;
+        case TICMachineGear.mgSensorFailedDeprecated: return MachineGearType.SensorFailedDeprecated;
+        case TICMachineGear.mgForward2: return MachineGearType.Forward2;
+        case TICMachineGear.mgForward3: return MachineGearType.Forward3;
+        case TICMachineGear.mgForward4: return MachineGearType.Forward4;
+        case TICMachineGear.mgForward5: return MachineGearType.Forward5;
+        case TICMachineGear.mgReverse2: return MachineGearType.Reverse2;
+        case TICMachineGear.mgReverse3: return MachineGearType.Reverse3;
+        case TICMachineGear.mgReverse4: return MachineGearType.Reverse4;
+        case TICMachineGear.mgReverse5: return MachineGearType.Reverse5;
+        case TICMachineGear.mgPark: return MachineGearType.Park;
+        case TICMachineGear.mgUnknown: return MachineGearType.Unknown;
+        case TICMachineGear.mgNull: return MachineGearType.Null;
+        default: throw new Exception($"Unknown TICMachineGear type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static OnGroundStateType convertOnGroundStateType(TICOnGroundState type)
+    {
+      switch (type)
+      {
+        case TICOnGroundState.ogNo: return OnGroundStateType.No;
+        case TICOnGroundState.ogYesLegacy: return OnGroundStateType.YesLegacy;
+        case TICOnGroundState.ogYesMachineConfig: return OnGroundStateType.YesMachineConfig;
+        case TICOnGroundState.ogYesMachineHardware: return OnGroundStateType.YesMachineHardware;
+        case TICOnGroundState.ogYesMachineSoftware: return OnGroundStateType.YesMachineSoftware;
+        case TICOnGroundState.ogYesRemoteSwitch: return OnGroundStateType.YesRemoteSwitch;
+        case TICOnGroundState.ogUnknown: return OnGroundStateType.Unknown;
+        default: throw new Exception($"Unknown TICOnGroundState type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static VibrationStateType convertVibrationStateType(TICVibrationState type)
+    {
+      switch (type)
+      {
+        case TICVibrationState.vsOff: return VibrationStateType.Off;
+        case TICVibrationState.vsOn: return VibrationStateType.On;
+        case TICVibrationState.vsInvalid: return VibrationStateType.Invalid;
+        default: throw new Exception($"Unknown TICVibrationState type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static GPSAccuracyType convertGPSAccuracyType(TICGPSAccuracy type)
+    {
+      switch (type)
+      {
+        case TICGPSAccuracy.gpsaFine: return GPSAccuracyType.Fine;
+        case TICGPSAccuracy.gpsaMedium: return GPSAccuracyType.Medium;
+        case TICGPSAccuracy.gpsaCoarse: return GPSAccuracyType.Coarse;
+        case TICGPSAccuracy.gpsaUnknown: return GPSAccuracyType.Unknown;
+        default: throw new Exception($"Unknown TICGPSAccuracy type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static PositioningTechType convertPositioningTechType(TICPositioningTech type)
+    {
+      switch (type)
+      {
+        case TICPositioningTech.ptGPS: return PositioningTechType.GPS;
+        case TICPositioningTech.ptUTS: return PositioningTechType.UTS;
+        case TICPositioningTech.ptUnknown: return PositioningTechType.Unknown;
+        default: throw new Exception($"Unknown TICPositioningTech type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static ColorPalette[] convertColorPalettes(TColourPalette[] colorPalettes)
+    {
+      return colorPalettes.Select(cp => new ColorPalette(cp.Colour, cp.Value)).ToArray();
+    }
+
+    public static TASNodeUserPreferences convertToRaptorUserPreferences(UserPreferences userPreferences)
+    {
+      return ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
+        userPreferences.TimeZone,
+        userPreferences.DateSeparator,
+        userPreferences.TimeSeparator,
+        userPreferences.ThousandsSeparator,
+        userPreferences.DecimalSeparator,
+        userPreferences.TimeZoneOffset,
+        userPreferences.Language,
+        userPreferences.Units,
+        userPreferences.DateTimeFormat,
+        userPreferences.NumberFormat,
+        userPreferences.TemperatureUnits,
+        userPreferences.AssetLabelTypeID);
+    }
+
+    public static TMachine[] convertToRaptorMachines(Machine[] machines)
+    {
+      return machines.Select(m => new TMachine() { AssetID = m.AssetID, MachineName = m.MachineName,SerialNo = m.SerialNo}).ToArray();
+    }
+
+    public static Machine[] convertMachines(TMachine[] machines)
+    {
+      return machines.Select(m => new Machine() { AssetID = m.AssetID, MachineName = m.MachineName, SerialNo = m.SerialNo }).ToArray();
+    }
+
+    public static TTranslation[] convertToRaptorTranslations(TranslationDescriptor[] translations)
+    {
+      return translations.Select(tr => new TTranslation(){ ID = tr.ID, Translation = tr.Translation }).ToArray();
+    }
+
+    public static T3DBoundingWorldExtent convertToRaptorProjectExtents(BoundingExtents3D extents)
+    {
+      return new T3DBoundingWorldExtent(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY, extents.MinZ, extents.MaxZ);
+    }
+
+    public static BoundingExtents3D convertProjectExtents(T3DBoundingWorldExtent extents)
+    {
+      return new BoundingExtents3D(extents.MinX, extents.MinY, extents.MinZ, extents.MaxX, extents.MaxY, extents.MaxZ);
+    }
+
+#endif
   }
 }

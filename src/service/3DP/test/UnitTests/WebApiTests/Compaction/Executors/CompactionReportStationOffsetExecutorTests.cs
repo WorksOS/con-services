@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
       var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
-      var TASNodeUserPreference = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
+      var TASNodeUserPreference = ExportRequestHelper.ConvertToRaptorUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
       var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);

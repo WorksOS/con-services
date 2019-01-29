@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
                   "Failed to process CCA data colour palettes request sent to Raptor."));
             }
 
-            return CCAColorPaletteResult.CreateCCAColorPaletteResult(palettes.Transitions);
+            return CCAColorPaletteResult.CreateCCAColorPaletteResult(RaptorConverters.convertColorPalettes(palettes.Transitions));
           }
 
           throw new ServiceException(HttpStatusCode.BadRequest,

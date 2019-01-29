@@ -14,14 +14,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void ConvertEmptyPreferences()
     {
-      var converted = ExportRequestHelper.ConvertUserPreferences(new UserPreferenceData(), "Aleutian Standard Time");
+      var converted = ExportRequestHelper.ConvertToRaptorUserPreferences(new UserPreferenceData(), "Aleutian Standard Time");
     }
 
 
     [TestMethod]
     public void ConvertPreferencesWithtimezoneButNoProjectTimeZone()
     {
-      _ = ExportRequestHelper.ConvertUserPreferences(new UserPreferenceData
+      _ = ExportRequestHelper.ConvertToRaptorUserPreferences(new UserPreferenceData
       {
         Timezone = "Aleutian Standard Time"
       },

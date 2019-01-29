@@ -13,6 +13,6 @@
     /// <summary>
     /// The projection parameter's value.
     /// </summary>
-    public short Value { get; set; }
+    public double Value { get; set; }
   }
 }

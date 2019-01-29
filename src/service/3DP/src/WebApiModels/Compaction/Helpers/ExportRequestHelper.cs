@@ -130,10 +130,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         restrictSize,
         rawData,
-        projectExtents,
+        RaptorConverters.convertProjectExtents(projectExtents),
         false,
         outputType,
-        machineList,
+        RaptorConverters.convertMachines(machineList),
         exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="userPref">The set of user preferences.</param>
     /// <param name="projectTimezone">The project time zone.</param>
     /// <returns>The set of user preferences in Raptor's format</returns>
-    public static TASNodeUserPreferences ConvertUserPreferences(UserPreferenceData userPref, string projectTimezone)
+    public static TASNodeUserPreferences ConvertToRaptorUserPreferences(UserPreferenceData userPref, string projectTimezone)
     {
       var timezone = projectTimezone ?? userPref.Timezone;
       TimeZoneInfo projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
@@ -194,6 +194,45 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
+
+    /// <summary>
+    /// Converts a set user preferences in the common format.
+    /// It is solely used by production data export WebAPIs.
+    /// </summary>
+    /// <param name="userPref">The set of user preferences.</param>
+    /// <param name="projectTimezone">The project time zone.</param>
+    /// <returns>The set of user preferences in Raptor's format</returns>
+    public static UserPreferences ConvertUserPreferences(UserPreferenceData userPref, string projectTimezone)
+    {
+      var timezone = projectTimezone ?? userPref.Timezone;
+      TimeZoneInfo projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+      double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
+
+      var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
+
+      if (languageIndex == -1)
+      {
+        languageIndex = (int)LanguageEnum.enUS;
+      }
+
+      return new UserPreferences(
+        timezone,
+        Preferences.DefaultDateSeparator,
+        Preferences.DefaultTimeSeparator,
+        //Hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
+        //To respect user preferences requires Raptor to enclose formatted numbers in quotes.
+        //This bug is present in CG since it uses user preferences separators.
+        Preferences.DefaultThousandsSeparator,
+        Preferences.DefaultDecimalSeparator,
+        projectTimeZoneOffset,
+        languageIndex,
+        (int)userPref.Units.UnitsType(),
+        Preferences.DefaultDateTimeFormat,
+        Preferences.DefaultNumberFormat,
+        (int)userPref.TemperatureUnit.TemperatureUnitType(),
+        Preferences.DefaultAssetLabelTypeId);
+    }
+
 #endif
   }
 }

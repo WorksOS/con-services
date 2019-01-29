@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
       var userPreferences =
-        ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
+        ExportRequestHelper.ConvertToRaptorUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
       var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);

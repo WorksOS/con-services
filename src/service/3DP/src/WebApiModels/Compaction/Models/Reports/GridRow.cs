@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       row.SetReportFlags(request);
       return row;
     }
-#else
+#endif
     public static GridRow CreateRow(GriddedReportDataRow dataRow, CompactionReportRequest request)
     {
       var row = new GridRow();
@@ -30,6 +30,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       row.SetReportFlags(request);
       return row;
     }
-#endif
+
   }
 }

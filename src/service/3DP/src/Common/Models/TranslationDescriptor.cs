@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.WebApi.Models.Report.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   public struct TranslationDescriptor
   {
