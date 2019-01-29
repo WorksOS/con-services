@@ -24,7 +24,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       SetValues(station, offset, northing, easting, elevation, cutFill, cmv, mdp, passCount, temperature);
     }
 
-    public StationOffsetRow(double station, double offset,double northing, double easting)
+    public StationOffsetRow(double station, double offset, double northing, double easting)
     {
       SetValues(station, offset, northing, easting, Consts.NullHeight, Consts.NullHeight, CellPassConsts.NullCCV, CellPassConsts.NullMDP, (short) CellPassConsts.NullPassCountValue, (short) CellPassConsts.NullMaterialTemperatureValue);
     }

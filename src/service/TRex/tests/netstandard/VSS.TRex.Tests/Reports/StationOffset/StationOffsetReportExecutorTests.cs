@@ -9,7 +9,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.SiteModels;
@@ -21,7 +20,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Reports.StationOffset
 {
-  public class StationOffsetReportExecutorTests : IClassFixture<DILoggingFixture>
+  public class StationOffsetReportExecutorTests : IClassFixture<DITagFileFixture>
   {
     private static Guid NewSiteModelGuid = Guid.NewGuid();
 
@@ -98,7 +97,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Fact]
-    public void StationOffsetReportExecutor_NoPointsInAlignment()
+    public void StationOffsetReportExecutor_SiteModelNotFound()
     {
       Guid projectUid = Guid.NewGuid(); // use NewSiteModelGuid to get mocked siteModel
       FilterResult filter = null;
@@ -113,7 +112,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       double crossSectionInterval = 1.0;
       double startStation = 100;
       double endStation = 200;
-      double[] offsets = new double[3] {-1, 0, 1};
+      double[] offsets = new double[] {-1, 0, 1};
 
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         projectUid, filter,
@@ -121,8 +120,6 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         cutFillDesignUid, alignmentDesignUid,
         crossSectionInterval, startStation, endStation, offsets);
       request.Validate();
-
-      SetupDI();
 
       var executor = RequestExecutorContainer
         .Build<StationOffsetReportExecutor>(DIContext.Obtain<IConfigurationStore>(),
@@ -133,42 +130,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.Equal($"Site model {projectUid} is unavailable", result.GetResult.Message);
     }
-
-    private void SetupDI()
-    {
-      var moqStorageProxy = new Mock<IStorageProxy>();
-
-      var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
-      moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(moqStorageProxy.Object);
-      moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(moqStorageProxy.Object);
-      moqStorageProxyFactory.Setup(mk => mk.MutableGridStorage()).Returns(moqStorageProxy.Object);
-      moqStorageProxyFactory.Setup(mk => mk.ImmutableGridStorage()).Returns(moqStorageProxy.Object);
-
-      var moqAlignments = new Mock<IAlignments>();
-
-      var moqSiteModels = new Mock<ISiteModels>();
-      moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
-
-      DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
-        .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
-        .Add(x => x.AddSingleton<IAlignments>(moqAlignments.Object))
-        .Build();
-
-      ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuid);
-
-      var moqSiteModelFactory = new Mock<ISiteModelFactory>();
-      moqSiteModelFactory.Setup(mk => mk.NewSiteModel()).Returns(mockedSiteModel);
-      moqSiteModelFactory.Setup(mk => mk.NewSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
-
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
-
-      // Mock the new sitemodel creation API to return just a new sitemodel
-      moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);
-    }
+   
   }
 }
 

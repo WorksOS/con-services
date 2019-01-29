@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
@@ -50,10 +51,15 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         try
         {
           // Note: Start/end point lat/lon fields have been converted into grid local coordinate system by this point
-          if (requestArgument.Points.Count > 1)
+          if (requestArgument.Points.Count > 0)
+          {
             Log.LogInformation($"#In#: DataModel {requestArgument.ProjectID}, pointCount: {requestArgument.Points.Count}");
+          }
           else
-            Log.LogInformation($"#In#: DataModel {requestArgument.ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
+          {
+            Log.LogInformation($"#In#: DataModel {requestArgument.ProjectID}, Note! vertices list has insufficient vertices (min of 1 required)");
+            return new StationOffsetReportRequestResponse_ClusterCompute(){ResultStatus = RequestErrorStatus.OK, ReturnCode = ReportReturnCode.NoData };
+          }
 
           return response = GetProductionData();
         }
@@ -96,7 +102,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var requestors = utilities.ConstructRequestors(siteModel,
-        utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, true, GridDataType.HeightAndTime),
+        utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, true, GridDataType.CellProfile),
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
@@ -128,6 +134,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         if (request != ServerRequestResult.NoError)
         {
           Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {result}");
+          result.StationOffsetRows.Add(new StationOffsetRow(point.Station, point.Offset, point.Northing, point.Easting));
           continue;
         }
 
