@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces

@@ -260,7 +260,7 @@ namespace VSS.TRex.Tests.Caching
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationMappingModeFilter = true;
-        x.AttributeFilter.MinElevationMapping = ElevationMappingMode.MinimumElevation;
+        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MinimumElevation;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:1", StringComparison.OrdinalIgnoreCase),
@@ -269,7 +269,7 @@ namespace VSS.TRex.Tests.Caching
       filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationMappingModeFilter = true;
-        x.AttributeFilter.MinElevationMapping = ElevationMappingMode.LatestElevation;
+        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.LatestElevation;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("EMM:0", StringComparison.OrdinalIgnoreCase),
