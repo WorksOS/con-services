@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -43,18 +44,20 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // tasks to the list in a concurrent fashion if required.
         // Each task added to the process list represents a tag file that has been
         // processed
-        public bool AddTaskToProcessList(ISiteModel siteModel,
-                                      IMachine machine,
+        public bool AddTaskToProcessList(ISiteModel transientSiteModel,
+                                      Guid persistentSiteModelID,
+                                      IMachine transientMachine,
+                                      Guid persistentMachineID,
                                       IServerSubGridTree aggregatedCellPasses,
                                       int aggregatedCellPassCount,
                                       IProductionEventLists aggregatedMachineEvents)
         {
             AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask
             {
-                TargetSiteModel = siteModel,
-                TargetSiteModelID = siteModel.ID,
-                TargetMachine = machine,
-                TargetMachineID = machine.ID,
+                IntermediaryTargetSiteModel = transientSiteModel,
+                PersistedTargetSiteModelID = persistentSiteModelID,
+                IntermediaryTargetMachine = transientMachine,
+                PersistedTargetMachineID = persistentMachineID,
                 AggregatedCellPasses = aggregatedCellPasses,
                 AggregatedMachineEvents = aggregatedMachineEvents,
                 AggregatedCellPassCount = aggregatedCellPassCount

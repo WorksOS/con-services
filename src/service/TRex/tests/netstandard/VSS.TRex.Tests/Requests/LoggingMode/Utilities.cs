@@ -6,6 +6,7 @@ using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
+using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -118,6 +119,13 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
           return true;
         });
       totalCells.Should().Be(expectedNonNullCells);
+
+      siteModel.SiteModelExtent.MinX.Should().BeApproximately(376735.98, 0.001);
+      siteModel.SiteModelExtent.MaxX.Should().BeApproximately(376742.78, 0.001);
+      siteModel.SiteModelExtent.MinY.Should().BeApproximately(808534.28, 0.001);
+      siteModel.SiteModelExtent.MaxY.Should().BeApproximately(808542.78, 0.001);
+      siteModel.SiteModelExtent.MinZ.Should().BeApproximately(66.4441, 0.001);
+      siteModel.SiteModelExtent.MaxZ.Should().BeApproximately(68.5629, 0.001);
 
       return siteModel;
     }

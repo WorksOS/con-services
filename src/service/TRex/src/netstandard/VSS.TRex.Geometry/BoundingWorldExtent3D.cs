@@ -87,31 +87,31 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Constructor taking min/max X & Y values but allowing Z values to default to null
     /// </summary>
-    /// <param name="AMinX"></param>
-    /// <param name="AMinY"></param>
-    /// <param name="AMaxX"></param>
-    /// <param name="AMaxY"></param>
-    public BoundingWorldExtent3D(double AMinX, double AMinY, double AMaxX, double AMaxY) : this(AMinX, AMinY, AMaxX, AMaxY, Consts.NullDouble, Consts.NullDouble)
+    /// <param name="minX"></param>
+    /// <param name="minY"></param>
+    /// <param name="maxX"></param>
+    /// <param name="maxY"></param>
+    public BoundingWorldExtent3D(double minX, double minY, double maxX, double maxY) : this(minX, minY, maxX, maxY, Consts.NullDouble, Consts.NullDouble)
     {
     }
 
     /// <summary>
     /// Full 3d constructor taking min/max X, Y and Z values
     /// </summary>
-    /// <param name="AMinX"></param>
-    /// <param name="AMinY"></param>
-    /// <param name="AMaxX"></param>
-    /// <param name="AMaxY"></param>
-    /// <param name="AMinZ"></param>
-    /// <param name="AMaxZ"></param>
-    public BoundingWorldExtent3D(double AMinX, double AMinY, double AMaxX, double AMaxY, double AMinZ, double AMaxZ)
+    /// <param name="minX"></param>
+    /// <param name="minY"></param>
+    /// <param name="maxX"></param>
+    /// <param name="maxY"></param>
+    /// <param name="minZ"></param>
+    /// <param name="maxZ"></param>
+    public BoundingWorldExtent3D(double minX, double minY, double maxX, double maxY, double minZ, double maxZ)
     {
-      MinX = AMinX;
-      MinY = AMinY;
-      MaxX = AMaxX;
-      MaxY = AMaxY;
-      MinZ = AMinZ;
-      MaxZ = AMaxZ;
+      MinX = minX;
+      MinY = minY;
+      MaxX = maxX;
+      MaxY = maxY;
+      MinZ = minZ;
+      MaxZ = maxZ;
     }
 
     /// <summary>
