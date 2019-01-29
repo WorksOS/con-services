@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
@@ -571,16 +572,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       }
     }
 
-    public override void SetMinElevMappingState(bool Value)
+    public override void SetElevationMappingModeState(ElevationMappingMode Value)
     {
-      base.SetMinElevMappingState(Value);
+      base.SetElevationMappingModeState(Value);
 
       if (DataTime != DateTime.MinValue)
-        MachineTargetValueChangesAggregator.MinElevMappingStateEvents.PutValueAtDate(DataTime, Value);
+        MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.PutValueAtDate(DataTime, Value);
       else
       {
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetMinElevMappingState', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetElevationMappingModeState', slpmcDebug);
         //{$ENDIF}
       }
     }

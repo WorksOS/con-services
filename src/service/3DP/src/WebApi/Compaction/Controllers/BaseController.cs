@@ -323,10 +323,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
     {
+      var filterKey = filterUid.HasValue ? $"{nameof(FilterResult)} {filterUid.Value}" : string.Empty;
       // Filter models are immutable except for their Name.
       // This service doesn't consider the Name in any of it's operations so we don't mind if our
       // cached object is out of date in this regard.
-      var cachedFilter = filterUid.HasValue ? FilterCache.Get<FilterResult>(filterUid.Value.ToString()) : null;
+      var cachedFilter = filterUid.HasValue ? FilterCache.Get<FilterResult>(filterKey) : null;
       if (cachedFilter != null)
       {
         await ApplyDateRange(projectUid, cachedFilter);
@@ -398,7 +399,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               projectUid.ToString()
             };
 
-            FilterCache.Set(filterUid.Value.ToString(), raptorFilter, filterTags, filterCacheOptions);
+            FilterCache.Set(filterKey, raptorFilter, filterTags, filterCacheOptions);
 
             return raptorFilter;
           }

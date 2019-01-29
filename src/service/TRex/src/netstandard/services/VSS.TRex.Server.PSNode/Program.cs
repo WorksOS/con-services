@@ -100,8 +100,6 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
-        .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
-
         // Create the cache to store the general subgrid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
           new TRexSpatialMemoryCache(
@@ -127,7 +125,11 @@ namespace VSS.TRex.Server.PSNode
           factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder) =>  new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder)))
 
         // Register the factory for surface elevation requests
+        .Build()
         .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequest(cache, context)))
+
+        .Build()
+        .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
 
         .Complete();
     }

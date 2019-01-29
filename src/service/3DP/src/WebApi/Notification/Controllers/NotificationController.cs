@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -32,6 +33,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
   /// <summary>
   /// 
   /// </summary>
+  [Obsolete("Use Push Service instead, as it supports horizontal scaling")]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class NotificationController : Controller
   {
@@ -86,6 +88,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     private readonly IProjectListProxy projectsListProxy;
 
+    private readonly IDataCache dataCache;
+
     /// <summary>
     /// Gets the users email address from the context.
     /// </summary>
@@ -119,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
-      IFilterServiceProxy filterServiceProxy, IResponseCache cache, IProjectListProxy projectProxy)
+      IFilterServiceProxy filterServiceProxy, IResponseCache cache, IProjectListProxy projectProxy, IDataCache dataCache)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -132,6 +136,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.fileListProxy = fileListProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.cache = cache;
+      this.dataCache = dataCache;
       userPreferences = prefProxy;
       projectsListProxy = projectProxy;
     }
@@ -208,6 +213,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       fileQueue.EnqueueItem(request);
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, customHeaders);
+      dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful");
@@ -256,6 +262,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, customHeaders);
+      dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
@@ -291,6 +298,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       }
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, customHeaders);
+      dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
@@ -311,6 +319,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         customHeaders.Add("X-VisionLink-ClearCache", "true");
       await projectsListProxy.GetProjectForCustomer(((RaptorPrincipal) User).CustomerUid, projectUid.ToString(),
         customHeaders);
+      dataCache.RemoveByTag(projectUid.ToString());
       cache.InvalidateReponseCacheForProject(projectUid);
       return new ContractExecutionResult();
     }
@@ -332,6 +341,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var customHeaders = Request.Headers.GetCustomHeaders();
       await ClearFilesCaches(projectUid, customHeaders);
       cache.InvalidateReponseCacheForProject(projectUid);
+      dataCache.RemoveByTag(projectUid.ToString());
       log.LogInformation("GetNotifyImportedFileChange returned");
       return new ContractExecutionResult();
     }
@@ -347,6 +357,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       log.LogDebug("GetNotifyFilterChange: " + Request.QueryString);
       filterServiceProxy.ClearCacheItem(filterUid.ToString());
       filterServiceProxy.ClearCacheListItem(projectUid.ToString());
+      dataCache.RemoveByTag(projectUid.ToString());
+      dataCache.RemoveByTag(filterUid.ToString());
       log.LogInformation("GetNotifyFilterChange returned");
       return new ContractExecutionResult();
     }
@@ -360,6 +372,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       //Clear file list cache and reload
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
+
+      dataCache.RemoveByTag(projectUid.ToString());
 
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), customHeaders);
       log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);

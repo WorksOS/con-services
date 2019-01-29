@@ -1,10 +1,10 @@
 ﻿namespace VSS.TRex.Types
 {
     /// <summary>
-    /// Machine gear selected at the timw of cell pass measurment
+    /// Machine gear selected at the time of cell pass measurement
     /// </summary>
-    public enum MachineGear
-    {
+    public enum MachineGear : byte
+  {
         Neutral,
         Forward,
         Reverse,

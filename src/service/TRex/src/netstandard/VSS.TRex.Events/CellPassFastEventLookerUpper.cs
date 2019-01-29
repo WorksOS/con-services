@@ -240,10 +240,10 @@ namespace VSS.TRex.Events
           passes[I].EventValues.EventAutoVibrationState = TrackingState.EventAutoVibrationState;
         }
 
-        if (populationControl.WantsEventMinElevMappingValues)
+        if (populationControl.WantsEventElevationMappingModeValues)
         {
-          TrackingState.MinElevMappingState = TrackingState.MinElevMappingState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
-          passes[I].EventValues.EventMinElevMapping = TrackingState.MinElevMappingState;
+          TrackingState.ElevationMappingModeState = TrackingState.ElevationMappingModeState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
+          passes[I].EventValues.EventElevationMappingMode = TrackingState.ElevationMappingModeState;
         }
 
         if (populationControl.WantsEventGPSAccuracyValues)

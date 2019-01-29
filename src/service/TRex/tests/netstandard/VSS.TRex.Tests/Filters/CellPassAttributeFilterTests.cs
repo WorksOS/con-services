@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -26,10 +30,6 @@ namespace VSS.TRex.Tests.Filters
 
             Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialized");
 
-            filter.Prepare();
-
-            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is not initialized");
-
             filter.ClearFilter();
 
             Assert.False(filter.AnyFilterSelections, "AnyFilterSelections not false");
@@ -37,21 +37,19 @@ namespace VSS.TRex.Tests.Filters
             Assert.False(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not false");
 
             filter.HasTimeFilter = true;
-            filter.Prepare();
 
             Assert.True(filter.AnyFilterSelections, "AnyFilterSelections not true after adding time filter");
             Assert.False(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not false");
             Assert.True(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true after adding time filter");
 
+            filter.ClearFilter();
             filter.HasPositioningTechFilter = true;
-
-            filter.Prepare();
 
             Assert.True(filter.AnyFilterSelections, "AnyFilterSelections not true");
             Assert.True(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
-            Assert.True(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true");
+            Assert.False(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections true");
         }
-
+      
         [Fact(Skip = "Not Implemented")]
         public void Test_CellPassAttributeFilter_ClearFilter()
         {
@@ -189,9 +187,9 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact()]
-        public void Test_CellPassAttributeFilter_CompareTo_MinElevMapping()
+        public void Test_CellPassAttributeFilter_CompareTo_ElevationMappingMode()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping true", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationMappingMode true", x => { x.HasElevationMappingModeFilter = true; x.ElevationMappingMode = ElevationMappingMode.MinimumElevation; });
         }
 
         [Fact()]
@@ -383,11 +381,11 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearMinElevationMapping()
         {
-            Test_CellPassAttributeFilter_ClearFilter_Aspect("MinElevMapping",
-                                                            x => { x.HasMinElevMappingFilter = true; },
-                                                            x => x.HasMinElevMappingFilter,
+            Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationMappingMode",
+                                                            x => { x.HasElevationMappingModeFilter = true; },
+                                                            x => x.HasElevationMappingModeFilter,
                                                             x => { x.ClearMinElevationMapping(); },
-                                                            x => !x.HasMinElevMappingFilter && x.MinElevationMapping == false);
+                                                            x => !x.HasElevationMappingModeFilter && x.ElevationMappingMode == ElevationMappingMode.LatestElevation);
         }
 
         [Fact()]

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces
@@ -18,7 +19,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool HasDesignFilter { get; set; }
     bool HasVibeStateFilter { get; set; }
     bool HasLayerStateFilter { get; set; }
-    bool HasMinElevMappingFilter { get; set; }
+    bool HasElevationMappingModeFilter { get; set; }
     bool HasElevationTypeFilter { get; set; }
     bool HasGCSGuidanceModeFilter { get; set; }
     bool HasGPSAccuracyFilter { get; set; }
@@ -47,7 +48,7 @@ namespace VSS.TRex.Filters.Interfaces
     VibrationState VibeState { get; set; }
     MachineDirection MachineDirection { get; set; }
     PassTypeSet PassTypeSet { get; set; }
-    bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
+    ElevationMappingMode ElevationMappingMode { get; set; }
     PositioningTech PositioningTech { get; set; }
     ushort GPSTolerance { get; set; }
     bool GPSAccuracyIsInclusive { get; set; }

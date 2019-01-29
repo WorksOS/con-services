@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 
@@ -26,6 +27,18 @@ namespace VSS.TRex.Filters
     {
       AttributeFilter = new CellPassAttributeFilter();
       SpatialFilter = new CellSpatialFilter();
+    }
+
+    /// <summary>
+    ///  Handy helper function to make a configured filter
+    /// </summary>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static CombinedFilter MakeFilterWith(Action<CombinedFilter> configure)
+    {
+      var combinedFilter = new CombinedFilter();
+      configure(combinedFilter);
+      return combinedFilter;
     }
 
     /// <summary>

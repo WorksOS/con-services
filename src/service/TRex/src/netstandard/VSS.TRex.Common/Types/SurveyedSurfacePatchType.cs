@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.TRex.Types
+﻿namespace VSS.TRex.Types
 {
   /// <summary>
-  /// Notes the type of surveyed surface patch result required froma surveyed surface patch request
+  /// Notes the type of surveyed surface patch result required from a surveyed surface patch request
   /// </summary>
-  public enum SurveyedSurfacePatchType
+  public enum SurveyedSurfacePatchType : byte
   {
     /// <summary>
     /// The latest (in time) available elevation at each location from a set of surveyed surfaces
@@ -20,7 +16,7 @@ namespace VSS.TRex.Types
     EarliestSingleElevation,
 
     /// <summary>
-    /// THe analysed first, last, lowest and heighest elevations at each location from a set of surveyed surfaces
+    /// THe analyzed first, last, lowest and highest elevations at each location from a set of surveyed surfaces
     /// </summary>
     CompositeElevations
   }

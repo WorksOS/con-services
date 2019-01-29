@@ -3,8 +3,8 @@
     /// <summary>
     /// Vibration states reported by a machine for a vibratory compaction drum
     /// </summary>
-    public enum VibrationState
-    {
+    public enum VibrationState : byte
+  {
         /// <summary>
         /// Vibration is off
         /// </summary>

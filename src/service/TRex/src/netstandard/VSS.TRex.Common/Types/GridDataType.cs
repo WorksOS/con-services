@@ -4,10 +4,10 @@ using VSS.Productivity3D.Models.Enums;
 namespace VSS.TRex.Types
 {
   /// <summary>
-  /// Types of grid data that client leaf subgrids may represent. These largely map to the 
+  /// Types of grid data that client leaf sub grids may represent. These largely map to the 
   /// attribute and processing vectors supported by the TRex processing engine with the exception 
   /// of All which represents fully attributed call passes. This type is only used on server side
-  /// full stack cell pass subgrids.
+  /// full stack cell pass sub grids.
   /// </summary>
   public enum GridDataType
   {
@@ -43,7 +43,7 @@ namespace VSS.TRex.Types
     /// <summary>
     /// SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
     /// used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
-    /// general subgrid result cache along with HeightAndTime results that are derived from production data
+    /// general sub grid result cache along with HeightAndTime results that are derived from production data
     /// and SurveyedSurfaceHeightAndTime results
     /// </summary>
     SurveyedSurfaceHeightAndTime = 0x0000001C

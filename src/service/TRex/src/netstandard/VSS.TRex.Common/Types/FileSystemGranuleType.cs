@@ -5,7 +5,7 @@
     /// Types of file system granules supported in a Raptor FS file
     /// </summary>
     public enum FileSystemGranuleType
-    {
+  {
         Unknown,
         Header,
         Integrity,

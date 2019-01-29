@@ -33,6 +33,7 @@ namespace VSS.TRex.DI
     /// </summary>
     public static void Close()
     {
+      Logging.Logger.Inject(null);
       ServiceProvider = null;
     }
 

@@ -18,7 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Apache.Ignite" Version="2.6.0" />
+    <PackageReference Include="Apache.Ignite" Version="2.7.0" />
     <PackageReference Include="FluentAssertions" Version="5.5.3" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
@@ -108,6 +108,27 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0187J008YU--TNZ 323F GS520--190123002153.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0187J008YU--TNZ 323F GS520--190123002653.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115000234.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115001235.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115001735.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115002235.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115002735.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
