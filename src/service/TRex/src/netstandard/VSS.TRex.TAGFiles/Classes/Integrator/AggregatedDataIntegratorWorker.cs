@@ -120,11 +120,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
           // and also explicitly provides the transactional storage proxy being used for processing the
           // data from TAG files into the model
-          ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID, true);
+          ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.PersistedTargetSiteModelID, true);
 
           if (SiteModelFromDM == null)
           {
-            Log.LogError($"Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
+            Log.LogError($"Unable to lock SiteModel {Task.PersistedTargetSiteModelID} from the data model file");
             return false;
           }
 
@@ -138,7 +138,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           if (!(AnyMachineEvents || AnyCellPasses))
           {
-            Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {Task.TargetSiteModelID}");
+            Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {Task.PersistedTargetSiteModelID}");
 
             return true;
           }
@@ -174,7 +174,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
           }*/
 
-          Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
+          Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.PersistedTargetMachineID} in project {Task.PersistedTargetSiteModelID}");
 
           // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
@@ -183,10 +183,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             AggregatedDataIntegratorTask processedTask = ProcessedTasks[I];
 
             // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
-            Task.TargetSiteModel.Include(processedTask.TargetSiteModel);
+            Task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
 
             // Integrate the machine events
-            eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.TargetSiteModel, Task.TargetSiteModel);
+            eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
 
             //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
@@ -195,23 +195,23 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubGridHasChanged);
 
             //Update current DateTime with the latest one
-            if (processedTask.TargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp) == -1)
+            if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
             {
-              Task.TargetMachine.LastKnownPositionTimeStamp = processedTask.TargetMachine.LastKnownPositionTimeStamp;
-              Task.TargetMachine.LastKnownX = processedTask.TargetMachine.LastKnownX;
-              Task.TargetMachine.LastKnownY = processedTask.TargetMachine.LastKnownY;
+              Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp = processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
+              Task.IntermediaryTargetMachine.LastKnownX = processedTask.IntermediaryTargetMachine.LastKnownX;
+              Task.IntermediaryTargetMachine.LastKnownY = processedTask.IntermediaryTargetMachine.LastKnownY;
             }
 
-            if (Task.TargetMachine.MachineHardwareID == "")
-              Task.TargetMachine.MachineHardwareID = processedTask.TargetMachine.MachineHardwareID;
+            if (Task.IntermediaryTargetMachine.MachineHardwareID == "")
+              Task.IntermediaryTargetMachine.MachineHardwareID = processedTask.IntermediaryTargetMachine.MachineHardwareID;
 
-            if (Task.TargetMachine.MachineType == 0)
-              Task.TargetMachine.MachineType = processedTask.TargetMachine.MachineType;
+            if (Task.IntermediaryTargetMachine.MachineType == 0)
+              Task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
 
             processedTask.AggregatedCellPasses = null;
           }
 
-          // Integrate the items present in the 'TargetSiteModel' into the real site model
+          // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
           // read from the datamodel file itself, then synchronously write it to the DataModel
 
           IMachine MachineFromDM;
@@ -219,33 +219,33 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           lock (SiteModelFromDM)
           {
             // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
-            SiteModelFromDM.Include(Task.TargetSiteModel);
+            SiteModelFromDM.Include(Task.IntermediaryTargetSiteModel);
 
             // Need to locate or create a matching machine in the site model.
-            MachineFromDM = SiteModelFromDM.Machines.Locate(Task.TargetMachineID, Task.TargetMachine.IsJohnDoeMachine);
+            MachineFromDM = SiteModelFromDM.Machines.Locate(Task.PersistedTargetMachineID, Task.IntermediaryTargetMachine.IsJohnDoeMachine);
 
             if (MachineFromDM == null)
             {
-              MachineFromDM = SiteModelFromDM.Machines.CreateNew(Task.TargetMachine.Name,
-                Task.TargetMachine.MachineHardwareID,
-                Task.TargetMachine.MachineType,
-                Task.TargetMachine.DeviceType,
-                Task.TargetMachine.IsJohnDoeMachine,
-                Task.TargetMachineID);
-              MachineFromDM.Assign(Task.TargetMachine);
+              MachineFromDM = SiteModelFromDM.Machines.CreateNew(Task.IntermediaryTargetMachine.Name,
+                Task.IntermediaryTargetMachine.MachineHardwareID,
+                Task.IntermediaryTargetMachine.MachineType,
+                Task.IntermediaryTargetMachine.DeviceType,
+                Task.IntermediaryTargetMachine.IsJohnDoeMachine,
+                Task.PersistedTargetMachineID);
+              MachineFromDM.Assign(Task.IntermediaryTargetMachine);
             }
 
             // Update the internal name of the machine with the machine name from the TAG file
-            if (Task.TargetMachine.Name != "" && MachineFromDM.Name != Task.TargetMachine.Name)
+            if (Task.IntermediaryTargetMachine.Name != "" && MachineFromDM.Name != Task.IntermediaryTargetMachine.Name)
             {
-              MachineFromDM.Name = Task.TargetMachine.Name;
+              MachineFromDM.Name = Task.IntermediaryTargetMachine.Name;
             }
 
             // Update the internal type of the machine with the machine type from the TAG file
             // if the existing internal machine type is zero then
-            if (Task.TargetMachine.MachineType != 0 && MachineFromDM.MachineType == 0)
+            if (Task.IntermediaryTargetMachine.MachineType != 0 && MachineFromDM.MachineType == 0)
             {
-              MachineFromDM.MachineType = Task.TargetMachine.MachineType;
+              MachineFromDM.MachineType = Task.IntermediaryTargetMachine.MachineType;
             }
 
             // If the machine target values can't be found then create them
@@ -264,7 +264,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           // Perform machine event integration outside of the SiteModel write access interlock as the
           // individual event lists have independent exclusive locks event integration uses.
-          eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.TargetSiteModel, SiteModelFromDM);
+          eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.IntermediaryTargetSiteModel, SiteModelFromDM);
 
           // Integrate the machine events into the main site model. This requires the
           // site model interlock as aspects of the site model state (machine) are being changed.
@@ -273,7 +273,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             if (SiteModelMachineTargetValues != null)
             {
               //Update machine last known value (events) from integrated model before saving
-              int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
+              int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp);
               if (Comparison == -1)
               {
                 MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
@@ -287,9 +287,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                   MachineFromDM.LastKnownLayerId = 0;
                 }
 
-                MachineFromDM.LastKnownPositionTimeStamp = Task.TargetMachine.LastKnownPositionTimeStamp;
-                MachineFromDM.LastKnownX = Task.TargetMachine.LastKnownX;
-                MachineFromDM.LastKnownY = Task.TargetMachine.LastKnownY;
+                MachineFromDM.LastKnownPositionTimeStamp = Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
+                MachineFromDM.LastKnownX = Task.IntermediaryTargetMachine.LastKnownX;
+                MachineFromDM.LastKnownY = Task.IntermediaryTargetMachine.LastKnownY;
               }
             }
             else
@@ -429,7 +429,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
         finally
         {
-          Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.TargetMachineID} in project {Task?.TargetSiteModelID}");
+          Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.PersistedTargetMachineID} in project {Task?.PersistedTargetSiteModelID}");
         }
       }
       catch (Exception E)

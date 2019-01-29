@@ -52,5 +52,7 @@ namespace VSS.TRex.Events.Interfaces
     void SetStateAtIndex(int index, V state);
 
     void PutValueAtDate(DateTime dateTime, V state);
+
+    void PutValuesAtDates(IEnumerable<(DateTime, V)> events);
   }
 }

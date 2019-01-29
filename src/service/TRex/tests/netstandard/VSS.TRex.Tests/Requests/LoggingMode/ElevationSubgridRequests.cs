@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Common;
@@ -11,8 +10,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -229,5 +226,6 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       // Check cell has no height selected as no cell pass matches Maximum elevation mode
       subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
     }
+
   }
 }

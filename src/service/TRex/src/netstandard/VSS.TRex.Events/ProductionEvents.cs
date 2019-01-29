@@ -220,6 +220,23 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
+    /// Adds a set of event of type T with the given dates and values into the list. 
+    /// </summary>
+    /// <param name="events"></param>
+    /// <returns>The event instance that was added to the list</returns>
+    public virtual void PutValuesAtDates(IEnumerable<(DateTime, V)> events)
+    {
+      foreach (var evt in events)
+      {
+        PutValueAtDate(new Event
+        {
+          Date = evt.Item1,
+          State = evt.Item2,
+        });
+      }
+    }
+
+    /// <summary>
     /// Creates an array of string representations for the events in the list bounded by the
     /// supplied date range and the maximum number of events to return
     /// </summary>
