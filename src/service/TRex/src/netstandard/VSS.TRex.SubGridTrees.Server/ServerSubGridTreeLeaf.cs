@@ -638,8 +638,8 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 MajorVersion = SubGridStreamHeader.kSubGridMajorVersion,
                 MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
-                Identifier = SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker,
-                Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridDirectoryFile,
+                Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
+                Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
                 StartTime = LeafStartTime,
                 EndTime = LeafEndTime,
                 LastUpdateTimeUTC = DateTime.UtcNow
@@ -694,9 +694,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
             bool Result = false;
 
-            if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker))
+            if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker))
             {
-                Log.LogError($"Subgrid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker}, found {Header.Identifier}]).");
+                Log.LogError($"Subgrid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
                 return false;
             }
 
@@ -729,13 +729,13 @@ namespace VSS.TRex.SubGridTrees.Server
                         Result = Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
                         break;
                     default:
-                        Log.LogError($"Subgrid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker}, found {Header.Identifier}]).");
+                        Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
                         break;
                 }
             }
             else
             {
-              Log.LogError($"Subgrid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker}, found {Header.Identifier}]).");
+              Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
             }
 
             if (!Result)
