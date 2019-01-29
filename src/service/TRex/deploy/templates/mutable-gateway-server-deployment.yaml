@@ -6,6 +6,7 @@ metadata:
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
+    mutable-cluster: "true"
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
   replicas: {{ .Values.mutableGateway.replicaCount }}

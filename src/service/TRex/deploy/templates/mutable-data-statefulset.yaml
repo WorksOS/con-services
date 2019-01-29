@@ -7,6 +7,8 @@ metadata:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
     component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
+    mutable-cluster: "true"
+    immutable-cluster: "true"
 spec:
   selector:
     matchLabels:
