@@ -8,20 +8,20 @@ namespace VSS.TRex.SubGridTrees.Server
 { 
   public class SubGridDirectory : ISubGridDirectory
   {
-        private static ILogger Log = Logging.Logger.CreateLogger<SubGridDirectory>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridDirectory>();
      
         /// <summary>
-        /// This subgrid is present in the persistent store
+        /// This sub grid is present in the persistent store
         /// </summary>
         public bool ExistsInPersistentStore { get; set; }
 
         // SegmentDirectory contains a list of all the segments that are present
-        // in this subgrid. The list is time ordered and also contains references
+        // in this sub grid. The list is time ordered and also contains references
         // to the segments that are currently loaded into memory
         public List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; set; } = new List<ISubGridCellPassesDataSegmentInfo>();
 
         // GlobalLatestCells contains the computed latest cell information that spans
-        // all the segments in the subgrid
+        // all the segments in the sub grid
         public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
 
         public void AllocateGlobalLatestCells()
@@ -65,7 +65,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             try
             {
-                Debug.Assert(GlobalLatestCells != null, "Cannot write subgrid directory without global latest values available");
+                Debug.Assert(GlobalLatestCells != null, "Cannot write sub grid directory without global latest values available");
 
                 GlobalLatestCells.Write(writer, new byte[10000]);
 
@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             try
             {
-                Debug.Assert(GlobalLatestCells != null, "Cannot read subgrid directory without global latest values available");
+                Debug.Assert(GlobalLatestCells != null, "Cannot read sub grid directory without global latest values available");
 
                 GlobalLatestCells.Read(reader, new byte[10000]);
 
