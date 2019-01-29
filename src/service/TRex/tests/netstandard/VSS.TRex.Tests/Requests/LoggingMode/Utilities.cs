@@ -6,8 +6,7 @@ using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
-using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -20,27 +19,22 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 {
   public static class Utilities
   {
-    public static ISiteModel CreateSiteModelWithSingleCellForTesting(DateTime baseTime, int timeIncrementSeconds, float baseHeight, float heightDecrement, int numPassesToCreate)
+    public static ISiteModel NewEmptyModel()
     {
-      // Set up a model with a single sub grid with a single cell containing two cell passes and a single
-      // elevation mapping event with a state of lowest elevation mapping
-      // Create the site model and machine etc to aggregate the processed TAG file into
-
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       _ = siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
 
-      // Add the lowest pass elevation mapping event occurring after a last pass mapping event
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValuesAtDates(new[] {
-          (baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation),
-          (baseTime, ElevationMappingMode.MinimumElevation)
-        });
+      return siteModel;
+    }
 
-      // Ensure there are two appropriate elevation mapping mode events
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(2);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(0, out var eventDate, out var eventState);
-      eventState.Should().Be(ElevationMappingMode.LatestElevation);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.LastStateValue().Should().Be(ElevationMappingMode.MinimumElevation);
+    public static void AddElevationMappingModeEvents(ISiteModel siteModel, IEnumerable<(DateTime, ElevationMappingMode)> events)
+    {
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValuesAtDates(events);
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(events.Count());
+    }
 
+    public static void AddSingleCellAtOriginWithPasses(ISiteModel siteModel, IEnumerable<CellPass> passes)
+    {
       // Construct the sub grid to hold the cell being tested
       IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
       leaf.Should().NotBeNull();
@@ -55,27 +49,16 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(1);
 
-      // Add three passes, each separated by 10 seconds and descending by 100mm each pass
-      for (int i = 0; i < numPassesToCreate; i++)
-      {
-        leaf.AddPass(0, 0, new CellPass
-        {
-          InternalSiteModelMachineIndex = 0,
-          Time = baseTime.AddSeconds(i * timeIncrementSeconds),
-          Height = baseHeight + i * heightDecrement,
-          PassType = PassType.Front
-        });
-      }
+      CellPass[] _passes = passes.ToArray();
+
+      foreach (var pass in _passes)
+        leaf.AddPass(0, 0, pass);
 
       var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(0, 0);
-      cellPasses.Length.Should().Be(numPassesToCreate);
+      cellPasses.Length.Should().Be(_passes.Length);
 
       // Assign global latest cell pass to the appropriate pass
       leaf.Directory.GlobalLatestCells[0, 0] = cellPasses.Last();
-
-      // Ensure all cell passes register the correct elevation mapping mode
-      for (int i = 0; i < cellPasses.Length; i++)
-        siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetValueAtDate(cellPasses[i].Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
 
       // Ensure the pass data existence map records the existence of a non null value in the cell
       leaf.Directory.GlobalLatestCells.PassDataExistenceMap[0, 0] = true;
@@ -86,7 +69,42 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
         return true;
       });
+
       totalCells.Should().Be(1);
+    }
+
+    public static ISiteModel CreateSiteModelWithSingleCellForTesting(DateTime baseTime, int timeIncrementSeconds, float baseHeight, float heightDecrement, int numPassesToCreate)
+    {
+      // Set up a model with a single sub grid with a single cell containing two cell passes and a single
+      // elevation mapping event with a state of lowest elevation mapping
+      // Create the site model and machine etc to aggregate the processed TAG file into
+
+      ISiteModel siteModel = NewEmptyModel();
+
+      // Add the lowest pass elevation mapping event occurring after a last pass mapping event
+      AddElevationMappingModeEvents(siteModel, new[] {
+          (baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation),
+          (baseTime, ElevationMappingMode.MinimumElevation)
+        });
+
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(0, out var eventDate, out var eventState);
+      eventState.Should().Be(ElevationMappingMode.LatestElevation);
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.LastStateValue().Should().Be(ElevationMappingMode.MinimumElevation);
+
+      IEnumerable<CellPass> cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = 0,
+          Time = baseTime.AddSeconds(x * timeIncrementSeconds),
+          Height = baseHeight + x * heightDecrement,
+          PassType = PassType.Front
+        });
+
+      AddSingleCellAtOriginWithPasses(siteModel, cellPasses);
+
+      // Ensure all cell passes register the correct elevation mapping mode
+      foreach (var cellPass in cellPasses)
+        siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
 
       return siteModel;
     }
