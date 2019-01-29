@@ -254,8 +254,8 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
-       Guid.Parse(_projectUid), ImportedFileType.DesignSurface,
-       fileDescriptor, importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId
+       Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor, 
+       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();

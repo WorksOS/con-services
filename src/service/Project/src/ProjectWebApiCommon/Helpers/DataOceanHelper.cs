@@ -72,10 +72,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes the importedFile from DataOcean
     /// </summary>
     /// <returns></returns>
-    public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(string fullFileName, 
-      Guid projectUid, Guid importedFileUid, ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
+    public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(
+      string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid, 
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
       IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
     {
+      var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid.ToString());
+      var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
       log.LogInformation($"DeleteFileFromDataOcean: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
 
       var customHeaders = CustomHeaders(authn);

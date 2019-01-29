@@ -365,9 +365,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       ImportedFileUtils.ValidateEnvironmentVariables(existing.ImportedFileType, configStore, serviceExceptionHandler);
 
-      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(projectUid, existing.ImportedFileType,
-        JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 
-        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId);
+      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
+        projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 
+        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, DataOceanRootFolder);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

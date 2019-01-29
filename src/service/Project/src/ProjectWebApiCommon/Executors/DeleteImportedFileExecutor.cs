@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DotNetCore.CAP.Dashboard.Resources;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -98,8 +99,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (importedFileInternalResult == null)
         {
           importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-            $"{deleteImportedFile.FileDescriptor.Path}{Path.DirectorySeparatorChar}{deleteImportedFile.FileDescriptor.FileName}", deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-              log, serviceExceptionHandler, dataOceanClient, authn)
+            deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid, deleteImportedFile.ProjectUid, 
+            deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);
         }
         if (importedFileInternalResult != null)
