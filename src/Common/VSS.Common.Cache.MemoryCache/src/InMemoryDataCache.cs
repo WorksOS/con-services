@@ -46,6 +46,16 @@ namespace VSS.Common.Cache.MemoryCache
     public List<string> CacheTags => keyLookup.Values.SelectMany(s => s).Distinct().ToList();
 
     /// <summary>
+    /// Get a list of tags used to create the cache item for a given key
+    /// </summary>
+    public List<string> GetTagsForKey(string key)
+    {
+      return keyLookup.TryGetValue(key, out var res) 
+        ? res 
+        : new List<string>();
+    }
+
+    /// <summary>
     /// Get an item from cache if it exists, and is of the correct type
     /// </summary>
     /// <typeparam name="TItem">Reference type expected to be cached</typeparam>
