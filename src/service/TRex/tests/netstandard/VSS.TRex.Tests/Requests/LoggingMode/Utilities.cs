@@ -6,6 +6,7 @@ using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -29,8 +30,10 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       _ = siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
 
       // Add the lowest pass elevation mapping event occurring after a last pass mapping event
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValueAtDate(baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValueAtDate(baseTime, ElevationMappingMode.MinimumElevation);
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValuesAtDates(new[] {
+          (baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation),
+          (baseTime, ElevationMappingMode.MinimumElevation)
+        });
 
       // Ensure there are two appropriate elevation mapping mode events
       siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(2);
