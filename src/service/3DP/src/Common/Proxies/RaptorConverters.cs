@@ -1290,7 +1290,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static ProjectionParameter[] convertCoordinateSystemProjectionParameters(TProjectionParameters parameters)
     {
-      return parameters.ProjectionParameters.Select(pp => new ProjectionParameter()
+      return parameters.ProjectionParameters?.Select(pp => new ProjectionParameter()
       {
         Name = pp.Name,
         Value = pp.Value
