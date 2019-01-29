@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.ResultHandling
     [DataRow(TTAGProcServerProcessResult.tpsprServiceStopped, Type.TEMPORARY, false, "OnProcessTAGFile. Service has been stopped.")]
     [DataRow(TTAGProcServerProcessResult.tpsprFailedValidation, Type.NULL, null, "OnOverrideEvent. Failed on target data validation.")]
     [DataRow(TTAGProcServerProcessResult.tpsprTFAServiceError, Type.TEMPORARY, false, "TFA service error. Can not request Project or Asset from TFA.")]
-    public void Should_set_fields_correctly_When_given_Raptor_response_code(TTAGProcServerProcessResult code, string type, bool? continuable, string message)
+    public void Should_set_fields_correctly_When_given_Raptor_response_code(TAGProcServerProcessResultCode code, string type, bool? continuable, string message)
     {
       var helper = new TagFileProcessResultHelper(code);
 
