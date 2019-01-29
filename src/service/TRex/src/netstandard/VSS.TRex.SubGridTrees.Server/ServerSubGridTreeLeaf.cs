@@ -631,7 +631,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool SaveDirectoryToStream(Stream stream)
         {
-            bool Result;
             BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
             SubGridStreamHeader Header = new SubGridStreamHeader
@@ -648,24 +647,19 @@ namespace VSS.TRex.SubGridTrees.Server
             // Write the header/version to the stream
             Header.Write(writer);
 
-            Result = Directory.Write(writer);
+            Directory.Write(writer);
 
-            return Result;
+            return true;
         }
 
         public bool SaveDirectoryToFile(IStorageProxy storage,
                                         string FileName)
-    {
+        {
             MemoryStream MStream = new MemoryStream();
 
-            bool Result;
+            SaveDirectoryToStream(MStream);
 
-            if (!SaveDirectoryToStream(MStream))
-            {
-                return false;
-            }
-
-            Result = storage.WriteSpatialStreamToPersistentStore
+            bool Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, string.Empty,
               FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
@@ -726,7 +720,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 switch (Header.MinorVersion)
                 {
                     case 0:
-                        Result = Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
+                        Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
                         break;
                     default:
                         Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
@@ -738,12 +732,7 @@ namespace VSS.TRex.SubGridTrees.Server
               Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
             }
 
-            if (!Result)
-            {
-                Directory.Clear();
-            }
-
-            return Result;
+            return true;
         }
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
