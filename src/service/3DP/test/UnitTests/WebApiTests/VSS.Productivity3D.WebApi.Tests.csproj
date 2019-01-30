@@ -12,6 +12,34 @@
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">    
+    <Compile Remove=".\TransferTests.cs" />
+
+    <Compile Remove=".\Common\RaptorConvertersTests.cs" />
+    
+    <Compile Remove=".\Compaction\Executors\CompactionCellDatumExecutorTests.cs" />    
+    <Compile Remove=".\Compaction\Executors\CompactionDesignProfileExecutorTests.cs" />
+    <Compile Remove=".\Compaction\Executors\CompactionProfileExecutorTests.cs" />
+    <Compile Remove=".\Compaction\Executors\ResultConverterTests.cs" />
+    
+    <Compile Remove=".\Compaction\Helpers\ProfilesHelperTests.cs" />
+    <Compile Remove=".\Compaction\Helpers\ExportRequestHelperTests.cs" />    
+
+    <Compile Remove=".\Compaction\Models\LineworkRequestTests.cs" />
+    <Compile Remove=".\Compaction\Models\OffsetStatisticsTests.cs" />
+    
+    <Compile Remove=".\Coord\Controllers\CoordinateSystemControllerTests.cs" />
+
+    <Compile Remove=".\MapHandling\BoundingBoxServiceTests.cs" />
+    
+    <Compile Remove=".\ProductionData\Controllers\ProfileProductionDataControllerTests.cs" />
+
+    <Compile Remove=".\Report\Executors\ExportReportExecutorTests.cs" />
+    <Compile Remove=".\Report\Models\GridRowTests.cs" />
+    <Compile Remove=".\Report\Models\StationOffsetRowTests.cs" />    
+  </ItemGroup>
+
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />

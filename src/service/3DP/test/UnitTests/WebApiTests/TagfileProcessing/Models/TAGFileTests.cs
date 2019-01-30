@@ -26,10 +26,11 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
       var tagfile = TagFileRequestLegacy.CreateTagFile("test.dxf", data, 10, fence, 11, false, false);
 
       Assert.IsTrue(validator.TryValidate(tagfile, out _));
-
+#if RAPTOR
       tagfile = TagFileRequestLegacy.CreateTagFile("te$#@#%%&^%&^%#G<>SFDGREYT*st.dxf", data, 10, null, 11, false, false);
 
       Assert.IsFalse(validator.TryValidate(tagfile, out _));
+#endif
     }
   }
 }
