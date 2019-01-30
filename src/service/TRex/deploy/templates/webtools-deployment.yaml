@@ -19,6 +19,8 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
         component: {{ template "trex.deployname" . }}-webtools
+        immutable-cluster: "true"
+        mutable-cluster: "true"
 
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}

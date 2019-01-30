@@ -23,6 +23,7 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
         component: {{ template "trex.deployname" . }}-psn
+        immutable-cluster: "true"
     spec:
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ .Values.serviceAccountName }}

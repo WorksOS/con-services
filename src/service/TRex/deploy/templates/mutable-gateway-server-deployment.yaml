@@ -18,6 +18,7 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
         component: {{ template "trex.deployname" . }}-mgateway
+        mutable-cluster: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
 

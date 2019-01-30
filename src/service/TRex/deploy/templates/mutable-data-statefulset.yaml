@@ -24,6 +24,8 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
         component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
+        mutable-cluster: "true"
+        immutable-cluster: "true"
     spec:
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ .Values.serviceAccountName }}
