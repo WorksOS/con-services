@@ -160,5 +160,10 @@ namespace VSS.TRex.Common.CellPasses
     /// The CCA value, which a lift is marked as thick at.
     /// </summary>
     public const byte THICK_LIFT_CCA_VALUE = 120;
+
+    /// <summary>
+    /// The mask to be applied to the GPSModeStore member of the cell pass to access the GPSMode enumeration value
+    /// </summary>
+    public const byte GPSModeStoreMask = 0b00001111;
   }
 }
