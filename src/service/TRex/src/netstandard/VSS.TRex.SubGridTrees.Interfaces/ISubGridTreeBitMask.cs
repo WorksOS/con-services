@@ -92,7 +92,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// from the level 5 (node) layer to the level 6 (leaf) layer
     /// </summary>
     /// <param name="functor"></param>
-    void ScanAllSetBitsAsSubGridAddresses(Action<ISubGridCellAddress> functor);
+    void ScanAllSetBitsAsSubGridAddresses(Action<SubGridCellAddress> functor);
 
     ISubGrid CreateNewSubgrid(byte level);
   }
