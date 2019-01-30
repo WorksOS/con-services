@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGrids
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// Local reference to the client subgrid factory
+        /// Local reference to the client sub grid factory
         /// </summary>
         private IClientLeafSubGridFactory clientLeafSubGridFactory;
 
@@ -486,7 +486,7 @@ namespace VSS.TRex.SubGrids
         /// <param name="surveyedSurfaceDataRequested"></param>
         /// <param name="clientGrid"></param>
         /// <returns></returns>
-        public ServerRequestResult RequestSubGridInternal(ISubGridCellAddress subGridAddress,
+        public ServerRequestResult RequestSubGridInternal(SubGridCellAddress subGridAddress,
                                                           // LiftBuildSettings: TICLiftBuildSettings;
                                                           bool prodDataRequested,
                                                           bool surveyedSurfaceDataRequested,
