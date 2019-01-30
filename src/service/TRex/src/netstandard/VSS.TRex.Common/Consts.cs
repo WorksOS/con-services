@@ -59,9 +59,9 @@
     public const int VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT = 100; // override with:  VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT
 
     /// <summary>
-    /// Defines the maximum number of cell passes permitted in a subgrid segment before that segment will be split
+    /// Defines the maximum number of cell passes permitted in a sub grid segment before that segment will be split
     /// </summary>
-    public const int VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT = 15000;     // override with:  VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT
+    public const int VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT = 10000;     // override with:  VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT
 
     /// <summary>
     /// Defines the maximum number of cell passes that may occur within a single cell within a segment
