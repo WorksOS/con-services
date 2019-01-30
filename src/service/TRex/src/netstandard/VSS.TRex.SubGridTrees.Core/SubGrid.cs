@@ -309,7 +309,7 @@ namespace VSS.TRex.SubGridTrees
         {
             int result = 0;
 
-            for (int I = 0; I < SubGridTreeConsts.SubGridTreeCellsPerSubgrid; I++)
+            for (int I = 0; I < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; I++)
             {
                 if (CellHasValue((byte)(I / SubGridTreeConsts.SubGridTreeDimension), (byte)(I % SubGridTreeConsts.SubGridTreeDimension)))
                 {

@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     /// <summary>
-    /// The time iteration direction for iterating thorugh the segments in the subgrid
+    /// The time iteration direction for iterating through the segments in the sub grid
     /// </summary>
     public enum IterationDirection
     {

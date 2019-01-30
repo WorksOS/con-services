@@ -3,7 +3,7 @@
 namespace VSS.TRex.SubGridTrees.Core
 {
   /// <summary>
-  /// A basic long based subgrid tree.
+  /// A basic long based sub grid tree.
   /// </summary>
   public class GenericSubGridTree_Long : GenericSubGridTree<long, GenericLeafSubGrid_Long>, IGenericSubGridTree_Long
   {

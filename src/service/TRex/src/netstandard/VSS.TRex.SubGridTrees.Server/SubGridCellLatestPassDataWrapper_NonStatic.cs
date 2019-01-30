@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// The array of 32x32 cells containing a cell pass representing the latest known values for a variety of cell attributes
         /// </summary>
-        public CellPass[,] PassData = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+        public readonly CellPass[,] PassData = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// Implement the last pass indexer from the interface.
@@ -23,14 +23,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public CellPass this[int x, int y]
         {
-            get
-            {
-                return PassData[x, y];
-            }
-            set
-            {
-                PassData[x, y] = value;
-            }
+            get => PassData[x, y];
+            set => PassData[x, y] = value;
         }
 
         /// <summary>
@@ -43,7 +37,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Clear());
         }
 
-    public bool HasCCVData() => true;
+      public bool HasCCVData() => true;
 
       public bool HasRMVData() => true;
 
@@ -79,7 +73,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// ReadHeiht will read the Height from the latest cell identified by the Row and Col
+        /// ReadHeight will read the Height from the latest cell identified by the Row and Col
         /// </summary>
         /// <param name="Col"></param>
         /// <param name="Row"></param>

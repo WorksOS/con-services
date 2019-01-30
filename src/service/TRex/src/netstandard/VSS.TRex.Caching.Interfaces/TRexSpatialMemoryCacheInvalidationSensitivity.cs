@@ -12,7 +12,7 @@ namespace VSS.TRex.Caching.Interfaces
     None = 0,
 
     /// <summary>
-    /// Spatial (subgrid) updates driven by ingest of new production data will cause invalidation and
+    /// Spatial (sub grid) updates driven by ingest of new production data will cause invalidation and
     /// eviction of all relevant spatial dat held within the cache
     /// </summary>
     ProductionDataIngest = 1

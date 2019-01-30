@@ -83,7 +83,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
 
-      Array.Copy(nullTimes, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
+      Array.Copy(nullTimes, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
     }
 
     /// <summary>
@@ -95,8 +95,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
-      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
+      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
+      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
     }
 
     /// <summary>
@@ -108,8 +108,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
-      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
+      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
+      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long));
     }
 
     /// <summary>

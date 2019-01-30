@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.SubGridTrees.Helpers;
+﻿using VSS.TRex.SubGridTrees.Helpers;
 using Xunit;
 
 namespace VSS.TRex.Tests.Utility

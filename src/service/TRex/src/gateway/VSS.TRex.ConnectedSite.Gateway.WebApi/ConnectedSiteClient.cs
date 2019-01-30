@@ -21,6 +21,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
     /// Typed HttpClient for sending status messages to connected site.
     /// </summary>
     /// <param name="client">Inner http client</param>
+    /// <param name="logger"></param>
     public ConnectedSiteClient(HttpClient client, ILogger<ConnectedSiteClient> logger)
     {
       _client = client;

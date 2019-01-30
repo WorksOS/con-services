@@ -71,7 +71,7 @@ namespace VSS.TRex.Cells
             }
           default:
             {
-              throw new ArgumentException($"Unknown pass type supplied to SetPassType {_passType}", "_passType");
+              throw new ArgumentException($"Unknown pass type supplied to SetPassType {_passType}", nameof(_passType));
             }
         }
 
@@ -123,8 +123,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     public GPSMode gpsMode
     {
-      get { return (GPSMode)(GPSModeStore & 0x0F); }
-      set { GPSModeStore = (byte)((GPSModeStore & 0xF0) | ((byte)value & 0x0F)); }
+      get => (GPSMode)(GPSModeStore & 0x0F); 
+      set => GPSModeStore = (byte)((GPSModeStore & 0xF0) | ((byte)value & 0x0F)); 
     }
 
     /// <summary>
@@ -132,8 +132,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     public bool HalfPass
     {
-      get { return (GPSModeStore & (1 << (int)GPSFlagBits.GPSSBitHalfPass)) != 0; }
-      set { GPSModeStore = (byte)(value ? GPSModeStore | 1 << (int)GPSFlagBits.GPSSBitHalfPass : GPSModeStore & ~(1 << (int)GPSFlagBits.GPSSBitHalfPass)); }
+      get => (GPSModeStore & (1 << (int)GPSFlagBits.GPSSBitHalfPass)) != 0; 
+      set => GPSModeStore = (byte)(value ? GPSModeStore | 1 << (int)GPSFlagBits.GPSSBitHalfPass : GPSModeStore & ~(1 << (int)GPSFlagBits.GPSSBitHalfPass)); 
     }
 
     /// <summary>
@@ -141,15 +141,15 @@ namespace VSS.TRex.Cells
     /// </summary>
     public PassType PassType
     {
-      get { return PassTypeHelper.GetPassType(GPSModeStore); }
-      set { GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); }
+      get => PassTypeHelper.GetPassType(GPSModeStore); 
+      set => GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); 
     }
 
     /// <summary>
     /// The external descriptor for a machine within a project. This is immutable and once a machine is created in the project. The machine
     /// may always be referred to via this descriptor
     /// </summary>
-    /// Note: This is removed in favour of CellPasses only ever containing the internal sitemodel machine index
+    /// Note: This is removed in favor of CellPasses only ever containing the internal site model machine index
     /// public long MachineID { get; set; }
 
     /// <summary>
@@ -209,7 +209,7 @@ namespace VSS.TRex.Cells
     public short MDP { get; set; }
 
     /// <summary>
-    /// The measured CCA (Caterpillar COmpaction Algorithm) value, for this pass
+    /// The measured CCA (Caterpillar Compaction Algorithm) value, for this pass
     /// </summary>
     public byte CCA { get; set; }
 
@@ -337,7 +337,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -358,7 +358,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Deserializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

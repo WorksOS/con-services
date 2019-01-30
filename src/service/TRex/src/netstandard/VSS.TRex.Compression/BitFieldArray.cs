@@ -328,7 +328,7 @@ namespace VSS.TRex.Compression
         /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
         /// encoded to native null value conversion and deal with adding the minvalue
         /// from the descriptor in the read value.
-        /// The variant that take an exct number of value bits is a raw version of the read method that
+        /// The variant that take an exact number of value bits is a raw version of the read method that
         /// just reads the value from the given bits.
         /// </summary>
         /// <param name="ABitLocation"></param>
@@ -339,7 +339,7 @@ namespace VSS.TRex.Compression
             // Reading occurs in three stages:
             // 1: Read the remaining bits in the element referenced by ABitLocation
             // 2: If there are still more than kNBitsReadAtATime remaining bits to be read, then read
-            //    individual elements from Storage into Result until the reminining number of bits
+            //    individual elements from Storage into Result until the remaining number of bits
             //    to be read is less than kNBitsReadAtATime
             // 3: If there are still (less than kNBitsReadAtATime) bits to be read, then read the remainder
             //    of the bits from the most significant bits of the next element in Storage
@@ -413,7 +413,7 @@ namespace VSS.TRex.Compression
         /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
         /// encoded to native null value conversion and deal with adding the minvalue
         /// from the descriptor in the read value.
-        /// The variant that take an exct number of value bits is a raw version of the read method that
+        /// The variant that take an exact number of value bits is a raw version of the read method that
         /// just reads the value from the given bits.
         /// </summary>
         /// <param name="ABitLocation"></param>
@@ -424,7 +424,7 @@ namespace VSS.TRex.Compression
             // Reading occurs in three stages:
             // 1: Read the remaining bits in the element referenced by ABitLocation
             // 2: If there are still more than kNBitsReadAtATime remaining bits to be read, then read
-            //    individual elements from Storage into Result until the reminining number of bits
+            //    individual elements from Storage into Result until the remaining number of bits
             //    to be read is less than kNBitsReadAtATime
             // 3: If there are still (less than kNBitsReadAtATime) bits to be read, then read the remainder
             //    of the bits from the most significant bits of the next element in Storage

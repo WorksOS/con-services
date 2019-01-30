@@ -71,7 +71,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Write out the directory of segments
             Debug.Assert(SegmentDirectory.Count > 0, "Writing a segment directory with no segments");
-            writer.Write((int)SegmentDirectory.Count);
+            writer.Write(SegmentDirectory.Count);
 
             foreach (var Segment in SegmentDirectory)
             {

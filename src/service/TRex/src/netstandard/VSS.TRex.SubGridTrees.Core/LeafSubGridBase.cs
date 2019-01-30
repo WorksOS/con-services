@@ -19,10 +19,8 @@ namespace VSS.TRex.SubGridTrees
         {
             Debug.Assert(value, "Can only mark sub grid as dirty via public interface (not unset it!)");
 
-            base.SetDirty(value);
-
-            if (Dirty)
-                latestCellPassesOutOfDate = true;
+            base.SetDirty(true);
+            latestCellPassesOutOfDate = true;
         }
 
         public LeafSubGridBase(ISubGridTree owner,

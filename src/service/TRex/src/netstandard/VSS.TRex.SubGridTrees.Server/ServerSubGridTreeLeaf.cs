@@ -20,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// The core class containing a description of all cell passes recorded within the spatial confines
-    /// of a subgrid on the ground.
+    /// of a sub grid on the ground.
     /// </summary>
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool HasSubGridDirectoryDetails => Directory.SegmentDirectory.Count > 0; 
 
         /// <summary>
-        /// The date time of the last observed cell pass within this subgrid
+        /// The date time of the last observed cell pass within this sub grid
         /// </summary>
         public DateTime LeafEndTime { get; set; }
 
@@ -672,7 +672,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
       /// <summary>
-      /// Generates the affinity key for this subgrid that identifies this element in the persistent data store
+      /// Generates the affinity key for this sub grid that identifies this element in the persistent data store
       /// </summary>
       /// <returns></returns>
       public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(Owner.ID, OriginX, OriginY);
@@ -686,17 +686,15 @@ namespace VSS.TRex.SubGridTrees.Server
             // long LatestCellPassDataSize;
             // long CellPassStacksDataSize;
 
-            bool Result = false;
-
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker))
             {
-                Log.LogError($"Subgrid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
+                Log.LogError($"Sub grid directory file header mismatch (expected [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
                 return false;
             }
 
             if (!Header.IsSubGridDirectoryFile)
             {
-                Log.LogCritical("Subgrid directory file does not identify itself as such in extended header flags");
+                Log.LogCritical("Sub grid directory file does not identify itself as such in extended header flags");
                 return false;
             }
 
