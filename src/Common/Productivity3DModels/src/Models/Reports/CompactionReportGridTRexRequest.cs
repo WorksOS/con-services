@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     protected CompactionReportGridTRexRequest()
     { }
 
-    public static CompactionReportGridTRexRequest CreateCompactionReportGridTRexRequest(
+    public static CompactionReportGridTRexRequest CreateRequest(
       Guid projectUid,
       FilterResult filter,
       bool reportElevation,

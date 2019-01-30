@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -11,10 +9,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
