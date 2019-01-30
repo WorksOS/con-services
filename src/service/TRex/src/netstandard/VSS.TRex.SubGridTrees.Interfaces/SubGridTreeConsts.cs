@@ -3,7 +3,7 @@
   public static class SubGridTreeConsts
   {
     /// <summary>
-    /// We use 6 levels in our subgrid tree (Root + 4 intermediary + 1 on-the-ground)
+    /// We use 6 levels in our sub grid tree (Root + 4 intermediary + 1 on-the-ground)
     /// </summary>
     public const byte SubGridTreeLevels = 6;
 
@@ -13,7 +13,7 @@
     public const double DefaultCellSize = 0.34; // Units: meters
 
     /// <summary>
-    /// Denotes how many bits of an on-the-ground cell X or Y index reference each level in the subgrid tree represents
+    /// Denotes how many bits of an on-the-ground cell X or Y index reference each level in the sub grid tree represents
     /// </summary>
     public const byte SubGridIndexBitsPerLevel = 5;
 
@@ -28,9 +28,9 @@
     public const byte SubGridTreeDimensionMinus1 = (1 << SubGridIndexBitsPerLevel) - 1;
 
     /// <summary>
-    /// The number of cells contained within a subgrid
+    /// The number of cells contained within a sub grid
     /// </summary>
-    public const int SubGridTreeCellsPerSubgrid = SubGridTreeDimension * SubGridTreeDimension;
+    public const int SubGridTreeCellsPerSubGrid = SubGridTreeDimension * SubGridTreeDimension;
 
     /// <summary>
     /// The number of cells on-the-ground a single cell in the
@@ -41,16 +41,16 @@
     public const uint RootSubGridCellSize = 1 << ((SubGridTreeLevels - 1) * SubGridIndexBitsPerLevel);
 
     /// <summary>
-    /// The mask required to extract the portion of a subgrid key relating to a single level in the tree
+    /// The mask required to extract the portion of a sub grid key relating to a single level in the tree
     /// This is 0b00011111 (ie: five bits of an X/Y component of the key)
     /// </summary>
-    public const byte SubGridLocalKeyMask = 0x1F;
+    public const byte SubGridLocalKeyMask = 0b00011111; //0x1F;
 
     /// <summary>
-    /// The number of cells (representing node subgrids, leaf subgrids or on-the-ground cells) that
-    /// are represented within a subgrid
+    /// The number of cells (representing node sub grids, leaf sub grids or on-the-ground cells) that
+    /// are represented within a sub grid
     /// </summary>
-    public const uint CellsPerSubgrid = SubGridTreeDimension * SubGridTreeDimension;
+    public const uint CellsPerSubGrid = SubGridTreeDimension * SubGridTreeDimension;
 
     /// <summary>
     /// The default cell index offset to translate the

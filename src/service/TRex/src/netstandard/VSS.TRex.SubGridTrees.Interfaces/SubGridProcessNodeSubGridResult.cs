@@ -1,9 +1,9 @@
 ﻿namespace VSS.TRex.SubGridTrees.Types
 {
     /// <summary>
-    /// Control state for iterating through subgrids in a subgrid tree
-    /// A notification event called when scanning node subgrids in the sub grid tree
-    /// (or any other events where the node subgrid needs to passed to a processor). 
+    /// Control state for iterating through sub grids in a sub grid tree
+    /// A notification event called when scanning node sub grids in the sub grid tree
+    /// (or any other events where the node sub grid needs to passed to a processor). 
     /// A result of DontDescendFurther indicates that no further processing should occur in 
     /// child nodes of this node. A result of TerminateProcessing indicates no further scanning 
     /// should occur in the tree.
@@ -16,7 +16,7 @@
         OK,
 
         /// <summary>
-        /// Scanning should not recurse further into the structre past this node subgrid
+        /// Scanning should not recurse further into the structure past this node sub grid
         /// </summary>
         DontDescendFurther,
 

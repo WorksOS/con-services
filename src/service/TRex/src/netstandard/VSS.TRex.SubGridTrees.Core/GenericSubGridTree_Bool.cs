@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.SubGridTrees.Core
 {
   /// <summary>
-  /// A basic boolean based subgrid tree.
+  /// A basic boolean based sub grid tree.
   /// </summary>
   public class GenericSubGridTree_Bool : GenericSubGridTree<bool, GenericLeafSubGrid_Bool>
   {

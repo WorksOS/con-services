@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Interfaces
 {
@@ -11,39 +9,41 @@ namespace VSS.TRex.SubGridTrees.Interfaces
   public interface ISubGrid
   {
     /// <summary>
-    /// ‘Level’ in the subgrid tree in which this subgrid resides. Level 1 is the root node in the tree
+    /// ‘Level’ in the sub grid tree in which this sub grid resides. Level 1 is the root node in the tree
     /// </summary>
     byte Level { get; set; }
 
     /// <summary>
-    /// Grid cell X Origin of the bottom left hand cell in this subgrid. 
-    /// Origin is wrt to cells of the spatial dimension held by this subgrid
+    /// Grid cell X Origin of the bottom left hand cell in this sub grid. 
+    /// Origin is wrt to cells of the spatial dimension held by this sub grid
     /// </summary>
     uint OriginX { get; set; }
 
     /// <summary>
-    /// Grid cell Y Origin of the bottom left hand cell in this subgrid. 
-    /// Origin is wrt to cells of the spatial dimension held by this subgrid
+    /// Grid cell Y Origin of the bottom left hand cell in this sub grid. 
+    /// Origin is wrt to cells of the spatial dimension held by this sub grid
     /// </summary>
     uint OriginY { get; set; }
 
     /// <summary>
     /// Dirty property used to indicate the presence of changes that are not persisted.
     /// </summary>
-    bool Dirty { get; set; }
+    bool Dirty { get; }
 
     /// <summary>
-    /// The owning subgrid tree that this subgrid is a part of.
+    /// The owning sub grid tree that this su grid is a part of.
     /// </summary>
     ISubGridTree Owner { get; set; }
 
     /// <summary>
-    /// The parent subgrid that owns this subgrid as a cell.
+    /// The parent sub grid that owns this sub grid as a cell.
     /// </summary>
     ISubGrid Parent { get; set; }
 
-    uint AxialCellCoverageByThisSubgrid();
-    uint AxialCellCoverageByChildSubgrid();
+    void SetDirty();
+
+    uint AxialCellCoverageByThisSubGrid();
+    uint AxialCellCoverageByChildSubGrid();
     bool ContainsOTGCell(uint CellX, uint CellY);
     void SetOriginPosition(uint CellX, uint CellY);
     void GetSubGridCellIndex(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY);
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     void FromBytes(byte[] bytes, byte[] helperBuffer = null);
 
     /// <summary>
-    /// Perform an action over all cells in the subgrid by calling the supplied action lambda with the coordinates of each cell
+    /// Perform an action over all cells in the sub grid by calling the supplied action lambda with the coordinates of each cell
     /// </summary>
     /// <param name="action"></param>
     void ForEach(Action<byte, byte> action);

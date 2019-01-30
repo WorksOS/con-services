@@ -6,30 +6,26 @@ namespace VSS.TRex.Tests.Utility
 {
         public class GPSTests
     {
-        [Fact()]
+        [Fact]
         public void Test_GPSOriginTimeToDateTime()
         {
             DateTime dateTime = GPS.GPSOriginTimeToDateTime(10000, 10000000);
 
-            uint GPSWeek, GPSWeekMilliseconds;
-
-            GPS.DateTimeToGPSOriginTime(dateTime, out GPSWeek, out GPSWeekMilliseconds);
+            GPS.DateTimeToGPSOriginTime(dateTime, out uint GPSWeek, out uint GPSWeekMilliseconds);
 
             Assert.True(GPSWeek == 10000 && GPSWeekMilliseconds == 10000000,
                 "Round trip conversion of GPS date failed");
         }
 
-        [Fact()]
+        [Fact]
         public void Test_GPSOriginTimeToDateTime_Invalid()
         {
-            uint GPSWeek, GPSWeekMilliseconds;
-
             // Ensure an argument exception occurs for request to convert dates before the GPS origin time
             try
             {
-                GPS.DateTimeToGPSOriginTime(new DateTime(1950, 1, 1), out GPSWeek, out GPSWeekMilliseconds);
+                GPS.DateTimeToGPSOriginTime(new DateTime(1950, 1, 1), out _, out _);
 
-                Assert.True(false,"Dtae before GPS origin did not cuse an exception");
+                Assert.True(false,"Date before GPS origin did not cause an exception");
             }
             catch ( ArgumentException )
             {

@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using Xunit;
 

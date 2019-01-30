@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
-    /// Factory that creates subgrid segments that contain collections of cell passes
+    /// Factory that creates sub grid segments that contain collections of cell passes
     /// </summary>
     public class SubGridCellSegmentPassesDataWrapperFactory : ISubGridCellSegmentPassesDataWrapperFactory
     {

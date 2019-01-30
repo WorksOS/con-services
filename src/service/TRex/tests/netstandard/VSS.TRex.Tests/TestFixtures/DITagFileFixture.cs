@@ -120,7 +120,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
       DIBuilder.Eject();
     }

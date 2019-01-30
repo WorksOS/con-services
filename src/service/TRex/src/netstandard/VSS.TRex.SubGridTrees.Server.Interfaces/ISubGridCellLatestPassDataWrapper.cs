@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void Assign(ISubGridCellLatestPassDataWrapper Source);
 
         /// <summary>
-        /// An indexer supporting accessing the 2D array of 'last' pass information for the cell in a subgrid or segment
+        /// An indexer supporting accessing the 2D array of 'last' pass information for the cell in a sub grid or segment
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>

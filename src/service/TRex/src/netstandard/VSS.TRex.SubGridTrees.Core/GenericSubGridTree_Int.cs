@@ -3,7 +3,7 @@
 namespace VSS.TRex.SubGridTrees.Core
 {
   /// <summary>
-  /// A basic int based subgrid tree.
+  /// A basic int based sub grid tree.
   /// </summary>
   public class GenericSubGridTree_Int : GenericSubGridTree<int, GenericLeafSubGrid_Int>, IGenericSubGridTree_Int
   {
