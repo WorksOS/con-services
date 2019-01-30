@@ -1,9 +1,11 @@
+Set-Location $PSScriptRoot
+
 Write-Host "Running acceptance tests" -ForegroundColor DarkGray
 
 $global:ipAddress = ""
 
 function WaitForContainer {
-    PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -containerIPAddress $global:ipAddress
+    PowerShell.exe -ExecutionPolicy Bypass -Command ./wait-for-container.ps1 -containerIPAddress $global:ipAddress
 
     if ($LastExitCode -ne 0) {
         Write-Host "Unable to connect to Raptor container service at $ipAddress, the '$containerName' container may not be responding or has stopped." -ForegroundColor DarkRed
@@ -44,7 +46,6 @@ $env:FILE_ACCESS_SVC_BASE_URI=":80"
 $env:RAPTOR_WEBSERVICES_HOST=$ipAddress
 
 Write-Host "Removing test file artifacts..." -ForegroundColor DarkGray
-#Set-Location .\AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug\netcoreapp2.0
 Set-Location .\AcceptanceTests
 Remove-Item *.trx
 
