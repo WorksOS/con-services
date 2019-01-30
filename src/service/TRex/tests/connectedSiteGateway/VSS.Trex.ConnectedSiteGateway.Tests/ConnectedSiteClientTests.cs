@@ -20,7 +20,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     public async Task Test_Good_L1_Message()
     {
       // Test constants
-      var expectedUri = new Uri("http://nowhere.specific/positions/in/v1/GCS900-1");
+      var expectedUri = new Uri("http://nowhere.specific/positions/in/v1/CB460-1SW");
       var messageTime = DateTime.Parse("2018-10-16T16:54:12.9933999+13:00");
       var expectedRequestMessage = "{\"ts\":\"2018-10-16T16:54:12.9933999+13:00\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
@@ -57,7 +57,9 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
         Lattitude = -2,
         Longitude = 3,
         Timestamp = messageTime,
-        HardwareID = "1"
+        HardwareID = "1SW",
+        PlatformType = TRex.Common.Types.MachineControlPlatformType.CB460
+        
       };
 
       var client = new ConnectedSiteClient(httpClient, new Mock<ILogger<ConnectedSiteClient>>().Object);
@@ -82,7 +84,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     public async Task Test_Good_L2_Message()
     {
       // Test constants
-      var expectedUri = new Uri("http://nowhere.specific/status/in/v1/GCS900-1");
+      var expectedUri = new Uri("http://nowhere.specific/status/in/v1/CB430-1SM");
       var messageTime = DateTime.Parse("2018-10-16T16:54:12.9933999+13:00");
       var expectedRequestMessage =
         "{\"timestamp\":\"2018-10-16T16:54:12.9933999+13:00\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
@@ -120,11 +122,12 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
         Lattitude = -2,
         Longitude = 3,
         Timestamp = messageTime,
-        HardwareID = "1",
+        HardwareID = "1SM",
         DesignName = "Highway to hell",
         AppVersion = "666a",
         AssetNickname = "Little Nicky",
-        AssetType = ((MachineType)0x17).ToString()
+        AssetType = ((MachineType)0x17).ToString(),
+        PlatformType = TRex.Common.Types.MachineControlPlatformType.CB430
        };
 
       var client = new ConnectedSiteClient(httpClient, new Mock<ILogger<ConnectedSiteClient>>().Object);
@@ -172,7 +175,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
         Lattitude = -2,
         Longitude = 3,
         Timestamp = DateTime.Now,
-        HardwareID = "1",
+        HardwareID = "1SV",
         DesignName = "Highway to hell",
         AssetType = "ICBM",
         AppVersion = "666a",
