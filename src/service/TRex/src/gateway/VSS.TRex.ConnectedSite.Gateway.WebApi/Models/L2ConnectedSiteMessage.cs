@@ -26,8 +26,8 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
     public L2ConnectedSiteMessage(TAGFilePreScan tagFilePrescan)
     {
       Timestamp = tagFilePrescan.SeedTimeUTC;
-      Lattitude = tagFilePrescan.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLatitude.Value) : 0;
-      Longitude = tagFilePrescan.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLongitude.Value) : 0;
+      Lattitude = tagFilePrescan.SeedLatitude.HasValue ? (double?)MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLatitude.Value) : null;
+      Longitude = tagFilePrescan.SeedLatitude.HasValue ? (double?)MathUtilities.RadiansToDegrees(tagFilePrescan.SeedLongitude.Value) : null;
       Height = tagFilePrescan.SeedHeight;
       HardwareID = tagFilePrescan.HardwareID;
       AssetNickname = tagFilePrescan.MachineID;
