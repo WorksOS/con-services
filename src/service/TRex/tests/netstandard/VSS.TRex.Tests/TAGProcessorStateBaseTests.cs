@@ -427,5 +427,22 @@ namespace VSS.TRex.Tests
       state.SetICMachineSpeedValue(100);
       Assert.Equal(100, state.GetLatestMachineSpeed());
     }
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlTypeEmpty()
+    {
+      TAGProcessorStateBase state = new TAGProcessorStateBase();
+      state.HardwareID.Should().BeNullOrEmpty();
+      state.Invoking(x => x.GetPlatformType()).Should().Throw<ArgumentException>().WithMessage("No mapping exists for this serial number");
+    }
+
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlTypeValid()
+    {
+      TAGProcessorStateBase state = new TAGProcessorStateBase();
+      state.HardwareID = "2432J011SW";
+      state.GetPlatformType().Should().Be(MachineControlPlatformType.CB460);
+    }
   }
 }

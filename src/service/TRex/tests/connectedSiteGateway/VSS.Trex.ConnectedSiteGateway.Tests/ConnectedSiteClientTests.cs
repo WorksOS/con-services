@@ -57,7 +57,9 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
         Lattitude = -2,
         Longitude = 3,
         Timestamp = messageTime,
-        HardwareID = "1SW"
+        HardwareID = "1SW",
+        PlatformType = TRex.Common.Types.MachineControlPlatformType.CB460
+        
       };
 
       var client = new ConnectedSiteClient(httpClient, new Mock<ILogger<ConnectedSiteClient>>().Object);
@@ -124,7 +126,8 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
         DesignName = "Highway to hell",
         AppVersion = "666a",
         AssetNickname = "Little Nicky",
-        AssetType = ((MachineType)0x17).ToString()
+        AssetType = ((MachineType)0x17).ToString(),
+        PlatformType = TRex.Common.Types.MachineControlPlatformType.CB430
        };
 
       var client = new ConnectedSiteClient(httpClient, new Mock<ILogger<ConnectedSiteClient>>().Object);

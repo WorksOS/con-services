@@ -19,7 +19,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
     public string AppVersion { get; set; }
     public string AppName { get { return "GCS900"; } }
     public string AssetNickname { get; set; }
-    public override string Route { get => $"{API_ROUTE}{MachineSerialUtilities.MapSerialToModel(HardwareID)}-{HardwareID}"; }
+    public override string Route { get => $"{API_ROUTE}{PlatformType}-{HardwareID}"; }
 
     public L2ConnectedSiteMessage() { }
 
@@ -34,6 +34,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
       AppVersion = tagFilePrescan.ApplicationVersion;
       DesignName = tagFilePrescan.DesignName;
       AssetType = ((MachineType)tagFilePrescan.MachineType).ToString();
+      PlatformType = tagFilePrescan.PlatformType;
     }
 
   }

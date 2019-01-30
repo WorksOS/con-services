@@ -1,29 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using VSS.TRex.Common.Types;
 
 namespace VSS.TRex.Common.Utilities
 {
   public static class MachineSerialUtilities
   {
-    public static string MapSerialToModel(string serial)
+    public static MachineControlPlatformType MapSerialToModel(string serial)
     {
 
       if (serial.EndsWith("SM"))
       {
-        return "CB430";
+        return MachineControlPlatformType.CB430;
       }
       else if (serial.EndsWith("SV"))
       {
-        return "CB450";
+        return MachineControlPlatformType.CB450;
       }
       else if (serial.EndsWith("SW"))
       {
-        return "CB460";
+        return MachineControlPlatformType.CB460;
       }
       else if (serial.EndsWith("YU"))
       {
-        return "EC520";
+        return MachineControlPlatformType.EC520;
       }
       throw new ArgumentException("No mapping exists for this serial number");
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
@@ -35,6 +36,8 @@ namespace VSS.TRex.TAGFiles.Executors
     public string ApplicationVersion { get; set; } = string.Empty;
 
     public string DesignName { get; set; } = string.Empty;
+
+    public MachineControlPlatformType PlatformType {get; set;}
 
 
     public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
@@ -86,6 +89,7 @@ namespace VSS.TRex.TAGFiles.Executors
       HardwareID = Processor.HardwareID;
       ApplicationVersion = Processor.ApplicationVersion;
       DesignName = Processor.Design;
+      PlatformType = Processor.GetPlatformType();
     }
 
     /// <summary>
