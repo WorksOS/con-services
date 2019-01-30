@@ -18,7 +18,7 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     /// <summary>
     /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
-    /// requiring the sitemodel to be reloaded
+    /// requiring the site model to be reloaded
     /// </summary>
     /// <param name="SiteModelID"></param>
     void SiteModelAttributesHaveChanged(Guid SiteModelID, ISiteModelAttributesChangedEvent message);

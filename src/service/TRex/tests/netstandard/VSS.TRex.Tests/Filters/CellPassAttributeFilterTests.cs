@@ -189,7 +189,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_ElevationMappingMode()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationMappingMode true", x => { x.HasElevationMappingModeFilter = true; x.MinElevationMapping = ElevationMappingMode.MinimumElevation; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationMappingMode true", x => { x.HasElevationMappingModeFilter = true; x.ElevationMappingMode = ElevationMappingMode.MinimumElevation; });
         }
 
         [Fact()]
@@ -385,7 +385,7 @@ namespace VSS.TRex.Tests.Filters
                                                             x => { x.HasElevationMappingModeFilter = true; },
                                                             x => x.HasElevationMappingModeFilter,
                                                             x => { x.ClearMinElevationMapping(); },
-                                                            x => !x.HasElevationMappingModeFilter && x.MinElevationMapping == ElevationMappingMode.LatestElevation);
+                                                            x => !x.HasElevationMappingModeFilter && x.ElevationMappingMode == ElevationMappingMode.LatestElevation);
         }
 
         [Fact()]

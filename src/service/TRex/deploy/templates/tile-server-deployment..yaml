@@ -6,6 +6,7 @@ metadata:
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
+    immutable-cluster: "true"
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
   replicas: {{ .Values.tileServer.replicaCount }}
@@ -16,6 +17,7 @@ spec:
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
+        immutable-cluster: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
