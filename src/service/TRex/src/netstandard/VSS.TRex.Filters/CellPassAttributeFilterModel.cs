@@ -248,7 +248,7 @@ namespace VSS.TRex.Filters
 
     public PassTypeSet PassTypeSet { get; set; }
 
-    public ElevationMappingMode MinElevationMapping { get; set; }
+    public ElevationMappingMode ElevationMappingMode { get; set; }
     public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
     public ushort GPSTolerance { get; set; } = CellPassConsts.NullGPSTolerance;
@@ -403,7 +403,7 @@ namespace VSS.TRex.Filters
       writer.WriteByte((byte)MachineDirection);
       writer.WriteByte((byte)PassTypeSet);
 
-      writer.WriteByte((byte)MinElevationMapping);
+      writer.WriteByte((byte)ElevationMappingMode);
       writer.WriteByte((byte)PositioningTech);
       writer.WriteInt(GPSTolerance); // No WriteUShort is provided, use an int...
       writer.WriteBoolean(GPSAccuracyIsInclusive);
@@ -493,7 +493,7 @@ namespace VSS.TRex.Filters
       MachineDirection = (MachineDirection)reader.ReadByte();
       PassTypeSet = (PassTypeSet)reader.ReadByte();
 
-      MinElevationMapping = (ElevationMappingMode)reader.ReadByte();
+      ElevationMappingMode = (ElevationMappingMode)reader.ReadByte();
       PositioningTech = (PositioningTech)reader.ReadByte();
       GPSTolerance = (ushort)reader.ReadInt();
       GPSAccuracyIsInclusive = reader.ReadBoolean();

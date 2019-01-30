@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
 
@@ -82,7 +81,7 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="errorCode"></param>
     /// <returns></returns>
     void GetDesignHeights(Guid siteModelID,
-      ISubGridCellAddress originCellAddress,
+      SubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
       out DesignProfilerRequestResult errorCode);
@@ -97,7 +96,7 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="errorCode"></param>
     /// <returns></returns>
     void GetFilterMask(Guid siteModelID,
-      ISubGridCellAddress originCellAddress,
+      SubGridCellAddress originCellAddress,
       double cellSize,
       out SubGridTreeBitmapSubGridBits filterMask,
       out DesignProfilerRequestResult errorCode);

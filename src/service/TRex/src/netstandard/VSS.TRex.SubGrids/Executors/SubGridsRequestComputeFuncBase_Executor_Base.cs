@@ -78,7 +78,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// The list of address being constructed prior to submission to the processing engine
     /// </summary>
-    private ISubGridCellAddress[] addresses;
+    private SubGridCellAddress[] addresses;
 
     /// <summary>
     /// The number of sub grids currently present in the process pending list
@@ -255,7 +255,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// <param name="address"></param>
     /// <param name="clientGrid"></param>
     private ServerRequestResult PerformSubGridRequest(ISubGridRequestor requester,
-      ISubGridCellAddress address,
+      SubGridCellAddress address,
       out IClientLeafSubGrid clientGrid)
     {
       // Log.InfoFormat("Requesting sub grid #{0}:{1}", ++requestCount, address.ToString());
@@ -344,7 +344,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// Process a subset of the full set of sub grids in the request
     /// </summary>
-    private void PerformSubGridRequestList(ISubGridCellAddress[] addressList, int addressCount)
+    private void PerformSubGridRequestList(SubGridCellAddress[] addressList, int addressCount)
     {
       if (addressCount == 0)
         return;
@@ -376,9 +376,9 @@ namespace VSS.TRex.SubGrids.Executors
 
     private readonly List<Task> tasks = new List<Task>();
 
-    private void ProcessSubGridAddressGroup(ISubGridCellAddress[] addressList, int addressCount)
+    private void ProcessSubGridAddressGroup(SubGridCellAddress[] addressList, int addressCount)
     {
-      ISubGridCellAddress[] addressListCopy = new ISubGridCellAddress[addressCount];
+      SubGridCellAddress[] addressListCopy = new SubGridCellAddress[addressCount];
       Array.Copy(addressList, addressListCopy, addressCount);
 
       tasks.Add(Task.Run(() => PerformSubGridRequestList(addressListCopy, addressCount)));
@@ -388,7 +388,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// Adds a new address to the list of addresses being built and triggers processing of the list if it hits the critical size
     /// </summary>
     /// <param name="address"></param>
-    private void AddSubGridToAddressList( ISubGridCellAddress address)
+    private void AddSubGridToAddressList(SubGridCellAddress address)
     {
       addresses[listCount++] = address;
 
@@ -419,7 +419,7 @@ namespace VSS.TRex.SubGrids.Executors
 
       Log.LogInformation("Scanning sub grids in request");
 
-      addresses = new ISubGridCellAddress[AddressBucketSize];
+      addresses = new SubGridCellAddress[AddressBucketSize];
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
       bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();

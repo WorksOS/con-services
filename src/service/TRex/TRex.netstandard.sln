@@ -50,9 +50,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.MutableData", "src\netstandard\services\VSS.TRex.Server.MutableData\VSS.TRex.Server.MutableData.csproj", "{7FFCE29D-AEA3-47F8-9C45-FA97EACC73EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.PSNode", "src\netstandard\services\VSS.TRex.Server.PSNode\VSS.TRex.Server.PSNode.csproj", "{B441691C-8EA0-4573-A68E-411BC23DED85}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9F30F74A-BD30-4CF4-B452-FF70BFCC3EE1} = {9F30F74A-BD30-4CF4-B452-FF70BFCC3EE1}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.Application", "src\netstandard\services\VSS.TRex.Server.Application\VSS.TRex.Server.Application.csproj", "{5B7C0CB2-B3F3-45F9-964E-EF3584F90E13}"
 EndProject
@@ -261,6 +258,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanInTSandBox", "src\netstandard\SandBox\SpanInTSandBox\SpanInTSandBox.csproj", "{D0255551-13E5-4DE9-A9FA-310CDFDACE55}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DISandBox", "src\netstandard\SandBox\DISandBox\DISandBox.csproj", "{AC37A1DE-3E37-445D-A00A-7216BA7BE387}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuidHashCodeBenchmark", "src\netstandard\SandBox\GuidHashCodeBenchmark\GuidHashCodeBenchmark.csproj", "{41F1AC43-45E5-4B18-898E-022645B5C449}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1126,6 +1125,14 @@ Global
 		{AC37A1DE-3E37-445D-A00A-7216BA7BE387}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AC37A1DE-3E37-445D-A00A-7216BA7BE387}.Release|x64.ActiveCfg = Release|Any CPU
 		{AC37A1DE-3E37-445D-A00A-7216BA7BE387}.Release|x64.Build.0 = Release|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Debug|x64.Build.0 = Debug|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Release|x64.ActiveCfg = Release|Any CPU
+		{41F1AC43-45E5-4B18-898E-022645B5C449}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1242,6 +1249,7 @@ Global
 		{CD42D023-9286-4300-AF77-31BC68E86A9E} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
 		{D0255551-13E5-4DE9-A9FA-310CDFDACE55} = {9AAEFDCA-DA56-4830-8FF4-8840AF43C825}
 		{AC37A1DE-3E37-445D-A00A-7216BA7BE387} = {9AAEFDCA-DA56-4830-8FF4-8840AF43C825}
+		{41F1AC43-45E5-4B18-898E-022645B5C449} = {9AAEFDCA-DA56-4830-8FF4-8840AF43C825}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

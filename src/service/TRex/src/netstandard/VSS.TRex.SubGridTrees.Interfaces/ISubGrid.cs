@@ -65,7 +65,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     void Read(BinaryReader reader, byte[] buffer);
 
-    ISubGridCellAddress OriginAsCellAddress();
+    SubGridCellAddress OriginAsCellAddress();
 
     byte[] ToBytes();
     byte[] ToBytes(byte[] helperBuffer);

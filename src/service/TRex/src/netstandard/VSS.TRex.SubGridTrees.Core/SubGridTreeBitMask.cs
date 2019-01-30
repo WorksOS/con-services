@@ -303,7 +303,7 @@ namespace VSS.TRex.SubGridTrees
         /// from the level 5 (node) layer to the level 6 (leaf) layer
         /// </summary>
         /// <param name="functor"></param>
-        public void ScanAllSetBitsAsSubGridAddresses(Action<ISubGridCellAddress> functor)
+        public void ScanAllSetBitsAsSubGridAddresses(Action<SubGridCellAddress> functor)
         {
           ScanAllSubGrids(leaf =>
           {

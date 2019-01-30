@@ -48,7 +48,7 @@ namespace VSS.TRex.Filters.Interfaces
     VibrationState VibeState { get; set; }
     MachineDirection MachineDirection { get; set; }
     PassTypeSet PassTypeSet { get; set; }
-    ElevationMappingMode MinElevationMapping { get; set; }
+    ElevationMappingMode ElevationMappingMode { get; set; }
     PositioningTech PositioningTech { get; set; }
     ushort GPSTolerance { get; set; }
     bool GPSAccuracyIsInclusive { get; set; }

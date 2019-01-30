@@ -20,7 +20,7 @@ namespace TAGFiles.Tests
             ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID);
             ProductionEventLists events = new ProductionEventLists(siteModel, machine.InternalSiteModelMachineIndex);
 
-            integrator.AddTaskToProcessList(siteModel, machine, tree, 0, events);
+            integrator.AddTaskToProcessList(siteModel, siteModel.ID, machine, machine.ID, tree, 0, events);
 
             Assert.Equal(1, integrator.CountOfTasksToProcess);
             Assert.True(integrator.CanAcceptMoreAggregatedCellPasses, "CanAcceptMoreAggregatedCellPasses is false");

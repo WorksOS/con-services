@@ -27,6 +27,7 @@ using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -170,7 +171,8 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Volumes.CutFillVolume)
+        typeof(VSS.TRex.Volumes.CutFillVolume),
+        typeof (VSS.TRex.Reports.StationOffset.Executors.ComputeStationOffsetReportExecutor_ClusterCompute)
       };
 
       foreach (var asmType in AssemblyDependencies)
