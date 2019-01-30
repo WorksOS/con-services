@@ -61,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       if (ccPutFileResult == false)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 116);
       }
 
       log.LogInformation(
@@ -95,9 +95,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       if (ccDeleteFileResult == false)
       {
-        log.LogError(
+        log.LogWarning(
           $"DeleteFileFromDataOcean DeleteFile failed to delete importedFileUid:{importedFileUid}.");
-        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 54);
+        //Not an error if it doesn't delete the file?
+        //return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 117);
       }
     
       return null;
