@@ -34,15 +34,15 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             Assert.False(leafSubgrid.Dirty);
             Assert.Equal(leafSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels);
-            Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTreeConsts.SubGridTreeDimension);
+            Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubGrid(), SubGridTreeConsts.SubGridTreeDimension);
 
             Assert.Equal((uint)0, leafSubgrid.OriginX);
             Assert.Equal((uint)0, leafSubgrid.OriginY);
             Assert.Equal("0:0", leafSubgrid.Moniker());
 
             // Does the dirty flag change?
-            leafSubgrid.Dirty = true;
-            Assert.True(leafSubgrid.Dirty, "Leaf subgrid is not marked as dirty after setting it to dirty");
+            leafSubgrid.SetDirty();
+            Assert.True(leafSubgrid.Dirty, "Leaf sub grid is not marked as dirty after setting it to dirty");
         }
 
         [Fact]
@@ -59,11 +59,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(nodeSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels - 1);
 
             // A subgrid one level above a leaf subgrid covers sqr(SubGridTreeConsts.SubGridTreeDimension) cells in each dimension (X & Y)
-            Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
+            Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubGrid(), SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
             // A child subgrid of this parent shoudl ahve an axial coverage of SubGridTreeConsts.SubGridTreeDimension cells in each dimension (X & Y)
             // (as there are SubGridTreeConsts.SubGridTreeDimension children cells in the X and Y dimensions
-            Assert.Equal(nodeSubgrid.AxialCellCoverageByChildSubgrid(), SubGridTreeConsts.SubGridTreeDimension);
+            Assert.Equal(nodeSubgrid.AxialCellCoverageByChildSubGrid(), SubGridTreeConsts.SubGridTreeDimension);
         }
 
         [Fact]
@@ -224,7 +224,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             Assert.False(leafSubgrid.Dirty, "Leaf is Dirty after creation");
-            leafSubgrid.Dirty = true;
+            leafSubgrid.SetDirty();
             Assert.True(leafSubgrid.Dirty, "Leaf is not Dirty after setting Dirty to true");
             leafSubgrid.AllChangesMigrated();
             Assert.False(leafSubgrid.Dirty, "Leaf is Dirty after AllChangesMigrated");

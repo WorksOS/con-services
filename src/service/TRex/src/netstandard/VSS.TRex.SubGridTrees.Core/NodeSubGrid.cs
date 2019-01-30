@@ -272,8 +272,8 @@ namespace VSS.TRex.SubGridTrees.Core
       // Work out the on-the-ground cell extent needed to be scanned that this sub grid covers
       uint ScanMinX = (uint) Math.Max(OriginX, Extent.MinX);
       uint ScanMinY = (uint) Math.Max(OriginY, Extent.MinY);
-      uint ScanMaxX = (uint) Math.Min(OriginX + AxialCellCoverageByThisSubgrid() - 1, Extent.MaxX);
-      uint ScanMaxY = (uint) Math.Min(OriginY + AxialCellCoverageByThisSubgrid() - 1, Extent.MaxY);
+      uint ScanMaxX = (uint) Math.Min(OriginX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
+      uint ScanMaxY = (uint) Math.Min(OriginY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
 
       // Convert the on-the-ground cell indexes into subgrid indexes at this level in the sub grid tree
       GetSubGridCellIndex(ScanMinX, ScanMinY, out byte SubGridMinX, out byte SubGridMinY);
