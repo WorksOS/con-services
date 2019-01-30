@@ -65,8 +65,7 @@ namespace VSS.TRex.Common.Types
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-             Station.Equals(other.Station) &&
+      return Station.Equals(other.Station) &&
              Offset.Equals(other.Offset) &&
              Northing.Equals(other.Northing) &&
              Easting.Equals(other.Easting);

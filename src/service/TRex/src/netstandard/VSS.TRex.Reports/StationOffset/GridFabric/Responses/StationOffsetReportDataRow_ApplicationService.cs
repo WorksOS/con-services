@@ -154,7 +154,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Offsets = new List<StationOffsetRow>();
       for (var i = 0; i < offsetCount; i++)
       {
-        Offsets[i].FromBinary(reader);
+        var offset = new StationOffsetRow();
+        offset.FromBinary(reader);
+        Offsets.Add(offset);
       }
       Minimum.FromBinary(reader);
       Maximum.FromBinary(reader);

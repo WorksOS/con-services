@@ -71,7 +71,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     /// Offsets left and right (or on) the center line in the AlignmentUid design
     /// </summary>
     /// 
-    public double[] Offsets { get; set; }
+    public double[] Offsets { get; set; } = new double[0];
 
     /// <summary>
     /// Serializes content to the writer
@@ -119,8 +119,23 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-             ReportElevation.Equals(other.ReportElevation) &&
+
+      if ((Offsets == null && other.Offsets != null) ||
+          (Offsets != null && other.Offsets == null))
+        return false;
+
+      if (Offsets != null && other.Offsets != null)
+      {
+        if (!Offsets.Length.Equals(other.Offsets.Length))
+          return false;
+        for (int i = 0; i < Offsets.Length; i++)
+        {
+          if (!Offsets[i].Equals(other.Offsets[i]))
+            return false;
+        }
+      }
+
+      return ReportElevation.Equals(other.ReportElevation) &&
              ReportCmv.Equals(other.ReportCmv) &&
              ReportMdp.Equals(other.ReportMdp) &&
              ReportPassCount.Equals(other.ReportPassCount) &&
@@ -129,8 +144,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
              AlignmentDesignUid.Equals(other.AlignmentDesignUid) &&
              CrossSectionInterval.Equals(other.CrossSectionInterval) &&
              StartStation.Equals(other.StartStation) &&
-             EndStation.Equals(other.EndStation) &&
-             Offsets.Equals(other.Offsets);
+             EndStation.Equals(other.EndStation);
     }
 
     public override bool Equals(object obj)

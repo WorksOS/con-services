@@ -11,7 +11,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Requests
   /// Defines the contract for the stationOffsetReport request made to the applications service
   /// </summary>
   public class StationOffsetReportRequest_ApplicationService 
-    : GenericASNodeRequest<StationOffsetReportRequestArgument_ApplicationService, StationOffsetReportRequestComputeFunc_ApplicationService, StationOffsetReportRequestResponse_ApplicationService> 
+    : GenericASNodeRequest
+      <StationOffsetReportRequestArgument_ApplicationService, StationOffsetReportRequestComputeFunc_ApplicationService, StationOffsetReportRequestResponse_ApplicationService> 
   {
     public StationOffsetReportRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.REPORTING_ROLE)
     {

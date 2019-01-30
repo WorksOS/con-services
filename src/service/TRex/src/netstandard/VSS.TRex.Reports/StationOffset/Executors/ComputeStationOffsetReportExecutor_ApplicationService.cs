@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.Reports;
@@ -8,7 +10,13 @@ using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
+using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Reports.StationOffset.Executors
@@ -23,7 +31,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeStationOffsetReportExecutor_ApplicationService>();
 
     public ComputeStationOffsetReportExecutor_ApplicationService()
-    { }
+    {
+    }
 
     /// <summary>
     /// Executes the profiler
@@ -39,7 +48,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           // Prepare the filters for use in stationOffset operations. Failure to prepare any filter results in this request terminating
           if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK)))
           {
-            return new StationOffsetReportRequestResponse_ApplicationService { ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
+            return new StationOffsetReportRequestResponse_ApplicationService {ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }
         }
 
@@ -59,8 +68,13 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           Points = new List<StationOffsetPoint>()
         };
 
-        var alignmentDesign = DIContext.Obtain<IAlignmentManager>().List(argClusterCompute.ProjectID).Locate(arg.AlignmentDesignUid);
-        argClusterCompute.Points = alignmentDesign.GetOffsetPointsInNEE(arg.CrossSectionInterval, arg.StartStation, arg.EndStation, arg.Offsets);
+        // alignment sdk will convert interval/offsets into northing/eastings for the project
+        // todo when SDK available
+        // var alignmentDesign = DIContext.Obtain<IAlignmentManager>().List(argClusterCompute.ProjectID).Locate(arg.AlignmentDesignUid);
+        // argClusterCompute.Points = alignmentDesign.GetOffsetPointsInNEE(arg.CrossSectionInterval, arg.StartStation, arg.EndStation, arg.Offsets);
+        
+        argClusterCompute.Points = GetMockPointsFromSiteModel(argClusterCompute.ProjectID, 3);
+        
         Log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}");
         if (argClusterCompute.Points.Count == 0)
         {
@@ -68,8 +82,17 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         }
 
         var request = new StationOffsetReportRequest_ClusterCompute();
-        var clusterComputeResponse = request.Execute(argClusterCompute);
-        
+        StationOffsetReportRequestResponse_ClusterCompute clusterComputeResponse;
+        try
+        {
+          clusterComputeResponse = request.Execute(argClusterCompute);
+        }
+        catch (Exception e)
+        {
+          Console.WriteLine(e);
+          throw;
+        }
+
         // Return the core package to the caller
         var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService();
         applicationResponse.LoadStationOffsets(clusterComputeResponse.StationOffsetRows);
@@ -79,6 +102,70 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       {
         Log.LogInformation($"End {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}");
       }
+    }
+
+    // todoJeannie temp 
+    private List<StationOffsetPoint> GetMockPointsFromSiteModel(Guid projectUid, int countPointsRequired)
+    {
+      var points = new List<StationOffsetPoint>();
+      double station = 0;      
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid);
+
+      /* this code from unit tests, assumes the entire grid is loaded into memory
+       siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(),
+        subGrid =>
+        {
+          subGrid.CalculateWorldOrigin(out var originX, out var originY);
+
+          ((IServerLeafSubGrid) subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.ForEachSetBit(
+            (x, y) =>
+            {
+              points.Add(new StationOffsetPoint(station += 1, 0,
+                originY + y * siteModel.Grid.CellSize + siteModel.Grid.CellSize / 2,
+                originX + x * siteModel.Grid.CellSize + siteModel.Grid.CellSize / 2));
+              return points.Count < countPointsRequired;
+            });
+
+          return points.Count < countPointsRequired;
+        });
+      */
+
+      /* this piece of code reads data into memory, using the existance map */
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>
+      {
+        if (points.Count > countPointsRequired)
+          return;
+
+        var subGrid = SubGridUtilities.LocateSubGridContaining
+        (DIContext.Obtain<ISiteModels>().StorageProxy,
+          siteModel.Grid, address.X, address.Y, siteModel.Grid.NumLevels, false, false);
+
+        if (subGrid != null)
+        {
+          subGrid.CalculateWorldOrigin(out var originX, out var originY);
+
+          ((IServerLeafSubGrid) subGrid).Directory.GlobalLatestCells.PassDataExistenceMap.ForEachSetBit(
+            (x, y) =>
+            {
+              points.Add(new StationOffsetPoint(station += 1, 0,
+                originY + y * siteModel.Grid.CellSize + siteModel.Grid.CellSize / 2,
+                originX + x * siteModel.Grid.CellSize + siteModel.Grid.CellSize / 2));
+              return points.Count < countPointsRequired;
+            });
+        }
+      });
+
+      if (points.Count == 0)
+      {
+        // uses data locations from tagFileSubmission for Project6 siteModel "f13f2458-6666-424f-a995-4426a00771ae"
+        return new List<StationOffsetPoint>()
+        {
+          new StationOffsetPoint(1,-1,804645, 388062),
+          new StationOffsetPoint(1,-0,804650, 388050),
+          new StationOffsetPoint(1,1,804664, 388048)
+        };
+      }
+      return points;
     }
   }
 }

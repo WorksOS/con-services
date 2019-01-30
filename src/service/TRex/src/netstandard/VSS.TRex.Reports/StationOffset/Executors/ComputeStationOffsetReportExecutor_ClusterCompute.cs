@@ -108,7 +108,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
       bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
       SubGridTreeBitmapSubGridBits cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
       foreach (var point in requestArgument.Points)
       {
         // Determine the on-the-ground cell 

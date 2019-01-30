@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
-
+      
       StationOffsetReportRequest_ApplicationService tRexRequest = new StationOffsetReportRequest_ApplicationService();
 
       StationOffsetReportRequestResponse_ApplicationService response = tRexRequest.Execute(new StationOffsetReportRequestArgument_ApplicationService

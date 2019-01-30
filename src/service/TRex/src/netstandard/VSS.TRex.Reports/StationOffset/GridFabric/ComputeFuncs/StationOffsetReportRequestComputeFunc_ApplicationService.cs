@@ -15,8 +15,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
   public class StationOffsetReportRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ApplicationService, StationOffsetReportRequestResponse_ApplicationService>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
-
+    
     public StationOffsetReportRequestResponse_ApplicationService Invoke(StationOffsetReportRequestArgument_ApplicationService arg)
     {
       Log.LogInformation($"Start {nameof(StationOffsetReportRequestComputeFunc_ApplicationService)}");

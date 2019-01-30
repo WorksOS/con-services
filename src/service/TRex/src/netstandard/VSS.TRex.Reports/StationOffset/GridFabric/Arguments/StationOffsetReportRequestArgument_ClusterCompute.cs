@@ -28,7 +28,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     /// Points in NEE derived from each station & offset
     /// </summary>
     /// 
-    public List<StationOffsetPoint> Points { get; set; }
+    public List<StationOffsetPoint> Points { get; set; } = new List<StationOffsetPoint>();
 
     /// <summary>
     /// Serializes content to the writer
@@ -66,6 +66,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
       ReportTemperature = reader.ReadBoolean();
       ReportCutFill = reader.ReadBoolean();
       var pointCount = reader.ReadInt();
+      Points = new List<StationOffsetPoint>();
       for (int i = 0; i < pointCount; i++)
       {
         StationOffsetPoint point = null;
@@ -78,14 +79,28 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-             ReportElevation.Equals(other.ReportElevation) &&
+
+      if ((Points == null && other.Points != null) ||
+          (Points != null && other.Points == null))
+        return false;
+
+      if (Points != null && other.Points != null)
+      {
+        if (!Points.Count.Equals(other.Points.Count))
+          return false;
+        for (int i = 0; i < Points.Count; i++)
+        {
+          if (!Points[i].Equals(other.Points[i]))
+            return false;
+        }
+      }
+
+      return ReportElevation.Equals(other.ReportElevation) &&
              ReportCmv.Equals(other.ReportCmv) &&
              ReportMdp.Equals(other.ReportMdp) &&
              ReportPassCount.Equals(other.ReportPassCount) &&
              ReportTemperature.Equals(other.ReportTemperature) &&
-             ReportCutFill.Equals(other.ReportCutFill) &&
-             Points.Equals(other.Points);
+             ReportCutFill.Equals(other.ReportCutFill);
     }
 
     public override bool Equals(object obj)

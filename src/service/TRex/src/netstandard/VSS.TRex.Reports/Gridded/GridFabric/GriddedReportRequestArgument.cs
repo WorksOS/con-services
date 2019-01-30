@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Reports.Gridded.GridFabric
@@ -134,8 +135,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-             ReportElevation.Equals(other.ReportElevation) &&
+      return ReportElevation.Equals(other.ReportElevation) &&
              ReportCMV.Equals(other.ReportCMV) &&
              ReportMDP.Equals(other.ReportMDP) &&
              ReportPassCount.Equals(other.ReportPassCount) &&

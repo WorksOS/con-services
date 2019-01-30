@@ -48,8 +48,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void ToBinary(IBinaryRawWriter writer)
     {
+      base.ToBinary(writer);
       writer.WriteInt((int)ReturnCode);
       writer.WriteInt((int)ReportType);
       writer.WriteInt(StationOffsetReportDataRowList.Count);
@@ -63,8 +64,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void FromBinary(IBinaryRawReader reader)
     {
+      base.FromBinary(reader);
       ReturnCode = (ReportReturnCode)reader.ReadInt();
       ReportType = (ReportType)reader.ReadInt();
       var stationOffsetRowsCount = reader.ReadInt();
