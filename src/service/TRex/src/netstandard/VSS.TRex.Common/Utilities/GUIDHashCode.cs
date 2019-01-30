@@ -14,11 +14,11 @@ namespace VSS.TRex.Common.Utilities
     /// </summary>
     /// <param name="g"></param>
     /// <returns></returns>
-    public static int Hash(Guid g)
+    public static int Hash_Old(Guid g)
     {
       byte[] bytes = g.ToByteArray();
 
-      var msb = new byte[] {
+      var msb = new [] {
         bytes[6],
         bytes[7],
         bytes[4],
@@ -28,7 +28,7 @@ namespace VSS.TRex.Common.Utilities
         bytes[2],
         bytes[3] };
 
-      var lsb = new byte[] {
+      var lsb = new [] {
         bytes[15],
         bytes[14],
         bytes[13],
@@ -40,7 +40,68 @@ namespace VSS.TRex.Common.Utilities
         };
 
       long hilo = BitConverter.ToInt64(msb, 0) ^ BitConverter.ToInt64(lsb, 0);
-      return ((int)(hilo >> 32)) ^ (int)hilo;
+      return (int)(hilo >> 32) ^ (int)hilo;
     }
+
+    public static int Hash(Guid g)
+    {
+      byte[] bytes = g.ToByteArray();
+
+      var b = new[]
+      {
+        bytes[6],
+        bytes[7],
+        bytes[4],
+        bytes[5],
+        bytes[0],
+        bytes[1],
+        bytes[2],
+        bytes[3],
+        bytes[15],
+        bytes[14],
+        bytes[13],
+        bytes[12],
+        bytes[11],
+        bytes[10],
+        bytes[9],
+        bytes[8]
+      };
+
+      long hilo = BitConverter.ToInt64(b, 0) ^ BitConverter.ToInt64(b, 8);
+      return (int) (hilo >> 32) ^ (int) hilo;
+    }    
+
+    /* This unsafe implementation has essentially identical performance to Hash()
+    public static unsafe int HashExUnsafe(Guid g)
+    {
+      byte[] bytes = g.ToByteArray();
+
+      var b = new[]
+      {
+        bytes[6],
+        bytes[7],
+        bytes[4],
+        bytes[5],
+        bytes[0],
+        bytes[1],
+        bytes[2],
+        bytes[3],
+        bytes[15],
+        bytes[14],
+        bytes[13],
+        bytes[12],
+        bytes[11],
+        bytes[10],
+        bytes[9],
+        bytes[8]
+      };
+
+      fixed (byte* pbyte = &b[0])
+      {
+          long hilo = *((long*) pbyte) ^ *((long*) (pbyte + 8));
+          return (int)(hilo >> 32) ^ (int)hilo;
+      }
+    }
+   */
   }
 }

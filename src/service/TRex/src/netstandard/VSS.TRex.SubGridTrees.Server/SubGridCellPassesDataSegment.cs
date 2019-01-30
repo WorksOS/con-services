@@ -171,9 +171,9 @@ namespace VSS.TRex.SubGridTrees.Server
       EndTime = Header.EndTime;
 
       // Read the version etc from the stream
-      if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridLeafFileMoniker))
+      if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridLeafFileMoniker))
       {
-        Log.LogError($"Subgrid segment file moniker (expected {SubGridStreamHeader.kICServerSubgridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+        Log.LogError($"Subgrid segment file moniker (expected {SubGridStreamHeader.kICServerSubGridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
         return false;
       }
 
@@ -215,8 +215,8 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         MajorVersion = SubGridStreamHeader.kSubGridMajorVersion,
         MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
-        Identifier = SubGridStreamHeader.kICServerSubgridLeafFileMoniker,
-        Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridSegmentFile,
+        Identifier = SubGridStreamHeader.kICServerSubGridLeafFileMoniker,
+        Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridSegmentFile,
         StartTime = SegmentInfo?.StartTime ?? StartTime,
         EndTime = SegmentInfo?.EndTime ?? EndTime,
         LastUpdateTimeUTC = DateTime.UtcNow

@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void DeAllocateGlobalLatestCells();
     void CreateDefaultSegment();
     void Clear();
-    bool Write(BinaryWriter writer);
-    bool Read_2p0(BinaryReader reader);
+    void Write(BinaryWriter writer);
+    void Read_2p0(BinaryReader reader);
   }
 }
