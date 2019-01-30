@@ -1,1 +1,0 @@
-powershell.exe -executionpolicy bypass -File build471.ps1
