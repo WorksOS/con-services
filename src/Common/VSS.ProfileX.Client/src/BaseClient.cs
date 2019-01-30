@@ -15,7 +15,7 @@ namespace VSS.ProfileX.Client
 {
   public abstract class BaseClient
   {
-    private const string PROFILE_X_URL_KEY = "PROFILE_X_URL";
+    public const string PROFILE_X_URL_KEY = "PROFILE_X_URL";
 
     private readonly string baseUrl;
 
