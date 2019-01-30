@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using VSS.TRex.Common.Types;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions
 {
@@ -11,5 +11,6 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions
     public double? Height { get; set; }
     public string HardwareID { get; set; }
     public abstract string Route { get; }
+    public MachineControlPlatformType PlatformType { get; set;}
   }
 }

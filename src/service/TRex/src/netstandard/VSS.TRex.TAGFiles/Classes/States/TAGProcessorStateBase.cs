@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
 using VSS.TRex.TAGFiles.Types;
@@ -305,6 +306,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
       }
 
       return MachineDirection.Unknown;
+    }
+
+    public MachineControlPlatformType GetPlatformType()
+    {
+      return MachineSerialUtilities.MapSerialToModel(HardwareID);
     }
 
     public virtual void SetResearchData(bool value) => _ResearchData = value;
