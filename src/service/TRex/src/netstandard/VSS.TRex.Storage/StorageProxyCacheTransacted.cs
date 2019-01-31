@@ -40,10 +40,12 @@ namespace VSS.TRex.Storage
         /// <returns></returns>
         public override bool Remove(TK key)
         {
+          // Remove any uncommitted writes for the deleted item from pending writes
+          PendingTransactedWrites.Remove(key);
+
+          // Note the delete request in pending deletes
           if (!PendingTransactedDeletes.Add(key))
-          {
             Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
-          }
 
           return true;
         }
@@ -57,12 +59,7 @@ namespace VSS.TRex.Storage
         public override void RemoveAll(IEnumerable<TK> keys)
         {
           foreach (var key in keys)
-          {
-            if (!PendingTransactedDeletes.Add(key))
-            {
-              Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [RemoveAll]"); 
-            }
-          }
+            Remove(key);
         }
 
         /// <summary>
@@ -75,9 +72,9 @@ namespace VSS.TRex.Storage
         {
             // If there is an existing pending write for the give key, then replace the
             // element in the dictionary with the new element
-            if (PendingTransactedWrites.ContainsKey(key))
-                PendingTransactedWrites.Remove(key);
+            PendingTransactedWrites.Remove(key);
 
+            // Add the pending write request to the collection
             PendingTransactedWrites.Add(key, value);
 
             if (value is byte[] bytes) 
@@ -103,8 +100,7 @@ namespace VSS.TRex.Storage
         {
             // The generic transactional cache cannot track the size of the elements being 'put' to the cache
             numDeleted = PendingTransactedDeletes.Count;
-            foreach (var x in PendingTransactedDeletes)
-              base.Remove(x);
+            base.RemoveAll(PendingTransactedDeletes);
 
             numUpdated = PendingTransactedWrites.Count;
 
