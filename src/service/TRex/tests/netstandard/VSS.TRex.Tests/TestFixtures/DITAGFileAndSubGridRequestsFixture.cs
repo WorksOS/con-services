@@ -8,6 +8,7 @@ using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
@@ -65,8 +66,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
+      base.Dispose();
+
       DIBuilder.Eject();
   }
 
@@ -93,7 +96,8 @@ namespace VSS.TRex.Tests.TestFixtures
       foreach (var c in converters)
       {
         c.Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(targetSiteModel, targetMachine, c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
+        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machine, targetMachine.ID, 
+          c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
       }
 
       // Construct an integration worker and ask it to perform the integration

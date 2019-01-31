@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
-    /// Factory that creates structures that contain a 'latest pass' records for cells in a subgrid or segment
+    /// Factory that creates structures that contain a 'latest pass' records for cells in a sub grid or segment
     /// </summary>
     public class SubGridCellLatestPassesDataWrapperFactory
     {

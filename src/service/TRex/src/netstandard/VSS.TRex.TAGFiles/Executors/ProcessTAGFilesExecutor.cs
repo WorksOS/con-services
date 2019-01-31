@@ -58,7 +58,7 @@ namespace VSS.TRex.TAGFiles.Executors
                     converter.Machine.ID = AssetID;
                     converter.Machine.IsJohnDoeMachine = item.IsJohnDoe;
 
-                    integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+                    integrator.AddTaskToProcessList(converter.SiteModel, ProjectID, converter.Machine, AssetID, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
 
                     if (++batchCount >= batchSize)
                     {

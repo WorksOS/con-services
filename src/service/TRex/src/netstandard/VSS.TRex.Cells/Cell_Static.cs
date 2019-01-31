@@ -5,22 +5,22 @@ namespace VSS.TRex.Cells
 {
     /// <summary>
     /// Cell_Static represents cell instances stored in the compaction information grid.
-    /// The compaction information grid itself is modelled after the standard TGriddedGrid,
+    /// The compaction information grid itself is modeled after the standard TGriddedGrid,
     /// but is reimplemented rather than derived.
     /// An interesting point to note is that a cell knows very little about it's context
-    /// in the grid. It doesn't know who owns it, where it is or who its neighbours are.
+    /// in the grid. It doesn't know who owns it, where it is or who its neighbors are.
     /// These are all handled in upper layers which must provide such information to the
     /// cell as needed when requesting the cell perform certain operations or calculate
     /// certain quantities (such as calculating the current topmost height of the cell).
     /// Note: Static cells do not store their own cell passes; these are delegated to the 
-    /// owning subgrid to store. Similarly, as the cell is static, it is an immutable construct
+    /// owning sub grid to store. Similarly, as the cell is static, it is an immutable construct
     /// and may not be added to or otherwise modified once constructed.
     /// </summary>
     public struct Cell_Static
     {
         /// <summary>
-        /// Static cells do not record cell passes within their own structure but delegate this to the subgrid that owns the
-        /// cell. CellPassOffset records the location in that wider set of cell passes within the subgrid where the list of cell passes
+        /// Static cells do not record cell passes within their own structure but delegate this to the sub grid that owns the
+        /// cell. CellPassOffset records the location in that wider set of cell passes within the sub grid where the list of cell passes
         /// recorded for this cell starts. 
         /// </summary>
         public uint CellPassOffset;

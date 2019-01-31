@@ -8,9 +8,9 @@ using VSS.TRex.Common.Utilities;
 namespace VSS.TRex.SubGridTrees
 {
   /// <summary>
-  /// Identifies a cell address or location within a subgrid tree
+  /// Identifies a cell address or location within a sub grid tree
   /// </summary>
-  public struct SubGridCellAddress : IEquatable<ISubGridCellAddress>, ISubGridCellAddress
+  public struct SubGridCellAddress : IEquatable<SubGridCellAddress>
   {
     /// <summary>
     /// Storage for bit flags used for elements such as ProdDataRequested and SurveyedSurfaceDataRequested
@@ -66,8 +66,8 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(ISubGridCellAddress other) => other != null && X == other.X && Y == other.Y;
-
+    public bool Equals(SubGridCellAddress other) => X == other.X && Y == other.Y;
+  
     /// <summary>
     /// Constructs a single long quantity that encodes both the X & Y elements of the subgrid address.
     /// X occupies the high 32 bits, Y the lower 32 bits

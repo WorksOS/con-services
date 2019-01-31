@@ -26,7 +26,7 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// <param name="surveyedSurfaceDataRequested"></param>
     /// <param name="clientGrid"></param>
     /// <returns></returns>
-    ServerRequestResult RequestSubGridInternal(ISubGridCellAddress subGridAddress,
+    ServerRequestResult RequestSubGridInternal(SubGridCellAddress subGridAddress,
       // LiftBuildSettings: TICLiftBuildSettings;
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested,

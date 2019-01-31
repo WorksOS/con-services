@@ -413,7 +413,7 @@ namespace VSS.TRex.SubGridTrees.Server
             EncodedFieldDescriptors.Read(reader);
 
             int Count = reader.ReadInt32();
-            MachineIDs = new short[Count]; //SubgridCellSegmentMachineReference[Count];
+            MachineIDs = new short[Count]; //SubGridCellSegmentMachineReference[Count];
 
             for (int i = 0; i < Count; i++)
                 MachineIDs[i] = reader.ReadInt16();
@@ -675,7 +675,7 @@ namespace VSS.TRex.SubGridTrees.Server
             BitFieldArrayRecordsDescriptor[] recordDescriptors = new [] 
             {
                 new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTreeConsts.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
-                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
+                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubGrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
             };
 
             BF_PassCounts.Initialise(recordDescriptors);

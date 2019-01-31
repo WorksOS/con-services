@@ -18,25 +18,31 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 {
   public static class Utilities
   {
-    public static ISiteModel CreateSiteModelWithSingleCellForTesting(DateTime baseTime, int timeIncrementSeconds, float baseHeight, float heightDecrement, int numPassesToCreate)
+    public static ISiteModel NewEmptyModel()
     {
-      // Set up a model with a single sub grid with a single cell containing two cell passes and a single
-      // elevation mapping event with a state of lowest elevation mapping
-      // Create the site model and machine etc to aggregate the processed TAG file into
-
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       _ = siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
 
-      // Add the lowest pass elevation mapping event occurring after a last pass mapping event
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValueAtDate(baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValueAtDate(baseTime, ElevationMappingMode.MinimumElevation);
+      return siteModel;
+    }
 
-      // Ensure there are two appropriate elevation mapping mode events
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(2);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(0, out var eventDate, out var eventState);
-      eventState.Should().Be(ElevationMappingMode.LatestElevation);
-      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.LastStateValue().Should().Be(ElevationMappingMode.MinimumElevation);
+    public static void AddElevationMappingModeEvents(ISiteModel siteModel, IEnumerable<(DateTime, ElevationMappingMode)> events)
+    {
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.PutValuesAtDates(events);
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(events.Count());
 
+      int index = 0;
+      foreach (var evt in events)
+      {
+        siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetStateAtIndex(index++, out var eventDate, out var eventState);
+        eventState.Should().Be(evt.Item2);
+      }
+
+      siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.LastStateValue().Should().Be(events.Last().Item2);
+    }
+
+    public static void AddSingleCellWithPasses(ISiteModel siteModel, uint originX, uint originY, IEnumerable<CellPass> passes, int expectedCellCount, int expectedPasssCount)
+    {
       // Construct the sub grid to hold the cell being tested
       IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
       leaf.Should().NotBeNull();
@@ -51,30 +57,22 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(1);
 
-      // Add three passes, each separated by 10 seconds and descending by 100mm each pass
-      for (int i = 0; i < numPassesToCreate; i++)
-      {
-        leaf.AddPass(0, 0, new CellPass
-        {
-          InternalSiteModelMachineIndex = 0,
-          Time = baseTime.AddSeconds(i * timeIncrementSeconds),
-          Height = baseHeight + i * heightDecrement,
-          PassType = PassType.Front
-        });
-      }
+      CellPass[] _passes = passes.ToArray();
 
-      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(0, 0);
-      cellPasses.Length.Should().Be(numPassesToCreate);
+      foreach (var pass in _passes)
+        leaf.AddPass(originX, originY, pass);
+
+      byte cellX = (byte)(originX & SubGridTreeConsts.SubGridLocalKeyMask);
+      byte cellY = (byte)(originY & SubGridTreeConsts.SubGridLocalKeyMask);
+
+      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(cellX, cellY);
+      cellPasses.Length.Should().Be(expectedPasssCount);
 
       // Assign global latest cell pass to the appropriate pass
-      leaf.Directory.GlobalLatestCells[0, 0] = cellPasses.Last();
-
-      // Ensure all cell passes register the correct elevation mapping mode
-      for (int i = 0; i < cellPasses.Length; i++)
-        siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetValueAtDate(cellPasses[i].Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
+      leaf.Directory.GlobalLatestCells[cellX, cellY] = cellPasses.Last();
 
       // Ensure the pass data existence map records the existence of a non null value in the cell
-      leaf.Directory.GlobalLatestCells.PassDataExistenceMap[0, 0] = true;
+      leaf.Directory.GlobalLatestCells.PassDataExistenceMap[cellX, cellY] = true;
 
       // Count the number of non-null elevation cells to verify a correct setup
       long totalCells = 0;
@@ -82,7 +80,97 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
         return true;
       });
-      totalCells.Should().Be(1);
+
+      totalCells.Should().Be(expectedCellCount);
+    }
+
+    public static ISiteModel CreateSiteModelWithSingleCellWithMinimElevationPasses(DateTime baseTime, int timeIncrementSeconds, float baseHeight, float heightDecrement, int numPassesToCreate)
+    {
+      // Set up a model with a single sub grid with a single cell containing two cell passes and a single
+      // elevation mapping event with a state of lowest elevation mapping
+      // Create the site model and machine etc to aggregate the processed TAG file into
+
+      ISiteModel siteModel = NewEmptyModel();
+
+      // Add the lowest pass elevation mapping event occurring after a last pass mapping event
+      AddElevationMappingModeEvents(siteModel, new[] {
+          (baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation),
+          (baseTime, ElevationMappingMode.MinimumElevation)
+        });
+
+      IEnumerable<CellPass> cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = 0,
+          Time = baseTime.AddSeconds(x * timeIncrementSeconds),
+          Height = baseHeight + x * heightDecrement,
+          PassType = PassType.Front
+        });
+
+      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
+
+      // Ensure all cell passes register the correct elevation mapping mode
+      foreach (var cellPass in cellPasses)
+        siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
+
+      return siteModel;
+    }
+
+    public static ISiteModel CreateSiteModelWithSingleCellWithMixedElevationModePasses(DateTime baseTime, int timeIncrementSeconds, float baseHeight, float heightDecrement, int numPassesToCreate)
+    {
+      // Set up a model with a single sub grid with a single cell containing two cell passes and a single
+      // elevation mapping event with a state of lowest elevation mapping
+
+      // Create the site model and machine etc
+      ISiteModel siteModel = NewEmptyModel();
+
+      // Add elevation mode mapping events to define two periods of minimum elevation mapping separated by a latest pass elevation mapping mode
+      AddElevationMappingModeEvents(siteModel, new[] {
+        (baseTime.AddSeconds(-1), ElevationMappingMode.LatestElevation),
+        (baseTime, ElevationMappingMode.MinimumElevation),
+        (baseTime.AddMinutes(1), ElevationMappingMode.LatestElevation),
+        (baseTime.AddMinutes(2), ElevationMappingMode.MinimumElevation),
+      });
+
+      // Add a set of passes in the first minute to capture minimum elevation mode cutting
+      IEnumerable<CellPass> cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = 0,
+          Time = baseTime.AddSeconds(x * timeIncrementSeconds),
+          Height = baseHeight + x * heightDecrement,
+          PassType = PassType.Front
+        });
+
+      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
+
+      // Add a set of passes in the second minute to capture latest elevation mode filling
+      cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = 0,
+          Time = baseTime.AddMinutes(1).AddSeconds(x * timeIncrementSeconds),
+          Height = baseHeight + x * -heightDecrement,
+          PassType = PassType.Front
+        });
+
+      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 2 * numPassesToCreate);
+
+      // Add a set of passes in the third minute to capture latest elevation mode cutting back through the original cut zone
+      cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = 0,
+          Time = baseTime.AddMinutes(2).AddSeconds(x * timeIncrementSeconds),
+          Height = baseHeight + x * -heightDecrement,
+          PassType = PassType.Front
+        });
+
+      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 3 * numPassesToCreate);
+
+      // Ensure all cell passes register the correct elevation mapping mode
+      foreach (var cellPass in cellPasses)
+        siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
 
       return siteModel;
     }
@@ -118,6 +206,13 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
           return true;
         });
       totalCells.Should().Be(expectedNonNullCells);
+
+      siteModel.SiteModelExtent.MinX.Should().BeApproximately(376735.98, 0.001);
+      siteModel.SiteModelExtent.MaxX.Should().BeApproximately(376742.78, 0.001);
+      siteModel.SiteModelExtent.MinY.Should().BeApproximately(808534.28, 0.001);
+      siteModel.SiteModelExtent.MaxY.Should().BeApproximately(808542.78, 0.001);
+      siteModel.SiteModelExtent.MinZ.Should().BeApproximately(66.4441, 0.001);
+      siteModel.SiteModelExtent.MaxZ.Should().BeApproximately(68.5629, 0.001);
 
       return siteModel;
     }

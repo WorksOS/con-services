@@ -555,7 +555,7 @@ namespace VSS.TRex.Designs
         }
 
         // Initialise Patch to null height values
-        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
+        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
         // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
         // triangles in the leaf that will be considered for point-in-triangle & elevation checks.

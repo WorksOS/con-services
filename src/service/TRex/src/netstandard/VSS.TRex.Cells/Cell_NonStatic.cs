@@ -110,7 +110,7 @@ namespace VSS.TRex.Cells
 
             // Yes, this looks naive, however, this operation really only occurs during TAG
             // file processing where the cell pass results from that processing are added into
-            // new, and temporary, subgrid trees.
+            // new, and temporary, sub grid trees.
             // Examination of the code in the previous version showed this the effective behaviour anyway.
 
             AllocatePasses(PassCount + 1);
@@ -193,8 +193,8 @@ namespace VSS.TRex.Cells
             // there are passes in source that have identical times to the passes in
             // this cell pass stack, it does give an upper bound, and the minority of cases
             // where the actual number of passes are less than the total that are initially set here
-            // will be cleaned up when the subgrid next exits the cache, or is integrated with
-            // another aggregated subgrid from TAG file processing
+            // will be cleaned up when the sub grid next exits the cache, or is integrated with
+            // another aggregated sub grid from TAG file processing
             Array.Resize(ref IntegratedPasses, IntegratedPassCount);
 
             // Combine the two (sorted) lists of cell passes together to arrive at a single
