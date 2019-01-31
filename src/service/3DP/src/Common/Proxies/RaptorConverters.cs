@@ -1394,7 +1394,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static ColorPalette[] convertColorPalettes(TColourPalette[] colorPalettes)
     {
-      return colorPalettes.Select(cp => new ColorPalette(cp.Colour, cp.Value)).ToArray();
+      return colorPalettes?.Select(cp => new ColorPalette(cp.Colour, cp.Value)).ToArray();
     }
 
     public static TASNodeUserPreferences convertToRaptorUserPreferences(UserPreferences userPreferences)
@@ -1416,17 +1416,17 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TMachine[] convertToRaptorMachines(Machine[] machines)
     {
-      return machines.Select(m => new TMachine() { AssetID = m.AssetID, MachineName = m.MachineName,SerialNo = m.SerialNo}).ToArray();
+      return machines?.Select(m => new TMachine() { AssetID = m.AssetID, MachineName = m.MachineName,SerialNo = m.SerialNo}).ToArray();
     }
 
     public static Machine[] convertMachines(TMachine[] machines)
     {
-      return machines.Select(m => new Machine() { AssetID = m.AssetID, MachineName = m.MachineName, SerialNo = m.SerialNo }).ToArray();
+      return machines?.Select(m => new Machine() { AssetID = m.AssetID, MachineName = m.MachineName, SerialNo = m.SerialNo }).ToArray();
     }
 
     public static TTranslation[] convertToRaptorTranslations(TranslationDescriptor[] translations)
     {
-      return translations.Select(tr => new TTranslation(){ ID = tr.ID, Translation = tr.Translation }).ToArray();
+      return translations?.Select(tr => new TTranslation(){ ID = tr.ID, Translation = tr.Translation }).ToArray();
     }
 
     public static T3DBoundingWorldExtent convertToRaptorProjectExtents(BoundingExtents3D extents)
