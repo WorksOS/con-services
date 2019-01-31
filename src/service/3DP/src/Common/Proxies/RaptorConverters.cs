@@ -1428,10 +1428,11 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       return translations?.Select(tr => new TTranslation(){ ID = tr.ID, Translation = tr.Translation }).ToArray();
     }
-
     public static T3DBoundingWorldExtent convertToRaptorProjectExtents(BoundingExtents3D extents)
     {
-      return new T3DBoundingWorldExtent(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY, extents.MinZ, extents.MaxZ);
+      return extents != null 
+        ? new T3DBoundingWorldExtent(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY, extents.MinZ, extents.MaxZ) 
+        : new T3DBoundingWorldExtent(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
 
     public static BoundingExtents3D convertProjectExtents(T3DBoundingWorldExtent extents)
