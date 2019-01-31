@@ -14,16 +14,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Simple array to hold client leaf sub grid type constructor map
     /// </summary>
-    private readonly Func<IClientLeafSubGrid>[] typeMap;
+    private readonly Func<IClientLeafSubGrid>[] typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
 
     /// <summary>
     /// Stores of cached client grids to reduce the object instantiation and garbage collection overhead
     /// </summary>
-    private readonly SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
+    // private readonly SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
 
     public ClientLeafSubGridFactory()
     {
-      typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
     }
 
     /// <summary>
