@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage
@@ -56,11 +57,7 @@ namespace VSS.TRex.Storage
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public override void RemoveAll(IEnumerable<TK> keys)
-        {
-          foreach (var key in keys)
-            Remove(key);
-        }
+        public override void RemoveAll(IEnumerable<TK> keys) => keys.ForEach(x => Remove(x));
 
         /// <summary>
         /// Provides Put semantics into the cache. If there has been a previous uncommitted put for the same key then
@@ -85,12 +82,8 @@ namespace VSS.TRex.Storage
         /// Accepts a list of elements to be put and enlists the local Put() semantics to handle them
         /// </summary>
         /// <param name="values"></param>
-        public override void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
-        {
-          foreach (var x in values)
-            Put(x.Key, x.Value);
-        }
-
+        public override void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => values.ForEach(x => Put(x.Key, x.Value));
+      
         /// <summary>
         /// Commits all pending deletes and writes to the underlying cache
         /// </summary>
