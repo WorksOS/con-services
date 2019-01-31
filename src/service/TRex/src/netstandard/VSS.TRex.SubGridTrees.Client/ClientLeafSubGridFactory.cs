@@ -49,7 +49,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       IClientLeafSubGrid result = null;
 
-      //* Don't use repatriated sub grids for now...
+      //* TODO: Don't use repatriated sub grids for now...
       //    if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
       //    {
             if (typeMap[(int) gridDataType] != null)
@@ -92,7 +92,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="clientGrid"></param>
     public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
     {
-      // Don't accept any repatriated sub grids for now
+      // TODO: Don't accept any repatriated sub grids for now
 
       /*
       if (clientGrid == null)
