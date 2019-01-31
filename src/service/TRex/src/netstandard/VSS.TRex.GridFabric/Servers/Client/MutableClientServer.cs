@@ -80,6 +80,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
+            FailureDetectionTimeout = TimeSpan.FromMinutes(2);
+
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration()
             {

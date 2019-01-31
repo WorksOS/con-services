@@ -98,6 +98,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
+      cfg.FailureDetectionTimeout = TimeSpan.FromMinutes(2);
+
       // Set an Ignite metrics heartbeat of 10 seconds
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
 
