@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
@@ -47,18 +45,20 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="gridDataType"></param>
     /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
-    public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType) => typeMap[(int) gridDataType]();
-    /* Don't use repatriated sub grids for now...
-      {
-      if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
-      {
-        if (typeMap[(int) gridDataType] != null)
-          result = typeMap[(int) gridDataType]();
-      }
+    public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType)
+    {
+      IClientLeafSubGrid result = null;
+
+      //* Don't use repatriated sub grids for now...
+      //    if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
+      //    {
+            if (typeMap[(int) gridDataType] != null)
+              result = typeMap[(int) gridDataType]();
+      //    }
 
       result?.Clear();
       return result;
-    }*/
+    }
 
     /// <summary>
     /// Construct a concrete instance of a sub grid implementing the IClientLeafSubGrid interface based
@@ -105,8 +105,8 @@ namespace VSS.TRex.SubGridTrees.Client
       // }
 
       ClientLeaves[(int) clientGrid.GridDataType].Add(clientGrid);
-      clientGrid = null;
       */
+      clientGrid = null;
     }
 
     /// <summary>
@@ -116,15 +116,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="count"></param>
     public void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrids, int count)
     {
-      // Don't accept any repatriated sub grids for now
-
-      /*
       if (count < 0 || count > clientGrids.Length)
         throw new ArgumentException("Invalid count of sub grids to return", nameof(count));
 
       for (int i = 0; i < count; i++)
         ReturnClientSubGrid(ref clientGrids[i]);
-      */
     }
 
     /// <summary>
@@ -134,9 +130,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="count"></param>
     public void ReturnClientSubGrids(IClientLeafSubGrid[][] clientGrids, int count)
     {
-      // Don't accept any repatriated sub grids for now
-
-      /*
       if (count < 0 || count > clientGrids.Length)
         throw new ArgumentException("Invalid count of sub grids to return", nameof(count));
 
@@ -145,7 +138,6 @@ namespace VSS.TRex.SubGridTrees.Client
         for (int j = 0; j < clientGrids[i]?.Length; j++)
           ReturnClientSubGrid(ref clientGrids[i][j]);
       }
-      */
     }
   }
 }
