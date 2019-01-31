@@ -15,7 +15,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   /// </summary>
   public class SiteModelAttributesChangedEventSender : ISiteModelAttributesChangedEventSender
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger("SiteModelAttributesChangedEventSender");
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelAttributesChangedEventSender>();
 
     private const string MessageTopicName = "SiteModelAttributesChangedEvents";
 
