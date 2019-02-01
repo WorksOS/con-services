@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
@@ -47,14 +48,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// File import controller v4
     /// </summary>
-    /// <param name="persistantTransferProxy"></param>
-    /// <param name="filterServiceProxy"></param>
-    /// <param name="tRexImportFileProxy"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="requestFactory"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="dataOceanClient"></param>
     /// <param name="tileServiceProxy"></param>
     /// <param name="authn"></param>
     public FileImportV4Controller(IKafka producer,
@@ -100,21 +93,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Upload a file, and do processing synchronously
     /// </summary>
-    /// <param name="file"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileType"></param>
-    /// <param name="dxfUnitsType"></param>
-    /// <param name="fileCreatedUtc"></param>
-    /// <param name="fileUpdatedUtc"></param>
-    /// <param name="surveyedUtc"></param>
-    /// <returns></returns>
     [Route("api/v4/importedfile")]
     [HttpPost]
     [FlowUpload(Extensions = new[]
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
-    public async Task<ImportedFileDescriptorSingleResult> SyncUpload(FlowFile file,
+    public async Task<ImportedFileDescriptorSingleResult> SyncUpload(
+      FlowFile file,
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
       [FromQuery] DxfUnitsType dxfUnitsType,
@@ -135,11 +121,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         $"SyncUploadV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
+      ValidateFileDoesNotExist(projectUid.ToString(), file.flowFilename, importedFileType, surveyedUtc);
+
       ContractExecutionResult importedFileResult;
 
       using (var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read))
       {
-        importedFileResult = await CreateFile(file.flowFilename, fileStream, projectUid, importedFileType, dxfUnitsType,
+        importedFileResult = await UpsertFileInternal(file.flowFilename, fileStream, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
       }
 
@@ -173,15 +161,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromServices] ISchedulerProxy scheduler,
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
     {
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
         $"BackgroundUploadV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-      
+
+      if (string.Equals(Request.Method, HttpMethod.Post.ToString(), StringComparison.OrdinalIgnoreCase))
+      {
+        ValidateFileDoesNotExist(projectUid.ToString(), file.flowFilename, importedFileType, surveyedUtc);
+      }
+
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
       var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
+      var transferProxy = transferProxyFunc(TransferProxyType.Default);
       transferProxy.Upload(fileStream, s3Path);
 
       var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
@@ -206,10 +199,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Import a design file
-    ///    this creates a link between the file and project in database,
-    ///      sends file to TCC
-    ///      and notifies RaptorWebApi
+    /// Do the import of a file via scheduler 
+    /// This can be called by the background upload (file stored in AWS, then re downloaded with scheduler request)
     /// </summary>
     /// <param name="filename">The filename for the file being uploaded</param>
     /// <param name="awsFilePath">The location of the file in AWS</param>
@@ -223,10 +214,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
     [Route("internal/v4/importedfile")]
     [HttpGet]
-    public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(
+    public async Task<ImportedFileDescriptorSingleResult> InternalImportedFileV4(
       [FromQuery] string filename,
       [FromQuery] string awsFilePath,
-      [FromQuery] Guid projectUid,
+      [FromQuery] Guid projectUid, 
       [FromQuery] ImportedFileType importedFileType,
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromQuery] DateTime fileCreatedUtc,
@@ -237,7 +228,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
       log.LogInformation(
-        $"CreateImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
+        $"InternalImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       // Retrieve the stored file from AWS
@@ -256,11 +247,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         // Not the best solution for extra large files, but TCC doesn't support uploading without file size AFAIK
         fileResult.FileStream.CopyTo(ms);
 
-        var importedFileResult = await CreateFile(filename, ms, projectUid, importedFileType, dxfUnitsType,
+        var importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
 
         log.LogInformation(
-          $"SyncUploadV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
+          $"InternalImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
 
         return importedFileResult;
       }
@@ -271,6 +262,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   this creates/updates database AND creates/updates file in TCC.
     ///   notify RaptorWebAPI.
     /// </summary>
+    // I don't believe this endpoint is used anymore
     [Route("api/v4/importedfile")]
     [Route("internal/v4/importedfile")]
     [HttpPut]
@@ -384,79 +376,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Do the import of a file uploaded directly, or via scheduler 
-    /// This can be called by the background upload (file stored in AWS, then re downloaded with scheduler request), or Synchronise upload (file stored locally)
-    /// </summary>
-    /// <param name="filename">filename if the file</param>
-    /// <param name="fileStream">Stream containing the contents of the file</param>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileType"></param>
-    /// <param name="dxfUnitsType"></param>
-    /// <param name="fileCreatedUtc"></param>
-    /// <param name="fileUpdatedUtc"></param>
-    /// <param name="surveyedUtc"></param>
-    /// <returns>Details of the upload file</returns>
-    private async Task<ImportedFileDescriptorSingleResult> CreateFile(string filename, Stream fileStream,
-      Guid projectUid, ImportedFileType importedFileType,
-      DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DateTime? surveyedUtc)
-    {      
-      var existing = await ImportedFileRequestDatabaseHelper
-        .GetImportedFileForProject
-          (projectUid.ToString(), filename, importedFileType, surveyedUtc,
-           log, projectRepo)
-        .ConfigureAwait(false);
-
-      if (existing != null)
-      {
-        var message = $"CreateImportedFileV4. File: {filename} has already been imported.";
-        log.LogError(message);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
-      }
-
-      /*** now making changes, potentially needing rollback ***/
-      FileDescriptor fileDescriptor = null;
-      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
-      {
-        fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          fileStream, projectUid.ToString(), filename,
-          importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-          log, serviceExceptionHandler, persistantTransferProxy);
-      }
-
-      if (UseRaptorGatewayDesignImport)
-      {
-        fileDescriptor = await TccHelper.WriteFileToTCCRepository(
-            fileStream, customerUid, projectUid.ToString(),
-            filename,
-            importedFileType == ImportedFileType.SurveyedSurface,
-            surveyedUtc, FileSpaceId, log, serviceExceptionHandler, fileRepo)
-          .ConfigureAwait(false);
-          //save copy to DataOcean
-          await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), 
-              filename,
-              importedFileType == ImportedFileType.SurveyedSurface,
-              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
-            .ConfigureAwait(false);
-      }
-
-      var createImportedFile = CreateImportedFile.Create(projectUid, filename, fileDescriptor,
-          importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder);
-
-       var importedFileResult = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<CreateImportedFileExecutor>(
-              logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
-              producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, tileServiceProxy, authn)
-            .ProcessAsync(createImportedFile)
-        ) as ImportedFileDescriptorSingleResult;
-      
-      return importedFileResult;
-    }
-
-
-    /// <summary>
     /// Common file processing method used by all importedFile endpoints.
     /// </summary>
     private async Task<ImportedFileDescriptorSingleResult> UpsertFile(
@@ -475,54 +394,69 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       string fileName = Path.GetFileName(filePath);
 
-      // this also validates that this customer has access to the projectUid
-      var project = await ProjectRequestHelper.GetProject(projectUid, customerUid, log, serviceExceptionHandler, projectRepo);
+      using (var fileStream = new FileStream(filePath, FileMode.Open))
+      {
+        return await UpsertFileInternal(fileName, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType, fileCreatedUtc,
+          fileUpdatedUtc, surveyedUtc);
+      }
+    }
 
+    /// <summary>
+    /// Common file processing method used by all importedFile endpoints.
+    /// </summary>
+    private async Task<ImportedFileDescriptorSingleResult> UpsertFileInternal(
+      string filename,
+      Stream fileStream,
+      Guid projectUid,
+      ImportedFileType importedFileType,
+      DxfUnitsType dxfUnitsType,
+      DateTime fileCreatedUtc,
+      DateTime fileUpdatedUtc,
+      DateTime? surveyedUtc = null)
+    {
       var existing = await ImportedFileRequestDatabaseHelper
         .GetImportedFileForProject
-          (project.ProjectUID, fileName, importedFileType, surveyedUtc,
+          (projectUid.ToString(), filename, importedFileType, surveyedUtc,
            log, projectRepo)
         .ConfigureAwait(false);
 
       bool creating = existing == null;
       log.LogInformation(
         creating
-          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {fileName} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}"
+          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}"
           : $"UpdateImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
       ImportedFileDescriptorSingleResult importedFile;
 
       FileDescriptor fileDescriptor = null;
-      using (var fileStream = new FileStream(filePath, FileMode.Open))
+
+      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
       {
-        if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
-        {
-          fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-            fileStream, projectUid, fileName,
-            importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-            log, serviceExceptionHandler, persistantTransferProxy);
-        }
-
-        if (UseRaptorGatewayDesignImport)
-        {
-          fileDescriptor = await TccHelper.WriteFileToTCCRepository(
-              fileStream, customerUid, projectUid, filePath,
-              importedFileType == ImportedFileType.SurveyedSurface,
-              surveyedUtc, FileSpaceId, log, serviceExceptionHandler, fileRepo)
-            .ConfigureAwait(false);
-
-          //save copy to DataOcean      
-          await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, DataOceanRootFolder, customerUid, projectUid, filePath,
-              importedFileType == ImportedFileType.SurveyedSurface, 
-              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
-            .ConfigureAwait(false);        
-        }
+        fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
+          fileStream, projectUid.ToString(), filename,
+          importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
+          log, serviceExceptionHandler, persistantTransferProxy);
       }
 
+      if (UseRaptorGatewayDesignImport)
+      {
+        fileDescriptor = await TccHelper.WriteFileToTCCRepository(
+            fileStream, customerUid, projectUid.ToString(), filename,
+            importedFileType == ImportedFileType.SurveyedSurface,
+            surveyedUtc, FileSpaceId, log, serviceExceptionHandler, fileRepo)
+          .ConfigureAwait(false);
+
+        //save copy to DataOcean      
+        await DataOceanHelper.WriteFileToDataOcean(
+            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
+            importedFileType == ImportedFileType.SurveyedSurface,
+            surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
+          .ConfigureAwait(false);
+      }
+      
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.Create(Guid.Parse(projectUid), fileName,
+        var createImportedFile = CreateImportedFile.Create(projectUid, filename,
           fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
@@ -539,8 +473,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
+        // this also validates that this customer has access to the projectUid
+        var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
+
         var importedFileUpsertEvent = UpdateImportedFile.Create(
-          Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileType,
+          projectUid, project.LegacyProjectID, importedFileType,
           importedFileType == ImportedFileType.SurveyedSurface
             ? surveyedUtc
             : null,
@@ -562,12 +499,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           $"UpdateImportedFileV4. Update completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
 
-      await notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid))); 
+      await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       return importedFile;
     }
-    
-    
+
+
     /// <summary>
     /// Validate that the uploaded file doesn't already exist in the database.
     /// Should only be called from create methods where there's an expectation the file isn't already present.
@@ -588,7 +525,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (importedFileDescriptor != null)
       {
-        var message = $"CreateImportedFileV4. File: {filename} has already been imported.";
+        var message = $"CreateImportedFileDirectV4. File: {filename} has already been imported.";
         log.LogError(message);
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
       }
