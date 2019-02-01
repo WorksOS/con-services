@@ -59,7 +59,7 @@ namespace VSS.TRex.Designs
       try
       {
         Data = File.ReadAllBytes(localPathAndFileName);
-        Log.LogInformation($"Loaded alignment file {localPathAndFileName} containing bytecount: {Data.Length}.");
+        Log.LogInformation($"Loaded alignment file {localPathAndFileName} containing byte count: {Data.Length}.");
 
         return DesignLoadResult.Success;
       }
@@ -68,7 +68,6 @@ namespace VSS.TRex.Designs
         Log.LogError(e, "Exception in LoadFromFile");
         return DesignLoadResult.UnknownFailure;
       }
-      return DesignLoadResult.Success;
     }
 
     /// <summary>

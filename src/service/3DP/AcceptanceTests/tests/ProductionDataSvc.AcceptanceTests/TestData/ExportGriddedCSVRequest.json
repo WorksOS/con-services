@@ -30,6 +30,7 @@
 
   "BadRequestNoReportType": {
     "projectID": 1001158,
+    "reportType": 0,
     "reportElevation": true,
     "reportCutFill": false,
     "reportMDP": false,

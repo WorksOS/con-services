@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Represents the number of passes and the location of the first cell pass for a cell within the set of cell passes
-    /// stored in this subgrid segment
+    /// stored in this sub grid segment
     /// </summary>
     public struct SubGridCellPassCountRecord
     {
@@ -12,7 +12,7 @@
         public int PassCount;
 
         /// <summary>
-        /// The index of the first cell pass inteh cell in this segment within the overall list of cell passes
+        /// The index of the first cell pass in the cell in this segment within the overall list of cell passes
         /// </summary>
         public int FirstCellPass;
     }

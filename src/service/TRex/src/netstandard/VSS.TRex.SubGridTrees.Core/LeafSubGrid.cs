@@ -5,7 +5,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
-    /// LeafSubgrid is the true base class from which to derive varieties of leaf sub grid that support different data types
+    /// LeafSubGrid is the true base class from which to derive varieties of leaf sub grid that support different data types
     /// and use cases.
     /// </summary>
     public class LeafSubGrid : LeafSubGridBase, ILeafSubGrid

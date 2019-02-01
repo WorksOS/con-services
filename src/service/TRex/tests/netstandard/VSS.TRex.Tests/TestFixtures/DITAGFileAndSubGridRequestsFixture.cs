@@ -66,8 +66,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
+      base.Dispose();
+
       DIBuilder.Eject();
   }
 

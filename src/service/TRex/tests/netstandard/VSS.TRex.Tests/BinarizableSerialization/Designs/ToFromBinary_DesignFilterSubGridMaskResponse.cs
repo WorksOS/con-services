@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
       var result = SimpleBinarizableInstanceTester.TestClass(argument, "Empty DesignFilterSubGridMaskResponse not same after round trip serialisation");
 
       result.member.Bits.IsFull().Should().Be(true);
-      result.member.Bits.CountBits().Should().Be(SubGridTreeConsts.CellsPerSubgrid);
+      result.member.Bits.CountBits().Should().Be(SubGridTreeConsts.CellsPerSubGrid);
     }
   }
 }

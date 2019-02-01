@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Common.Utilities.Interfaces;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,7 +10,7 @@ namespace VSS.TRex.Tests.Utility
 {
     public class TestClassBase : MemoryStream
     {
-        public TestClassBase()
+        protected TestClassBase()
         {
         }
     }

@@ -66,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                 SubGrid.Cells.SelectSegment(DateTime.MinValue);
             }
 
-            SubGrid.Dirty = true;
+            SubGrid.SetDirty();
 
             // Find the location of the cell within the sub grid.
             SubGrid.GetSubGridCellIndex(cellX, cellY, out byte SubGridCellX, out byte SubGridCellY);

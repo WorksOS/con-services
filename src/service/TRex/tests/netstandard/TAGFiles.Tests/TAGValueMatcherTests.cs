@@ -1029,10 +1029,6 @@ namespace TAGFiles.Tests
           "Matcher process function returned false");
       sink.ElevationMappingMode.Should().Be(ElevationMappingMode.MinimumElevation);
 
-      Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 2),
-        "Matcher process function returned false");
-      sink.ElevationMappingMode.Should().Be(ElevationMappingMode.MaximumElevation);
-
       Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 3),
           "Matcher process function returned false");
     }

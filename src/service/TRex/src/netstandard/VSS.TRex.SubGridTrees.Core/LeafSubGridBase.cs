@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using VSS.TRex.SubGridTrees.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -8,23 +7,6 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public class LeafSubGridBase : SubGrid
     {
-        /// <summary>
-        /// LatestCellPassesOutOfDate notes whether there is 'latest' call pass information that has been changed and 
-        /// required persistence.
-        /// </summary>
-        protected bool latestCellPassesOutOfDate;
-        public bool LatestCellPassesOutOfDate => latestCellPassesOutOfDate;
-
-        public override void SetDirty(bool value)
-        {
-            Debug.Assert(value, "Can only mark sub grid as dirty via public interface (not unset it!)");
-
-            base.SetDirty(value);
-
-            if (Dirty)
-                latestCellPassesOutOfDate = true;
-        }
-
         public LeafSubGridBase(ISubGridTree owner,
                                ISubGrid parent,
                                byte level,

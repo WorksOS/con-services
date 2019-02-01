@@ -8,7 +8,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// Describes a relationship between a machine represented by a GUID, and an internal numeric identifier used
     /// to reduce the storage required in the cell passes to identify the machine
     /// </summary>
-    public struct SubgridCellSegmentMachineReference
+    public struct SubGridCellSegmentMachineReference
     {
         /// <summary>
         /// Internal numeric identifier for the machine in a segment

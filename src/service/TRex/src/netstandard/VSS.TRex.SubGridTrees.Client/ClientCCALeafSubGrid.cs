@@ -201,7 +201,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataCCAEntryRecord.IndicativeSizeInBytes();
+             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataCCAEntryRecord.IndicativeSizeInBytes();
     }
   }
 }

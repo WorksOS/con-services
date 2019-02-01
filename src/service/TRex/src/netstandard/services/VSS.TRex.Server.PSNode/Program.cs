@@ -170,7 +170,13 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Volumes.CutFillVolume)
+        typeof(VSS.TRex.Volumes.CutFillVolume),
+
+        // This inclusion is needed to support the segment retirement queue service provided
+        // by the TAG file namespace to mange retirement of updated segments as they age
+        // out of the consistency window.
+        // TODO: It might not be a bad idea to refactor this service into a more separate boundary
+        typeof(VSS.TRex.TAGFiles.GridFabric.Services.SegmentRetirementQueueService)
       };
 
       foreach (var asmType in AssemblyDependencies)
