@@ -58,12 +58,35 @@ namespace VSS.Tile.Service.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing DXF file name"));
       }
-      var customHeaders = new Dictionary<string, string>
+      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, CustomHeaders()));
+    }
+
+    /// <summary>
+    /// Deletes DXF tiles for the DXF file.
+    /// </summary>
+    /// <param name="dxfFileName">The path and name of the DXF file</param>
+    /// <returns></returns>
+    [Route("internal/v1/deletedxftiles")]
+    [HttpDelete]
+    public Task<bool> DeleteDxfTiles([FromQuery] string dxfFileName)
+    {
+      if (string.IsNullOrEmpty(dxfFileName))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing DXF file name"));
+      }
+      return pegasusClient.DeleteDxfTiles(dxfFileName, CustomHeaders());
+    }
+
+    private Dictionary<string, string> CustomHeaders()
+    {
+      return new Dictionary<string, string>
       {
         {"Content-Type", "application/json"},
         {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"}
       };
-      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, customHeaders);
     }
   }
 }
+

@@ -262,6 +262,40 @@ namespace VSS.Pegasus.Client.UnitTests
       Assert.Null(result);
     }
 
+    [Fact]
+    public void CanDeleteDxfTilesSuccess()
+    {
+      var gracefulMock = new Mock<IWebRequest>();
+
+      var dataOceanMock = new Mock<IDataOceanClient>();
+      string tileFolderFullName = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
+      dataOceanMock.Setup(d => d.DeleteFile(tileFolderFullName, null)).ReturnsAsync(true);
+
+      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      var serviceProvider2 = serviceCollection.BuildServiceProvider();
+      var client = serviceProvider2.GetRequiredService<IPegasusClient>();
+      var result = client.DeleteDxfTiles(dxfFullName, null).Result;
+      Assert.True(result);
+    }
+
+    [Fact]
+    public void CanDeleteDxfTilesFailure()
+    {
+      var gracefulMock = new Mock<IWebRequest>();
+
+      var dataOceanMock = new Mock<IDataOceanClient>();
+      string tileFolderFullName = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
+      dataOceanMock.Setup(d => d.DeleteFile(tileFolderFullName, null)).ReturnsAsync(false);
+
+      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      var serviceProvider2 = serviceCollection.BuildServiceProvider();
+      var client = serviceProvider2.GetRequiredService<IPegasusClient>();
+      var result = client.DeleteDxfTiles(dxfFullName, null).Result;
+      Assert.False(result);
+    }
+
 
     #region privates
     private Task<TileMetadata> CanGenerateDxfTiles(ExecutionStatus status)

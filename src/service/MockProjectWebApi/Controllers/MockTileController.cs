@@ -16,5 +16,14 @@ namespace MockProjectWebApi.Controllers
 
       return Task.FromResult(MockDataOceanController.tileMetadata);
     }
+
+    [Route("/internal/v1/mock/deletedxftiles")]
+    [HttpDelete]
+    public Task<bool> DeleteDxfTiles([FromQuery] string dxfFileName)
+    {
+      Console.WriteLine($"{nameof(DeleteDxfTiles)}: {Request.QueryString}");
+
+      return Task.FromResult(true);
+    }
   }
 }

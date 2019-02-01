@@ -64,7 +64,7 @@ namespace VSS.Pegasus.Client
     /// <param name="dxfFileName">The path and file name of the DXF file</param>
     /// <param name="dxfUnitsType">The units of the DXF file</param>
     /// <param name="customHeaders"></param>
-    /// <returns></returns>
+    /// <returns>Metadata for the generated tiles including the zoom range</returns>
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders)
     {
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
@@ -88,12 +88,13 @@ namespace VSS.Pegasus.Client
 
       //In DataOcean this is actually a multifile not a folder
       string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
+      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
+      await DeleteDxfTiles(tileFolderFullName, customHeaders);
+      //Get the parent folder id
       var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
       var tileFolderName = parts[parts.Length - 1];
       var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
       var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);
-      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
-      await dataOceanClient.DeleteFile(tileFolderFullName, customHeaders);
 
       //Get the Pegasus units
       var pegasusUnits = PegasusUnitsType.Metre;
@@ -206,6 +207,20 @@ namespace VSS.Pegasus.Client
 
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
       return metadata;
+    }
+
+    /// <summary>
+    /// Deletes the generated DXF tiles for the given DXF file
+    /// </summary>
+    /// <param name="dxfFileName">The path and file name of the DXF file</param>
+    /// <param name="customHeaders"></param>
+    /// <returns>True if successfully deleted otherwise false</returns>
+    public async Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders)
+    {
+      //In DataOcean this is actually a multifile not a folder
+      string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
+      //To avoid 2 traversals just try the delete anyway without checking for existance.
+      return await dataOceanClient.DeleteFile(tileFolderFullName, customHeaders);
     }
 
   }

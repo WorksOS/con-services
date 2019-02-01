@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies
     {
     }
 
-    public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType,
+    public Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType,
       IDictionary<string, string> customHeaders, int timeoutMins)
     {
       log.LogDebug($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
@@ -30,10 +30,23 @@ namespace VSS.MasterData.Proxies
 
       var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
-      TileMetadata response = await SendRequest<TileMetadata>("TILE_INTERNAL_BASE_URL",
+      return SendRequest<TileMetadata>("TILE_INTERNAL_BASE_URL",
         string.Empty, customHeaders, "/generatedxftiles", HttpMethod.Get, queryParams, timeoutMins, 1);
+    }
 
-      return response;
+    public Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders)
+    {
+      log.LogDebug($"{nameof(DeleteDxfTiles)}: dxfFileName={dxfFileName}");
+
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        {"dxfFileName" , dxfFileName }
+      };
+
+      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
+
+      return SendRequest<bool>("TILE_INTERNAL_BASE_URL",
+        string.Empty, customHeaders, "/deletedxftiles", HttpMethod.Delete, queryParams);
     }
   }
 }

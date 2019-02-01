@@ -236,6 +236,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #region tiles
 
+    /// <summary>
+    /// Generate DXF tiles using Pegasus through the tile service. Set the zoom range in the notification result.
+    /// </summary>
     public static async Task GenerateDxfTiles(AddFileResult notificationResult, string rootFolder, Guid projectUid, string customerUid, 
       string fileName, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, Guid importedFileUid, 
       ILogger log, IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy, IRaptorProxy raptorProxy, 
@@ -275,6 +278,33 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
     }
 
+    /// <summary>
+    /// Delete generated DXF tiles through the tile service.
+    /// </summary>
+    public static async Task DeleteDxfTiles(string rootFolder, Guid projectUid, string customerUid, string fileName, 
+      ImportedFileType importedFileType, ILogger log, IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy)
+    {
+      if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.Alignment)
+      {
+        try
+        {
+          var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
+          var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
+          var success = await tileServiceProxy.DeleteDxfTiles(dxfFileName, headers);
+        }
+        catch (Exception e)
+        {
+          log.LogError(
+            $"FileImport DeleteDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
+          throw;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
+    /// </summary>
+    /// <returns>The generated file name</returns>
     private static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, IDictionary<string, string> headers,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, IDataOceanClient dataOceanClient, IConfigurationStore configStore)
     {

@@ -6,6 +6,7 @@ namespace VSS.DataOcean.Client
   public class DataOceanFileUtil
   {
     public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
+    public const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
     public const string DXF_FILE_EXTENSION = ".dxf";
 
     public string FileName { get; private set; }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DotNetCore.CAP.Dashboard.Resources;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -93,16 +94,34 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           importedFileInternalResult = await TccHelper.DeleteFileFromTCCRepository
             (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-            log, serviceExceptionHandler, fileRepo, projectRepo)
+              log, serviceExceptionHandler, fileRepo, projectRepo)
             .ConfigureAwait(false);
-        }
-        if (importedFileInternalResult == null)
-        {
+
           importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-            deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid, deleteImportedFile.ProjectUid, 
-            deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn)
-            .ConfigureAwait(false);
+            deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+            deleteImportedFile.ProjectUid,
+            deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
+
+          if (deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
+              deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+          {
+            //Do we care if deleting DXF tiles and generated DXF file fails?
+            await ImportedFileRequestHelper.DeleteDxfTiles(deleteImportedFile.DataOceanRootFolder,
+              deleteImportedFile.ProjectUid, customerUid, deleteImportedFile.FileDescriptor.FileName,
+              deleteImportedFile.ImportedFileType, log, customHeaders, tileServiceProxy);
+
+            if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+            {
+              string generatedName =
+                $"{Path.GetFileNameWithoutExtension(deleteImportedFile.FileDescriptor.FileName)}{DataOceanFileUtil.GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DataOceanFileUtil.DXF_FILE_EXTENSION}";
+              await DataOceanHelper.DeleteFileFromDataOcean(
+                generatedName, deleteImportedFile.DataOceanRootFolder, customerUid,
+                deleteImportedFile.ProjectUid,
+                deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
+            }
+          }
         }
+
         if (importedFileInternalResult != null)
         {
           await ImportedFileRequestDatabaseHelper.UndeleteImportedFile
