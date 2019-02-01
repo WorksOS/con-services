@@ -42,7 +42,6 @@ namespace VSS.TRex.SubGrids
     private readonly bool _hasOverrideSpatialCellRestriction;
     private readonly BoundingIntegerExtent2D _overrideSpatialCellRestriction;
     private readonly bool _prepareGridForCacheStorageIfNoSeiving;
-    private readonly byte _level;
     private readonly int _maxNumberOfPassesToReturn;
     private AreaControlSet _areaControlSet;
 
@@ -84,7 +83,6 @@ namespace VSS.TRex.SubGrids
     /// <param name="hasOverrideSpatialCellRestriction">The spatially selected cells are masked by a rectangular restriction boundary</param>
     /// <param name="overrideSpatialCellRestriction"></param>
     /// <param name="prepareGridForCacheStorageIfNoSeiving">The cell coordinate bounding box restricting cells involved in the request</param>
-    /// <param name="treeLevel">The level in the sub grid tree containing requested sub grids this sub grid is to be retrieved from</param>
     /// <param name="maxNumberOfPassesToReturn"></param>
     /// <param name="areaControlSet"></param>
     /// <param name="populationControl"></param>
@@ -95,7 +93,7 @@ namespace VSS.TRex.SubGrids
       bool hasOverrideSpatialCellRestriction,
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
       bool prepareGridForCacheStorageIfNoSeiving,
-      byte treeLevel,
+     // byte treeLevel,
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
@@ -115,7 +113,6 @@ namespace VSS.TRex.SubGrids
 
       _prepareGridForCacheStorageIfNoSeiving = prepareGridForCacheStorageIfNoSeiving;
 
-      _level = treeLevel;
       _maxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
 
       _areaControlSet = areaControlSet;
@@ -619,7 +616,7 @@ namespace VSS.TRex.SubGrids
         // First get the sub grid we are interested in
         // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
-        _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, CellX, CellY, _level, false, false);
+        _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, CellX, CellY, _siteModel.Grid.NumLevels, false, false);
 
         //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 

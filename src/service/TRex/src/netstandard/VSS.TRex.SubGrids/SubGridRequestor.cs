@@ -74,15 +74,14 @@ namespace VSS.TRex.SubGrids
         }
 
         /// <summary>
-        /// Constructor that accepts the common parameters around a set of subgrids the requester will be asked to process
-        /// and initializes the requester state ready to start processing individual subgrid requests.
+        /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
+        /// and initializes the requester state ready to start processing individual sub grid requests.
         /// </summary>
         public void Initialize(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
                                 ICombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
-                                byte treeLevel,
                                 int maxNumberOfPassesToReturn,
                                 AreaControlSet areaControlSet,
                                 IFilteredValuePopulationControl populationControl,
@@ -109,7 +108,6 @@ namespace VSS.TRex.SubGrids
               Filter = filter;
             }
 
-            TreeLevel = treeLevel;
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
             OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
             MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
@@ -120,7 +118,6 @@ namespace VSS.TRex.SubGrids
                                              hasOverrideSpatialCellRestriction,
                                              overrideSpatialCellRestriction,
                                              subGridCacheContext != null,
-                                             treeLevel,
                                              maxNumberOfPassesToReturn,
                                              areaControlSet,
                                              populationControl,

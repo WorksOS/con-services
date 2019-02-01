@@ -144,7 +144,6 @@ namespace VSS.TRex.SubGrids
           x.Filter,
           false, // Override cell restriction
           BoundingIntegerExtent2D.Inverted(),
-          SubGridTreeConsts.SubGridTreeLevels,
           int.MaxValue, // MaxCellPasses
           areaControlSet,
           new FilteredValuePopulationControl(),
