@@ -382,30 +382,5 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
                       apiRequest.Offsets.Length > 0 ? apiRequest.Offsets[0] : -6666, "Offset[0] not mapped correctly");
 
     }
-
-    //[TestMethod]
-    //public void MapStationOffsetReportRequestToTRexRequest()
-    //{
-    //  var projectUid = Guid.NewGuid();
-    //  var apiRequest = CompactionReportStationOffsetRequest.CreateRequest(
-    //    0, null, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, null, null);
-
-    //  var tRexRequest = AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(apiRequest);
-    //  Assert.AreEqual(tRexRequest.ProjectUid, projectUid, "projectUid not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.Filter, apiRequest.Filter, "Filter not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.ReportElevation, apiRequest.ReportElevation, "ReportElevation not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.ReportCMV, apiRequest.ReportCMV, "ReportCMV not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.ReportMDP, apiRequest.ReportMDP, "ReportMDP not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.ReportTemperature, apiRequest.ReportTemperature, "ReportTemperature not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.ReportCutFill, apiRequest.ReportCutFill, "ReportCutFill not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.ReportElevation, apiRequest.ReportElevation, "ReportElevation not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.CutFillDesignUid, apiRequest.DesignFile.FileUid, "CutFillDesignUid not mapped correctly");
-
-    //  Assert.AreEqual(tRexRequest.AlignmentDesignUid, apiRequest.AlignmentFile.FileUid, "AlignmentDesignUid not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.CrossSectionInterval, apiRequest.CrossSectionInterval, "CrossSectionInterval not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.StartStation, apiRequest.StartStation, "StartStation not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.EndStation, apiRequest.EndStation, "EndStation not mapped correctly");
-    //  Assert.AreEqual(tRexRequest.Offsets, apiRequest.Offsets, "Offsets not mapped correctly");
-    //}
   }
 }

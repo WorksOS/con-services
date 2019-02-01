@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.TRex.Common;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using Xunit;
 
@@ -57,7 +56,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
           (stationGroup.Key, stationOffsetRowCopyList);
       }
 
-      Assert.Equal(stationOffsetDataRowManual, stationOffsetDataRowAuto);
+      Assert.Equal(stationOffsetDataRowManual.Station, stationOffsetDataRowAuto.Station);
+      Assert.Equal(stationOffsetDataRowManual.Offsets.Count, stationOffsetDataRowAuto.Offsets.Count);
+      Assert.Equal(stationOffsetDataRowManual.Offsets[0].Offset, stationOffsetDataRowAuto.Offsets[0].Offset);
+      Assert.Equal(stationOffsetDataRowManual.Offsets[0].Northing, stationOffsetDataRowAuto.Offsets[0].Northing);
+      Assert.Equal(stationOffsetDataRowManual.Minimum.CutFill, stationOffsetDataRowAuto.Minimum.CutFill);
+      Assert.Equal(stationOffsetDataRowManual.Maximum.Elevation, stationOffsetDataRowAuto.Maximum.Elevation);
     }
 
     [Fact]
@@ -95,7 +99,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
           (stationGroup.Key, stationGroup.ToList());
       }
 
-      Assert.Equal(stationOffsetDataRowManual, stationOffsetDataRowAuto);
+      Assert.Equal(stationOffsetDataRowManual.Station, stationOffsetDataRowAuto.Station);
+      Assert.Equal(stationOffsetDataRowManual.Offsets.Count, stationOffsetDataRowAuto.Offsets.Count);
+      Assert.Equal(stationOffsetDataRowManual.Offsets[0].Offset, stationOffsetDataRowAuto.Offsets[0].Offset);
+      Assert.Equal(stationOffsetDataRowManual.Offsets[0].Northing, stationOffsetDataRowAuto.Offsets[0].Northing);
+      Assert.Equal(stationOffsetDataRowManual.Minimum.CutFill, stationOffsetDataRowAuto.Minimum.CutFill);
+      Assert.Equal(stationOffsetDataRowManual.Maximum.Elevation, stationOffsetDataRowAuto.Maximum.Elevation);
     }
 
     [Fact]
@@ -233,12 +242,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       var original = new StationOffsetReportResult(ReportType.StationOffset);
       original.GriddedData.Rows.Add(retrievedStation1);
-      original.GriddedData.ElevationReport = true;
-      original.GriddedData.CutFillReport = true;
-      original.GriddedData.CmvReport = false;
-      original.GriddedData.MdpReport = true;
-      original.GriddedData.PassCountReport = false;
-      original.GriddedData.TemperatureReport = true;
+      original.GriddedData.ReportElevation = true;
+      original.GriddedData.ReportCutFill = true;
+      original.GriddedData.ReportCmv = false;
+      original.GriddedData.ReportMdp = true;
+      original.GriddedData.ReportPassCount = false;
+      original.GriddedData.ReportTemperature = true;
 
       var byteArrayOfOriginal = original.Write();
       var copyOfOrig = new StationOffsetReportResult();
@@ -253,7 +262,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       Assert.True(ReportType.StationOffset == resultFromStream.ReportType, "Invalid report type");
       Assert.True(original.GriddedData.Rows.Count == resultFromStream.GriddedData.Rows.Count, "Invalid number of rows");
-      Assert.Equal(original, resultFromStream);
+      Assert.Equal(original.GriddedData.Rows[0].Station, resultFromStream.GriddedData.Rows[0].Station);
+      Assert.Equal(original.GriddedData.Rows[0].Offsets.Count, resultFromStream.GriddedData.Rows[0].Offsets.Count);
+      Assert.Equal(original.GriddedData.Rows[0].Offsets[0].Offset, resultFromStream.GriddedData.Rows[0].Offsets[0].Offset);
+      Assert.Equal(original.GriddedData.Rows[0].Offsets[0].Northing, resultFromStream.GriddedData.Rows[0].Offsets[0].Northing);
+      Assert.Equal(original.GriddedData.Rows[0].Minimum.CutFill, resultFromStream.GriddedData.Rows[0].Minimum.CutFill);
+      Assert.Equal(original.GriddedData.Rows[0].Maximum.Elevation, resultFromStream.GriddedData.Rows[0].Maximum.Elevation);
     }
 
     [Fact]

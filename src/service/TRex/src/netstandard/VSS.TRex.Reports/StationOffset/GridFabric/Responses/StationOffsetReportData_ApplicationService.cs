@@ -1,85 +1,42 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class StationOffsetReportData_ApplicationService : IEquatable<StationOffsetReportData_ApplicationService>
+  public class StationOffsetReportData_ApplicationService : ReportTypeData
   {
     public int NumberOfRows { get; set; }
-    public StationOffsetReportDataRows_ApplicationService Rows { get; set; }
-    public bool ElevationReport { get; set; }
-    public bool CutFillReport { get; set; }
-    public bool CmvReport { get; set; }
-    public bool MdpReport { get; set; }
-    public bool PassCountReport { get; set; }
-    public bool TemperatureReport { get; set; }
-
+    public StationOffsetReportDataRows_ApplicationService Rows { get; private set; }
 
     public StationOffsetReportData_ApplicationService()
     {
+      base.Clear();
       Clear();
     }
 
-    public void Clear()
+    public new void Clear()
     {
       Rows = new StationOffsetReportDataRows_ApplicationService();
       NumberOfRows = Rows.Count;
-      ElevationReport = false;
-      CutFillReport = false;
-      CmvReport = false;
-      MdpReport = false;
-      PassCountReport = false;
-      TemperatureReport = false;
     }
 
-    public void Write(BinaryWriter writer)
+    public new void Write(BinaryWriter writer)
     {
       NumberOfRows = Rows.Count;
       writer.Write(NumberOfRows);
       Rows.Write(writer);
-      writer.Write(ElevationReport);
-      writer.Write(CutFillReport);
-      writer.Write(CmvReport);
-      writer.Write(MdpReport);
-      writer.Write(PassCountReport);
-      writer.Write(TemperatureReport);
+      base.Write(writer);
     }
 
-    public void Read(BinaryReader reader)
+    public new void Read(BinaryReader reader)
     {
       NumberOfRows = reader.ReadInt32();
+      Rows = new StationOffsetReportDataRows_ApplicationService();
       Rows.Read(reader, NumberOfRows);
-      ElevationReport = reader.ReadBoolean();
-      CutFillReport = reader.ReadBoolean();
-      CmvReport = reader.ReadBoolean();
-      MdpReport = reader.ReadBoolean();
-      PassCountReport = reader.ReadBoolean();
-      TemperatureReport = reader.ReadBoolean();
-    }
-
-    public bool Equals(StationOffsetReportData_ApplicationService other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return NumberOfRows.Equals(other.NumberOfRows) &&
-             Rows.Equals(other.Rows) &&
-             ElevationReport.Equals(other.ElevationReport) &&
-             CutFillReport.Equals(other.CutFillReport) &&
-             CmvReport.Equals(other.CmvReport) &&
-             MdpReport.Equals(other.MdpReport) &&
-             PassCountReport.Equals(other.PassCountReport) &&
-             TemperatureReport.Equals(other.TemperatureReport);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportData_ApplicationService)obj);
+      base.Read(reader);
     }
 
     public override int GetHashCode()
@@ -89,12 +46,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
         int hashCode = base.GetHashCode();
         hashCode = (hashCode * 397) ^ NumberOfRows.GetHashCode();
         hashCode = (hashCode * 397) ^ Rows.GetHashCode();
-        hashCode = (hashCode * 397) ^ ElevationReport.GetHashCode();
-        hashCode = (hashCode * 397) ^ CutFillReport.GetHashCode();
-        hashCode = (hashCode * 397) ^ CmvReport.GetHashCode();
-        hashCode = (hashCode * 397) ^ MdpReport.GetHashCode();
-        hashCode = (hashCode * 397) ^ PassCountReport.GetHashCode();
-        hashCode = (hashCode * 397) ^ TemperatureReport.GetHashCode();
         return hashCode;
       }
     }

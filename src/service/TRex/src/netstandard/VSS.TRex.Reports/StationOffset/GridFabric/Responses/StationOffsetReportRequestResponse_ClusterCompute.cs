@@ -8,8 +8,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   public class StationOffsetReportRequestResponse_ClusterCompute : SubGridsPipelinedResponseBase, IAggregateWith<StationOffsetReportRequestResponse_ClusterCompute>
   {
-    public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
-    public ReportType ReportType;       // == TRaptorReportType
+    public ReportReturnCode ReturnCode;  // == TRaptorReportReturnCode
+    private ReportType ReportType;       // == TRaptorReportType
     public List<StationOffsetRow> StationOffsetRows;
 
     public StationOffsetReportRequestResponse_ClusterCompute()
@@ -17,7 +17,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Clear();
     }
 
-    public void Clear()
+    private void Clear()
     {
       ReturnCode = ReportReturnCode.NoError;
       ReportType = ReportType.StationOffset;
@@ -60,7 +60,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       ReturnCode = (ReportReturnCode)reader.ReadInt();
       ReportType = (ReportType)reader.ReadInt();
       var griddedRowsCount = reader.ReadInt();
-      StationOffsetRows = new List<StationOffsetRow>();
+      StationOffsetRows = new List<StationOffsetRow>(griddedRowsCount);
       for (int i = 0; i < griddedRowsCount; i++)
       {
         var row = new StationOffsetRow();

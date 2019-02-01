@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using VSS.Productivity3D.Models.Models.Reports;
 
@@ -10,9 +9,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
   /// 
   /// Note that this structure needs to be look like TRaptorReportsPackager
   ///   to be deserialized by it. One day... TRaptorReportsPackeger will
-  ///   go away and StationOffsetReportResult could be deserialised in 3dp using it instead.
+  ///   go away and StationOffsetReportResult could be deserialized in 3dp using it instead.
   /// </summary>
-  public class StationOffsetReportResult : IEquatable<StationOffsetReportResult>
+  public class StationOffsetReportResult
   {
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType; // == TRaptorReportType
@@ -47,7 +46,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
           bw.Write((int)ReturnCode);
           bw.Write((int)ReportType);
 
-          GriddedData?.Write(bw);
+          GriddedData.Write(bw);
         }
 
         return ms.ToArray();
@@ -69,24 +68,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
         return ms;
       }
     }
-
-    public bool Equals(StationOffsetReportResult other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return ReturnCode.Equals(other.ReturnCode) &&
-             ReportType.Equals(other.ReportType) &&
-             GriddedData.Equals(other.GriddedData);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportResult)obj);
-    }
-
+    
     public override int GetHashCode()
     {
       unchecked

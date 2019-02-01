@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Reports.StationOffset.Executors;
@@ -14,8 +13,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
   /// </summary>
   public class StationOffsetReportRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ApplicationService, StationOffsetReportRequestResponse_ApplicationService>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-    
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<StationOffsetReportRequestComputeFunc_ApplicationService>();
+
     public StationOffsetReportRequestResponse_ApplicationService Invoke(StationOffsetReportRequestArgument_ApplicationService arg)
     {
       Log.LogInformation($"Start {nameof(StationOffsetReportRequestComputeFunc_ApplicationService)}");

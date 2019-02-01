@@ -1,29 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Types;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
 {
   /// <summary>
   /// The argument to be supplied to the grid request
   /// </summary>
-  public class StationOffsetReportRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<StationOffsetReportRequestArgument_ClusterCompute>
+  public class StationOffsetReportRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgumentReport
   {
-    public bool ReportElevation { get; set; }
-
-    public bool ReportCmv { get; set; }
- 
-    public bool ReportMdp { get; set; }
-
-    public bool ReportPassCount { get; set; }
-
-    public bool ReportTemperature { get; set; }
-
-    public bool ReportCutFill { get; set; }
-
-
     /// <summary>
     /// Points in NEE derived from each station & offset
     /// </summary>
@@ -37,13 +23,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
-      
-      writer.WriteBoolean(ReportElevation);
-      writer.WriteBoolean(ReportCmv);
-      writer.WriteBoolean(ReportMdp);
-      writer.WriteBoolean(ReportPassCount);
-      writer.WriteBoolean(ReportTemperature);
-      writer.WriteBoolean(ReportCutFill);
       writer.WriteInt(Points.Count);
       foreach (var point in Points)
       {
@@ -58,13 +37,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
-
-      ReportElevation = reader.ReadBoolean();
-      ReportCmv = reader.ReadBoolean();
-      ReportMdp = reader.ReadBoolean();
-      ReportPassCount = reader.ReadBoolean();
-      ReportTemperature = reader.ReadBoolean();
-      ReportCutFill = reader.ReadBoolean();
       var pointCount = reader.ReadInt();
       Points = new List<StationOffsetPoint>();
       for (int i = 0; i < pointCount; i++)
@@ -74,53 +46,11 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
         Points.Add(point);
       }
     }
-
-    public bool Equals(StationOffsetReportRequestArgument_ClusterCompute other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      if ((Points == null && other.Points != null) ||
-          (Points != null && other.Points == null))
-        return false;
-
-      if (Points != null && other.Points != null)
-      {
-        if (!Points.Count.Equals(other.Points.Count))
-          return false;
-        for (int i = 0; i < Points.Count; i++)
-        {
-          if (!Points[i].Equals(other.Points[i]))
-            return false;
-        }
-      }
-
-      return ReportElevation.Equals(other.ReportElevation) &&
-             ReportCmv.Equals(other.ReportCmv) &&
-             ReportMdp.Equals(other.ReportMdp) &&
-             ReportPassCount.Equals(other.ReportPassCount) &&
-             ReportTemperature.Equals(other.ReportTemperature) &&
-             ReportCutFill.Equals(other.ReportCutFill);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportRequestArgument_ClusterCompute) obj);
-    }
-
     public override int GetHashCode()
     {
       unchecked
       {
-        int hashCode = ReportElevation.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportCmv.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportMdp.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportPassCount.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportTemperature.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportCutFill.GetHashCode();
+        int hashCode = base.GetHashCode();
         hashCode = (hashCode * 397) ^ (Points != null ? Points.GetHashCode() : 0);
         return hashCode;
       }

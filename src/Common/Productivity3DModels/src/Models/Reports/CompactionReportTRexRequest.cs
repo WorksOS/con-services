@@ -3,7 +3,7 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Exceptions;
 using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.Models.Reports
@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
   /// The request representation for getting production data from TRex for a grid or stationOffset report.
   /// </summary>
   /// 
-  public abstract class CompactionReportTRexRequest : TRexHelper
+  public abstract class CompactionReportTRexRequest 
   {
     /// <summary>
     /// A project unique identifier.
@@ -85,14 +85,15 @@ namespace VSS.Productivity3D.Models.Models.Reports
     /// 
     public virtual void Validate()
     {
-      if (!Guid.TryParseExact(ProjectUid.ToString(), "D", out Guid _) || ProjectUid == Guid.Empty)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid must be provided"));
-      }
-
       if (ReportCutFill)
       {
-        ValidateDesign(CutFillDesignUid, DisplayMode.CutFill, VolumesType.None);
+        if (CutFillDesignUid == null || CutFillDesignUid.Value == Guid.Empty)
+        {
+          throw new MissingDesignDescriptorException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              string.Format(
+                "Design descriptor required for cut/fill and design to filter or filter to design volumes display")));
+        }
       }
 
       if (!(ReportPassCount || ReportTemperature || ReportMdp || ReportCutFill || ReportCmv || ReportElevation))

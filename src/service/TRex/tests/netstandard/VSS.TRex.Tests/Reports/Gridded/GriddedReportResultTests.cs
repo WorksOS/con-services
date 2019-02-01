@@ -25,12 +25,12 @@ namespace VSS.TRex.Tests.Reports.Gridded
         Temperature = 8
       };
       original.GriddedData.Rows.Add(griddedDataRow);
-      original.GriddedData.ElevationReport = true;
-      original.GriddedData.CutFillReport = true;
-      original.GriddedData.CmvReport = false;
-      original.GriddedData.MdpReport = true;
-      original.GriddedData.PassCountReport = false;
-      original.GriddedData.TemperatureReport = true;
+      original.GriddedData.ReportElevation = true;
+      original.GriddedData.ReportCutFill = true;
+      original.GriddedData.ReportCmv = false;
+      original.GriddedData.ReportMdp = true;
+      original.GriddedData.ReportPassCount = false;
+      original.GriddedData.ReportTemperature = true;
 
       var byteArrayOfOriginal = original.Write();
       var copyOfOrig = new GriddedReportResult();
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
 
       Assert.True(original.ReportType == copyOfOrig.ReportType, "Invalid report type");
       Assert.True(original.GriddedData.Rows.Count == copyOfOrig.GriddedData.Rows.Count, "Invalid number of rows");
-      Assert.Equal(original, copyOfOrig);
+      Assert.True(original.GriddedData.ReportCutFill == copyOfOrig.GriddedData.ReportCutFill, "Invalid ReportCutFull setting");
     }
 
     [Fact]
@@ -59,12 +59,12 @@ namespace VSS.TRex.Tests.Reports.Gridded
         Temperature = 8
       };
       original.GriddedData.Rows.Add(griddedDataRow);
-      original.GriddedData.ElevationReport = true;
-      original.GriddedData.CutFillReport = true;
-      original.GriddedData.CmvReport = false;
-      original.GriddedData.MdpReport = true;
-      original.GriddedData.PassCountReport = false;
-      original.GriddedData.TemperatureReport = true;
+      original.GriddedData.ReportElevation = true;
+      original.GriddedData.ReportCutFill = true;
+      original.GriddedData.ReportCmv = false;
+      original.GriddedData.ReportMdp = true;
+      original.GriddedData.ReportPassCount = false;
+      original.GriddedData.ReportTemperature = true;
 
       var byteArrayOfOriginal = original.Write();
       var copyOfOrig = new GriddedReportResult();
@@ -79,7 +79,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
 
       Assert.True(ReportType.Gridded == resultFromStream.ReportType, "Invalid report type");
       Assert.True(original.GriddedData.Rows.Count == resultFromStream.GriddedData.Rows.Count, "Invalid number of rows");
-      Assert.Equal(original, resultFromStream);
+      Assert.True(original.GriddedData.ReportCutFill == resultFromStream.GriddedData.ReportCutFill, "Invalid ReportCutFull setting");
     }
   }
 }

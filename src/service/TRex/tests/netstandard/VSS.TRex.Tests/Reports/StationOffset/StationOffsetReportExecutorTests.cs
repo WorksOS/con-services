@@ -8,7 +8,11 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.DI;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Reports.Gridded.GridFabric;
+using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
+using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -16,7 +20,78 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 {
   public class StationOffsetReportExecutorTests : IClassFixture<DITagFileFixture>
   {
-    private static Guid NewSiteModelGuid = Guid.NewGuid();
+    [Theory]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      true, false, true, false, true, false,
+      null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
+      1.0, 100, 200, new double[3] { -1, 0, 1 })]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      false, true, false, true, false, true,
+      null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
+      1.0, 100, 200, new double[3] { -1, 0, 1 })]
+    public void MapStationOffsetRequestToResult(
+      Guid projectUid, FilterResult filter,
+      bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
+      Guid? cutFillDesignUid, Guid alignmentDesignUid,
+      double crossSectionInterval, double startStation, double endStation, double[] offsets)
+    { 
+      var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
+        projectUid, filter,
+        reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
+        cutFillDesignUid, alignmentDesignUid,
+        crossSectionInterval, startStation, endStation, offsets);
+
+      var result = AutoMapperUtility.Automapper.Map<StationOffsetReportData_ApplicationService>(request);
+
+      Assert.Equal(request.ReportElevation, result.ReportElevation);
+      Assert.Equal(request.ReportCutFill, result.ReportCutFill);
+      Assert.Equal(request.ReportCmv, result.ReportCmv);
+      Assert.Equal(request.ReportMdp, result.ReportMdp);
+      Assert.Equal(request.ReportPassCount, result.ReportPassCount);
+      Assert.Equal(request.ReportTemperature, result.ReportTemperature);
+      Assert.Equal(0, result.NumberOfRows);
+      Assert.NotNull(result.Rows);
+    }
+
+    [Theory]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      true, false, true, false, true, false,
+      null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
+      1.0, 100, 200, new double[3] { -1, 0, 1 })]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      false, true, false, true, false, true,
+      null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
+      1.0, 100, 200, new double[3] { -1, 0, 1 })]
+    public void MapStationOffsetRequestToApplicationArgument(
+      Guid projectUid, FilterResult filter,
+      bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
+      Guid? cutFillDesignUid, Guid alignmentDesignUid,
+      double crossSectionInterval, double startStation, double endStation, double[] offsets)
+    {
+      var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
+        projectUid, filter,
+        reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
+        cutFillDesignUid, alignmentDesignUid,
+        crossSectionInterval, startStation, endStation, offsets);
+
+      var result = AutoMapperUtility.Automapper.Map<StationOffsetReportRequestArgument_ApplicationService>(request);
+
+      Assert.Equal(request.ProjectUid, result.ProjectID);
+      Assert.Null(result.Filters);
+      Assert.Equal(request.ReportElevation, result.ReportElevation);
+      Assert.Equal(request.ReportCutFill, result.ReportCutFill);
+      Assert.Equal(request.ReportCmv, result.ReportCmv);
+      Assert.Equal(request.ReportMdp, result.ReportMdp);
+      Assert.Equal(request.ReportPassCount, result.ReportPassCount);
+      Assert.Equal(request.ReportTemperature, result.ReportTemperature);
+      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesignUID);
+      Assert.Equal(request.AlignmentDesignUid, result.AlignmentDesignUid);
+      Assert.Equal(request.CrossSectionInterval, result.CrossSectionInterval);
+      Assert.Equal(request.StartStation, result.StartStation);
+      Assert.Equal(request.EndStation, result.EndStation);
+      Assert.Equal(request.Offsets.Length, result.Offsets.Length);
+      Assert.Equal(request.Offsets[2], result.Offsets[2]);
+    }
 
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
@@ -42,11 +117,6 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Theory]
-    [InlineData(null, null,
-      true, false, false, false, false, false,
-      null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
-      1.0, 100, 200, new double[3] {-1, 0, 1},
-      "ProjectUid must be provided")]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       false, false, false, false, false, false,
       null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
@@ -72,7 +142,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       null, "66e6bd66-54d8-4651-8907-88b15d81b2d7",
       1.0, 300, 200, new double[3] {-1, 0, 1},
       "Invalid station range for station and offset report.")]
-    public void StationOffsetTRexRequest_Unsuccesfull(
+    public void StationOffsetTRexRequest_Unsuccessful(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
       Guid? cutFillDesignUid, Guid alignmentDesignUid,

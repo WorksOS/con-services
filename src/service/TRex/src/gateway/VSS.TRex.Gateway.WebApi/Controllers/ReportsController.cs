@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,6 +12,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -37,16 +37,19 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Get station-offset report stream for the specified project, filter etc.
     /// </summary>
     /// <param name="reportStationOffsetRequest"></param>
+    /// <param name="reportDataValidationUtility"></param>
     /// <returns></returns>
     [Route("api/v1/report/stationoffset")]
     [HttpPost]
-    public FileResult PostStationOffsetReport([FromBody] CompactionReportStationOffsetTRexRequest reportStationOffsetRequest)
+    public FileResult PostStationOffsetReport(
+      [FromBody] CompactionReportStationOffsetTRexRequest reportStationOffsetRequest,
+      [FromServices] IReportDataValidationUtility reportDataValidationUtility)
     {
       Log.LogInformation($"{nameof(PostStationOffsetReport)}: {Request.QueryString}");
 
       reportStationOffsetRequest.Validate();
-      ValidateDataAvailable(reportStationOffsetRequest.ProjectUid, reportStationOffsetRequest.CutFillDesignUid, reportStationOffsetRequest.AlignmentDesignUid);
-      
+      reportDataValidationUtility.ValidateData((object) reportStationOffsetRequest);
+    
       var stationOffsetReportDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<StationOffsetReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
@@ -67,15 +70,18 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Get grid report for the specified project, filter etc.
     /// </summary>
     /// <param name="reportGridRequest"></param>
+    /// <param name="reportDataValidationUtility"></param>
     /// <returns></returns>
     [Route("api/v1/report/grid")]
     [HttpPost]
-    public FileResult PostGriddedReport([FromBody] CompactionReportGridTRexRequest reportGridRequest)
+    public FileResult PostGriddedReport(
+      [FromBody] CompactionReportGridTRexRequest reportGridRequest,
+      [FromServices] IReportDataValidationUtility reportDataValidationUtility)
     {
       Log.LogInformation($"{nameof(PostGriddedReport)}: {Request.QueryString}");
 
       reportGridRequest.Validate();
-      ValidateDataAvailable(reportGridRequest.ProjectUid, reportGridRequest.CutFillDesignUid, null);
+      reportDataValidationUtility.ValidateData((object)reportGridRequest);
 
       var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -93,30 +99,34 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return new FileStreamResult(new MemoryStream(griddedReportDataResult?.GriddedData), "application/octet-stream");
     }
 
-    private void ValidateDataAvailable(Guid projectUid, Guid? cutFillDesignUid, Guid? alignmentUid)
-    {
-      if (DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false) == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Project: {projectUid} is not found."));
-      }
+    //private void ValidateDataAvailable(object compactionReportTRexRequest)
+    //{
+    //  var request = compactionReportTRexRequest as CompactionReportTRexRequest;
+    //  if (DIContext.Obtain<ISiteModels>().GetSiteModel(request.ProjectUid, false) == null)
+    //  {
+    //    throw new ServiceException(HttpStatusCode.BadRequest,
+    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+    //        $"Project: {request.ProjectUid} is not found."));
+    //  }
 
-      if (cutFillDesignUid.HasValue &&
-          DIContext.Obtain<IDesignManager>().List(projectUid).Locate(cutFillDesignUid.Value) == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"CutFill design {cutFillDesignUid.Value} is not found."));
-      }
+    //  if (request.CutFillDesignUid.HasValue &&
+    //      DIContext.Obtain<IDesignManager>().List(request.ProjectUid).Locate(request.CutFillDesignUid.Value) == null)
+    //  {
+    //    throw new ServiceException(HttpStatusCode.BadRequest,
+    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+    //        $"CutFill design {request.CutFillDesignUid.Value} is not found."));
+    //  }
 
-      if (alignmentUid.HasValue &&
-          DIContext.Obtain<IAlignmentManager>().List(projectUid).Locate(alignmentUid.Value) == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Alignment design {alignmentUid} is not found."));
-      }
-    }
+    //  if (compactionReportTRexRequest.GetType() == typeof(CompactionReportStationOffsetTRexRequest))
+    //  {
+    //    var alignmentUid = (compactionReportTRexRequest as CompactionReportStationOffsetTRexRequest).AlignmentDesignUid;
+    //    if (DIContext.Obtain<IAlignmentManager>().List(request.ProjectUid).Locate(alignmentUid) == null)
+    //    {
+    //      throw new ServiceException(HttpStatusCode.BadRequest,
+    //        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+    //          $"Alignment design {alignmentUid} is not found."));
+    //    }
+    //  }
+    //}
   }
 }

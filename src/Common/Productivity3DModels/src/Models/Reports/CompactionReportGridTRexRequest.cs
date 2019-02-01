@@ -126,13 +126,9 @@ namespace VSS.Productivity3D.Models.Models.Reports
 
       if (Azimuth < 0 || Azimuth > (2 * Math.PI))
       {
-        // TODO (Aaron) Unreachable code; this check is already performed in the base class validation that occurs in the above base.Validate() call.
-        if (!(ReportPassCount || ReportTemperature || ReportMdp || ReportCutFill || ReportCmv || ReportElevation))
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              $"Azimuth must be in the range 0..2*PI radians. Actual value: {Azimuth}"));
-        }
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Azimuth must be in the range 0..2*PI radians. Actual value: {Azimuth}"));
       }
     }
   }

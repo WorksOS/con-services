@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -7,7 +6,7 @@ using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
-  public class StationOffsetRow : GriddedReportDataRow, IEquatable<StationOffsetRow>
+  public class StationOffsetRow : GriddedReportDataRow
   {
     public double Station { get; set; }
 
@@ -72,24 +71,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Station = reader.ReadDouble();
       Offset = reader.ReadDouble();
     }
-
-    public bool Equals(StationOffsetRow other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-          Station.Equals(other.Station) &&
-          Offset.Equals(other.Offset);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetRow)obj);
-    }
-
+    
     public override int GetHashCode()
     {
       unchecked

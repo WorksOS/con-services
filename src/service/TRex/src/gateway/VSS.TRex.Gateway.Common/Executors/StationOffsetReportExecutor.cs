@@ -6,6 +6,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
@@ -41,40 +42,18 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request.Filter, siteModel);
       
       StationOffsetReportRequest_ApplicationService tRexRequest = new StationOffsetReportRequest_ApplicationService();
-
-      StationOffsetReportRequestResponse_ApplicationService response = tRexRequest.Execute(new StationOffsetReportRequestArgument_ApplicationService
-      {
-        ProjectID = siteModel.ID,
-        Filters = new FilterSet(filter),
-        ReferenceDesignUID = request.CutFillDesignUid ?? Guid.Empty, // only present if ReportCutFill required
-        ReportElevation = request.ReportElevation,
-        ReportCutFill = request.ReportCutFill,
-        ReportCmv = request.ReportCmv,
-        ReportMdp = request.ReportMdp,
-        ReportPassCount = request.ReportPassCount,
-        ReportTemperature = request.ReportTemperature,
-        AlignmentDesignUid = request.AlignmentDesignUid,
-        CrossSectionInterval = request.CrossSectionInterval,
-        StartStation = request.StartStation,
-        EndStation = request.EndStation,
-        Offsets = request.Offsets
-      });
+      var stationOffsetReportRequestArgument_ApplicationService = AutoMapperUtility.Automapper.Map<StationOffsetReportRequestArgument_ApplicationService>(request);
+      stationOffsetReportRequestArgument_ApplicationService.Filters = new FilterSet(filter);
+      
+      StationOffsetReportRequestResponse_ApplicationService response = tRexRequest.Execute(stationOffsetReportRequestArgument_ApplicationService);
 
       var result = new StationOffsetReportResult()
       {
         ReturnCode = response.ReturnCode,
         ReportType = ReportType.StationOffset,
-        GriddedData = new StationOffsetReportData_ApplicationService()
-        {
-          ElevationReport = request.ReportElevation,
-          CutFillReport = request.ReportCutFill,
-          CmvReport = request.ReportCmv,
-          MdpReport = request.ReportMdp,
-          PassCountReport = request.ReportPassCount,
-          TemperatureReport = request.ReportTemperature,
-          NumberOfRows = response.StationOffsetReportDataRowList.Count
-        }
+        GriddedData = AutoMapperUtility.Automapper.Map<StationOffsetReportData_ApplicationService>(request)
       };
+      result.GriddedData.NumberOfRows = response.StationOffsetReportDataRowList.Count;
       result.GriddedData.Rows.AddRange(response.StationOffsetReportDataRowList);
       return new GriddedReportDataResult(result.Write());
     }

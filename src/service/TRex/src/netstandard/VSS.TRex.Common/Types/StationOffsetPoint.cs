@@ -1,12 +1,11 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 
 namespace VSS.TRex.Common.Types
 {
   /// <summary>
   /// The argument to be supplied to the grid request
   /// </summary>
-  public class StationOffsetPoint : IEquatable<StationOffsetPoint>
+  public class StationOffsetPoint 
   {
     public double Station { get; set; }
 
@@ -59,24 +58,6 @@ namespace VSS.TRex.Common.Types
       Offset = reader.ReadDouble();
       Northing = reader.ReadDouble();
       Easting = reader.ReadDouble();
-    }
-
-    public bool Equals(StationOffsetPoint other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return Station.Equals(other.Station) &&
-             Offset.Equals(other.Offset) &&
-             Northing.Equals(other.Northing) &&
-             Easting.Equals(other.Easting);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetPoint)obj);
     }
 
     public override int GetHashCode()

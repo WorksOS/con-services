@@ -79,8 +79,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
 
     /// <summary>
-    /// For each point in the list, get the subgrid and extract productionData at the station/offset i.e pointOfInterest
-    ///    This could be optimized to get any poi from each subgrid before disposal
+    /// For each point in the list, get the sub grid and extract productionData at the station/offset i.e pointOfInterest
+    ///    This could be optimized to get any poi from each sub grid before disposal
     /// </summary>
     private StationOffsetReportRequestResponse_ClusterCompute GetProductionData()
     {
@@ -91,6 +91,16 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       {
         Log.LogError($"Failed to locate site model {requestArgument.ProjectID}");
         return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.NoSuchDataModel};
+      }
+
+      IDesign cutFillDesign = null;
+      if (requestArgument.ReferenceDesignUID != Guid.Empty)
+      {
+        cutFillDesign = siteModel.Designs.Locate(requestArgument.ReferenceDesignUID);
+        if (cutFillDesign == null)
+        {
+          throw new ArgumentException($"Design {requestArgument.ReferenceDesignUID} not a recognized design in project {requestArgument.ProjectID}");
+        }
       }
 
       ISubGridTreeBitMask existenceMap = siteModel.ExistenceMap;
@@ -128,7 +138,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         requestors[0].CellOverrideMask = cellOverrideMask;
 
         // using the cell address get the index of cell in clientGrid
-        ClientCellProfileLeafSubgrid clientGrid = new ClientCellProfileLeafSubgrid();
+        var clientGrid = DIContext.Obtain<IClientLeafSubGridFactory>().GetSubGrid(GridDataType.CellProfile) as ClientCellProfileLeafSubgrid;
         ServerRequestResult request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true, clientGrid);
         if (request != ServerRequestResult.NoError)
         {
@@ -137,7 +147,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           continue;
         }
 
-        var hydratedPoint = ExtractRequiredValues(requestArgument, point, clientGrid, cellX, cellY);
+        var hydratedPoint = ExtractRequiredValues(cutFillDesign, point, clientGrid, cellX, cellY);
         result.StationOffsetRows.Add(hydratedPoint);
       }
 
@@ -146,8 +156,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     }
 
 
-    private StationOffsetRow ExtractRequiredValues(StationOffsetReportRequestArgument_ClusterCompute requestArgument,
-      StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, uint cellX, uint cellY)
+    private StationOffsetRow ExtractRequiredValues(IDesign cutFillDesign, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, uint cellX, uint cellY)
     {
       clientGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
       ClientCellProfileLeafSubgridRecord cell = clientGrid.Cells[cellX, cellY];
@@ -157,12 +166,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       if (requestArgument.ReferenceDesignUID != Guid.Empty)
       {
-        IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID).Designs.Locate(requestArgument.ReferenceDesignUID);
-        if (cutFillDesign == null)
-        {
-          throw new ArgumentException($"Design {requestArgument.ReferenceDesignUID} not a recognized design in project {requestArgument.ProjectID}");
-        }
-
         cutFillDesign.GetDesignHeights(requestArgument.ProjectID, clientGrid.OriginAsCellAddress(),
           clientGrid.CellSize, out designHeights, out var errorCode);
 

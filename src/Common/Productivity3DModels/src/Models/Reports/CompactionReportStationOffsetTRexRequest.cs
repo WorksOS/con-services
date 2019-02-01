@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     {
       base.Validate();
 
-      if (!Guid.TryParseExact(AlignmentDesignUid.ToString(), "D", out Guid _) || AlignmentDesignUid == Guid.Empty)
+      if (AlignmentDesignUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -9,7 +9,10 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.DI;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Reports.Gridded;
+using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -17,14 +20,85 @@ namespace VSS.TRex.Tests.Reports.Gridded
 {
   public class GriddedReportExecutorTests : IClassFixture<DITagFileFixture>
   {
-    private static Guid NewSiteModelGuid = Guid.NewGuid();
+    [Theory]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      true, false, true, false, true, false,
+      null,
+      null, GridReportOption.Automatic,
+      800000, 400000, 800001, 400001, 2)]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      false, true, false, true, false, true,
+      null,
+      null, GridReportOption.Automatic,
+      800000, 400000, 800001, 400001, 2)]
+    public void MapGriddedRequestToResult(
+      Guid projectUid, FilterResult filter,
+      bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
+      Guid? cutFillDesignUid,
+      double? gridInterval, GridReportOption gridReportOption,
+      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
+    {
+      var request = CompactionReportGridTRexRequest.CreateRequest(
+        projectUid, filter,
+        reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
+        cutFillDesignUid,
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+
+      var result = AutoMapperUtility.Automapper.Map<GriddedReportData>(request);
+
+      Assert.Equal(request.ReportElevation, result.ReportElevation);
+      Assert.Equal(request.ReportCutFill, result.ReportCutFill);
+      Assert.Equal(request.ReportCmv, result.ReportCmv);
+      Assert.Equal(request.ReportMdp, result.ReportMdp);
+      Assert.Equal(request.ReportPassCount, result.ReportPassCount);
+      Assert.Equal(request.ReportTemperature, result.ReportTemperature);
+      Assert.Equal(0, result.NumberOfRows);
+      Assert.NotNull(result.Rows);
+    }
+
+    [Theory]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      true, false, true, false, true, false,
+      null,
+      null, GridReportOption.Automatic,
+      800000, 400000, 800001, 400001, 2)]
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
+      false, true, false, true, false, true,
+      null,
+      null, GridReportOption.Automatic,
+      800000, 400000, 800001, 400001, 2)]
+    public void MapGriddedRequestToArgument(
+      Guid projectUid, FilterResult filter,
+      bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
+      Guid? cutFillDesignUid,
+      double? gridInterval, GridReportOption gridReportOption,
+      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
+    {
+      var request = CompactionReportGridTRexRequest.CreateRequest(
+        projectUid, filter,
+        reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
+        cutFillDesignUid,
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+
+      var result = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
+
+      Assert.Equal(request.ProjectUid, result.ProjectID);
+      Assert.Null(result.Filters);
+      Assert.Equal(request.CutFillDesignUid ?? Guid.Empty, result.ReferenceDesignUID);
+      Assert.Equal(request.ReportElevation, result.ReportElevation);
+      Assert.Equal(request.ReportCutFill, result.ReportCutFill);
+      Assert.Equal(request.ReportCmv, result.ReportCmv);
+      Assert.Equal(request.ReportMdp, result.ReportMdp);
+      Assert.Equal(request.ReportPassCount, result.ReportPassCount);
+      Assert.Equal(request.ReportTemperature, result.ReportTemperature);
+    }
 
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, false, false, false, false,
       null, 
       null, GridReportOption.Automatic,
-      800000, 400000, 800001, 400001, 10)]
+      800000, 400000, 800001, 400001, 4)]
     public void GriddedTRexRequest_Successful(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
@@ -41,13 +115,13 @@ namespace VSS.TRex.Tests.Reports.Gridded
     }
 
     [Theory]
-    [InlineData(null, null,
+    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, false, false, false, false,
       null,
       null, GridReportOption.Automatic,
-      800000, 400000, 800001, 400001, 10,
-      "ProjectUid must be provided")]
-    public void GriddedTRexRequest_Unsuccesfull(
+      800000, 400000, 800001, 400001, 66,
+      "Azimuth must be in the range 0..2*PI radians. Actual value: 66")]
+    public void GriddedTRexRequest_Unsuccessful(
       Guid projectUid, FilterResult filter,
       bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
       Guid? cutFillDesignUid,
@@ -60,6 +134,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
+
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.ValidationError, ex.GetResult.Code);
@@ -84,7 +159,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
       double startEasting = 400000;
       double endNorthing = 800010;
       double endEasting = 400010;
-      double azimuth = 10;
+      double azimuth = 4;
 
       var request = CompactionReportGridTRexRequest.CreateRequest(
         projectUid, filter,
@@ -95,7 +170,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
 
       var executor = RequestExecutorContainer
         .Build<GriddedReportExecutor>(DIContext.Obtain<IConfigurationStore>(),
-          TRex.DI.DIContext.Obtain<ILoggerFactory>(),
+          DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain <IServiceExceptionHandler>());
       var result = Assert.Throws<ServiceException>(() => executor.Process(request));
       Assert.Equal(HttpStatusCode.BadRequest, result.Code);

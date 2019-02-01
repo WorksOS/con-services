@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
-  public class OffsetStatistics_ApplicationService : GriddedReportDataRow, IEquatable<OffsetStatistics_ApplicationService>
+  public class OffsetStatistics_ApplicationService : GriddedReportDataRow
   {
     public new void Write(BinaryWriter writer)
     {
@@ -34,22 +33,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     {
       base.FromBinary(reader);
     }
-
-    public bool Equals(OffsetStatistics_ApplicationService other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return true;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((OffsetStatistics_ApplicationService)obj);
-    }
-
+    
     public override int GetHashCode()
     {
       unchecked

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
@@ -11,7 +10,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class StationOffsetReportDataRow_ApplicationService : IEquatable<StationOffsetReportDataRow_ApplicationService>
+  public class StationOffsetReportDataRow_ApplicationService
   {
     public double Station { get; set; }
 
@@ -162,37 +161,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Maximum.FromBinary(reader);
       Average.FromBinary(reader);
     }
-
-    public bool Equals(StationOffsetReportDataRow_ApplicationService other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return Station.Equals(other.Station) &&
-             ((Offsets == null && other.Offsets == null) ||
-              (!(Offsets == null || other.Offsets == null) &&
-                Offsets.Count == other.Offsets.Count) &&
-                Offsets.SequenceEqual(other.Offsets) 
-             ) &&
-             ((Minimum == null && other.Minimum == null) ||
-              (Minimum.Equals(other.Minimum))
-             ) &&
-             ((Maximum == null && other.Maximum == null) ||
-              (Maximum.Equals(other.Maximum))
-             ) &&
-             ((Average == null && other.Average == null) ||
-              (Average.Equals(other.Average))
-             )
-        ;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StationOffsetReportDataRow_ApplicationService)obj);
-    }
-
+    
     public override int GetHashCode()
     {
       unchecked

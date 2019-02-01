@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.Reports;
@@ -16,7 +15,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
   /// </summary>
   public class StationOffsetReportRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute, StationOffsetReportRequestResponse_ClusterCompute> 
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<StationOffsetReportRequestComputeFunc_ClusterCompute>();
 
     public StationOffsetReportRequestResponse_ClusterCompute Invoke(StationOffsetReportRequestArgument_ClusterCompute arg)
     {

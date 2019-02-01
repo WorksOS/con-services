@@ -23,12 +23,11 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 
     public void LoadStationOffsets(List<StationOffsetRow> stationOffsets)
     {
-      var queryStations =
-        from stationOffsetRow in stationOffsets
-        group stationOffsetRow by stationOffsetRow.Station
-        into newGroup
-        orderby newGroup.Key
-        select newGroup;
+      var queryStations = 
+        stationOffsets
+        .GroupBy(stationOffsetRow => stationOffsetRow.Station)
+        .OrderBy(newGroup => newGroup.Key);
+
       foreach (var stationGroup in queryStations)
       {
         StationOffsetReportDataRowList.Add(new StationOffsetReportDataRow_ApplicationService
@@ -70,7 +69,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       ReturnCode = (ReportReturnCode)reader.ReadInt();
       ReportType = (ReportType)reader.ReadInt();
       var stationOffsetRowsCount = reader.ReadInt();
-      StationOffsetReportDataRowList = new List<StationOffsetReportDataRow_ApplicationService>();
+      StationOffsetReportDataRowList = new List<StationOffsetReportDataRow_ApplicationService>(stationOffsetRowsCount);
       for (int i = 0; i < stationOffsetRowsCount; i++)
       {
         var row = new StationOffsetReportDataRow_ApplicationService();
