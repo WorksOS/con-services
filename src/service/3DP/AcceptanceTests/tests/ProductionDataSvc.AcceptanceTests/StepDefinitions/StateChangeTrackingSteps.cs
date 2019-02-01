@@ -65,7 +65,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       if (firstDotMachineStatus.MachineStatuses.Length < 1)
       {
-        Assert.True(false, string.Format("Unable to get machine status {0}", firstDotMachineStatus));
+        Assert.True(false, $"Unable to get machine status {firstDotMachineStatus}");
       }
 
       var actualObj = JObject.FromObject(firstDotMachineStatus);

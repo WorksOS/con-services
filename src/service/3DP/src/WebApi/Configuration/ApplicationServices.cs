@@ -94,7 +94,6 @@ namespace VSS.Productivity3D.WebApi
         x.UseDashboard(); //View dashboard at http://localhost:5000/cap
       });
       */
-      serviceCollection = services;
     }
   }
 }

@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jaeger" Version="0.2.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.5.0" />
+    <PackageReference Include="NewRelic.Agent.Api" Version="8.10.51" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
+    <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
+
+
+</Project>

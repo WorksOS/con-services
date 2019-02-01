@@ -53,6 +53,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
             "File data cannot be null"));
       }
 
+      if ((int)LineworkUnits == DxfFileRequest.NOT_DEFINED)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Invalid request, DxfUnits must be provided"));
+      }
+
       if (!Enum.IsDefined(typeof(TVLPDDistanceUnits), LineworkUnits))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

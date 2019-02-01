@@ -3,25 +3,6 @@ using System.Collections.Generic;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
-  public class EditDataRequest : RequestBase
-  {
-    /// <summary>
-    /// Project ID. Required.
-    /// </summary>
-    public long projectId { get; set; }
-
-    /// <summary>
-    /// Flag which determines if the edit is applied or undone. Required.
-    /// </summary>
-    public bool undo { get; set; }
-
-    /// <summary>
-    /// Details of the edit to apply or undo. Required for applying an edit and for a single undo.
-    /// If null and undo is true then all edits to the production data for the project will be undone.
-    /// </summary>
-    public ProductionDataEdit dataEdit { get; set; }
-  }
-
   public class EditDataResult : ResponseBase
   {
     public EditDataResult()

@@ -5,10 +5,8 @@ $artifactsWorkingDir = "$artifactsDir/webapi"
 
 Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
 
-IF (Test-Path -path $artifactsDir) {
-    Remove-Item -Force -Recurse -Path $artifactsDir -ErrorAction Ignore
-    New-Item -ItemType directory "$artifactsWorkingDir/logs" | out-null
-}
+IF (Test-Path -Path $artifactsDir) { Get-ChildItem $artifactsDir -Include *.* -Recurse | Remove-Item }
+IF (-NOT (Test-Path -Path "$artifactsWorkingDir/logs")) { New-Item -ItemType directory "$artifactsWorkingDir/logs" | out-null -ErrorAction Ignore }
 
 Invoke-Expression "dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net471"
 
