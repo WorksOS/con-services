@@ -4,7 +4,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/Service/VSS.Productivity3D.3DNow/VSS.Productivity3D.3DNow.csproj -o /build/artifacts/3DNow --framework netcoreapp2.1 --runtime linux-x64
+RUN dotnet publish ./$SERVICE_PATH/Service/VSS.Productivity3D.3DNow/VSS.Productivity3D.Now3D.csproj -o /build/artifacts/3DNow --framework netcoreapp2.1 --runtime linux-x64
 
 FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-runtime
 
@@ -33,4 +33,4 @@ EXPOSE 80
 COPY --from=builder /build/artifacts/3DNow .
 
 
-ENTRYPOINT ["dotnet", "VSS.Productivity3D.3DNow.dll"]
+ENTRYPOINT ["dotnet", "VSS.Productivity3D.Now3D.dll"]
