@@ -40,7 +40,6 @@ namespace VSS.TRex.Profiling.Executors
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     private readonly Guid DesignUid;
-    private bool ReturnAllPassesAndLayers;
 
     private ISubGridSegmentCellPassIterator CellPassIterator;
     private ISubGridSegmentIterator SegmentIterator;
@@ -65,7 +64,6 @@ namespace VSS.TRex.Profiling.Executors
       NEECoords = nEECoords;
       Filters = filters;
       DesignUid = designUid;
-      ReturnAllPassesAndLayers = returnAllPassesAndLayers;
       VolumeType = volumeType;
     }
 
@@ -115,7 +113,7 @@ namespace VSS.TRex.Profiling.Executors
           if (NEECoords.Length > 1)
             Log.LogInformation($"#In#: DataModel {ProjectID}, Vertices:{NEECoords[0]} -> {NEECoords[1]}");
           else
-            Log.LogInformation($"#In#: DataModel {ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
+            Log.LogWarning($"#In#: DataModel {ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
 
           ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ProjectID);
 
@@ -134,15 +132,13 @@ namespace VSS.TRex.Profiling.Executors
             return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
           }
 
-          ICellSpatialFilter CellFilter = Filters.Filters[0].SpatialFilter;
-          ICellPassAttributeFilter PassFilter = Filters.Filters[0].AttributeFilter;
-
           FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
-          PopulationControl.PreparePopulationControl(ProfileTypeRequired, PassFilter);
+          PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);
 
           IDesign design = null;
           if (DesignUid != Guid.Empty)
           {
+
             design = SiteModel.Designs.Locate(DesignUid);
 
             if (design == null)
@@ -165,7 +161,7 @@ namespace VSS.TRex.Profiling.Executors
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
-            SetupForCellPassStackExamination(PassFilter);
+            SetupForCellPassStackExamination(Filters.Filters[0].AttributeFilter);
 
             Log.LogInformation("Building lift profile");
             if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))

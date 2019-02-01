@@ -47,11 +47,10 @@ namespace VSS.TRex.Designs
       {
         ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
-        IDesigns designs = null;
+        IDesigns designs = DIContext.Obtain<IDesigns>();
 
         if (ms != null)
         {
-          designs = DIContext.Obtain<IDesigns>();
           using (ms)
           {
             designs.FromStream(ms);
