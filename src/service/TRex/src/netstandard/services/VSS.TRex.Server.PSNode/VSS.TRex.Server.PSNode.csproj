@@ -165,9 +165,6 @@
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj">
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj">
-      <Private>true</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
       <Private>true</Private>
     </ProjectReference>
