@@ -21,8 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
         {
             if (valueType.Type == TAGDataType.t8bitUInt && 
                 (value == (byte)ElevationMappingMode.LatestElevation || 
-                 value == (byte)ElevationMappingMode.MinimumElevation || 
-                 value == (byte)ElevationMappingMode.MaximumElevation))
+                 value == (byte)ElevationMappingMode.MinimumElevation))
             {
                 valueSink.SetElevationMappingModeState((ElevationMappingMode)value);
                 return true;

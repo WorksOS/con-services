@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       Assert.True(parentSubgrid.IsEmpty(), "Parent node subgrid not empty after creation");
 
       // Fill the entirety of the parent subgrid with new child subgrids
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
@@ -79,14 +79,14 @@ namespace VSS.TRex.Tests.SubGridTrees
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
 
       // Fill the entirety of the parent subgrid with new child subgrids using SetSubGrid
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
       }
 
       // Iterate over all subgrids deleting them one at a time
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.DeleteSubgrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension));
       }
@@ -118,14 +118,14 @@ namespace VSS.TRex.Tests.SubGridTrees
 
 
       // Fill the entirety of the parent subgrid with new child subgrids using SetSubGrid
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
       }
 
       Assert.False(parentSubgrid.IsEmpty(), "Parent node subgrid is empty after adding subgrids to parent");
-      Assert.Equal((uint) parentSubgrid.CountChildren(), SubGridTreeConsts.CellsPerSubgrid);
+      Assert.Equal((uint) parentSubgrid.CountChildren(), SubGridTreeConsts.CellsPerSubGrid);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
 
       // Fill half of the parent subgrid with new child subgrids using SetSubGrid
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid / 2; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid / 2; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
@@ -161,10 +161,10 @@ namespace VSS.TRex.Tests.SubGridTrees
         return SubGridProcessNodeSubGridResult.OK;
       });
 
-      Assert.Equal((uint) count, SubGridTreeConsts.CellsPerSubgrid / 2);
+      Assert.Equal((uint) count, SubGridTreeConsts.CellsPerSubGrid / 2);
 
       // Fill all of the parent subgrid with new child subgrids using SetSubGrid
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
@@ -178,7 +178,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         return SubGridProcessNodeSubGridResult.OK;
       });
 
-      Assert.Equal((uint) count, SubGridTreeConsts.CellsPerSubgrid);
+      Assert.Equal((uint) count, SubGridTreeConsts.CellsPerSubGrid);
     }
 
     [Fact]
@@ -190,7 +190,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
 
       // Fill all of the parent subgrid with new child subgrids using SetSubGrid
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
@@ -216,7 +216,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
 
       // Fill all of the parent subgrid with new child subgrids using SetSubGrid
-      for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
       {
         parentSubgrid.SetSubGrid((byte) (i / SubGridTreeConsts.SubGridTreeDimension), (byte) (i % SubGridTreeConsts.SubGridTreeDimension),
           new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit;
 using Xunit.Gherkin.Quick;
@@ -7,15 +8,20 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("CoordinateConversion.feature")]
-  public class CoordinateConversionSteps : FeaturePostRequestBase<CoordinateConversionRequest, CoordinateConversionResult>
+  public class CoordinateConversionSteps : FeaturePostRequestBase<JObject, CoordinateConversionResult>
   {
     [And(@"the coordinate conversion type ""(.*)""")]
     public void GivenTheCoordinateConversionType(string conversionType)
     {
-      if (conversionType == "LatLonToNorthEast")
-        PostRequestHandler.CurrentRequest.conversionType = TwoDCoordinateConversionType.LatLonToNorthEast;
-      if (conversionType == "NorthEastToLatLon")
-        PostRequestHandler.CurrentRequest.conversionType = TwoDCoordinateConversionType.NorthEastToLatLon;
+      switch (conversionType)
+      {
+        case "LatLonToNorthEast":
+          PostRequestHandler.CurrentRequest["conversionType"] = (int)TwoDCoordinateConversionType.LatLonToNorthEast;
+          break;
+        case "NorthEastToLatLon":
+          PostRequestHandler.CurrentRequest["conversionType"] = (int)TwoDCoordinateConversionType.NorthEastToLatLon;
+          break;
+      }
     }
 
     [And(@"these coordinates")]
@@ -32,7 +38,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         });
       }
 
-      PostRequestHandler.CurrentRequest.conversionCoordinates = coordinates.ToArray();
+      PostRequestHandler.CurrentRequest["conversionCoordinates"] = JToken.FromObject(coordinates.ToArray());
     }
 
     [Then(@"the result should be")]

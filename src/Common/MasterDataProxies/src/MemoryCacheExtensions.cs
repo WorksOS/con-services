@@ -22,7 +22,9 @@ namespace VSS.MasterData.Proxies
       const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
 
       string cacheLife = configurationStore.GetValueString(cacheLifeKey);
-      log.LogInformation($"{cacheLifeKey}: {cacheLife}");
+
+      if(log.IsEnabled(LogLevel.Trace)) 
+        log.LogTrace($"Cache Life: {cacheLifeKey}: {cacheLife}");
 
       if (string.IsNullOrEmpty(cacheLife))
       {

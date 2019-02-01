@@ -22,10 +22,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public int Count => Items?.Count ?? 0;
 
-    public ISubGridCellPassesDataSegment this[int index]
-    {
-      get { return Items[index]; }
-    }
+    public ISubGridCellPassesDataSegment this[int index] => Items[index];
 
     public int Add(ISubGridCellPassesDataSegment item)
     {

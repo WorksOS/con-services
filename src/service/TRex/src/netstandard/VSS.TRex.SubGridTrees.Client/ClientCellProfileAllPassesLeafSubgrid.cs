@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override void Clear()
     {
-      Array.Copy(NullCells, Cells, SubGridTreeConsts.CellsPerSubgrid);
+      Array.Copy(NullCells, Cells, SubGridTreeConsts.CellsPerSubGrid);
       TopLayerOnly = false;
     }
 

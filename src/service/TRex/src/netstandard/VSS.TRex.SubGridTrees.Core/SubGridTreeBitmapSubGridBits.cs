@@ -26,7 +26,7 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// The code used in serialized bit masks to indicate the number of set bits is in the range 
-        /// 1..SubGridTreeConsts.CellsPerSubgrid and so are explicitly written
+        /// 1..SubGridTreeConsts.CellsPerSubGrid and so are explicitly written
         /// </summary>
         private const byte Serialisation_ArbitraryBitsSet = 2;
 

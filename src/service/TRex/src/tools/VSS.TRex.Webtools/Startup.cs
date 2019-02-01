@@ -71,18 +71,13 @@ namespace VSS.TRex.Webtools
       //services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Gateway");
 
       //Set up logging etc. for TRex
-      var serviceProvider = services.BuildServiceProvider();
-      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      Logging.Logger.Inject(loggerFactory);
-      DIContext.Inject(serviceProvider);
+      DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
-      
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
-      serviceProvider = services.BuildServiceProvider();
-      DIContext.Inject(serviceProvider);
+      DIContext.Inject(services.BuildServiceProvider());
 
       services.AddTransient<ISiteModelMetadata>(factory => new SiteModelMetadata()); 
       services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
@@ -111,8 +106,7 @@ namespace VSS.TRex.Webtools
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
       services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       
-      serviceProvider = services.BuildServiceProvider();
-      DIContext.Inject(serviceProvider);
+      DIContext.Inject(services.BuildServiceProvider());
 
       // In production, the Angular files will be served from this directory
       services.AddSpaStaticFiles(configuration =>

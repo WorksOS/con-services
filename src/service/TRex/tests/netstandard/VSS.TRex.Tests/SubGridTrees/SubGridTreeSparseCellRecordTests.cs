@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             ISubGrid leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
-            SubgridTreeSparseCellRecord sparseCell = new SubgridTreeSparseCellRecord(15, 15, leafSubgrid);
+            SubGridTreeSparseCellRecord sparseCell = new SubGridTreeSparseCellRecord(15, 15, leafSubgrid);
 
             Assert.True(sparseCell.CellX == 15 && sparseCell.CellY == 15 && sparseCell.Cell == leafSubgrid,
                           "Sparse subgrid tree cell record failed to initialise");
