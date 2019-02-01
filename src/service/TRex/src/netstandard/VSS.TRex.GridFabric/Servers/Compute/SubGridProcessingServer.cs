@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Models.Servers;
 
@@ -14,7 +13,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// </summary>
     public class SubGridProcessingServer : ImmutableCacheComputeServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridProcessingServer>();
 
         public override void ConfigureTRexGrid(IgniteConfiguration cfg)
         {
@@ -32,7 +31,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         }
 
         /// <summary>
-        /// Sets up the local server configuration to reflect the requirements of subgrid processing
+        /// Sets up the local server configuration to reflect the requirements of sub grid processing
         /// </summary>
         public void SetupServerSpecificConfiguration()
         {
