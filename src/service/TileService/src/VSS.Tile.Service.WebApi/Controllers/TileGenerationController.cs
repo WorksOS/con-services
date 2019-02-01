@@ -58,7 +58,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing DXF file name"));
       }
-      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, CustomHeaders()));
+      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, CustomHeaders());
     }
 
     /// <summary>
