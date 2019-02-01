@@ -1,33 +1,32 @@
 ﻿using System;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("ProjectStatistics.feature")]
-  public class ProjectStatisticsSteps : FeaturePostRequestBase<StatisticsParameters, ProjectStatistics>
+  public class ProjectStatisticsSteps : FeaturePostRequestBase<JObject, ProjectStatistics>
   {
     [And(@"a Project Statistics project id (.*)")]
     public void GivenAProjectStatisticsProjectId(long pId)
     {
-      PostRequestHandler.CurrentRequest = new StatisticsParameters { projectId = pId, excludedSurveyedSurfaceIds = new long[] { } };
+      PostRequestHandler.CurrentRequest["projectId"] = JToken.FromObject(pId);
+      PostRequestHandler.CurrentRequest["excludedSurveyedSurfaceIds"] = JToken.FromObject(new long[] { });
+      //PostRequestHandler.CurrentRequest = new StatisticsParameters { projectId = pId, excludedSurveyedSurfaceIds = new long[] { } };
     }
 
     [And(@"I decide to exclude surveyed surfaces ""(.*)""")]
     public void GivenIDecideToExcludeSurveyedSurfaces(string surveyedSurfaceIds)
     {
-      var ids = Array.ConvertAll(surveyedSurfaceIds.Split(','), long.Parse);
-
-      PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = ids;
+      PostRequestHandler.CurrentRequest["excludedSurveyedSurfaceIds"] = JToken.FromObject(Array.ConvertAll(surveyedSurfaceIds.Split(','), long.Parse));
     }
 
     [And(@"I decide to include surveyed surfaces ""(.*)""")]
     public void GivenIDecideToIncludeSurveyedSurfaces(string surveyedSurfaceIds)
     {
-      var ids = Array.ConvertAll(surveyedSurfaceIds.Split(','), long.Parse);
-
-      PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = ids;
+      PostRequestHandler.CurrentRequest["excludedSurveyedSurfaceIds"] = JToken.FromObject(Array.ConvertAll(surveyedSurfaceIds.Split(','), long.Parse));
     }
 
     [Then(@"I should get the following project statistics:")]
