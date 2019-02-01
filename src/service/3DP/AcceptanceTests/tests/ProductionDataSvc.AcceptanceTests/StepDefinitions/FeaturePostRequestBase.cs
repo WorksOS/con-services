@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Gherkin.Ast;
+﻿using Gherkin.Ast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
@@ -11,7 +9,7 @@ using Feature = Xunit.Gherkin.Quick.Feature;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  public abstract class FeaturePostRequestBase<TRequest, TResponse> : Feature where TRequest : RequestBase, new() where TResponse : ResponseBase
+  public abstract class FeaturePostRequestBase<TRequest, TResponse> : Feature where TRequest : JObject, new() where TResponse : ResponseBase
   {
     protected Poster<TRequest, TResponse> PostRequestHandler;
 
@@ -96,15 +94,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
     }
-
-    private static void TrySetProperty(object obj, string property, object value)
+    
+    /// <summary>
+    /// Adds and sets a new property on the JObject receiver.
+    /// </summary>
+    private static void TrySetProperty(JObject obj, string property, string value)
     {
-      var prop = obj.GetType().GetProperty(property, BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance);
-
-      if (prop != null && prop.CanWrite)
-      {
-        prop.SetValue(obj, Convert.ChangeType(value, prop.PropertyType));
-      }
+      // All inputs are strings despite their type, because their origin is a .feature file.
+      obj[property] = value;
     }
 
     protected void AssertObjectsAreEqual<T>(T expectedResult)
