@@ -13,7 +13,7 @@ using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Push
+namespace VSS.Productivity3D.Now3D
 {
   public class Startup : BaseStartup
   {
@@ -29,10 +29,12 @@ namespace VSS.Productivity3D.Push
 
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-     services.AddMvc();
+      services.AddMvc();
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<IProjectListProxy, ProjectListProxy>();
+      services.AddTransient<IFileListProxy, FileListProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();
@@ -43,7 +45,7 @@ namespace VSS.Productivity3D.Push
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      app.UseFilterMiddleware<TIDAuthentication>();
+      app.UseFilterMiddleware<Now3DAuthentication>();
       app.UseMvc();
     }
   }

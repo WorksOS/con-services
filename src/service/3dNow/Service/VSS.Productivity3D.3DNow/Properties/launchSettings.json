@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "VSS.Productivity3D.Push": {
+    "VSS.Productivity3D.Now3D": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
