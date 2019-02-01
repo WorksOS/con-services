@@ -9,7 +9,7 @@
     public const short NO_MDP = short.MaxValue;
     public const ushort NO_TEMPERATURE = 4096;
     public const ushort NO_PASSCOUNT = ushort.MinValue;
-    public const float NULL_SINGLE = float.MaxValue;
+    public const float NULL_SINGLE = 3.4E38F; // The value must be the same as defined in the DTXModelDecls.pas od the Raprtor's source code instead of the float.MaxValue.
     public const ushort NO_SPEED = ushort.MaxValue;
     public const double VOLUME_CHANGE_TOLERANCE = 0.0;
   }
