@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { Elevation = elevation }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Elevation = elevation }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Elevation = elevation }, request);
 #endif
       Assert.AreEqual(expectedResult, row.ShouldSerializeElevation());
     }
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { CutFill = cutFill }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { CutFill = cutFill }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { CutFill = cutFill }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeCutFill());
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { CMV = cmv }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Cmv = cmv }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Cmv = cmv }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeCMV());
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { MDP = mdp }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Mdp = mdp }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Mdp = mdp }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeMDP());
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { PassCount = passCount }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { PassCount = passCount }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { PassCount = passCount }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializePassCount());
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { Temperature = temperature }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Temperature = temperature }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Temperature = temperature }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeTemperature());
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { MDP = mdp }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Mdp = mdp }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Mdp = mdp }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.MDP);
@@ -136,7 +136,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { CMV = cmv }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Cmv = cmv }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Cmv = cmv }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.CMV);
@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 #if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { Temperature = temperature }, request);
 #else
-      var row = GridRow.CreateRow(new GriddedReportDataRow { Temperature = temperature }, request);
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Temperature = temperature }, request);
 #endif
 
       Assert.AreEqual(expectedResult, row.Temperature);

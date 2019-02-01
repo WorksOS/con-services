@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       return row;
     }
 #endif
-    public static GridRow CreateRow(GriddedReportDataRow dataRow, CompactionReportRequest request)
+    public static GridRow CreateRow(GriddedReportDataRowBase dataRow, CompactionReportRequest request)
     {
       var row = new GridRow();
       row.SetValues(dataRow.Northing, dataRow.Easting, dataRow.Elevation, dataRow.CutFill, dataRow.Cmv, dataRow.Mdp, dataRow.PassCount, dataRow.Temperature);

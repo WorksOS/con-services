@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class GriddedReportDataRows : List<GriddedReportDataRow>, IEquatable<GriddedReportDataRows>
+  public class GriddedReportDataRows : List<GriddedReportDataRowBase>, IEquatable<GriddedReportDataRows>
   {
     public GriddedReportDataRows()
     {
@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     {
       for (int i = 0; i < numberOfRows; i++)
       {
-        var grdr = new GriddedReportDataRow();
+        var grdr = new GriddedReportDataRowBase();
         grdr.Read(reader);
         Add(grdr);
       }

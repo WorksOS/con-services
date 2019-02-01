@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using Apache.Ignite.Core.Binary;
 
 namespace VSS.Productivity3D.Models.Models.Reports
 {
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class GriddedReportDataRow : IEquatable<GriddedReportDataRow>
+  public class GriddedReportDataRowBase : IEquatable<GriddedReportDataRowBase>
   {
     public double Northing { get; set; }
     public double Easting { get; set; }
@@ -18,11 +17,11 @@ namespace VSS.Productivity3D.Models.Models.Reports
     public short PassCount { get; set; }
     public short Temperature { get; set; }
 
-    public GriddedReportDataRow()
+    public GriddedReportDataRowBase()
     {
     }
 
-    public GriddedReportDataRow(
+    public GriddedReportDataRowBase(
       double northing, double easting, double elevation,
       double cutFill, short cmv, short mdp, short passCount, short temperature)
     {
@@ -59,7 +58,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       PassCount = reader.ReadInt16();
       Temperature = reader.ReadInt16();
     }
-
+/*
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
@@ -91,8 +90,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
       PassCount = reader.ReadShort();
       Temperature = reader.ReadShort();
     }
-
-    public bool Equals(GriddedReportDataRow other)
+*/
+    public bool Equals(GriddedReportDataRowBase other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -111,7 +110,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((GriddedReportDataRow)obj);
+      return Equals((GriddedReportDataRowBase)obj);
     }
 
     public override int GetHashCode()
