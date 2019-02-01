@@ -58,39 +58,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       PassCount = reader.ReadInt16();
       Temperature = reader.ReadInt16();
     }
-/*
-    /// <summary>
-    /// Serialises content to the writer
-    /// </summary>
-    /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
-    {
-      writer.WriteDouble(Northing);
-      writer.WriteDouble(Easting);
-      writer.WriteDouble(Elevation);
-      writer.WriteDouble(CutFill);
-      writer.WriteShort(Cmv);
-      writer.WriteShort(Mdp);
-      writer.WriteShort(PassCount);
-      writer.WriteShort(Temperature);
-    }
 
-    /// <summary>
-    /// Serialises content from the writer
-    /// </summary>
-    /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
-    {
-      Northing = reader.ReadDouble();
-      Easting = reader.ReadDouble();
-      Elevation = reader.ReadDouble();
-      CutFill = reader.ReadDouble();
-      Cmv = reader.ReadShort();
-      Mdp = reader.ReadShort();
-      PassCount = reader.ReadShort();
-      Temperature = reader.ReadShort();
-    }
-*/
     public bool Equals(GriddedReportDataRowBase other)
     {
       if (ReferenceEquals(null, other)) return false;
