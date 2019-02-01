@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -44,10 +43,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 
       //We build and inject here because we need it below 
       var serviceProvider = services.BuildServiceProvider();
-      DIContext.Inject(serviceProvider);
-
-
-      var configurationStore = DIContext.Obtain<IConfigurationStore>();
+      var configurationStore = serviceProvider.GetRequiredService<IConfigurationStore>();
 
       services.AddTransient<TPaaSAuthenticatedRequestHandler>();
       services.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
@@ -76,10 +72,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Set up logging etc. for TRex
-      serviceProvider = services.BuildServiceProvider();
-      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      Logging.Logger.Inject(loggerFactory);
-      DIContext.Inject(serviceProvider);
+      DIContext.Inject(services.BuildServiceProvider());
     }
 
     /// <summary>

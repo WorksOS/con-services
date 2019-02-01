@@ -75,12 +75,10 @@ namespace VSS.TRex.Server.PSNode
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Build()
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
-        .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(new ProfilerBuilderFactory<ProfileCell>()))
@@ -100,7 +98,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
-        // Create the cache to store the general subgrid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
+        // Create the cache to store the general sub grid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
           new TRexSpatialMemoryCache(
             DIContext.Obtain<IConfigurationStore>().GetValueInt("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT", Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT),

@@ -25,7 +25,7 @@ namespace VSS.TRex.DI
 
       // Advise the TRex Logger namespace of the logger factory to use in case
       // DIBuilder.AddLogging was not used in the DI construction phase.
-      Logging.Logger.Inject(serviceProvider.GetService<ILoggerFactory>());
+      Logging.Logger.Inject(serviceProvider.GetRequiredService<ILoggerFactory>());
     }
 
     /// <summary>
