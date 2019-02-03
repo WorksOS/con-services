@@ -67,6 +67,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            leaf.Clear();
 
             Assert.True(leaf.Cells == null &&
                 leaf.Directory != null &&
@@ -74,8 +75,8 @@ namespace VSS.TRex.Tests.SubGridTrees
                 leaf.LeafEndTime == DateTime.MinValue &&
                 leaf.LeafStartTime == DateTime.MaxValue &&
                 leaf.Level == SubGridTreeConsts.SubGridTreeLevels &&
-                leaf.IsLeafSubGrid() == true,
-                "Leaf not initialised as expected");
+                leaf.IsLeafSubGrid(),
+                "Leaf not initialized as expected");
         }
 
         [Fact()]
@@ -84,6 +85,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
+            leaf.Clear();
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
             leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());
@@ -132,6 +134,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
+            leaf.Clear();
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
             leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());

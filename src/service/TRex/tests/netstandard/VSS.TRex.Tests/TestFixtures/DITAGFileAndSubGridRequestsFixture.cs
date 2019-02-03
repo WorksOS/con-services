@@ -8,6 +8,7 @@ using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling;
@@ -18,8 +19,10 @@ using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -88,7 +91,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
@@ -110,6 +113,15 @@ namespace VSS.TRex.Tests.TestFixtures
 
       targetSiteModel.Should().NotBe(null);
       ProcessedTasks.Count.Should().Be(_tagFiles.Count);
+
+      // Cause the latest cell pass information to be created for all sub grids
+      targetSiteModel.Grid.Root.ScanSubGrids(targetSiteModel.Grid.FullCellExtent(),
+        leaf =>
+        {
+          if (leaf is IServerLeafSubGrid Leaf)
+            Leaf.ComputeLatestPassInformation(true, DIContext.Obtain<ISiteModels>().StorageProxy);
+          return true;
+        });
 
       return targetSiteModel;
     }

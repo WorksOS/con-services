@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Machines.Interfaces
 {
@@ -55,7 +56,7 @@ namespace VSS.TRex.Machines.Interfaces
     void Write(BinaryWriter writer);
 
     IMachine CreateNew(string name, string machineHardwareID,
-      byte machineType,
+      MachineType machineType,
       int deviceType,
       bool isJohnDoeMachine,
       Guid machineID);

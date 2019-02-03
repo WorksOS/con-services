@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     public static ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       return siteModel;
     }

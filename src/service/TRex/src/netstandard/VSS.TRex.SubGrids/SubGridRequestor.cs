@@ -215,7 +215,7 @@ namespace VSS.TRex.SubGrids
                 // Log.LogInformation($"Acquired sub grid {CachedSubGrid.Moniker()} for client sub grid {ClientGrid.Moniker()} in data model {SiteModel.ID} from result cache");
            
                 // Compute the matching filter mask that the full processing would have computed
-                if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter, CellOverrideMask, 
+                if (SubGridFilterMasks.ConstructSubGridCellFilterMask(ClientGrid, SiteModel, Filter, CellOverrideMask, 
                   HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction, ClientGrid.ProdDataMap, ClientGrid.FilterMap))
                 {
                     ModifyFilterMapBasedOnAdditionalSpatialFiltering();
@@ -469,7 +469,7 @@ namespace VSS.TRex.SubGrids
             if (SurveyedSurfaceDataRequested)
             {
                 // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
-                if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
+                if (SubGridFilterMasks.ConstructSubGridCellFilterMask(ClientGrid, SiteModel, Filter,
                                                                       CellOverrideMask,
                                                                       HasOverrideSpatialCellRestriction,
                                                                       OverrideSpatialCellRestriction,

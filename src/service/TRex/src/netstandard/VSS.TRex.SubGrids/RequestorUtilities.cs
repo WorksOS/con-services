@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGrids
         ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
 
         if (_enableGeneralSubGridResultCaching &&
-            ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int)gridDataType])
+            ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)gridDataType])
         {
           SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
         }
