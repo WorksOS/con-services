@@ -27,6 +27,7 @@ using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -95,6 +96,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
@@ -168,7 +170,8 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Volumes.CutFillVolume)
+        typeof(VSS.TRex.Volumes.CutFillVolume),
+        typeof (VSS.TRex.Reports.StationOffset.Executors.ComputeStationOffsetReportExecutor_ClusterCompute)
       };
 
       foreach (var asmType in AssemblyDependencies)

@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Models.Reports;
 
 namespace VSS.TRex.Reports.Gridded
@@ -23,7 +22,7 @@ namespace VSS.TRex.Reports.Gridded
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
@@ -36,6 +35,5 @@ namespace VSS.TRex.Reports.Gridded
       Mdp = reader.ReadShort();
       PassCount = reader.ReadShort();
       Temperature = reader.ReadShort();
-    }
   }
 }

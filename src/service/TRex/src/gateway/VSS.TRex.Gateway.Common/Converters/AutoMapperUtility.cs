@@ -1,13 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using VSS.Productivity3D.Models.Models;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Reports.Gridded;
+using VSS.TRex.Reports.Gridded.GridFabric;
+using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
+using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -58,6 +64,7 @@ namespace VSS.TRex.Gateway.Common.Converters
           cfg.AddProfile<FenceProfile>();
           cfg.AddProfile<CombinedFilterProfile>();
           cfg.AddProfile<DesignResultProfile>();
+          cfg.AddProfile<ReportingProfile>();
         }
       );
 
@@ -71,7 +78,7 @@ namespace VSS.TRex.Gateway.Common.Converters
       public ICellPassAttributeFilter Resolve(FilterResult src, CombinedFilter dst, ICellPassAttributeFilter member, ResolutionContext context)
       {
         var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value;
-    
+
         return new CellPassAttributeFilter
         {
           ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
@@ -79,7 +86,7 @@ namespace VSS.TRex.Gateway.Common.Converters
           ElevationType = returnEarliestFilteredCellPass ? Types.ElevationType.First : Types.ElevationType.Last,
           SurveyedSurfaceExclusionList = null //done afterwards
         };
-  
+
       }
     }
 
@@ -166,7 +173,6 @@ namespace VSS.TRex.Gateway.Common.Converters
       }
     }
 
-
     public class CombinedFilterProfile : Profile
     {
       public CombinedFilterProfile()
@@ -232,6 +238,45 @@ namespace VSS.TRex.Gateway.Common.Converters
             opt => opt.MapFrom(f => f.Extents))
           .ForMember(x => x.SurveyedUtc,
             opt => opt.Ignore());
+      }
+    }
+
+    public class ReportingProfile : Profile
+    {
+      public ReportingProfile()
+      {
+        CreateMap<CompactionReportStationOffsetTRexRequest, StationOffsetReportData_ApplicationService>()
+          .ForMember(x => x.NumberOfRows,
+            opt => opt.Ignore())
+          .ForMember(x => x.Rows,
+            opt => opt.Ignore());
+
+        CreateMap<CompactionReportStationOffsetTRexRequest, StationOffsetReportRequestArgument_ApplicationService>()
+          .ForMember(x => x.ProjectID,
+            opt => opt.MapFrom(f => f.ProjectUid))
+          .ForMember(x => x.TRexNodeID,
+            opt => opt.Ignore())
+          .ForMember(x => x.Filters,
+            opt => opt.Ignore())
+          .ForMember(x => x.ReferenceDesignUID,
+            opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
+
+        CreateMap<CompactionReportGridTRexRequest, GriddedReportData>()
+          .ForMember(x => x.NumberOfRows,
+            opt => opt.Ignore())
+          .ForMember(x => x.Rows,
+            opt => opt.Ignore());
+
+        CreateMap<CompactionReportGridTRexRequest, GriddedReportRequestArgument>()
+          .ForMember(x => x.ProjectID,
+            opt => opt.MapFrom(f => f.ProjectUid))
+          .ForMember(x => x.TRexNodeID,
+            opt => opt.Ignore())
+          .ForMember(x => x.Filters,
+            opt => opt.Ignore())
+          .ForMember(x => x.ReferenceDesignUID,
+            opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
+
       }
     }
   }

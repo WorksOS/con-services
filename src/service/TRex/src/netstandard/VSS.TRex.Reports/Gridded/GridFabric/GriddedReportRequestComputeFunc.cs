@@ -31,7 +31,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
       try
       {
         // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
-        // subgrid results to it.
+        // sub grid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 

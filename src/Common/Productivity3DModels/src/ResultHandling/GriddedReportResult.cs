@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using VSS.Productivity3D.Models.Models.Reports;
 
@@ -7,13 +6,12 @@ namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// Contains the prepared result for the client to consume.
-  /// At present this contains only GriddedData, StationOffset will come later...
   /// 
   /// Note that this structure needs to be look like TRaptorReportsPackager
   ///   to be deserialized by it. One day... TRaptorReportsPackeger will
-  ///   go away and GriddedReportResult could be deserialised in 3dp using it instead.
+  ///   go away and GriddedReportResult could be deserialized in 3dp using it instead.
   /// </summary>
-  public class GriddedReportResult : IEquatable<GriddedReportResult>
+  public class GriddedReportResult 
   {
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType; // == TRaptorReportType
@@ -25,7 +23,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
       Clear();
     }
 
-    public void Clear()
+    private void Clear()
     {
       ReturnCode = ReportReturnCode.NoError;
       ReportType = ReportType.None;
@@ -70,24 +68,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
         return ms;
       }
     }
-
-    public bool Equals(GriddedReportResult other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return ReturnCode.Equals(other.ReturnCode) &&
-             ReportType.Equals(other.ReportType) &&
-             GriddedData.Equals(other.GriddedData);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((GriddedReportResult)obj);
-    }
-
+    
     public override int GetHashCode()
     {
       unchecked

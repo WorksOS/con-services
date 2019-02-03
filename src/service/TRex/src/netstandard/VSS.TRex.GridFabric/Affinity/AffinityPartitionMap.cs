@@ -24,9 +24,9 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides a map of primary partitions that this node is responsible for
     /// </summary>
-    public bool[] PrimaryPartitions
+    public bool[] PrimaryPartitions()
     {
-      get => primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
+      return primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public bool HasPrimaryPartitionFor(TK key) => PrimaryPartitions[PartitionFor(key)];
+    public bool HasPrimaryPartitionFor(TK key) => PrimaryPartitions()[PartitionFor(key)];
 
     /// <summary>
     /// Determines if this node holds a backup partition for the given key

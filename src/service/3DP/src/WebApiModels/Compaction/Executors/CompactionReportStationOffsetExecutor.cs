@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -44,7 +45,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (useTrexGateway)
         {
 #endif
-          var responseData = (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
+          var responseData = trexCompactionDataProxy
+            .SendStationOffsetReportRequest(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), customHeaders).Result;
 
           return responseData.Length > 0
             ? ConvertTRexStationOffsetResult(request, responseData)

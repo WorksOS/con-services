@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -42,9 +43,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (useTrexGateway)
         {
 #endif
-          // change CompactionReportGridRequest when DesignDescription DataOcean requirements are known.
-          //   also projectid and filterId not required by TRex
-          var responseData = trexCompactionDataProxy.SendGridReportRequest(request, customHeaders).Result;
+          var responseData = trexCompactionDataProxy
+            .SendGridReportRequest(AutoMapperUtility.Automapper.Map<CompactionReportGridTRexRequest>(request), customHeaders).Result;
           return responseData.Length > 0
             ? ConvertTRexGridResult(request, responseData)
             : CreateNullGridReturnedResult();

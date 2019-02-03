@@ -22,6 +22,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -31,8 +32,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
   [TestClass]
   public class CompactionReportGridExecutorTest
   {
-    private static IServiceProvider serviceProvider;
-    private static ILoggerFactory logger;
+    private static IServiceProvider _serviceProvider;
+    private static ILoggerFactory _logger;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -48,9 +49,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .AddTransient<IErrorCodesProvider, RaptorResult>()
 #endif
   ;
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      _serviceProvider = serviceCollection.BuildServiceProvider();
 
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 #if RAPTOR
     [TestMethod]
@@ -94,7 +95,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         Returns(0); // icsrrUnknownError
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object);
+        .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
 #endif
@@ -103,8 +104,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var projectUid = Guid.NewGuid();
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
-        0, projectUid, null, -1, null, false, false, false, false, false, false, null, 0.0, GridReportOption.Automatic,
-        0.0, 0.0, 0.0, 0.0, 0.0);
+        0, projectUid, null, -1, null, true, false, false, false, false, false, 
+        null, 4.0, GridReportOption.Automatic,
+        0.0, 0.0, 1.0, 2.0, 0.0);
 
       var mockConfigStore = new Mock<IConfigurationStore>();
 #if RAPTOR
@@ -113,10 +115,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"Grid report has not been implemented in Trex yet. ProjectUid: {projectUid}"));
+          $"Grid report failed somehow. ProjectUid: {projectUid}"));
+
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendGridReportRequest(request, It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendGridReportRequest(It.IsAny<CompactionReportGridTRexRequest>(), It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
+
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportGridExecutor>(logger, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
@@ -165,7 +169,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         Returns(1); // icsrrNoError
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, raptorClient.Object);
+        .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object);
 
       var result = executor.Process(request) as CompactionReportResult;
 
