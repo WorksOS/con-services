@@ -110,6 +110,7 @@
     <ProjectReference Include="..\..\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
       <Private>true</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Reports\VSS.TRex.Reports.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
       <Private>true</Private>
     </ProjectReference>
