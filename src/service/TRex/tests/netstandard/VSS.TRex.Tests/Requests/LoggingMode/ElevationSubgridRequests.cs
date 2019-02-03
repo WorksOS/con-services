@@ -209,40 +209,34 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       subGridHeight.Cells[0, 0].Should().Be(MINIMUM_HEIGHT);
     }
 
-    [Fact]
-    public void Test_ElevationSubGridRequests_SingleCell_QueryWithElevationMappingModeFilter_MaximumElevationOnly()
+    [Fact()]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_NoFilter()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { new CombinedFilter() });
 
-      var filter = CombinedFilter.MakeFilterWith(x =>
-      {
-        x.AttributeFilter.HasElevationMappingModeFilter = true;
-        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MaximumElevation;
-      });
-
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
       var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
-      // Check cell has no height selected as no cell pass matches Maximum elevation mode
-      subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + 2 * HEIGHT_DECREMENT);
     }
 
-    [Fact]
-    public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes()
+    [Fact(Skip = "Not complete")]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_WithFilterOnMinimumElevationMode()
     {
       var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationMappingModeFilter = true;
-        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MaximumElevation;
+        x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MinimumElevation;
       });
 
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
       var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
-      // Check cell has no height selected as no cell pass matches Maximum elevation mode
-      subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
+      // Until elevation mode behaviour implement, this should return the most recent minimum elevation pass
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT);
     }
+
   }
 }

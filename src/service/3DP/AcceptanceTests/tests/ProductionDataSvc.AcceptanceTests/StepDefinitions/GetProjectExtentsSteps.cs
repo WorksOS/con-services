@@ -1,16 +1,17 @@
 ﻿using System.Linq;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("GetProjectExtents.feature")]
-  public class GetProjectExtentsSteps : FeaturePostRequestBase<ProjectExtentRequest, ProjectExtentsResult>
+  public class GetProjectExtentsSteps : FeaturePostRequestBase<JObject, ProjectExtentsResult>
   {
     [And(@"I decide to exclude surveyed surface (.*)")]
     public void GivenIDecideToExcludeAnySurveyedSurface(int surveyedSurfaceId)
     {
-       PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { surveyedSurfaceId };
+       PostRequestHandler.CurrentRequest["excludedSurveyedSurfaceIds"] = JToken.FromObject(new long[] { surveyedSurfaceId });
     }
 
     [Then(@"the following objects should be returned:")]

@@ -289,9 +289,6 @@ namespace VSS.TRex.Tests
 
       state.SetElevationMappingModeState(ElevationMappingMode.MinimumElevation);
       state.ElevationMappingMode.Should().Be(ElevationMappingMode.MinimumElevation);
-
-      state.SetElevationMappingModeState(ElevationMappingMode.MaximumElevation);
-      state.ElevationMappingMode.Should().Be(ElevationMappingMode.MaximumElevation);
     }
 
     [Fact()]

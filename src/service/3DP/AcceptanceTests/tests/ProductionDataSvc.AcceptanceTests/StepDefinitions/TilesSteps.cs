@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit;
@@ -7,7 +8,7 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("Tiles.feature")]
-  public class TilesSteps : FeaturePostRequestBase<TileRequest, TileResult>
+  public class TilesSteps : FeaturePostRequestBase<JObject, TileResult>
   {
     [Then(@"the Raw PNG Tiles response should match ""(.*)"" result from the repository")]
     public void ThenTheRawPNGTilesResponseShouldMatchResultFromTheRepository(string responseName)

@@ -62,20 +62,6 @@ namespace VSS.TRex.Service.Deployer
       }
 
       Log.LogInformation("Completed service deployment for mutable segment retirement queue service");
-
-      // Deploy the retirement service to the immutable grid
-      var segmentRetirementProxyImmutable = new SegmentRetirementQueueServiceProxyImmutable();
-      try
-      {
-        Log.LogInformation("Deploying segment retirement queue service to the immutable grid");
-        segmentRetirementProxyImmutable.Deploy();
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception occurred deploying service:");
-      }
-
-      Log.LogInformation("Completed service deployment for immutable segment retirement queue service");
     }
   }
 }

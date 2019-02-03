@@ -63,30 +63,5 @@ namespace VSS.TRex.Webtools.Controllers
       Log.LogInformation("Completed service deployment for mutable segment retirement service");
       return "Completed service deployment for mutable segment retirement service";
     }
-
-    /// <summary>
-    /// Deploys the segment retirement service to the immutable grid
-    /// </summary>
-    /// <returns></returns>
-    [HttpPut("segmentretirement/immutable")]
-    public string DeployImmutableSegmentRetirementService()
-    {
-      Log.LogInformation("Obtaining proxy for mutable segment retirement service");
-
-      try
-      {
-        var proxy = new SegmentRetirementQueueServiceProxyImmutable();
-        Log.LogInformation("Deploying mutable segment retirement service");
-        proxy.Deploy();
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception occurred deploying service:");
-        return $"Exception occurred deploying service: {e}";
-      }
-
-      Log.LogInformation("Completed service deployment for mutable segment retirement service");
-      return "Completed service deployment for mutable segment retirement service";
-    }
   }
 }

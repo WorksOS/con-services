@@ -1,9 +1,10 @@
-﻿using ProductionDataSvc.AcceptanceTests.Models;
+﻿using Newtonsoft.Json.Linq;
+using ProductionDataSvc.AcceptanceTests.Models;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("ElevationStatistics.feature")]
-  public class ElevationStatisticsSteps : FeaturePostRequestBase<ElevationStatisticsRequest, ResponseBase>
+  public class ElevationStatisticsSteps : FeaturePostRequestBase<JObject, ResponseBase>
   { }
 }
