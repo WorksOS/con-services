@@ -72,6 +72,8 @@ namespace VSS.TRex.SubGrids
     private ISubGridCellLatestPassDataWrapper _globalLatestCells;
     private bool _useLastPassGrid; // Assume we can't use last pass data
 
+    private SubGridTreeBitmapSubGridBits _aggregatedCellScanMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
     /// <summary>
     /// Constructor for the sub grid retriever helper
     /// </summary>
@@ -288,7 +290,7 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <summary>
-    /// Retrieves cell values for a sub grid stripe at a time. Currently deprecated in favor of RetrieveSubGridCell()
+    /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
     /// <param name="StripeIndex"></param>
     /// <returns></returns>
@@ -304,12 +306,9 @@ namespace VSS.TRex.SubGrids
         // Iterate over the cells in the sub grid applying the filter and assigning the requested information into the sub grid
         for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
         {
-          // If there is an overriding sieve bitmask (eg: from WMS rendering) then check if this cell is contained in the sieve, otherwise ignore it.
-          if (_sieveFilterInUse && !_sieveBitmask.BitSet(StripeIndex, J))
+          // If this cell is not included in the scan mask then prune execution here for the cell
+          if (!_aggregatedCellScanMap.BitSet(StripeIndex, J))
             continue;
-
-          if ((_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSieving) && !_clientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) 
-            continue; // This cell does not match the filter mask and should not be processed
 
           if (_gridDataType == GridDataType.CellProfile) // all requests using this data type should filter temperature range using last pass only
             _filter.AttributeFilter.FilterTemperatureByLastPass = true;
@@ -321,6 +320,24 @@ namespace VSS.TRex.SubGrids
             continue;
 
           _haveFilteredPass = false;
+
+          // ###US79098### -->
+          if (_useLastPassGrid)
+          {
+            // Determine if there is an elevation mapping mode that may require searching through cell passes. If so, the last pass grid can
+            // only be used if the machine that recorded that last pass is not an excavator with an elevation mode set to MinimumHeight
+            if (_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
+            {
+              var machine = _siteModel.Machines[_globalLatestCells[StripeIndex, J].InternalSiteModelMachineIndex];
+
+              bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+              bool minimumElevationMappingModeAtLatestCellPassTime = false;
+
+              if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
+                _useLastPassGrid = false;
+            }
+          }
+          // <-- ###US79098###
 
           if (_useLastPassGrid)
           {
@@ -596,9 +613,9 @@ namespace VSS.TRex.SubGrids
         //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
         if (_subGrid == null) // This should never really happen, but we'll be polite about it
-        {        
+        {
           Log.LogWarning(
-            $"Sub grid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing sub grid in the data model.' + 'Returning SubGridNotFound as response with a null sub grid reference.");
+            $"Sub grid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing sub grid in the data model. Returning SubGridNotFound as response with a null sub grid reference.");
           return ServerRequestResult.SubGridNotFound;
         }
 
@@ -625,7 +642,7 @@ namespace VSS.TRex.SubGrids
           return ServerRequestResult.NoError;
 
         // Determine the bitmask detailing which cells match the cell selection filter
-        if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_subGridAsLeaf, _siteModel, _filter,
+        if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_subGridAsLeaf, _siteModel, _filter,
           cellOverrideMask, _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction,
           _clientGridAsLeaf.ProdDataMap, _clientGridAsLeaf.FilterMap))
         {
@@ -663,6 +680,16 @@ namespace VSS.TRex.SubGrids
         }
 
         //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {CellX}x{CellY}");
+
+        // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
+        // knowledge, which cells need to be visited
+
+        // Only ask for cells the filter wants and which are actually present in the data set
+        _aggregatedCellScanMap.SetAndOf(_clientGridAsLeaf.FilterMap, _globalLatestCells.PassDataExistenceMap); 
+        if (_sieveFilterInUse)
+          _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
+        if (_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSieving)
+          _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.ProdDataMap); // ... and which are in the required production data map
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
