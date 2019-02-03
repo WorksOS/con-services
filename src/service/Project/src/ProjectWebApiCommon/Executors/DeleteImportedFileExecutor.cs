@@ -106,14 +106,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
           {
             //Do we care if deleting DXF tiles and generated DXF file fails?
+            string generatedName = DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.ImportedFileType);
             await ImportedFileRequestHelper.DeleteDxfTiles(deleteImportedFile.DataOceanRootFolder,
-              deleteImportedFile.ProjectUid, customerUid, deleteImportedFile.FileDescriptor.FileName,
+              deleteImportedFile.ProjectUid, customerUid, generatedName,
               deleteImportedFile.ImportedFileType, log, customHeaders, tileServiceProxy);
 
             if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
             {
-              string generatedName =
-                $"{Path.GetFileNameWithoutExtension(deleteImportedFile.FileDescriptor.FileName)}{DataOceanFileUtil.GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DataOceanFileUtil.DXF_FILE_EXTENSION}";
               await DataOceanHelper.DeleteFileFromDataOcean(
                 generatedName, deleteImportedFile.DataOceanRootFolder, customerUid,
                 deleteImportedFile.ProjectUid,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
 {
@@ -135,6 +136,26 @@ namespace VSS.DataOcean.Client
     public static bool FileCacheable(string filename)
     {
       return filename.Contains(GENERATED_TILE_FOLDER_SUFFIX) && filename.Contains(".png");
+    }
+
+    /// <summary>
+    /// Gets the generated DXF file name
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="fileType"></param>
+    /// <returns></returns>
+    public static string GeneratedFileName(string fileName, ImportedFileType fileType)
+    {
+      if (fileType == ImportedFileType.Alignment)
+      {
+        return $"{Path.GetFileNameWithoutExtension(fileName)}{GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DXF_FILE_EXTENSION}";
+      }
+
+      if (fileType == ImportedFileType.Linework)
+      {
+        return fileName;
+      }
+      throw new ArgumentException($"{fileName} is not a DXF or alignment file.");
     }
   }
 }

@@ -253,7 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           if (importedFileType == ImportedFileType.Alignment)
           {
             fileName = await CreateGeneratedDxfFile(customerUid, projectUid, importedFileUid, raptorProxy, headers, 
-              log, serviceExceptionHandler, authn, dataOceanClient, configStore);
+              log, serviceExceptionHandler, authn, dataOceanClient, configStore, fileName);
           }
 
           var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
@@ -305,10 +305,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
     /// </summary>
     /// <returns>The generated file name</returns>
-    private static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, IDictionary<string, string> headers,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, IDataOceanClient dataOceanClient, IConfigurationStore configStore)
+    private static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, 
+      IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, 
+      IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName)
     {
-      var generatedName = string.Empty;
+      var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
       //Get generated DXF file from Raptor
       var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
       //GradefulWebRequest should throw an exception if the web api call fails but just in case...
@@ -319,7 +320,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           if (archive.Entries.Count == 1)
           {
-            generatedName = archive.Entries[0].Name;
             var dataOceanRootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
             if (string.IsNullOrEmpty(dataOceanRootFolder))
             {

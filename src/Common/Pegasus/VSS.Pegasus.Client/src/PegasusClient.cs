@@ -86,10 +86,11 @@ namespace VSS.Pegasus.Client
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
 
+      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
+      await DeleteDxfTiles(dxfFileName, customHeaders);
+
       //In DataOcean this is actually a multifile not a folder
       string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
-      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
-      await DeleteDxfTiles(tileFolderFullName, customHeaders);
       //Get the parent folder id
       var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
       var tileFolderName = parts[parts.Length - 1];
