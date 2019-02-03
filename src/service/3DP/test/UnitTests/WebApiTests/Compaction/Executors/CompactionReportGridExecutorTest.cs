@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(logger, configStore: mockConfigStore.Object,
+        .Build<CompactionReportGridExecutor>(_logger, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
       var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);

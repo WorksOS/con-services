@@ -35,5 +35,6 @@ namespace VSS.TRex.Reports.Gridded
       Mdp = reader.ReadShort();
       PassCount = reader.ReadShort();
       Temperature = reader.ReadShort();
+    }
   }
 }
