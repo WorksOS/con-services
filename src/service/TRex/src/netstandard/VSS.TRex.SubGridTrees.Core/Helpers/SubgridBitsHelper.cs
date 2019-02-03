@@ -6,7 +6,7 @@ namespace VSS.TRex.SubGridTrees.Helpers
     /// A helper class that contains definitions of Clear and Filled Bits sub grid bitmask bit arrays as well as
     /// the number of elements in the Bits array
     /// </summary>
-    public static class SubgridBitsHelper
+    public static class SubGridBitsHelper
     {
     /// <summary>
     /// The number of elements in the Bits array. Defined as:
