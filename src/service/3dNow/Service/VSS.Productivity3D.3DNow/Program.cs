@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
+using VSS.Productivity3D.Now3D;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Push
+namespace VSS.Productivity3D.Now3D
 {
   public class Program
   {

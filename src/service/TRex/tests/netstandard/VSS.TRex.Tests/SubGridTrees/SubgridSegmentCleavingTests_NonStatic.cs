@@ -222,7 +222,6 @@ namespace VSS.TRex.Tests.SubGridTrees
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
-        .Build()
         .Complete();
     }
 

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -52,14 +51,15 @@ namespace VSS.TRex.Gateway.WebApi
 
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
-        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()));
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager()))
+        .Build();
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
-      services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
-      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager());
 
       services.AddOpenTracing(builder =>
       {
@@ -76,15 +76,9 @@ namespace VSS.TRex.Gateway.WebApi
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      //Set up logging etc. for TRex
-      var serviceProvider = services.BuildServiceProvider();
-      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      Logging.Logger.Inject(loggerFactory);
-      DIContext.Inject(serviceProvider);
-
-      services.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
-      serviceProvider = services.BuildServiceProvider();
-      DIContext.Inject(serviceProvider);
+      DIBuilder.Continue()
+        .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
+        .Complete();
     }
 
     /// <summary>

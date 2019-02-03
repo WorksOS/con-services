@@ -18,10 +18,12 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// Adds CORS, MVC, Swagger ... for Web API service. T is the Startup class for the service.
     /// </summary>
-    public static IServiceCollection AddCommon<T>(this IServiceCollection services, string serviceTitle, string serviceDescription=null, string version="v1")
+    public static IServiceCollection AddCommon<T>(this IServiceCollection services, string serviceTitle, string serviceDescription = null, string version = "v1")
     {
-      if (services == null)
-        throw new ArgumentNullException("services");
+      if (services == null) { throw new ArgumentNullException(nameof(services)); }
+      
+      // Guard against BaseStartup::ServiceVersion not being implemented in Startup.cs; else the following call to setup Swagger fails with 'null value for key'.
+      if (string.IsNullOrEmpty(version)) { version = "v1"; }
 
       services.AddCors(options =>
       {
@@ -57,8 +59,8 @@ namespace VSS.WebApi.Common
 
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
           pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
+        else if (File.Exists(Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml")))
+          pathToXml = AppContext.BaseDirectory;
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;

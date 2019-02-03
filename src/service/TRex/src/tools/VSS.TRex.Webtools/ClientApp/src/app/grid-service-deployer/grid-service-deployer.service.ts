@@ -37,12 +37,4 @@ export class GridServiceDeployerService {
       console.log(result);
     });
   }
-    
-  public deployImmutableSegmentRetirementQueueService(): void {
-    let url = `${this.baseUrl}api/services/segmentretirement/immutable`;
-    console.log(url);
-    this.http.put<string>(url, null).subscribe((result) => {
-      console.log(result);
-    });
-  }
 }
