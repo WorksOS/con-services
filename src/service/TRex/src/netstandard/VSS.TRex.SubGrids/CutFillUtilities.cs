@@ -9,22 +9,22 @@ using VSS.TRex.SubGridTrees.Core.Utilities;
 namespace VSS.TRex.SubGrids
 {
   /// <summary>
-  /// Contains methods relevant to supporting Cut/Fill operations, such a computing cut/fill elevation subgrids
+  /// Contains methods relevant to supporting Cut/Fill operations, such a computing cut/fill elevation sub grids
   /// </summary>
   public static class CutFillUtilities
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger("CutFillUtilities");
 
     /// <summary>
-    /// Calculates a cut/fill subgrid from a production data elevation subgrid and an elevation subgrid computed from a referenced design,
-    /// replacing the elevations in the first subgrid with the resulting cut fill values
+    /// Calculates a cut/fill sub grid from a production data elevation sub grid and an elevation subg rid computed from a referenced design,
+    /// replacing the elevations in the first sub grid with the resulting cut fill values
     /// </summary>
     /// <param name="design"></param>
     /// <param name="SubGrid"></param>
     /// <param name="DataModelID"></param>
     /// <param name="ProfilerRequestResult"></param>
     /// <returns></returns>
-    public static bool ComputeCutFillSubgrid(IClientLeafSubGrid SubGrid,
+    public static bool ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid,
       IDesign design,
       Guid DataModelID,
       out DesignProfilerRequestResult ProfilerRequestResult)

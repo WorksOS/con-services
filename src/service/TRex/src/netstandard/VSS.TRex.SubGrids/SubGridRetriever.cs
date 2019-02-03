@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
@@ -32,7 +31,7 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public class SubGridRetriever
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRetriever>();
 
     // Local state populated by the retriever constructor
     private readonly ICombinedFilter _filter;
@@ -93,7 +92,6 @@ namespace VSS.TRex.SubGrids
       bool hasOverrideSpatialCellRestriction,
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
       bool prepareGridForCacheStorageIfNoSeiving,
-     // byte treeLevel,
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
@@ -120,9 +118,8 @@ namespace VSS.TRex.SubGrids
       _populationControl = populationControl;
       _pdExistenceMap = pDExistenceMap;
 
-      // Create and configure the assignment context which is used to contain
-      // a filtered pass and its attendant machine events and target values
-      // prior to assignment to the client sub grid.
+      // Create and configure the assignment context which is used to contain a filtered pass and
+      // its attendant machine events and target values prior to assignment to the client sub grid.
       _assignmentContext = new FilteredValueAssignmentContext();
     }
 
@@ -143,7 +140,6 @@ namespace VSS.TRex.SubGrids
           bool takePass;
           if (_filter.AttributeFilter.HasPassCountRangeFilter)
           {
-
             if (_currentPass.FilteredPass.HalfPass)
             {
               if (!haveHalfPass)
@@ -158,34 +154,30 @@ namespace VSS.TRex.SubGrids
           else
             takePass = true;
 
-          if (takePass)
-          {
-            if (_filter.AttributeFilter.HasElevationTypeFilter)
-              _assignmentContext.FilteredValue.PassCount = 1;
+          if (!takePass) continue;
 
-            if (_filter.AttributeFilter.HasElevationMappingModeFilter || (_filter.AttributeFilter.HasElevationTypeFilter &&
-                                                                          _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
-            {
-              if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
-                _tempPass = _currentPass;
-              _haveFilteredPass = true;
-            }
-            else
-            {
-              if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Highest)
-              {
-                if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
-                  _tempPass = _currentPass;
-                _haveFilteredPass = true;
-              }
-              else
-              {
-                _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
-                _haveFilteredPass = true;
-                _assignmentContext.FilteredValue.PassCount = -1;
-                break;
-              }
-            }
+          if (_filter.AttributeFilter.HasElevationTypeFilter)
+            _assignmentContext.FilteredValue.PassCount = 1;
+
+          if (_filter.AttributeFilter.HasElevationMappingModeFilter || (_filter.AttributeFilter.HasElevationTypeFilter &&
+                                                                        _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
+          {
+            if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
+              _tempPass = _currentPass;
+            _haveFilteredPass = true;
+          }
+          else if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Highest)
+          {
+            if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
+              _tempPass = _currentPass;
+            _haveFilteredPass = true;
+          }
+          else
+          {
+            _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+            _haveFilteredPass = true;
+            _assignmentContext.FilteredValue.PassCount = -1;
+            break;
           }
         }
       }
@@ -205,48 +197,37 @@ namespace VSS.TRex.SubGrids
         case GridDataType.Height:
           cellPass.Height = _globalLatestCells.ReadHeight(x, y);
           break;
-
         case GridDataType.HeightAndTime:
           cellPass.Height = _globalLatestCells.ReadHeight(x, y);
           cellPass.Time = _globalLatestCells.ReadTime(x, y);
           break;
-
         case GridDataType.CCV:
           cellPass.CCV = _globalLatestCells.ReadCCV(x, y);
           break;
-
         case GridDataType.RMV:
           cellPass.RMV = _globalLatestCells.ReadRMV(x, y);
           break;
-
         case GridDataType.Frequency:
           cellPass.Frequency = _globalLatestCells.ReadFrequency(x, y);
           break;
-
         case GridDataType.Amplitude:
           cellPass.Amplitude = _globalLatestCells.ReadAmplitude(x, y);
           break;
-
         case GridDataType.GPSMode:
           cellPass.gpsMode = _globalLatestCells.ReadGPSMode(x, y);
           break;
-
         case GridDataType.MDP:
           cellPass.MDP = _globalLatestCells.ReadMDP(x, y);
           break;
-
         case GridDataType.CCA:
           cellPass.CCA = _globalLatestCells.ReadCCA(x, y);
           break;
-
         case GridDataType.Temperature:
           cellPass.MaterialTemperature = _globalLatestCells.ReadTemperature(x, y);
           break;
-
         case GridDataType.TemperatureDetail:
           cellPass.MaterialTemperature = _globalLatestCells.ReadTemperature(x, y);
           break;
-
         default:
           throw new TRexSubGridProcessingException($"Unsupported grid data type in AssignRequiredFilteredPassAttributesFromGlobalLatestCells: {_gridDataType}");
       }
@@ -317,7 +298,6 @@ namespace VSS.TRex.SubGrids
       int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
 
-      // bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;   
       // if (Debug_ExtremeLogSwitchD) Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {CellX}x{CellY}");
 
       try
@@ -363,16 +343,13 @@ namespace VSS.TRex.SubGrids
 
             if (_profiler != null) // we don't need this anymore as the logic is implemented in lift builder
             {
-              // While we have been given a profiler, we may not need to use it to
-              // analyze layers in the cell pass stack. The layer analysis in this
-              // operation is intended to locate cell passes belonging to superseded
-              // layers, in which case they are not considered for providing the
-              // requested value. However, if there is no filter is in effect, then the
-              // global latest information for the sub grid may be consulted first
-              // to see if the appropriate values came from the last physically collected
-              // cell pass in the cell. Note that the tracking of latest values is
-              // also true for time, so that the time recorded in the latest values structure
-              // also includes that cell pass time.
+              // While we have been given a profiler, we may not need to use it to analyze layers in the cell pass stack.
+              // The layer analysis in this operation is intended to locate cell passes belonging to superseded layers,
+              // in which case they are not considered for providing the requested value. However, if there is no filter
+              // is in effect, then the global latest information for the sub grid may be consulted first to see if the
+              // appropriate values came from the last physically collected cell pass in the cell. Note that the tracking
+              // of latest values is also true for time, so that the time recorded in the latest values structure also
+              // includes that cell pass time.
 
               if (_canUseGlobalLatestCells)
               {
@@ -598,7 +575,7 @@ namespace VSS.TRex.SubGrids
           if ((_filter.AttributeFilter.PassTypeSet & (PassTypeSet.Front | PassTypeSet.Rear)) == PassTypeSet.Front)
             _filter.AttributeFilter.PassTypeSet |= PassTypeSet.Rear; // these two types go together as half passes
 
-        // ... unless we if we can use the last pass grid to satisfy the query
+        // ... unless we can use the last pass grid to satisfy the query
         if (_canUseGlobalLatestCells &&
             !_filter.AttributeFilter.HasElevationRangeFilter &&
             !_clientGrid.WantsLiftProcessingResults() &&
@@ -620,17 +597,16 @@ namespace VSS.TRex.SubGrids
 
         //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
-        if (_subGrid == null)
-        {
-          // This should never really happen, but we'll be polite about it
+        if (_subGrid == null) // This should never really happen, but we'll be polite about it
+        {        
           Log.LogWarning(
-            $"Sub grid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing sub grid in the data model.' + 'Returning SubGridNotFound as response with a nil sub grid reference.");
+            $"Sub grid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing sub grid in the data model.' + 'Returning SubGridNotFound as response with a null sub grid reference.");
           return ServerRequestResult.SubGridNotFound;
         }
 
         // Now process the contents of that sub grid into the sub grid to be returned to the client.
 
-        if (!_subGrid.IsLeafSubGrid()) // It's a leaf node
+        if (!_subGrid.IsLeafSubGrid())
         {
           Log.LogInformation("Requests of node sub grids in the server sub grid are not yet supported");
           return Result;
@@ -677,10 +653,9 @@ namespace VSS.TRex.SubGrids
         // the X and Y pixel world size (used for WMS tile computation)
         _subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
-        if (_areaControlSet.UseIntegerAlgorithm)
-          _sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _sieveBitmask);
-        else
-          _sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
+        _sieveFilterInUse = _areaControlSet.UseIntegerAlgorithm 
+          ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _sieveBitmask) 
+          : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
 
         if (!_sieveFilterInUse)
         {
@@ -689,25 +664,21 @@ namespace VSS.TRex.SubGrids
           _areaControlSet.PixelYWorldSize = 0;
         }
 
-        //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
-        //  Log.LogDebug($"Performing stripe iteration at {CellX}x{CellY}");
+        //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {CellX}x{CellY}");
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
           RetrieveSubGridStripe(I);
 
-        //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then
-        //  Log.LogDebug($"Stripe iteration complete at {CellX}x{CellY}");
+        //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {CellX}x{CellY}");
 
         Result = ServerRequestResult.NoError;
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occured in RetrieveSubGrid");
+        Log.LogError(e, $"Exception occured in {nameof(RetrieveSubGrid)}");
         throw;
       }
-
-      //  Log.LogInformation("Exiting RetrieveSubGrid");
 
       return Result;
     }

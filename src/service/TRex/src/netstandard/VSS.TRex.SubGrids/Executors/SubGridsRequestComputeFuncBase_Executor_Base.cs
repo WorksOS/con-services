@@ -308,7 +308,7 @@ namespace VSS.TRex.SubGrids.Executors
           {
             // The cut fill is defined between one production data derived height sub grid and a
             // height sub grid to be calculated from a designated design
-            if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
+            if (!CutFillUtilities.ComputeCutFillSubGrid(ClientArray[0], // base
               ReferenceDesign, // 'top'
               localArg.ProjectID,
               out _ /*ProfilerRequestResult*/))
