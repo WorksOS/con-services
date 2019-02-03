@@ -403,7 +403,7 @@ namespace VSS.TRex.SubGrids.Executors
       addresses = new SubGridCellAddress[AddressBucketSize];
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
-      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
 
       // Request production data only, or hybrid production data and surveyed surface data sub grids
       ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>

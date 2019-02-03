@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{F077C52D-518D-41BE-9D38-B5917FE472F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DNow", "Service\VSS.Productivity3D.3DNow\VSS.Productivity3D.3DNow.csproj", "{633B1E2D-78C6-455D-BCA5-50CA2EBB5B75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Now3D", "Service\VSS.Productivity3D.3DNow\VSS.Productivity3D.Now3D.csproj", "{633B1E2D-78C6-455D-BCA5-50CA2EBB5B75}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DNow.UnitTests", "test\VSS.Productivity3D.3DNow.UnitTests\VSS.Productivity3D.3DNow.UnitTests.csproj", "{F7349DD4-FF17-4620-9784-8D33986E3A72}"
 EndProject

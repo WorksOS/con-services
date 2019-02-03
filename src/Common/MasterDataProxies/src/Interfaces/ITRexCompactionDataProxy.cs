@@ -164,7 +164,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="stationOffsetRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+    Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetTRexRequest stationOffsetRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -173,7 +173,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="gridRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<Stream> SendGridReportRequest(CompactionReportGridRequest gridRequest,
+    Task<Stream> SendGridReportRequest(CompactionReportGridTRexRequest gridRequest,
       IDictionary<string, string> customHeaders = null);
   }
 }

@@ -79,8 +79,8 @@ namespace VSS.TRex.Webtools
 
       DIContext.Inject(services.BuildServiceProvider());
 
-      services.AddTransient<ISiteModelMetadata>(factory => new SiteModelMetadata()); // todoJeannie
-      services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());// todoJeannie
+      services.AddTransient<ISiteModelMetadata>(factory => new SiteModelMetadata()); 
+      services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
 
       services.AddTransient<ISiteModels>(factory => SwitchableGridContext.SwitchableSiteModelsContext());
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
