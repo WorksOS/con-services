@@ -36,13 +36,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataExport),
-        request.UserPrefs, (int)request.ExportType, request.CallerId, raptorFilter,
+        RaptorConverters.convertToRaptorUserPreferences(request.UserPrefs), (int)request.ExportType, request.CallerId, raptorFilter,
         RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
         request.TimeStampRequired, request.CellSizeRequired, request.RawData, request.RestrictSize, true,
         request.Tolerance, request.IncludeSurveydSurface,
-        request.Precheckonly, request.Filename, request.MachineList, (int)request.CoordType, (int)request.OutputType,
+        request.Precheckonly, request.Filename, RaptorConverters.convertToRaptorMachines(request.MachineList), (int)request.CoordType, (int)request.OutputType,
         request.DateFromUTC, request.DateToUTC,
-        request.Translations, request.ProjectExtents, out var dataexport);
+        RaptorConverters.convertToRaptorTranslations(request.Translations), 
+        RaptorConverters.convertToRaptorProjectExtents(request.ProjectExtents), out var dataexport);
 
       if (success)
       {

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
@@ -34,13 +37,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Cache for elevation extents
     /// </summary>
     private readonly IMemoryCache elevationExtentsCache;
-
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// 
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// For getting compaction settings for a project
     /// </summary>
@@ -72,9 +75,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public ElevationExtentsProxy(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
       this.log = logger.CreateLogger<ElevationExtentsProxy>();
       elevationExtentsCache = cache;
@@ -110,7 +119,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           var projectExtentsRequest = new ExtentRequest(projectId, projectUid,
             filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
           var extents =
-            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
+            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
+#if RAPTOR
+                raptorClient, 
+#endif
+                configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
               .Process(projectExtentsRequest) as ProjectExtentsResult;
           result = ElevationStatisticsResult.CreateElevationStatisticsResult(
             BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
@@ -128,11 +141,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
               liftSettings);
           statsRequest.Validate();
-
+#if RAPTOR
           result =
             RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
               .Process(statsRequest) as ElevationStatisticsResult;
-
+#else
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
         }
         //Check for 'No elevation range' result
         const double NO_ELEVATION = 10000000000.0;

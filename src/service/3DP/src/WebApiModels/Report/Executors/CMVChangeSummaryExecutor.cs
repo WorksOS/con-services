@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+#if RAPTOR
 using ASNode.CMVChange.RPC;
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -27,6 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       ProcessErrorCodes();
     }
 
+#if RAPTOR
     private CMVChangeSummaryResult ConvertResult(TASNodeCMVChangeResult result)
     {
       return new CMVChangeSummaryResult
@@ -35,19 +38,21 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         result.CoverageArea
       );
     }
-
+#endif
+    
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<CMVChangeSummaryRequest>(item);
-        
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CMV"))
         {
+#endif
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
-          return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;
+            return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;
+#if RAPTOR
         }
-
         new TASNodeCMVChangeResult();
 
         TASNodeCMVChangeSettings settings = new TASNodeCMVChangeSettings(request.CMVChangeSummaryValues);
@@ -64,6 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(result);
 
         throw CreateServiceException<CMVChangeSummaryExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -73,7 +79,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

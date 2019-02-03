@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
@@ -15,11 +18,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ProfileProductionDataController : Controller, IProfileProductionDataContract
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// LoggerFactory factory for use by executor
     /// </summary>
@@ -28,9 +32,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProfileProductionDataController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public ProfileProductionDataController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
     }
 
@@ -48,10 +58,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ProfileResult Post([FromBody] ProfileProductionDataRequest request)
     {
       request.Validate();
-
+#if RAPTOR
       return RequestExecutorContainerFactory
         .Build<ProfileProductionDataExecutor>(logger, raptorClient)
         .Process(request) as ProfileResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

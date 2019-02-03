@@ -1,6 +1,8 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -33,11 +35,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<PassCounts>(item);
-
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_PASSCOUNT"))
         {
+#endif
           var pcDetailsRequest = new PassCountDetailsRequest(request.ProjectUid, request.Filter, request.passCountSettings.passCounts);
           return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
@@ -53,6 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(passCountDetails, request.liftBuildSettings);
 
         throw CreateServiceException<DetailedPassCountExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -62,9 +67,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
-
+#if RAPTOR
     private PassCountDetailedResult ConvertResult(TPassCountDetails details, LiftBuildSettings liftSettings)
     {
       return new PassCountDetailedResult(
@@ -83,5 +90,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         PassCounts = settings.passCounts
       };
     }
+#endif
   }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net471;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>VSS.Productivity3D.WebApiTests</AssemblyName>
     <PackageId>WebApiTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -11,6 +11,34 @@
     <RootNamespace>VSS.Productivity3D.WebApiTests</RootNamespace>
     <Platforms>x64</Platforms>
   </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">    
+    <Compile Remove=".\TransferTests.cs" />
+
+    <Compile Remove=".\Common\RaptorConvertersTests.cs" />
+    
+    <Compile Remove=".\Compaction\Executors\CompactionCellDatumExecutorTests.cs" />    
+    <Compile Remove=".\Compaction\Executors\CompactionDesignProfileExecutorTests.cs" />
+    <Compile Remove=".\Compaction\Executors\CompactionProfileExecutorTests.cs" />
+    <Compile Remove=".\Compaction\Executors\ResultConverterTests.cs" />
+    
+    <Compile Remove=".\Compaction\Helpers\ProfilesHelperTests.cs" />
+    <Compile Remove=".\Compaction\Helpers\ExportRequestHelperTests.cs" />    
+
+    <Compile Remove=".\Compaction\Models\LineworkRequestTests.cs" />
+    <Compile Remove=".\Compaction\Models\OffsetStatisticsTests.cs" />
+    
+    <Compile Remove=".\Coord\Controllers\CoordinateSystemControllerTests.cs" />
+
+    <Compile Remove=".\MapHandling\BoundingBoxServiceTests.cs" />
+    
+    <Compile Remove=".\ProductionData\Controllers\ProfileProductionDataControllerTests.cs" />
+
+    <Compile Remove=".\Report\Executors\ExportReportExecutorTests.cs" />
+    <Compile Remove=".\Report\Models\GridRowTests.cs" />
+    <Compile Remove=".\Report\Models\StationOffsetRowTests.cs" />    
+  </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.csproj" />
@@ -74,7 +102,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

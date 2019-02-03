@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -123,6 +126,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
+#if RAPTOR
         var projectExtents = RequestExecutorContainerFactory
                              .Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
                              .Process(request) as ProjectStatisticsResult;
@@ -141,6 +145,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         //All other cases - proceed further
         return (true, filter);
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
       }
       catch
       {

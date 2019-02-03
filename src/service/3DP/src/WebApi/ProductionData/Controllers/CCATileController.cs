@@ -32,10 +32,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CCATileController : Controller, ICCATileContract
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
+#endif
     /// <summary>
     /// LoggerFactory for logging
     /// </summary>
@@ -72,12 +74,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="configStore">Configuration Store</param>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger,
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       this.geofenceProxy = geofenceProxy;
       this.logger = logger;
       log = logger.CreateLogger<CCATileController>();
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
@@ -174,7 +182,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private FileResult GetCCADataTile(TileRequest request)
     {
       var tileResult = RequestExecutorContainerFactory
-                         .Build<TilesExecutor>(this.logger, this.raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders:CustomHeaders)
+                         .Build<TilesExecutor>(this.logger,
+#if RAPTOR
+          this.raptorClient, 
+#endif
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders:CustomHeaders)
                          .Process(request) as TileResult;
 
       if (tileResult?.TileData == null)
@@ -221,7 +233,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               "No Geofence geometry found."));
 
-        geometry = RaptorConverters.GeometryToPoints(geometryWKT).ToList();
+        geometry = CommonConverters.GeometryToPoints(geometryWKT).ToList();
       }
 
       var filter = FilterResult.CreateFilterForCCATileRequest

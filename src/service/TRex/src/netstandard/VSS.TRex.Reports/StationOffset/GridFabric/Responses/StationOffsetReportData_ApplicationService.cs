@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses

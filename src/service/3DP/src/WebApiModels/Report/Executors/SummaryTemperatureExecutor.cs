@@ -1,6 +1,8 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -35,16 +37,19 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<TemperatureRequest>(item);
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
           var temperatureSummaryRequest = new TemperatureSummaryRequest(
             request.ProjectUid,
             request.Filter,
             request.TemperatureSettings);
 
           return trexCompactionDataProxy.SendTemperatureSummaryRequest(temperatureSummaryRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
@@ -60,6 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(temperatureSummary);
 
         throw CreateServiceException<SummaryTemperatureExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -69,9 +75,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
 
+#if RAPTOR
     private TemperatureSummaryResult ConvertResult(TTemperature summary)
     {
       return new TemperatureSummaryResult(
@@ -97,6 +106,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         OverrideMachineTarget = settings.OverrideTemperatureRange
       };
     }
-
+#endif
   }
 }
