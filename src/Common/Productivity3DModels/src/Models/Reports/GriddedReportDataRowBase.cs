@@ -6,7 +6,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  public class GriddedReportDataRowBase : IEquatable<GriddedReportDataRowBase>
+  public class GriddedReportDataRowBase
   {
     public double Northing { get; set; }
     public double Easting { get; set; }
@@ -22,6 +22,13 @@ namespace VSS.Productivity3D.Models.Models.Reports
     }
 
     public GriddedReportDataRowBase(
+      double northing, double easting, double elevation,
+      double cutFill, short cmv, short mdp, short passCount, short temperature)
+    {
+      SetValues(northing, easting, elevation, cutFill, cmv, mdp, passCount, temperature);
+    }
+
+    public void SetValues(
       double northing, double easting, double elevation,
       double cutFill, short cmv, short mdp, short passCount, short temperature)
     {
@@ -57,28 +64,6 @@ namespace VSS.Productivity3D.Models.Models.Reports
       Mdp = reader.ReadInt16();
       PassCount = reader.ReadInt16();
       Temperature = reader.ReadInt16();
-    }
-
-    public bool Equals(GriddedReportDataRowBase other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return Northing.Equals(other.Northing) &&
-             Easting.Equals(other.Easting) &&
-             Elevation.Equals(other.Elevation) &&
-             CutFill.Equals(other.CutFill) &&
-             Cmv.Equals(other.Cmv) &&
-             Mdp.Equals(other.Mdp) &&
-             PassCount.Equals(other.PassCount) &&
-             Temperature.Equals(other.Temperature);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((GriddedReportDataRowBase)obj);
     }
 
     public override int GetHashCode()
