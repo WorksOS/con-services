@@ -1,5 +1,7 @@
 ﻿using System;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -9,7 +11,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public const int PROFILE_TYPE_NOT_REQUIRED = -1;
     public const int PROFILE_TYPE_HEIGHT = 2;
     public const double ONE_MM = 0.001;
-
+#if RAPTOR
     public static bool CellGapExists(Velociraptor.PDSInterface.ProfileCell prevCell, Velociraptor.PDSInterface.ProfileCell currCell, out double prevStationIntercept)
     {
       return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
@@ -54,5 +56,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         // TODO throw an exception
       }
     }
+#endif
   }
 }

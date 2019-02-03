@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "palettes", Required = Required.Default)]
-    public TColourPalette[] palettes { get; private set; }
+    public ColorPalette[] palettes { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <param name="colorPalettes">A list of color palettes.</param>
     /// <returns>An instance of the CreateCCAColorPaletteResult class.</returns>
     /// 
-    public static CCAColorPaletteResult CreateCCAColorPaletteResult(TColourPalette[] colorPalettes)
+    public static CCAColorPaletteResult CreateCCAColorPaletteResult(ColorPalette[] colorPalettes)
     {
       return new CCAColorPaletteResult { palettes = colorPalettes };
     }

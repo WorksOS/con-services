@@ -2,6 +2,7 @@
 using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         // Datum...
         settings.DatumName,
         settings.DatumMethod,
-        settings.DatumMethodType,
+        RaptorConverters.convertCoordinateSystemDatumMethodType(settings.DatumMethodType),
         settings.LatitudeDatumGridFileName,
         settings.LongitudeDatumGridFileName,
         settings.IsDatumGridHeightShiftDefined,
@@ -70,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         // Geoid...
         settings.GeoidName,
         settings.GeoidMethod,
-        settings.GeoidMethodType,
+        RaptorConverters.convertCoordinateSystemGeoidMethodType(settings.GeoidMethodType),
         settings.GeoidFileName,
         settings.GeoidConstantSeparation,
         settings.GeoidOriginX,
@@ -82,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         settings.GeoidScaleFactor,
         // Projection
         settings.ProjectionType,
-        settings.ProjectionParameters,
+        RaptorConverters.convertCoordinateSystemProjectionParameters(settings.ProjectionParameters),
         settings.AzimuthDirection,
         settings.PositiveCoordinateDirection,
         // Others...

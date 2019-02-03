@@ -3,6 +3,7 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -51,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
                   "Failed to process CCA data colour palettes request sent to Raptor."));
             }
 
-            return CCAColorPaletteResult.CreateCCAColorPaletteResult(palettes.Transitions);
+            return CCAColorPaletteResult.CreateCCAColorPaletteResult(RaptorConverters.convertColorPalettes(palettes.Transitions));
           }
 
           throw new ServiceException(HttpStatusCode.BadRequest,

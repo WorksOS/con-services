@@ -26,11 +26,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
   public class CompactionReportController : BaseController<CompactionReportController>
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// The request factory
     /// </summary>
@@ -49,13 +50,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore,
+    public CompactionReportController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITRexCompactionDataProxy tRexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
@@ -135,7 +142,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+          .Build<CompactionReportGridExecutor>(LoggerFactory,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportGridRequest) as CompactionReportResult
       );
@@ -221,7 +232,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportRequest) as CompactionReportResult
       );

@@ -33,7 +33,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
+#if RAPTOR
     private IASNodeClient raptorClient;
+#endif
     private ILogger<T> logger;
     private ILoggerFactory loggerFactory;
     private IFilterServiceProxy filterServiceProxy;
@@ -59,9 +61,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the service exception handler.
     /// </summary>
     private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
-
+#if RAPTOR
     protected IASNodeClient RaptorClient => raptorClient ?? (raptorClient = HttpContext.RequestServices.GetService<IASNodeClient>());
-
+#endif
     /// <summary>
     /// Gets the application logging interface.
     /// </summary>

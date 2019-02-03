@@ -27,6 +27,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
     private const int ERROR_STATUS_OK = 0;
 
+#if RAPTOR
     /// <summary>
     /// Raptor client used in ProcessEx
     /// </summary>
@@ -36,6 +37,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Tag processor client interface used in ProcessEx
     /// </summary>
     protected ITagProcessor tagProcessor;
+#endif
 
     /// <summary>
     /// Logger for logging
@@ -158,13 +160,19 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, 
+    public void Initialise(ILogger logger,
+#if RAPTOR
+      IASNodeClient raptorClient,
+      ITagProcessor tagProcessor,
+#endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
       ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy, IDictionary<string, string> customHeaders)
     {
+      log = logger;
+#if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
-      log = logger;
+#endif
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.tileGenerator = tileGenerator;

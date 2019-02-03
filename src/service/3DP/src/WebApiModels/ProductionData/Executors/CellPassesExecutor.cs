@@ -146,22 +146,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       return new CellPassesResult.CellEventsValue
       {
-        eventAutoVibrationState = events.EventAutoVibrationState,
+        eventAutoVibrationState = RaptorConverters.convertAutoStateType(events.EventAutoVibrationState),
         eventDesignNameID = events.EventDesignNameID,
         eventICFlags = events.EventICFlags,
         EventInAvoidZoneState = events.EventInAvoidZoneState,
-        eventMachineAutomatics = events.EventMachineAutomatics,
-        eventMachineGear = events.EventMachineGear,
+        eventMachineAutomatics = RaptorConverters.convertGCSAutomaticsModeType(events.EventMachineAutomatics),
+        eventMachineGear = RaptorConverters.convertMachineGearType(events.EventMachineGear),
         eventMachineRMVThreshold = events.EventMachineRMVThreshold,
         EventMinElevMapping = events.EventMinElevMapping,
-        eventOnGroundState = events.EventOnGroundState,
-        eventVibrationState = events.EventVibrationState,
-        gPSAccuracy = events.GPSAccuracy,
+        eventOnGroundState = RaptorConverters.convertOnGroundStateType(events.EventOnGroundState),
+        eventVibrationState = RaptorConverters.convertVibrationStateType(events.EventVibrationState),
+        gPSAccuracy = RaptorConverters.convertGPSAccuracyType(events.GPSAccuracy),
         gPSTolerance = events.GPSTolerance,
         layerID = events.LayerID,
         mapReset_DesignNameID = events.MapReset_DesignNameID,
         mapReset_PriorDate = events.MapReset_PriorDate,
-        positioningTech = events.PositioningTech
+        positioningTech = RaptorConverters.convertPositioningTechType(events.PositioningTech)
       };
     }
 

@@ -107,10 +107,11 @@ namespace VSS.Productivity3D.WebApi
       {
         Log.LogWarning("Response caching disabled");
       }
-
+#if RAPTOR
       CheckRaptorAvailabilityIfRequired();
+#endif
     }
-
+#if RAPTOR
     /// <summary>
     /// Checks whether the Raptor is available if the condition is met.
     /// </summary>
@@ -150,7 +151,7 @@ namespace VSS.Productivity3D.WebApi
         Environment.Exit(138);
       }
     }
-
+#endif
     /// <summary>
     /// Custom URL rewriter. Replaces all occurrences of // with /.
     /// </summary>
