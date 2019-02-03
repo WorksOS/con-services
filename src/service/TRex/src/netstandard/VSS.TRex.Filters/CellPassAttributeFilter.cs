@@ -831,7 +831,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
           return false;
       }
 
@@ -940,7 +940,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
@@ -1056,7 +1056,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
