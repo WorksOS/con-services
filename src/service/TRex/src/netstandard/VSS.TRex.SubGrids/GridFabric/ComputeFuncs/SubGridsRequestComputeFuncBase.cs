@@ -10,7 +10,7 @@ using VSS.TRex.SubGrids.Executors;
 namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 {
   /// <summary>
-  /// The closure/function that implements subgrid request processing on compute nodes
+  /// The closure/function that implements sub grid request processing on compute nodes
   /// </summary>
   public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : BaseComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
     where TSubGridsRequestArgument : SubGridsRequestArgument
