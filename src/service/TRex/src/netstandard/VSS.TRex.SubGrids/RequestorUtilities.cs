@@ -25,8 +25,6 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public class RequestorUtilities : IRequestorUtilities
   {
-    //private static readonly ILogger Log = Logging.Logger.CreateLogger<RequestorUtilities>();
-
     private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     private ITRexSpatialMemoryCache _subGridCache;
@@ -144,7 +142,6 @@ namespace VSS.TRex.SubGrids
           x.Filter,
           false, // Override cell restriction
           BoundingIntegerExtent2D.Inverted(),
-          SubGridTreeConsts.SubGridTreeLevels,
           int.MaxValue, // MaxCellPasses
           areaControlSet,
           new FilteredValuePopulationControl(),

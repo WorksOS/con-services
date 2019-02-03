@@ -30,9 +30,7 @@ namespace VSS.TRex.SubGrids.Executors
     protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       if (Task == null)
-      {
         throw new ArgumentException("Task null in ProcessSubGridRequestResult() for SubGridsRequestComputeFuncAggregative<TArgument, TResponse> instance.");
-      }
 
       Task.TransferResponse(results);
     }

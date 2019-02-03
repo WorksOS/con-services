@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     public static class SegmentTimeRangeCalculator
     {
         /// <summary>
-        /// Calculates the time range covering all the cell passes within the given subgrid segment
+        /// Calculates the time range covering all the cell passes within the given sub grid segment
         /// </summary>
         /// <param name="segment"></param>
         /// <param name="startTime"></param>
