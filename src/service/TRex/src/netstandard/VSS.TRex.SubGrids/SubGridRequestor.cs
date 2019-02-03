@@ -229,9 +229,7 @@ namespace VSS.TRex.SubGrids
               return ServerRequestResult.FailedToComputeDesignFilterPatch;
             }
 
-            ServerRequestResult Result = retriever.RetrieveSubGrid(CellX, CellY,
-                                               // LiftBuildSettings,
-                                               ClientGrid, CellOverrideMask, DesignElevations);
+            ServerRequestResult Result = retriever.RetrieveSubGrid(CellX, CellY, /* LiftBuildSettings, */ ClientGrid, CellOverrideMask);
 
             // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
             if (Result == ServerRequestResult.NoError && SubGridCacheContext != null)

@@ -40,9 +40,9 @@ namespace VSS.TRex.SubGrids
     private bool _canUseGlobalLatestCells;
     private readonly bool _hasOverrideSpatialCellRestriction;
     private readonly BoundingIntegerExtent2D _overrideSpatialCellRestriction;
-    private readonly bool _prepareGridForCacheStorageIfNoSeiving;
+    private readonly bool _prepareGridForCacheStorageIfNoSieving;
     private readonly int _maxNumberOfPassesToReturn;
-    private AreaControlSet _areaControlSet;
+    private readonly AreaControlSet _areaControlSet;
 
     // Local state populated for the purpose of access from various local methods
     private IClientLeafSubGrid _clientGrid;
@@ -55,7 +55,7 @@ namespace VSS.TRex.SubGrids
     private ISubGrid _subGrid;
     private IServerLeafSubGrid _subGridAsLeaf;
 
-    private FilteredValueAssignmentContext _assignmentContext;
+    private readonly FilteredValueAssignmentContext _assignmentContext;
     private ISubGridSegmentIterator _segmentIterator;
     private SubGridSegmentCellPassIterator_NonStatic _cellPassIterator;
     private readonly IFilteredValuePopulationControl _populationControl;
@@ -72,7 +72,6 @@ namespace VSS.TRex.SubGrids
     private ISubGridCellLatestPassDataWrapper _globalLatestCells;
     private bool _useLastPassGrid; // Assume we can't use last pass data
 
-
     /// <summary>
     /// Constructor for the sub grid retriever helper
     /// </summary>
@@ -81,17 +80,17 @@ namespace VSS.TRex.SubGrids
     /// <param name="filter">The TRex spatial and attribute filtering description for the request</param>
     /// <param name="hasOverrideSpatialCellRestriction">The spatially selected cells are masked by a rectangular restriction boundary</param>
     /// <param name="overrideSpatialCellRestriction"></param>
-    /// <param name="prepareGridForCacheStorageIfNoSeiving">The cell coordinate bounding box restricting cells involved in the request</param>
-    /// <param name="maxNumberOfPassesToReturn"></param>
-    /// <param name="areaControlSet"></param>
-    /// <param name="populationControl"></param>
-    /// <param name="pDExistenceMap"></param>
+    /// <param name="prepareGridForCacheStorageIfNoSieving">The cell coordinate bounding box restricting cells involved in the request</param>
+    /// <param name="maxNumberOfPassesToReturn">The maximum number of passes in a cell in a sub grid that will be considered when processing the request</param>
+    /// <param name="areaControlSet">The skip/step area control set for selection of cells with sub grids for processing. Cells not identified by the control set will return null values.</param>
+    /// <param name="populationControl">The delegate responsible for populating events depended on for processing the request.</param>
+    /// <param name="pDExistenceMap">The production data existence map for the project the request relates to</param>
     public SubGridRetriever(ISiteModel siteModel,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
       bool hasOverrideSpatialCellRestriction,
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
-      bool prepareGridForCacheStorageIfNoSeiving,
+      bool prepareGridForCacheStorageIfNoSieving,
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
@@ -109,7 +108,7 @@ namespace VSS.TRex.SubGrids
       _hasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
       _overrideSpatialCellRestriction = overrideSpatialCellRestriction;
 
-      _prepareGridForCacheStorageIfNoSeiving = prepareGridForCacheStorageIfNoSeiving;
+      _prepareGridForCacheStorageIfNoSieving = prepareGridForCacheStorageIfNoSieving;
 
       _maxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
 
@@ -309,7 +308,7 @@ namespace VSS.TRex.SubGrids
           if (_sieveFilterInUse && !_sieveBitmask.BitSet(StripeIndex, J))
             continue;
 
-          if ((_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSeiving) && !_clientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) 
+          if ((_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSieving) && !_clientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) 
             continue; // This cell does not match the filter mask and should not be processed
 
           if (_gridDataType == GridDataType.CellProfile) // all requests using this data type should filter temperature range using last pass only
@@ -522,8 +521,7 @@ namespace VSS.TRex.SubGrids
     public ServerRequestResult RetrieveSubGrid(uint CellX, uint CellY,
       // liftBuildSettings          : TICLiftBuildSettings;
       IClientLeafSubGrid clientGrid,
-      SubGridTreeBitmapSubGridBits cellOverrideMask,
-      IClientHeightLeafSubGrid designElevations)
+      SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 
