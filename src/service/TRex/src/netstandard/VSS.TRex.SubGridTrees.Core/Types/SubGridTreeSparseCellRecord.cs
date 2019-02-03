@@ -13,17 +13,17 @@ namespace VSS.TRex.SubGridTrees.Types
         /// <summary>
         /// X ordinate of the in sub grid address of the cell
         /// </summary>
-        public byte CellX { get; set; }
+        public byte CellX { get; }
 
         /// <summary>
         /// Y ordinate of the in sub grid address of the cell
         /// </summary>
-        public byte CellY { get; set; }
+        public byte CellY { get; }
 
         /// <summary>
         /// Reference to the cell at the X, Y location
         /// </summary>
-        public ISubGrid Cell { get; set; }
+        public ISubGrid Cell { get; }
 
         public SubGridTreeSparseCellRecord(byte cellX, byte cellY, ISubGrid cell)
         {

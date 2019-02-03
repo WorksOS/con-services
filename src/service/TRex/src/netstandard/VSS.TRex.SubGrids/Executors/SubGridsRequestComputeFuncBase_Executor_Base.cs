@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Types;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -41,8 +39,6 @@ namespace VSS.TRex.SubGrids.Executors
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
-    private readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
-
     /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
@@ -50,8 +46,6 @@ namespace VSS.TRex.SubGrids.Executors
 
     private IClientLeafSubGridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
-
-    // private static int requestCount = 0;
 
     /// <summary>
     /// Mask is the internal sub grid bit mask tree created from the serialized mask contained in the 
@@ -85,19 +79,10 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private int listCount;
 
-    private AreaControlSet AreaControlSet = AreaControlSet.CreateAreaControlSet();
-
     /// <summary>
     /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
     /// </summary>
     private IDesign ReferenceDesign;
-
-    // private ITRexSpatialMemoryCache subGridCache;
-
-    // <summary>
-    // The DI injected TRex spatial memory cache for general sub grid results
-    // </summary>
-    // private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
 
     /// <summary>
     /// Cleans an array of client leaf sub grids by repatriating them to the client leaf sub grid factory
@@ -106,9 +91,7 @@ namespace VSS.TRex.SubGrids.Executors
     private void CleanSubGridResultArray(IClientLeafSubGrid[] SubGridResultArray)
     {
       if (SubGridResultArray != null)
-      {
         ClientLeafSubGridFactory.ReturnClientSubGrids(SubGridResultArray, SubGridResultArray.Length);
-      }
     }
 
     /// <summary>
@@ -154,9 +137,7 @@ namespace VSS.TRex.SubGrids.Executors
         }
 
         if (SubGridResultArray.Length == 0)
-        {
           return;
-        }
 
         try
         {
@@ -165,17 +146,17 @@ namespace VSS.TRex.SubGrids.Executors
             if (SubGridResultArray[I] == null)
               continue;
 
-            if (SubGridResultArray[I].GridDataType != RequestGridDataType)
+            var subGridResult = SubGridResultArray[I];
+
+            if (subGridResult.GridDataType != RequestGridDataType)
             {
               switch (RequestGridDataType)
               {
                 case GridDataType.SimpleVolumeOverlay:
-                  Debug.Assert(false, "SimpleVolumeOverlay not implemented");
-                  break;
+                  throw new TRexSubGridProcessingException("SimpleVolumeOverlay not implemented");
 
                 case GridDataType.Height:
-                  NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGrid(GridDataType.Height);
-                  NewClientGrids[I].CellSize = siteModel.Grid.CellSize;
+                  NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.Grid.CellSize, siteModel.Grid.NumLevels, subGridResult.OriginX, subGridResult.OriginY);
 
                   /*
                   Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
@@ -183,19 +164,19 @@ namespace VSS.TRex.SubGrids.Executors
                       Debug.Assert(SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubGridResultArray[I].GetType().Name}/{SubGridResultArray[I]}");
                   */
 
-                  (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubGridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
+                  (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(subGridResult as ClientHeightAndTimeLeafSubGrid);
                   break;
 
                 case GridDataType.CutFill:
                   // Just copy the height sub grid to new sub grid list
-                  NewClientGrids[I] = SubGridResultArray[I];
+                  NewClientGrids[I] = subGridResult;
                   SubGridResultArray[I] = null;
                   break;
               }
             }
             else
             {
-              NewClientGrids[I] = SubGridResultArray[I];
+              NewClientGrids[I] = subGridResult;
               SubGridResultArray[I] = null;
             }
           }
@@ -244,8 +225,6 @@ namespace VSS.TRex.SubGrids.Executors
       // Set up any required cut fill design
       if (arg.ReferenceDesignUID != Guid.Empty)
         ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignUID);
-
-      AreaControlSet = arg.AreaControlSet;
     }
 
     /// <summary>
@@ -255,11 +234,8 @@ namespace VSS.TRex.SubGrids.Executors
     /// <param name="address"></param>
     /// <param name="clientGrid"></param>
     private ServerRequestResult PerformSubGridRequest(ISubGridRequestor requester,
-      SubGridCellAddress address,
-      out IClientLeafSubGrid clientGrid)
+      SubGridCellAddress address, out IClientLeafSubGrid clientGrid)
     {
-      // Log.InfoFormat("Requesting sub grid #{0}:{1}", ++requestCount, address.ToString());
-
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
         ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
@@ -301,14 +277,14 @@ namespace VSS.TRex.SubGrids.Executors
           {
             // The cut fill is defined between two production data derived height sub grids
             // depending on volume type work out height difference
-            CutFillUtilities.ComputeCutFillSubgrid((IClientHeightLeafSubGrid) ClientArray[0], // 'base'
+            CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid) ClientArray[0], // 'base'
               (IClientHeightLeafSubGrid) ClientArray[1]); // 'top'
           }
           else
           {
             // The cut fill is defined between one production data derived height sub grid and a
             // height sub grid to be calculated from a designated design
-            if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
+            if (!CutFillUtilities.ComputeCutFillSubGrid(ClientArray[0], // base
               ReferenceDesign, // 'top'
               localArg.ProjectID,
               out _ /*ProfilerRequestResult*/))
@@ -376,6 +352,11 @@ namespace VSS.TRex.SubGrids.Executors
 
     private readonly List<Task> tasks = new List<Task>();
 
+    /// <summary>
+    /// Processes a bucket of sub grids by creating a task for it and adding it to the tasks list for the request
+    /// </summary>
+    /// <param name="addressList"></param>
+    /// <param name="addressCount"></param>
     private void ProcessSubGridAddressGroup(SubGridCellAddress[] addressList, int addressCount)
     {
       SubGridCellAddress[] addressListCopy = new SubGridCellAddress[addressCount];
@@ -422,7 +403,7 @@ namespace VSS.TRex.SubGrids.Executors
       addresses = new SubGridCellAddress[AddressBucketSize];
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
-      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
 
       // Request production data only, or hybrid production data and surveyed surface data sub grids
       ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
@@ -468,7 +449,11 @@ namespace VSS.TRex.SubGrids.Executors
       return null;
     }
 
-  public TSubGridRequestsResponse Execute()
+    /// <summary>
+    /// Executes the request for sub grids
+    /// </summary>
+    /// <returns></returns>
+    public TSubGridRequestsResponse Execute()
     {
       long NumSubGridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
 

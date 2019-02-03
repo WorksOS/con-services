@@ -37,12 +37,11 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
     /// and initializes the requester state ready to start processing individual sub grid requests.
     /// </summary>
-    void Initialize(ISiteModel sitemodel,
+    void Initialize(ISiteModel siteModel,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
       bool hasOverrideSpatialCellRestriction,
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
-      byte treeLevel,
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,

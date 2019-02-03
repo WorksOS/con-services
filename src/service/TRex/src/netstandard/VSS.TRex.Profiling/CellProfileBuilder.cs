@@ -238,7 +238,7 @@ namespace VSS.TRex.Profiling
       DesignElevations = null;
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
-      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
 
       for (int loopBound = NEECoords.Length - 1, I = 0; I < loopBound; I++)
       {

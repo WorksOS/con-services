@@ -217,7 +217,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
-      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + 2 * HEIGHT_DECREMENT);
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + 2 * (HEIGHT_DECREMENT / 2));
     }
 
     [Fact(Skip = "Not complete")]
