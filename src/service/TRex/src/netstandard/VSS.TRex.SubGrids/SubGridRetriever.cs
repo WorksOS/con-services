@@ -153,7 +153,6 @@ namespace VSS.TRex.SubGrids
             // with the minimum elevation mapping mode selected then scan all cell passes until one is encountered
             // which fails that test. The filtered cell pass is then set to be the cell pass with the lowest 
             // measured elevation of that set of cell passes
-
             var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
             var machine = _siteModel.Machines[internalMachineIndex];
             bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
@@ -162,6 +161,8 @@ namespace VSS.TRex.SubGrids
 
             if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
             {
+              // TODO: Assumption validation: Once this workflow is entered the only expected output is the cell pass with the lowest elevation per the selection rules below.
+
               CellPass _nextCurrentPass = new CellPass();
               CellPass _lowestPass = _currentPass.FilteredPass;
 
