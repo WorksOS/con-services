@@ -72,7 +72,9 @@ namespace VSS.TRex.SubGrids
     private ISubGridCellLatestPassDataWrapper _globalLatestCells;
     private bool _useLastPassGrid; // Assume we can't use last pass data
 
-    private SubGridTreeBitmapSubGridBits _aggregatedCellScanMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    private readonly SubGridTreeBitmapSubGridBits _aggregatedCellScanMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    private bool _selectCellPassAccordingToMinimumElevationMappingMode = false;
 
     /// <summary>
     /// Constructor for the sub grid retriever helper
@@ -88,6 +90,7 @@ namespace VSS.TRex.SubGrids
     /// <param name="populationControl">The delegate responsible for populating events depended on for processing the request.</param>
     /// <param name="pDExistenceMap">The production data existence map for the project the request relates to</param>
     public SubGridRetriever(ISiteModel siteModel,
+      GridDataType gridDataType,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
       bool hasOverrideSpatialCellRestriction,
@@ -99,6 +102,7 @@ namespace VSS.TRex.SubGrids
       ISubGridTreeBitMask pDExistenceMap)
     {
       _siteModel = siteModel;
+      _gridDataType = gridDataType;
       _storageProxy = storageProxy;
       _segmentIterator = null;
       _cellPassIterator = null;
@@ -124,21 +128,73 @@ namespace VSS.TRex.SubGrids
       _assignmentContext = new FilteredValueAssignmentContext();
     }
 
+    /// <summary>
+    /// Performs primary filtered iteration over cell passes in the cell being processed to determine the cell pass
+    /// to be selected.
+    /// </summary>
     private void ProcessCellPasses()
     {
       bool haveHalfPass = false;
       int passRangeCount = 0;
+      bool firstFilteredCellPass = true;
 
       while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
              _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
       {
-        FiltersValuePopulation.PopulateFilteredValues(
-          _siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex],
+        FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex],
           _populationControl, ref _currentPass);
 
         if (_filter.AttributeFilter.FilterPass(ref _currentPass))
         {
-          bool takePass;
+          // -->###US79098###
+          if (firstFilteredCellPass) // && _selectCellPassAccordingToMinimumElevationMappingMode)
+          {
+            // if the first filtered pass returned by GetNextCellPass was recorded by an Excavator machine
+            // with the minimum elevation mapping mode selected then scan all cell passes until one is encountered
+            // which fails that test. The filtered cell pass is then set to be the cell pass with the lowest 
+            // measured elevation of that set of cell passes
+
+            var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
+            var machine = _siteModel.Machines[internalMachineIndex];
+            bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+            var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_currentPass.FilteredPass.Time, out _);
+            bool minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
+
+            if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
+            {
+              CellPass _nextCurrentPass = new CellPass();
+              CellPass _lowestPass = _currentPass.FilteredPass;
+
+              while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _nextCurrentPass))
+              {
+                var nextInternalMachineIndex = _nextCurrentPass.InternalSiteModelMachineIndex;
+                var nextMachine = _siteModel.Machines[nextInternalMachineIndex];
+                bool nextMachineIsAnExcavator = nextMachine.MachineType == MachineType.Excavator;
+                var nextMappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_nextCurrentPass.Time, out _);
+                bool nextMinimumElevationMappingModeAtCellPassTime = nextMappingMode == ElevationMappingMode.MinimumElevation;
+
+                if (nextMachineIsAnExcavator && nextMinimumElevationMappingModeAtCellPassTime)
+                {
+                  // Still an excavator machine, check if this pass is lower than the lowest.
+                  if (_nextCurrentPass.Height < _lowestPass.Height)
+                    _lowestPass = _nextCurrentPass;
+                }
+                else
+                {
+                  // This cell pass was made by a new machine not meeting the filter, or minimum elevation mapping mode.
+                  // This terminates search for lowest pass; Return the lowest elevation cell pass encountered in the search.
+                  break;
+                }
+              }
+
+              _currentPass.FilteredPass = _lowestPass;
+              FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
+              _haveFilteredPass = true;
+              _assignmentContext.FilteredValue.PassCount = -1;
+            }
+          }
+          // <--###US79098###
+
           if (_filter.AttributeFilter.HasPassCountRangeFilter)
           {
             if (_currentPass.FilteredPass.HalfPass)
@@ -148,20 +204,19 @@ namespace VSS.TRex.SubGrids
               haveHalfPass = !haveHalfPass;
             }
             else
+            {
               ++passRangeCount; // increase count for first full pass
+            }
 
-            takePass = Range.InRange(passRangeCount, _filter.AttributeFilter.PasscountRangeMin, _filter.AttributeFilter.PasscountRangeMax);
+            if (!Range.InRange(passRangeCount, _filter.AttributeFilter.PasscountRangeMin, _filter.AttributeFilter.PasscountRangeMax))
+              continue;
           }
-          else
-            takePass = true;
-
-          if (!takePass) continue;
 
           if (_filter.AttributeFilter.HasElevationTypeFilter)
             _assignmentContext.FilteredValue.PassCount = 1;
 
-          if (_filter.AttributeFilter.HasElevationMappingModeFilter || (_filter.AttributeFilter.HasElevationTypeFilter &&
-                                                                        _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
+          // Track cell passes against lowest/highest elevation criteria
+          if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Lowest)
           {
             if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
               _tempPass = _currentPass;
@@ -175,11 +230,14 @@ namespace VSS.TRex.SubGrids
           }
           else
           {
+            // All criteria have been met for acceptance of this pass
             _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
             _haveFilteredPass = true;
             _assignmentContext.FilteredValue.PassCount = -1;
             break;
           }
+
+          firstFilteredCellPass = false;
         }
       }
     }
@@ -294,12 +352,12 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     /// <param name="StripeIndex"></param>
     /// <returns></returns>
-    private ServerRequestResult RetrieveSubGridStripe(byte StripeIndex)
+    private void RetrieveSubGridStripe(byte StripeIndex)
     {
-      int TopMostLayerPassCount = 0;
+    //  int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
 
-      // if (Debug_ExtremeLogSwitchD) Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {CellX}x{CellY}");
+      // if (Debug_ExtremeLogSwitchD) Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
       try
       {
@@ -307,41 +365,51 @@ namespace VSS.TRex.SubGrids
         for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
         {
           // If this cell is not included in the scan mask then prune execution here for the cell
-          if (!_aggregatedCellScanMap.BitSet(StripeIndex, J))
+          // For pass attributes that are maintained on a historical last pass basis (meaning their values bubble up through cell passes where the values of
+          // those attributes are null), check the global latest pass version of those values. If they are null, then no further work needs to be done
+          if (!_aggregatedCellScanMap.BitSet(StripeIndex, J) || LatestCellPassAttributeIsNull(StripeIndex, J))
             continue;
 
           if (_gridDataType == GridDataType.CellProfile) // all requests using this data type should filter temperature range using last pass only
             _filter.AttributeFilter.FilterTemperatureByLastPass = true;
 
-          // For pass attributes that are maintained on a historical last pass basis (meaning their values bubble up through cell passes where the values of
-          // those attributes are null), check the global latest pass version of those values. If they are null, then no further work needs to be done
-
-          if (LatestCellPassAttributeIsNull(StripeIndex, J))
-            continue;
-
           _haveFilteredPass = false;
+          _selectCellPassAccordingToMinimumElevationMappingMode = false;
 
           // ###US79098### -->
           if (_useLastPassGrid)
           {
             // Determine if there is an elevation mapping mode that may require searching through cell passes. If so, the last pass grid can
-            // only be used if the machine that recorded that last pass is not an excavator with an elevation mode set to MinimumHeight
-            if (_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
+            // only be used if the machine that recorded that last pass is not an excavator with an elevation mode set to MinimumHeight.
+            // This only applies if there is not an elevation mapping mode filter selecting cells with LatestPass mapping mode
+            if ((_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
+              && !(_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.LatestElevation))
             {
-              var machine = _siteModel.Machines[_globalLatestCells[StripeIndex, J].InternalSiteModelMachineIndex];
+              var internalMachineIndex = _globalLatestCells[StripeIndex, J].InternalSiteModelMachineIndex;
+              var machine = _siteModel.Machines[internalMachineIndex];
 
               bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
-              bool minimumElevationMappingModeAtLatestCellPassTime = false;
+              var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.LastStateValue();
+              //var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_globalLatestCells[StripeIndex, J].Time, out _);
+
+              bool minimumElevationMappingModeAtLatestCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
 
               if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
+              {
+                // It is not possible to use the latest cell pass to answer the query - force the query engine  into the cell pass examination work flow
                 _useLastPassGrid = false;
+                _canUseGlobalLatestCells = false;
+
+                // Flag this cell as using the minimum elevation cell pass selection workflow
+                _selectCellPassAccordingToMinimumElevationMappingMode = true;
+              }
             }
           }
           // <-- ###US79098###
 
           if (_useLastPassGrid)
           {
-            // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Using last pass grid");
+            // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using last pass grid");
 
             AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref _assignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
 
@@ -353,16 +421,16 @@ namespace VSS.TRex.SubGrids
           }
           else
           {
-            // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Using profiler");
+            // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using profiler");
 
             _filter.AttributeFilter.InitaliaseFilteringForCell(StripeIndex, J);
 
-            if (_profiler != null) // we don't need this anymore as the logic is implemented in lift builder
+            if (_profiler != null)
             {
               // While we have been given a profiler, we may not need to use it to analyze layers in the cell pass stack.
               // The layer analysis in this operation is intended to locate cell passes belonging to superseded layers,
               // in which case they are not considered for providing the requested value. However, if there is no filter
-              // is in effect, then the global latest information for the sub grid may be consulted first to see if the
+              // in effect, then the global latest information for the sub grid may be consulted first to see if the
               // appropriate values came from the last physically collected cell pass in the cell. Note that the tracking
               // of latest values is also true for time, so that the time recorded in the latest values structure also
               // includes that cell pass time.
@@ -395,14 +463,14 @@ namespace VSS.TRex.SubGrids
               {
                 _cellPassIterator.SetCellCoordinatesInSubgrid(StripeIndex, J);
 
-                // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Calling BuildLiftsForCell");
+                // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
 
                 if (_profiler.CellLiftBuilder.Build(_cellProfile, _clientGrid,
                     _assignmentContext, // Place a filtered value into this assignment context
                     _cellPassIterator, // Iterate over the cells using this cell pass iterator
                     true)) // Return an individual filtered value
                 {
-                  TopMostLayerPassCount = _profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
+                  // TopMostLayerPassCount = _profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
                   TopMostLayerCompactionHalfPassCount = _profiler.CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
 
                   // Filtered value selection is combined with lift analysis in this context via
@@ -419,7 +487,7 @@ namespace VSS.TRex.SubGrids
                     _haveFilteredPass = true;
                 }
 
-                // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Call to BuildLiftsForCell completed");
+                // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Call to BuildLiftsForCell completed");
               }
             }
             else
@@ -433,9 +501,8 @@ namespace VSS.TRex.SubGrids
               ProcessCellPasses();
 
               if (_haveFilteredPass &&
-                  (_filter.AttributeFilter.HasElevationMappingModeFilter ||
-                   (_filter.AttributeFilter.HasElevationTypeFilter &&
-                    (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest))))
+                  (_filter.AttributeFilter.HasElevationTypeFilter &&
+                   (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest)))
               {
                 _assignmentContext.FilteredValue.FilteredPassData = _tempPass;
                 _assignmentContext.FilteredValue.PassCount = -1;
@@ -468,12 +535,10 @@ namespace VSS.TRex.SubGrids
             }
           }
         }
-
-        return ServerRequestResult.NoError;
       }
       finally
       {
-        //if (Debug_ExtremeLogSwitchD) Log.LogDebug("Completed stripe iteration {StripeIndex} at {CellX}x{CellY}");
+        //if (Debug_ExtremeLogSwitchD) Log.LogDebug("Completed stripe iteration {StripeIndex} at {clientGrid.OriginX}x{clientGrid.OriginY}");
       }
     }
 
@@ -504,42 +569,47 @@ namespace VSS.TRex.SubGrids
       }
     }
 
+    private bool _commonCellPassStackExaminationDone = false;
+
     private void SetupForCellPassStackExamination()
     {
-      _populationControl.PreparePopulationControl(_gridDataType, /* todo LiftBuildSettings, */ _filter.AttributeFilter, _clientGrid);
+      if (!_commonCellPassStackExaminationDone)
+      {
+        _populationControl.PreparePopulationControl(_gridDataType, /* todo LiftBuildSettings, */ _filter.AttributeFilter, _clientGrid.EventPopulationFlags);
 
-      _filter.AttributeFilter.RequestedGridDataType = _gridDataType;
+        _filter.AttributeFilter.RequestedGridDataType = _gridDataType;
 
-      // Create and configure the segment iterator to be used
+        // Create and configure the segment iterator to be used
+        _segmentIterator = new SubGridSegmentIterator(_subGridAsLeaf, _subGridAsLeaf.Directory, _storageProxy);
 
-      _segmentIterator = new SubGridSegmentIterator(_subGridAsLeaf, _subGridAsLeaf.Directory, _storageProxy);
+        if (_filter.AttributeFilter.HasMachineFilter)
+          _segmentIterator.SetMachineRestriction(_filter.AttributeFilter.MachineIDSet);
+
+        // Create and configure the cell pass iterator to be used
+
+        _cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(_segmentIterator);
+        _cellPassIterator.SetTimeRange(_filter.AttributeFilter.HasTimeFilter, _filter.AttributeFilter.StartTime, _filter.AttributeFilter.EndTime);
+
+        _commonCellPassStackExaminationDone = true;
+      }
 
       if (_filter.AttributeFilter.ReturnEarliestFilteredCellPass ||
-          (_filter.AttributeFilter.HasElevationTypeFilter &&
-           (_filter.AttributeFilter.ElevationType == ElevationType.First)))
+          (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.First))
         _segmentIterator.IterationDirection = IterationDirection.Forwards;
       else
         _segmentIterator.IterationDirection = IterationDirection.Backwards;
 
       _segmentIterator.SubGrid = _subGridAsLeaf;
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
-
-      if (_filter.AttributeFilter.HasMachineFilter)
-        _segmentIterator.SetMachineRestriction(_filter.AttributeFilter.MachineIDSet);
-
-      // Create and configure the cell pass iterator to be used
-
-      _cellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(_segmentIterator);
-      _cellPassIterator.SetTimeRange(_filter.AttributeFilter.HasTimeFilter,
-        _filter.AttributeFilter.StartTime,
-        _filter.AttributeFilter.EndTime);
     }
 
-    public ServerRequestResult RetrieveSubGrid(uint CellX, uint CellY,
-      // liftBuildSettings          : TICLiftBuildSettings;
+    public ServerRequestResult RetrieveSubGrid(// liftBuildSettings          : TICLiftBuildSettings;
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
+      if (clientGrid.GridDataType != _gridDataType)
+        throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] does not match grid data type of retriever [{_gridDataType}]");
+
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 
       //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]), slmcDebug);
@@ -547,7 +617,6 @@ namespace VSS.TRex.SubGrids
       // Set up class local state for other methods to access
       _clientGrid = clientGrid;
       _clientGridAsLeaf = clientGrid as ClientLeafSubGrid;
-      _gridDataType = clientGrid.GridDataType;
 
       _canUseGlobalLatestCells &=
        // todo: Readd when liftbuildsettings available
@@ -606,16 +675,16 @@ namespace VSS.TRex.SubGrids
         }
 
         // First get the sub grid we are interested in
-        // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
+        // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]), slmcDebug); {SKIP}
 
-        _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, CellX, CellY, _siteModel.Grid.NumLevels, false, false);
+        _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, clientGrid.OriginX, clientGrid.OriginY, _siteModel.Grid.NumLevels, false, false);
 
-        //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
+        //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.Origin]), slmcDebug); {SKIP}
 
         if (_subGrid == null) // This should never really happen, but we'll be polite about it
         {
           Log.LogWarning(
-            $"Sub grid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing sub grid in the data model. Returning SubGridNotFound as response with a null sub grid reference.");
+            $"Sub grid address (CellX={clientGrid.OriginX}, CellY={clientGrid.OriginY}) passed to LocateSubGridContaining() from RetrieveSubGrid() did not match an existing sub grid in the data model. Returning SubGridNotFound as response with a null sub grid reference.");
           return ServerRequestResult.SubGridNotFound;
         }
 
@@ -633,7 +702,7 @@ namespace VSS.TRex.SubGrids
           return Result;
         }
 
-        // SIGLogMessage.PublishNoODS(Nil, Format('Getting sub grid leaf at %dx%d', [CellX, CellY]), slmcDebug);
+        // SIGLogMessage.PublishNoODS(Nil, Format('Getting sub grid leaf at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]), slmcDebug);
 
         _subGridAsLeaf = (IServerLeafSubGrid) _subGrid;
         _globalLatestCells = _subGridAsLeaf.Directory.GlobalLatestCells;
@@ -649,10 +718,9 @@ namespace VSS.TRex.SubGrids
           return ServerRequestResult.FailedToComputeDesignFilterPatch;
         }
 
-        // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [CellX, CellY]), slmcDebug);
-
-        if (!_useLastPassGrid)
-          SetupForCellPassStackExamination();
+        // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]), slmcDebug);
+        
+        SetupForCellPassStackExamination();
 
         // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
         if (_clientGrid.WantsLiftProcessingResults())
@@ -679,7 +747,7 @@ namespace VSS.TRex.SubGrids
           _areaControlSet.PixelYWorldSize = 0;
         }
 
-        //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {CellX}x{CellY}");
+        //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
         // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
         // knowledge, which cells need to be visited
@@ -695,7 +763,7 @@ namespace VSS.TRex.SubGrids
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
           RetrieveSubGridStripe(I);
 
-        //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {CellX}x{CellY}");
+        //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
         Result = ServerRequestResult.NoError;
       }
