@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
@@ -146,7 +145,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     [JsonProperty(PropertyName = "compress", Required = Required.Default)]
     public bool compress { get; protected set; }
 
-    public TTranslation[] translations { get; private set; }
+    public TranslationDescriptor[] translations { get; private set; }
 
     protected ExportGridCSV()
     { }
@@ -212,7 +211,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         }
       }
 
-      translations = new TTranslation[6];
+      translations = new TranslationDescriptor[6];
       translations[0].ID = 0;
       translations[0].Translation = "Problem occured processing export.";
       translations[1].ID = 1;

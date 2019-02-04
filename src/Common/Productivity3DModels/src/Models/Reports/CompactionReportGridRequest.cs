@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     { }
 
     public static CompactionReportGridRequest CreateCompactionReportGridRequest(
-      long projectId,
+      long? projectId,
       Guid? projectUid,
       FilterResult filter,
       long filterId,
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       bool reportTemperature,
       bool reportCutFill,
       DesignDescriptor designFile,
-      double? gridInerval,
+      double? gridInterval,
       GridReportOption gridReportOption,
       double startNorthing,
       double startEasting,
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
         ReportTemperature = reportTemperature,
         ReportCutFill = reportCutFill,
         DesignFile = designFile,
-        GridInterval = gridInerval ?? ValidationConstants3D.DEFAULT_SPACING_INERVAL,
+        GridInterval = gridInterval ?? ValidationConstants3D.DEFAULT_SPACING_INTERVAL,
         GridReportOption = gridReportOption,
         StartNorthing = startNorthing,
         StartEasting = startEasting,

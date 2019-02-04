@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -22,15 +24,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ProjectVerifier]
   public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
   {
+#if RAPTOR
     private readonly IASNodeClient raptorClient;
+#endif
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    public SurveyedSurfaceController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public SurveyedSurfaceController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
     }
 
@@ -43,7 +53,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult Post([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorPost>(logger, raptorClient).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -59,10 +74,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
       ssId.Validate();
-
+#if RAPTOR
       return
           RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorDelete>(logger, raptorClient)
               .Process(new Tuple<ProjectID, DataID>(projId, ssId));
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -79,15 +98,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
       ssId.Validate();
-
+#if RAPTOR
       return
           RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorDelete>(logger, raptorClient)
               .Process(new Tuple<ProjectID, DataID>(projId, ssId));
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
-    /// <summary>
-    /// Gets a Surveyed Surface list from Raptor.
-    /// </summary>
+      /// <summary>
+      /// Gets a Surveyed Surface list from Raptor.
+      /// </summary>
     [HttpGet]
     [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] long projectId)
@@ -95,7 +118,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ProjectID request = new ProjectID(projectId);
 
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient).Process(request) as SurveyedSurfaceResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -109,21 +137,31 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ProjectID request = new ProjectID(projectId, projectUid);
 
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient).Process(request) as SurveyedSurfaceResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
-    /// <summary>
-    /// Updates an existing Surveyed Surface data in a Raptor's list of surveyed surfaces if the target
-    /// exists, otherwise - adds a new Surveyed Surface to the list.
-    /// </summary>
-    /// <param name="request">Description of the Surveyed Surface request.</param>
+      /// <summary>
+      /// Updates an existing Surveyed Surface data in a Raptor's list of surveyed surfaces if the target
+      /// exists, otherwise - adds a new Surveyed Surface to the list.
+      /// </summary>
+      /// <param name="request">Description of the Surveyed Surface request.</param>
     [PostRequestVerifier]
     [Route("api/v1/surveyedsurfaces/post")]
     [HttpPost]
     public ContractExecutionResult PostPut([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorPut>(logger, raptorClient).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -136,7 +174,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult PostDelete([FromBody] DesignNameRequest request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<DesignNameUpdateCacheExecutor>(logger, raptorClient).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

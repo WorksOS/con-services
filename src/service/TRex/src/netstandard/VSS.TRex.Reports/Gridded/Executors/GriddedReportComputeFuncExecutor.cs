@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -24,7 +25,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Reports.Gridded.Executors
 {
   /// <summary>
-  /// Generates a patch of subgrids from a wider query
+  /// Generates a patch of sub grids from a wider query
   /// </summary>
   public class GriddedReportComputeFuncExecutor
   {
@@ -141,7 +142,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
         if (cutFillDesign == null)
         {
-          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognised design in project {_griddedReportRequestArgument.ProjectID}");
+          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
         }
 
         cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
@@ -182,8 +183,8 @@ namespace VSS.TRex.Reports.Gridded.Executors
             : Consts.NullHeight,
 
           // CCV is equiv to CMV in this instance
-          Cmv = (short) (griddedReportRequestArgument.ReportCMV ? cell.LastPassValidCCV : CellPassConsts.NullCCV),
-          Mdp = (short) (griddedReportRequestArgument.ReportMDP ? cell.LastPassValidMDP : CellPassConsts.NullMDP),
+          Cmv = (short) (griddedReportRequestArgument.ReportCmv ? cell.LastPassValidCCV : CellPassConsts.NullCCV),
+          Mdp = (short) (griddedReportRequestArgument.ReportMdp ? cell.LastPassValidMDP : CellPassConsts.NullMDP),
           PassCount = (short) (griddedReportRequestArgument.ReportPassCount ? cell.PassCount : CellPassConsts.NullPassCountValue),
           Temperature = (short) (griddedReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : CellPassConsts.NullMaterialTemperatureValue)
         });

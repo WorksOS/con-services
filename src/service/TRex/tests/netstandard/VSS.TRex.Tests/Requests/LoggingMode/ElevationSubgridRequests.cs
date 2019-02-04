@@ -209,8 +209,19 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       subGridHeight.Cells[0, 0].Should().Be(MINIMUM_HEIGHT);
     }
 
-    [Fact(Skip = "Partially implemented test for elevation mapping mode")]
-    public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes()
+    [Fact()]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_NoFilter()
+    {
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { new CombinedFilter() });
+
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + 2 * (HEIGHT_DECREMENT / 2));
+    }
+
+    [Fact(Skip = "Not complete")]
+    public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_WithFilterOnMinimumElevationMode()
     {
       var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
@@ -223,8 +234,9 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
       var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
 
-      // Check cell has no height selected as no cell pass matches Maximum elevation mode
-      subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
+      // Until elevation mode behaviour implement, this should return the most recent minimum elevation pass
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT);
     }
+
   }
 }

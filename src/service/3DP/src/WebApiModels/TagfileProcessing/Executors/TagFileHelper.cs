@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using TAGProcServiceDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         log.LogError(e, $"SendTagFileToTRex: returned exception");
       }
 
-      return new ContractExecutionResult((int) TTAGProcServerProcessResult.tpsprUnknown);
+      return new ContractExecutionResult((int) TAGProcServerProcessResultCode.Unknown);
     }
   }
 }

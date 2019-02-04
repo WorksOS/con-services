@@ -42,8 +42,11 @@ namespace VSS.Productivity3D.WebApi
     {
       //TODO We may switch over to IOptions as it is safer - proactive config validation vs lazy and strongly typed config values
       services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
+#if RAPTOR
       services.AddScoped<IASNodeClient, ASNodeClient>();
       services.AddScoped<ITagProcessor, TagProcessor>();
+      services.AddScoped<IErrorCodesProvider, RaptorResult>();
+#endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
@@ -57,7 +60,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
       services.AddScoped<IFilterServiceProxy, FilterServiceProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, RaptorResult>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<IBoundaryProxy, BoundaryProxy>();
@@ -94,7 +96,6 @@ namespace VSS.Productivity3D.WebApi
         x.UseDashboard(); //View dashboard at http://localhost:5000/cap
       });
       */
-      serviceCollection = services;
     }
   }
 }

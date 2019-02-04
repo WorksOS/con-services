@@ -4,6 +4,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
@@ -278,7 +279,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           }
         case DisplayMode.CMVChange:
           {
-            const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
+            const int NO_CCV = VelociraptorConstants.NO_CCV;
 
             var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings(projectSettings);
             var cmvPercentChangeColors = projectSettingsColors.useDefaultCMVPercentColors.HasValue &&

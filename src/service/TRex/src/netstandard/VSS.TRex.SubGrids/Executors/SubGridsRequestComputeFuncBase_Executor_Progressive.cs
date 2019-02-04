@@ -23,7 +23,6 @@ namespace VSS.TRex.SubGrids.Executors
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Progressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     private IMessaging rmtMsg;
-
     private string tRexNodeIDAsString = string.Empty;
 
     /// <summary>

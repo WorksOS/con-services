@@ -26,7 +26,6 @@ namespace VSS.Productivity3D.WebApi
     const string MIN_IO_THREADS = "MIN_IO_THREADS";
     const string DEFAULT_CONNECTION_LIMIT = "DEFAULT_CONNECTION_LIMIT";
 
-
     /// <summary>
     /// Default program entry point.
     /// </summary>
@@ -38,6 +37,8 @@ namespace VSS.Productivity3D.WebApi
         .AddCommandLine(args)
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
+
+      Log4NetProvider.RepoName = Startup.LoggerRepoName;
 
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
@@ -62,7 +63,6 @@ namespace VSS.Productivity3D.WebApi
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
         {
-          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Debug);
           builder.AddConfiguration(config);

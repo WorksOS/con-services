@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
 
       [TestMethod]
-      public void Should_set_Filter1_from_topFilter_When_VolCalType_is_valid()
+      public void Should_set_Filter1_from_topFilter_When_VolCalType_valid()
       {
         InitRequestHelper();
         requestHelper.SetVolumeCalcType(VolumeCalcType.GroundToGround);

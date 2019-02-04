@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
@@ -29,6 +28,16 @@ namespace VSS.WebApi.Common
     protected IServiceCollection Services { get; private set; }
 
     /// <summary>
+    /// Gets the default IServiceProvider.
+    /// </summary>
+    protected ServiceProvider ServiceProvider { get; private set; }
+
+    /// <summary>
+    /// Gets the ILogger type used for logging.
+    /// </summary>
+    protected ILogger Log { get; private set; }
+
+    /// <summary>
     /// The name of this service for swagger etc.
     /// </summary>
     public abstract string ServiceName { get; }
@@ -48,11 +57,14 @@ namespace VSS.WebApi.Common
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
-      
       services.AddJaeger(ServiceName);
-      
+
       Services = services;
+
       ConfigureAdditionalServices(services);
+
+      ServiceProvider = Services.BuildServiceProvider();
+      Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -77,9 +89,8 @@ namespace VSS.WebApi.Common
     /// Extra app and env setup options
     /// Useful for adding ASP related options, such as filter MiddleWhere
     /// </summary>
-    protected abstract void ConfigureAdditionalAppSettings(IApplicationBuilder app, 
+    protected abstract void ConfigureAdditionalAppSettings(IApplicationBuilder app,
       IHostingEnvironment env,
       ILoggerFactory factory);
-
   }
 }

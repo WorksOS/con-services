@@ -37,7 +37,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Loads the set of designs for a site model. If none exist and empty list is returned.
+    /// Loads the set of designs for a site model. If none exist an empty list is returned.
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <returns></returns>
@@ -48,7 +48,6 @@ namespace VSS.TRex.Designs
         ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
         IDesigns designs = DIContext.Obtain<IDesigns>();
-
         if (ms != null)
         {
           using (ms)

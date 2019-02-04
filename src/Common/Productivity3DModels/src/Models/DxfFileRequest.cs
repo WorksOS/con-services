@@ -2,9 +2,10 @@
 {
   public class DxfFileRequest
   {
+    public const int NOT_DEFINED = -1;
     public string Filename { get; set; }
     public byte[] FileData { get; set; }
-    public int DxfUnits { get; set; }
+    public int DxfUnits = NOT_DEFINED;
     public string CoordinateSystemName { get; set; }
 
     public override string ToString()

@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     { }
 
     public static CompactionReportStationOffsetRequest CreateRequest(
-      long projectId,
+      long? projectId,
       Guid? projectUid,
       FilterResult filter,
       long filterId,

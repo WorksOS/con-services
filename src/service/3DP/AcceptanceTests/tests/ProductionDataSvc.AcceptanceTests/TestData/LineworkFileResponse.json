@@ -7,6 +7,10 @@
     "Code": -1,
     "Message": "Invalid DxfUnits value '3', out of range"
   },
+  "NotSuppliedDxfUnit": {
+    "Code": -1,
+    "Message": "Invalid request, DxfUnits must be provided"
+  },
   "21BoundariesDXF": {
     "type": "FeatureCollection",
     "features": [

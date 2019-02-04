@@ -31,12 +31,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, RaptorResult>();
+#if RAPTOR
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
+#endif
+        ;
 
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
 
-    #region FindCutFillElevations tests
+#region FindCutFillElevations tests
     [TestMethod]
     [DataRow(CompactionDataPoint.CUT_FILL, VolumeCalcType.None)]
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToDesign)]
@@ -347,9 +350,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(17, actualPoints[1].y2, "1: Wrong y2 height");
       Assert.AreEqual(30, actualPoints[2].y2, "2: Wrong y2 height");
     }
-    #endregion
+#endregion
 
-    #region RearrangeProfileResult production data profile tests
+#region RearrangeProfileResult production data profile tests
 
     [TestMethod]
     public void RearrangeProductionDataProfileResultWithNull()
@@ -592,9 +595,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedY2, actualResult.y2, $"{j}: {expectedType} Wrong y2");
       Assert.AreEqual(expectedValue2, actualResult.value2, $"{j}: {expectedType} Wrong value2");
     }
-    #endregion
+#endregion
 
-    #region RearrangeProfileResult summary volumes profile tests
+#region RearrangeProfileResult summary volumes profile tests
     [TestMethod]
     public void RearrangeSummaryVolumesProfileResultWithNull()
     {
@@ -734,9 +737,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(null, actualResult.value2, $"{j}: {expectedType} Wrong value2");
     }
 
-    #endregion
+#endregion
 
-    #region RemoveRepeatedNoData tests
+#region RemoveRepeatedNoData tests
 
     [TestMethod]
     [DataRow(CompactionDataPoint.FIRST_PASS, null)]
@@ -1559,9 +1562,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedElevation, actual.y, $"{i}: Wrong y");
       Assert.AreEqual(expectedElevation2, actual.y2, $"{i}: Wrong y2");
     }
-    #endregion
+#endregion
 
-    #region AddMidPoint tests
+#region AddMidPoint tests
 
     [TestMethod]
     public void SlicerEmptyDataNoAddedMidPoints()
@@ -1987,9 +1990,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(float.NaN, actualPoints[6].y, "Wrong y 7");
     }
 
-    #endregion
+#endregion
 
-    #region InterpolateEdges tests
+#region InterpolateEdges tests
     [TestMethod]
     [DataRow(CompactionDataPoint.LAST_PASS, null)]
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround)]
@@ -2524,9 +2527,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         Assert.AreEqual(float.NaN, actualPoints[6].y2, "Wrong y2 7");
       }
     }
-    #endregion
+#endregion
 
-    #region ConvertProfileResult design profile tests
+#region ConvertProfileResult design profile tests
     [TestMethod]
     public void ConvertDesignProfileResultWithNull()
     {
@@ -2650,9 +2653,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         Assert.AreEqual(expectedVertices[i].elevation, actualResult.data[i].elevation, $"{j}: Wrong elevation {i}");
       }
     }
-    #endregion
+#endregion
 
-    #region AddSlicerEndPoints tests
+#region AddSlicerEndPoints tests
 
     [TestMethod]
     public void DesignProfileWithSlicerEndPointsPresentShouldNotChange()
@@ -2786,6 +2789,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(designUid, result.results[0].designFileUid);
       Assert.AreEqual(0, result.results[0].data.Count);
     }
-    #endregion
+#endregion
   }
 }
