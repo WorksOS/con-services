@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -78,6 +80,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet("api/v2/linework/alignment")]
     public async Task<FileResult> GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid, [FromServices] IPreferenceProxy prefProxy)
     {
+      Log.LogDebug($"{nameof(GetLineworkFromAlignment)}: projectUid={projectUid} alignmentUid={alignmentUid}");
+
+#if RAPTOR
       var projectId = await GetLegacyProjectId(projectUid);
       var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid, OperationType.GeneratingDxf);
       var dxfUnitsType = DxfUnitsType.Meters;
@@ -117,6 +122,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // Don't forget to seek back, or else the content length will be 0
       outputStream.Seek(0, SeekOrigin.Begin);
       return new FileStreamResult(outputStream, "application/zip");
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
   }
