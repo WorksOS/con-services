@@ -1,14 +1,16 @@
 ﻿using System;
+#if RAPTOR
 using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
+using VSS.Productivity3D.WebApi.Models.Report.Executors.Utilities;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Report.Executors.Utilities;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -31,9 +33,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<SummaryVolumesRequest>(item);
-
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_VOLUMES"))
         {
+#endif
           var summaryVolumesRequest = new SummaryVolumesDataRequest(
             request.ProjectUid,
             request.BaseFilter,
@@ -43,6 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.VolumeCalcType);
 
           return trexCompactionDataProxy.SendSummaryVolumesRequest(summaryVolumesRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         TASNodeSimpleVolumesResult result;
@@ -100,6 +104,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ResultConverter.SimpleVolumesResultToSummaryVolumesResult(result);
 
         throw CreateServiceException<SummaryVolumesExecutorV2>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -109,7 +114,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

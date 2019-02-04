@@ -29,18 +29,26 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     private readonly IProductionDataRequestFactory requestFactory;
     private readonly IElevationExtentsProxy elevProxy;
+#if RAPTOR
     private readonly IASNodeClient raptorClient;
+#endif
     private readonly IConfigurationStore ConfigStore;
     protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
 
-    public ProductionDataTileService(IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IElevationExtentsProxy extentsProxy, IASNodeClient raptor, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public ProductionDataTileService(IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IElevationExtentsProxy extentsProxy,
+#if RAPTOR
+      IASNodeClient raptor, 
+#endif
+      IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       requestFactory = prodDataFactory;
       log = logger.CreateLogger<ProductionDataTileService>();
       this.logger = logger;
+#if RAPTOR
       raptorClient = raptor;
+#endif
       elevProxy = extentsProxy;
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
@@ -133,7 +141,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         try
         {
           tileResult = RequestExecutorContainerFactory
-            .Build<CompactionTileExecutor>(logger, raptorClient, null, ConfigStore, null, null, null, null, null, null, TRexCompactionDataProxy, customHeaders)
+            .Build<CompactionTileExecutor>(logger,
+#if RAPTOR
+              raptorClient, 
+#endif
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: customHeaders)
             .Process(tileRequest) as TileResult;
         }
         catch (Exception ex)

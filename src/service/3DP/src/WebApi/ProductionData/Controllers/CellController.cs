@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -21,15 +23,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CellController
   {
+#if RAPTOR
     private readonly IASNodeClient raptorClient;
+#endif
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CellController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public CellController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
     }
 
@@ -44,7 +54,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpPost]
     public CellPassesResult Post([FromBody]CellPassesRequest request)
     {
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient).Process(request) as CellPassesResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -59,7 +74,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public CellDatumResponse Post([FromBody]CellDatumRequest request)
     {
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient).Process(request) as CellDatumResponse;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -71,10 +91,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult Post([FromBody]PatchRequest request)
     {
       request.Validate();
-
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<PatchExecutor>(logger, raptorClient).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
-    
+
     /// <summary>
     /// Requests cell passes information in patches but returning co-ordinates relative to the world origin rather than cell origins.
     /// </summary>
@@ -84,8 +108,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult GetSubGridPatchesAsWorldOrigins([FromBody]PatchRequest request)
     {
       request.Validate();
-
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CompactionPatchExecutor>(logger, raptorClient).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

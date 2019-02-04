@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+#if RAPTOR
 using ASNodeRPC;
+using SVOICFilterSettings;
+using SVOICLiftBuildSettings;
+using SVOICOptionsDecls;
+using VLPDDecls;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
-using SVOICFilterSettings;
-using SVOICLiftBuildSettings;
-using SVOICOptionsDecls;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -43,13 +45,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, RaptorResult>();
-
+#if RAPTOR
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
+#endif
+  ;
       _serviceProvider = serviceCollection.BuildServiceProvider();
 
       _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
     }
-
+#if RAPTOR
     [TestMethod]
     public void CompactionReportGridExecutor_Raptor_NoResult()
     {
@@ -94,7 +98,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Build<CompactionReportGridExecutor>(_logger, raptorClient.Object, configStore: mockConfigStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
-
+#endif
     [TestMethod]
     public void CompactionReportGridExecutor_TRex_NoResult()
     {
@@ -105,7 +109,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         0.0, 0.0, 1.0, 2.0, 0.0);
 
       var mockConfigStore = new Mock<IConfigurationStore>();
+#if RAPTOR
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_GRIDREPORT")).Returns("true");
+#endif
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
@@ -116,14 +122,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionReportGridExecutor>(_logger, null, configStore: mockConfigStore.Object,
+        .Build<CompactionReportGridExecutor>(_logger, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
       var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
       Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
     }
-
+#if RAPTOR
     [Ignore]
     [TestMethod]
     public void CompactionReportGridExecutorSuccess()
@@ -174,5 +180,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.AreEqual(responseData.ToString(), reportDataAsJson, "Wrong Data");
 
     }
+#endif
   }
 }

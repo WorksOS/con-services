@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VLPDDecls;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromBody] DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
-
+#if RAPTOR
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
       requestDto.Filename = Guid.NewGuid().ToString();
@@ -63,6 +64,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())
         : StatusCode((int)HttpStatusCode.BadRequest, result);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
 
@@ -98,6 +103,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var outputStream = new MemoryStream();
       using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create, true))
       {
+        //Note: When all DXF tile generation stuff removed this can be changed as the project
+        //service creates its own generated name. It doesn't use the one from the zip file.
         var suffix = FileUtils.GeneratedFileSuffix(ImportedFileType.Alignment);
         string generatedName =
           FileUtils.GeneratedFileName(designDescriptor.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);

@@ -25,15 +25,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class MachinesController : Controller, IMachinesContract
   {
+#if RAPTOR
     private readonly IASNodeClient raptorClient;
+#endif
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public MachinesController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public MachinesController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
     }
 
@@ -49,8 +57,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var id = new ProjectID(projectId);
       id.Validate();
-
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -66,7 +78,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var id = new ProjectID(projectId, projectUid);
       id.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     // GET: api/Machines
@@ -85,10 +102,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var id = new ProjectID(projectId);
       id.Validate();
+#if RAPTOR
       var result =
           RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -107,10 +129,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var id = new ProjectID(projectId, projectUid);
       id.Validate();
+#if RAPTOR
       var result =
           RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     // GET: api/Machines/Designs
@@ -128,8 +155,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var id = new ProjectID(projectId);
       id.Validate();
+#if RAPTOR
       var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     // GET: api/Machines/Designs
@@ -147,8 +179,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var id = new ProjectID(projectId, projectUid);
       id.Validate();
+#if RAPTOR
       var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -183,7 +220,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var id = new ProjectID(projectId, projectUid);
       id.Validate();
-
+#if RAPTOR
       DateTime? beginUtc;
       DateTime? finishUtc;
       ValidateDates(startUtc, endUtc, out beginUtc, out finishUtc);
@@ -207,6 +244,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         }
       }
       return MachineDesignDetailsExecutionResult.Create(designDetailsList.ToArray());
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -222,7 +263,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var id = new ProjectID(projectId);
       id.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -239,7 +285,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var id = new ProjectID(projectId, projectUid);
       id.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -285,6 +336,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     private MachineLayerIdsExecutionResult GetMachineLiftsWith(ProjectID id, string startUtc, string endUtc)
     {
+#if RAPTOR
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
       //Posts on the internet suggets using JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc
       //and IsoDateTimeConverter but that didn't fix the problem.
@@ -314,8 +366,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       }
 
       return MachineLayerIdsExecutionResult.CreateMachineLayerIdsExecutionResult(liftDetailsList.ToArray());
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
-
+#if RAPTOR
     private void ValidateDates(string startUtc, string endUtc, out DateTime? beginUtc, out DateTime? finishUtc)
     {
       beginUtc = ParseUtcDate(startUtc);
@@ -365,5 +421,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       }
       return true;
     }
+#endif
   }
 }
