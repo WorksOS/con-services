@@ -136,21 +136,17 @@ namespace VSS.TRex.Profiling
       // Execute a client grid request for each requester and create an array of the results
       var clientGrids = Requestors.Select(x =>
       {
-
-        var clientGrid = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.HeightAndTime, SiteModel.Grid.CellSize, SubGridTreeConsts.SubGridTreeLevels,
-          (uint)(address.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint)(address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
-
         x.CellOverrideMask = cellOverrideMask;
 
-        // Reach into the subgrid request layer and retrieve an appropriate subgrid
-        ServerRequestResult result = x.RequestSubGridInternal((SubGridCellAddress)address, prodDataAtAddress, true, clientGrid);
+        // Reach into the sub grid request layer and retrieve an appropriate sub grid
+        ServerRequestResult result = x.RequestSubGridInternal(address, prodDataAtAddress, true, out var clientGrid);
         if (result != ServerRequestResult.NoError)
-          Log.LogError($"Request for subgrid {address} request failed with code {result}");
+          Log.LogError($"Request for sub grid {address} request failed with code {result}");
 
         return clientGrid;
       }).ToArray();
 
-      // If an intermediary result was requested then merge the 'from' and intermediary subgrids now
+      // If an intermediary result was requested then merge the 'from' and intermediary sub grids now
       if (IntermediaryFilterRequired)
       {
         MergeIntemediaryResults(clientGrids[0] as ClientHeightAndTimeLeafSubGrid, clientGrids[1] as ClientHeightAndTimeLeafSubGrid);

@@ -50,7 +50,8 @@ namespace VSS.TRex.SubGrids
     /// ready to be used to create per-Task requestor delegates
     /// </summary>
     /// <returns></returns>
-    public (ICombinedFilter Filter,
+    public (GridDataType GridDataType,
+      ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -59,7 +60,8 @@ namespace VSS.TRex.SubGrids
         bool includeSurveyedSurfaceInformation,
         GridDataType gridDataType)
     {
-      (ICombinedFilter Filter,
+      (GridDataType GridDataType,
+      ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -96,7 +98,7 @@ namespace VSS.TRex.SubGrids
           SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
         }
 
-        return (filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray,
+        return (gridDataType, filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray,
           SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
             SubGridCacheContext);
       }
@@ -110,7 +112,8 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     /// <returns></returns>
     public ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
-      (ICombinedFilter Filter,
+      (GridDataType GridDataType,
+        ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         Guid[] FilteredSurveyedSurfacesAsArray,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -138,6 +141,7 @@ namespace VSS.TRex.SubGrids
 
         var requestor = SubGridRequestorFactory();
         requestor.Initialize(siteModel,
+          x.GridDataType,
           siteModels.StorageProxy,
           x.Filter,
           false, // Override cell restriction

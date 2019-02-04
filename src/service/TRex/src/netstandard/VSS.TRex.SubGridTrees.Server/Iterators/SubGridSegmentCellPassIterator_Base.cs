@@ -135,26 +135,26 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         /// <summary>
         /// Initialises the iterator state for the next segment to be iterated through. Static and non-static cell
-        /// paas implementations override this appropriately.
+        /// pass implementations override this appropriately.
         /// </summary>
         protected void InitialiseForNewSegment()
         {
             if (SegmentIterator.CurrentSubGridSegment == null)
             {
-                Log.LogCritical("No current subgrid segment in iterator to initialise cell enumeration over.");
+                Log.LogCritical("No current sub grid segment in iterator to initialise cell enumeration over.");
                 return;
             }
 
             InitialiseForNewSegment(SegmentIterator.IterationDirection);
         }
 
-        // SetCellCoordinatesInSubgrid set the coordinates of the cell in the subgrid that
+        // SetCellCoordinatesInSubGrid set the coordinates of the cell in the sub grid that
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
         public void SetCellCoordinatesInSubgrid(byte _cellX, byte _cellY)
         {
             Debug.Assert(Range.InRange(_cellX, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
                          Range.InRange(_cellY, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1),
-                "Cell coordinates out of range in SetCellCoordinatesInSubgrid");
+                "Cell coordinates out of range in SetCellCoordinatesInSubGrid");
 
             cellX = _cellX;
             cellY = _cellY;

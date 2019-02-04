@@ -35,6 +35,7 @@ namespace VSS.TRex.SubGrids
 
         private SubGridRetriever retriever;
         private ISiteModel SiteModel;
+        private GridDataType GridDataType;
         private ICombinedFilter Filter;
         private ISurfaceElevationPatchRequest surfaceElevationPatchRequest;
         private bool HasOverrideSpatialCellRestriction;
@@ -44,8 +45,7 @@ namespace VSS.TRex.SubGrids
         private bool SurveyedSurfaceDataRequested;
         private IClientLeafSubGrid ClientGrid;
         private ISurfaceElevationPatchArgument SurfaceElevationPatchArg;
-        private uint CellX;
-        private uint CellY;
+
         public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         private AreaControlSet AreaControlSet;
 
@@ -73,22 +73,24 @@ namespace VSS.TRex.SubGrids
         /// and initializes the requester state ready to start processing individual sub grid requests.
         /// </summary>
         public void Initialize(ISiteModel siteModel,
-                                IStorageProxy storageProxy,
-                                ICombinedFilter filter,
-                                bool hasOverrideSpatialCellRestriction,
-                                BoundingIntegerExtent2D overrideSpatialCellRestriction,
-                                int maxNumberOfPassesToReturn,
-                                AreaControlSet areaControlSet,
-                                IFilteredValuePopulationControl populationControl,
-                                ISubGridTreeBitMask PDExistenceMap,
-                                ITRexSpatialMemoryCache subGridCache,
-                                ITRexSpatialMemoryCacheContext subGridCacheContext,                                
-                                ISurveyedSurfaces filteredSurveyedSurfaces,
-                                Guid[] filteredSurveyedSurfacesAsArray,
-                                ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-                                ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
+                               GridDataType gridDataType,
+                               IStorageProxy storageProxy,
+                               ICombinedFilter filter,
+                               bool hasOverrideSpatialCellRestriction,
+                               BoundingIntegerExtent2D overrideSpatialCellRestriction,
+                               int maxNumberOfPassesToReturn,
+                               AreaControlSet areaControlSet,
+                               IFilteredValuePopulationControl populationControl,
+                               ISubGridTreeBitMask PDExistenceMap,
+                               ITRexSpatialMemoryCache subGridCache,
+                               ITRexSpatialMemoryCacheContext subGridCacheContext,                                
+                               ISurveyedSurfaces filteredSurveyedSurfaces,
+                               Guid[] filteredSurveyedSurfacesAsArray,
+                               ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+                               ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
         {
             SiteModel = siteModel;
+            GridDataType = gridDataType;
 
             if (filter.AttributeFilter.HasElevationRangeFilter)
             {
@@ -108,6 +110,7 @@ namespace VSS.TRex.SubGrids
             MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
 
             retriever = new SubGridRetriever(siteModel,
+                                             gridDataType,
                                              storageProxy,
                                              Filter,
                                              hasOverrideSpatialCellRestriction,
@@ -229,7 +232,7 @@ namespace VSS.TRex.SubGrids
               return ServerRequestResult.FailedToComputeDesignFilterPatch;
             }
 
-            ServerRequestResult Result = retriever.RetrieveSubGrid(CellX, CellY, /* LiftBuildSettings, */ ClientGrid, CellOverrideMask);
+            ServerRequestResult Result = retriever.RetrieveSubGrid(/* LiftBuildSettings, */ ClientGrid, CellOverrideMask);
 
             // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
             if (Result == ServerRequestResult.NoError && SubGridCacheContext != null)
@@ -435,27 +438,25 @@ namespace VSS.TRex.SubGrids
                                                           // LiftBuildSettings: TICLiftBuildSettings;
                                                           bool prodDataRequested,
                                                           bool surveyedSurfaceDataRequested,
-                                                          IClientLeafSubGrid clientGrid)
+                                                          out IClientLeafSubGrid clientGrid)
         {
+            clientGrid = null;
+
+            if (!(prodDataRequested || surveyedSurfaceDataRequested))
+              return ServerRequestResult.MissingInputParameters;
+
             ProdDataRequested = prodDataRequested;
             SurveyedSurfaceDataRequested = surveyedSurfaceDataRequested;
 
-            if (!(ProdDataRequested || SurveyedSurfaceDataRequested))
-                return ServerRequestResult.MissingInputParameters;
-
             ServerRequestResult Result = ServerRequestResult.UnknownError;
-
-            int _shiftBy = ((SubGridTreeConsts.SubGridTreeLevels - SiteModel.Grid.NumLevels) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
-            CellX = subGridAddress.X << _shiftBy;
-            CellY = subGridAddress.Y << _shiftBy;
 
             // if <config>.Debug_ExtremeLogSwitchB then Log.LogDebug("About to call RetrieveSubGrid()");
 
+            clientGrid = ClientLeafSubGridFactory.GetSubGridEx(Utilities.IntermediaryICGridDataTypeForDataType(GridDataType, subGridAddress.SurveyedSurfaceDataRequested), 
+                                                               SiteModel.Grid.CellSize, SubGridTreeConsts.SubGridTreeLevels,
+                                                               (uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
+                                                               (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
             ClientGrid = clientGrid;
-            ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
-                                                 (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
-            ClientGrid.SetAbsoluteLevel(SiteModel.Grid.NumLevels);
-            ClientGrid.CellSize = SiteModel.Grid.CellSize;
 
             if (!InitialiseFilterContext())
               return ServerRequestResult.FilterInitialisationFailure;
