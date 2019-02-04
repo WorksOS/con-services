@@ -76,7 +76,7 @@ namespace VSS.MasterData.Proxies
           x => { ApplyHeaders(customHeaders, x); }, log);
 
       if (method == HttpMethod.Delete)
-        return httpClient.DeleteAsync(endpoint);
+        return httpClient.DeleteAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
