@@ -8,6 +8,7 @@
     <OutputType>exe</OutputType>
     <PackageId>TRexWebApi</PackageId>
     <RootNamespace>VSS.TRex.Gateway.WebApi</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
