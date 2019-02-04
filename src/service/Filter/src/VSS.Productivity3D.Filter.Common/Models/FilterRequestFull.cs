@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     /// Determines whether CRUD operations should result in a Kafka message being sent.
     /// </summary>
     public bool SendKafkaMessages;
-
+    
     public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {
       return new FilterRequestFull
