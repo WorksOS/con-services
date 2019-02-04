@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Proxies;
 using VSS.WebApi.Common;
 
@@ -9,6 +10,13 @@ namespace VSS.Productivity3D.Now3D.Controllers
 {
   public abstract class BaseController : Controller
   {
+    protected BaseController(ILoggerFactory loggerFactory)
+    {
+      Log = loggerFactory.CreateLogger(GetType().Name);
+    }
+
+    protected ILogger Log { get; private set; }
+
     /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
