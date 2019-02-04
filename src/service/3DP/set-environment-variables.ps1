@@ -112,13 +112,13 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
-  @{key = "FILTER_API_URL"; value = "http://filter.dev.k8s.vspengg.com/api/v1"}
+  @{key = "FILTER_API_URL"; value = "http://filter.dev.eks.vspengg.com/api/v1"}
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"} # Use Alpha service here
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles"}
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"} # Use Alpha service here
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project"}
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4"}
-  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.dev.k8s.vspengg.com/internal/v1/export"}
+  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.dev.eks.vspengg.com/internal/v1/export"}
   @{key = "SHAREUNC"; value = "\\dev-iolv01.vssengg.com\ProductionData"}
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"}
   @{key = "TCCORG"; value = "vldev"}
@@ -134,13 +134,13 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
-  @{key = "FILTER_API_URL"; value = "http://filter.alpha.k8s.vspengg.com/api/v1"}
+  @{key = "FILTER_API_URL"; value = "http://filter.alpha.eks.vspengg.com/api/v1"}
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"}
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles"}
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"}
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project"}
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4"}
-  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.alpha.k8s.vspengg.com/internal/v1/export"}
+  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.alpha.eks.vspengg.com/internal/v1/export"}
   @{key = "SHAREUNC"; value = "\\alpha-iolv01.vssengg.com\ProductionData"}
   @{key = "TCCFILESPACENAME"; value = "vldatastore-alpha"}
   @{key = "TCCORG"; value = "vlalpha"}
