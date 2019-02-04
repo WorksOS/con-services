@@ -10,6 +10,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// <summary>
   /// Represents the response to a request to get boundaries from a DXF linework file.
   /// </summary>
+  /// <remarks>
+  /// We are not altering the coordinates in any way; they are in the order received from Raptor/Trex. Please note, this likely means
+  /// they do not conform with the 2016 IETF specification on 'right hand winding'; see section 3.1.6 of the spec; https://tools.ietf.org/html/rfc7946#section-3.1.6.
+  ///
+  /// If you need a linter for the 3DP response that supports the 2008 informal spec see http://geojson.io/#map=2/20.0/0.0.
+  /// </remarks>
   public class DxfLineworkFileResult : ContractExecutionResult
   {
     public TWGS84LineworkBoundary[] LineworkBoundaries { get; }
@@ -39,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
           Properties = new Properties { Name = boundary.BoundaryName },
           Geometry = new Geometry
           {
-            Type = Geometry.Types.MULTI_LINE_STRING,
+            Type = Geometry.Types.POLYGON,
             Coordinates = GetCoordinatesFromFencePoints(boundary)
           }
         });

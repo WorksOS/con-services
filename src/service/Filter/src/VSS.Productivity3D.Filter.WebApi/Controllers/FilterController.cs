@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -16,11 +18,14 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Push.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -113,6 +118,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpPut("api/v1/filter/{ProjectUid}")]
     public async Task<FilterDescriptorSingleResult> PutFilter(
       [FromServices] IFileListProxy fileListProxy,
+      [FromServices] INotificationHubClient notificationHubClient,
       string projectUid,
       [FromBody] FilterRequest request)
     {
@@ -120,6 +126,11 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName, fileListProxy);
       var upsertFilterResult = await UpsertFilter((TIDCustomPrincipal)User, (User.Identity as GenericIdentity)?.Name, filterExecutor, await GetProjectForUser(User, projectUid), request);
+
+      if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent && upsertFilterResult.FilterDescriptor.ContainsBoundary)
+      {
+        await notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+      }
 
       return upsertFilterResult;
     }
@@ -152,7 +163,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         newFilters.Add((await UpsertFilter((TIDCustomPrincipal)User, username, filterExecutor, project, filterRequest)).FilterDescriptor);
       }
 
-      var result = new FilterDescriptorListResult{ FilterDescriptors = newFilters.ToImmutableList() };
+      var result = new FilterDescriptorListResult { FilterDescriptors = newFilters.ToImmutableList() };
 
       Log.LogInformation($"{nameof(CreateFilters)} Completed: resultCode: {result.Code} result: {JsonConvert.SerializeObject(result)}");
 

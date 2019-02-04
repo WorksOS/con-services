@@ -37,7 +37,9 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 
       //If no polygon boundary return original filter JSON
       if (string.IsNullOrEmpty(filterTempForHydration?.PolygonUid))
+      {
         return filterRequestFull.FilterJson;
+      }
 
       //Get polygon boundary to add to filter
       Geofence filterBoundary = null;

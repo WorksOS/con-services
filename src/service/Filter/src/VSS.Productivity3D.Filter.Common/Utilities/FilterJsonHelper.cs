@@ -12,10 +12,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
   {
     public static void ParseFilterJson(ProjectData project, IEnumerable<DbFilter> filters, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      if (filters == null)
-      {
-        return;
-      }
+      if (filters == null) { return; }
 
       foreach (var filter in filters)
       {
@@ -25,37 +22,31 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 
     public static void ParseFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      if (filter == null)
-      {
-        return;
-      }
+      if (filter == null) { return; }
 
       GenerateIanaBasedDateTime(project, filter, raptorProxy, customHeaders);
     }
 
     public static void ParseFilterJson(ProjectData project, FilterDescriptor filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      if (filter == null)
-      {
-        return;
-      }
+      if (filter == null) { return; }
 
-      filter.FilterJson = ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
+      var processFilterJson = ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
+
+      filter.FilterJson = processFilterJson.filterJson;
+      filter.ContainsBoundary = processFilterJson.containsBoundary;
     }
 
     private static void GenerateIanaBasedDateTime(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      filter.FilterJson = ProcessFilterJson(project, filter, raptorProxy, customHeaders);
+      var processFilterJson = ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
+
+      filter.FilterJson = processFilterJson.filterJson;
     }
 
-    private static string ProcessFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
+    private static (string filterJson, bool containsBoundary) ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      return ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
-    }
-
-    private static string ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
-    {
-      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+      var filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
 
       filterObj.ApplyDateRange(project?.IanaTimeZone);
 
@@ -75,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         filterObj.DateRangeType = DateRangeType.Custom;
       }
 
-      return JsonConvert.SerializeObject(filterObj);
+      return (JsonConvert.SerializeObject(filterObj), filterObj.ContainsBoundary);
     }
   }
 }
