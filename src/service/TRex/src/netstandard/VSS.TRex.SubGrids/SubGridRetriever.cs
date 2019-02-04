@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGrids
     // Local state populated for the purpose of access from various local methods
     private IClientLeafSubGrid _clientGrid;
     private ClientLeafSubGrid _clientGridAsLeaf;
-    private GridDataType _gridDataType = GridDataType.All;
+    private readonly GridDataType _gridDataType = GridDataType.All;
     private bool _sieveFilterInUse;
 
     private SubGridTreeBitmapSubGridBits _sieveBitmask;
@@ -74,7 +74,7 @@ namespace VSS.TRex.SubGrids
 
     private readonly SubGridTreeBitmapSubGridBits _aggregatedCellScanMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-    private bool _selectCellPassAccordingToMinimumElevationMappingMode = false;
+    private bool _selectCellPassAccordingToMinimumElevationMappingMode;
 
     /// <summary>
     /// Constructor for the sub grid retriever helper
