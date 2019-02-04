@@ -74,8 +74,6 @@ namespace VSS.TRex.SubGrids
 
     private readonly SubGridTreeBitmapSubGridBits _aggregatedCellScanMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-    private bool _selectCellPassAccordingToMinimumElevationMappingMode;
-
     /// <summary>
     /// Constructor for the sub grid retriever helper
     /// </summary>
@@ -147,7 +145,7 @@ namespace VSS.TRex.SubGrids
         if (_filter.AttributeFilter.FilterPass(ref _currentPass))
         {
           // -->###US79098###
-          if (firstFilteredCellPass) // && _selectCellPassAccordingToMinimumElevationMappingMode)
+          if (firstFilteredCellPass) 
           {
             // if the first filtered pass returned by GetNextCellPass was recorded by an Excavator machine
             // with the minimum elevation mapping mode selected then scan all cell passes until one is encountered
@@ -375,7 +373,6 @@ namespace VSS.TRex.SubGrids
             _filter.AttributeFilter.FilterTemperatureByLastPass = true;
 
           _haveFilteredPass = false;
-          _selectCellPassAccordingToMinimumElevationMappingMode = false;
 
           // ###US79098### -->
           if (_useLastPassGrid)
@@ -400,9 +397,6 @@ namespace VSS.TRex.SubGrids
                 // It is not possible to use the latest cell pass to answer the query - force the query engine  into the cell pass examination work flow
                 _useLastPassGrid = false;
                 _canUseGlobalLatestCells = false;
-
-                // Flag this cell as using the minimum elevation cell pass selection workflow
-                _selectCellPassAccordingToMinimumElevationMappingMode = true;
               }
             }
           }
