@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
@@ -16,12 +17,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Get the pass count summary for the project extents
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    [HttpGet("api/v1/reports/passcount")]
+    [HttpGet("api/v1/reports/passcount/summary")]
     [ProducesResponseType(typeof(PassCountSummaryResult), 200)]
-    public IActionResult PasscountReport(string projectUid)
+    public IActionResult PasscountReport([FromQuery, BindRequired]Filter filter)
     {
-      Log.LogInformation($"PasscountReport Project UID: {projectUid}");
+      Log.LogInformation($"PasscountReport Filter: {filter}");
       // Request projectUid, filterUid (optional) 
       // Default filter to project extents, no design
       // URL:  api/v2/passcounts/summary
@@ -38,12 +38,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Gets the CMV Summary report for the project extents
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    [HttpGet("api/v1/reports/cmv")]
+    [HttpGet("api/v1/reports/cmv/summary")]
     [ProducesResponseType(typeof(CMVSummaryResult), 200)]
-    public IActionResult CmvReport(string projectUid)
+    public IActionResult CmvReport([FromQuery, BindRequired]Filter filter)
     {
-      Log.LogInformation($"CmvReport Project UID: {projectUid}");
+      Log.LogInformation($"CmvReport Filter: {filter}");
       // Request: CMVRequest
       // Default filter to project extents, no design
       // URL api/v1/compaction/cmv/summary
@@ -60,12 +59,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Gets the MDP Summary report for the project extents
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    [HttpGet("api/v1/reports/mdp")]
+    [HttpGet("api/v1/reports/mdp/summary")]
     [ProducesResponseType(typeof(CompactionMdpSummaryResult), 200)]
-    public IActionResult MdpReport(string projectUid)
+    public IActionResult MdpReport([FromQuery, BindRequired]Filter filter)
     {
-      Log.LogInformation($"MdpReport Project UID: {projectUid}");
+      Log.LogInformation($"MdpReport Filter: {filter}");
       // Request: projectUid and filterUid (optional)
       // Url api/v2/mdp/summary
       // Returns CompactionMdpSummaryResult
@@ -88,13 +86,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Gets a Volumes (Ground to Design) summary report for the project
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="designFileUid">The Design File UID to use</param>
-    [HttpGet("api/v1/reports/volumes")]
+    [HttpGet("api/v1/reports/volumes/summary")]
     [ProducesResponseType(typeof(SummaryVolumesResult), 200)]
-    public IActionResult VolumesReport(string projectUid, string designFileUid)
+    public IActionResult VolumesReport([FromQuery, BindRequired]Filter filter)
     {
-      Log.LogInformation($"VolumesReport Project UID: {projectUid}, Design File UID: {designFileUid}");
+      Log.LogInformation($"VolumesReport Filter: {filter}");
       // Ground to design only
       // SummaryVolumesRequest
 
@@ -115,13 +111,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Gets a Cut/Fill report for the given project and design
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="cutfillDesignUid">The Cut File Design File UID to use</param>
-    [HttpGet("api/v1/reports/cutfill")]
+    [HttpGet("api/v1/reports/cutfill/details")]
     [ProducesResponseType(typeof(CompactionCutFillDetailedResult), 200)]
-    public IActionResult CutFillReport(string projectUid, string cutfillDesignUid)
+    public IActionResult CutFillReport([FromQuery, BindRequired]Filter filter)
     {
-      Log.LogInformation($"CutFillReport Project UID: {projectUid}, Design File UID: {cutfillDesignUid}");
+      Log.LogInformation($"CutFillReport Filter: {filter}");
       // Request orojectUid, filterUid (optional), cutfillDesignUid
       // Url api/v2/cutfill/details"
       // Returns CompactionCutFillDetailedResult
