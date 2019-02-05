@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGrids.Interfaces
       // LiftBuildSettings: TICLiftBuildSettings;
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested,
-      IClientLeafSubGrid clientGrid
+      out IClientLeafSubGrid clientGrid
     );
 
     /// <summary>
@@ -38,6 +38,7 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// and initializes the requester state ready to start processing individual sub grid requests.
     /// </summary>
     void Initialize(ISiteModel siteModel,
+      GridDataType gridDataType,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
       bool hasOverrideSpatialCellRestriction,

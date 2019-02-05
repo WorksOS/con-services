@@ -403,7 +403,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
-    public byte MachineType { get; set; } = CellPassConsts.MachineTypeNull;
+    public MachineType MachineType { get; set; } = CellPassConsts.MachineTypeNull;
 
     public DateTime UserTimeOffset { get; set; } = DateTime.MinValue;
 

@@ -11,8 +11,6 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
   /// </summary>
   public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>
   {
-    private double DEFAULT_DOUBLE_VALUE = 0.0;
-
     /// <summary>
     /// Cut volume, expressed in cubic meters
     /// </summary>
