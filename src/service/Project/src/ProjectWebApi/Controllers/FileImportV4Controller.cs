@@ -316,6 +316,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation(
         $"{nameof(CreateImportedFileDirectV4)}: ProjectUid: `{projectUid}`, Filename: `{filename}` ImportedFileType: `{importedFileType}`, DxfUnitsType: `{dxfUnitsType}`, SurveyedUTC: `{(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}`");
 
+      //When debugging locally using Postman, remove this check so can do an update
       ValidateFileDoesNotExist(projectUid.ToString(), filename, importedFileType, surveyedUtc);
 
       if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
