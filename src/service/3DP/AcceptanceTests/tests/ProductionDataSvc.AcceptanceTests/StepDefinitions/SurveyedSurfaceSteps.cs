@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
@@ -18,7 +19,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private DummyRequestResult resultPost;
 
     private Getter<DummyRequestResult> surfacesDeleteValidator;
-    private Poster<SurveyedSurfaceRequest, DummyRequestResult> surfaceToPost;
+    private Poster<JObject, DummyRequestResult> surfaceToPost;
     private DummyRequestResult resultDelete;
     private string uriProd;
     private string postAddress;
@@ -26,15 +27,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the Surveyd surface service URI ""(.*)""")]
     public void GivenTheSurveydSurfaceServiceURI(string uri)
     {
-      this.uriProd = uri = RestClient.Productivity3DServiceBaseUrl + uri;
-      this.surfacesValidator = new Getter<GetSurveydSurfacesResult>(uri);
+      uriProd = uri = RestClient.Productivity3DServiceBaseUrl + uri;
+      surfacesValidator = new Getter<GetSurveydSurfacesResult>(uri);
       surfacesDeleteValidator = new Getter<DummyRequestResult>(uri + "/1234/delete");
     }
 
     [And(@"using repository ""(.*)""")]
     public void GivenUsingRepository(string p0)
     {
-      surfaceToPost = new Poster<SurveyedSurfaceRequest, DummyRequestResult>(postAddress, p0, p0);
+      surfaceToPost = new Poster<JObject, DummyRequestResult>(postAddress, p0, p0);
     }
 
     [And(@"the Surveyd surface service POST URI ""(.*)""")]

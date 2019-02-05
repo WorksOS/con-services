@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Now3D.Models;
@@ -10,13 +11,14 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Now3D.Controllers
 {
-  public class MasterDataController : BaseController
+  public class ProjectsController : BaseController
   {
     private readonly ICustomerProxy customerProxy;
     private readonly IProjectListProxy projectListProxy;
     private readonly IFileListProxy fileListProxy;
 
-    public MasterDataController(ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
+    public ProjectsController(ILoggerFactory loggerFactory, ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
+      :base(loggerFactory)
     {
       this.customerProxy = customerProxy;
       this.projectListProxy = projectListProxy;
@@ -24,13 +26,12 @@ namespace VSS.Productivity3D.Now3D.Controllers
     }
 
     /// <summary>
-    /// Get a list of customers, projects and files for me, in one nice query
+    /// Get a list of customers, projects and files for me
     /// </summary>
     /// <response code="200">A list of customers you can currently access.</response>
     /// <response code="403">Invalid access token provided</response>
     [HttpGet("api/v1/projects")]
     [ProducesResponseType(typeof(List<CustomerDisplayModel>), 200)]
-
     public async Task<IActionResult> GetMasterDataModels()
     {
       var customers = await customerProxy.GetCustomersForMe(UserId, CustomHeaders);
@@ -69,7 +70,8 @@ namespace VSS.Productivity3D.Now3D.Controllers
       var projectModel = new ProjectDisplayModel
       {
         ProjectName = project.Name,
-        ProjectUid = project.ProjectUid
+        ProjectUid = project.ProjectUid,
+        IsActive = !project.IsArchived
       };
 
       var files = await fileListProxy.GetFiles(project.ProjectUid, UserId, headers);
@@ -79,7 +81,9 @@ namespace VSS.Productivity3D.Now3D.Controllers
         projectModel.Files.Add(new FileDisplayModel
         {
           FileName = fileData.Name,
-          FileUid = fileData.ImportedFileUid
+          FileUid = fileData.ImportedFileUid,
+          FileType = fileData.ImportedFileType,
+          FileTypeName = fileData.ImportedFileTypeName
         });
       }
 

@@ -194,6 +194,14 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "passCountRangeMax", Required = Required.Default)]
     public int? PassCountRangeMax { get; protected set; }
 
+    /// <summary>
+    /// Gets whether this Filter has a design boundary or alignment file defining it's boundary.
+    /// </summary>
+    [JsonIgnore]
+    public bool ContainsBoundary => !string.IsNullOrEmpty(DesignUid) || 
+                                    !string.IsNullOrEmpty(AlignmentUid) ||
+                                    !string.IsNullOrEmpty(PolygonUid);
+
     #region For JSON Serialization
     public bool ShouldSerializeStartUtc()
     {
