@@ -146,9 +146,9 @@ namespace VSS.TRex.SubGrids
             // measured elevation of that set of cell passes
             var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
             var machine = _siteModel.Machines[internalMachineIndex];
-            bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+            var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
             var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_currentPass.FilteredPass.Time, out _);
-            bool minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
+            var minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
 
             if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
             {
@@ -161,9 +161,9 @@ namespace VSS.TRex.SubGrids
               {
                 var nextInternalMachineIndex = _nextCurrentPass.InternalSiteModelMachineIndex;
                 var nextMachine = _siteModel.Machines[nextInternalMachineIndex];
-                bool nextMachineIsAnExcavator = nextMachine.MachineType == MachineType.Excavator;
+                var nextMachineIsAnExcavator = nextMachine.MachineType == MachineType.Excavator;
                 var nextMappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_nextCurrentPass.Time, out _);
-                bool nextMinimumElevationMappingModeAtCellPassTime = nextMappingMode == ElevationMappingMode.MinimumElevation;
+                var nextMinimumElevationMappingModeAtCellPassTime = nextMappingMode == ElevationMappingMode.MinimumElevation;
 
                 if (nextMachineIsAnExcavator && nextMinimumElevationMappingModeAtCellPassTime)
                 {
@@ -182,7 +182,7 @@ namespace VSS.TRex.SubGrids
               _currentPass.FilteredPass = _lowestPass;
               FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
               _haveFilteredPass = true;
-              _assignmentContext.FilteredValue.PassCount = -1;
+              _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
             }
           }
           // <--###US79098###
@@ -225,7 +225,7 @@ namespace VSS.TRex.SubGrids
             // All criteria have been met for acceptance of this pass
             _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
             _haveFilteredPass = true;
-            _assignmentContext.FilteredValue.PassCount = -1;
+            _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
             break;
           }
 
