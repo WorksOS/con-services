@@ -13,13 +13,13 @@ namespace VSS.TRex.Cells
     /// Sets the appropriate bits in the GPSModeStore corresponding to the desired pass type
     /// </summary>
     /// <param name="value"></param>
-    /// <param name="_passType"></param>
+    /// <param name="passType"></param>
     /// <returns></returns>
-    public static byte SetPassType(byte value, PassType _passType)
+    public static byte SetPassType(byte value, PassType passType)
     {
       byte result = value;
 
-      switch (_passType)
+      switch (passType)
       {
         case PassType.Front: // val 0
           {
@@ -47,7 +47,7 @@ namespace VSS.TRex.Cells
           }
         default:
           {
-            throw new ArgumentException($"Unknown pass type supplied to SetPassType {_passType}", nameof(_passType));
+            throw new ArgumentException($"Unknown pass type supplied to SetPassType {passType}", nameof(passType));
           }
       }
 
