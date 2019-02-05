@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGrids
     // Local state populated for the purpose of access from various local methods
     private IClientLeafSubGrid _clientGrid;
     private ClientLeafSubGrid _clientGridAsLeaf;
-    private readonly GridDataType _gridDataType = GridDataType.All;
+    private readonly GridDataType _gridDataType;
     private bool _sieveFilterInUse;
 
     private SubGridTreeBitmapSubGridBits _sieveBitmask;
@@ -78,6 +78,7 @@ namespace VSS.TRex.SubGrids
     /// Constructor for the sub grid retriever helper
     /// </summary>
     /// <param name="siteModel">The project this sub gris is being retrieved from</param>
+    /// <param name="gridDataType">The type of client grid data sub grids to be returned by this retriever</param>
     /// <param name="storageProxy">The Ignite storage proxy to be used when requesting data from the persistent store</param>
     /// <param name="filter">The TRex spatial and attribute filtering description for the request</param>
     /// <param name="hasOverrideSpatialCellRestriction">The spatially selected cells are masked by a rectangular restriction boundary</param>
@@ -104,20 +105,13 @@ namespace VSS.TRex.SubGrids
       _storageProxy = storageProxy;
       _segmentIterator = null;
       _cellPassIterator = null;
-
       _filter = filter ?? new CombinedFilter();
-
       _canUseGlobalLatestCells = _filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
-
       _hasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
       _overrideSpatialCellRestriction = overrideSpatialCellRestriction;
-
       _prepareGridForCacheStorageIfNoSieving = prepareGridForCacheStorageIfNoSieving;
-
       _maxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
-
       _areaControlSet = areaControlSet;
-
       _populationControl = populationControl;
       _pdExistenceMap = pDExistenceMap;
 
@@ -139,8 +133,7 @@ namespace VSS.TRex.SubGrids
       while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
              _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
       {
-        FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex],
-          _populationControl, ref _currentPass);
+        FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
 
         if (_filter.AttributeFilter.FilterPass(ref _currentPass))
         {
@@ -323,8 +316,6 @@ namespace VSS.TRex.SubGrids
     /// Determines if there is null value for the required grid data type in the latest cell pass information.
     /// If the grid data type is not represented in the latest cell pass information this method returns false.
     /// </summary>
-    /// <param name="StripeIndex"></param>
-    /// <param name="J"></param>
     /// <returns></returns>
     private bool LatestCellPassAttributeIsNull(int StripeIndex, int J)
     {
@@ -349,7 +340,6 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
-    /// <param name="StripeIndex"></param>
     /// <returns></returns>
     private void RetrieveSubGridStripe(byte StripeIndex)
     {
@@ -564,7 +554,7 @@ namespace VSS.TRex.SubGrids
       }
     }
 
-    private bool _commonCellPassStackExaminationDone = false;
+    private bool _commonCellPassStackExaminationDone;
 
     private void SetupForCellPassStackExamination()
     {
@@ -607,14 +597,14 @@ namespace VSS.TRex.SubGrids
 
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 
-      //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]), slmcDebug);
+      //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]));
 
       // Set up class local state for other methods to access
       _clientGrid = clientGrid;
       _clientGridAsLeaf = clientGrid as ClientLeafSubGrid;
 
       _canUseGlobalLatestCells &=
-       // todo: Readd when liftbuildsettings available
+       // todo: Re-add when lift build settings available
        // !(_gridDataType == GridDataType.CCV ||
        //   _gridDataType == GridDataType.CCVPercent) /*&& (LiftBuildSettings.CCVSummaryTypes<>[])*/ &&
        // !(_gridDataType == GridDataType.MDP ||
@@ -670,11 +660,11 @@ namespace VSS.TRex.SubGrids
         }
 
         // First get the sub grid we are interested in
-        // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]), slmcDebug); {SKIP}
+        // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.OriginY])); 
 
         _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, clientGrid.OriginX, clientGrid.OriginY, _siteModel.Grid.NumLevels, false, false);
 
-        //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.Origin]), slmcDebug); {SKIP}
+        //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [clientGrid.OriginX, clientGrid.Origin]));
 
         if (_subGrid == null) // This should never really happen, but we'll be polite about it
         {
@@ -697,7 +687,7 @@ namespace VSS.TRex.SubGrids
           return Result;
         }
 
-        // SIGLogMessage.PublishNoODS(Nil, Format('Getting sub grid leaf at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]), slmcDebug);
+        // SIGLogMessage.PublishNoODS(Nil, Format('Getting sub grid leaf at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
 
         _subGridAsLeaf = (IServerLeafSubGrid) _subGrid;
         _globalLatestCells = _subGridAsLeaf.Directory.GlobalLatestCells;
@@ -713,7 +703,7 @@ namespace VSS.TRex.SubGrids
           return ServerRequestResult.FailedToComputeDesignFilterPatch;
         }
 
-        // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]), slmcDebug);
+        // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
         
         SetupForCellPassStackExamination();
 

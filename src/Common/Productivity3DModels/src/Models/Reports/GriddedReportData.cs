@@ -12,12 +12,13 @@ namespace VSS.Productivity3D.Models.Models.Reports
     
     public GriddedReportData()
     {
-      base.Clear();
       Clear();
     }
 
     public new void Clear()
     {
+      base.Clear();
+
       Rows = new GriddedReportDataRows();
       NumberOfRows = Rows.Count;
     }
