@@ -175,6 +175,7 @@ namespace VSS.TRex.Profiling.Executors
 
               Response = new ProfileRequestResponse<T>
               {
+                GridDistanceBetweenProfilePoints = Profiler.CellProfileBuilder.GridDistanceBetweenProfilePoints,
                 ProfileCells = ThinnedProfileCells,
                 ResultStatus = RequestErrorStatus.OK
               };

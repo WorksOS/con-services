@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
@@ -105,8 +106,18 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     private SummaryVolumesProfileResult ConvertResult(ProfileRequestResponse<SummaryVolumeProfileCell> result)
     {
+      var profileCells = result.ProfileCells.Select(pc => 
+        new SummaryVolumesProfileCell(
+          pc.Station, 
+          pc.InterceptLength, 
+          pc.OTGCellX, 
+          pc.OTGCellY, 
+          pc.DesignElev, 
+          pc.LastCellPassElevation1, 
+          pc.LastCellPassElevation2))
+        .ToList();
 
-      return SummaryVolumesProfileResult.Create();
+      return new SummaryVolumesProfileResult(result.GridDistanceBetweenProfilePoints, profileCells);
     }
 
 

@@ -9,27 +9,25 @@ namespace VSS.Productivity3D.Models.ResultHandling
   /// </summary>
   public class SummaryVolumesProfileResult : ContractExecutionResult
   {
+    public double GridDistanceBetweenProfilePoints { get; }
+
+    public List<SummaryVolumesProfileCell> ProfileCells { get; }
+
+    public bool HasData() => (ProfileCells?.Count ?? 0) > 0;
+
     /// <summary>
     /// Default private constructor.
     /// </summary>
     private SummaryVolumesProfileResult()
     { }
 
-    // Todo Make a return class
-  //  public List<SummaryVolumeProfileCell> ProfileCells { get; set; } = new List<SummaryVolumeProfileCell>();
-
-    public bool HasData() => true;
-
     /// <summary>
-    /// Static constructor.
+    /// Override constructor with parameters.
     /// </summary>
-    public static SummaryVolumesProfileResult Create()
+    public SummaryVolumesProfileResult(double gridDistanceBetweenProfilePoints, List<SummaryVolumesProfileCell> profileCells)
     {
-      // todo add params etc
-      return new SummaryVolumesProfileResult
-      {
-      };
-      
+      GridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
+      ProfileCells = profileCells;
     }
   }
 }
