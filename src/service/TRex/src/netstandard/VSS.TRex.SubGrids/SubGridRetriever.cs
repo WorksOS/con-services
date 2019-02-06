@@ -723,7 +723,7 @@ namespace VSS.TRex.SubGrids
 
         _sieveFilterInUse = _areaControlSet.UseIntegerAlgorithm 
           ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _sieveBitmask) 
-          : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
+          : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
 
         if (!_sieveFilterInUse)
         {

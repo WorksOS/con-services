@@ -2,6 +2,7 @@
 using System;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -374,8 +375,9 @@ namespace VSS.TRex.SubGrids
                     }
                     else
                     {
-                        ProdHeight = Consts.NullHeight; // should not get here
-                        ProdTime = DateTime.MinValue.Ticks;
+                       throw new TRexSubGridProcessingException($"Surveyed surface annotation of sub grid {ClientGrid.Moniker()} encountered neither HeightAndTIme nor CellProfile client sub grids");
+                       // ProdHeight = Consts.NullHeight; // should not get here
+                       // ProdTime = DateTime.MinValue.Ticks;
                     }
 
                     // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
@@ -469,16 +471,11 @@ namespace VSS.TRex.SubGrids
 
             if (SurveyedSurfaceDataRequested)
             {
-                // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
-                if (SubGridFilterMasks.ConstructSubGridCellFilterMask(ClientGrid, SiteModel, Filter,
-                                                                      CellOverrideMask,
-                                                                      HasOverrideSpatialCellRestriction,
-                                                                      OverrideSpatialCellRestriction,
-                                                                      ClientGrid.ProdDataMap,
-                                                                      ClientGrid.FilterMap))
-                    Result = PerformHeightAnnotation();
-                else
-                    Result = ServerRequestResult.FailedToComputeDesignFilterPatch;
+              // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
+              Result = SubGridFilterMasks.ConstructSubGridCellFilterMask(ClientGrid, SiteModel, Filter, CellOverrideMask,
+                                          HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction, ClientGrid.ProdDataMap, ClientGrid.FilterMap) 
+                ? PerformHeightAnnotation() 
+                : ServerRequestResult.FailedToComputeDesignFilterPatch;
             }
 
             return Result;

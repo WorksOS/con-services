@@ -181,9 +181,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
-      var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits _);
       Assert.False(sieveFilterInUse, "sieve filter should not have been generated for zero pixelWorldSize");
     }
@@ -201,9 +200,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
-      var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits _);
       Assert.False(sieveFilterInUse, "sieve filter should not have been generated where pixelWorldSize < siteModelCellSize");
     }
@@ -223,10 +221,9 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       double subGridWorldOriginX = siteModelCellsize / 2; 
       double subGridWorldOriginY = siteModelCellsize / 2;
-      var subGridMoniker = "theSubGridMoniker";
 
       var assignmentContext = new FilteredValueAssignmentContext();
-      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
       Assert.True(sieveFilterInUse, "sieve filter should have been generated");
@@ -260,9 +257,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
-      var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
       Assert.True(sieveFilterInUse, "sieve filter should have been generated");
@@ -299,9 +295,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
-      var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
       Assert.True(sieveFilterInUse, "sieve filter should have been generated");
@@ -338,9 +333,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
-      var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
       Assert.True(sieveFilterInUse, "sieve filter should have been generated");
