@@ -17,7 +17,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01742610607381, 36.208029800671845 ],
@@ -107,7 +107,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02311741179915, 36.207174764387581 ],
@@ -149,7 +149,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02202265682729, 36.207043252908278 ],
@@ -249,7 +249,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02205768151799, 36.206917760164217 ],
@@ -354,7 +354,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02092217907116, 36.207661374261811 ],
@@ -405,7 +405,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01881210298967, 36.207262256278 ],
@@ -428,7 +428,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01921331425895, 36.207267462971181 ],
@@ -453,7 +453,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01893449440189, 36.207869083745791 ],
@@ -499,7 +499,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01831053100042, 36.207851484856121 ],
@@ -531,7 +531,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01837389902254, 36.2078261678398 ],
@@ -548,7 +548,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02193627179412, 36.207366455324149 ],
@@ -573,7 +573,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02194281877435, 36.207372495116637 ],
@@ -595,7 +595,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02155160685983, 36.206889000133124 ],
@@ -659,7 +659,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01855637637492, 36.207647928295408 ],
@@ -703,7 +703,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01852221971168, 36.2075787263516 ],
@@ -744,7 +744,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.01882764583546, 36.2072601394153 ],
@@ -768,7 +768,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02408324381703, 36.206539205516265 ],
@@ -804,7 +804,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02409927440713, 36.207020754565235 ],
@@ -830,7 +830,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.0240727665232, 36.207072444781588 ],
@@ -866,7 +866,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02367756519497, 36.207643896819256 ],
@@ -931,7 +931,7 @@
       {
         "type": "Feature",
         "geometry": {
-          "type": "MultiLineString",
+          "type": "Polygon",
           "coordinates": [
             [
               [ -115.02549177483918, 36.207666612372947 ],

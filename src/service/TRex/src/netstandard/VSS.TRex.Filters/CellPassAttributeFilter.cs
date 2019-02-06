@@ -831,7 +831,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
           return false;
       }
 
@@ -940,7 +940,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
@@ -1056,7 +1056,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
@@ -1534,7 +1534,7 @@ namespace VSS.TRex.Filters
     {
       // Certain types of grid attribute data requests may need us to select
       // a pass that is not the latest pass in the pass list. Such an instance is
-      // when request CCV value where null CCV values are passed over in favor of
+      // when requesting CCV values where null CCV values are passed over in favor of
       // non-null CCV values in passes that are older in the pass list for the cell.
 
       // Important: Also see the CalculateLatestPassDataForPassStack() function in

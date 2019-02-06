@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
@@ -8,6 +7,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests", "..\test\UnitTests\VSS.MasterData.Models.UnitTests.csproj", "{2D15648F-4D22-493D-BDE3-FB62940D5096}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{7D42D723-8965-49F6-A903-7BF7A6AA9776}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{47F4364F-5368-4932-8900-3387AC04AFB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +28,10 @@ Global
 		{7D42D723-8965-49F6-A903-7BF7A6AA9776}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D42D723-8965-49F6-A903-7BF7A6AA9776}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D42D723-8965-49F6-A903-7BF7A6AA9776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47F4364F-5368-4932-8900-3387AC04AFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47F4364F-5368-4932-8900-3387AC04AFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47F4364F-5368-4932-8900-3387AC04AFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47F4364F-5368-4932-8900-3387AC04AFB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

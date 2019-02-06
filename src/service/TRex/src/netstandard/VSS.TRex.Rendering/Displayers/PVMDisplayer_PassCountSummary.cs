@@ -25,17 +25,17 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are greater than target range.
     /// </summary>
-    private Draw.Color AbovePassTargetRangeColour;
+    private readonly Draw.Color AbovePassTargetRangeColour;
 
     /// <summary>
     /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are within target range.
     /// </summary>
-    private Draw.Color WithinPassTargetRangeColour;
+    private readonly Draw.Color WithinPassTargetRangeColour;
 
     /// <summary>
     /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are less than target range.
     /// </summary>
-    private Draw.Color BelowPassTargetRangeColour;
+    private readonly Draw.Color BelowPassTargetRangeColour;
 
     /// <summary>
     /// Default no-arg constructor

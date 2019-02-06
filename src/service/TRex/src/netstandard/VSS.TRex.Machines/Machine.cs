@@ -25,7 +25,7 @@ namespace VSS.TRex.Machines
 
     public string Name { get; set; } = "";
 
-    public byte MachineType { get; set; } = byte.MaxValue;
+    public MachineType MachineType { get; set; } = (MachineType)byte.MaxValue;
 
     public int DeviceType { get; set; } = int.MaxValue;
 
@@ -58,9 +58,9 @@ namespace VSS.TRex.Machines
     /// <returns></returns>
     public bool MachineIsCompactorType()
     {
-      return MachineType == (byte)Types.MachineType.SoilCompactor ||
-             MachineType == (byte)Types.MachineType.AsphaltCompactor ||
-             MachineType == (byte)Types.MachineType.FourDrumLandfillCompactor;
+      return MachineType == MachineType.SoilCompactor ||
+             MachineType == MachineType.AsphaltCompactor ||
+             MachineType == MachineType.FourDrumLandfillCompactor;
     }
 
     public static bool MachineGearIsForwardGear(MachineGear gear)
@@ -88,7 +88,7 @@ namespace VSS.TRex.Machines
     public Machine(MachinesList owner,
                    string name,
                    string machineHardwareID,
-                   byte machineType,
+                   MachineType machineType,
                    int deviceType,
                    Guid machineID,
                    short internalSiteModelMachineIndex,
@@ -134,7 +134,7 @@ namespace VSS.TRex.Machines
       writer.Write(ID.ToByteArray());
       writer.Write(InternalSiteModelMachineIndex);
       writer.Write(Name);
-      writer.Write(MachineType);
+      writer.Write((byte)MachineType);
       writer.Write(DeviceType);
       writer.Write(MachineHardwareID);
       writer.Write(IsJohnDoeMachine);
@@ -160,7 +160,7 @@ namespace VSS.TRex.Machines
       ID = reader.ReadGuid();
       InternalSiteModelMachineIndex = reader.ReadInt16();
       Name = reader.ReadString();
-      MachineType = reader.ReadByte();
+      MachineType = (MachineType)reader.ReadByte();
       DeviceType = reader.ReadInt32();
       MachineHardwareID = reader.ReadString();
       IsJohnDoeMachine = reader.ReadBoolean();
