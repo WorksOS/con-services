@@ -42,7 +42,7 @@ namespace VSS.TRex.Machines
     private Guid UniqueJohnDoeID() => Guid.NewGuid();
 
     public IMachine CreateNew(string name, string machineHardwareID,
-      byte machineType,
+      MachineType machineType,
       int deviceType,
       bool isJohnDoeMachine,
       Guid machineID)

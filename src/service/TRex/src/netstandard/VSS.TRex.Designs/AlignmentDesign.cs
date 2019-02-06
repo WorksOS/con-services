@@ -13,27 +13,17 @@ using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 namespace VSS.TRex.Designs
 {
   /// <summary>
-  /// A design comprised of linework components which describe a road (or part of)
+  /// A design comprised of line work components which describe a road (or part of)
   /// </summary>
 
   public class AlignmentDesign : DesignBase
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-    private double _minHeight;
-    private double _maxHeight;
-    private readonly double _cellSize;
-    private readonly ISubGridTreeBitMask _subgridIndex;
-
     public byte[] Data { get; set; } // assuming here there will be some kind of SDK model
-
-    public OptimisedSpatialIndexSubGridTree SpatialIndexOptimised { get; private set; }
-    private static readonly float[,] kNullPatch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     static AlignmentDesign()
     {
-      // todo when SDK available
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => kNullPatch[x, y] = Common.Consts.NullHeight);
     }
 
     /// <summary>
@@ -44,7 +34,6 @@ namespace VSS.TRex.Designs
     {
       // todo when SDK available
       Data = new byte[0];
-      this._cellSize = cellSize;
     }
 
 
@@ -116,7 +105,7 @@ namespace VSS.TRex.Designs
     /// <param name="y2"></param>
     public override void GetExtents(out double x1, out double y1, out double x2, out double y2)
     {
-      // todo when SDK available
+      // todo when SDK available if appropriate
       x1 = 6;
       y1 = 34;
       x2 = 8;
@@ -130,9 +119,9 @@ namespace VSS.TRex.Designs
     /// <param name="z2"></param>
     public override void GetHeightRange(out double z1, out double z2)
     {
-      // todo when SDK available
-      z1 = _minHeight;
-      z2 = _maxHeight;
+      // todo when SDK available if appropriate
+      z1 = Consts.NullDouble;
+      z2 = Consts.NullDouble;
     }
 
     /// <summary>
@@ -149,13 +138,13 @@ namespace VSS.TRex.Designs
       double Offset,
       out double Z)
     {
-      // todo when SDK available
+      // todo when SDK available if appropriate
       Z = Common.Consts.NullReal;
       return false;
     }
 
     /// <summary>
-    /// Interpolates heights from the design for all the cells in a subgrid
+    /// Interpolates heights from the design for all the cells in a sub grid
     /// </summary>
     /// <param name="Patch"></param>
     /// <param name="OriginX"></param>
@@ -188,17 +177,11 @@ namespace VSS.TRex.Designs
       return false;
     }
 
-    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => _subgridIndex[SubGridX, SubGridY];
+    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => false;
 
     public override bool HasFiltrationDataForSubGridPatch(double X, double Y) => false;
 
-    public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY) => false;
-
-    /// <summary>
-    /// A reference to the internal subgrid existence map for the design
-    /// </summary>
-    /// <returns></returns>
-    public override ISubGridTreeBitMask SubgridOverlayIndex() => _subgridIndex;
+    public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubGridY) => false;
 
     /// <summary>
     /// Computes the requested geometric profile over the design and returns the result

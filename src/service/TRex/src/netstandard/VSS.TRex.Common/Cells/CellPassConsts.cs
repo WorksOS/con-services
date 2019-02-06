@@ -119,7 +119,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null machine type value
     /// </summary>
-    public const byte MachineTypeNull = 0;
+    public const MachineType MachineTypeNull = (MachineType)0;
 
     /// <summary>
     /// Null value for the Volkel compaction sensor measurement range (defined as int, but null is byte.MaxValue)

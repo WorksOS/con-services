@@ -9,7 +9,7 @@ namespace VSS.TRex.Machines.Interfaces
     Guid ID { get; set; }
     short InternalSiteModelMachineIndex { get; set; }
     string Name { get; set; }
-    byte MachineType { get; set; }
+    MachineType MachineType { get; set; }
     int DeviceType { get; set; }
     string MachineHardwareID { get; set; }
     bool IsJohnDoeMachine { get; set; }

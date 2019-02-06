@@ -16,7 +16,8 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// ready to be used to create per-Task requestor delegates
     /// </summary>
     /// <returns></returns>
-    (ICombinedFilter Filter,
+    (GridDataType GridDataType,
+      ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -30,7 +31,8 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// </summary>
     /// <returns></returns>
     ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
-      (ICombinedFilter Filter,
+      (GridDataType GridDataType,
+        ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         Guid[] FilteredSurveyedSurfacesAsArray,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
