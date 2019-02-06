@@ -235,79 +235,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     #endregion TRex
 
     #region tiles
-
-    /// <summary>
-    /// Generate DXF tiles using Pegasus through the tile service. Set the zoom range in the notification result.
-    /// </summary>
-    public static async Task GenerateDxfTiles(AddFileResult notificationResult, string rootFolder, Guid projectUid, string customerUid, 
-      string fileName, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, Guid importedFileUid, 
-      ILogger log, IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy, IRaptorProxy raptorProxy, 
-      IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, IDataOceanClient dataOceanClient, 
-      IConfigurationStore configStore)
-    { 
-      if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.Alignment)
-      {
-        try
-        {
-          //For alignment files get the generated DXF from Raptor and save to DataOcean
-          if (importedFileType == ImportedFileType.Alignment)
-          {
-            fileName = await CreateGeneratedDxfFile(customerUid, projectUid, importedFileUid, raptorProxy, headers, 
-              log, serviceExceptionHandler, authn, dataOceanClient, configStore, fileName);
-          }
-
-          var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
-          var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
-          var dcFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{coordSysFileName}";
-          const string PEGASUS_EXECUTION_TIMEOUT_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
-          var executionTimeout = configStore.GetValueInt(PEGASUS_EXECUTION_TIMEOUT_KEY, 5)*60000;//minutes converted to millisecs
-          //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
-          var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers, executionTimeout);
-          if (tileMetadata != null)
-          {
-            notificationResult.MinZoomLevel = tileMetadata.MinZoom;
-            notificationResult.MaxZoomLevel = tileMetadata.MaxZoom;
-          }
-        }
-        catch (Exception e)
-        {
-          log.LogError(
-            $"FileImport GenerateDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
-          throw;
-        }        
-      }
-    }
-
-    /// <summary>
-    /// Delete generated DXF tiles through the tile service.
-    /// </summary>
-    public static async Task DeleteDxfTiles(string rootFolder, Guid projectUid, string customerUid, string fileName, 
-      ImportedFileType importedFileType, ILogger log, IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy)
-    {
-      if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.Alignment)
-      {
-        try
-        {
-          var dataOceanPath = DataOceanHelper.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
-          var dxfFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
-          var success = await tileServiceProxy.DeleteDxfTiles(dxfFileName, headers);
-        }
-        catch (Exception e)
-        {
-          log.LogError(
-            $"FileImport DeleteDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
-          throw;
-        }
-      }
-    }
-
     /// <summary>
     /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
     /// </summary>
     /// <returns>The generated file name</returns>
-    private static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, 
+    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, 
       IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, 
-      IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName)
+      IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
     {
       var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
       //Get generated DXF file from Raptor
@@ -320,11 +254,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           if (archive.Entries.Count == 1)
           {
-            var dataOceanRootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
-            if (string.IsNullOrEmpty(dataOceanRootFolder))
-            {
-              serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
-            }
             using (var stream = archive.Entries[0].Open() as DeflateStream)
             using (var ms = new MemoryStream())
             {
@@ -332,7 +261,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               stream.CopyTo(ms);
               ms.Seek(0, SeekOrigin.Begin);
               await DataOceanHelper.WriteFileToDataOcean(
-                ms, dataOceanRootFolder, customerUid, projectUid.ToString(),
+                ms, rootFolder, customerUid, projectUid.ToString(),
                generatedName, false, null, log, serviceExceptionHandler, dataOceanClient, authn);
             }
           }

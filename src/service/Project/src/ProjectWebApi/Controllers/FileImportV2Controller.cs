@@ -60,10 +60,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
-      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn)
       : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, tileServiceProxy, authn)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     {
       this.logger = logger;
     }
@@ -167,7 +167,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, tileServiceProxy, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 

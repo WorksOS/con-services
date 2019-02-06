@@ -109,7 +109,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
-      services.AddSingleton<ITileServiceProxy, TileServiceProxy>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
 

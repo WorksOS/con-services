@@ -90,23 +90,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
           log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
 
-        //Generate DXF tiles
-        if (createimportedfile.ImportedFileType == ImportedFileType.Linework || createimportedfile.ImportedFileType == ImportedFileType.Alignment)
+        if (createimportedfile.ImportedFileType == ImportedFileType.Alignment)
         {
-          await ImportedFileRequestHelper.GenerateDxfTiles(
-            addFileResult, createimportedfile.DataOceanRootFolder, createimportedfile.ProjectUid, customerUid,
-            createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
-            project.CoordinateSystemFileName, createImportedFileEvent.ImportedFileUID, log, customHeaders, tileServiceProxy,
-            raptorProxy, serviceExceptionHandler, authn, dataOceanClient, configStore);
-
-          createImportedFileEvent.MinZoomLevel = addFileResult.MinZoomLevel;
-          createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
+          //Create DXF file for alignment center line
+          await ImportedFileRequestHelper.CreateGeneratedDxfFile(
+            customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, raptorProxy, customHeaders, log,
+            serviceExceptionHandler, authn, dataOceanClient, configStore, createimportedfile.FileName, createimportedfile.DataOceanRootFolder);
         }
 
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db  
+        //Need to update zoom levels in Db  (this will not be needed when DXF tile generation done externally/separately)
         _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
             createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,

@@ -127,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null, projectRepo, 
-            subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient, null, authn)
+            subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient, authn)
           .ProcessAsync(createProjectEvent)
       );
 

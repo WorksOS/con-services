@@ -170,7 +170,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName, raptorProxy, 
             subscriptionProxy, null, null, null, projectRepo, subscriptionRepo, fileRepo, 
-            null, HttpContextAccessor, dataOceanClient, null, authn)
+            null, HttpContextAccessor, dataOceanClient, authn)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -252,7 +252,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null,
             projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, 
-            dataOceanClient, null, authn)
+            dataOceanClient, authn)
           .ProcessAsync(project)
       );
 

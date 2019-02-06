@@ -56,10 +56,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
-      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient)
+      ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, tileServiceProxy, authn)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     {
       this.logger = logger;
       this.notificationHubClient = notificationHubClient;
@@ -367,7 +367,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<DeleteImportedFileExecutor>(
             logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-            projectRepo, null, fileRepo, null, null, dataOceanClient, null, authn)
+            projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
           .ProcessAsync(deleteImportedFile)
       );
 
@@ -465,7 +465,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<CreateImportedFileExecutor>(
               logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, tileServiceProxy, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -492,7 +492,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpdateImportedFileExecutor>(
               logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, null, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, tileServiceProxy, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
 

@@ -76,9 +76,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
-      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn)
       : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
-        subscriptionRepo, fileRepo, dataOceanClient, tileServiceProxy, authn)
+        subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;

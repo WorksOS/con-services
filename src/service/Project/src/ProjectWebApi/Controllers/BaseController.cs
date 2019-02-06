@@ -78,7 +78,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly IFileRepository fileRepo;
 
     protected readonly IDataOceanClient dataOceanClient;
-    protected readonly ITileServiceProxy tileServiceProxy;
     protected readonly ITPaaSApplicationAuthentication authn;
 
     /// <summary>
@@ -132,8 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IRaptorProxy raptorProxy, IProjectRepository projectRepo, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
-      IDataOceanClient dataOceanClient = null, ITileServiceProxy tileServiceProxy = null,
-      ITPaaSApplicationAuthentication authn = null)
+      IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null)
     {
       this.log = log;
       this.configStore = configStore;
@@ -153,7 +151,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.fileRepo = fileRepo;
       this.raptorProxy = raptorProxy;
       this.dataOceanClient = dataOceanClient;
-      this.tileServiceProxy = tileServiceProxy;
       this.authn = authn;
     }
 

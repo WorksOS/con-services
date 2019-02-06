@@ -58,7 +58,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
       : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
-        subscriptionRepo, fileRepo, dataOceanClient, null, authn)
+        subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.subscriptionProxy = subscriptionProxy;
     }

@@ -102,22 +102,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             deleteImportedFile.ProjectUid,
             deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
 
-          if (deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
-              deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+          if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
           {
-            //Do we care if deleting DXF tiles and generated DXF file fails?
+            //Do we care if deleting generated DXF file fails?
             string generatedName = DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.ImportedFileType);
-            await ImportedFileRequestHelper.DeleteDxfTiles(deleteImportedFile.DataOceanRootFolder,
-              deleteImportedFile.ProjectUid, customerUid, generatedName,
-              deleteImportedFile.ImportedFileType, log, customHeaders, tileServiceProxy);
-
-            if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
-            {
-              await DataOceanHelper.DeleteFileFromDataOcean(
-                generatedName, deleteImportedFile.DataOceanRootFolder, customerUid,
-                deleteImportedFile.ProjectUid,
-                deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
-            }
+            await DataOceanHelper.DeleteFileFromDataOcean(
+              generatedName, deleteImportedFile.DataOceanRootFolder, customerUid,
+              deleteImportedFile.ProjectUid,
+              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);         
           }
         }
 
