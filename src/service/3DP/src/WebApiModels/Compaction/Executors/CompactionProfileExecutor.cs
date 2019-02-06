@@ -27,8 +27,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// </summary>
   public class CompactionProfileExecutor : RequestExecutorContainer
   {
-    public const double TOLERANCE_DISTANCE = 1E-5;
-
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
@@ -158,24 +156,24 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           profile.results.Add(gapCell);
         }
 
-        var lastPassHeight = Math.Abs(currCell.lastPassHeight - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
+        var lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE
           ? float.NaN
           : currCell.lastPassHeight;
-        var lastCompositeHeight = Math.Abs(currCell.compositeLastPassHeight - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.compositeLastPassHeight;
 
-        var designHeight = Math.Abs(currCell.designHeight - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.designHeight;
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV ||
                           currCell.CCV == VelociraptorConstants.NO_CCV;
-        bool noCCVElevation = Math.Abs(currCell.CCVElev - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE || noCCVValue;
+        bool noCCVElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
         bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP ||
                           currCell.MDP == VelociraptorConstants.NO_MDP;
-        bool noMDPElevation = Math.Abs(currCell.MDPElev - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE || noMDPValue;
+        bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
         bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
-        bool noTemperatureElevation = Math.Abs(currCell.materialTemperatureElev - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE ||
+        bool noTemperatureElevation = currCell.materialTemperatureElev == VelociraptorConstants.NULL_SINGLE ||
                                       noTemperatureValue;
         bool noPassCountValue = currCell.topLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
 
@@ -192,16 +190,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ? float.NaN
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
 
-        var firstPassHeight = Math.Abs(currCell.firstPassHeight - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.firstPassHeight;
 
-        var highestPassHeight = Math.Abs(currCell.highestPassHeight - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.highestPassHeight;
 
-        var lowestPassHeight = Math.Abs(currCell.lowestPassHeight - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.lowestPassHeight;
 
         var cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight)
@@ -493,16 +491,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           profile.results.Add(gapCell);
         }
 
-        var lastPassHeight1 = Math.Abs(currCell.LastCellPassElevation1 - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
+        var lastPassHeight1 = currCell.LastCellPassElevation1 == VelociraptorConstants.NULL_SINGLE
           ? float.NaN
           : currCell.LastCellPassElevation1;
 
-        var lastPassHeight2 = Math.Abs(currCell.LastCellPassElevation2 - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var lastPassHeight2 = currCell.LastCellPassElevation2 == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.LastCellPassElevation2;
 
-        var designHeight = Math.Abs(currCell.DesignElev - VelociraptorConstants.NULL_SINGLE) < TOLERANCE_DISTANCE
-          ? float.NaN
+        var designHeight = currCell.DesignElev == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
           : currCell.DesignElev;
 
         float cutFill = float.NaN;
