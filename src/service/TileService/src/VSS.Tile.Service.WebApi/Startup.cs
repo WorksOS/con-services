@@ -60,13 +60,8 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
-      services.AddTransient<IDataOceanClient, DataOceanClient>();
-      services.AddTransient<IPegasusClient, PegasusClient>();
-      services.AddSingleton<IWebRequest, GracefulWebRequest>();
-      services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
-      services.AddTransient<ITPaasProxy, TPaasProxy>();
 
-      services.AddSingleton<Productivity3D.Push.Clients.CacheInvalidationService>();
+      services.AddSingleton<CacheInvalidationService>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
