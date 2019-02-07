@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Models.ResultHandling;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -17,9 +18,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
     }
 
-    public static bool CellGapExists(Velociraptor.PDSInterface.SummaryVolumesProfileCell prevCell, Velociraptor.PDSInterface.SummaryVolumesProfileCell currCell, out double prevStationIntercept)
+    public static bool CellGapExists(SummaryVolumesProfileCell prevCell, SummaryVolumesProfileCell currCell, out double prevStationIntercept)
     {
-      return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
+      return CellGapExists(prevCell?.Station, prevCell?.InterceptLength, currCell.Station, out prevStationIntercept);
     }
 
     private static bool CellGapExists(double? prevStation, double? prevInterceptLength, double currStation, out double prevStationIntercept)

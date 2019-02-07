@@ -66,7 +66,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     private DesignProfileResult ConvertResult(CalculateDesignProfileResponse result)
     {
-      return DesignProfileResult.Create(result.Profile.Select(x => new Productivity3D.Models.ResultHandling.XYZS
+      return new DesignProfileResult(result.Profile.Select(x => new XYZS
       {
         X = x.X, Y = x.Y, Z = x.Z, Station = x.Station
       }).ToList());
