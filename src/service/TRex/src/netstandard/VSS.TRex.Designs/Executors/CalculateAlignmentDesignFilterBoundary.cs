@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public Fence Execute(Guid projectUID, Guid referenceDesignUID, double startSTation, double endStation, double leftOffset, double rightOffset)
+    public Fence Execute(Guid projectUID, Guid referenceDesignUID, double startStation, double endStation, double leftOffset, double rightOffset)
     {
       try
       {

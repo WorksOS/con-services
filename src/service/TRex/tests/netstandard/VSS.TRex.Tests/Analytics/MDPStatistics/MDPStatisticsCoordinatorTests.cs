@@ -107,6 +107,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
         Assert.True(response.Counts[i] == aggregator.Counts[i], $"Invalid aggregated value for Counts[{i}].");
     }
 
+    [Fact]
     public void Test_MDPStatisticsCoordinator_ReadOutResults_Summary_Successful()
     {
       var aggregator = _getMDPAggregator(Arg_Summary);

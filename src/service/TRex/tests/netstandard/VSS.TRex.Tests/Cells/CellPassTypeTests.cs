@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Cells;
+﻿using VSS.TRex.Cells;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -34,16 +31,16 @@ namespace VSS.TRex.Tests.Cells
             PassTypeSet PassTypes = PassTypeSet.None;
 
             PassTypes = PassTypeSet.Front;
-            Assert.True(CellPass.PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Front));
+            Assert.True(PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Front));
 
             PassTypes = PassTypeSet.Rear;
-            Assert.True(CellPass.PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Rear));
+            Assert.True(PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Rear));
 
             PassTypes = PassTypeSet.Track;
-            Assert.True(CellPass.PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Track));
+            Assert.True(PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Track));
 
             PassTypes = PassTypeSet.Wheel;
-            Assert.True(CellPass.PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Wheel));
+            Assert.True(PassTypeHelper.PassTypeSetContains(PassTypes, PassType.Wheel));
         }
     }
 }

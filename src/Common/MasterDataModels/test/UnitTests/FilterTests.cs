@@ -27,8 +27,7 @@ namespace VSS.MasterData.Models.UnitTests
 
       Assert.AreEqual(expectedResult, filter.DateRangeName);
     }
-
-
+    
     [TestMethod]
     [DataRow(DateRangeType.ProjectExtents)]
     public void ApplyDateRange_null_project_extents(DateRangeType dateRangeType)
@@ -42,7 +41,6 @@ namespace VSS.MasterData.Models.UnitTests
       }
     }
 
-
     [TestMethod]
     [DataRow(DateRangeType.Today)]
     public void ApplyDateRange_null_project_start_when_asAtDate(DateRangeType dateRangeType)
@@ -54,6 +52,16 @@ namespace VSS.MasterData.Models.UnitTests
       Assert.AreEqual(DateTime.UtcNow.Date, filter.EndUtc.Value.Date);
     }
 
+    [TestMethod]
+    [DataRow(null, null, null, false)]
+    [DataRow("f76fe65a-5715-4a3b-9df4-284b7425d097", null, null, true)]
+    [DataRow(null, "3e8ebc3f-a82f-4ed6-95f8-47c0f3a80e8b", null, true)]
+    [DataRow(null, null, "ce56b132-58a5-4803-b2c6-7a4bc3c2390b", true)]
+    public void ContainsBoundary_returns_correct_result(string designUid, string alignmentUid, string polygonUid, bool expectedResult)
+    { 
+      var filter = JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"0\",\"designUid\":\"{designUid}\",\"alignmentUid\":\"{alignmentUid}\",\"polygonUid\":\"{polygonUid}\"}}");
 
+      Assert.AreEqual(expectedResult, filter.ContainsBoundary);
+    }
   }
 }

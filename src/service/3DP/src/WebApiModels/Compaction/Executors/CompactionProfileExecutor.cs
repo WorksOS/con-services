@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using SVOICOptionsDecls;
 using SVOICProfileCell;
 using SVOICSummaryVolumesProfileCell;
 using SVOICVolumeCalculationsDecls;
-using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -18,6 +19,7 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Velociraptor.PDSInterface;
+using SummaryVolumeProfileCell = VSS.Productivity3D.Models.ResultHandling.SummaryVolumesProfileCell;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -159,11 +161,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ? float.NaN
           : currCell.lastPassHeight;
         var lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
+        ? float.NaN
           : currCell.compositeLastPassHeight;
 
         var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
+        ? float.NaN
           : currCell.designHeight;
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV ||
                           currCell.CCV == VelociraptorConstants.NO_CCV;
@@ -190,15 +192,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
 
         var firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
+        ? float.NaN
           : currCell.firstPassHeight;
 
         var highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
+        ? float.NaN
           : currCell.highestPassHeight;
 
         var lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
+        ? float.NaN
           : currCell.lowestPassHeight;
 
         var cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight)
@@ -472,11 +474,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
 
       profile.results = new List<CompactionSummaryVolumesProfileCell>();
-      SummaryVolumesProfileCell prevCell = null;
+      SummaryVolumeProfileCell prevCell = null;
 
-      foreach (var currCell in pdsiProfile.Cells)
+      var profileCells = pdsiProfile.Cells.Select(c => new SummaryVolumeProfileCell(
+        c.station,
+        c.interceptLength,
+        (uint)c.OTGCellX,
+        (uint)c.OTGCellY,
+        c.designElevation,
+        c.lastCellPassElevation1,
+        c.lastCellPassElevation2
+      )).ToList();
+
+      foreach (var currCell in profileCells)
       {
-        var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
+        var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out var prevStationIntercept);
 
         if (gapExists)
         {
@@ -485,17 +497,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           profile.results.Add(gapCell);
         }
 
-        var lastPassHeight1 = currCell.lastCellPassElevation1 == VelociraptorConstants.NULL_SINGLE
+        var lastPassHeight1 = currCell.LastCellPassElevation1 == VelociraptorConstants.NULL_SINGLE
           ? float.NaN
-          : currCell.lastCellPassElevation1;
+          : currCell.LastCellPassElevation1;
 
-        var lastPassHeight2 = currCell.lastCellPassElevation2 == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
-          : currCell.lastCellPassElevation2;
+        var lastPassHeight2 = currCell.LastCellPassElevation2 == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
+          : currCell.LastCellPassElevation2;
 
-        var designHeight = currCell.designElevation == VelociraptorConstants.NULL_SINGLE
-          ? float.NaN
-          : currCell.designElevation;
+        var designHeight = currCell.DesignElev == VelociraptorConstants.NULL_SINGLE
+        ? float.NaN
+          : currCell.DesignElev;
 
         float cutFill = float.NaN;
         switch (calcType)
@@ -521,7 +533,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
 
-          station = currCell.station,
+          station = currCell.Station,
 
           lastPassHeight1 = lastPassHeight1,
           lastPassHeight2 = lastPassHeight2,
@@ -533,11 +545,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
-      if (prevCell != null && prevCell.interceptLength > ProfilesHelper.ONE_MM)
+      if (prevCell != null && prevCell.InterceptLength > ProfilesHelper.ONE_MM)
       {
         var lastCell = new CompactionSummaryVolumesProfileCell(profile.results[profile.results.Count - 1])
         {
-          station = prevCell.station + prevCell.interceptLength
+          station = prevCell.Station + prevCell.InterceptLength
         };
 
         profile.results.Add(lastCell);

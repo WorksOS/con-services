@@ -183,7 +183,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     private ISiteModel CreateSiteModelWithSingleCellForTesting()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      siteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      siteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       // vibrationState is needed to get cmv values
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(BASE_TIME,VibrationState.On);

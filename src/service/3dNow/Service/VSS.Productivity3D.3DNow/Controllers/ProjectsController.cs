@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Now3D.Models;
@@ -16,7 +17,8 @@ namespace VSS.Productivity3D.Now3D.Controllers
     private readonly IProjectListProxy projectListProxy;
     private readonly IFileListProxy fileListProxy;
 
-    public ProjectsController(ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
+    public ProjectsController(ILoggerFactory loggerFactory, ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
+      :base(loggerFactory)
     {
       this.customerProxy = customerProxy;
       this.projectListProxy = projectListProxy;
@@ -30,7 +32,6 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <response code="403">Invalid access token provided</response>
     [HttpGet("api/v1/projects")]
     [ProducesResponseType(typeof(List<CustomerDisplayModel>), 200)]
-
     public async Task<IActionResult> GetMasterDataModels()
     {
       var customers = await customerProxy.GetCustomersForMe(UserId, CustomHeaders);

@@ -43,9 +43,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
-      (bool uploadSuccess, string message) = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
+      var uploadResult = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
 
-      if (!uploadSuccess) return StatusCode((int)HttpStatusCode.BadRequest, message);
+      if (!uploadResult.success) return StatusCode((int)HttpStatusCode.BadRequest, uploadResult.message);
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)

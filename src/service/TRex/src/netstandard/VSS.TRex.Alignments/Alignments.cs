@@ -14,14 +14,6 @@ namespace VSS.TRex.Alignments
     private const byte kMajorVersion = 1;
     private const byte kMinorVersion = 3;
 
-    private bool FSorted;
-    private bool SortDescending;
-
-    public bool Sorted => FSorted;
-
-    private IExistenceMaps existenceMaps;
-    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
-
     /// <summary>
     /// No-arg constructor
     /// </summary>

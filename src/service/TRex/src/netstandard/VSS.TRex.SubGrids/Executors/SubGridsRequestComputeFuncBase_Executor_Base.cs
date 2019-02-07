@@ -249,14 +249,10 @@ namespace VSS.TRex.SubGrids.Executors
         return ServerRequestResult.FailedToComputeDesignElevationPatch;
       }
 
-      clientGrid = ClientLeafSubGridFactory.GetSubGridEx(Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested),
-        siteModel.Grid.CellSize, SubGridTreeConsts.SubGridTreeLevels, 
-        (uint) (address.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint) (address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
-
       // Reach into the sub grid request layer and retrieve an appropriate sub grid
       requester.CellOverrideMask.Fill();
 
-      ServerRequestResult result = requester.RequestSubGridInternal((SubGridCellAddress) address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
+      ServerRequestResult result = requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, out clientGrid);
 
       if (result != ServerRequestResult.NoError)
         Log.LogError($"Request for sub grid {address} request failed with code {result}");
@@ -384,7 +380,8 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// The collection of requestor intermediaries that are derived from to create requestor delegates
     /// </summary>
-    private (ICombinedFilter Filter, 
+    private (GridDataType GridDataType,
+      ICombinedFilter Filter, 
       ISurveyedSurfaces FilteredSurveyedSurfaces, 
       Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
