@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters.Models;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {

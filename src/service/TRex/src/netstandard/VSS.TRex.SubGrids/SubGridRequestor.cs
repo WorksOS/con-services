@@ -92,19 +92,7 @@ namespace VSS.TRex.SubGrids
         {
             SiteModel = siteModel;
             GridDataType = gridDataType;
-
-            if (filter.AttributeFilter.HasElevationRangeFilter)
-            {
-              // Make a clone of the filter to be specific to the sub grids that will be iterated over by this requestor
-              // and assign the clone to the local Filter property
-          
-              Filter = new CombinedFilter(filter.SpatialFilter);
-              Filter.AttributeFilter.Assign(filter.AttributeFilter);
-            }
-            else
-            {
-              Filter = filter;
-            }
+            Filter = filter;
 
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
             OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
