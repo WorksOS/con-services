@@ -235,18 +235,48 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Sends a request to get a TIN surface data from the TRex database.
     /// </summary>
-    /// <param name="compactionExportRequest"></param>
+    /// <param name="compactionSurfaceExportRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<CompactionExportResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
+    public Task<CompactionExportResult> SendSurfaceExportRequest(CompactionSurfaceExportRequest compactionSurfaceExportRequest,
       IDictionary<string, string> customHeaders = null)
     {
-      var request = JsonConvert.SerializeObject(compactionExportRequest);
-
+      var request = JsonConvert.SerializeObject(compactionSurfaceExportRequest);
       log.LogDebug($"{nameof(SendSurfaceExportRequest)}: Sending the request: {request}");
 
       return SendRequestPost<CompactionExportResult>(request, customHeaders, "/export/surface/ttm");
     }
+
+    /// <summary>
+    /// Sends a request to get Veta format .csv output from TRex.
+    /// </summary>
+    /// <param name="compactionVetaExportRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<CompactionExportResult> SendVetaExportRequest(CompactionVetaExportRequest compactionVetaExportRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(compactionVetaExportRequest);
+      log.LogDebug($"{nameof(SendVetaExportRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<CompactionExportResult>(request, customHeaders, "/export/veta");
+    }
+
+    /// <summary>
+    /// Sends a request to get PassCount .csv output from TRex.
+    /// </summary>
+    /// <param name="compactionPassCountExportRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<CompactionExportResult> SendPassCountExportRequest(CompactionPassCountExportRequest compactionPassCountExportRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(compactionPassCountExportRequest);
+      log.LogDebug($"{nameof(SendPassCountExportRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<CompactionExportResult>(request, customHeaders, "/export/passcount");
+    }
+
 
     /// <summary>
     /// Sends a request to get production data patches from the TRex database.

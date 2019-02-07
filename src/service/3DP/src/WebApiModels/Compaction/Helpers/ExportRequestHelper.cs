@@ -16,6 +16,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -76,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       bool restrictSize,
       bool rawData,
       OutputTypes outputType,
-      string machineNames,
+      string machineNameString,
       double tolerance = 0.0)
     {
 #if !RAPTOR
@@ -87,26 +88,32 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
+      string[] machineNames = null;
 
       if (exportType == ExportTypes.SurfaceExport)
       {
         raptorClient.GetDataModelExtents(ProjectId,
           RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.SurveyedSurfaceExclusionList), out projectExtents);
       }
-      else
+      else if (exportType == ExportTypes.VedaExport)
       {
-        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
+        if (!string.IsNullOrEmpty(machineNameString) && machineNameString != "All")
+        {
+          machineNames = machineNameString.Split(',');
+        }
+#if RAPTOR
+          TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
 
         if (machineDetails != null)
         {
-          if (!string.IsNullOrEmpty(machineNames) && machineNames != "All")
+          if (!string.IsNullOrEmpty(machineNameString) && machineNameString != "All")
           {
-            var machineNamesArray = machineNames.Split(',');
-            machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
+            machineDetails = machineDetails.Where(machineDetail => machineNames.Contains(machineDetail.Name)).ToArray();
           }
 
           machineList = machineDetails.Select(m => new TMachine { AssetID = m.ID, MachineName = m.Name, SerialNo = "" }).ToArray();
         }
+#endif
       }
 
       if (!string.IsNullOrEmpty(fileName))
@@ -137,7 +144,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
-        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));
+        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone),
+        machineNames);
 #endif
     }
 

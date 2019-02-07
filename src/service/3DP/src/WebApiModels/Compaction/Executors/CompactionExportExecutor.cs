@@ -40,15 +40,40 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (
 #if RAPTOR
-          UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") && 
+          UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") &&
 #endif
           request?.ExportType == ExportTypes.SurfaceExport)
         {
+          var compactionSurfaceExportRequest =
+            new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename,
+              request.Tolerance);
 
-          var cmvChangeDetailsRequest =
-            new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
+          return trexCompactionDataProxy.SendSurfaceExportRequest(compactionSurfaceExportRequest, customHeaders).Result;
+        }
+        else if (
+#if RAPTOR
+          UseTRexGateway("ENABLE_TREX_GATEWAY_VETA") &&
+#endif
+          request?.ExportType == ExportTypes.VedaExport)
+        {
+          // todoJeannie note that only OutputTypes.VedaAllPasses is currently supported in 3dp
+          var compactionVetaExportRequest =
+            new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.MachineNames);
 
-          return trexCompactionDataProxy.SendSurfaceExportRequest(cmvChangeDetailsRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendVetaExportRequest(compactionVetaExportRequest, customHeaders).Result;
+        }
+        else
+          if (
+#if RAPTOR
+            UseTRexGateway("ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT") &&
+#endif
+            request?.ExportType == ExportTypes.PassCountExport)
+          {
+            var compactionPassCountExportRequest =
+              new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.RestrictSize, request.RawData);
+
+            return trexCompactionDataProxy.SendPassCountExportRequest(compactionPassCountExportRequest, customHeaders).Result;
+
 #if !RAPTOR
         }
         else
@@ -58,9 +83,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         }
 #else
-        }
+          }
 
-        return ProcessWithRaptor(request);
+
+          return ProcessWithRaptor(request);
 #endif
       }
       finally

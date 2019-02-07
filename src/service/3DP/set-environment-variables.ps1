@@ -47,7 +47,10 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_SURFACE"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_VETA"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"; value = "false"})
   
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
@@ -68,13 +71,19 @@ $tccAndAwsEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_SURFACE"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_VETA"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"; value = "false"})
 
 # Used when running the collaborating services against a locally running MockWebApi service.
 $localhostEnvironmentVariables = @(
   @{key = "CUSTOMERSERVICE_API_URL"; value = "http://localhost:5001/api/v1/mock/getcustomersforme"}
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"}
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_SURFACE"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_VETA"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
   @{key = "FILTER_API_URL"; value = "http://localhost:5001/api/v1/mock"}
@@ -110,6 +119,9 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me"}, # Use Alpha service here
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"}
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_SURFACE"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_VETA"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
   @{key = "FILTER_API_URL"; value = "http://filter.dev.k8s.vspengg.com/api/v1"}
@@ -132,6 +144,9 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me"}
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"}
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_SURFACE"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_VETA"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
   @{key = "FILTER_API_URL"; value = "http://filter.alpha.k8s.vspengg.com/api/v1"}
@@ -154,6 +169,9 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me"}
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"}
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_SURFACE"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_VETA"; value = "false"}
+  @{key = "ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"}
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"}
   @{key = "FILTER_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-3dfilter/1.0"}

@@ -2,10 +2,10 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
@@ -96,6 +96,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
     public UserPreferences UserPrefs { get; private set; }
 
+    public string[] MachineNames { get; private set; }
+
     /// <summary>
     /// Default protected constructor.
     /// </summary>
@@ -107,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// </summary>>
     public ExportReport(long projectId, Guid? projectUid, LiftBuildSettings liftBuildSettings, FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordType coordtype,
         DateTime dateFromUTC, DateTime dateToUTC, double tolerance, bool timeStampRequired, bool restrictSize, bool rawData, BoundingExtents3D prjExtents, bool precheckOnly, OutputTypes outpuType,
-        Machine[] machineList, bool includeSrvSurface, string fileName, ExportTypes exportType, UserPreferences userPrefs)
+        Machine[] machineList, bool includeSrvSurface, string fileName, ExportTypes exportType, UserPreferences userPrefs, string[] machineNames = null)
     {
       ProjectId = projectId;
       ProjectUid = projectUid;
@@ -132,6 +134,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
       TimeStampRequired = timeStampRequired;
       Tolerance = tolerance;
       UserPrefs = userPrefs;
+      MachineNames = machineNames;
     }
 
     /// <summary>

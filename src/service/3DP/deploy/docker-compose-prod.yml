@@ -21,6 +21,9 @@ services:
      - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_GRIDREPORT=false
+     - ENABLE_TREX_GATEWAY_SURFACE=false
+     - ENABLE_TREX_GATEWAY_VETA=false
+     - ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT=false
      - FILTER_API_URL=http://filter.prod.k8s.services.myvisionlink.com/api/v1
      - FILTER_CACHE_LIFE=00:15:00
      - GEOFENCE_API_URL=https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0

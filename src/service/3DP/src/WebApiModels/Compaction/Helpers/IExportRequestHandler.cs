@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       bool restrictSize,
       bool rawData,
       OutputTypes outputType,
-      string machineNames,
+      string machineNameString,
       double tolerance = 0.0);
   }
 }

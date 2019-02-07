@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -244,7 +245,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: ConfigStore)
+            configStore: ConfigStore,
+            trexCompactionDataProxy: TRexCompactionDataProxy, 
+            customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
@@ -316,7 +319,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: ConfigStore)
+            configStore: ConfigStore,
+            trexCompactionDataProxy: TRexCompactionDataProxy, 
+            customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
@@ -339,7 +344,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double? tolerance,
       [FromQuery] Guid? filterUid)
     {
-      const double surfaceExportTollerance = 0.05;
+      const double surfaceExportTolerance = 0.05;
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
@@ -348,7 +353,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
 
-      tolerance = tolerance ?? surfaceExportTollerance;
+      tolerance = tolerance ?? surfaceExportTolerance;
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)

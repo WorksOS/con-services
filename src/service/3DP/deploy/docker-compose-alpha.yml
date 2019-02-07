@@ -23,6 +23,9 @@ services:
      - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_GRIDREPORT=false
+     - ENABLE_TREX_GATEWAY_SURFACE=false
+     - ENABLE_TREX_GATEWAY_VETA=false
+     - ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT=false
      - FILTER_API_URL=http://filter.alpha.eks.vspengg.com/api/v1
      - FILTER_CACHE_LIFE=00:15:00
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
