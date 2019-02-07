@@ -6,7 +6,7 @@ namespace VSS.Productivity3D.Now3D.Models
   /// <summary>
   /// Simple Filter that will be used as a start for a full blown 3D Productivity Filter
   /// </summary>
-  public class Filter
+  public class SimpleFilter
   {
     /// <summary>
     /// Project Uid for the data.

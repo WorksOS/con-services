@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Now3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.Now3D.Controllers
@@ -19,7 +20,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/passcount/summary")]
     [ProducesResponseType(typeof(PassCountSummaryResult), 200)]
-    public IActionResult PasscountReport([FromQuery, BindRequired]Filter filter)
+    public IActionResult PasscountReport([FromQuery, BindRequired]SimpleFilter filter)
     {
       Log.LogInformation($"PasscountReport Filter: {filter}");
       // Request projectUid, filterUid (optional) 
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/cmv/summary")]
     [ProducesResponseType(typeof(CMVSummaryResult), 200)]
-    public IActionResult CmvReport([FromQuery, BindRequired]Filter filter)
+    public IActionResult CmvReport([FromQuery, BindRequired]SimpleFilter filter)
     {
       Log.LogInformation($"CmvReport Filter: {filter}");
       // Request: CMVRequest
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/mdp/summary")]
     [ProducesResponseType(typeof(CompactionMdpSummaryResult), 200)]
-    public IActionResult MdpReport([FromQuery, BindRequired]Filter filter)
+    public IActionResult MdpReport([FromQuery, BindRequired]SimpleFilter filter)
     {
       Log.LogInformation($"MdpReport Filter: {filter}");
       // Request: projectUid and filterUid (optional)
@@ -88,7 +89,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/volumes/summary")]
     [ProducesResponseType(typeof(SummaryVolumesResult), 200)]
-    public IActionResult VolumesReport([FromQuery, BindRequired]Filter filter)
+    public IActionResult VolumesReport([FromQuery, BindRequired]SimpleFilter filter)
     {
       Log.LogInformation($"VolumesReport Filter: {filter}");
       // Ground to design only
@@ -113,7 +114,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/cutfill/details")]
     [ProducesResponseType(typeof(CompactionCutFillDetailedResult), 200)]
-    public IActionResult CutFillReport([FromQuery, BindRequired]Filter filter)
+    public IActionResult CutFillReport([FromQuery, BindRequired]SimpleFilter filter)
     {
       Log.LogInformation($"CutFillReport Filter: {filter}");
       // Request orojectUid, filterUid (optional), cutfillDesignUid
