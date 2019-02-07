@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public LineworkController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
       base(configStore, fileListProxy, settingsManager)
     { }
-
+    
     /// <summary>
     /// Get all boundaries from provided linework (DXF) file.
     /// </summary>
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
       requestDto.Filename = Guid.NewGuid().ToString();
-
+     
       var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
       var uploadResult = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
