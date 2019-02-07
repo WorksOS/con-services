@@ -47,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
       var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
       var topFilter = ConvertFilter(request.TopFilter, siteModel);
-      Guid refDesign = Guid.Empty; 
+      var refDesign = Guid.Empty; 
       if (request.ReferenceDesignUid.HasValue)
         refDesign = request.ReferenceDesignUid.Value;
 

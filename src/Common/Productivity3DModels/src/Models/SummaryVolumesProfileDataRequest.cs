@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Models.Models
     public bool PositionsAreGrid;
 
     /// <summary>
-    /// Prevents a default instance of the <see cref="SummaryVolumesProfileDataRequest"/> class from being created.
+    /// Default public constructor.
     /// </summary>
     public SummaryVolumesProfileDataRequest()
     { }
