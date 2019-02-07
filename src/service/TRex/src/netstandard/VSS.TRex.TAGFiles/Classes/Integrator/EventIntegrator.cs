@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
@@ -41,8 +40,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         //    and we reflect THAT Id in the source list
         for (int I = 0; I < SourceLists.MachineDesignNameIDStateEvents.Count(); I++)
         {
-          int machineDesignId;
-          SourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out DateTime dateTime, out machineDesignId);
+          SourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out DateTime dateTime, out int machineDesignId);
           if (machineDesignId > -1)
           {
             var sourceMachineDesign = SourceSiteModel.SiteModelMachineDesigns.Locate(machineDesignId);
@@ -93,10 +91,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         IntegrateMachineEvents();
       }
 
-      /// <summary>
+         /// <summary>
         /// Integrate together all the events lists for a machine between the source and target lists of machine events
         /// </summary>
-        public void IntegrateMachineEvents()
+        private void IntegrateMachineEvents()
         {
             IntegrateMachineDesignEventNames();
 

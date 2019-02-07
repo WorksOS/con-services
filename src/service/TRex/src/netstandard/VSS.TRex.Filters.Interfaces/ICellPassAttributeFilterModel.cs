@@ -44,7 +44,7 @@ namespace VSS.TRex.Filters.Interfaces
     DateTime EndTime { get; set; }
 
     Guid[] MachinesList { get; set; }
-    int DesignNameID { get; set; } // DesignNameID :TICDesignNameID;
+    int DesignNameID { get; set; } 
     VibrationState VibeState { get; set; }
     MachineDirection MachineDirection { get; set; }
     PassTypeSet PassTypeSet { get; set; }
@@ -95,7 +95,7 @@ namespace VSS.TRex.Filters.Interfaces
     Guid ElevationRangeDesignUID { get; set; }
 
     /// <summary>
-    /// Denotes whether analysis of cell passes in a cell are analysed into separate layers according to 
+    /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
     /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
     LayerState LayerState { get; set; }

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.TestFixtures;
@@ -272,7 +270,7 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact()]
-        public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
+        public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialization()
         {
             var filterAnnex = new CellPassAttributeFilterProcessingAnnex()
             {
@@ -490,7 +488,7 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact(Skip = "Not Implemented")]
-        public void Test_CellPassAttributeFilter_InitaliaseFilteringForCell()
+        public void Test_CellPassAttributeFilter_InitialiseFilteringForCell()
         {
             Assert.True(false);
 

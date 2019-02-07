@@ -13,14 +13,15 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.Profiling
 {
   /// <summary>
-  /// Provides support for determining inclusion masks for subgrid cell selection and processing based on spatial, positional
+  /// Provides support for determining inclusion masks for sub grid cell selection and processing based on spatial, positional
   /// and design based spatial selection criteria from filters
   /// </summary>
   public static class LiftFilterMask<T> where T : class, IProfileCellBase
   {
-    private static ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
+    // ReSharper disable once StaticMemberInGenericType
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
 
-    private static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree, 
+    private static void ConstructSubGridSpatialAndPositionalMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, 
       List<T> profileCells, 
       SubGridTreeBitmapSubGridBits mask,
@@ -33,11 +34,11 @@ namespace VSS.TRex.Profiling
       for (int CellIdx = fromProfileCellIndex; CellIdx < profileCells.Count; CellIdx++)
       {
         T profileCell = profileCells[CellIdx];
-        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(
+        SubGridCellAddress ThisSubGridOrigin = new SubGridCellAddress(
           profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
           profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
-        if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
+        if (!currentSubGridOrigin.Equals(ThisSubGridOrigin))
           break;
 
         byte CellX = (byte)(profileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask);
@@ -55,7 +56,7 @@ namespace VSS.TRex.Profiling
       }
     }
 
-    public static bool ConstructSubgridCellFilterMask(ISubGridTree tree, 
+    public static bool ConstructSubGridCellFilterMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, 
       List<T> profileCells,
       SubGridTreeBitmapSubGridBits mask,
@@ -63,7 +64,7 @@ namespace VSS.TRex.Profiling
       ICellSpatialFilter cellFilter,
       IDesign SurfaceDesignMaskDesign)
     {
-      ConstructSubgridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
+      ConstructSubGridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
 
       // If the filter contains an alignment design mask filter then compute this and AND it with the
       // mask calculated in the step above to derive the final required filter mask
@@ -92,7 +93,7 @@ namespace VSS.TRex.Profiling
           mask.AndWith(filterMask);
         else
         {
-          Log.LogError($"Call (B2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {requestResult} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          Log.LogError($"Call (B2) to {nameof(ConstructSubGridCellFilterMask)} returned error result {requestResult} for {cellFilter.SurfaceDesignMaskDesignUid}");
           return false;
         }
       }

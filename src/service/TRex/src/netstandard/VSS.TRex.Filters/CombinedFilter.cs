@@ -10,7 +10,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CombinedFilter : ICombinedFilter
   {
-/// <summary>
+    /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     public ICellPassAttributeFilter AttributeFilter { get; set; }

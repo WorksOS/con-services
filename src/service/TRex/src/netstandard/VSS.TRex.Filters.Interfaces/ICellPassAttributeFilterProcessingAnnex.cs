@@ -24,7 +24,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     bool ElevationRangeIsInitialized { get; set; }
 
-    void ClearElevationRange();
     void ClearElevationRangeFilterInitialization();
     bool FilterPassUsingElevationRange(ref CellPass PassValue);
     bool FiltersElevation(float Elevation);

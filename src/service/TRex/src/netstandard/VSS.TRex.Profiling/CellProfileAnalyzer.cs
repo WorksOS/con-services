@@ -38,10 +38,10 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public int TopMostLayerCompactionHalfPassCount;
 
-    private ICellPassAttributeFilter PassFilter;
-    private ICellPassAttributeFilterProcessingAnnex PassFilterAnnex;
+    private readonly ICellPassAttributeFilter PassFilter;
+    private readonly ICellPassAttributeFilterProcessingAnnex PassFilterAnnex;
 
-    private ICellSpatialFilter CellFilter;
+    private readonly ICellSpatialFilter CellFilter;
 
     /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
@@ -453,7 +453,7 @@ namespace VSS.TRex.Profiling
             CompositeHeightsGrid = null;
           }
 
-          if (!LiftFilterMask<ProfileCell>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubGridOrigin,
+          if (!LiftFilterMask<ProfileCell>.ConstructSubGridCellFilterMask(SiteModel.Grid, CurrentSubGridOrigin,
             ProfileCells, FilterMask, I, CellFilter, SurfaceDesignMaskDesign))
             continue;
 

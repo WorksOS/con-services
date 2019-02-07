@@ -37,14 +37,6 @@ namespace VSS.TRex.Filters
     /// </summary>
     public bool ElevationRangeIsInitialized { get; set; }
 
-
-    public void ClearElevationRange()
-    {
-      ElevationRangeTopElevationForCell = Consts.NullDouble;
-      ElevationRangeBottomElevationForCell = Consts.NullDouble;
-      ElevationRangeDesignElevations = null;
-    }
-
     public void ClearElevationRangeFilterInitialization()
     {
       ElevationRangeIsInitialized = false;
