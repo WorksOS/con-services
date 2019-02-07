@@ -1,0 +1,13 @@
+{{- $filename := printf "%s.txt" .Values.environment -}}
+{{- $name := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "trex.deployname" . }}-cm
+  labels:
+    app: {{ template "trex.deployname" . }}
+    release: {{ template "trex.deployname" . }}
+data:
+  {{ range .Files.Lines $filename }}
+  {{ . }}{{ end }}
+
