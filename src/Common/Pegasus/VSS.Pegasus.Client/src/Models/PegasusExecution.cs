@@ -17,7 +17,5 @@ namespace VSS.Pegasus.Client.Models
     public ExecutionStatus ExecutionStatus { get; set; }
     [JsonProperty(PropertyName = "latest_attempt", Required = Required.Default)]
     public PegasusExecutionAttempt LatestAttempt { get; set; }
-
-
   }
 }

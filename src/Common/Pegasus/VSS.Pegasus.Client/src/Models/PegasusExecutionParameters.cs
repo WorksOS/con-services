@@ -29,7 +29,5 @@ namespace VSS.Pegasus.Client.Models
     public string PlaneUnit { get; set; }
     [JsonProperty(PropertyName = "vertical_unit", Required = Required.Default)]
     public string VerticalUnit { get; set; }
-
-
   }
 }
