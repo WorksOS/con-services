@@ -24,12 +24,9 @@ namespace LandfillDatasync.netcore
     public DataSynchronizer(ILog logger, IConfigurationStore configurationStore)
     {
       Log = logger;
-      authn = new _3dpmAuthN(new GenericConfiguration(new NullLoggerFactory()),
-        new TPaasProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
       authn = new TPaaSApplicationAuthentication(configurationStore,
         new TPaasProxy(configurationStore, new NullLoggerFactory()),
-      authn = new _3dpmAuthN(configurationStore,
-        new TPaasProxy(configurationStore, new NullLoggerFactory()),
+        new Logger<TPaaSApplicationAuthentication>(new NullLoggerFactory()));
     }
 
     public Guid? CustomerUid { get; set; }
