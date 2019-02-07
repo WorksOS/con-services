@@ -97,10 +97,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return tileRequest;
     }
 
-    public TileRequest CreateTileRequest(DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, ElevationStatisticsResult elevExtents)
-    {
-      throw new System.NotImplementedException();
-    }
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 9;
