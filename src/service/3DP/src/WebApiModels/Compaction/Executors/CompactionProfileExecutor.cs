@@ -382,7 +382,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
       {
         var volCalcType = (TComputeICVolumesType) request.volumeCalcType.Value;
-        if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters && !request.ExplicitFilters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
         }

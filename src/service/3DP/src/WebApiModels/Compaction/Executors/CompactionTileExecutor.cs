@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
 
       var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
-      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters && !request.ExplicitFilters)
       {
         RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
       }

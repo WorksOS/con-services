@@ -189,7 +189,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders));
+          CustomHeaders, false));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return tileResult;
@@ -485,7 +485,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders));
+          CustomHeaders, false));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");

@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="endLatDegrees"></param>
     /// <param name="endLonDegrees"></param>
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
-    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
+    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, bool explicitFilters)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.LatDegreesToRadians(), startLonDegrees.LonDegreesToRadians(), endLatDegrees.LatDegreesToRadians(), endLonDegrees.LonDegreesToRadians());
 
@@ -94,7 +94,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         baseFilter,
         topFilter,
         volCalcType,
-        volumeDesign);
+        volumeDesign,
+        explicitFilters);
     }
   }
 }

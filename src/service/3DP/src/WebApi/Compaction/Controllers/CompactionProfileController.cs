@@ -84,7 +84,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? cutfillDesignUid,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] bool explicitFilters = false)
     {
       Log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
       var projectId = await GetLegacyProjectId(projectUid);
@@ -126,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .SetTopFilter(topFilter)
           .SetVolumeCalcType(volumeCalcType)
           .SetVolumeDesign(volumeDesign)
-          .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
+          .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees, explicitFilters);
 
       slicerProductionDataProfileRequest.Validate();
 #if RAPTOR
