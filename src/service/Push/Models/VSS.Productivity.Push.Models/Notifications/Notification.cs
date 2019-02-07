@@ -11,9 +11,7 @@ namespace VSS.Productivity.Push.Models.Notifications
     /// </summary>
     [JsonConstructor]
     private Notification()
-    {
-
-    }
+    { }
 
     /// <summary>
     /// Constructor to create a notification

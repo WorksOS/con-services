@@ -28,7 +28,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     ServiceCollection services = new ServiceCollection();
     Mock<IConfigurationStore> mockConfigStore = new Mock<IConfigurationStore>();
     Mock<IServiceExceptionHandler> mockServiceExceptionHandler = new Mock<IServiceExceptionHandler>();
-    CompactionTagFileRequest GoodTagRequest;
+    readonly CompactionTagFileRequest GoodTagRequest;
 
 
     public ConnectedSiteMessageSubmissionExecutorTests()

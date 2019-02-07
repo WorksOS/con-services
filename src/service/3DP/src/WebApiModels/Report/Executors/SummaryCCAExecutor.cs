@@ -1,6 +1,8 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -32,14 +34,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<CCARequest>(item);
-
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
           var ccaSummaryRequest = new CCASummaryRequest(request.ProjectUid, request.Filter);
 
           return trexCompactionDataProxy.SendCCASummaryRequest(ccaSummaryRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
@@ -54,6 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(ccaSummary);
 
         throw CreateServiceException<SummaryCCAExecutor>(ccaSummary.ReturnCode);
+#endif
       }
 
       finally
@@ -64,9 +69,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddMissingTargetDataResultMessages(ContractExecutionStates);
+#endif
     }
-
+#if RAPTOR
     private CCASummaryResult ConvertResult(TCCASummary summary)
     {
       return CCASummaryResult.Create(
@@ -76,5 +83,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
                 summary.TotalAreaCoveredSqMeters,
                 summary.UnderCompactedPercent);
     }
+#endif
   }
 }

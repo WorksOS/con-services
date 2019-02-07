@@ -1,8 +1,13 @@
-﻿using BoundingExtents;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+#if RAPTOR
+using BoundingExtents;
+using VLPDDecls;
+#endif
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -16,7 +21,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
   [TestClass]
   public class ProjectExtentsControllerTests
   {
-
+#if RAPTOR
     [TestMethod]
     public void PD_PostProjectExtentsSuccessful()
     {
@@ -52,13 +57,17 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     }
 
     [TestMethod]
-    public void PD_PostProjectExtentsFail()
+    public void PD_PostProjectExtents_Raptor_Fail()
     {
 
       // create the mock RaptorClient with successful result
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+
       var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TILES")).Returns("false");
+
+
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       var getExtentsResults = false;
       long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
@@ -79,6 +88,40 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       // Act
       // Call controller
       Assert.ThrowsException<ServiceException>(() => submitter.Process(request));
+    }
+#endif
+    [TestMethod]
+    public void PD_PostProjectExtents_TRex_Fail()
+    {
+      const short projectId = 544;
+
+      var projectUid = Guid.NewGuid();
+
+      var request = new ExtentRequest(projectId, projectUid, null);
+
+      var mockLogger = new Mock<ILoggerFactory>();
+
+      var mockConfigStore = new Mock<IConfigurationStore>();
+#if RAPTOR
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TILES")).Returns("true");
+#endif
+
+      var exception = new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
+      
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
+      trexCompactionDataProxy.Setup(x => x.SendProjectExtentsRequest(projectUid.ToString(), It.IsAny<IDictionary<string, string>>()))
+        .Throws(exception);
+
+      var executor = RequestExecutorContainerFactory
+        .Build<ProjectExtentsSubmitter>(mockLogger.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
+
+      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+
+      Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
+      Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
+      Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
     }
   }
 }

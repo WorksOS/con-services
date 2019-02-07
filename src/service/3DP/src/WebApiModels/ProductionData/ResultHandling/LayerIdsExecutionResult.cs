@@ -1,4 +1,6 @@
-﻿using VLPDDecls;
+﻿#if RAPTOR
+using VLPDDecls;
+  #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
@@ -6,7 +8,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
   public class LayerIdsExecutionResult : ContractExecutionResult
   {
     public LayerIdDetails[] LayerIdDetailsArray { get; private set; }
-
+#if RAPTOR
     public static LayerIdsExecutionResult CreateLayerIdsExecutionResult(TDesignLayer[] layerlist)
     {
       var layerIdDetails = new LayerIdDetails[layerlist.Length];
@@ -25,5 +27,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 
       return new LayerIdsExecutionResult { LayerIdDetailsArray = layerIdDetails };
     }
+#endif
   }
 }

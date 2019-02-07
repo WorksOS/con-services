@@ -1,6 +1,8 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -36,10 +38,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<MDPRequest>(item);
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
           var mdpSummaryRequest = new MDPSummaryRequest(
             request.ProjectUid,
             request.Filter,
@@ -49,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.MdpSettings.MinMDPPercent);
 
           return trexCompactionDataProxy.SendMDPSummaryRequest(mdpSummaryRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
@@ -65,6 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(mdpSummary);
 
         throw CreateServiceException<SummaryMDPExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -74,9 +80,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
-
+#if RAPTOR
     private MDPSummaryResult ConvertResult(TMDPSummary summary)
     {
       return new MDPSummaryResult(
@@ -102,5 +110,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         OverrideTargetMDP = settings.OverrideTargetMDP
       };
     }
+#endif
   }
 }

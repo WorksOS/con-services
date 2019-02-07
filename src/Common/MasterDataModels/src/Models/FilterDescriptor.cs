@@ -36,6 +36,12 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "filterType")]
     public FilterType FilterType { get; set; }
 
+    /// <summary>
+    /// Gets whether this Filter has a design boundary or alignment file defining it's boundary.
+    /// </summary>
+    [JsonIgnore]
+    public bool ContainsBoundary;
+
     public override bool Equals(object obj)
     {
       if (!(obj is FilterDescriptor otherFilter))

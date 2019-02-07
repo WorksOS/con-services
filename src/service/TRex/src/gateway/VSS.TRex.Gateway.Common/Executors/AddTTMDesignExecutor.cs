@@ -51,8 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as DesignRequest;
-      if (request == null)
+      if (!(item is DesignRequest request))
       {
         ThrowRequestTypeCastException<DesignRequest>();
         return null; // to keep compiler happy

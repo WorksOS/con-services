@@ -39,30 +39,28 @@
     "geoidRotationY": 0.0,
     "geoidScaleFactor": 0.0,
     "projectionType": "Transverse Mercator",
-    "projectionParameters": {
-      "projectionParameters": [
-        {
-          "name": "Central Latitude",
-          "value": -0.76079871721795822
-        },
-        {
-          "name": "Central Longitude",
-          "value": 3.0146538874648057
-        },
-        {
-          "name": "False Northing",
-          "value": 800000.0
-        },
-        {
-          "name": "False Easting",
-          "value": 400000.0
-        },
-        {
-          "name": "Scale Factor",
-          "value": 1.0
-        }
-      ]
-    },
+    "projectionParameters": [
+      {
+        "name": "Central Latitude",
+        "value": -0.76079871721795822
+      },
+      {
+        "name": "Central Longitude",
+        "value": 3.0146538874648057
+      },
+      {
+        "name": "False Northing",
+        "value": 800000.0
+      },
+      {
+        "name": "False Easting",
+        "value": 400000.0
+      },
+      {
+        "name": "Scale Factor",
+        "value": 1.0
+      }
+    ],
     "azimuthDirection": "North Azimuth",
     "positiveCoordinateDirection": "NorthEast",
     "siteCalibration": true,
@@ -113,30 +111,28 @@
     "geoidRotationY": 0.0,
     "geoidScaleFactor": 0.0,
     "projectionType": "Transverse Mercator",
-    "projectionParameters": {
-      "projectionParameters": [
-        {
-          "name": "Central Latitude",
-          "value": 0.62598166431806213
-        },
-        {
-          "name": "Central Longitude",
-          "value": -1.8554975129664792
-        },
-        {
-          "name": "False Northing",
-          "value": 539902.92405439669
-        },
-        {
-          "name": "False Easting",
-          "value": 494607.64053898357
-        },
-        {
-          "name": "Scale Factor",
-          "value": 1.000348301
-        }
-      ]
-    },
+    "projectionParameters": [
+      {
+        "name": "Central Latitude",
+        "value": 0.62598166431806213
+      },
+      {
+        "name": "Central Longitude",
+        "value": -1.8554975129664792
+      },
+      {
+        "name": "False Northing",
+        "value": 539902.92405439669
+      },
+      {
+        "name": "False Easting",
+        "value": 494607.64053898357
+      },
+      {
+        "name": "Scale Factor",
+        "value": 1.000348301
+      }
+    ],
     "azimuthDirection": "North Azimuth",
     "positiveCoordinateDirection": "NorthEast",
     "siteCalibration": true,
@@ -187,30 +183,28 @@
     "geoidRotationY": 0.0,
     "geoidScaleFactor": 0.0,
     "projectionType": "Transverse Mercator",
-    "projectionParameters": {
-      "projectionParameters": [
-        {
-          "name": "Central Latitude",
-          "value": -0.76079871721795822
-        },
-        {
-          "name": "Central Longitude",
-          "value": 3.0146538874648057
-        },
-        {
-          "name": "False Northing",
-          "value": 800000.0
-        },
-        {
-          "name": "False Easting",
-          "value": 400000.0
-        },
-        {
-          "name": "Scale Factor",
-          "value": 1.0
-        }
-      ]
-    },
+    "projectionParameters": [
+      {
+        "name": "Central Latitude",
+        "value": -0.76079871721795822
+      },
+      {
+        "name": "Central Longitude",
+        "value": 3.0146538874648057
+      },
+      {
+        "name": "False Northing",
+        "value": 800000.0
+      },
+      {
+        "name": "False Easting",
+        "value": 400000.0
+      },
+      {
+        "name": "Scale Factor",
+        "value": 1.0
+      }
+    ],
     "azimuthDirection": "North Azimuth",
     "positiveCoordinateDirection": "NorthEast",
     "siteCalibration": true,

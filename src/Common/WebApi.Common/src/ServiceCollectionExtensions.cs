@@ -3,10 +3,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Cache.MemoryCache;
 using VSS.MasterData.Models.FIlters;
+using VSS.WebApi.Common.Swagger;
 
 namespace VSS.WebApi.Common
 {
@@ -48,6 +50,8 @@ namespace VSS.WebApi.Common
         // Allows swagger to index models on it's full name, rather than class name - which causes conflicts if a class name is used more than once in the swagger documentation
         // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
         c.CustomSchemaIds(x => x.FullName);
+        c.OperationFilter<AddRequiredHeadersParameter>();
+        c.DescribeAllParametersInCamelCase();
       });
 
       services.ConfigureSwaggerGen(options =>

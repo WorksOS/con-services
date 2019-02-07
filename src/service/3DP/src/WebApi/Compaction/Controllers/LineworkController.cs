@@ -4,7 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -34,16 +36,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromBody] DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
-
+#if RAPTOR
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
       requestDto.Filename = Guid.NewGuid().ToString();
 
       var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
-      (bool uploadSuccess, string message) = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
+      var uploadResult = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
 
-      if (!uploadSuccess) return StatusCode((int)HttpStatusCode.BadRequest, message);
+      if (!uploadResult.success) return StatusCode((int)HttpStatusCode.BadRequest, uploadResult.message);
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)
@@ -54,6 +56,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())
         : StatusCode((int)HttpStatusCode.BadRequest, result);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

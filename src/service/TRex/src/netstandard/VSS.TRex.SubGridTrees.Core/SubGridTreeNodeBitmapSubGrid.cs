@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Core
         //public SubGridTreeBitmapSubGridBits _Bits;
 
         /// <summary>
-        /// Writes the contents of the subgrid bit mask to the writer
+        /// Writes the contents of the sub grid bit mask to the writer
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="buffer"></param>
@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Core
         }
 
         /// <summary>
-        /// Reads the contents of the subgrid bit mask from the reader
+        /// Reads the contents of the sub grid bit mask from the reader
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="buffer"></param>
@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGridTrees.Core
         }
 
         /// <summary>
-        /// Constructor taking the tree reference, parent and level of the subgrid to be created
+        /// Constructor taking the tree reference, parent and level of the sub grid to be created
         /// </summary>
         /// <param name="owner"></param>
         /// <param name="parent"></param>

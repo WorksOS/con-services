@@ -1009,9 +1009,9 @@ namespace TAGFiles.Tests
       var matcher = new TAGMachineTypeValueMatcher(sink, state);
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0),
-              100),
+          (byte)MachineType.Dozer),
           "Matcher process function returned false");
-      Assert.Equal(100, sink.MachineType);
+      Assert.Equal(MachineType.Dozer, sink.MachineType);
     }
 
     [Fact()]

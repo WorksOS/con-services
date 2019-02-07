@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 {
@@ -20,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
                 return false;
             }
 
-            valueSink.MachineType = (byte)value;
+            valueSink.MachineType = (MachineType)value;
             return true;
         }
     }

@@ -22,14 +22,11 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public bool HasData() => (ProfileLine?.Count ?? 0) > 0;
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with a parameter.
     /// </summary>
-    public static DesignProfileResult Create(List<XYZS> profileLine)
+    public DesignProfileResult(List<XYZS> profileLine)
     {
-      return new DesignProfileResult
-      {
-        ProfileLine = profileLine
-      };
+      ProfileLine = profileLine;
     }
   }
 }

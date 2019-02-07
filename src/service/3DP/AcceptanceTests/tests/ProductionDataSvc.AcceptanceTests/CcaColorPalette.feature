@@ -9,19 +9,19 @@ Scenario: Get CCA color palette
   {
     "palettes": [
     {
-      "colour": 12632064,
+      "color": 12632064,
       "value": 1.0
     },
     {
-      "colour": 16711680,
+      "color": 16711680,
       "value": 2.0
     },
     {
-      "colour": 65535,
+      "color": 65535,
       "value": 3.0
     },
     {
-      "colour": 32768,
+      "color": 32768,
       "value": 4.0
     }
     ],

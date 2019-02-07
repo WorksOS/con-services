@@ -5,7 +5,7 @@ using VSS.TRex.SubGrids.Executors;
 namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 {
   /// <summary>
-  /// The base closure/function that implements subgrid request processing on compute nodes
+  /// The base closure/function that implements sub grid request processing on compute nodes
   /// </summary>
   public class SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>
     where TSubGridsRequestArgument : SubGridsRequestArgument

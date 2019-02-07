@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
@@ -101,7 +103,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IFilterServiceProxy filterServiceProxy,
       ICompactionSettingsManager settingsManager,
       IProductionDataTileService tileService,
+#if RAPTOR
       IASNodeClient raptorClient,
+#endif
       IBoundingBoxHelper boundingBoxHelper) : base(configStore, fileListProxy, settingsManager)
     {
       this.tileService = tileService;
@@ -241,7 +245,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode mode,
       [FromServices] IPreferenceProxy prefProxy,
       [FromServices] ITRexCompactionDataProxy tRexCompactionDataProxy,
+#if RAPTOR
       [FromServices] IASNodeClient raptorClient,
+#endif
       [FromServices] IProductionDataRequestFactory requestFactory,
       [FromServices] IFileRepository tccFileRepository)
     {
@@ -269,7 +275,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetUserPreferences(userPreferences)
+#if RAPTOR
         .SetRaptorClient(raptorClient)
+#endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
           null, //startUtc,
@@ -289,10 +297,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // comes in a zip file
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
-            trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Build<CompactionExportExecutor>(LoggerFactory,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: ConfigStore,
+            trexCompactionDataProxy: tRexCompactionDataProxy,
+            customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
-
+#if RAPTOR
       var zipStream = new FileStream(result.FullFileName, FileMode.Open);
 
       using (var archive = new ZipArchive(zipStream))
@@ -436,6 +449,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // Don't forget to seek back, or else the content length will be 0
       outputStream.Seek(0, SeekOrigin.Begin);
       return new FileStreamResult(outputStream, "application/zip");
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>

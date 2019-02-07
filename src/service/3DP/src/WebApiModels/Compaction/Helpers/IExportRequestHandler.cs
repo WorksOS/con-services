@@ -6,8 +6,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   public interface IExportRequestHandler
   {
+#if RAPTOR
     ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient);
-
+#endif
     ExportReport CreateExportRequest(
       DateTime? startUtc,
       DateTime? endUtc,

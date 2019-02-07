@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -26,8 +28,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   public class DesignController : Controller, IDesignContract
   {
     #region privates
-    private readonly IASNodeClient raptorClient;
 
+#if RAPTOR
+    private readonly IASNodeClient raptorClient;
+#endif
     /// <summary>
     /// LoggerFactory for logging
     /// </summary>
@@ -48,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// For getting list of imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
-    #endregion
+#endregion
 
     /// <summary>
     /// Constructor with injection
@@ -57,9 +61,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileListProxy">File list proxy</param>
-    public DesignController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
+    public DesignController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
       this.log = logger.CreateLogger<NotificationController>();
       this.configStore = configStore;
@@ -85,16 +95,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       DesignBoundariesRequest request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance.Value);
 
       request.Validate();
-
+#if RAPTOR
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      var result = RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
-
-      return result;
+      return RequestExecutorContainerFactory.Build<DesignExecutor>(logger, raptorClient, configStore: configStore, fileList: fileList).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
-
+#if RAPTOR
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
@@ -109,6 +121,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
-
+#endif
   }
 }

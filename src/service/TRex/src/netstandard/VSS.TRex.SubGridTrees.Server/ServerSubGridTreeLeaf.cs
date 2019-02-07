@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -24,7 +25,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
-      private static ILogger Log = Logging.Logger.CreateLogger("ServerSubGridTreeLeaf");
+      private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
 
         /// <summary>
         /// Does this sub grid contain directory information for all the segments that exist within it?
@@ -82,7 +83,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Takes a date/time and expands the sub grid leaf time range to include it if necessary
         /// </summary>
         /// <param name="time"></param>
-        public void UpdateStartEndTimeRange(DateTime time)
+        private void UpdateStartEndTimeRange(DateTime time)
         {
             if (time < LeafStartTime)
                 LeafStartTime = time;
@@ -102,7 +103,6 @@ namespace VSS.TRex.SubGridTrees.Server
                                      ISubGrid parent,
                                      byte level) : base(owner, parent, level)
         {
-            Clear();
         }
 
         public void AddPass(uint cellX, uint cellY, CellPass Pass)
@@ -110,15 +110,10 @@ namespace VSS.TRex.SubGridTrees.Server
             ISubGridCellPassesDataSegment Segment = Cells.SelectSegment(Pass.Time);
 
             if (Segment == null)
-            {
-                Debug.Assert(false, "Cells.SelectSegment failed to return a segment");
-                //return;
-            }
+                throw new TRexSubGridTreeException("Cells.SelectSegment failed to return a segment");
 
             if (!Segment.HasAllPasses)
-            {
                 Segment.AllocateFullPassStacks();
-            }
 
             // Add the processed pass to the cell
 
@@ -211,7 +206,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Certain types of grid attribute data requests may need us to select
         /// a pass that is not the latest pass in the pass list. Such an instance is
-        /// when request CCV value where null CCV values are passed over in favour of
+        /// when request CCV value where null CCV values are passed over in favor of
         /// non-null CCV values in passes that are older in the pass list for the cell.
         /// Important: Also see the PassIsAcceptable() function in
         /// TICDataPassFilter.FilterSinglePass() to ensure that the logic
@@ -325,23 +320,22 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void CalculateLatestPassDataForPassStack(CellPass[] CellPasses,
-                                                        ref CellPass LatestData,
-                                                        out bool CCVFromLatestCellPass,
-                                                        out bool RMVFromLatestCellPass,
-                                                        out bool FrequencyFromLatestCellPass,
-                                                        out bool AmplitudeFromLatestCellPass,
-                                                        out bool TemperatureFromLatestCellPass,
-                                                        out bool GPSModeFromLatestCellPass,
-                                                        out bool MDPFromLatestCellPass,
-                                                        out bool CCAFromLatestCellPass)
+        private void CalculateLatestPassDataForPassStack(CellPass[] CellPasses,
+                                                         ref CellPass LatestData,
+                                                         out bool CCVFromLatestCellPass,
+                                                         out bool RMVFromLatestCellPass,
+                                                         out bool FrequencyFromLatestCellPass,
+                                                         out bool AmplitudeFromLatestCellPass,
+                                                         out bool TemperatureFromLatestCellPass,
+                                                         out bool GPSModeFromLatestCellPass,
+                                                         out bool MDPFromLatestCellPass,
+                                                         out bool CCAFromLatestCellPass)
         {
             Debug.Assert(CellPasses.Length > 0, "CalculateLatestPassDataForPassStack called with a cell pass stack containing no passes");
 
             int LastPassIndex = CellPasses.Length - 1;
 
             LatestData.Time = CellPasses[LastPassIndex].Time;
-            //LatestData.MachineID = CellPasses[LastPassIndex].MachineID;
             LatestData.InternalSiteModelMachineIndex = CellPasses[LastPassIndex].InternalSiteModelMachineIndex;
 
             if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
@@ -384,8 +378,8 @@ namespace VSS.TRex.SubGridTrees.Server
             return Directory.GlobalLatestCells.PassDataExistenceMap.BitSet(CellX, CellY);
         }
 
-        public void CalculateLatestPassGridForSegment(ISubGridCellPassesDataSegment Segment,
-                                                      ISubGridCellPassesDataSegment TemporallyPrecedingSegment)
+        private void CalculateLatestPassGridForSegment(ISubGridCellPassesDataSegment Segment,
+                                                       ISubGridCellPassesDataSegment TemporallyPrecedingSegment)
         {
             if (Segment.PassesData == null)
             {
@@ -434,7 +428,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 if (Segment.PassesData.PassCount(I, J) > 0)
                 {
                     CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J),
-                        ref ((SubGridCellLatestPassDataWrapper_NonStatic) (Segment).LatestPasses).PassData[I, J],
+                        ref ((SubGridCellLatestPassDataWrapper_NonStatic)Segment.LatestPasses).PassData[I, J],
                         out bool CCVFromLatestCellPass,
                         out bool RMVFromLatestCellPass,
                         out bool FrequencyFromLatestCellPass,
@@ -475,7 +469,7 @@ namespace VSS.TRex.SubGridTrees.Server
             });
         }
 
-        public void CalculateLatestPassGridForAllSegments()
+        private void CalculateLatestPassGridForAllSegments()
         {
             AllocateLeafLatestPassGrid();
 
@@ -505,7 +499,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (!Dirty)
             {
-                Log.LogCritical($"Subgrid {Moniker()} not marked as dirty when computing latest pass information");
+                Log.LogCritical($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
                 return;
             }
 

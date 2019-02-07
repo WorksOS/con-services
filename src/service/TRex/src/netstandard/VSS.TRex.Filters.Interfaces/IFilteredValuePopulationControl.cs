@@ -1,5 +1,5 @@
-﻿using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
+﻿using VSS.TRex.Types;
+using VSS.TRex.Events.Models;
 
 namespace VSS.TRex.Filters.Interfaces
 {
@@ -60,11 +60,11 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     /// <param name="profileTypeRequired"></param>
     /// <param name="passFilter"></param>
-    /// <param name="clientGrid"></param>
+    /// <param name="eventPopulationFlags"></param>
     void PreparePopulationControl(GridDataType profileTypeRequired,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       ICellPassAttributeFilter passFilter,
-      IClientLeafSubGrid clientGrid);
+      PopulationControlFlags eventPopulationFlags);
 
     /// <summary>
     /// Prepares the set of event population control flags depending on the requested data type and filter

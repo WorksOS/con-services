@@ -22,11 +22,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var request = CastRequestObjectTo<ExtentRequest>(item);
         bool success;
         BoundingBox3DGrid bbExtents = null;
-
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
+#endif
           bbExtents = trexCompactionDataProxy.SendProjectExtentsRequest(request.ProjectUid.ToString(), customHeaders).Result;
           success = bbExtents != null;
+#if RAPTOR
         }
         else
         {
@@ -36,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
           bbExtents = RaptorConverters.ConvertExtents(extents);
         }
-
+#endif
         if (success)
           return ProjectExtentsResult.CreateProjectExtentsResult(bbExtents);
 

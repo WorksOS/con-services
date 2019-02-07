@@ -5,6 +5,8 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 
 namespace VSS.WebApi.Common
 {
+  // Hide from Swagger
+  [ApiExplorerSettings(IgnoreApi=true)]
   public class CacheController : Controller
   {
     private readonly IDataCache cache;

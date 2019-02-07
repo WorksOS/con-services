@@ -58,8 +58,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        IClientLeafSubGrid clientGrid = DIContext.Obtain<IClientLeafSubGridFactory>().GetSubGrid(GridDataType.Height);
-        if (Requestors[0].RequestSubGridInternal(x, true, false, clientGrid) == ServerRequestResult.NoError)
+        if (Requestors[0].RequestSubGridInternal(x, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
           requestedSubGrids.Add(clientGrid);
       });
 
@@ -70,12 +69,12 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       requestedSubGrids.Cast<IClientHeightLeafSubGrid>().Sum(x => x.CountNonNullCells()).Should().Be(427);
     }
 
-    private ISubGridRequestor[] CreateRequestorsForSingleCellTesting(ISiteModel siteModel,ICombinedFilter[] filters)
+    private ISubGridRequestor[] CreateRequestorsForSingleCellTesting(ISiteModel siteModel, GridDataType gridDataType, ICombinedFilter[] filters)
     {
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var Requestors = utilities.ConstructRequestors(siteModel,
-        utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(filters), true, GridDataType.HeightAndTime),
+        utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(filters), true, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 
       Requestors.Should().NotBeNull();
@@ -84,14 +83,13 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       return Requestors;
     }
 
-    private IEnumerable<T> RequestAllSubGridsForSingleCellTesting<T>(ISiteModel siteModel, ISubGridRequestor[] requestors, GridDataType gridDataType)
+    private IEnumerable<T> RequestAllSubGridsForSingleCellTesting<T>(ISiteModel siteModel, ISubGridRequestor[] requestors)
     {
       // Request all elevation sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        IClientLeafSubGrid clientGrid = DIContext.Obtain<IClientLeafSubGridFactory>().GetSubGrid(gridDataType);
-        if (requestors[0].RequestSubGridInternal(x, true, false, clientGrid) == ServerRequestResult.NoError)
+        if (requestors[0].RequestSubGridInternal(x, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
           requestedSubGrids.Add(clientGrid);
       });
 
@@ -101,13 +99,13 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     [Fact]
     public void Test_ElevationSubgridRequests_SingleCell_SiteModelCreation()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimumElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
-      var Requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { new CombinedFilter() });
+      var Requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { new CombinedFilter() });
 
       // Request all elevation sub grids from the model
-      var requestedSubGrids = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, Requestors, GridDataType.Height);
+      var requestedSubGrids = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, Requestors);
 
       // Check exactly one-nonnull cell is present
       requestedSubGrids.Sum(x => x.CountNonNullCells()).Should().Be(1);
@@ -116,9 +114,9 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     [Fact]
     public void Test_ElevationSubgridRequests_RequestElevationSubGrids_SingleCell_QueryWithNoFilter()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] {new CombinedFilter()});
-      var subGrid = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimumElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] {new CombinedFilter()});
+      var subGrid = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
       // Check cell has most recent height selected
       // Assumption: Absence of elevation mode filtering will ignore elevation mapping mode (may change)
@@ -129,7 +127,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     [Fact]
     public void Test_ElevationSubGridRequests_RequestElevationSubGrids_SingleCell_QueryWithAsAtFilter_IncludesOnlyFirstPass()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimumElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
@@ -137,8 +135,8 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         x.AttributeFilter.EndTime = BASE_TIME;
       });
 
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] {filter});
-      var subGrid = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] {filter});
+      var subGrid = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
       // Check cell has has first height selected
       // Assumption: Elevation mode filtering has no impact on this scenario
@@ -149,7 +147,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     [Fact]
     public void Test_ElevationSubGridRequests_RequestElevationSubGrids_SingleCell_QueryWithTimeRangeFilter_IncludesOnlySecondPass()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimumElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       // Create a time range filter than bounds he time of the second added cell pass by 1 second before and after
 
@@ -160,14 +158,15 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         x.AttributeFilter.EndTime = BASE_TIME.AddSeconds(TIME_INCREMENT_SECONDS).AddSeconds(1);
       });
 
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
-      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
       // Check cell has has second height selected
       // Assumption: Elevation mode filtering has no impact on this scenario
       subGridHeight.Cells[0, 0].Should().Be(MAXIMUM_HEIGHT + HEIGHT_DECREMENT);
 
-      var subGridPassCount = RequestAllSubGridsForSingleCellTesting<IClientPassCountLeafSubGrid>(siteModel, requestors, GridDataType.PassCount).First();
+      var requestors2 = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.PassCount, new[] { filter });
+      var subGridPassCount = RequestAllSubGridsForSingleCellTesting<IClientPassCountLeafSubGrid>(siteModel, requestors2).First();
 
       // Check only a single cell was selected as a result of the time range filter
       subGridPassCount.Cells[0, 0].MeasuredPassCount.Should().Be(1);
@@ -176,7 +175,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     [Fact]
     public void Test_ElevationSubGridRequests_SingleCell_QueryWithElevationMappingModeFilter_LastPassOnly()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimumElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
@@ -184,17 +183,17 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.LatestElevation;
       });
 
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
-      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
-      // Check cell has no height selected as no cell pass matches LastPassElevation mode
+      // Check cell has no height selected as no cell pass matches LatestElevation mode
       subGridHeight.Cells[0, 0].Should().Be(Consts.NullHeight);
     }
 
     [Fact]
     public void Test_ElevationSubGridRequests_SingleCell_QueryWithElevationMappingModeFilter_MinimumElevationOnly()
     {
-      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
+      var siteModel = Utilities.CreateSiteModelWithSingleCellWithMinimumElevationPasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
 
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
@@ -202,8 +201,8 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MinimumElevation;
       }); 
 
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
-      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
       // Check cell has no height selected as no cell pass matches minimum elevation mode
       subGridHeight.Cells[0, 0].Should().Be(MINIMUM_HEIGHT);
@@ -213,11 +212,11 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_NoFilter()
     {
       var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { new CombinedFilter() });
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { new CombinedFilter() });
 
-      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
-      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + 2 * HEIGHT_DECREMENT);
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + (PASSES_IN_DECREMENTING_ELEVATION_LIST - 1) * HEIGHT_DECREMENT);
     }
 
     [Fact(Skip = "Not complete")]
@@ -231,8 +230,8 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         x.AttributeFilter.ElevationMappingMode = ElevationMappingMode.MinimumElevation;
       });
 
-      var requestors = CreateRequestorsForSingleCellTesting(siteModel, new[] { filter });
-      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors, GridDataType.Height).First();
+      var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { filter });
+      var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
       // Until elevation mode behaviour implement, this should return the most recent minimum elevation pass
       subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT);

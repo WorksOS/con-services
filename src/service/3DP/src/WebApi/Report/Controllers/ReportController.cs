@@ -29,11 +29,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ReportController : Controller, IReportSvc
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// LoggerFactory factory for use by executor
     /// </summary>
@@ -62,9 +63,15 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="TRexCompactionDataProxy"></param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy TRexCompactionDataProxy)
+    public ReportController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy TRexCompactionDataProxy)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
       log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
@@ -103,7 +110,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportCsvReport)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     [PostRequestVerifier]
@@ -114,9 +126,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportReport)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+#if RAPTOR
       return
         RequestExecutorContainerFactory.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
           .Process(request) as ExportResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -138,7 +155,13 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
       return
         RequestExecutorContainerFactory
-            .Build<SummaryPassCountsExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<SummaryPassCountsExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore,
+            trexCompactionDataProxy: TRexCompactionDataProxy,
+            customHeaders: CustomHeaders)
             .Process(request) as PassCountSummaryResult;
     }
 
@@ -168,7 +191,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       }
       return
         RequestExecutorContainerFactory
-            .Build<DetailedPassCountExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<DetailedPassCountExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as PassCountDetailedResult;
     }
 
@@ -190,7 +217,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
       return
         RequestExecutorContainerFactory
-            .Build<SummaryCMVExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<SummaryCMVExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVSummaryResult;
     }
 
@@ -212,7 +243,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
       return
         RequestExecutorContainerFactory
-            .Build<DetailedCMVExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<DetailedCMVExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVDetailedResult;
     }
 
@@ -231,9 +266,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+#if RAPTOR
       return
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient).Process(request)
           as ProjectStatisticsResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -251,9 +291,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+#if RAPTOR
       return
         RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger, raptorClient).Process(request) as
           SummaryVolumesResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -271,9 +316,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportSummaryThickness)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+#if RAPTOR
       return
         RequestExecutorContainerFactory.Build<SummaryThicknessExecutor>(logger, raptorClient).Process(request)
           as SummaryThicknessResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -293,7 +343,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
       return
         RequestExecutorContainerFactory
-            .Build<SummarySpeedExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<SummarySpeedExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as SpeedSummaryResult;
     }
 
@@ -314,7 +368,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
       return
         RequestExecutorContainerFactory
-            .Build<CMVChangeSummaryExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<CMVChangeSummaryExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVChangeSummaryResult;
     }
 
@@ -333,9 +391,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
+#if RAPTOR
       return
         RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient).Process(request)
           as ElevationStatisticsResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -361,7 +424,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
 
       return
-        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
+        RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
           CCASummaryResult;
     }
   }

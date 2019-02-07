@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -16,6 +15,9 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -24,53 +26,40 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// <summary>
   /// VSS.Productivity3D.Filter startup
   /// </summary>
-  public class Startup
+  public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    private const string SERVICE_TITLE = "Filter Service API";
-    /// <summary>
-    /// 
-    /// </summary>
-    public const string LoggerRepoName = "WebApi";
-    private IServiceCollection serviceCollection;
+    /// <inheritdoc />
+    public override string ServiceName => "Filter Service API";
 
+    /// <inheritdoc />
+    public override string ServiceDescription => "A service to manage Filter related CRUD requests within the 3DP service architecture.";
+
+    /// <inheritdoc />
+    public override string ServiceVersion => "v1";
+
+    internal const string LoggerRepoName = "WebApi";
+    
     /// <summary>
-    /// VSS.Productivity3D.Filter startup
+    /// Gets the configuration.
     /// </summary>
-    public Startup(IHostingEnvironment env)
+    public IConfigurationRoot Configuration { get; }
+
+    /// <inheritdoc />
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
-
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
-    /// <summary>
-    /// Gets the configuration.
-    /// </summary>
-    /// <value>
-    /// The configuration.
-    /// </value>
-    public IConfigurationRoot Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container
-    /// <summary>
-    /// Configures the services.
-    /// </summary>
-    /// <param name="services">The services.</param>
-    public void ConfigureServices(IServiceCollection services)
+    /// <inheritdoc />
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddCommon<Startup>(SERVICE_TITLE);
-
-      // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
@@ -83,6 +72,9 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+      
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddSingleton<CacheInvalidationService>();
 
       services.AddOpenTracing(builder =>
       {
@@ -91,37 +83,13 @@ namespace VSS.Productivity3D.Filter.WebApi
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
         });
       });
-
-      services.AddJaeger(SERVICE_TITLE);
-      services.AddOpenTracing();
-
-      serviceCollection = services;
     }
 
-
-    // This method gets called by the runtime. Use this method to configure the HTTP Request pipeline
-    /// <summary>
-    /// Configures the specified application.
-    /// </summary>
-    /// <param name="app">The application.</param>
-    /// <param name="env">The env.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    /// <inheritdoc />
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.BuildServiceProvider();
-
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon(SERVICE_TITLE);
       app.UseFilterMiddleware<FilterAuthentication>();
-
-      //if (Configuration["newrelic"] == "true")
-      //{
-      //  app.UseMiddleware<NewRelicMiddleware>();
-      //}
-
       app.UseMvc();
-
     }
   }
 }
