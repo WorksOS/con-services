@@ -2,7 +2,6 @@
 using System;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -38,10 +37,10 @@ namespace VSS.TRex.SubGrids
         private ISiteModel SiteModel;
         private GridDataType GridDataType;
         private ICombinedFilter Filter;
+        private readonly ICellPassAttributeFilterProcessingAnnex FilterAnnex = new CellPassAttributeFilterProcessingAnnex();
         private ISurfaceElevationPatchRequest surfaceElevationPatchRequest;
         private bool HasOverrideSpatialCellRestriction;
         private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
-        private int MaxNumberOfPassesToReturn;
         private bool ProdDataRequested;
         private bool SurveyedSurfaceDataRequested;
         private IClientLeafSubGrid ClientGrid;
@@ -69,6 +68,7 @@ namespace VSS.TRex.SubGrids
 
         public SubGridRequestor() {}
 
+        /// <inheritdoc />
         /// <summary>
         /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
         /// and initializes the requester state ready to start processing individual sub grid requests.
@@ -108,12 +108,12 @@ namespace VSS.TRex.SubGrids
 
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
             OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
-            MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
 
             retriever = new SubGridRetriever(siteModel,
                                              gridDataType,
                                              storageProxy,
                                              Filter,
+                                             FilterAnnex,
                                              hasOverrideSpatialCellRestriction,
                                              overrideSpatialCellRestriction,
                                              subGridCacheContext != null,
@@ -153,7 +153,7 @@ namespace VSS.TRex.SubGrids
 
             if (Filter.AttributeFilter.HasElevationRangeFilter)
             {
-                Filter.AttributeFilter.ClearElevationRangeFilterInitialisation();
+                FilterAnnex.ClearElevationRangeFilterInitialization();
 
                 // If the elevation range filter uses a design then the design elevations
                 // for the sub grid need to be calculated and supplied to the filter
@@ -169,7 +169,7 @@ namespace VSS.TRex.SubGrids
                       || DesignElevations == null)
                     return false;
 
-                  Filter.AttributeFilter.InitialiseElevationRangeFilter(DesignElevations);
+                  FilterAnnex.InitializeElevationRangeFilter(Filter.AttributeFilter, DesignElevations);
                 }
             }
 
@@ -306,7 +306,7 @@ namespace VSS.TRex.SubGrids
                         ProcessingMap.ClearBit(x, y);
                 });
             }
-            else if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
+            else // if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
             {
                 ClientGridAsCellProfile = (ClientCellProfileLeafSubgrid)ClientGrid;
                 ProcessingMap.Assign(ClientGridAsCellProfile.FilterMap);
@@ -368,16 +368,10 @@ namespace VSS.TRex.SubGrids
                         ProdHeight = ClientGridAsHeightAndTime.Cells[x, y];
                         ProdTime = ClientGridAsHeightAndTime.Times[x, y];
                     }
-                    else if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
+                    else // if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
                     {
                         ProdHeight = ClientGridAsCellProfile.Cells[x, y].Height;
                         ProdTime = ClientGridAsCellProfile.Cells[x, y].LastPassTime.Ticks;
-                    }
-                    else
-                    {
-                       throw new TRexSubGridProcessingException($"Surveyed surface annotation of sub grid {ClientGrid.Moniker()} encountered neither HeightAndTIme nor CellProfile client sub grids");
-                       // ProdHeight = Consts.NullHeight; // should not get here
-                       // ProdTime = DateTime.MinValue.Ticks;
                     }
 
                     // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
@@ -395,8 +389,8 @@ namespace VSS.TRex.SubGrids
                     // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
                     if (Filter.AttributeFilter.HasElevationRangeFilter)
                     {
-                        Filter.AttributeFilter.InitaliaseFilteringForCell((byte)x, (byte)y);
-                        if (!Filter.AttributeFilter.FiltersElevation(SurveyedSurfaceCellHeight))
+                        FilterAnnex.InitializeFilteringForCell(Filter.AttributeFilter, (byte)x, (byte)y);
+                        if (!FilterAnnex.FiltersElevation(SurveyedSurfaceCellHeight))
                         {
                             // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
                             ProcessingMap.ClearBit(x, y);
@@ -409,7 +403,7 @@ namespace VSS.TRex.SubGrids
                         ClientGridAsHeightAndTime.Cells[x, y] = SurveyedSurfaceCellHeight;
                         ClientGridAsHeightAndTime.Times[x, y] = SurveyedSurfaceCellTime;
                     }
-                    else if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
+                    else // if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
                         ClientGridAsCellProfile.Cells[x, y].Height = SurveyedSurfaceCellHeight;
                 });
 

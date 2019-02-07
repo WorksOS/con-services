@@ -100,14 +100,16 @@ namespace VSS.TRex.Profiling
       return true;
     }
 
-    public static bool InitialiseFilterContext(ISiteModel siteModel, ICellPassAttributeFilter passFilter, ProfileCell profileCell, IDesign design, out DesignProfilerRequestResult FilterDesignErrorCode)
+    public static bool InitialiseFilterContext(ISiteModel siteModel, 
+      ICellPassAttributeFilter passFilter, ICellPassAttributeFilterProcessingAnnex passFilterAnnex,
+      ProfileCell profileCell, IDesign design, out DesignProfilerRequestResult FilterDesignErrorCode)
     {
       FilterDesignErrorCode = DesignProfilerRequestResult.UnknownError;
 
       if (passFilter.HasElevationRangeFilter)
       {
         // If the elevation range filter uses a design then the design elevations
-        // for the subgrid need to be calculated and supplied to the filter
+        // for the sub grid need to be calculated and supplied to the filter
 
         if (passFilter.ElevationRangeDesignUID != Guid.Empty)
         {
@@ -125,7 +127,7 @@ namespace VSS.TRex.Profiling
             return false;
           }
 
-          passFilter.InitialiseElevationRangeFilter(FilterDesignElevations);
+          passFilterAnnex.InitializeElevationRangeFilter(passFilter, FilterDesignElevations);
         }
       }
       return true;

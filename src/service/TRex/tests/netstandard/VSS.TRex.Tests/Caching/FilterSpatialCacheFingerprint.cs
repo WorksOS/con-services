@@ -547,8 +547,8 @@ namespace VSS.TRex.Tests.Caching
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasPassCountRangeFilter = true;
-        x.AttributeFilter.PasscountRangeMin = 2;
-        x.AttributeFilter.PasscountRangeMax = 11;
+        x.AttributeFilter.PassCountRangeMin = 2;
+        x.AttributeFilter.PassCountRangeMax = 11;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("PC:2-11", StringComparison.OrdinalIgnoreCase),

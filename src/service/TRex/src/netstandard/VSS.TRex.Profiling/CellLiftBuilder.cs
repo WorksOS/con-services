@@ -112,6 +112,7 @@ namespace VSS.TRex.Profiling
     private readonly GridDataType ProfileTypeRequired;
     private readonly IFilteredValuePopulationControl PopulationControl;
     private ICellPassAttributeFilter PassFilter;
+    private ICellPassAttributeFilterProcessingAnnex PassFilterAnnex;
     private ICellPassFastEventLookerUpper CellPassFastEventLookerUpper;
     private ISubGridSegmentCellPassIterator CellPassIterator;
 
@@ -144,6 +145,7 @@ namespace VSS.TRex.Profiling
       ProfileTypeRequired = profileTypeRequired;
       PopulationControl = populationControl;
       PassFilter = filterSet?.Filters[0].AttributeFilter;
+      PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellPassFastEventLookerUpper = cellPassFastEventLookerUpper;
     }
 
@@ -662,7 +664,7 @@ namespace VSS.TRex.Profiling
             ++currentPassIdx;
           }
           
-          if (!Range.InRange(currentPassIdx, PassFilter.PasscountRangeMin, PassFilter.PasscountRangeMax))
+          if (!Range.InRange(currentPassIdx, PassFilter.PassCountRangeMin, PassFilter.PassCountRangeMax))
           {
             Cell.FilteredPassFlags[passIndex] = false; // flag for removal
           } 
@@ -1045,7 +1047,7 @@ namespace VSS.TRex.Profiling
             if (!ReadCellPassIntoTempList)
               break;
 
-            TempFilteredPassFlags[TempPassCount] = PassFilter.FilterPass_NoMachineEvents(Pass);
+            TempFilteredPassFlags[TempPassCount] = PassFilter.FilterPass_NoMachineEvents(ref Pass, PassFilterAnnex);
             TempPasses[TempPassCount].FilteredPass = Pass;
 
             TempPassCount++;
@@ -1197,7 +1199,7 @@ namespace VSS.TRex.Profiling
             do
             {
               if ((FilterAppliedToCellPasses ||
-                   PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[FilteredPassIndex])) &&
+                   PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[FilteredPassIndex], PassFilterAnnex)) &&
                   (!FilterAppliedToCellPasses || Cell.FilteredPassFlags[FilteredPassIndex]))
               {
                 LayerContainsAFilteredPass = true;
@@ -1349,7 +1351,7 @@ namespace VSS.TRex.Profiling
             for (int PassIndex = Cell.Layers.Last().StartCellPassIdx;
               PassIndex < Cell.Layers.Last().EndCellPassIdx;
               PassIndex++)
-              if (PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[PassIndex]))
+              if (PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[PassIndex], PassFilterAnnex))
               {
                 FilteredPassCountOfTopMostLayer++;
                 if (Cell.Passes.FilteredPassData[PassIndex].FilteredPass.HalfPass ||

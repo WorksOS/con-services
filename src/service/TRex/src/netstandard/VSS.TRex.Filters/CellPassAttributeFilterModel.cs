@@ -14,7 +14,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
   {
-    protected bool _prepared = false;
+    protected bool _prepared;
 
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at
@@ -298,30 +298,6 @@ namespace VSS.TRex.Filters
     public Guid ElevationRangeDesignUID { get; set; } = Guid.Empty;
 
     /// <summary>
-    /// Elevation parameters have been initialized in preparation for elevation range filtering, either
-    /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
-    /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
-    /// </summary>
-    public bool ElevationRangeIsInitialised { get; set; }
-
-    /// <summary>
-    /// The defined elevation range is defined only by a level plan and thickness
-    /// </summary>
-    public bool ElevationRangeIsLevelAndThicknessOnly { get; set; }
-
-    /// <summary>
-    /// The top of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    public double ElevationRangeTopElevationForCell { get; set; } = Consts.NullDouble;
-
-    /// <summary>
-    /// The bottom of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    public double ElevationRangeBottomElevationForCell { get; set; } = Consts.NullDouble;
-
-    /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
     /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
@@ -350,12 +326,12 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
-    public ushort PasscountRangeMin { get; set; }
+    public ushort PassCountRangeMin { get; set; }
 
     /// <summary>
     ///  takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
-    public ushort PasscountRangeMax { get; set; }
+    public ushort PassCountRangeMax { get; set; }
 
     /// <summary>
     /// Serialize the state of the cell pass attribute filter using the FromToBinary serialization approach
@@ -421,12 +397,6 @@ namespace VSS.TRex.Filters
 
       writer.WriteGuid(ElevationRangeDesignUID);
 
-      writer.WriteBoolean(ElevationRangeIsInitialised);
-      writer.WriteBoolean(ElevationRangeIsLevelAndThicknessOnly);
-
-      writer.WriteDouble(ElevationRangeTopElevationForCell);
-      writer.WriteDouble(ElevationRangeBottomElevationForCell);
-
       writer.WriteByte((byte)LayerState);
       writer.WriteInt(LayerID);
 
@@ -440,8 +410,8 @@ namespace VSS.TRex.Filters
 
       writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
       writer.WriteInt(MaterialTemperatureMax); // No Writer.WriteUShort, use int instead
-      writer.WriteInt(PasscountRangeMin); // No Writer.WriteUShort, use int instead   
-      writer.WriteInt(PasscountRangeMax); // No Writer.WriteUShort, use int instead
+      writer.WriteInt(PassCountRangeMin); // No Writer.WriteUShort, use int instead   
+      writer.WriteInt(PassCountRangeMax); // No Writer.WriteUShort, use int instead
     }
 
     /// <summary>
@@ -511,12 +481,6 @@ namespace VSS.TRex.Filters
 
       ElevationRangeDesignUID = reader.ReadGuid() ?? Guid.Empty;
 
-      ElevationRangeIsInitialised = reader.ReadBoolean();
-      ElevationRangeIsLevelAndThicknessOnly = reader.ReadBoolean();
-
-      ElevationRangeTopElevationForCell = reader.ReadDouble();
-      ElevationRangeBottomElevationForCell = reader.ReadDouble();
-
       LayerState = (LayerState)reader.ReadByte();
       LayerID = reader.ReadInt();
 
@@ -530,8 +494,8 @@ namespace VSS.TRex.Filters
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();
       MaterialTemperatureMax = (ushort)reader.ReadInt();
-      PasscountRangeMin = (ushort)reader.ReadInt();
-      PasscountRangeMax = (ushort)reader.ReadInt();
+      PassCountRangeMin = (ushort)reader.ReadInt();
+      PassCountRangeMax = (ushort)reader.ReadInt();
     }
   }
 }

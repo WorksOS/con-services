@@ -209,7 +209,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// when request CCV value where null CCV values are passed over in favor of
         /// non-null CCV values in passes that are older in the pass list for the cell.
         /// Important: Also see the PassIsAcceptable() function in
-        /// TICDataPassFilter.FilterSinglePass() to ensure that the logic
+        /// CellPassAttributeFilter.FilterSinglePass() to ensure that the logic
         /// here is consistent (or at least not contradictory) with the logic here.
         /// The checks are duplicated as there may be different logic applied to the
         /// selection of the 'latest' pass from a cell pass state versus selection of
