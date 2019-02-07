@@ -49,23 +49,5 @@
       LastCellPassElevation1 = lastCellPassElevation1;
       LastCellPassElevation2 = lastCellPassElevation2;
     }
-
-    public void SetValues(
-      double station,
-      double interceptLength,
-      uint otgCellX,
-      uint otgCellY,
-      float designElev,
-      float lastCellPassElevation1,
-      float lastCellPassElevation2)
-    {
-      Station = station;
-      InterceptLength = interceptLength;
-      OTGCellX = otgCellX;
-      OTGCellY = otgCellY;
-      DesignElev = designElev;
-      LastCellPassElevation1 = lastCellPassElevation1;
-      LastCellPassElevation2 = lastCellPassElevation2;
-    }
   }
 }

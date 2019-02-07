@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using SVOICOptionsDecls;
@@ -474,15 +475,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       profile.results = new List<CompactionSummaryVolumesProfileCell>();
       SummaryVolumeProfileCell prevCell = null;
-      var currCell = new SummaryVolumeProfileCell();
 
-      foreach (var currentCell in pdsiProfile.Cells)
+      var profileCells = pdsiProfile.Cells.Select(c => new SummaryVolumeProfileCell(
+        c.station,
+        c.interceptLength,
+        (uint)c.OTGCellX,
+        (uint)c.OTGCellY,
+        c.designElevation,
+        c.lastCellPassElevation1,
+        c.lastCellPassElevation2
+      )).ToList();
+
+      foreach (var currCell in profileCells)
       {
-        currCell.SetValues(currentCell.station, currentCell.interceptLength, 
-          (uint) currentCell.OTGCellX, (uint)currentCell.OTGCellY,
-          currentCell.designElevation, currentCell.lastCellPassElevation1, currentCell.lastCellPassElevation2);
-
-      var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out var prevStationIntercept);
+        var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out var prevStationIntercept);
 
         if (gapExists)
         {
