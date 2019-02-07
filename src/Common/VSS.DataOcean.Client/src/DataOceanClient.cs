@@ -305,6 +305,10 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"GetFolderMetadata: {path}");
 
+      //NOTE: DataOcean requires / regardless of OS. However we construct the path and split using Path.DirectorySeparatorChar.
+      //This is merely a convenience as DataOcean doesn't use paths but a hierarchy of folders above the file, linked using parent_id.
+      //We traverse this hierarchy. The only place it matters is the multifile structure for tiles. This is contained in the multifile
+      //download url so we don't have to worry about it.
       var parts = path.Split(Path.DirectorySeparatorChar);
       DataOceanDirectory folder = null;
       Guid? parentId = null;
