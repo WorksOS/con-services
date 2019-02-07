@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     {
       // Don't need to validate project Id or UID on this request object. By design we don't have them.
 
-      if (FileData == null)
+      if (FileData == null || FileData.Length == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

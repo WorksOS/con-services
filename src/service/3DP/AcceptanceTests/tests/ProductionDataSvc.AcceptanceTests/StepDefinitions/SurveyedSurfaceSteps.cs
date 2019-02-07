@@ -105,7 +105,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I Post Surveyd Surface ""(.*)"" expecting Bad Request")]
     public void WhenIPostSurveydSurfaceExpectingBadRequest(string paramName)
     {
-      resultPost = surfaceToPost.DoRequest(paramName, (int)HttpStatusCode.BadRequest);
+      resultPost = surfaceToPost.DoRequest(paramName, expectedHttpCode: (int)HttpStatusCode.BadRequest);
     }
 
     [Then(@"the Post response should contain Code (.*) and Message ""(.*)""")]
