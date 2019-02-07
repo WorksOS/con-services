@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existing.LegacyProjectID,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, raptorProxy, configStore, fileRepo, dataOceanClient).ConfigureAwait(false);
+          projectRepo, raptorProxy, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
         log.LogDebug($"UpdateProject: CreateCoordSystemInRaptorAndTcc succeeded");
       }
 

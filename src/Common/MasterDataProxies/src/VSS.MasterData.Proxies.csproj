@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
+    <ProjectReference Include="..\..\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj" />
     <ProjectReference Include="..\..\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj" />

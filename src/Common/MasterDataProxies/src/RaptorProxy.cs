@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
@@ -29,6 +31,18 @@ namespace VSS.MasterData.Proxies
       BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL","" , customHeaders, "/invalidatecache", HttpMethod.Get, $"?projectUid={projectUid}");
       log.LogDebug("RaptorProxy.InvalidateCache: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
+    }
+
+    public Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders)
+    {
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        { "projectUid", projectUid.ToString() }, { "alignmentUid", alignmentUid.ToString() }
+      };
+
+      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
+      var result = GetMasterDataStreamContent("RAPTOR_3DPM_API_URL", customHeaders, HttpMethod.Get, null, queryParams, "/linework/alignment");
+      return result;
     }
 
     /// <summary>

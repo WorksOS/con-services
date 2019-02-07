@@ -24,6 +24,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\Common\ITask\src\VSS.ITask.csproj", "{CF944992-D0B9-4284-8448-C3EBBCBFC45E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{F172D97A-706B-45B9-9B31-39C52CEEC4EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{58ADCDF6-0C41-42C5-A3FE-3FBE694D46BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{A4EE2435-94B4-4B7A-9B47-7D96DDA3FDA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +80,18 @@ Global
 		{CF944992-D0B9-4284-8448-C3EBBCBFC45E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF944992-D0B9-4284-8448-C3EBBCBFC45E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF944992-D0B9-4284-8448-C3EBBCBFC45E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F172D97A-706B-45B9-9B31-39C52CEEC4EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F172D97A-706B-45B9-9B31-39C52CEEC4EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F172D97A-706B-45B9-9B31-39C52CEEC4EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F172D97A-706B-45B9-9B31-39C52CEEC4EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58ADCDF6-0C41-42C5-A3FE-3FBE694D46BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58ADCDF6-0C41-42C5-A3FE-3FBE694D46BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58ADCDF6-0C41-42C5-A3FE-3FBE694D46BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58ADCDF6-0C41-42C5-A3FE-3FBE694D46BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4EE2435-94B4-4B7A-9B47-7D96DDA3FDA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4EE2435-94B4-4B7A-9B47-7D96DDA3FDA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4EE2435-94B4-4B7A-9B47-7D96DDA3FDA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4EE2435-94B4-4B7A-9B47-7D96DDA3FDA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

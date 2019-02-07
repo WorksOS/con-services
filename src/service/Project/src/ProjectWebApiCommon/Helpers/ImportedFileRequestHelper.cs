@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using Jaeger.Thrift;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -13,6 +18,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -39,8 +45,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         notificationResult = await raptorProxy
           .AddFile(projectUid, importedFileType, importedFileUid,
-            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, headers)
-          .ConfigureAwait(false);
+            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, headers);
+
+      
       }
       catch (Exception e)
       {
@@ -226,6 +233,45 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     #endregion TRex
+
+    #region tiles
+    /// <summary>
+    /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
+    /// </summary>
+    /// <returns>The generated file name</returns>
+    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, 
+      IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, 
+      IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
+    {
+      var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
+      //Get generated DXF file from Raptor
+      var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
+      //GradefulWebRequest should throw an exception if the web api call fails but just in case...
+      if (dxfContents != null && dxfContents.Length > 0)
+      {
+        //Unzip it and save to DataOcean 
+        using (var archive = new ZipArchive(dxfContents))
+        {
+          if (archive.Entries.Count == 1)
+          {
+            using (var stream = archive.Entries[0].Open() as DeflateStream)
+            using (var ms = new MemoryStream())
+            {
+              // Unzip the file, copy to memory 
+              stream.CopyTo(ms);
+              ms.Seek(0, SeekOrigin.Begin);
+              await DataOceanHelper.WriteFileToDataOcean(
+                ms, rootFolder, customerUid, projectUid.ToString(),
+               generatedName, false, null, log, serviceExceptionHandler, dataOceanClient, authn);
+            }
+          }
+        }
+      }
+
+      return generatedName;
+    }
+
+    #endregion
   }
 
 }

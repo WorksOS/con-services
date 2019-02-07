@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using VSS.Common.Cache.MemoryCache;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
+using VSS.WebApi.Common;
 
 namespace LandfillDatasync.netcore
 {
@@ -18,14 +19,14 @@ namespace LandfillDatasync.netcore
   {
     private const string userId = "sUpErSeCretIdTuSsupport348215890UnknownRa754291";
     private readonly ILog Log;
-    private readonly I_3dpmAuthN authn;
+    private readonly ITPaaSApplicationAuthentication authn;
 
     public DataSynchronizer(ILog logger, IConfigurationStore configurationStore)
     {
       Log = logger;
-      authn = new _3dpmAuthN(configurationStore,
+      authn = new TPaaSApplicationAuthentication(configurationStore,
         new TPaasProxy(configurationStore, new NullLoggerFactory()),
-        new Logger<_3dpmAuthN>(new NullLoggerFactory()));
+        new Logger<TPaaSApplicationAuthentication>(new NullLoggerFactory()));
     }
 
     public Guid? CustomerUid { get; set; }
@@ -49,7 +50,7 @@ namespace LandfillDatasync.netcore
       var projects = GetListOfProjectsToRetrieve();
       var result = new Dictionary<Project, List<DateEntry>>();
       Log.DebugFormat("Got {0} projects to process for volumes", projects.Count);
-      var headers = new Dictionary<string, string> {{"Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}"}};
+      var headers = new Dictionary<string, string> {{"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"}};
       foreach (var project in projects)
       {
         headers["X-VisionLink-CustomerUID"] = project.customerUid;
@@ -99,7 +100,7 @@ namespace LandfillDatasync.netcore
       {
         var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
-        var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+        var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.GetApplicationBearerToken()}" } };
         Log.DebugFormat("RunUpdateVolumesFromRaptor Processing project {0} with {1} entries", project.Key.id, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
@@ -130,7 +131,7 @@ namespace LandfillDatasync.netcore
       Log.InfoFormat("***** Start Processing CCA for the last {0} days", ccaDaysBackFill);
       var projects = GetListOfProjectsToRetrieve();
       Log.InfoFormat("UpdateCCA: Got {0} projects to process for CCA", projects.Count);
-      var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+      var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.GetApplicationBearerToken()}" } };
 
       foreach (var project in projects)
       {
@@ -199,7 +200,7 @@ namespace LandfillDatasync.netcore
       Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLifts> machines)
     {
       var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(project.projectUid, m));
-      var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+      var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.GetApplicationBearerToken()}" } };
       headers["X-VisionLink-CustomerUID"] = project.customerUid;
 
       foreach (var geofenceUid in geofenceUids)
