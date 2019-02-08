@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Filters
           info.PassCount.Should().Be(5);
 
           info.Clear();
-          info.PassCount.Should().Be(5);
+          info.PassCount.Should().Be(0);
         }
     }
 }
