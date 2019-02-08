@@ -2,9 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
-using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.UnitTests
+namespace VSS.Productivity3D.Filter.Tests
 {
   [TestClass]
   public class FilterTests
@@ -23,7 +22,7 @@ namespace VSS.MasterData.Models.UnitTests
     [DataRow(DateRangeType.PriorToPreviousMonth, "PriorToPreviousMonth")]
     public void DateRangeName_returns_correct_string_representation(DateRangeType dateRangeType, string expectedResult)
     {
-      var filter = JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"{dateRangeType}\"}}");
+      var filter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>($"{{\"dateRangeType\":\"{dateRangeType}\"}}");
 
       Assert.AreEqual(expectedResult, filter.DateRangeName);
     }
@@ -32,7 +31,7 @@ namespace VSS.MasterData.Models.UnitTests
     [DataRow(DateRangeType.ProjectExtents)]
     public void ApplyDateRange_null_project_extents(DateRangeType dateRangeType)
     {
-      var filter = JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"{dateRangeType}\"}}");
+      var filter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>($"{{\"dateRangeType\":\"{dateRangeType}\"}}");
       filter.ApplyDateRange("UTC");
       if (dateRangeType == DateRangeType.ProjectExtents)
       {
@@ -46,7 +45,7 @@ namespace VSS.MasterData.Models.UnitTests
     public void ApplyDateRange_null_project_start_when_asAtDate(DateRangeType dateRangeType)
     {
       var filter =
-        JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"true\"}}");
+        JsonConvert.DeserializeObject<Abstractions.Models.Filter>($"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"true\"}}");
       filter.ApplyDateRange("UTC");
       Assert.AreEqual(null, filter.StartUtc);
       Assert.AreEqual(DateTime.UtcNow.Date, filter.EndUtc.Value.Date);
@@ -59,7 +58,7 @@ namespace VSS.MasterData.Models.UnitTests
     [DataRow(null, null, "ce56b132-58a5-4803-b2c6-7a4bc3c2390b", true)]
     public void ContainsBoundary_returns_correct_result(string designUid, string alignmentUid, string polygonUid, bool expectedResult)
     { 
-      var filter = JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"0\",\"designUid\":\"{designUid}\",\"alignmentUid\":\"{alignmentUid}\",\"polygonUid\":\"{polygonUid}\"}}");
+      var filter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>($"{{\"dateRangeType\":\"0\",\"designUid\":\"{designUid}\",\"alignmentUid\":\"{alignmentUid}\",\"polygonUid\":\"{polygonUid}\"}}");
 
       Assert.AreEqual(expectedResult, filter.ContainsBoundary);
     }

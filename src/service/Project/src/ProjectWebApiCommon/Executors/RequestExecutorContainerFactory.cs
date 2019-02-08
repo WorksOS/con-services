@@ -8,6 +8,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 

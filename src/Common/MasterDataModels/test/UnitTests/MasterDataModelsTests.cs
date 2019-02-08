@@ -8,6 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.UnitTests.ResultsHandling;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.MasterData.Models.UnitTests
 {

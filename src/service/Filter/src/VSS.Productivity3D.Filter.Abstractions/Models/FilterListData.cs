@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.Models
+namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
   public class FilterListData : BaseDataResult, IMasterDataModel
   {

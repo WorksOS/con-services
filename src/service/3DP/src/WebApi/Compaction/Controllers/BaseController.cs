@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -22,6 +24,7 @@ using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Extensions;
@@ -434,12 +437,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Dynamically set the date range according to the<see cref= "Filter.DateRangeType" /> property.
+    /// Dynamically set the date range according to the<see cref= "DateRangeType" /> property.
     /// </summary>
     /// <remarks>
     /// Custom date range is unaltered. Project extents is always null. Other types are calculated in the project time zone.
     /// </remarks>
-    private async Task ApplyDateRange(Guid projectUid, Filter filter)
+    private async Task ApplyDateRange(Guid projectUid, Filter.Abstractions.Models.Filter filter)
     {
       var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       if (project == null)
@@ -468,13 +471,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="FilterDescriptor"/> for a given Filter FileUid (by project).
     /// </summary>
-    protected async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
+    protected async Task<Filter.Abstractions.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
 
       return filterDescriptor == null
         ? null
-        : JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterJson);
+        : JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(filterDescriptor.FilterJson);
     }
   }
 }

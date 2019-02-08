@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
 
 namespace VSS.Productivity3D.Filter.Tests
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.Filter.Tests
         var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}" };
         FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxy, new Dictionary<string, string>());
 
-        MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+        Abstractions.Models.Filter filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
         Assert.AreEqual(DateRangeType.Today, filterObj.DateRangeType);
       }
       catch (Exception exception)
@@ -99,7 +100,7 @@ namespace VSS.Productivity3D.Filter.Tests
         var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}" };
         FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
-        MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+        Abstractions.Models.Filter filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
         Assert.AreEqual(DateRangeType.CurrentMonth, filterObj.DateRangeType);
       }
       catch (Exception exception)
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filter, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
-      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
+      Abstractions.Models.Filter filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
       Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
       if (asAtDate)
         Assert.AreEqual(mockedStartTime, filterObj.StartUtc);
@@ -147,7 +148,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
-      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+      Abstractions.Models.Filter filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.AreEqual(asAtDate ? mockedStartTime : startUtc, filterObj.StartUtc);
       Assert.AreEqual(endUtc, filterObj.EndUtc);
     }
@@ -168,7 +169,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
-      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+      Abstractions.Models.Filter filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.AreEqual(mockedStartTime, filterObj.StartUtc);
       Assert.AreEqual(mockedEndTime, filterObj.EndUtc);
     }
@@ -266,7 +267,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
     private static void ValidateDates(string filterJson, bool startUtcShouldBeExtents)
     {
-      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+      Abstractions.Models.Filter filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
       //todo tidy this up
       if (startUtcShouldBeExtents)
       {

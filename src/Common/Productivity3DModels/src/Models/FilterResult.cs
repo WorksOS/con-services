@@ -484,7 +484,7 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult
     (
       Guid? uid,
-      Filter filter,
+      Productivity3D.Filter.Abstractions.Models.Filter filter,
       List<WGSPoint> polygonLL,
       DesignDescriptor alignmentFile,
       FilterLayerMethod? layerType,

@@ -94,11 +94,11 @@ namespace VSS.Productivity3D.Filter.Common.Models
       }
     }
 
-    public MasterData.Models.Models.Filter FilterModel(IServiceExceptionHandler serviceExceptionHandler)
+    public Abstractions.Models.Filter FilterModel(IServiceExceptionHandler serviceExceptionHandler)
     {
       try
       {
-        return string.IsNullOrEmpty(FilterJson) ? null : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(FilterJson);
+        return string.IsNullOrEmpty(FilterJson) ? null : JsonConvert.DeserializeObject<Abstractions.Models.Filter>(FilterJson);
       }
       catch (JsonReaderException exception)
       {

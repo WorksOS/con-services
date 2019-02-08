@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.Productivity3D.Filter.Proxy
 {
   public class FilterServiceProxy : BaseProxy, IFilterServiceProxy
   {

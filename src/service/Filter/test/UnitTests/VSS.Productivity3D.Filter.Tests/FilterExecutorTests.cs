@@ -17,6 +17,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -327,7 +329,7 @@ namespace VSS.Productivity3D.Filter.Tests
       //Assert.AreEqual(filterUid, result.FilterDescriptor.FilterUid, "Wrong filterUid");
       Assert.IsFalse(String.IsNullOrEmpty(result.FilterDescriptor.FilterUid));
       //Because of mocking can't use result JSON but request JSON should be hydrated
-      var boundary = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(/*result.FilterDescriptor.FilterJson*/request.FilterJson);
+      var boundary = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(/*result.FilterDescriptor.FilterJson*/request.FilterJson);
       Assert.AreEqual(geofence.GeofenceUID, boundary.PolygonUid, "Wrong polygonUID");
       Assert.AreEqual(geofence.Name, boundary.PolygonName, "Wrong polygonName");
       Assert.AreEqual(geofence.GeometryWKT, GetWicketFromPoints(boundary.PolygonLL), "Wrong polygonLL");

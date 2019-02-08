@@ -457,6 +457,7 @@ namespace VSS.MasterData.Proxies
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The uid of the item to remove from the cache</param>
     /// <param name="userId">The user ID, only required if caching per user</param>
+    [Obsolete("Used the ClearCacheByTag method, which isn't dependent on the Type T")]
     protected void ClearCacheItem<T>(string uid, string userId)
     {
       if (dataCache == null)
@@ -464,6 +465,15 @@ namespace VSS.MasterData.Proxies
       var cacheKey = GetCacheKey<T>(uid, userId);
       log.LogDebug($"Clearing item from cache: {cacheKey}");
       dataCache.RemoveByKey(cacheKey);
+    }
+
+    /// <summary>
+    /// Clear any cached items that related the UID passed in
+    /// </summary>
+    protected void ClearCacheByTag(string uid)
+    {
+      if(!string.IsNullOrEmpty(uid))
+        dataCache.RemoveByTag(uid);
     }
 
     /// <summary>

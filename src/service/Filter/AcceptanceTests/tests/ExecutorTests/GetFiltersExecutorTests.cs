@@ -16,6 +16,8 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Linq;
 using VSS.Common.Cache.MemoryCache;
+using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace ExecutorTests
 {

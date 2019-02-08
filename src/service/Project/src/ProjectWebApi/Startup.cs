@@ -25,6 +25,8 @@ using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.WebAPI;

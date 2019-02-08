@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     /// <summary>
     /// Evaluates two filters for use with summary volumes ground to ground comparison.
     /// </summary>
-    public static bool DoGroundToGroundComparison(MasterData.Models.Models.Filter baseFilter, MasterData.Models.Models.Filter topFilter)
+    public static bool DoGroundToGroundComparison(Filter.Abstractions.Models.Filter baseFilter, Filter.Abstractions.Models.Filter topFilter)
     {
       if (baseFilter == null || topFilter == null)
       {
