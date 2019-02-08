@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.DI;
+using VSS.TRex.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
@@ -53,7 +54,7 @@ namespace VSS.TRex.Storage
         case StorageMutability.Mutable: return MutableGridStorage();
         case StorageMutability.Immutable: return ImmutableGridStorage();
         default:
-          throw new ArgumentException($"Unknown mutability type {mutability} in proxy storage factory.");
+          throw new TRexException($"Unknown mutability type {mutability} in proxy storage factory.");
       }
     }
   }

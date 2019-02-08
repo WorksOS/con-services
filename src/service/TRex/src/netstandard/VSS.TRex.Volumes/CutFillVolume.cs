@@ -3,27 +3,15 @@
 namespace VSS.TRex.Volumes
 {
     /// <summary>
-    /// Tracks cut anf fille volume information...
+    /// Tracks cut and fill volume information...
     /// </summary>
     public class CutFillVolume
     {
         private double? _CutVolume;
-        public double CutVolume
-        {
-            get
-            {
-                return _CutVolume ?? 0;
-            }
-        }
+        public double CutVolume => _CutVolume ?? 0;
 
         private double? _FillVolume;
-        public double FillVolume
-        {
-            get
-            {
-                return _FillVolume ?? 0;
-            }
-        }
+        public double FillVolume => _FillVolume ?? 0;
 
         /// <summary>
         /// Default no-arg constructor
