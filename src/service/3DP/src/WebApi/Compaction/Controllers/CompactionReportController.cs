@@ -12,6 +12,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -112,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = await GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
+      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r

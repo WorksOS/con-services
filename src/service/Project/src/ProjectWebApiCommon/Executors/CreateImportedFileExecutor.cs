@@ -82,21 +82,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         var project =
           await ProjectRequestHelper.GetProject(createimportedfile.ProjectUid.ToString(), customerUid, log,
-            serviceExceptionHandler,
-            projectRepo);
+            serviceExceptionHandler, projectRepo);
 
         var addFileResult = await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
           createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
           log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
-        createImportedFileEvent.MinZoomLevel = addFileResult.MinZoomLevel;
-        createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
+
+        if (createimportedfile.ImportedFileType == ImportedFileType.Alignment)
+        {
+          //Create DXF file for alignment center line
+          await ImportedFileRequestHelper.CreateGeneratedDxfFile(
+            customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, raptorProxy, customHeaders, log,
+            serviceExceptionHandler, authn, dataOceanClient, configStore, createimportedfile.FileName, createimportedfile.DataOceanRootFolder);
+        }
 
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db (Raptor - todo is this still needed (i.e. with new tiling process)?)  
+        //Need to update zoom levels in Db  (this will not be needed when DXF tile generation done externally/separately)
         _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
             createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,

@@ -20,3 +20,5 @@ newrelic: "true"
 TILE_CACHE_LIFE: 12:00:00
 NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
 PUSH_NO_AUTHENTICATION_HEADER: "true"
+TPAAS_APP_TOKENKEYS: Q1VrR3pGbzhfd2xzcElhbWtNSkozODF1R1RzYTpwOWxjU0phbVFFQ2lXYkhpdTJiMUhUSFM3S1Fh
+TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token

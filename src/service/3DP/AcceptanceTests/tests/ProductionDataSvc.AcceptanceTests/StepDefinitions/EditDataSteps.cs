@@ -239,7 +239,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       doEditRequest.DataEdit = JToken.FromObject(dataEditContext.DataEdits[editId]);
 
       editDataRequester.CurrentRequest = doEditRequest;
-      editDataResult = editDataRequester.DoRequest(null, (int)HttpStatusCode.BadRequest);
+      editDataResult = editDataRequester.DoRequest(null, expectedHttpCode: (int)HttpStatusCode.BadRequest);
     }
 
     [Then(@"I should get Error Code (.*) and Message ""(.*)""")]

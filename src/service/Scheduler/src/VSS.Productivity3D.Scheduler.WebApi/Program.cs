@@ -37,6 +37,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           builder.SetMinimumLevel(LogLevel.Debug);
           builder.AddConfiguration(kestrelConfig);
         })
+        //.UseUrls("http://localhost:5002/") /* use for debugging service locally */
         .UsePrometheus()
         .UseStartup<Startup>()
         .Build();

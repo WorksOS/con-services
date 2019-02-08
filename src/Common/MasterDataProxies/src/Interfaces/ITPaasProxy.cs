@@ -6,6 +6,6 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface ITPaasProxy
   {
-    Task<TPaasOauthResult> Get3DPmSchedulerBearerToken(string grantType, Dictionary<string, string> customHeaders);
+    Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, Dictionary<string, string> customHeaders);
   }
 }

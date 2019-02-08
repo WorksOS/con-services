@@ -41,13 +41,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I POST with no parameters I expect response code (\d+)")]
     public void WhenIPostWithNoParametersIExpectResponseCode(int httpCode)
     {
-      PostRequestHandler.DoRequest(null, httpCode);
+      PostRequestHandler.DoRequest(null, expectedHttpCode: httpCode);
     }
 
     [When(@"I POST with parameter ""(.*)"" I expect response code (\d+)")]
     public void WhenIPostWithParameterIExpectResponseCode(string parameterValue, int httpCode)
     {
-      PostRequestHandler.DoRequest(parameterValue, httpCode);
+      PostRequestHandler.DoRequest(parameterValue, expectedHttpCode: httpCode);
+    }
+
+    [When(@"I POST Content-Type ""(.*)"" with parameter ""(.*)"" I expect response code (\d+)")]
+    public void WhenIPostWithParameterAndContentTypeIExpectResponseCode(string contentType, string parameterValue, int httpCode)
+    {
+      PostRequestHandler.DoRequest(parameterValue, contentType, httpCode);
     }
 
     [Then(@"the response should match ""(.*)"" from the repository")]

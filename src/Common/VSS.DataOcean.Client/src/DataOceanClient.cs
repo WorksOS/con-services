@@ -25,8 +25,6 @@ namespace VSS.DataOcean.Client
     private const string DATA_OCEAN_UPLOAD_WAIT_KEY = "DATA_OCEAN_UPLOAD_WAIT_MILLSECS";
 
     private readonly ILogger<DataOceanClient> Log;
-    private readonly ILoggerFactory logFactory;
-    private readonly IConfigurationStore configStore;
     private readonly IWebRequest gracefulClient;
     private readonly string dataOceanBaseUrl;
     private readonly int uploadWaitInterval;
@@ -36,9 +34,7 @@ namespace VSS.DataOcean.Client
     /// </summary>
     public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient)
     {
-      logFactory = logger;
       Log = logger.CreateLogger<DataOceanClient>();
-      configStore = configuration;
       this.gracefulClient = gracefulClient;
 
       dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
@@ -62,7 +58,7 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"FolderExists: {path}");
 
-      var folder = await GetFolder(path, true, customHeaders);
+      var folder = await GetFolderMetadata(path, true, customHeaders);
       return folder != null;
     }
 
@@ -76,12 +72,8 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"FileExists: {filename}");
 
-      var path = Path.GetDirectoryName(filename);
-      var parentFolder = await GetFolder(path, true, customHeaders);
-
-      filename = Path.GetFileName(filename);
-      var result = await BrowseFile(filename, parentFolder?.Id, customHeaders);
-      return result?.Files?.Count == 1; 
+      var result = await GetFileMetadata(filename, customHeaders);
+      return result != null;
     }
 
     /// <summary>
@@ -94,7 +86,7 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"MakeFolder: {path}");
 
-      var folder = await GetFolder(path, false, customHeaders);
+      var folder = await GetFolderMetadata(path, false, customHeaders);
       return folder != null;
     }
 
@@ -108,29 +100,34 @@ namespace VSS.DataOcean.Client
     /// <returns></returns>
     public async Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders=null)
     {
-      Log.LogDebug($"PutFile: {Path.Combine(path,filename)}");
+      var fullName = Path.Combine(path, filename);
+      Log.LogDebug($"PutFile: {fullName}");
 
       var success = false;
-      var parentFolder = await GetFolder(path, true, customHeaders);
+      var parentFolder = await GetFolderMetadata(path, true, customHeaders);
+      //Delete any existing file. To avoid 2 traversals just try it anyway without checking for existance.
+      await DeleteFile(fullName, customHeaders);
+
       //1. Create the file
       var createResult = await CreateFile(filename, parentFolder?.Id, customHeaders);
-      if (createResult != null)
+      var newFile = createResult?.File;
+      if (newFile != null)
       {
         //2. Upload the file
-        HttpContent result = await gracefulClient.ExecuteRequestAsStreamContent(createResult.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
+        HttpContent result = await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents, null, 3, false);
 
         //3. Monitor status of upload until done
-        var route = $"/api/files/{createResult.Id}";
+        var route = $"/api/files/{newFile.Id}";
         DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(uploadTimeout);
         bool done = false;
         while (!done && DateTime.Now <= endJob)
         {
           if (uploadWaitInterval > 0) await Task.Delay(uploadWaitInterval);
           //TODO: This could be a scheduler job, polled for by the caller, if the upload is too slow.
-          var getResult = await GetData<DataOceanFile>(route, null, customHeaders);
-          var status = getResult.Status.ToUpper();
+          var getResult = await GetData<DataOceanFileResult>(route, null, customHeaders);
+          var status = getResult.File.Status.ToUpper();
           success = string.Compare(status, "AVAILABLE", true) == 0;
-          done = success || status == "UPLOAD_FAILED";
+          done = success || string.Compare(status, "UPLOAD_FAILED", true) == 0;
         }
 
         if (!done)
@@ -158,22 +155,145 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"DeleteFile: {fullName}");
 
-      var path = Path.GetDirectoryName(fullName);
-      var parentFolder = await GetFolder(path, true, customHeaders);
-
-      var filename = Path.GetFileName(fullName);
-      var result = await BrowseFile(filename, parentFolder?.Id, customHeaders);
-      if (result?.Files?.Count == 1)
+      var result = await GetFileMetadata(fullName, customHeaders);
+      if (result != null)
       {
-        var route = $"/api/files/{result.Files[0].Id}";
+        var route = $"/api/files/{result.Id}";
         await gracefulClient.ExecuteRequest($"{dataOceanBaseUrl}{route}", null, customHeaders, HttpMethod.Delete, null, 3, false);
+        return true;
       }
 
-      return true;
+      return false;
+    }
+
+    /// <summary>
+    /// Gets the id of the lowest level folder metadata in the path 
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders)
+    {
+      Log.LogDebug($"GetFolderId: {path}");
+
+      var folder = await GetFolderMetadata(path, true, customHeaders);
+      return folder?.Id;
+    }
+
+    /// <summary>
+    /// Gets the file id
+    /// </summary>
+    /// <param name="fullName"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders)
+    {
+      Log.LogDebug($"GetFileId: {fullName}");
+
+      var result = await GetFileMetadata(fullName, customHeaders);
+      return result?.Id;
+    }
+
+    /// <summary>
+    /// Gets the file contents
+    /// </summary>
+    /// <param name="fullName"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders)
+    {
+      Log.LogDebug($"GetFile: {fullName}");
+
+      //1. Get the download url
+      string tileFolderAndFileName = null;
+      string nameForMetadata = fullName;
+      if (fullName.Contains(DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX))
+      {
+        tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
+        nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
+      }
+
+      var result = await GetFileMetadata(nameForMetadata, customHeaders);
+      if (result == null)
+      {
+        Log.LogWarning($"Failed to find file {fullName}");
+        return null;
+      }
+      var downloadUrl = result.DataOceanDownload.Url;
+      //PNG tiles files and tiles.json metadata file are in a DataOcean multifile
+      if (result.Multifile)
+      {
+        if (string.IsNullOrEmpty(tileFolderAndFileName))
+        {
+          Log.LogError("Getting a multifile other than tiles is not implemented");
+          return null;
+        }
+        tileFolderAndFileName = tileFolderAndFileName.Substring(1);//Skip leading / as it's in the URL already
+        downloadUrl = downloadUrl.Replace("{path}", tileFolderAndFileName);
+      }
+      //2. Download the file
+      HttpContent response = null;
+      try
+      {
+        response = await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders, 
+          null, null, 3, false);
+      }
+      catch (HttpRequestException ex)
+      {
+        //If tile does not exist DataOcean returns 403
+        if (result.Multifile && string.Compare(ex.Message, "403 access denied", true) != 0)
+        {
+          throw;
+        }
+      }
+      //Check if anything returned. File may not exist.
+      if (response == null)
+        return null;
+      using (var responseStream = await response.ReadAsStreamAsync())
+      {
+        responseStream.Position = 0;
+        byte[] file = new byte[responseStream.Length];
+        responseStream.Read(file, 0, file.Length);
+        return new MemoryStream(file);
+      }
     }
     #endregion
 
     #region DataOcean private
+
+    /// <summary>
+    /// Gets the file metadata.
+    /// </summary>
+    /// <param name="fullName"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    private async Task<DataOceanFile> GetFileMetadata(string fullName, IDictionary<string, string> customHeaders)
+    {
+      Log.LogDebug($"GetFile: {fullName}");
+
+      var path = Path.GetDirectoryName(fullName);
+      var parentFolder = await GetFolderMetadata(path, true, customHeaders);
+
+      var filename = Path.GetFileName(fullName);
+      var result = await BrowseFile(filename, parentFolder?.Id, customHeaders);
+      int? count = result?.Files?.Count;
+      if (count == 1)
+      {
+        return result.Files[0];
+      }
+
+      if (count == 0)
+      {
+        Log.LogInformation($"File {fullName} not found");
+      }
+      else if (count > 1)
+      {
+        Log.LogWarning($"Multiple copies of file {fullName} found");
+      }
+
+      return null;
+    }
+
     /// <summary>
     /// Gets the lowest level folder metadata in the path. Creates it unless it this is purely a query and therefore must exist.
     /// </summary>
@@ -181,23 +301,36 @@ namespace VSS.DataOcean.Client
     /// <param name="mustExist"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private async Task<DataOceanDirectory> GetFolder(string path, bool mustExist, IDictionary<string, string> customHeaders)
+    private async Task<DataOceanDirectory> GetFolderMetadata(string path, bool mustExist, IDictionary<string, string> customHeaders)
     {
-      Log.LogDebug($"GetFolder: {path}");
+      Log.LogDebug($"GetFolderMetadata: {path}");
 
+      //NOTE: DataOcean requires / regardless of OS. However we construct the path and split using Path.DirectorySeparatorChar.
+      //This is merely a convenience as DataOcean doesn't use paths but a hierarchy of folders above the file, linked using parent_id.
+      //We traverse this hierarchy. The only place it matters is the multifile structure for tiles. This is contained in the multifile
+      //download url so we don't have to worry about it.
       var parts = path.Split(Path.DirectorySeparatorChar);
       DataOceanDirectory folder = null;
+      Guid? parentId = null;
+      bool creatingPath = false;
       for (var i = 0; i < parts.Length; i++)
       {
         if (!string.IsNullOrEmpty(parts[i]))
         {
-          var result = await BrowseFolder(parts[i], folder?.ParentId, customHeaders);
-          var count = result?.Directories?.Count;
-          if (count == 1)
+          //Once we know part of the path doesn't exist we can shortcut browsing to check for existance
+          int? count = 0;
+          if (!creatingPath)
           {
-            folder = result.Directories[0];
+            var result = await BrowseFolder(parts[i], parentId, customHeaders);
+            count = result?.Directories?.Count;
+            if (count == 1)
+            {
+              folder = result.Directories[0];
+              parentId = folder.Id;
+            }
           }
-          else if (count == 0)
+      
+          if (count == 0)
           {
             if (mustExist)
             {
@@ -205,10 +338,12 @@ namespace VSS.DataOcean.Client
             }
             else
             {
-              folder = await CreateDirectory(parts[i], folder?.ParentId, customHeaders);
+              folder = (await CreateDirectory(parts[i], parentId, customHeaders)).Directory;
+              parentId = folder.Id;
+              creatingPath = true;
             }
           }
-          else //count > 1
+          else if (count > 1)
           {
             //Should we throw an exception here?
             Log.LogWarning($"Duplicate folders {parts[i]} in path {path}");
@@ -277,7 +412,7 @@ namespace VSS.DataOcean.Client
     /// <param name="parentId">DataOcean ID of the parent directory</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private Task<DataOceanDirectory> CreateDirectory(string name, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<DataOceanDirectoryResult> CreateDirectory(string name, Guid? parentId, IDictionary<string, string> customHeaders)
     {
       var message = new CreateDirectoryMessage
       {
@@ -288,7 +423,7 @@ namespace VSS.DataOcean.Client
         }
       };
 
-      return CreateItem<CreateDirectoryMessage, DataOceanDirectory>(message, "/api/directories", customHeaders);
+      return CreateItem<CreateDirectoryMessage, DataOceanDirectoryResult>(message, "/api/directories", customHeaders);
     }
 
     /// <summary>
@@ -298,7 +433,7 @@ namespace VSS.DataOcean.Client
     /// <param name="parentId">DataOcean ID of the parent directory</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    private Task<DataOceanFile> CreateFile(string name, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<DataOceanFileResult> CreateFile(string name, Guid? parentId, IDictionary<string, string> customHeaders)
     {
       var message = new CreateFileMessage
       {
@@ -310,7 +445,7 @@ namespace VSS.DataOcean.Client
           RegionPreferences = new List<string> { "us1"}
         }
       };
-      return CreateItem<CreateFileMessage, DataOceanFile>(message, "/api/files", customHeaders);
+      return CreateItem<CreateFileMessage, DataOceanFileResult>(message, "/api/files", customHeaders);
     }
 
     /// <summary>

@@ -1,1 +1,3 @@
 JAEGER_SERVICE_NAME: Dev Tile Service API 
+TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
+TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token

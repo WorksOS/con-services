@@ -52,7 +52,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
-      HttpMethod method = null, string payload = null, Stream streamPayload = null)
+      HttpMethod method = null, string payload = null, Stream streamPayload = null, int? timeout = null, int retries = 3)
     {
       // Default to POST
       if (method == null)
@@ -65,19 +65,19 @@ namespace VSS.MasterData.Proxies
         if (method != HttpMethod.Get)
         {
           if (streamPayload != null && payload == null)
-            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
           else
           {
             if (payload != null)
             {
               streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-              result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+              result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
             }
           }
         }
         else
         {
-          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders);
+          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders, timeout:timeout, retries:retries);
         }
 
         log.LogDebug("Result of send to master data request: {0}", result);
@@ -100,12 +100,14 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
+    /// <param name="timeout">Optional timeout in millisecs for the request</param>
+    /// <param name="retries">How many times to retry the request (optional)</param>
     /// <returns>The item</returns>
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
-      string route = null, HttpMethod method = null, string queryParameters = null)
+      string route = null, HttpMethod method = null, string queryParameters = null, int ? timeout = null, int retries = 3)
     {
       log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
-      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout:timeout, retries:retries);
     }
 
     /// <summary>
