@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -80,14 +78,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly IFileRepository fileRepo;
 
     protected readonly IDataOceanClient dataOceanClient;
+    protected readonly ITPaaSApplicationAuthentication authn;
 
-   /// <summary>
+    /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
     /// <value>
     /// The custom customHeaders.
     /// </value>
-    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
+    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders(Request.Path.Value.Contains("internal"));
+    //protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders(true); //use this when debugging locally and calling other 3dpm services 
 
     /// <summary>
     /// Gets the customer uid from the current context
@@ -125,11 +125,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="tileServiceProxy"></param>
+    /// <param name="authn"></param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IRaptorProxy raptorProxy, IProjectRepository projectRepo, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
-      IDataOceanClient dataOceanClient = null)
+      IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null)
     {
       this.log = log;
       this.configStore = configStore;
@@ -149,6 +151,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.fileRepo = fileRepo;
       this.raptorProxy = raptorProxy;
       this.dataOceanClient = dataOceanClient;
+      this.authn = authn;
     }
 
     /// <summary>

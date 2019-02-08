@@ -21,6 +21,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -36,6 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected ITRexImportFileProxy tRexImportFileProxy;
 
     protected string FileSpaceId;
+    protected string DataOceanRootFolder;
     protected bool UseTrexGatewayDesignImport;
     protected bool UseRaptorGatewayDesignImport;
 
@@ -66,14 +68,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="requestFactory"></param>
     /// <param name="log"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="tileServiceProxy"></param>
+    /// <param name="authn"></param>
     public FileImportBaseController(IKafka producer,
       IConfigurationStore configStore, ILoggerFactory logger, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient)
-      : base(log, configStore, serviceExceptionHandler, producer,
-        raptorProxy, projectRepo, subscriptionRepo, fileRepo, dataOceanClient)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
+      ITPaaSApplicationAuthentication authn)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
+        subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;
@@ -83,12 +88,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.tRexImportFileProxy = tRexImportFileProxy;
 
       FileSpaceId = configStore.GetValueString("TCCFILESPACEID");
+      DataOceanRootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
     UseTrexGatewayDesignImport = false;
     UseRaptorGatewayDesignImport = true;
     bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
         out UseTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out UseRaptorGatewayDesignImport);
+
     }
 
     /// <summary>

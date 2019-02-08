@@ -33,6 +33,7 @@ using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -47,15 +48,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// File import controller v4
     /// </summary>
+    /// <param name="tileServiceProxy"></param>
+    /// <param name="authn"></param>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
+      ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     {
       this.logger = logger;
       this.notificationHubClient = notificationHubClient;
@@ -179,11 +183,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}";
       callbackUrl += $"&awsFilePath={WebUtility.UrlEncode(s3Path)}";
 
+      var executionTimeout = configStore.GetValueInt("PEGASUS_EXECUTION_TIMEOUT_MINS", 5) * 60000;//minutes converted to millisecs
       var request = new ScheduleJobRequest
       {
         Filename = file.flowFilename,
         Method = "GET", // match the internal upload Method
         Url = callbackUrl,
+        Timeout = executionTimeout
       };
       request.SetStringPayload(string.Empty);
 
@@ -310,6 +316,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation(
         $"{nameof(CreateImportedFileDirectV4)}: ProjectUid: `{projectUid}`, Filename: `{filename}` ImportedFileType: `{importedFileType}`, DxfUnitsType: `{dxfUnitsType}`, SurveyedUTC: `{(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}`");
 
+      //When debugging locally using Postman, remove this check so can do an update
       ValidateFileDoesNotExist(projectUid.ToString(), filename, importedFileType, surveyedUtc);
 
       if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
@@ -351,16 +358,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       ImportedFileUtils.ValidateEnvironmentVariables(existing.ImportedFileType, configStore, serviceExceptionHandler);
 
-      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(projectUid, existing.ImportedFileType,
-        JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 
-        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId);
+      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
+        projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 
+        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, DataOceanRootFolder);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<DeleteImportedFileExecutor>(
             logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-            projectRepo, null, fileRepo, null, null, dataOceanClient)
+            projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
           .ProcessAsync(deleteImportedFile)
       );
 
@@ -442,23 +449,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         //save copy to DataOcean      
         await DataOceanHelper.WriteFileToDataOcean(
-            fileStream, customerUid, projectUid.ToString(), filename,
+            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), filename,
             importedFileType == ImportedFileType.SurveyedSurface,
-            surveyedUtc, log, serviceExceptionHandler, dataOceanClient, customHeaders)
+            surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
           .ConfigureAwait(false);
       }
       
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.CreateACreateImportedFile(projectUid, filename,
-          fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc);
+        var createImportedFile = CreateImportedFile.Create(projectUid, filename,
+          fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
             .Build<CreateImportedFileExecutor>(
               logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -470,13 +477,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         // this also validates that this customer has access to the projectUid
         var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
-        var importedFileUpsertEvent = UpdateImportedFile.CreateUpdateImportedFile(
+        var importedFileUpsertEvent = UpdateImportedFile.Create(
           projectUid, project.LegacyProjectID, importedFileType,
           importedFileType == ImportedFileType.SurveyedSurface
             ? surveyedUtc
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
-          Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId
+          Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
+          DataOceanRootFolder
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
@@ -484,7 +492,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpdateImportedFileExecutor>(
               logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, null, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
 
