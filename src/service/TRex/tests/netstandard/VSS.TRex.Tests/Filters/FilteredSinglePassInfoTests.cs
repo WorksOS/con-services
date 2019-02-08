@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Filters.Models;
+﻿using FluentAssertions;
+using VSS.TRex.Filters.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Filters
@@ -13,10 +14,18 @@ namespace VSS.TRex.Tests.Filters
             Assert.Equal(0, info.PassCount);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_FilteredSinglePass_Clear()
         {
-            Assert.True(false);
+          FilteredSinglePassInfo info = new FilteredSinglePassInfo
+          {
+            PassCount = 5
+          };
+
+          info.PassCount.Should().Be(5);
+
+          info.Clear();
+          info.PassCount.Should().Be(5);
         }
     }
 }
