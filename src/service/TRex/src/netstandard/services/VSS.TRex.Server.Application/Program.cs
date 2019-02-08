@@ -64,6 +64,10 @@ namespace VSS.TRex.Server.Application
           return new PatchTask();
         case PipelineProcessorTaskStyle.SurfaceExport:
           return new SurfaceTask();
+        case PipelineProcessorTaskStyle.VetaExport:
+          return new SurfaceTask();
+        case PipelineProcessorTaskStyle.PassCountExport:
+          return new SurfaceTask();
         default:
           return null;
       }

@@ -7,9 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using FileSystem = System.IO.File;
 
@@ -18,27 +16,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
 
   /// <summary>
-  /// The controller for generating TIN surfaces decimated from elevation data
+  /// The controller for generating Csv file of productionData
   /// </summary>
   public class CSVExportController : BaseController
   {
     /// <summary>
-    /// Constructor for TIN surface export controller
+    /// Constructor for csv export controller
     /// </summary>
     /// <param name="loggerFactory"></param>
-    /// <param name="exceptionHandler"></param>
+    /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="tINSurfaceExportRequestor"></param>
-    public CSVExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore, ITINSurfaceExportRequestor tINSurfaceExportRequestor)
-      : base(loggerFactory, loggerFactory.CreateLogger<CSVExportController>(), exceptionHandler, configStore)
+    public CSVExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<DetailsDataController>(), serviceExceptionHandler, configStore)
     {
     }
 
     /// <summary>
     /// Web service end point controller for veta export of csv file
     /// </summary>
-    /// <param name="compactionExportRequest"></param>
+    /// <param name="compactionVetaExportRequest"></param>
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/veta")]
@@ -46,34 +42,30 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetVetaExport)}: {Request.QueryString}");
 
-      throw new NotImplementedException();
+      compactionVetaExportRequest.Validate();
 
-      //Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(compactionVetaExportRequest) as CSVExportResult);
 
-      //compactionVetaExportRequest.Validate();
+      const string CSV_EXTENSION = ".csv";
+      const string ZIP_EXTENSION = ".zip";
 
-      //var result = WithServiceExceptionTryExecute(() =>
-      //  RequestExecutorContainer
-      //    .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-      //    .Process(compactionVetaExportRequest) as  /* todoJeannie */ TINSurfaceExportResult);
+      // todoJeannie on s3?
+      var fullFileName = BuildFullFilePath(compactionVetaExportRequest.FileName, ZIP_EXTENSION);
 
-      //const string CSV_EXTENSION = ".csv";
-      //const string ZIP_EXTENSION = ".zip";
+      if (FileSystem.Exists(fullFileName))
+        FileSystem.Delete(fullFileName);
 
-      //// todoJeannie on s3?
-      //var fullFileName = BuildFullFilePath(compactionVetaExportRequest.FileName, ZIP_EXTENSION);
+      using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
+      {
+        var entry = zipFile.CreateEntry(compactionVetaExportRequest.FileName + CSV_EXTENSION);
+        using (var stream = entry.Open())
+          new MemoryStream(result?.CSVData).CopyTo(stream);
+      }
 
-      //if (FileSystem.Exists(fullFileName))
-      //  FileSystem.Delete(fullFileName);
-
-      //using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
-      //{
-      //  var entry = zipFile.CreateEntry(compactionVetaExportRequest.FileName + CSV_EXTENSION);
-      //  using (var stream = entry.Open())
-      //    new MemoryStream(result?.TINData).CopyTo(stream);
-      //}
-
-      //return new CompactionExportResult(fullFileName);
+      return new CompactionExportResult(fullFileName);
     }
 
     /// <summary>
@@ -86,6 +78,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public CompactionExportResult GetPassCountExport([FromBody] CompactionPassCountExportRequest compactionPassCountExportRequest)
     {
       Log.LogInformation($"{nameof(GetPassCountExport)}: {Request.QueryString}");
+
+      compactionPassCountExportRequest.Validate();
 
       throw new NotImplementedException();
 

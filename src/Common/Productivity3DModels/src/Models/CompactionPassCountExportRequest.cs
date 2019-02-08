@@ -37,15 +37,11 @@ namespace VSS.Productivity3D.Models.Models
     public bool RawDataAsDBase { get; protected set; }
 
 
-    /// <summary>
-    /// Overload constructor with parameters.
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filter"></param>
-    /// <param name="fileName"></param>
-    /// <param name="coordType"></param>
-    /// <param name="machineNames"></param>
-    public CompactionPassCountExportRequest(
+    protected CompactionPassCountExportRequest()
+    {
+    }
+
+    public static CompactionPassCountExportRequest CreateRequest(
       Guid projectUid,
       FilterResult filter,
       string fileName,
@@ -55,14 +51,18 @@ namespace VSS.Productivity3D.Models.Models
       bool rawDataAsDBase
     )
     {
-      ProjectUid = projectUid;
-      Filter = filter;
-      FileName = fileName;
-      CoordType = coordType;
-      OutputType = outputType;
-      RestrictOutputSize = restrictOutputSize;
-      RawDataAsDBase = rawDataAsDBase;
+      return new CompactionPassCountExportRequest
+      {
+        ProjectUid = projectUid,
+        Filter = filter,
+        FileName = fileName,
+        CoordType = coordType,
+        OutputType = outputType,
+        RestrictOutputSize = restrictOutputSize,
+        RawDataAsDBase = rawDataAsDBase
+      };
     }
+
 
     /// <summary>
     /// Validates all properties
@@ -83,10 +83,10 @@ namespace VSS.Productivity3D.Models.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Invalid output type for machine passes export report"));
+            "Invalid output type for passCount export"));
       }
 
-      // todo UserPreferences
+      // todoJeannie UserPreferences in base?
     }
   }
 }

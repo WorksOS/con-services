@@ -9,7 +9,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.Gridded.GridFabric;
 
 namespace VSS.TRex.Gateway.Common.Executors

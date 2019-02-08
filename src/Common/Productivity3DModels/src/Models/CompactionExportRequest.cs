@@ -17,7 +17,6 @@ namespace VSS.Productivity3D.Models.Models
     /// A project unique identifier.
     /// </summary>
     [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
-    [ValidProjectUID]
     public Guid ProjectUid { get; set; }
 
     /// <summary>
@@ -68,6 +67,13 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
+      if (ProjectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+
       Filter?.Validate();
     }
   }

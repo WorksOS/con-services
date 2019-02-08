@@ -12,6 +12,9 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class CompactionVetaExportRequest : CompactionExportRequest
   {
+
+    private const int MACHINENAME_LENGTH_MINIMUM = 5;
+
     /// <summary>
     /// Type of Coordinates required in result e.g. NE
     /// </summary>
@@ -32,15 +35,11 @@ namespace VSS.Productivity3D.Models.Models
     public string[] MachineNames { get; private set; }
 
 
-    /// <summary>
-    /// Overload constructor with parameters.
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filter"></param>
-    /// <param name="fileName"></param>
-    /// <param name="coordType"></param>
-    /// <param name="machineNames"></param>
-    public CompactionVetaExportRequest(
+    protected CompactionVetaExportRequest()
+    {
+    }
+
+    public static CompactionVetaExportRequest CreateRequest(
       Guid projectUid,
       FilterResult filter,
       string fileName,
@@ -49,12 +48,15 @@ namespace VSS.Productivity3D.Models.Models
       string[] machineNames
     )
     {
-      ProjectUid = projectUid;
-      Filter = filter;
-      FileName = fileName;
-      CoordType = coordType;
-      OutputType = outputType;
-      MachineNames = machineNames;
+      return new CompactionVetaExportRequest
+      {
+        ProjectUid = projectUid,
+        Filter = filter,
+        FileName = fileName,
+        CoordType = coordType,
+        OutputType = outputType,
+        MachineNames = machineNames,
+      };
     }
 
     /// <summary>
@@ -76,10 +78,23 @@ namespace VSS.Productivity3D.Models.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Invalid output type for machine passes export report for VETA"));
+            "Invalid output type for veta export"));
       }
 
-      // todo UserPreferences
+      if (MachineNames != null)
+      {
+        foreach (var machineName in MachineNames)
+        {
+          if (string.IsNullOrEmpty(machineName) || machineName.Length < MACHINENAME_LENGTH_MINIMUM)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Invalid machineNames"));
+          }
+        }
+      }
+
+      // todoJeannie UserPreferences put in base?
     }
   }
 }

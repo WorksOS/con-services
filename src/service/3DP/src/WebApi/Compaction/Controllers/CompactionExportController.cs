@@ -419,7 +419,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
-        //Special case of project extents where start and end UTC not set in filter for Raptor peformance.
+        //Special case of project extents where start and end UTC not set in filter for Raptor performance.
         //But need to set here for export.
         var excludedIds = filter?.SurveyedSurfaceExclusionList?.ToArray() ?? new long[0];
         ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
@@ -433,8 +433,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var endUtc = filter?.EndUtc ?? result.endTime;
         return new Tuple<DateTime, DateTime>(startUtc, endUtc);
 #else
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        // TRex determines this date range within the export API call
+        return new Tuple<DateTime, DateTime>(DateTime.MinValue, DateTime.MinValue);
 #endif
       }
 
