@@ -77,10 +77,21 @@ namespace VSS.TRex.Designs.TTM.Tests
         {
         }
 
-        [Fact(Skip = "not implemented")]
+        [Fact]
         public void BuildEdgeListTest()
         {
-        }
+          TrimbleTINModel TTM = new TrimbleTINModel();
+
+          TTM.LoadFromFile(Path.Combine("TestData", "Bug36372.ttm"));
+
+          TTM.Edges.Count.Should().Be(1525);
+
+          TTM.Edges.Clear();
+          TTM.Edges.Count.Should().Be(0);
+
+          TTM.BuildEdgeList();
+          TTM.Edges.Count.Should().Be(1525);
+    }
 
         [Fact]
         public void ClearTest()
