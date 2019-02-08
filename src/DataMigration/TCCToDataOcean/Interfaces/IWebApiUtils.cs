@@ -5,6 +5,6 @@ namespace TCCToDataOcean.Interfaces
 {
   public interface IWebApiUtils
   {
-    ProjectDataSingleResult UpdateProjectViaWebApi(string uriRoot, Project project, byte[] coordSystemFileContent);
+    ProjectDataSingleResult UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent);
   }
 }

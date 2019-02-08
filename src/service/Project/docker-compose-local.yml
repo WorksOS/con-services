@@ -115,6 +115,7 @@ services:
       - docker-compose-local.env
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:1
       - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1
     ports:
       - "9092:9092"

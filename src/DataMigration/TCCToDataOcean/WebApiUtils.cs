@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TCCToDataOcean.Interfaces;
 using VSS.MasterData.Models.ResultHandling;
@@ -11,6 +14,7 @@ namespace TCCToDataOcean
   public class WebApiUtils : IWebApiUtils
   {
     private readonly IRestClient RestClient;
+    private readonly MigrationSettings MigrationSettings;
 
     private readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
     {
@@ -18,15 +22,16 @@ namespace TCCToDataOcean
       NullValueHandling = NullValueHandling.Ignore
     };
 
-    public WebApiUtils(IRestClient restClient)
+    public WebApiUtils(IRestClient restClient, IMigrationSettings migrationSettings)
     {
       RestClient = restClient;
+      MigrationSettings = (MigrationSettings)migrationSettings;
     }
 
     /// <summary>
     /// Update the project via the web api. 
     /// </summary>
-    public ProjectDataSingleResult UpdateProjectViaWebApi(string uriRoot, Project project, byte[] coordSystemFileContent)
+    public ProjectDataSingleResult UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent)
     {
       var updateProjectEvt = new UpdateProjectEvent
       {
@@ -42,12 +47,18 @@ namespace TCCToDataOcean
         ReceivedUTC = DateTime.UtcNow,
         ActionUTC = project.LastActionedUTC
       };
+
       var jsonString = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvt }, JsonSettings);
-      var response = RestClient.DoHttpRequest(uriRoot, HttpMethod.Put.ToString(), jsonString, "application/json", project.CustomerUID);
-      return JsonConvert.DeserializeObject<ProjectDataSingleResult>(response);
+      var response = Task.Run(() => RestClient.SendHttpClientRequest(uriRoot, HttpMethod.Put, jsonString, Types.MediaType.ApplicationJson, Types.MediaType.ApplicationJson, project.CustomerUID)).Result;
+
+      var receiveStream = response.Content.ReadAsStreamAsync().Result;
+      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
+      var responseBody = readStream.ReadToEnd();
+
+      return JsonConvert.DeserializeObject<ProjectDataSingleResult>(responseBody, new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      });
     }
-
   }
-
-
 }

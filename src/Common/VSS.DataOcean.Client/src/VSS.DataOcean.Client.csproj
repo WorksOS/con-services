@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Serilog">
+      <HintPath>..\..\..\..\..\..\Users\amorgan\.nuget\packages\serilog\2.8.0\lib\netstandard2.0\Serilog.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

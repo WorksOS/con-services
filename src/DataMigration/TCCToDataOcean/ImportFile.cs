@@ -5,9 +5,12 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Newtonsoft.Json;
+using Serilog;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Types;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -17,7 +20,6 @@ namespace TCCToDataOcean
 {
   public class ImportFile : IImportFile
   {
-    private readonly ILogger Log;
     private readonly ITPaaSApplicationAuthentication Authentication;
     private readonly IRestClient RestClient;
 
@@ -27,11 +29,8 @@ namespace TCCToDataOcean
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
 
-    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, 
-      IRestClient restClient)
+    public ImportFile(ITPaaSApplicationAuthentication authentication, IRestClient restClient)
     {
-      Log = loggerFactory.CreateLogger<ImportFile>();
- 
       Authentication = authentication;
       RestClient = restClient;
     }
@@ -41,9 +40,24 @@ namespace TCCToDataOcean
     /// </summary>
     public FileDataResult GetImportedFilesFromWebApi(string uri, string customerUid)
     {
-      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid);
-      var filesResult = JsonConvert.DeserializeObject<FileDataResult>(response);
-      return filesResult;
+      //var response = RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, customerUid);
+      //return JsonConvert.DeserializeObject<FileDataResult>(response.Result, new JsonSerializerSettings
+      //{
+      //  Formatting = Formatting.Indented
+      //});
+
+      var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, customerUid)).Result;
+
+      // TODO (Aaron) handle non 200 result codes.
+
+      var receiveStream = response.Content.ReadAsStreamAsync().Result;
+      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
+      var responseBody = readStream.ReadToEnd();
+
+      return JsonConvert.DeserializeObject<FileDataResult>(responseBody, new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      });
     }
 
     /// <summary>
@@ -86,8 +100,8 @@ namespace TCCToDataOcean
       }
       catch (Exception exception)
       {
-        Log.LogInformation(response);
-        Log.LogError(exception.Message);
+        Log.Information(response);
+        Log.Error(exception.Message);
       }
 
       return null;
@@ -266,15 +280,5 @@ namespace TCCToDataOcean
 
       return string.Empty;
     }
-
-    /// <summary>
-    /// Call the web api for the imported files
-    /// </summary>
-    private string CallWebApi(string uri, string method, string configJson, string customerUid)
-    {
-      var response = RestClient.DoHttpRequest(uri, method, configJson, "application/json", customerUid);
-      return response;
-    }
-
   }
 }

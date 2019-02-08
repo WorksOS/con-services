@@ -1,7 +1,10 @@
-﻿namespace TCCToDataOcean.Interfaces
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace TCCToDataOcean.Interfaces
 {
   public interface IRestClient
   {
-    string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string mediaType, string customerUid);
+    Task<HttpResponseMessage> SendHttpClientRequest(string uri, HttpMethod method, string payloadData, string acceptHeader, string contentType, string customerUid);
   }
 }
