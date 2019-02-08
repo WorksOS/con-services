@@ -22,7 +22,7 @@ using Xunit;
 
 namespace VSS.Trex.ConnectedSiteGateway.Tests
 {
-  public class ConnectedSiteMessageSubmissionExecutorTests
+  public class ConnectedSiteMessageSubmissionExecutorTests : IDisposable
   {
     byte[] GoodTagfile;
     ServiceCollection services = new ServiceCollection();
@@ -43,7 +43,6 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
       loggerFactory.AddDebug();
       services.AddLogging().AddSingleton(loggerFactory);
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-
     }
 
 
@@ -279,6 +278,11 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
 
       result.Should().NotBeNull();
       result.Code.Should().Be((int)HttpStatusCode.PreconditionFailed);
+    }
+
+    void IDisposable.Dispose()
+    {
+      TRex.DI.DIBuilder.Eject();
     }
   }
 }
