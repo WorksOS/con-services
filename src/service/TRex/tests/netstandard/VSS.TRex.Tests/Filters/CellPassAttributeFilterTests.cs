@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.TestFixtures;
@@ -28,7 +26,7 @@ namespace VSS.TRex.Tests.Filters
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
-            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialized");
+//            Assert.False(filter.ElevationRangeIsInitialized, "Elevation range is initialized");
 
             filter.ClearFilter();
 
@@ -230,8 +228,8 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_CompareTo_PassCountRange()
         {
           Test_CellPassAttributeFilter_CompareTo_Aspect("PassCountRange", x => {
-                                                                         x.HasPassCountRangeFilter = true; x.PasscountRangeMin = 1;
-                                                                         x.PasscountRangeMax = 4;
+                                                                         x.HasPassCountRangeFilter = true; x.PassCountRangeMin = 1;
+                                                                         x.PassCountRangeMax = 4;
                                                                        });
         }
 
@@ -272,16 +270,17 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact()]
-        public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
+        public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialization()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter()
+            var filterAnnex = new CellPassAttributeFilterProcessingAnnex()
             {
-                ElevationRangeIsInitialised = true,
-                ElevationRangeDesignElevations = new VSS.TRex.SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
+                ElevationRangeIsInitialized = true,
+                ElevationRangeDesignElevations = new TRex.SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
             };
-            filter.ClearElevationRangeFilterInitialisation();
 
-            Assert.True(filter.ElevationRangeIsInitialised == false && filter.ElevationRangeDesignElevations == null);
+            filterAnnex.ClearElevationRangeFilterInitialization();
+
+            Assert.True(filterAnnex.ElevationRangeIsInitialized == false && filterAnnex.ElevationRangeDesignElevations == null);
         }
 
         [Fact(Skip = "Not Implemented")]
@@ -489,7 +488,7 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact(Skip = "Not Implemented")]
-        public void Test_CellPassAttributeFilter_InitaliaseFilteringForCell()
+        public void Test_CellPassAttributeFilter_InitialiseFilteringForCell()
         {
             Assert.True(false);
 

@@ -44,7 +44,7 @@ namespace VSS.TRex.Filters.Interfaces
     DateTime EndTime { get; set; }
 
     Guid[] MachinesList { get; set; }
-    int DesignNameID { get; set; } // DesignNameID :TICDesignNameID;
+    int DesignNameID { get; set; } 
     VibrationState VibeState { get; set; }
     MachineDirection MachineDirection { get; set; }
     PassTypeSet PassTypeSet { get; set; }
@@ -95,31 +95,7 @@ namespace VSS.TRex.Filters.Interfaces
     Guid ElevationRangeDesignUID { get; set; }
 
     /// <summary>
-    /// Elevation parameters have been initialized in preparation for elevation range filtering, either
-    /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
-    /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
-    /// </summary>
-    bool ElevationRangeIsInitialised { get; set; }
-
-    /// <summary>
-    /// The defined elevation range is defined only by a level plan and thickness
-    /// </summary>
-    bool ElevationRangeIsLevelAndThicknessOnly { get; set; }
-
-    /// <summary>
-    /// The top of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    double ElevationRangeTopElevationForCell { get; set; }
-
-    /// <summary>
-    /// The bottom of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    double ElevationRangeBottomElevationForCell { get; set; }
-
-    /// <summary>
-    /// Denotes whether analysis of cell passes in a cell are analysed into separate layers according to 
+    /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
     /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
     LayerState LayerState { get; set; }
@@ -147,12 +123,12 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
-    ushort PasscountRangeMin { get; set; }
+    ushort PassCountRangeMin { get; set; }
 
     /// <summary>
     ///  takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
-    ushort PasscountRangeMax { get; set; }
+    ushort PassCountRangeMax { get; set; }
 
     bool IsTimeRangeFilter();
   }

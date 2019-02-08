@@ -35,6 +35,7 @@ namespace VSS.TRex.SubGrids
 
     // Local state populated by the retriever constructor
     private readonly ICombinedFilter _filter;
+    private readonly ICellPassAttributeFilterProcessingAnnex _filterAnnex;
     private readonly ISiteModel _siteModel;
     private readonly IStorageProxy _storageProxy;
     private bool _canUseGlobalLatestCells;
@@ -81,6 +82,7 @@ namespace VSS.TRex.SubGrids
     /// <param name="gridDataType">The type of client grid data sub grids to be returned by this retriever</param>
     /// <param name="storageProxy">The Ignite storage proxy to be used when requesting data from the persistent store</param>
     /// <param name="filter">The TRex spatial and attribute filtering description for the request</param>
+    /// <param name="filterAnnex">An annex of data related to cell by cell filtering where the attributes related to that cell may change from cell to cell</param>
     /// <param name="hasOverrideSpatialCellRestriction">The spatially selected cells are masked by a rectangular restriction boundary</param>
     /// <param name="overrideSpatialCellRestriction"></param>
     /// <param name="prepareGridForCacheStorageIfNoSieving">The cell coordinate bounding box restricting cells involved in the request</param>
@@ -92,6 +94,7 @@ namespace VSS.TRex.SubGrids
       GridDataType gridDataType,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
+      ICellPassAttributeFilterProcessingAnnex filterAnnex,
       bool hasOverrideSpatialCellRestriction,
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
       bool prepareGridForCacheStorageIfNoSieving,
@@ -106,6 +109,7 @@ namespace VSS.TRex.SubGrids
       _segmentIterator = null;
       _cellPassIterator = null;
       _filter = filter ?? new CombinedFilter();
+      _filterAnnex = filterAnnex;
       _canUseGlobalLatestCells = _filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
       _hasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
       _overrideSpatialCellRestriction = overrideSpatialCellRestriction;
@@ -135,7 +139,7 @@ namespace VSS.TRex.SubGrids
       {
         FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
 
-        if (_filter.AttributeFilter.FilterPass(ref _currentPass))
+        if (_filter.AttributeFilter.FilterPass(ref _currentPass, _filterAnnex))
         {
           // -->###US79098###
           if (firstFilteredCellPass) 
@@ -200,7 +204,7 @@ namespace VSS.TRex.SubGrids
               ++passRangeCount; // increase count for first full pass
             }
 
-            if (!Range.InRange(passRangeCount, _filter.AttributeFilter.PasscountRangeMin, _filter.AttributeFilter.PasscountRangeMax))
+            if (!Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax))
               continue;
           }
 
@@ -408,7 +412,7 @@ namespace VSS.TRex.SubGrids
           {
             // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using profiler");
 
-            _filter.AttributeFilter.InitaliaseFilteringForCell(StripeIndex, J);
+            _filterAnnex.InitializeFilteringForCell(_filter.AttributeFilter, StripeIndex, J);
 
             if (_profiler != null)
             {
@@ -480,7 +484,7 @@ namespace VSS.TRex.SubGrids
               _cellPassIterator.SetCellCoordinatesInSubgrid(StripeIndex, J);
 
               if (_filter.AttributeFilter.HasElevationRangeFilter)
-                _cellPassIterator.SetIteratorElevationRange(_filter.AttributeFilter.ElevationRangeBottomElevationForCell, _filter.AttributeFilter.ElevationRangeTopElevationForCell);
+                _cellPassIterator.SetIteratorElevationRange(_filterAnnex.ElevationRangeBottomElevationForCell, _filterAnnex.ElevationRangeTopElevationForCell);
 
               _cellPassIterator.Initialise();
               ProcessCellPasses();
@@ -723,7 +727,7 @@ namespace VSS.TRex.SubGrids
 
         _sieveFilterInUse = _areaControlSet.UseIntegerAlgorithm 
           ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _sieveBitmask) 
-          : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
+          : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
 
         if (!_sieveFilterInUse)
         {

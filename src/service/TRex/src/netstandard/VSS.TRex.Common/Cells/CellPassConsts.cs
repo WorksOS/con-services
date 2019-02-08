@@ -8,7 +8,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null GPS tolerance value
     /// </summary>
-    public const ushort NullGPSTolerance = UInt16.MaxValue;
+    public const ushort NullGPSTolerance = ushort.MaxValue;
 
     /// <summary>
     /// Null machine speed value
@@ -18,7 +18,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null Pass Count value
     /// </summary>
-    public const ushort NullPassCountValue = UInt16.MinValue;
+    public const ushort NullPassCountValue = ushort.MinValue;
 
     /// <summary>
     /// Conversion ratio between temperature in whole degrees and tenths of degrees reported by some measurements from machines
