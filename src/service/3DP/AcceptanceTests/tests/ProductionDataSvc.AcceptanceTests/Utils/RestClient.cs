@@ -24,13 +24,25 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       Productivity3DServiceBaseUrl = $"http://{Environment.GetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST")}{Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI")}";
     }
 
-    public static Task<HttpResponseMessage> SendHttpClientRequest(string baseAddress, string route, HttpMethod method, string acceptHeader, string contentType, string payloadData)
+    public static Task<HttpResponseMessage> SendHttpClientRequest(string baseAddress, string route, HttpMethod method, string acceptHeader, string contentType, string payloadData = null)
     {
       var requestMessage = new HttpRequestMessage(method, new Uri($"{baseAddress}{route}"));
 
       if (payloadData != null)
       {
-        requestMessage.Content = new StringContent(payloadData, Encoding.UTF8, contentType);
+        switch (contentType)
+        {
+          case MediaTypes.JSON:
+            {
+              requestMessage.Content = new StringContent(payloadData, Encoding.UTF8, contentType);
+
+              break;
+            }
+          case MediaTypes.MULTIPART_FORM_DATA:
+            {
+              throw new NotImplementedException();
+            }
+        }
       }
 
       requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));

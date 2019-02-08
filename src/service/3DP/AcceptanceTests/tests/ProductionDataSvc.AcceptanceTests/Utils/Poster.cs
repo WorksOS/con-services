@@ -71,9 +71,9 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// </summary>
     /// <param name="requestName">Request name as appears in the request JSON file. If not supplied, use CurrentRequest.</param>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 200 OK.</param>
-    public TResponse DoRequest(string requestName = null, int expectedHttpCode = (int)HttpStatusCode.OK)
+    public TResponse DoRequest(string requestName = null, string contentType = MediaTypes.JSON, int expectedHttpCode = (int)HttpStatusCode.OK)
     {
-      return SendRequest(requestName, (HttpStatusCode)expectedHttpCode);
+      return SendRequest(requestName, contentType, (HttpStatusCode)expectedHttpCode);
     }
 
     /// <summary>
@@ -82,10 +82,10 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// <param name="request">Request object to be POST'ed.</param>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 200 OK.</param>
     /// <returns>Request response.</returns>
-    public TResponse DoValidRequest(TRequest request, HttpStatusCode expectedHttpCode = HttpStatusCode.OK)
+    public TResponse DoValidRequest(TRequest request, string contentType = MediaTypes.JSON, HttpStatusCode expectedHttpCode = HttpStatusCode.OK)
     {
       CurrentRequest = request;
-      return SendRequest(null, expectedHttpCode);
+      return SendRequest(null, contentType, expectedHttpCode);
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// </summary>
     /// <param name="requestName">Request name as appears in the request JSON file. If null, use CurrentRequest.</param>
     /// <param name="expectedHttpCode">Expected HTTP code.</param>
-    private TResponse SendRequest(string requestName, HttpStatusCode expectedHttpCode)
+    private TResponse SendRequest(string requestName, string contentType, HttpStatusCode expectedHttpCode)
     {
       string requestBodyString;
 
@@ -114,9 +114,9 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         Uri, 
         null, 
         HttpMethod.Post, 
-        MediaTypes.JSON,
-        MediaTypes.JSON,
-        requestBodyString).Result;
+        acceptHeader: MediaTypes.JSON,
+        contentType: contentType,
+        payloadData: requestBodyString).Result;
       
       var receiveStream = HttpResponseMessage.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader (receiveStream, Encoding.UTF8);

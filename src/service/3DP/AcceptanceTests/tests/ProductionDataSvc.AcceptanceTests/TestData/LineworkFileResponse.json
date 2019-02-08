@@ -995,5 +995,10 @@
         "properties": { "name": "EOP1" }
       }
     ]
+  },
+  "ErrorNoBoundariesInFile": {
+    "lineworkBoundaries": null,
+    "Code": 74,
+    "Message": "Failed to get/update data requested by LineworkFileExecutor with error: No boundaries in linework file"
   }
 }

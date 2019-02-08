@@ -5,32 +5,39 @@ using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VLPDDecls;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   /// <summary>
-  /// 
+  /// Executor for processing DXF linework files.
   /// </summary>
   public class LineworkFileExecutor : RequestExecutorContainer
   {
+    public LineworkFileExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
+    protected sealed override void ProcessErrorCodes()
+    {
+#if RAPTOR
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
+    }
+
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      try
-      {
-        var request = CastRequestObjectTo<LineworkRequest>(item);
+      var request = CastRequestObjectTo<LineworkRequest>(item);
 
-        return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
-          ? ProcessForTRex(request)
-          : ProcessForRaptor(request);
-      }
-      finally
-      {
-        ContractExecutionStates.ClearDynamic();
-      }
+      return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
+        ? ProcessForTRex(request)
+        : ProcessForRaptor(request);
     }
 
     private DxfLineworkFileResult ProcessForTRex(LineworkRequest request)
@@ -47,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var customDescriptor = new TVLPDDesignDescriptor();
         customDescriptor.Init(0, string.Empty, string.Empty, request.FileDescriptor.Path, request.FileDescriptor.FileName, 0);
 
-        log.LogDebug($"{nameof(LineworkFileExecutor)}: {nameof(TVLPDDesignDescriptor)} = {JsonConvert.SerializeObject(customDescriptor)}");
+        log.LogDebug($"{nameof(LineworkFileExecutor)}::{nameof(ProcessForRaptor)}() : {nameof(TVLPDDesignDescriptor)} = {JsonConvert.SerializeObject(customDescriptor)}");
 
         var args = new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
         {
@@ -59,18 +66,24 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           LineworkUnits = request.LineworkUnits
         };
 
-        // TODO (Aaron) Handled non success response codes, e.g. 74 = asneNoBoundariesInLineworkFile
-
         returnResult = raptorClient.GetBoundariesFromLinework(args, out var lineworksBoundary);
 
         log.LogInformation($"RequestBoundariesFromLinework: result: {JsonConvert.SerializeObject(returnResult)}");
 
+        if (returnResult != TASNodeErrorStatus.asneOK)
+        {
+          throw CreateServiceException<LineworkFileExecutor>((int)returnResult);
+        }
+
         return new DxfLineworkFileResult(returnResult, "", lineworksBoundary);
       }
-      catch (Exception ex)
+      catch (ServiceException ex)
       {
-        log.LogError($"RequestBoundariesFromLinework: exception {ex.Message}");
-        return new DxfLineworkFileResult(returnResult, "", null);
+        var errorMessage = ex.GetResult.Message;
+
+        log.LogError($"RequestBoundariesFromLinework: exception {errorMessage}");
+
+        return new DxfLineworkFileResult(returnResult, errorMessage, null);
       }
       finally
       {
