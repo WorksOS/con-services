@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using TCCToDataOcean.Interfaces;
 using VSS.WebApi.Common;
 
@@ -12,9 +12,12 @@ namespace TCCToDataOcean
   public class RestClient : IRestClient
   {
     private readonly HttpClient httpClient;
-    
-    public RestClient(ITPaaSApplicationAuthentication authentication)
+    private readonly ILogger Log;
+
+    public RestClient(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication)
     {
+      Log = loggerFactory.CreateLogger<HttpClient>();
+
       httpClient = new HttpClient();
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
 
@@ -25,7 +28,7 @@ namespace TCCToDataOcean
     public Task<HttpResponseMessage> SendHttpClientRequest(string uri, HttpMethod method, string payloadData, string acceptHeader, string contentType, string customerUid)
     {
       var request = new HttpRequestMessage(method, new Uri(uri));
-      Log.Information($"[{method}] {request.RequestUri.AbsoluteUri}");
+      Log.LogInformation($"[{method}] {request.RequestUri.AbsoluteUri}");
 
       request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
       request.Headers.Add("X-VisionLink-CustomerUid", customerUid);

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using TCCToDataOcean.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -20,13 +20,6 @@ namespace TCCToDataOcean
 
     static void Main()
     {
-      Log.Logger = new LoggerConfiguration()
-                   .Enrich.FromLogContext()
-                   .MinimumLevel.Debug()
-                   .WriteTo.Console()
-                   .WriteTo.File("logs\\migrator.log", rollingInterval: RollingInterval.Day)
-                   .CreateLogger();
-
       var serviceCollection = new ServiceCollection();
       ConfigureServices(serviceCollection);
 
@@ -41,12 +34,11 @@ namespace TCCToDataOcean
 
     private static void ConfigureServices(IServiceCollection services)
     {
-      Log.Debug("Configuring services");
-
       Log4NetProvider.RepoName = LoggerRepoName;
-
-      services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
-      
+      services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+      services.AddLogging(configure => configure.AddConsole()
+                                                .AddDebug())
+              .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -59,6 +51,8 @@ namespace TCCToDataOcean
       services.AddTransient<IMigrator, Migrator>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<IMigrationSettings, MigrationSettings>();
+
+      Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4nettest.xml");
     }
   }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using TCCToDataOcean.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -33,6 +33,7 @@ namespace TCCToDataOcean
     private readonly IFileRepository FileRepo;
     private readonly IWebApiUtils WebApiUtils;
     private readonly IImportFile ImportFile;
+    private readonly ILogger Log;
     private readonly MigrationSettings MigrationSettings;
     private readonly string FileSpaceId;
     private readonly string ProjectApiUrl;
@@ -70,9 +71,9 @@ namespace TCCToDataOcean
 
     public async Task<bool> MigrateFilesForAllActiveProjects()
     {
-      Log.Information($"Fetching projects from: '{ProjectApiUrl}'");
+      Log.LogInformation($"Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
-      Log.Information($"Found {projects.Count} projects");
+      Log.LogInformation($"Found {projects.Count} projects");
 
       // TODO (Aaron) Convert to dictionary and store project UID.
       var projectTasks = new List<Task<bool>>(projects.Count);
@@ -85,7 +86,7 @@ namespace TCCToDataOcean
       await Task.WhenAll(projectTasks);
 
       var result = projectTasks.All(t => t.Result);
-      Log.Information($"Overall migration result {result}");
+      Log.LogInformation($"Overall migration result {result}");
 
       return result;
     }
@@ -95,7 +96,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<bool> MigrateProject(Project project)
     {
-      Log.Information($"PUID: {project.ProjectUID} | Migrating project '{project.Name}'");
+      Log.LogInformation($"PUID: {project.ProjectUID} | Migrating project '{project.Name}'");
 
       var coordinateSystemFileMigrationResult = false;
 
@@ -106,11 +107,11 @@ namespace TCCToDataOcean
 
         coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
 
-        Log.Information($"PUID: {project.ProjectUID} | Update result code: {updateProjectResult.Code}, {updateProjectResult.Message}");
+        Log.LogInformation($"PUID: {project.ProjectUID} | Update result code: {updateProjectResult.Code}, {updateProjectResult.Message}");
       }
 
       //Get list of imported files for project from project web api
-      Log.Information($"PUID: {project.ProjectUID} | Getting files");
+      Log.LogInformation($"PUID: {project.ProjectUID} | Getting files");
       var importedFilesResult = false;
       var filesResult = ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project.CustomerUID);
       var filesList = filesResult.ImportedFileDescriptors;
@@ -118,7 +119,7 @@ namespace TCCToDataOcean
       {
         var selectedFiles =
           filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
-        Log.Information($"PUID: {project.ProjectUID} | {selectedFiles.Count} out of {filesList.Count} files to migrate");
+        Log.LogInformation($"PUID: {project.ProjectUID} | {selectedFiles.Count} out of {filesList.Count} files to migrate");
         var fileTasks = new List<Task<FileDataSingleResult>>();
 
         foreach (var file in selectedFiles)
@@ -132,18 +133,18 @@ namespace TCCToDataOcean
       }
       else
       {
-        Log.Information($"PUID: {project.ProjectUID} | No files found");
+        Log.LogInformation($"PUID: {project.ProjectUID} | No files found");
       }
 
       var result = coordinateSystemFileMigrationResult && importedFilesResult;
-      Log.Information($"PUID: {project.ProjectUID} | Migration result: {result}");
+      Log.LogInformation($"PUID: {project.ProjectUID} | Migration result: {result}");
 
       return result;
     }
 
     private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
     {
-      Log.Information($"PUID: {project.ProjectUID} | Downloading coord system file '{project.CoordinateSystemFileName}'");
+      Log.LogInformation($"PUID: {project.ProjectUID} | Downloading coord system file '{project.CoordinateSystemFileName}'");
 
       Stream memStream = null;
       byte[] coordSystemFileContent = null;
@@ -173,14 +174,14 @@ namespace TCCToDataOcean
         memStream?.Dispose();
       }
 
-      Log.Information(
+      Log.LogInformation(
         $"Coord system file for project {project.ProjectUID}: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
       return coordSystemFileContent;
 
     }
     private async Task<FileDataSingleResult> MigrateFile(FileData file)
     {
-      Log.Information($"Migrating file: Name: {file.Name}, Uid: {file.ImportedFileUid}");
+      Log.LogInformation($"Migrating file: Name: {file.Name}, Uid: {file.ImportedFileUid}");
 
       string tempFileName;
 
@@ -191,7 +192,7 @@ namespace TCCToDataOcean
 
         Directory.CreateDirectory(tempPath);
 
-        Log.Information($"Creating temporary file {tempFileName} for file {file.ImportedFileUid}");
+        Log.LogInformation($"Creating temporary file {tempFileName} for file {file.ImportedFileUid}");
 
         using (var tempFile = new FileStream(tempFileName, FileMode.Create))
         {
@@ -199,13 +200,13 @@ namespace TCCToDataOcean
         }
       }
 
-      Log.Information($"Uploading file {file.ImportedFileUid}");
+      Log.LogInformation($"Uploading file {file.ImportedFileUid}");
 
       var result = MigrationSettings.IsDebug
         ? new FileDataSingleResult()
         : ImportFile.SendRequestToFileImportV4(ImportedFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
-      Log.Information($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
+      Log.LogInformation($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
 
       return result;
     }

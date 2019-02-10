@@ -7,8 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Serilog;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Types;
 using VSS.MasterData.Models.Models;
@@ -22,6 +22,7 @@ namespace TCCToDataOcean
   {
     private readonly ITPaaSApplicationAuthentication Authentication;
     private readonly IRestClient RestClient;
+    private ILogger Log;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
@@ -29,8 +30,10 @@ namespace TCCToDataOcean
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
 
-    public ImportFile(ITPaaSApplicationAuthentication authentication, IRestClient restClient)
+    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient)
     {
+      Log = loggerFactory.CreateLogger<ImportFile>();
+
       Authentication = authentication;
       RestClient = restClient;
     }
@@ -100,8 +103,8 @@ namespace TCCToDataOcean
       }
       catch (Exception exception)
       {
-        Log.Information(response);
-        Log.Error(exception.Message);
+        Log.LogInformation(response);
+        Log.LogError(exception.Message);
       }
 
       return null;
