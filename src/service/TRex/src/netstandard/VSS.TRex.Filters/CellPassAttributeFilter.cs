@@ -160,6 +160,7 @@ namespace VSS.TRex.Filters
       ClearCompactionMachineOnlyRestriction();
       ClearLayerID();
       ClearGPSAccuracy();
+      ClearGPSTolerance();
       ClearTemperatureRange();
       ClearPassCountRange();
       ReturnEarliestFilteredCellPass = false;

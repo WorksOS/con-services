@@ -26,8 +26,6 @@ namespace VSS.TRex.Tests.Filters
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
-//            Assert.False(filter.ElevationRangeIsInitialized, "Elevation range is initialized");
-
             filter.ClearFilter();
 
             Assert.False(filter.AnyFilterSelections, "AnyFilterSelections not false");
@@ -234,7 +232,7 @@ namespace VSS.TRex.Tests.Filters
         }
 
 
-    [Fact()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearDesigns()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Designs",
@@ -283,22 +281,43 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(filterAnnex.ElevationRangeIsInitialized == false && filterAnnex.ElevationRangeDesignElevations == null);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearElevationType()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationType",
+            x => {
+              x.HasElevationTypeFilter = true;
+              x.ElevationType = ElevationType.First;
+            },
+            x => x.HasElevationTypeFilter && x.ElevationType == ElevationType.First,
+            x => { x.ClearElevationType(); },
+            x => !x.HasElevationTypeFilter && x.ElevationType == ElevationType.Last);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearGPSAccuracy()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("GPSAccuracy",
+            x => {
+              x.HasGPSAccuracyFilter = true;
+              x.GPSAccuracy = GPSAccuracy.Fine;
+            },
+            x => x.HasGPSAccuracyFilter && x.GPSAccuracy == GPSAccuracy.Fine,
+            x => { x.ClearGPSAccuracy(); },
+            x => !x.HasGPSAccuracyFilter && x.GPSAccuracy == GPSAccuracy.Unknown);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearGPSTolerance()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("GPSTolerance",
+            x => {
+              x.HasGPSToleranceFilter = true;
+              x.GPSTolerance = 123;
+            },
+            x => x.HasGPSToleranceFilter && x.GPSTolerance == 123,
+            x => { x.ClearGPSTolerance(); },
+            x => !x.HasGPSToleranceFilter && x.GPSTolerance == Consts.kMaxGPSAccuracyErrorLimit);
         }
 
         [Fact()]
@@ -407,11 +426,14 @@ namespace VSS.TRex.Tests.Filters
                                                             x => !x.HasPositioningTechFilter);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearSurveyedSurfaceExclusionList()
         {
-            Assert.True(false);
-
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("SurveyedSurfaceExclusionList",
+            x => { x.SurveyedSurfaceExclusionList = new Guid[] {Guid.Empty}; },
+            x => x.SurveyedSurfaceExclusionList.Length == 1 && x.SurveyedSurfaceExclusionList[0] == Guid.Empty,
+            x => { x.ClearSurveyedSurfaceExclusionList(); },
+            x => (x.SurveyedSurfaceExclusionList?.Length ?? 0) == 0);
         }
 
         [Fact()]
