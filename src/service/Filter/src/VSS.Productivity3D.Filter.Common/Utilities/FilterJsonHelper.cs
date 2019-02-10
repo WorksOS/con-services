@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities
@@ -46,7 +47,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 
     private static (string filterJson, bool containsBoundary) ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      var filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+      var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
 
       filterObj.ApplyDateRange(project?.IanaTimeZone);
 

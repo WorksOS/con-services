@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 

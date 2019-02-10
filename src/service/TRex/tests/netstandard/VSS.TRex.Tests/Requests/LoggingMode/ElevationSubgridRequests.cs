@@ -219,7 +219,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + (PASSES_IN_DECREMENTING_ELEVATION_LIST - 1) * HEIGHT_DECREMENT);
     }
 
-    [Fact(Skip = "Not complete")]
+    [Fact(Skip = "Not complete, WIP...")]
     public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_WithFilterOnMinimumElevationMode()
     {
       var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);

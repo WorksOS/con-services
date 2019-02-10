@@ -60,12 +60,6 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(false);
         }
 
-        [Fact(Skip = "Not Implemented")]
-        public void Test_SubGridSegmentIterator_CurrentSubgridSegmentDestroyed()
-        {
-            Assert.True(false);
-        }
-
         [Fact()]
         public void Test_SubGridSegmentIterator_InitialiseIterator()
         {
@@ -89,12 +83,6 @@ namespace VSS.TRex.Tests.SubGridTrees
 
         [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_SegmentListExtended()
-        {
-            Assert.True(false);
-        }
-
-        [Fact(Skip = "Not Implemented")]
-        public void Test_SubGridSegmentIterator_MarkCacheStamp()
         {
             Assert.True(false);
         }

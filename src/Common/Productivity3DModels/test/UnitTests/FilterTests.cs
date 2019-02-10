@@ -256,7 +256,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterCustom_Success()
     {
-      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
+      var filter = Filter.Abstractions.Models.Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, true);
       var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
       filterResult.Validate();
@@ -267,7 +267,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
       //Need to use filter JSON as cannot set DateRangeType directly
       var filterJson = "{\"asAtDate\":true, \"dateRangeType\":0}";
-      var filter = JsonConvert.DeserializeObject<Filter>(filterJson);
+      var filter = JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(filterJson);
       var filterResult = new FilterResult(null,filter, null, null, null, null, null, null);
       filterResult.Validate();
     }
@@ -275,7 +275,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterFailure_MissingEndUtc()
     {
-      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = Filter.Abstractions.Models.Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, true);
       var filterResult = new FilterResult(null,filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
@@ -284,7 +284,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterFailure_MissingStartUtc()
     {
-      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
+      var filter = Filter.Abstractions.Models.Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, false);
       var filterResult = new FilterResult(null,filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());

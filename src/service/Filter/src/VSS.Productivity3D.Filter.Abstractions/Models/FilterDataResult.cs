@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.ResultHandling
+namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
   public class FilterDataResult : BaseDataResult
   {

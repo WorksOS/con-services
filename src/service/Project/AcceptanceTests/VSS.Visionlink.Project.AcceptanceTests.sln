@@ -63,6 +63,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "..\..\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{7274F59B-3CAD-4475-9AB9-46C61266B843}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{8E2CC955-F0B2-463C-9A26-83958D737709}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Proxy", "..\..\Filter\src\VSS.Productivity3D.Filter.Proxy\VSS.Productivity3D.Filter.Proxy.csproj", "{5112582B-642F-4821-97DD-7A04AFA6D7DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +149,14 @@ Global
 		{FDDD85E3-6BE2-4864-933F-0A039C0A3A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDDD85E3-6BE2-4864-933F-0A039C0A3A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDDD85E3-6BE2-4864-933F-0A039C0A3A47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E2CC955-F0B2-463C-9A26-83958D737709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E2CC955-F0B2-463C-9A26-83958D737709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E2CC955-F0B2-463C-9A26-83958D737709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E2CC955-F0B2-463C-9A26-83958D737709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5112582B-642F-4821-97DD-7A04AFA6D7DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5112582B-642F-4821-97DD-7A04AFA6D7DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5112582B-642F-4821-97DD-7A04AFA6D7DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5112582B-642F-4821-97DD-7A04AFA6D7DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52B62343-B0EF-44E9-80B6-DFF4A655037C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52B62343-B0EF-44E9-80B6-DFF4A655037C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52B62343-B0EF-44E9-80B6-DFF4A655037C}.Release|Any CPU.ActiveCfg = Release|Any CPU

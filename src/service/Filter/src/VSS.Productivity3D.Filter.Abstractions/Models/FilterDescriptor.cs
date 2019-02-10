@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Models.Models
+namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
   /// <summary>
   /// Describes a filter

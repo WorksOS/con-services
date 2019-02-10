@@ -7,9 +7,10 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Internal;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 
-namespace VSS.MasterData.Models.Models
+namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
   /// <summary>
   /// Defines all the filter parameters that may be supplied and validates them.
@@ -361,31 +362,31 @@ namespace VSS.MasterData.Models.Models
     /// Create instance of Filter
     /// </summary>
     public static Filter CreateFilter(
-        DateTime? startUtc,
-        DateTime? endUtc,
-        string designUid,
-        string designName,
-        List<MachineDetails> contributingMachines,
-        long? onMachineDesignId,
-        ElevationType? elevationType,
-        bool? vibeStateOn,
-        List<WGSPoint> polygonLL,
-        bool? forwardDirection,
-        int? layerNumber,
-        string polygonUid = null,
-        string polygonName = null,
-        string alignmentUid = null,
-        string alignmentName = null,
-        double? startStation = null,
-        double? endStation = null,
-        double? leftOffset = null,
-        double? rightOffset = null,
-        bool? asAtDate = null,
-        AutomaticsType? automaticsType = null,
-        double? temperatureRangeMin = null,
-        double? temperatureRangeMax = null,
-        int? passCountRangeMin = null,
-        int? passCountRangeMax = null)
+      DateTime? startUtc,
+      DateTime? endUtc,
+      string designUid,
+      string designName,
+      List<MachineDetails> contributingMachines,
+      long? onMachineDesignId,
+      ElevationType? elevationType,
+      bool? vibeStateOn,
+      List<WGSPoint> polygonLL,
+      bool? forwardDirection,
+      int? layerNumber,
+      string polygonUid = null,
+      string polygonName = null,
+      string alignmentUid = null,
+      string alignmentName = null,
+      double? startStation = null,
+      double? endStation = null,
+      double? leftOffset = null,
+      double? rightOffset = null,
+      bool? asAtDate = null,
+      AutomaticsType? automaticsType = null,
+      double? temperatureRangeMin = null,
+      double? temperatureRangeMax = null,
+      int? passCountRangeMin = null,
+      int? passCountRangeMax = null)
     {
       return new Filter
       {
@@ -499,7 +500,7 @@ namespace VSS.MasterData.Models.Models
       if (AsAtDate.HasValue)
       {
         bool valid = EndUtc.HasValue || DateRangeType.HasValue &&
-                DateRangeType.Value != Internal.DateRangeType.Custom;//custom must have end UTC
+                     DateRangeType.Value !=  VSS.MasterData.Models.Internal.DateRangeType.Custom;//custom must have end UTC
         if (!valid)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
@@ -628,10 +629,10 @@ namespace VSS.MasterData.Models.Models
     {
       if (!string.IsNullOrEmpty(ianaTimeZoneName) &&
           DateRangeType != null &&
-          DateRangeType != Internal.DateRangeType.Custom)
+          DateRangeType != VSS.MasterData.Models.Internal.DateRangeType.Custom)
       {
         // Force date range filters to be null if ProjectExtents is specified.
-        if (DateRangeType == Internal.DateRangeType.ProjectExtents)
+        if (DateRangeType == VSS.MasterData.Models.Internal.DateRangeType.ProjectExtents)
         {
           StartUtc = null;
           EndUtc = null;

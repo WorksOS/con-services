@@ -1,7 +1,4 @@
-﻿
-using System.Collections.Generic;
-
-namespace VSS.MasterData.Proxies.Interfaces
+﻿namespace VSS.Common.Abstractions.Cache.Interfaces
 {
   public interface ICacheProxy
   {

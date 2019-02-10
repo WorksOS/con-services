@@ -52,13 +52,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       [TestMethod]
       public void Should_return_False_When_baseFilter_is_null()
       {
-        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(null, new Filter()));
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(null, new Filter.Abstractions.Models.Filter()));
       }
 
       [TestMethod]
       public void Should_return_False_When_topFilter_is_null()
       {
-        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(new Filter(), null));
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(new Filter.Abstractions.Models.Filter(), null));
       }
     }
   }

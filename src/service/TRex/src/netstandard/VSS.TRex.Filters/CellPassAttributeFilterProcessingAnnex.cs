@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using VSS.TRex.Cells;
+﻿using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Interfaces;
@@ -45,21 +45,27 @@ namespace VSS.TRex.Filters
 
     public bool FilterPassUsingElevationRange(ref CellPass PassValue)
     {
-      Debug.Assert(ElevationRangeIsInitialized, "Elevation range filter being used without the elevation range data being initialized");
+      if (!ElevationRangeIsInitialized)
+        throw new TRexFilterProcessingException("Elevation range filter being used without the elevation range data being initialized");
+
       return (ElevationRangeBottomElevationForCell != Consts.NullDouble) &&
              Range.InRange(PassValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     }
 
     public bool FiltersElevation(float Elevation)
     {
-      Debug.Assert(ElevationRangeIsInitialized, "Elevation range filter being used without the elevation range data being initialized");
+      if (!ElevationRangeIsInitialized)
+        throw new TRexFilterProcessingException("Elevation range filter being used without the elevation range data being initialized");
+
       return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
              Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     }
 
     public bool FiltersElevation(double Elevation)
     {
-      Debug.Assert(ElevationRangeIsInitialized, "Elevation range filter being used without the elevation range data being initialized");
+      if (!ElevationRangeIsInitialized)
+        throw new TRexFilterProcessingException("Elevation range filter being used without the elevation range data being initialized");
+
       return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
              Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     } 
