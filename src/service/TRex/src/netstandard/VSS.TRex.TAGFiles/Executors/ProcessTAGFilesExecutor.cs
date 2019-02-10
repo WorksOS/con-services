@@ -51,14 +51,14 @@ namespace VSS.TRex.TAGFiles.Executors
                     {
                         converter.Execute(fs);
 
-                        Log.LogInformation($"#Progress# TAG file generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
+                        Log.LogInformation($"#Progress# TAG file {item.FileName} generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
                     }
 
                     converter.SiteModel.ID = ProjectID;
                     converter.Machine.ID = AssetID;
                     converter.Machine.IsJohnDoeMachine = item.IsJohnDoe;
 
-                    integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+                    integrator.AddTaskToProcessList(converter.SiteModel, ProjectID, converter.Machine, AssetID, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
 
                     if (++batchCount >= batchSize)
                     {

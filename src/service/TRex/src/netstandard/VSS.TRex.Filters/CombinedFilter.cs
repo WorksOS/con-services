@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 
@@ -9,7 +10,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CombinedFilter : ICombinedFilter
   {
-/// <summary>
+    /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     public ICellPassAttributeFilter AttributeFilter { get; set; }
@@ -29,14 +30,15 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Creates a new combined filter based on a supplied spatial filter and a newly created
-    /// attribute filter
+    ///  Handy helper function to make a configured filter
     /// </summary>
-    /// <param name="spatialFilter"></param>
-    public CombinedFilter(ICellSpatialFilter spatialFilter)
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static CombinedFilter MakeFilterWith(Action<CombinedFilter> configure)
     {
-      AttributeFilter = new CellPassAttributeFilter();
-      SpatialFilter = spatialFilter;
+      var combinedFilter = new CombinedFilter();
+      configure(combinedFilter);
+      return combinedFilter;
     }
 
     public CombinedFilter(IBinaryRawReader reader)

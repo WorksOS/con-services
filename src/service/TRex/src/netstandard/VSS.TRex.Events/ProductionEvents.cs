@@ -19,6 +19,7 @@ namespace VSS.TRex.Events
   /// <typeparam name="V"></typeparam>
   public class ProductionEvents<V> : IProductionEvents<V>
   {
+    // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     private const int MajorVersion = 1;
@@ -84,21 +85,9 @@ namespace VSS.TRex.Events
     /// </summary>
 //        public DateTime LastUpdateTimeUTC { get => lastUpdateTimeUTC; set => lastUpdateTimeUTC = value; }
 
-    private Action<BinaryWriter, V> serialiseStateOut;
+    public Action<BinaryWriter, V> SerialiseStateOut { get; set; }
 
-    public Action<BinaryWriter, V> SerialiseStateOut
-    {
-      get => serialiseStateOut;
-      set => serialiseStateOut = value;
-    }
-
-    private Func<BinaryReader, V> serialiseStateIn;
-
-    public Func<BinaryReader, V> SerialiseStateIn
-    {
-      get => serialiseStateIn;
-      set => serialiseStateIn = value;
-    }
+    public Func<BinaryReader, V> SerialiseStateIn { get; set; }
 
     /// <summary>
     /// The event type this list stores
@@ -217,6 +206,23 @@ namespace VSS.TRex.Events
         Date = dateTime,
         State = value,
       });
+    }
+
+    /// <summary>
+    /// Adds a set of event of type T with the given dates and values into the list. 
+    /// </summary>
+    /// <param name="events"></param>
+    /// <returns>The event instance that was added to the list</returns>
+    public virtual void PutValuesAtDates(IEnumerable<(DateTime, V)> events)
+    {
+      foreach (var evt in events)
+      {
+        PutValueAtDate(new Event
+        {
+          Date = evt.Item1,
+          State = evt.Item2,
+        });
+      }
     }
 
     /// <summary>

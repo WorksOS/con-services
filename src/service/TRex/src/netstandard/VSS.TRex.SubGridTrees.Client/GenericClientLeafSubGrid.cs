@@ -53,7 +53,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public T[,] Clone2DArray()
         {
           T[,] result = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-          Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
+          Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
        
           return result;
         }
@@ -100,7 +100,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
         public override void Clear()
         {
-          Array.Copy(NullCells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
+          Array.Copy(NullCells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
           // Recreate the array. .Net will initialise the memory used to zero's effecting the clear
           // Cells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
@@ -114,7 +114,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="source"></param>
         public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
         {
-          Array.Copy(((GenericClientLeafSubGrid<T>)source).Cells, Cells, SubGridTreeConsts.CellsPerSubgrid);
+          Array.Copy(((GenericClientLeafSubGrid<T>)source).Cells, Cells, SubGridTreeConsts.CellsPerSubGrid);
         }
 
         /// <summary>

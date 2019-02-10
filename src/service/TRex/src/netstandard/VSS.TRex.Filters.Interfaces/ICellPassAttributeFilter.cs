@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters.Models;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
@@ -21,11 +20,10 @@ namespace VSS.TRex.Filters.Interfaces
 
     bool LastRecordedCellPassSatisfiesFilter { get; }
 
-    bool AnyFilterSelections { get; set; }
-    bool AnyMachineEventFilterSelections { get; set; }
-    bool AnyNonMachineEventFilterSelections { get; set; }
+    bool AnyFilterSelections { get; }
+    bool AnyMachineEventFilterSelections { get; }
+    bool AnyNonMachineEventFilterSelections { get; }
 
-    void Prepare();
     void ClearFilter();
     void ClearVibeState();
 
@@ -38,7 +36,6 @@ namespace VSS.TRex.Filters.Interfaces
 
     void ClearDesigns();
     void ClearElevationRange();
-    void ClearElevationRangeFilterInitialisation();
     void ClearElevationType();
     void ClearGPSAccuracy();
     void ClearTemperatureRange();
@@ -56,41 +53,23 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearPositioningTech();
     void ClearSurveyedSurfaceExclusionList();
     void ClearTime();
-    bool FilterPass(ref CellPass PassValue);
-    bool FilterPass(ref FilteredPassData PassValue);
-    bool FilterPassUsingElevationRange(ref CellPass PassValue);
+    bool FilterPass(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
+    bool FilterPass(ref FilteredPassData PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
     bool FilterPassUsingTemperatureRange(ref CellPass PassValue);
     bool FilterPassUsingTimeOnly(ref CellPass PassValue);
     bool FilterPass_MachineEvents(ref FilteredPassData PassValue);
-    bool FilterPass_NoMachineEvents(CellPass PassValue);
-    bool FiltersElevation(float Elevation);
-    bool FiltersElevation(double Elevation);
-
-    /// <summary>
-    /// FilterSinglePass selects a single pass from the list of passes in
-    /// PassValues where PassValues contains the entire list of passes for
-    /// a cell in the database.
-    /// </summary>
-    /// <returns></returns>
-    bool FilterSinglePass(CellPass[] PassValues,
-      int PassValueCount,
-      ref FilteredSinglePassInfo FilteredPassInfo,
-    //             ref FilteredMultiplePassInfo FilteredPassesBuffer)
-      object /*IProfileCell*/ profileCell
-    );
-
-    void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY);
-    void InitialiseElevationRangeFilter(IClientHeightLeafSubGrid DesignElevations);
+    bool FilterPass_NoMachineEvents(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
 
     /// <summary>
     /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
-    /// internal machine IDs relative to this sitemodel
+    /// internal machine IDs relative to this site model
     /// </summary>
     void InitialiseMachineIDsSet();
 
     bool FilterMultiplePasses(CellPass[] passValues,
       int PassValueCount,
-      FilteredMultiplePassInfo filteredPassInfo);
+      FilteredMultiplePassInfo filteredPassInfo,
+      ICellPassAttributeFilterProcessingAnnex filterAnnex);
 
     bool ExcludeSurveyedSurfaces();
     string ActiveFiltersText();
@@ -100,7 +79,8 @@ namespace VSS.TRex.Filters.Interfaces
       bool wantEarliestPass,
       ref FilteredSinglePassInfo filteredPassInfo,
       object profileCell,
-      bool performAttributeSubFilter);
+      bool performAttributeSubFilter,
+      ICellPassAttributeFilterProcessingAnnex filterAnnex);
 
     /// <summary>
     /// FilterSinglePass selects a single passes from the list of passes in
@@ -113,17 +93,20 @@ namespace VSS.TRex.Filters.Interfaces
     /// <param name="filteredPassInfo"></param>
     /// <param name="profileCell"></param>
     /// <param name="performAttributeSubFilter"></param>
+    /// <param name="filterAnnex"></param>
     /// <returns></returns>
     bool FilterSinglePass(FilteredPassData[] filteredPassValues,
       int passValueCount,
       bool wantEarliestPass,
       ref FilteredSinglePassInfo filteredPassInfo,
       object /* IProfileCell*/ profileCell,
-      bool performAttributeSubFilter);
+      bool performAttributeSubFilter,
+      ICellPassAttributeFilterProcessingAnnex filterAnnex
+      );
 
     /// <summary>
     /// Creates a fingerprint of the attribute filter based on the content of the filter that
-    /// has a differentiated bearing on the use of cached general subgrid results
+    /// has a differentiated bearing on the use of cached general sub grid results
     /// </summary>
     /// <returns></returns>
     string SpatialCacheFingerprint();

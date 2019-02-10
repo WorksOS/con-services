@@ -29,8 +29,6 @@ COPY --from=build_container /trex/libs/ /trex/libs/
 #ARGS have weird scoping
 ARG COMPONENT
 COPY --from=build_container /trex/${COMPONENT}/ /trex/
-#Get the ignite libs as these are ignored by dotnet publish
-#COPY --from=build_container /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
 WORKDIR /trex
 
 

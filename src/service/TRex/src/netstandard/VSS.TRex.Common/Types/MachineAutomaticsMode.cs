@@ -3,8 +3,8 @@
     /// <summary>
     /// The mode of the automatics blade control system within the machine control software
     /// </summary>
-    public enum MachineAutomaticsMode
-    {
+    public enum MachineAutomaticsMode : byte
+  {
         /// <summary>
         /// Automatics mode is unavailable or unknown
         /// </summary>

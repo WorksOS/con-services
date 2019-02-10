@@ -17,10 +17,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool RetrieveLatestData { get; set; }
         bool ReturnCachedItemsOnly { get; set; }
         bool ReturnDirtyOnly { get; set; }
-        //        SiteModel SiteModelReference { get; set; }
+
         IServerLeafSubGrid SubGrid { get; set; }
 
-        void CurrentSubGridSegmentDestroyed();
         void InitialiseIterator();
         bool MoveNext();
         bool MoveToFirstSubGridSegment();

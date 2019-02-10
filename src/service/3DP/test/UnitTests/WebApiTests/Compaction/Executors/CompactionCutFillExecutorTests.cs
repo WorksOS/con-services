@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+#if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
+using SVOICFilterSettings;
+using SVOICLiftBuildSettings;
+using VLPDDecls;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SVOICFilterSettings;
-using SVOICLiftBuildSettings;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
@@ -39,15 +44,18 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, RaptorResult>();
+#if RAPTOR
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
+#endif
+        ;
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
-
+#if RAPTOR
     [TestMethod]
-    public void CutFillExecutorNoResult()
+    public void CutFillExecutor_Raptor_NoResult()
     {
       var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
@@ -55,7 +63,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var raptorClient = new Mock<IASNodeClient>();
       var configStore = new Mock<IConfigurationStore>();
-      
+      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL")).Returns("false");
+
       raptorClient
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
@@ -63,10 +72,40 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(TASNodeErrorStatus.asneUnknown);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, null, configStore.Object);
+        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
+#endif
+    [TestMethod]
+    public void CutFillExecutor_TRex_NoResult()
+    {
+      var projectUid = Guid.NewGuid();
+      var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
+      var configStore = new Mock<IConfigurationStore>();
+#if RAPTOR
+      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL")).Returns("true");
+#endif
+
+      var exception = new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"Cut/Fill statistics have not been implemented in TRex yet. ProjectUid: {projectUid}"));
+
+      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
+      tRexProxy.Setup(x => x.SendCutFillDetailsRequest(request, It.IsAny<IDictionary<string, string>>()))
+        .Throws(exception);
+
+      var executor = RequestExecutorContainerFactory
+        .Build<CompactionCutFillExecutor>(logger, configStore: configStore.Object,
+          trexCompactionDataProxy: tRexProxy.Object);
+
+      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+
+      Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
+      Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
+      Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
+    }
+#if RAPTOR
     [TestMethod]
     public void CutFillExecutorSuccess()
     {
@@ -84,10 +123,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(TASNodeErrorStatus.asneOK);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, null, configStore.Object);
+        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
       var result = executor.Process(request) as CompactionCutFillDetailedResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(details.Percents, result.Percents, "Wrong percents");
     }
+#endif
   }
 }

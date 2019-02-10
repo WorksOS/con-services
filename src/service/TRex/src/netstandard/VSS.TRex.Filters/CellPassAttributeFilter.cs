@@ -3,18 +3,16 @@ using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Events;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 
@@ -51,7 +49,7 @@ namespace VSS.TRex.Filters
    */
 
   /// <summary>
-  /// TICGridDataFilter provides filtering support for grid data requested by the client
+  /// CellPassAttributeFilter provides filtering support for grid data requested by the client
   /// </summary>
   public class CellPassAttributeFilter : CellPassAttributeFilterModel, ICellPassAttributeFilter
   {
@@ -63,15 +61,9 @@ namespace VSS.TRex.Filters
     /// </summary>
     public object /*ISiteModel*/ SiteModel
     {
-      get { return siteModel; }
-      set { siteModel = (ISiteModel) value; }
+      get => siteModel; 
+      set => siteModel = (ISiteModel) value; 
     }
-
-    /// <summary>
-    /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
-    /// an elevation range filter.
-    /// </summary>
-    public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
 
     /// <summary>
     /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filter is being applied to
@@ -83,11 +75,14 @@ namespace VSS.TRex.Filters
     /// </summary>
     public BitArray MachineIDSet { get; set; }
 
-    public bool AnyFilterSelections { get; set; }
+    private bool _anyFilterSelections;
+    public bool AnyFilterSelections => _prepared ? _anyFilterSelections : Prepare() && _anyFilterSelections;
 
-    public bool AnyMachineEventFilterSelections { get; set; }
+    private bool _anyMachineEventFilterSelections;
+    public bool AnyMachineEventFilterSelections => _prepared ? _anyMachineEventFilterSelections : Prepare() && _anyMachineEventFilterSelections;
 
-    public bool AnyNonMachineEventFilterSelections { get; set; }
+    private bool _anyNonMachineEventFilterSelections;
+    public bool AnyNonMachineEventFilterSelections => _prepared ? _anyNonMachineEventFilterSelections : Prepare() && _anyNonMachineEventFilterSelections;
 
     /// <summary>
     /// Default no-arg constructor the produces a filter with all aspects set to their defaults
@@ -97,18 +92,13 @@ namespace VSS.TRex.Filters
       ClearFilter();
     }
 
-    public CellPassAttributeFilter(IBinaryRawReader reader)
-    {
-      FromBinary(reader);
-    }
-
     /// <summary>
     /// Performs operations that prepares the filter for active use. Prepare() must be called prior to
     /// active use of the filter.
     /// </summary>
-    public void Prepare()
+    private bool Prepare()
     {
-      AnyFilterSelections =
+      _anyFilterSelections =
         HasCompactionMachinesOnlyFilter ||
         HasDesignFilter ||
         HasElevationRangeFilter ||
@@ -120,7 +110,7 @@ namespace VSS.TRex.Filters
         HasLayerStateFilter ||
         HasMachineDirectionFilter ||
         HasMachineFilter ||
-        HasMinElevMappingFilter ||
+        HasElevationMappingModeFilter ||
         HasPassTypeFilter ||
         HasPositioningTechFilter ||
         HasTimeFilter ||
@@ -128,11 +118,11 @@ namespace VSS.TRex.Filters
         HasTemperatureRangeFilter ||
         HasPassCountRangeFilter;
 
-      AnyMachineEventFilterSelections =
+      _anyMachineEventFilterSelections =
         HasDesignFilter ||
         HasVibeStateFilter ||
         HasMachineDirectionFilter ||
-        HasMinElevMappingFilter ||
+        HasElevationMappingModeFilter ||
         HasGCSGuidanceModeFilter ||
         HasGPSAccuracyFilter ||
         HasGPSToleranceFilter ||
@@ -140,7 +130,7 @@ namespace VSS.TRex.Filters
         HasLayerIDFilter ||
         HasPassTypeFilter;
 
-      AnyNonMachineEventFilterSelections =
+      _anyNonMachineEventFilterSelections =
         HasTimeFilter ||
         HasMachineFilter ||
         HasElevationRangeFilter ||
@@ -148,6 +138,9 @@ namespace VSS.TRex.Filters
         HasTemperatureRangeFilter;
 
       InitialiseMachineIDsSet();
+
+      _prepared = true;
+      return true;
     }
 
     // Clear all the elements of the filter to a null state
@@ -167,14 +160,17 @@ namespace VSS.TRex.Filters
       ClearCompactionMachineOnlyRestriction();
       ClearLayerID();
       ClearGPSAccuracy();
+      ClearGPSTolerance();
       ClearTemperatureRange();
       ClearPassCountRange();
-      ClearElevationRangeFilterInitialisation();
-      AnyFilterSelections = false;
-      AnyMachineEventFilterSelections = false;
-      AnyNonMachineEventFilterSelections = false;
       ReturnEarliestFilteredCellPass = false;
       FilterTemperatureByLastPass = false;
+
+      _anyFilterSelections = false;
+      _anyMachineEventFilterSelections = false;
+      _anyNonMachineEventFilterSelections = false;
+
+      _prepared = false;
     }
 
     public void ClearVibeState()
@@ -198,18 +194,21 @@ namespace VSS.TRex.Filters
     /// <param name="list1"></param>
     /// <param name="list2"></param>
     /// <returns></returns>
-    private int MachineIDListsComparison(short[] list1, short[] list2)
+    private static int MachineIDListsComparison(short[] list1, short[] list2)
     {
-      if (list1 == null && list2 == null)
+      if (list1 == null || list2 == null)
         return 0;
 
+      var list1Length = list1.Length;
+      var list2Length = list2.Length;
+
       // Check list lengths
-      int result = list1.Length < list2.Length ? -1 : list1.Length == list2.Length ? 0 : 1;
+      int result = list1.Length < list2Length ? -1 : list1Length == list2Length ? 0 : 1;
 
       // If the lengths are the same check individual items
       if (result == 0)
       {
-        for (int i = 0; i < list1.Length; i++)
+        for (int i = 0; i < list1Length; i++)
         {
           result = list1[i] < list2[i] ? -1 : list1[i] == list2[i] ? 0 : 1;
 
@@ -306,12 +305,12 @@ namespace VSS.TRex.Filters
         return Result;
 
       // Min elev mapping
-      Result = FlagCheck(HasMinElevMappingFilter, AFilter.HasMinElevMappingFilter);
+      Result = FlagCheck(HasElevationMappingModeFilter, AFilter.HasElevationMappingModeFilter);
       if (Result != 0)
         return Result;
 
-      if (HasMinElevMappingFilter) // Check the contents of the min elevation filter
-        Result = MinElevationMapping.CompareTo(AFilter.MinElevationMapping); // CompareValue(Ord(MinElevationMapping), Ord(AFilter.MinElevationMapping));
+      if (HasElevationMappingModeFilter) // Check the contents of the min elevation filter
+        Result = ElevationMappingMode.CompareTo(AFilter.ElevationMappingMode); // CompareValue(Ord(ElevationMappingMode), Ord(AFilter.ElevationMappingMode));
 
       if (Result != 0)
         return Result;
@@ -331,7 +330,6 @@ namespace VSS.TRex.Filters
       Result = FlagCheck(ExcludeSurveyedSurfaces(), AFilter.ExcludeSurveyedSurfaces());
       if (Result != 0)
         return Result;
-
 
       // GCS Guidance mode
       Result = FlagCheck(HasGCSGuidanceModeFilter, AFilter.HasGCSGuidanceModeFilter);
@@ -455,10 +453,10 @@ namespace VSS.TRex.Filters
         return Result;
       if (HasPassCountRangeFilter)
       {
-        Result = PasscountRangeMin.CompareTo(AFilter.PasscountRangeMin);
+        Result = PassCountRangeMin.CompareTo(AFilter.PassCountRangeMin);
         if (Result != 0)
           return Result;
-        Result = PasscountRangeMax.CompareTo(AFilter.PasscountRangeMax);
+        Result = PassCountRangeMax.CompareTo(AFilter.PassCountRangeMax);
         if (Result != 0)
           return Result;
       }
@@ -483,18 +481,6 @@ namespace VSS.TRex.Filters
       ElevationRangeOffset = Consts.NullDouble;
       ElevationRangeThickness = Consts.NullDouble;
       ElevationRangeDesignUID = Guid.Empty;
-
-      ElevationRangeIsInitialised = false;
-      ElevationRangeIsLevelAndThicknessOnly = false;
-      ElevationRangeTopElevationForCell = Consts.NullDouble;
-      ElevationRangeBottomElevationForCell = Consts.NullDouble;
-      ElevationRangeDesignElevations = null;
-    }
-
-    public void ClearElevationRangeFilterInitialisation()
-    {
-      ElevationRangeIsInitialised = false;
-      ElevationRangeDesignElevations = null;
     }
 
     public void ClearElevationType()
@@ -511,7 +497,6 @@ namespace VSS.TRex.Filters
       GPSAccuracyIsInclusive = false;
     }
 
-
     public void ClearTemperatureRange()
     {
       HasTemperatureRangeFilter = false;
@@ -522,8 +507,8 @@ namespace VSS.TRex.Filters
     public void ClearPassCountRange()
     {
       HasPassCountRangeFilter = false;
-      PasscountRangeMin = 0;
-      PasscountRangeMax = 0;
+      PassCountRangeMin = 0;
+      PassCountRangeMax = 0;
     }
 
     public void ClearGPSTolerance()
@@ -553,8 +538,6 @@ namespace VSS.TRex.Filters
     public void Assign(ICellPassAttributeFilter Source)
     {
       SiteModel = Source.SiteModel;
-
-      //  FilterSelections = Source.FilterSelections;
 
       // Time based filtering members
       StartTime = Source.StartTime;
@@ -587,7 +570,7 @@ namespace VSS.TRex.Filters
       MachineDirection = Source.MachineDirection;
 
       PassTypeSet = Source.PassTypeSet;
-      MinElevationMapping = Source.MinElevationMapping;
+      ElevationMappingMode = Source.ElevationMappingMode;
 
       PositioningTech = Source.PositioningTech;
       GPSTolerance = Source.GPSTolerance;
@@ -614,8 +597,8 @@ namespace VSS.TRex.Filters
       MaterialTemperatureMin = Source.MaterialTemperatureMin;
       MaterialTemperatureMax = Source.MaterialTemperatureMax;
       FilterTemperatureByLastPass = Source.FilterTemperatureByLastPass;
-      PasscountRangeMin = Source.PasscountRangeMin;
-      PasscountRangeMax = Source.PasscountRangeMax;
+      PassCountRangeMin = Source.PassCountRangeMin;
+      PassCountRangeMax = Source.PassCountRangeMax;
 
       if (Source.SurveyedSurfaceExclusionList != null)
       {
@@ -625,18 +608,13 @@ namespace VSS.TRex.Filters
       else
         SurveyedSurfaceExclusionList = new Guid[0];
 
-      // This assignment method consciously does not "clone" or otherwise assign Elevation Range related filter state;
-      // i.e. FElevationRangeIsInitialised, FElevationRangeIsLevelAndThicknessOnly, FElevationRangeTopElevationForCell,
-      //      FElevationRangeBottomElevationForCell, FElevationRangeDesignElevations
-
-
       HasTimeFilter = Source.HasTimeFilter;
       HasMachineFilter = Source.HasMachineFilter;
       HasMachineDirectionFilter = Source.HasMachineDirectionFilter;
       HasDesignFilter = Source.HasDesignFilter;
       HasVibeStateFilter = Source.HasVibeStateFilter;
       HasLayerStateFilter = Source.HasLayerStateFilter;
-      HasMinElevMappingFilter = Source.HasMinElevMappingFilter;
+      HasElevationMappingModeFilter = Source.HasElevationMappingModeFilter;
       HasElevationTypeFilter = Source.HasElevationTypeFilter;
       HasGCSGuidanceModeFilter = Source.HasGCSGuidanceModeFilter;
       HasGPSAccuracyFilter = Source.HasGPSAccuracyFilter;
@@ -671,8 +649,8 @@ namespace VSS.TRex.Filters
 
     public void ClearMinElevationMapping()
     {
-      HasMinElevMappingFilter = false;
-      MinElevationMapping = false;
+      HasElevationMappingModeFilter = false;
+      ElevationMappingMode = ElevationMappingMode.LatestElevation;
     }
 
     public void ClearPassType()
@@ -700,19 +678,12 @@ namespace VSS.TRex.Filters
       EndTime = DateTime.MaxValue;
     }
 
+    private static readonly GPSAccuracyAndTolerance NullGPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
+
     // Returns true if the specified pass meets the set filter (if any)
     // FilterPass determines if a single pass conforms to the current filtering configuration
-    public bool FilterPass(ref CellPass PassValue)
+    public bool FilterPass(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
-      int DesignNameIDValue = Consts.kNoDesignNameID;
-      VibrationState VibeStateValue = VibrationState.Invalid;
-      MachineGear MachineGearValue = MachineGear.Null;
-      bool MinElevMappingValue = false;
-      GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
-      PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
-      MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
-      ushort LayerIDStateValue = ushort.MaxValue; // ID of current layer
-
       if (!AnyFilterSelections)
       {
         // There are no constrictive filter criteria - all cell passes pass the filter
@@ -727,13 +698,13 @@ namespace VSS.TRex.Filters
 
       if (HasElevationRangeFilter)
       {
-        if (!FilterPassUsingElevationRange(ref PassValue))
+        if (!filterAnnex.FilterPassUsingElevationRange(ref PassValue))
           return false;
       }
 
       if (HasMachineFilter)
       {
-        // Check the machine identified by PassValue.MachineID is in our Sitemodel Machine
+        // Check the machine identified by PassValue.MachineID is in our site model Machine
         // list based on the index of the machine in that list
 
         if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
@@ -742,95 +713,97 @@ namespace VSS.TRex.Filters
 
       if (HasCompactionMachinesOnlyFilter)
       {
-        //Machine = siteModel.Machines.Locate(PassValue.MachineID);
         IMachine Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
 
         if (Machine != null && !Machine.MachineIsCompactorType())
           return false;
       }
 
-      // Extract the list of events for the machine referred to in the cell pass. Use this
-      // reference for all filter criteria that depend on machine events
-      ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? (ProductionEventLists) siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex] : null;
-
-      if (HasDesignFilter)
+      if (AnyMachineEventFilterSelections)
       {
-        DesignNameIDValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, DesignNameIDValue);
+        // Extract the list of events for the machine referred to in the cell pass. Use this
+        // reference for all filter criteria that depend on machine events
+        var machineTargetValues = siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex];
 
-        if ((DesignNameIDValue != Consts.kAllDesignsNameID) && (DesignNameID != DesignNameIDValue))
-          return false;
-      }
+        if (HasDesignFilter)
+        {
+          int DesignNameIDValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, Consts.kNoDesignNameID);
 
-      if (HasVibeStateFilter)
-      {
-        VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out _, VibeStateValue);
+          if (DesignNameIDValue != Consts.kAllDesignsNameID && DesignNameID != DesignNameIDValue)
+            return false;
+        }
 
-        if (VibeState != VibeStateValue)
-          return false;
-      }
+        if (HasVibeStateFilter)
+        {
+          VibrationState VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out _, VibrationState.Invalid);
 
-      if (HasGCSGuidanceModeFilter)
-      {
-        GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, GCSGuidanceModeValue);
+          if (VibeState != VibeStateValue)
+            return false;
+        }
 
-        if (GCSGuidanceMode != GCSGuidanceModeValue)
-          return false;
-      }
+        if (HasGCSGuidanceModeFilter)
+        {
+          MachineAutomaticsMode GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, MachineAutomaticsMode.Unknown);
 
-      if (HasMachineDirectionFilter)
-      {
-        MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out _, MachineGearValue);
+          if (GCSGuidanceMode != GCSGuidanceModeValue)
+            return false;
+        }
 
-        if (((MachineDirection == MachineDirection.Forward && !TRex.Machines.Machine.MachineGearIsForwardGear(MachineGearValue))) ||
-            ((MachineDirection == MachineDirection.Reverse && !TRex.Machines.Machine.MachineGearIsReverseGear(MachineGearValue))))
-          return false;
-      }
+        if (HasMachineDirectionFilter)
+        {
+          MachineGear MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out _, MachineGear.Null);
 
-      if (HasMinElevMappingFilter)
-      {
-        MinElevMappingValue = machineTargetValues.MinElevMappingStateEvents.GetValueAtDate(PassValue.Time, out _, MinElevMappingValue);
+          if ((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(MachineGearValue)) ||
+              (MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(MachineGearValue)))
+            return false;
+        }
 
-        if (MinElevationMapping != MinElevMappingValue)
-          return false;
-      }
+        if (HasElevationMappingModeFilter)
+        {
+          ElevationMappingMode ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingMode.LatestElevation);
 
-      if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
-      {
-        GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out _, GPSAccuracyAndToleranceValue);
+          if (ElevationMappingMode != ElevationMappingModeValue)
+            return false;
+        }
 
-        if (HasGPSAccuracyFilter && GPSAccuracy != GPSAccuracyAndToleranceValue.GPSAccuracy && !GPSAccuracyIsInclusive)
-          return false;
+        if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
+        {
+          var GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out _, NullGPSAccuracyAndToleranceValue);
 
-        if (HasGPSAccuracyFilter && GPSAccuracyIsInclusive && GPSAccuracy < GPSAccuracyAndToleranceValue.GPSAccuracy)
-          return false;
+          if (HasGPSAccuracyFilter && GPSAccuracy != GPSAccuracyAndToleranceValue.GPSAccuracy && !GPSAccuracyIsInclusive)
+            return false;
 
-        if (HasGPSToleranceFilter &&
-            !(GPSAccuracyAndToleranceValue.GPSTolerance != CellPassConsts.NullGPSTolerance &&
-              ((!GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance < GPSTolerance) ||
-               (GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance >= GPSTolerance))))
-          return false;
-      }
+          if (HasGPSAccuracyFilter && GPSAccuracyIsInclusive && GPSAccuracy < GPSAccuracyAndToleranceValue.GPSAccuracy)
+            return false;
 
-      if (HasPositioningTechFilter)
-      {
-        PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out _, PositioningTechStateValue);
+          if (HasGPSToleranceFilter &&
+              !(GPSAccuracyAndToleranceValue.GPSTolerance != CellPassConsts.NullGPSTolerance &&
+                ((!GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance < GPSTolerance) ||
+                 (GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance >= GPSTolerance))))
+            return false;
+        }
 
-        if (PositioningTech != PositioningTechStateValue)
-          return false;
-      }
+        if (HasPositioningTechFilter)
+        {
+          PositioningTech PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out _, PositioningTech.Unknown);
 
-      // Filter on LayerID
-      if (HasLayerIDFilter)
-      {
-        LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out _, LayerIDStateValue);
-        if (LayerID != LayerIDStateValue)
-          return false;
+          if (PositioningTech != PositioningTechStateValue)
+            return false;
+        }
+
+        // Filter on LayerID
+        if (HasLayerIDFilter)
+        {
+          ushort LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out _, ushort.MaxValue);
+          if (LayerID != LayerIDStateValue)
+            return false;
+        }
       }
 
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
           return false;
       }
 
@@ -844,7 +817,7 @@ namespace VSS.TRex.Filters
       return true;
     }
 
-    public bool FilterPass(ref FilteredPassData PassValue)
+    public bool FilterPass(ref FilteredPassData PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyFilterSelections)
       {
@@ -858,12 +831,12 @@ namespace VSS.TRex.Filters
       }
 
       if (HasElevationRangeFilter)
-        if (!FilterPassUsingElevationRange(ref PassValue.FilteredPass))
+        if (!filterAnnex.FilterPassUsingElevationRange(ref PassValue.FilteredPass))
           return false;
 
       if (HasMachineFilter)
       {
-        // Check the machine identified by PassValue.MachineID is in our Sitemodel Machine
+        // Check the machine identified by PassValue.MachineID is in our site model Machine
         // list based on the index of the machine in that list
 
         if (PassValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.FilteredPass.InternalSiteModelMachineIndex])
@@ -889,14 +862,14 @@ namespace VSS.TRex.Filters
 
       if (HasMachineDirectionFilter)
       {
-        if (((MachineDirection == MachineDirection.Forward && !Machines.Machine.MachineGearIsForwardGear(PassValue.EventValues.EventMachineGear))) ||
-            ((MachineDirection == MachineDirection.Reverse && !Machines.Machine.MachineGearIsReverseGear(PassValue.EventValues.EventMachineGear))))
+        if ((MachineDirection == MachineDirection.Forward && !Machines.Machine.MachineGearIsForwardGear(PassValue.EventValues.EventMachineGear)) ||
+            (MachineDirection == MachineDirection.Reverse && !Machines.Machine.MachineGearIsReverseGear(PassValue.EventValues.EventMachineGear)))
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventMinElevMapping)
+        if (ElevationMappingMode != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -939,7 +912,7 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
@@ -953,16 +926,9 @@ namespace VSS.TRex.Filters
       return true;
     }
 
-    public bool FilterPassUsingElevationRange(ref CellPass PassValue)
-    {
-      Debug.Assert(ElevationRangeIsInitialised, "Elevation range filter being used without the elevation range data being initialised");
-      return (ElevationRangeBottomElevationForCell != Consts.NullDouble) &&
-             Range.InRange(PassValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
-    }
-
     public bool FilterPassUsingTemperatureRange(ref CellPass PassValue)
     {
-      Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialised");
+      Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialized");
       return (PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
              Range.InRange(PassValue.MaterialTemperature, MaterialTemperatureMin, MaterialTemperatureMax);
     }
@@ -1011,9 +977,9 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-      if (HasMinElevMappingFilter)
+      if (HasElevationMappingModeFilter)
       {
-        if (MinElevationMapping != PassValue.EventValues.EventMinElevMapping)
+        if (ElevationMappingMode != PassValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
@@ -1055,14 +1021,14 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
       return true;
     }
 
-    public bool FilterPass_NoMachineEvents(CellPass PassValue)
+    public bool FilterPass_NoMachineEvents(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyNonMachineEventFilterSelections)
       {
@@ -1077,13 +1043,13 @@ namespace VSS.TRex.Filters
 
       if (HasElevationRangeFilter)
       {
-        if (!FilterPassUsingElevationRange(ref PassValue))
+        if (!filterAnnex.FilterPassUsingElevationRange(ref PassValue))
           return false;
       }
 
       if (HasMachineFilter)
       {
-        // Check the machine identified by PassValue.MachineID is in our Sitemodel Machine
+        // Check the machine identified by PassValue.MachineID is in our site model Machine
         // list based on the index of the machine in that list
 
         if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
@@ -1092,7 +1058,6 @@ namespace VSS.TRex.Filters
 
       if (HasCompactionMachinesOnlyFilter)
       {
-        //Machine = siteModel.Machines.Locate(PassValue.MachineID);
         IMachine Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
 
         if (Machine != null && !Machine.MachineIsCompactorType())
@@ -1100,7 +1065,7 @@ namespace VSS.TRex.Filters
       }
 
 
-      if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behavours depending on display or grid type etc
+      if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behaviors depending on display or grid type etc
       {
         // filtering on every cell here
         if (!FilterPassUsingTemperatureRange(ref PassValue))
@@ -1108,39 +1073,6 @@ namespace VSS.TRex.Filters
       }
 
       return true;
-    }
-
-    public bool FiltersElevation(float Elevation)
-    {
-      Debug.Assert(ElevationRangeIsInitialised, "Elevation range filter being used without the elevation range data being initialised");
-      return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
-             Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
-    }
-
-    public bool FiltersElevation(double Elevation)
-    {
-      Debug.Assert(ElevationRangeIsInitialised, "Elevation range filter being used without the elevation range data being initialised");
-      return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
-             Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
-    }
-
-    /// <summary>
-    /// FilterSinglePass selects a single pass from the list of passes in
-    /// PassValues where PassValues contains the entire list of passes for
-    /// a cell in the database.
-    /// </summary>
-    /// <returns></returns>
-    public bool FilterSinglePass(CellPass[] PassValues,
-      int PassValueCount,
-      ref FilteredSinglePassInfo FilteredPassInfo,
-      object /*IProfileCell*/ profileCell)
-    {
-      return FilterSinglePass(PassValues,
-        PassValueCount,
-        ReturnEarliestFilteredCellPass,
-        ref FilteredPassInfo,
-        (IProfileCell) profileCell,
-        true);
     }
 
     // FilterSinglePass selects a single passes from the list of passes in
@@ -1151,7 +1083,8 @@ namespace VSS.TRex.Filters
                                  bool wantEarliestPass,
                                  ref FilteredSinglePassInfo filteredPassInfo,
                                  object /* IProfileCell */ profileCell,
-                                 bool performAttributeSubFilter)
+                                 bool performAttributeSubFilter,
+                                 ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       bool Accept;
       bool Result = false;
@@ -1168,7 +1101,7 @@ namespace VSS.TRex.Filters
       {
         for (int I = 0; I < passValueCount; I++)
         {
-          if (CheckAttributes && !FilterPass(ref passValues[I]))
+          if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
           {
             return false;
           }
@@ -1189,7 +1122,7 @@ namespace VSS.TRex.Filters
       {
         for (int I = passValueCount - 1; I >= 0; I--)
         {
-          if (CheckAttributes && !FilterPass(ref passValues[I]))
+          if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
           {
             return false;
           }
@@ -1230,13 +1163,15 @@ namespace VSS.TRex.Filters
     /// <param name="filteredPassInfo"></param>
     /// <param name="profileCell"></param>
     /// <param name="performAttributeSubFilter"></param>
+    /// <param name="filterAnnex"></param>
     /// <returns></returns>
     public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
                                  int passValueCount,
                                  bool wantEarliestPass,
                                  ref FilteredSinglePassInfo filteredPassInfo,
                                  object /*IProfileCell*/ profileCell,
-                                 bool performAttributeSubFilter)
+                                 bool performAttributeSubFilter,
+                                 ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       bool Accept;
       bool Result = false;
@@ -1253,7 +1188,7 @@ namespace VSS.TRex.Filters
       {
         for (int I = 0; I < passValueCount; I++)
         {
-          if (CheckAttributes && !FilterPass(ref filteredPassValues[I]))
+          if (CheckAttributes && !FilterPass(ref filteredPassValues[I], filterAnnex))
           {
             return false;
           }
@@ -1274,7 +1209,7 @@ namespace VSS.TRex.Filters
       {
         for (int I = passValueCount - 1; I >= 0; I--)
         {
-          if (CheckAttributes && !FilterPass(ref filteredPassValues[I]))
+          if (CheckAttributes && !FilterPass(ref filteredPassValues[I], filterAnnex))
           {
             return false;
           }
@@ -1300,6 +1235,10 @@ namespace VSS.TRex.Filters
       return Result;
     }
 
+    /// <summary>
+    /// Constructs a fingerprint based on the features of a filter that can influence the outcome of analyzed sub grids stored in a cache
+    /// </summary>
+    /// <returns></returns>
     public string SpatialCacheFingerprint()
     {
       var sb = new StringBuilder();
@@ -1333,8 +1272,8 @@ namespace VSS.TRex.Filters
         sb.Append($"VS:{VibeState}");
 
       // Min elev mapping
-      if (HasMinElevMappingFilter)
-        sb.Append($"MEM:{(MinElevationMapping ? 1 : 0)}");
+      if (HasElevationMappingModeFilter)
+        sb.Append($"EMM:{(int)ElevationMappingMode}");
 
       // Elevation type
       if (HasElevationTypeFilter)
@@ -1387,7 +1326,7 @@ namespace VSS.TRex.Filters
 
       // PassCountRangeFilter
       if (HasPassCountRangeFilter)
-        sb.Append($"PC:{PasscountRangeMin}-{PasscountRangeMax}");
+        sb.Append($"PC:{PassCountRangeMin}-{PassCountRangeMax}");
 
       if (ReturnEarliestFilteredCellPass)
         sb.Append("REFCP:1");
@@ -1395,56 +1334,9 @@ namespace VSS.TRex.Filters
       return sb.ToString();
     }
 
-
-    public void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY)
-    {
-      if (!HasElevationRangeFilter)
-        return;
-
-      if (ElevationRangeDesignElevations != null)
-      {
-        if (ElevationRangeDesignElevations.Cells[ASubgridCellX, ASubgridCellY] == Consts.NullHeight)
-        {
-          ElevationRangeTopElevationForCell = Consts.NullDouble;
-          ElevationRangeBottomElevationForCell = Consts.NullDouble;
-          return;
-        }
-        else
-        {
-          ElevationRangeTopElevationForCell = ElevationRangeDesignElevations.Cells[ASubgridCellX, ASubgridCellY] + ElevationRangeOffset;
-        }
-      }
-      else
-      {
-        ElevationRangeTopElevationForCell = ElevationRangeLevel + ElevationRangeOffset;
-      }
-
-      ElevationRangeBottomElevationForCell = ElevationRangeTopElevationForCell - ElevationRangeThickness;
-    }
-
-    public void InitialiseElevationRangeFilter(IClientHeightLeafSubGrid DesignElevations)
-    {
-      // If there is a design specified then intialise the filter using the design elevations
-      // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickness
-      // are used to calculate an elevation bracket.
-
-      ElevationRangeIsLevelAndThicknessOnly = DesignElevations == null;
-      if (ElevationRangeIsLevelAndThicknessOnly)
-      {
-        ElevationRangeTopElevationForCell = ElevationRangeLevel + ElevationRangeOffset;
-        ElevationRangeBottomElevationForCell = ElevationRangeTopElevationForCell - ElevationRangeThickness;
-      }
-      else
-      {
-        ElevationRangeDesignElevations = DesignElevations;
-      }
-
-      ElevationRangeIsInitialised = true;
-    }
-
     /// <summary>
-    /// Converts an array of Guids representing machine identifiers into a BitArray encoding a bit set of
-    /// internal machine IDs relative to this sitemodel
+    /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
+    /// internal machine IDs relative to this site model
     /// </summary>
     public void InitialiseMachineIDsSet()
     {
@@ -1470,7 +1362,7 @@ namespace VSS.TRex.Filters
 
     /// <summary>
     /// LastRecordedCellPassSatisfiesFilter denotes whether the settings in the filter
-    /// may be satisfied by examining the last recorded value wrt the subgrid information
+    /// may be satisfied by examining the last recorded value wrt the sub grid information
     /// currently being requested. This allows the cached latest recorded values slice
     /// stored
     /// </summary>
@@ -1478,16 +1370,18 @@ namespace VSS.TRex.Filters
 
     /// <summary>
     /// FilterMultiplePasses selects a set of passes from the list of passes
-    /// in <passValues> where <passValues> contains the entire
+    /// in passValues where passValues contains the entire
     /// list of passes for a cell in the database.
     /// </summary>
     /// <param name="passValues"></param>
     /// <param name="passValueCount"></param>
     /// <param name="filteredPassInfo"></param>
+    /// <param name="filterAnnex"></param>
     /// <returns></returns>
     public bool FilterMultiplePasses(CellPass[] passValues,
       int passValueCount,
-      FilteredMultiplePassInfo filteredPassInfo)
+      FilteredMultiplePassInfo filteredPassInfo,
+      ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyFilterSelections)
       {
@@ -1510,7 +1404,7 @@ namespace VSS.TRex.Filters
       {
         CellPass PassValue = passValues[i];
 
-        if (FilterPass(ref PassValue))
+        if (FilterPass(ref PassValue, filterAnnex))
         {
           filteredPassInfo.AddPass(PassValue);
           Result = true;
@@ -1533,7 +1427,7 @@ namespace VSS.TRex.Filters
     {
       // Certain types of grid attribute data requests may need us to select
       // a pass that is not the latest pass in the pass list. Such an instance is
-      // when request CCV value where null CCV values are passed over in favour of
+      // when requesting CCV values where null CCV values are passed over in favor of
       // non-null CCV values in passes that are older in the pass list for the cell.
 
       // Important: Also see the CalculateLatestPassDataForPassStack() function in

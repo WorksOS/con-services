@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// <summary>
     /// The array of sparse cell references that form the known cells in this subgrid
     /// </summary>
-    private SubgridTreeSparseCellRecord[] _sparseCells;
+    private SubGridTreeSparseCellRecord[] _sparseCells;
 
     /// <summary>
     /// The number of sparse cells in the subgrid
@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         for (int I = 0; I < _sparseCellCount; I++)
         {
-          SubgridTreeSparseCellRecord sparseCell = _sparseCells[I];
+          SubGridTreeSparseCellRecord sparseCell = _sparseCells[I];
 
           if ((sparseCell.CellX == X) && (sparseCell.CellY == Y))
             return sparseCell.Cell;
@@ -236,7 +236,7 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         for (int I = 0; I < _sparseCellCount; I++)
         {
-          SubgridTreeSparseCellRecord sparseCell = _sparseCells[I];
+          SubGridTreeSparseCellRecord sparseCell = _sparseCells[I];
 
           if ((sparseCell.CellX >= minSubGridCellX && sparseCell.CellX <= maxSubGridCellX &&
                sparseCell.CellY >= minSubGridCellY && sparseCell.CellY <= maxSubGridCellY) &&
@@ -272,8 +272,8 @@ namespace VSS.TRex.SubGridTrees.Core
       // Work out the on-the-ground cell extent needed to be scanned that this sub grid covers
       uint ScanMinX = (uint) Math.Max(OriginX, Extent.MinX);
       uint ScanMinY = (uint) Math.Max(OriginY, Extent.MinY);
-      uint ScanMaxX = (uint) Math.Min(OriginX + AxialCellCoverageByThisSubgrid() - 1, Extent.MaxX);
-      uint ScanMaxY = (uint) Math.Min(OriginY + AxialCellCoverageByThisSubgrid() - 1, Extent.MaxY);
+      uint ScanMaxX = (uint) Math.Min(OriginX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
+      uint ScanMaxY = (uint) Math.Min(OriginY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
 
       // Convert the on-the-ground cell indexes into subgrid indexes at this level in the sub grid tree
       GetSubGridCellIndex(ScanMinX, ScanMinY, out byte SubGridMinX, out byte SubGridMinY);
@@ -324,14 +324,14 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         if (_sparseCells == null)
         {
-          _sparseCells = new SubgridTreeSparseCellRecord[_subGridTreeNodeCellSparcityLimit];
+          _sparseCells = new SubGridTreeSparseCellRecord[_subGridTreeNodeCellSparcityLimit];
           _sparseCellCount = 0;
         }
 
         // Add it to the sparse list
         if (_sparseCellCount < _subGridTreeNodeCellSparcityLimit)
         {
-          _sparseCells[_sparseCellCount++] = new SubgridTreeSparseCellRecord((byte) X, (byte) Y, Value);
+          _sparseCells[_sparseCellCount++] = new SubGridTreeSparseCellRecord((byte) X, (byte) Y, Value);
         }
         else
         {
@@ -341,7 +341,7 @@ namespace VSS.TRex.SubGridTrees.Core
 
           for (int I = 0; I < _sparseCellCount; I++)
           {
-            SubgridTreeSparseCellRecord sparseCell = _sparseCells[I];
+            SubGridTreeSparseCellRecord sparseCell = _sparseCells[I];
             _cells[sparseCell.CellX, sparseCell.CellY] = sparseCell.Cell;
           }
 

@@ -19,11 +19,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ProjectExtentsController : Controller, IProjectExtentsContract
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// LoggerFactory factory for use by executor
     /// </summary>
@@ -51,9 +52,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration Store</param>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public ProjectExtentsController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public ProjectExtentsController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
       this.configStore = configStore;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
@@ -74,7 +81,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ProjectExtentsResult Post([FromBody] ExtentRequest request)
     {
       return RequestExecutorContainerFactory.
-        Build<ProjectExtentsSubmitter>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders)
+        Build<ProjectExtentsSubmitter>(logger,
+#if RAPTOR
+          raptorClient, 
+#endif
+          configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(request) as ProjectExtentsResult;
     }
   }

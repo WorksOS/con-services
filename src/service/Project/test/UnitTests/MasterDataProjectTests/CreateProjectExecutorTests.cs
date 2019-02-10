@@ -151,7 +151,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, null, authn.Object);
+        dataOceanClient.Object, authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -230,7 +230,7 @@ namespace VSS.MasterData.ProjectTests
         customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, 
         subscriptionProxy.Object, null, null, null, projectRepo.Object, 
         subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
-        dataOceanClient.Object, null, authn.Object);
+        dataOceanClient.Object, authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -309,7 +309,7 @@ namespace VSS.MasterData.ProjectTests
         customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object,
         subscriptionProxy.Object, null, null, null, projectRepo.Object, 
         subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, null, authn.Object);
+        dataOceanClient.Object, authn.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
@@ -394,7 +394,7 @@ namespace VSS.MasterData.ProjectTests
         customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, 
         subscriptionProxy.Object, null, null, null, projectRepo.Object, 
         subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
-        dataOceanClient.Object, null, authn.Object);
+        dataOceanClient.Object, authn.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
@@ -477,7 +477,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, null, authn.Object);
+        dataOceanClient.Object, authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

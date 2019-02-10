@@ -3,14 +3,14 @@
 namespace VSS.TRex.SubGridTrees.Helpers
 {
     /// <summary>
-    /// A helper class that contains definitions of Clear and Filled Bits subgrid mitmask bit arrays as well as
+    /// A helper class that contains definitions of Clear and Filled Bits sub grid bitmask bit arrays as well as
     /// the number of elements in the Bits array
     /// </summary>
-    public static class SubgridBitsHelper
+    public static class SubGridBitsHelper
     {
     /// <summary>
     /// The number of elements in the Bits array. Defined as:
-    /// (SubGridTreeConsts.SubGridTreeCellsPerSubgrid * 8) / 2 unsigned ints
+    /// (SubGridTreeConsts.SubGridTreeCellsPerSubGrid * 8) / 2 unsigned integers
     /// </summary>
     public const int BitsArrayLength = SubGridTreeConsts.SubGridTreeDimension;
 
@@ -20,9 +20,9 @@ namespace VSS.TRex.SubGridTrees.Helpers
         public const int BytesInBitsArray = BitsArrayLength * 4;
 
         /// <summary>
-        /// A predefined array of cleared bits for a subgrid bitmask
+        /// A predefined array of cleared bits for a sub grid bitmask
         /// </summary>
-        public static uint[] SubGridTreeLeafBitmapSubGridBits_Clear = 
+        public static readonly uint[] SubGridTreeLeafBitmapSubGridBits_Clear = 
             {
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -31,9 +31,9 @@ namespace VSS.TRex.SubGridTrees.Helpers
             };
 
         /// <summary>
-        /// A predefined array of filled bits for a subgrid bitmask
+        /// A predefined array of filled bits for a sub grid bitmask
         /// </summary>
-        public static uint[] SubGridTreeLeafBitmapSubGridBits_Fill = 
+        public static readonly uint[] SubGridTreeLeafBitmapSubGridBits_Fill = 
             {
             0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,
             0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,

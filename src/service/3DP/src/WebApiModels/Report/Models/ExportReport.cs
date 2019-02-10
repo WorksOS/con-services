@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Net;
-using ASNode.ExportProductionDataCSV.RPC;
-using ASNode.UserPreferences;
-using BoundingExtents;
 using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -78,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     public string Filename { get; protected set; }
 
     [JsonProperty(PropertyName = "machineList", Required = Required.Default)]
-    public TMachine[] MachineList { get; protected set; }
+    public Machine[] MachineList { get; protected set; }
 
     [JsonProperty(PropertyName = "coordType", Required = Required.Default)]
     public CoordType CoordType { get; protected set; }
@@ -93,11 +90,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     public DateTime DateToUTC { get; protected set; }
 
     [JsonProperty(PropertyName = "projectExtents", Required = Required.Default)]
-    public T3DBoundingWorldExtent ProjectExtents { get; protected set; }
+    public BoundingExtents3D ProjectExtents { get; protected set; }
 
-    public TTranslation[] Translations { get; private set; }
+    public TranslationDescriptor[] Translations { get; private set; }
 
-    public TASNodeUserPreferences UserPrefs { get; private set; }
+    public UserPreferences UserPrefs { get; private set; }
 
     /// <summary>
     /// Default protected constructor.
@@ -109,8 +106,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Overload constructor with parameters.
     /// </summary>>
     public ExportReport(long projectId, Guid? projectUid, LiftBuildSettings liftBuildSettings, FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordType coordtype,
-        DateTime dateFromUTC, DateTime dateToUTC, double tolerance, bool timeStampRequired, bool restrictSize, bool rawData, T3DBoundingWorldExtent prjExtents, bool precheckOnly, OutputTypes outpuType,
-        TMachine[] machineList, bool includeSrvSurface, string fileName, ExportTypes exportType, TASNodeUserPreferences userPrefs)
+        DateTime dateFromUTC, DateTime dateToUTC, double tolerance, bool timeStampRequired, bool restrictSize, bool rawData, BoundingExtents3D prjExtents, bool precheckOnly, OutputTypes outpuType,
+        Machine[] machineList, bool includeSrvSurface, string fileName, ExportTypes exportType, UserPreferences userPrefs)
     {
       ProjectId = projectId;
       ProjectUid = projectUid;
@@ -176,16 +173,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
       if (MachineList == null)
       {
-        MachineList = new TMachine[2];
+        MachineList = new Machine[2];
 
-        MachineList[0] = new TMachine
+        MachineList[0] = new Machine
         {
           AssetID = 1,
           MachineName = "Asset 1 Name",
           SerialNo = "Asset 1 SN"
         };
 
-        MachineList[1] = new TMachine
+        MachineList[1] = new Machine
         {
           AssetID = 3517551388324974,
           MachineName = "Asset 3517551388324974 Name",
@@ -193,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         };
       }
 
-      Translations = new TTranslation[6];
+      Translations = new TranslationDescriptor[6];
       Translations[0].ID = 0;
       Translations[0].Translation = "Problem occured processing export.";
       Translations[1].ID = 1;
@@ -209,7 +206,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
       if (UserPrefs.Equals(Preferences.EmptyUserPreferences()))
       {
-        UserPrefs = ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
+        UserPrefs = new UserPreferences(
           "NZ",
           Preferences.DefaultDateSeparator,
           Preferences.DefaultTimeSeparator,

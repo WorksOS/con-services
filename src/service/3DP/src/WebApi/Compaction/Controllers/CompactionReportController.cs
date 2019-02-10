@@ -12,6 +12,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -26,11 +27,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
   public class CompactionReportController : BaseController<CompactionReportController>
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// The request factory
     /// </summary>
@@ -49,13 +51,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore,
+    public CompactionReportController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITRexCompactionDataProxy tRexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
@@ -105,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = await GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
+      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r
@@ -135,7 +143,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+          .Build<CompactionReportGridExecutor>(LoggerFactory,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportGridRequest) as CompactionReportResult
       );
@@ -221,7 +233,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory,
+#if RAPTOR
+            raptorClient, 
+#endif
+            configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportRequest) as CompactionReportResult
       );

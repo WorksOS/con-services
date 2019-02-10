@@ -20,6 +20,7 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -60,10 +61,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
-      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn)
       : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, tileServiceProxy, authn)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, authn)
     {
       this.logger = logger;
     }
@@ -149,7 +150,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileDescriptorSingleResult importedFile;
       if (creating)
       {
-        var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
+        var createImportedFile = CreateImportedFile.Create(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
           fileDescriptor,
           importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
@@ -158,7 +159,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
-          fileEntry.createTime, fileEntry.modifyTime);
+          fileEntry.createTime, fileEntry.modifyTime,
+          DataOceanRootFolder);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -166,7 +168,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, tileServiceProxy, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -175,7 +177,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        var importedFileUpsertEvent = UpdateImportedFile.CreateUpdateImportedFile
+        var importedFileUpsertEvent = UpdateImportedFile.Create
         (
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
@@ -185,7 +187,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId
+          fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
+          DataOceanRootFolder
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

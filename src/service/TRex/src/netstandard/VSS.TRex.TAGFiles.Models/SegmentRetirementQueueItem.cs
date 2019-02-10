@@ -13,8 +13,6 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class SegmentRetirementQueueItem : IBinarizable, IFromToBinary
   {
-    private static ISubGridSpatialAffinityKeyFactory KeyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
-
     private const byte VERSION_NUMBER = 1;
     /// <summary>
     /// The project this segment retirement queue item refers to
@@ -28,7 +26,7 @@ namespace VSS.TRex.TAGFiles.Models
     public long InsertUTCAsLong;
 
     /// <summary>
-    /// The list of keys of the subgrid and segment streams to be retired.
+    /// The list of keys of the sub grid and segment streams to be retired.
     /// This list is submitted as a single collection of retirement items per integration update epoch in the TAG file processor
     /// </summary>
     public ISubGridSpatialAffinityKey[] SegmentKeys;
@@ -66,6 +64,8 @@ namespace VSS.TRex.TAGFiles.Models
       {
         int numKeys = reader.ReadInt();
         SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
+
+        var KeyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
 
         for (int i = 0; i < numKeys; i++)
         {

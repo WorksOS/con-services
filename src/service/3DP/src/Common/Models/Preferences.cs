@@ -1,6 +1,4 @@
-﻿using ASNode.UserPreferences;
-
-namespace VSS.Productivity3D.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   public static class Preferences
   {
@@ -13,9 +11,9 @@ namespace VSS.Productivity3D.Common.Models
     public const int DefaultDateTimeFormat = 0;//not used by Raptor
     public const int DefaultNumberFormat = 0;//not used by Raptor
 
-    public static TASNodeUserPreferences EmptyUserPreferences()
+    public static UserPreferences EmptyUserPreferences()
     {
-      return __Global.Construct_TASNodeUserPreferences(null, null, null, null, null, 0.0, 0, 0, 0, 0, 0, 0);
+      return new UserPreferences(null, null, null, null, null, 0.0, 0, 0, 0, 0, 0, 0);
     }
   }
 }

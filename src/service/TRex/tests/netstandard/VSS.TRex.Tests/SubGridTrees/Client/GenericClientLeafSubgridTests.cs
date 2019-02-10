@@ -103,7 +103,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       int Count = 0;
 
       clientGrid.ForEach((x, y) => Count++);
-      Assert.True(SubGridTreeConsts.SubGridTreeCellsPerSubgrid == Count, "ForEach did not iterate all cells");
+      Assert.True(SubGridTreeConsts.SubGridTreeCellsPerSubGrid == Count, "ForEach did not iterate all cells");
     }
 
     [Theory]

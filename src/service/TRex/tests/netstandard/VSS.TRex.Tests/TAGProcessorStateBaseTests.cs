@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.Types;
@@ -279,13 +281,14 @@ namespace VSS.TRex.Tests
     }
 
     [Fact()]
-    public void Test_TAGProcessorStateBase_SetMinElevMappingState()
+    public void Test_TAGProcessorStateBase_SetElevationMappingModeState()
     {
       TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-      Assert.False(state.MinElevMapping);
-      state.SetMinElevMappingState(true);
-      Assert.True(state.MinElevMapping);
+      state.ElevationMappingMode.Should().Be(ElevationMappingMode.LatestElevation);
+
+      state.SetElevationMappingModeState(ElevationMappingMode.MinimumElevation);
+      state.ElevationMappingMode.Should().Be(ElevationMappingMode.MinimumElevation);
     }
 
     [Fact()]
@@ -420,6 +423,23 @@ namespace VSS.TRex.Tests
       Assert.Equal(state.GetLatestMachineSpeed(), Consts.NullDouble);
       state.SetICMachineSpeedValue(100);
       Assert.Equal(100, state.GetLatestMachineSpeed());
+    }
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlTypeEmpty()
+    {
+      TAGProcessorStateBase state = new TAGProcessorStateBase();
+      state.HardwareID.Should().BeNullOrEmpty();
+      state.Invoking(x => x.GetPlatformType()).Should().Throw<ArgumentException>().WithMessage("No mapping exists for this serial number");
+    }
+
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlTypeValid()
+    {
+      TAGProcessorStateBase state = new TAGProcessorStateBase();
+      state.HardwareID = "2432J011SW";
+      state.GetPlatformType().Should().Be(MachineControlPlatformType.CB460);
     }
   }
 }

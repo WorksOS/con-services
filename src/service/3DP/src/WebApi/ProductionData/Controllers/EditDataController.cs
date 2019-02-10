@@ -23,17 +23,26 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ProjectVerifier]
   public class EditDataController : IEditDataContract
   {
+#if RAPTOR
     private readonly ITagProcessor tagProcessor;
-    private readonly IASNodeClient raptorClient;
+  private readonly IASNodeClient raptorClient;
+#endif
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public EditDataController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger)
+    public EditDataController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+      ITagProcessor tagProcessor, 
+#endif
+      ILoggerFactory logger)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
+#endif
       this.logger = logger;
     }
 
@@ -47,8 +56,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request)
     {
       request.Validate();
-
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<GetEditDataExecutor>(logger, raptorClient, tagProcessor).Process(request) as EditDataResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -60,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult Post([FromBody]EditDataRequest request)
     {
       request.Validate();
-
+#if RAPTOR
       if (!request.undo)
       {
         //Validate against existing data edits
@@ -73,6 +86,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       }
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -112,6 +129,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, new long[0]);
       request.Validate();
+#if RAPTOR
       dynamic stats = RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, tagProcessor).Process(request) as ProjectStatisticsResult;
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -123,6 +141,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 string.Format("Data edit outside production data date range: {0}-{1}", stats.startTime, stats.endTime)));
       }
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

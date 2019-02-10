@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGridTrees.Client
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetCCVValues |
         PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold |
-        PopulationControlFlags.WantsEventMinElevMappingValues;
+        PopulationControlFlags.WantsEventElevationMappingModeValues;
 
       if (WantsPreviousCCVValue)
       {
@@ -315,7 +315,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataCMVEntryRecord.IndicativeSizeInBytes();
+             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataCMVEntryRecord.IndicativeSizeInBytes();
     }
   }
 }

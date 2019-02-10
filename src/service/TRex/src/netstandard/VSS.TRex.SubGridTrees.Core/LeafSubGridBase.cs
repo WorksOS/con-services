@@ -1,30 +1,12 @@
-﻿using System.Diagnostics;
-using VSS.TRex.SubGridTrees.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
-    /// Base class for any subgrid derivative that contains data at the bottom layer of a sub grid tree
+    /// Base class for any sub grid derivative that contains data at the bottom layer of a sub grid tree
     /// </summary>
     public class LeafSubGridBase : SubGrid
     {
-        /// <summary>
-        /// LatestCellPassesOutOfDate notes whether there is 'latest' call pass information that has been changed and 
-        /// required persistence.
-        /// </summary>
-        protected bool latestCellPassesOutOfDate;
-        public bool LatestCellPassesOutOfDate { get { return latestCellPassesOutOfDate; } }
-
-        public override void SetDirty(bool value)
-        {
-            Debug.Assert(value, "Can only mark subgrid as dirty via public interface (not unset it!)");
-
-            base.SetDirty(value);
-
-            if (Dirty)
-                latestCellPassesOutOfDate = true;
-        }
-
         public LeafSubGridBase(ISubGridTree owner,
                                ISubGrid parent,
                                byte level,

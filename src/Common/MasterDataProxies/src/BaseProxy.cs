@@ -52,7 +52,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
-      HttpMethod method = null, string payload = null, Stream streamPayload = null)
+      HttpMethod method = null, string payload = null, Stream streamPayload = null, int? timeout = null, int retries = 3)
     {
       // Default to POST
       if (method == null)
@@ -65,19 +65,19 @@ namespace VSS.MasterData.Proxies
         if (method != HttpMethod.Get)
         {
           if (streamPayload != null && payload == null)
-            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
           else
           {
             if (payload != null)
             {
               streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-              result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+              result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
             }
           }
         }
         else
         {
-          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders);
+          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get,customHeaders: customHeaders, timeout:timeout, retries:retries);
         }
 
         log.LogDebug("Result of send to master data request: {0}", result);
@@ -100,12 +100,14 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
+    /// <param name="timeout">Optional timeout in millisecs for the request</param>
+    /// <param name="retries">How many times to retry the request (optional)</param>
     /// <returns>The item</returns>
     protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
-      string route = null, HttpMethod method = null, string queryParameters = null)
+      string route = null, HttpMethod method = null, string queryParameters = null, int ? timeout = null, int retries = 3)
     {
       log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
-      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
+      return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout:timeout, retries:retries);
     }
 
     /// <summary>
@@ -312,7 +314,7 @@ namespace VSS.MasterData.Proxies
         log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
         result = await action.Invoke();
         if (result != null)
-          return dataCache.Set(cacheKey, result, null, opts); 
+          return dataCache.Set(cacheKey, result, result.GetIdentifiers(), opts); 
           
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
@@ -455,6 +457,7 @@ namespace VSS.MasterData.Proxies
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The uid of the item to remove from the cache</param>
     /// <param name="userId">The user ID, only required if caching per user</param>
+    [Obsolete("Used the ClearCacheByTag method, which isn't dependent on the Type T")]
     protected void ClearCacheItem<T>(string uid, string userId)
     {
       if (dataCache == null)
@@ -462,6 +465,15 @@ namespace VSS.MasterData.Proxies
       var cacheKey = GetCacheKey<T>(uid, userId);
       log.LogDebug($"Clearing item from cache: {cacheKey}");
       dataCache.RemoveByKey(cacheKey);
+    }
+
+    /// <summary>
+    /// Clear any cached items that related the UID passed in
+    /// </summary>
+    protected void ClearCacheByTag(string uid)
+    {
+      if(!string.IsNullOrEmpty(uid))
+        dataCache.RemoveByTag(uid);
     }
 
     /// <summary>

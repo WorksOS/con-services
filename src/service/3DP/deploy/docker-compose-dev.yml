@@ -9,7 +9,7 @@ services:
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
       - AWS_SECRET_KEY=v0kHIWmLJ7cUvqgH4JEDdHWSxOU9767i+vgb4hdZ
       - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives
-      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.k8s.vspengg.com/api/position
+      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.eks.vspengg.com/api/status
       - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
       - CUSTOMER_CACHE_LIFE=00:30:00
       - DEFAULT_CONNECTION_LIMIT=64
@@ -20,6 +20,7 @@ services:
       - ENABLE_TREX_GATEWAY_TAGFILE=false
       - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
       - ENABLE_TREX_GATEWAY_GRIDREPORT=false
+      - ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY=false
       - FILTER_API_URL=http://filter.dev.eks.vspengg.com/api/v1
       - FILTER_CACHE_LIFE=00:15:00
       - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
@@ -41,7 +42,7 @@ services:
       - SCHEDULED_JOB_TIMEOUT=900000
       - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.dev.eks.vspengg.com/internal/v1/export
       - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
-      - SNAKEPIT_HOST=snakepit.dev.k8s.vspengg.com
+      - SNAKEPIT_HOST=snakepit.dev.eks.vspengg.com
       - TCCBASEURL=https://www.myconnectedsite.com
       - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
       - TCCFILESPACENAME=vldatastore-dev

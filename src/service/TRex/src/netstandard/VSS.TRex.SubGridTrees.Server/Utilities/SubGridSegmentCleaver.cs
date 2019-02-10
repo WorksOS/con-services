@@ -12,7 +12,7 @@ using VSS.TRex.SubGridTrees.Server.Iterators;
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
   /// <summary>
-  /// Provides segment cleaving semantics against the set of segments contained within a subgrid
+  /// Provides segment cleaving semantics against the set of segments contained within a sub grid
   /// </summary>
   public class SubGridSegmentCleaver
   {
@@ -28,11 +28,11 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     // persistent data store that have been cloven since the last time this leaf
     // was persisted to the data store. This is essentially a list of obsolete
     // segments whose presence in the persistent data store need to be removed
-    // when the subgrid is next persisted
+    // when the sub grid is next persisted
     public List<ISubGridSpatialAffinityKey> PersistedClovenSegments { get; } = new List<ISubGridSpatialAffinityKey>(10);
 
     /// <summary>
-    /// Cleaves all dirty segments requiring cleaving within the given subgrid
+    /// Cleaves all dirty segments requiring cleaving within the given sub grid
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <param name="subGrid"></param>
@@ -64,18 +64,18 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
               Iterator.SegmentListExtended();
 
               if (_segmentCleavingOperationsToLog)
-                Log.LogInformation($"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
+                Log.LogInformation($"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
           }
           else
           {
             // The segment cleave failed. Currently the only cause of this is a
             // database modification lock acquisition failure. While this is not
-            // a serious problem (as the subgrid will be cleaved at some point in
+            // a serious problem (as the sub grid will be cleaved at some point in
             // the future when it is modified again via tag file processing etc)
             // it will be noted in the log.
 
             if (_segmentCleavingOperationsToLog)
-              Log.LogInformation($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
+              Log.LogInformation($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
           }
         }
 
@@ -83,7 +83,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         {
           if (Segment.RequiresCleaving(out TotalPassCount, out MaximumPassCount))
             Log.LogInformation(
-              $"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{_subGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{_subGridMaxSegmentCellPassesLimit})");
+              $"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{_subGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{_subGridMaxSegmentCellPassesLimit})");
         }
       } while (Iterator.MoveToNextSubGridSegment());
     }

@@ -3,8 +3,8 @@
     /// <summary>
     /// The options used to control the initial state of a BitMask when it is created
     /// </summary>
-    public enum SubGridBitsCreationOptions
-    {
+    public enum SubGridBitsCreationOptions : byte
+  {
         /// <summary>
         /// All bits in the bit mask are set to on (1)
         /// </summary>

@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
 
@@ -13,37 +14,215 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
   {
+    protected bool _prepared;
+
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at
     /// the time this filter is asked filter cell passes.
     /// </summary>
     public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
-    public bool HasTimeFilter { get; set; }
-    public bool HasMachineFilter { get; set; }
-    public bool HasMachineDirectionFilter { get; set; }
-    public bool HasDesignFilter { get; set; }
-    public bool HasVibeStateFilter { get; set; }
-    public bool HasLayerStateFilter { get; set; }
-    public bool HasMinElevMappingFilter { get; set; }
-    public bool HasElevationTypeFilter { get; set; }
-    public bool HasGCSGuidanceModeFilter { get; set; }
-    public bool HasGPSAccuracyFilter { get; set; }
-    public bool HasGPSToleranceFilter { get; set; }
-    public bool HasPositioningTechFilter { get; set; }
-    public bool HasLayerIDFilter { get; set; }
-    public bool HasElevationRangeFilter { get; set; }
-    public bool HasPassTypeFilter { get; set; }
+    private bool _HasTimeFilter;
+    public bool HasTimeFilter {
+      get => _HasTimeFilter;
+      set
+      {
+        _HasTimeFilter = value;
+        _prepared = false;
+      }
+    }
 
-    public virtual bool IsTimeRangeFilter() => false;
+    private bool _HasMachineFilter;
+    public bool HasMachineFilter
+    {
+      get => _HasMachineFilter;
+      set
+      {
+        _HasMachineFilter = value;
+        _prepared = false;
+      }
+    }
 
-    public bool HasCompactionMachinesOnlyFilter { get; set; }
+    private bool _HasMachineDirectionFilter;
+    public bool HasMachineDirectionFilter
+    {
+      get => _HasMachineDirectionFilter;
+      set
+      {
+        _HasMachineDirectionFilter = value;
+        _prepared = false;
+      }
+    }
 
-    public bool HasTemperatureRangeFilter { get; set; }
+    private bool _HasDesignFilter;
+    public bool HasDesignFilter
+    {
+      get => _HasDesignFilter;
+      set
+      {
+        _HasDesignFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasVibeStateFilter;
+    public bool HasVibeStateFilter
+    {
+      get => _HasVibeStateFilter;
+      set
+      {
+        _HasVibeStateFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasLayerStateFilter;
+    public bool HasLayerStateFilter
+    {
+      get => _HasLayerStateFilter;
+      set
+      {
+        _HasLayerStateFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasElevationMappingModeFilter;
+    public bool HasElevationMappingModeFilter
+    {
+      get => _HasElevationMappingModeFilter;
+      set
+      {
+        _HasElevationMappingModeFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasElevationTypeFilter;
+    public bool HasElevationTypeFilter
+    {
+      get => _HasElevationTypeFilter;
+      set
+      {
+        _HasElevationTypeFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasGCSGuidanceModeFilter;
+
+    public bool HasGCSGuidanceModeFilter
+    {
+      get => _HasGCSGuidanceModeFilter;
+      set
+      {
+        _HasGCSGuidanceModeFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasGPSAccuracyFilter;
+    public bool HasGPSAccuracyFilter
+    {
+      get => _HasGPSAccuracyFilter;
+      set
+      {
+        _HasGPSAccuracyFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasGPSToleranceFilter;
+    public bool HasGPSToleranceFilter
+    {
+      get => _HasGPSToleranceFilter;
+      set
+      {
+        _HasGPSToleranceFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasPositioningTechFilter;
+    public bool HasPositioningTechFilter
+    {
+      get => _HasPositioningTechFilter;
+      set
+      {
+        _HasPositioningTechFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasLayerIDFilter;
+    public bool HasLayerIDFilter
+    {
+      get => _HasLayerIDFilter;
+      set
+      {
+        _HasLayerIDFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasElevationRangeFilter;
+    public bool HasElevationRangeFilter
+    {
+      get => _HasElevationRangeFilter;
+      set
+      {
+        _HasElevationRangeFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasPassTypeFilter;
+    public bool HasPassTypeFilter
+    {
+      get => _HasPassTypeFilter;
+      set
+      {
+        _HasPassTypeFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasCompactionMachinesOnlyFilter;
+    public bool HasCompactionMachinesOnlyFilter
+    {
+      get => _HasCompactionMachinesOnlyFilter;
+      set
+      {
+        _HasCompactionMachinesOnlyFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasTemperatureRangeFilter;
+    public bool HasTemperatureRangeFilter
+    {
+      get => _HasTemperatureRangeFilter;
+      set
+      {
+        _HasTemperatureRangeFilter = value;
+        _prepared = false;
+      }
+    }
+
+    private bool _HasPassCountRangeFilter;
+    public bool HasPassCountRangeFilter
+    {
+      get => _HasPassCountRangeFilter;
+      set
+      {
+        _HasPassCountRangeFilter = value;
+        _prepared = false;
+      }
+    }
 
     public bool FilterTemperatureByLastPass { get; set; }
 
-    public bool HasPassCountRangeFilter { get; set; }
+    public virtual bool IsTimeRangeFilter() => false;
 
     // Time based filtering members
     /// <summary>
@@ -69,7 +248,7 @@ namespace VSS.TRex.Filters
 
     public PassTypeSet PassTypeSet { get; set; }
 
-    public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
+    public ElevationMappingMode ElevationMappingMode { get; set; }
     public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
     public ushort GPSTolerance { get; set; } = CellPassConsts.NullGPSTolerance;
@@ -119,30 +298,6 @@ namespace VSS.TRex.Filters
     public Guid ElevationRangeDesignUID { get; set; } = Guid.Empty;
 
     /// <summary>
-    /// Elevation parameters have been initialized in preparation for elevation range filtering, either
-    /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
-    /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
-    /// </summary>
-    public bool ElevationRangeIsInitialised { get; set; }
-
-    /// <summary>
-    /// The defined elevation range is defined only by a level plan and thickness
-    /// </summary>
-    public bool ElevationRangeIsLevelAndThicknessOnly { get; set; }
-
-    /// <summary>
-    /// The top of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    public double ElevationRangeTopElevationForCell { get; set; } = Consts.NullDouble;
-
-    /// <summary>
-    /// The bottom of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    public double ElevationRangeBottomElevationForCell { get; set; } = Consts.NullDouble;
-
-    /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
     /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
@@ -171,15 +326,15 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
-    public ushort PasscountRangeMin { get; set; }
+    public ushort PassCountRangeMin { get; set; }
 
     /// <summary>
     ///  takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
-    public ushort PasscountRangeMax { get; set; }
+    public ushort PassCountRangeMax { get; set; }
 
     /// <summary>
-    /// Serialise the state of the cell pass attribute filter using the FromToBinary serialization approach
+    /// Serialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -187,14 +342,14 @@ namespace VSS.TRex.Filters
       const byte VERSION_NUMBER = 1;
       writer.WriteByte(VERSION_NUMBER);
 
-      writer.WriteInt((int) RequestedGridDataType);
+      writer.WriteByte((byte) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
       writer.WriteBoolean(HasMachineFilter);
       writer.WriteBoolean(HasMachineDirectionFilter);
       writer.WriteBoolean(HasDesignFilter);
       writer.WriteBoolean(HasVibeStateFilter);
       writer.WriteBoolean(HasLayerStateFilter);
-      writer.WriteBoolean(HasMinElevMappingFilter);
+      writer.WriteBoolean(HasElevationMappingModeFilter);
       writer.WriteBoolean(HasElevationTypeFilter);
       writer.WriteBoolean(HasGCSGuidanceModeFilter);
       writer.WriteBoolean(HasGPSAccuracyFilter);
@@ -220,19 +375,19 @@ namespace VSS.TRex.Filters
       }
 
       writer.WriteInt(DesignNameID);
-      writer.WriteInt((int)VibeState);
-      writer.WriteInt((int)MachineDirection);
-      writer.WriteInt((int)PassTypeSet);
+      writer.WriteByte((byte)VibeState);
+      writer.WriteByte((byte)MachineDirection);
+      writer.WriteByte((byte)PassTypeSet);
 
-      writer.WriteBoolean(MinElevationMapping);
-      writer.WriteInt((int)PositioningTech);
+      writer.WriteByte((byte)ElevationMappingMode);
+      writer.WriteByte((byte)PositioningTech);
       writer.WriteInt(GPSTolerance); // No WriteUShort is provided, use an int...
       writer.WriteBoolean(GPSAccuracyIsInclusive);
-      writer.WriteInt((int)GPSAccuracy);
+      writer.WriteByte((byte)GPSAccuracy);
       writer.WriteBoolean(GPSToleranceIsGreaterThan);
 
-      writer.WriteInt((int)ElevationType);
-      writer.WriteInt((int)GCSGuidanceMode);
+      writer.WriteByte((byte)ElevationType);
+      writer.WriteByte((byte)GCSGuidanceMode);
 
       writer.WriteBoolean(ReturnEarliestFilteredCellPass);
 
@@ -242,13 +397,7 @@ namespace VSS.TRex.Filters
 
       writer.WriteGuid(ElevationRangeDesignUID);
 
-      writer.WriteBoolean(ElevationRangeIsInitialised);
-      writer.WriteBoolean(ElevationRangeIsLevelAndThicknessOnly);
-
-      writer.WriteDouble(ElevationRangeTopElevationForCell);
-      writer.WriteDouble(ElevationRangeBottomElevationForCell);
-
-      writer.WriteInt((int)LayerState);
+      writer.WriteByte((byte)LayerState);
       writer.WriteInt(LayerID);
 
       writer.WriteBoolean(SurveyedSurfaceExclusionList != null);
@@ -261,8 +410,8 @@ namespace VSS.TRex.Filters
 
       writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
       writer.WriteInt(MaterialTemperatureMax); // No Writer.WriteUShort, use int instead
-      writer.WriteInt(PasscountRangeMin); // No Writer.WriteUShort, use int instead   
-      writer.WriteInt(PasscountRangeMax); // No Writer.WriteUShort, use int instead
+      writer.WriteInt(PassCountRangeMin); // No Writer.WriteUShort, use int instead   
+      writer.WriteInt(PassCountRangeMax); // No Writer.WriteUShort, use int instead
     }
 
     /// <summary>
@@ -277,14 +426,14 @@ namespace VSS.TRex.Filters
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
-      RequestedGridDataType = (GridDataType)reader.ReadInt();
+      RequestedGridDataType = (GridDataType)reader.ReadByte();
       HasTimeFilter = reader.ReadBoolean();
       HasMachineFilter = reader.ReadBoolean();
       HasMachineDirectionFilter = reader.ReadBoolean();
       HasDesignFilter = reader.ReadBoolean();
       HasVibeStateFilter = reader.ReadBoolean();
       HasLayerStateFilter = reader.ReadBoolean();
-      HasMinElevMappingFilter = reader.ReadBoolean();
+      HasElevationMappingModeFilter = reader.ReadBoolean();
       HasElevationTypeFilter = reader.ReadBoolean();
       HasGCSGuidanceModeFilter = reader.ReadBoolean();
       HasGPSAccuracyFilter = reader.ReadBoolean();
@@ -310,19 +459,19 @@ namespace VSS.TRex.Filters
       }
 
       DesignNameID = reader.ReadInt();
-      VibeState = (VibrationState)reader.ReadInt();
-      MachineDirection = (MachineDirection)reader.ReadInt();
-      PassTypeSet = (PassTypeSet)reader.ReadInt();
+      VibeState = (VibrationState)reader.ReadByte();
+      MachineDirection = (MachineDirection)reader.ReadByte();
+      PassTypeSet = (PassTypeSet)reader.ReadByte();
 
-      MinElevationMapping = reader.ReadBoolean();
-      PositioningTech = (PositioningTech)reader.ReadInt();
+      ElevationMappingMode = (ElevationMappingMode)reader.ReadByte();
+      PositioningTech = (PositioningTech)reader.ReadByte();
       GPSTolerance = (ushort)reader.ReadInt();
       GPSAccuracyIsInclusive = reader.ReadBoolean();
-      GPSAccuracy = (GPSAccuracy)reader.ReadInt();
+      GPSAccuracy = (GPSAccuracy)reader.ReadByte();
       GPSToleranceIsGreaterThan = reader.ReadBoolean();
 
-      ElevationType = (ElevationType)reader.ReadInt();
-      GCSGuidanceMode = (MachineAutomaticsMode)reader.ReadInt();
+      ElevationType = (ElevationType)reader.ReadByte();
+      GCSGuidanceMode = (MachineAutomaticsMode)reader.ReadByte();
 
       ReturnEarliestFilteredCellPass = reader.ReadBoolean();
 
@@ -332,13 +481,7 @@ namespace VSS.TRex.Filters
 
       ElevationRangeDesignUID = reader.ReadGuid() ?? Guid.Empty;
 
-      ElevationRangeIsInitialised = reader.ReadBoolean();
-      ElevationRangeIsLevelAndThicknessOnly = reader.ReadBoolean();
-
-      ElevationRangeTopElevationForCell = reader.ReadDouble();
-      ElevationRangeBottomElevationForCell = reader.ReadDouble();
-
-      LayerState = (LayerState)reader.ReadInt();
+      LayerState = (LayerState)reader.ReadByte();
       LayerID = reader.ReadInt();
 
       if (reader.ReadBoolean())
@@ -351,8 +494,8 @@ namespace VSS.TRex.Filters
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();
       MaterialTemperatureMax = (ushort)reader.ReadInt();
-      PasscountRangeMin = (ushort)reader.ReadInt();
-      PasscountRangeMax = (ushort)reader.ReadInt();
+      PassCountRangeMin = (ushort)reader.ReadInt();
+      PassCountRangeMax = (ushort)reader.ReadInt();
     }
   }
 }

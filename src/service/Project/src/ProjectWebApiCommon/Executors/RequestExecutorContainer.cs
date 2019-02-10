@@ -14,6 +14,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -110,7 +111,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IHttpContextAccessor httpContextAccessor;
 
     protected IDataOceanClient dataOceanClient;
-    protected ITileServiceProxy tileServiceProxy;
     protected ITPaaSApplicationAuthentication authn;
 
     /// <summary>
@@ -213,7 +213,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, 
-      IDataOceanClient dataOceanClient= null, ITileServiceProxy tileServiceProxy = null,
+      IDataOceanClient dataOceanClient= null,
       ITPaaSApplicationAuthentication authn = null)
     {
       log = logger;
@@ -236,7 +236,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
-      this.tileServiceProxy = tileServiceProxy;
       this.authn = authn;
     }
 

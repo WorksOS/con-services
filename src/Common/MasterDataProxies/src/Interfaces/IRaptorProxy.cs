@@ -12,6 +12,10 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IRaptorProxy
   {
+
+    Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid,
+      IDictionary<string, string> customHeaders);
+
     Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent,
       string coordinateSystemFilename,
       IDictionary<string, string> customHeaders = null);

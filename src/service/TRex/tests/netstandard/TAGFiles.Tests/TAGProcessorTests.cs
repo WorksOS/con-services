@@ -28,9 +28,11 @@ namespace TAGFiles.Tests
         }
 
         [Fact]
-        public void Test_TAGProcessor_ProcessEpochContext()
+        public void Test_TAGProcessor_ProcessEpochContext_WithValidPosition()
         {
             var SiteModel = new SiteModel();
+             SiteModel.IgnoreInvalidPositions = false;
+
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -60,6 +62,32 @@ namespace TAGFiles.Tests
             Assert.Equal(9, processor.ProcessedCellPassesCount);
 
             Assert.Equal(2, processor.ProcessedEpochCount);
+        }
+
+        [Fact]
+        public void Test_TAGProcessor_ProcessEpochContext_WithoutValidPosition()
+        {
+            var SiteModel = new SiteModel();
+            SiteModel.IgnoreInvalidPositions = true;
+        
+            var Machine = new Machine();
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+        
+            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+        
+            // Set the blade left and right tip locations to a trivial epoch, the epoch and do it again to trigger a swathing scan, then 
+            // check to see if it generated anything!
+        
+            Fence interpolationFence = new Fence();
+            interpolationFence.SetRectangleFence(0, 0, 1, 1);
+        
+            DateTime StartTime = new DateTime(2000, 1, 1, 1, 1, 1);
+            processor.DataLeft = new XYZ(0, 0, 5);
+            processor.DataRight = new XYZ(1, 0, 5);
+            processor.DataTime = StartTime;
+        
+            Assert.False(processor.ProcessEpochContext(), "ProcessEpochContext returned true in default TAGProcessor state (1)");
         }
 
         [Fact]

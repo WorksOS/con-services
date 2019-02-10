@@ -6,14 +6,14 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGridTrees
 {
   /// <summary>
-    ///  A subgrid variant that contains a bit mask construct to represent a one-bit-per-pixel map
+    ///  A sub grid variant that contains a bit mask construct to represent a one-bit-per-pixel map
     /// </summary>
     public class SubGridTreeLeafBitmapSubGrid : SubGrid, ILeafSubGrid, ISubGridTreeLeafBitmapSubGrid
     {
         public SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
-        /// Writes the contents of the subgrid bit mask to the writer
+        /// Writes the contents of the sub grid bit mask to the writer
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="buffer"></param>
@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Reads the contents of the subgrid bit mask from the reader
+        /// Reads the contents of the sub grid bit mask from the reader
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="buffer"></param>
@@ -40,7 +40,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Constructor taking the tree reference, parent and level of the subgrid to be created
+        /// Constructor taking the tree reference, parent and level of the sub grid to be created
         /// </summary>
         /// <param name="owner"></param>
         /// <param name="parent"></param>
@@ -52,13 +52,13 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// CountBits counts the number of bits that are set to 1 (true) in the subgrid 
+        /// CountBits counts the number of bits that are set to 1 (true) in the sub grid 
         /// </summary>
         /// <returns></returns>
         public uint CountBits() => Bits.CountBits();
 
         /// <summary>
-        /// Computes the bounding extent of the cells (bits) in the subgrid that are set to 1 (true)
+        /// Computes the bounding extent of the cells (bits) in the sub grid that are set to 1 (true)
         /// </summary>
         /// <returns></returns>
         public BoundingIntegerExtent2D ComputeCellsExtents()

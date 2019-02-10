@@ -1,6 +1,4 @@
-﻿using System;
-using VSS.TRex.Common.Utilities;
-using Xunit;
+﻿using Xunit;
 
 namespace VSS.TRex.Tests.Utility
 {

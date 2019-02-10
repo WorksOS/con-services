@@ -28,7 +28,7 @@ data:
   COORDSYSPOST_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem
   COORDSYSVALIDATE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0/coordsystem/validation
   CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
-  FILTER_API_URL: http://filter.dev.eks.vspengg.com/api/v1
+  FILTER_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3Dfilter/1.0
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
   IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
   IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile
@@ -39,12 +39,13 @@ data:
   RAPTOR_3DPM_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
   RAPTOR_NOTIFICATION_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
+  RAPTOR_3DPM_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
   SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/background
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
   TREX_TAGFILE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
   TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v1/design
-  TILE_INTERNAL_BASE_URL: http://tile.dev.k8s.vspengg.com/internal/v1/
+  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
 #TPaaS
   TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token  

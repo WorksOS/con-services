@@ -9,6 +9,22 @@ namespace VSS.Common.Abstractions.Cache.Interfaces
   public interface IDataCache
   {
     /// <summary>
+    /// List of all keys stored in the cache
+    /// </summary>
+    List<string> CacheKeys { get; }
+
+    /// <summary>
+    /// Identify tags at a given point in time
+    /// Used in testing
+    /// </summary>
+    List<string> CacheTags { get; }
+
+    /// <summary>
+    /// Get a list of tags used to create the cache item for a given key
+    /// </summary>
+    List<string> GetTagsForKey(string key);
+
+    /// <summary>
     /// Get an item from cache if it exists, and is of the correct type
     /// </summary>
     /// <typeparam name="TItem">Reference type expected to be cached</typeparam>

@@ -36,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetMDPValues |
-        PopulationControlFlags.WantsEventMinElevMappingValues;
+        PopulationControlFlags.WantsEventElevationMappingModeValues;
 
       _gridDataType = TRex.Types.GridDataType.MDP;
     }
@@ -257,7 +257,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataMDPEntryRecord.IndicativeSizeInBytes();
+             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataMDPEntryRecord.IndicativeSizeInBytes();
     }
   }
 }

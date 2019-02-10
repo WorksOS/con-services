@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Common.CellPasses;
-using VSS.TRex.SubGridTrees.Client.Types;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_SubGridCellPassDataPassCountEntryRecord_Creation()
     {
-      SubGridCellPassDataPassCountEntryRecord rec = new SubGridCellPassDataPassCountEntryRecord();
+      var rec = new SubGridCellPassDataPassCountEntryRecord();
 
       rec.Clear();
 

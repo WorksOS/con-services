@@ -8,6 +8,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -28,7 +29,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
-      ITileServiceProxy tileServiceProxy = null, ITPaaSApplicationAuthentication authn = null
+      ITPaaSApplicationAuthentication authn = null
       ) 
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -44,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
         producer, kafkaTopicName, raptorProxy, subscriptionProxy, persistantTransferProxy, 
         filterServiceProxy, tRexImportFileProxy, projectRepo, subscriptionRepo, fileRepo, customerRepo, 
-        httpContextAccessor, dataOceanClient, tileServiceProxy, authn
+        httpContextAccessor, dataOceanClient, authn
         );
 
       return executor;

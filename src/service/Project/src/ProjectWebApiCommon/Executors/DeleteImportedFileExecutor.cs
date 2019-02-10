@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DotNetCore.CAP.Dashboard.Resources;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -92,16 +94,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           importedFileInternalResult = await TccHelper.DeleteFileFromTCCRepository
             (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-            log, serviceExceptionHandler, fileRepo, projectRepo)
+              log, serviceExceptionHandler, fileRepo, projectRepo)
             .ConfigureAwait(false);
-        }
-        if (importedFileInternalResult == null)
-        {
+
           importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-            $"{deleteImportedFile.FileDescriptor.Path}{Path.DirectorySeparatorChar}{deleteImportedFile.FileDescriptor.FileName}", deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-              log, serviceExceptionHandler, dataOceanClient, authn)
-            .ConfigureAwait(false);
+            deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+            deleteImportedFile.ProjectUid,
+            deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
+
+          if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+          {
+            //Do we care if deleting generated DXF file fails?
+            string generatedName = DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.ImportedFileType);
+            await DataOceanHelper.DeleteFileFromDataOcean(
+              generatedName, deleteImportedFile.DataOceanRootFolder, customerUid,
+              deleteImportedFile.ProjectUid,
+              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);         
+          }
         }
+
         if (importedFileInternalResult != null)
         {
           await ImportedFileRequestDatabaseHelper.UndeleteImportedFile

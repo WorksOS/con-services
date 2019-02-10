@@ -66,7 +66,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightAndTimeResults);
 
-      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
     }
@@ -79,7 +79,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightLeaf);
 
-      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
     }
@@ -190,8 +190,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       SurveyedSurfaceMap.Write(writer, buffer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
-      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
+      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
     }
 
     /// <summary>
@@ -207,8 +207,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       SurveyedSurfaceMap.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
+      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       return base.IndicativeSizeInBytes() + 
              SurveyedSurfaceMap.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float);
+             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
     }
   }
 }

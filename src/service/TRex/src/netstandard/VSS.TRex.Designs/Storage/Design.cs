@@ -4,7 +4,6 @@ using System.IO;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Geometry;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Interfaces;
@@ -223,7 +222,7 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
     public void GetDesignHeights(Guid siteModelID,
-      ISubGridCellAddress originCellAddress,
+      SubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
       out DesignProfilerRequestResult errorCode)
@@ -252,7 +251,7 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="filterMask"></param>
     /// <param name="errorCode"></param>
     public void GetFilterMask(Guid siteModelID,
-      ISubGridCellAddress originCellAddress,
+      SubGridCellAddress originCellAddress,
       double cellSize,
       out SubGridTreeBitmapSubGridBits filterMask,
       out DesignProfilerRequestResult errorCode)

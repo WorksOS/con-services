@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
@@ -13,11 +14,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   [FeatureFile("EditData.feature")]
   public class EditDataSteps : Feature
   {
-    private Poster<EditDataRequest, EditDataResult> editDataRequester;
-    private Poster<GetEditDataRequest, GetEditDataResult> getEditDataRequester;
+    private Poster<JObject, EditDataResult> editDataRequester;
+    private Poster<JObject, GetEditDataResult> getEditDataRequester;
     private EditDataResult editDataResult;
-    private GetEditDataResult getEditDataResult;
-    private CellDatumResult cellDatumResult;
+    private ResponseBase getEditDataResult;
+    private ResponseBase cellDatumResult;
     private GetMachineDesignResult getMachineDesignResult;
     private LayerIdsExecutionResult layerIdsExecutionResult;
 
@@ -31,28 +32,34 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the edit data service URI ""(.*)""")]
     public void GivenTheEditDataServiceURI(string editDataUri)
     {
-      editDataRequester = new Poster<EditDataRequest, EditDataResult>(RestClient.Productivity3DServiceBaseUrl + editDataUri);
+      editDataRequester = new Poster<JObject, EditDataResult>(RestClient.Productivity3DServiceBaseUrl + editDataUri);
     }
 
     [And(@"the get edit data service URI ""(.*)""")]
     public void AndTheGetEditDataServiceURI(string getEditDataUri)
     {
-      getEditDataRequester = new Poster<GetEditDataRequest, GetEditDataResult>(RestClient.Productivity3DServiceBaseUrl + getEditDataUri);
+      getEditDataRequester = new Poster<JObject, GetEditDataResult>(RestClient.Productivity3DServiceBaseUrl + getEditDataUri);
     }
 
     [And(@"all data edits are cleared for project (.*)")]
     public void GivenAllDataEditsAreClearedForProject(long pId)
     {
       // Requests for Undo All Edits & Get All Edits
-      var undoAllEditsRequest = new EditDataRequest { projectId = pId, undo = true, dataEdit = null };
-      var getAllEditsRequest = new GetEditDataRequest { projectId = pId, assetId = -1 };
+      dynamic undoAllEditsRequest = new JObject();
+      undoAllEditsRequest.ProjectId = pId;
+      undoAllEditsRequest.Undo = true;
+      undoAllEditsRequest.DataEdit = null;
+
+      dynamic getAllEditsRequest = new JObject();
+      getAllEditsRequest.ProjectId = pId;
+      getAllEditsRequest.AssetId = -1;
 
       // Undo all edits
       editDataRequester.DoValidRequest(undoAllEditsRequest);
 
       // Get all edits and confirm they have been removed.
       var allEdits = getEditDataRequester.DoValidRequest(getAllEditsRequest);
-      Assert.True(!allEdits.dataEdits.Any());
+      Assert.True(!((List<ProductionDataEdit>)allEdits.dataEdits).Any());
     }
 
     [And(@"GetLifts service ""(.*)"" only returns (.*) real lifts for project (.*)")]
@@ -99,12 +106,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       {
         _ = int.Parse(row.Cells.ElementAt(0).Value);
 
-        var doEditRequest = new EditDataRequest
-        {
-          projectId = pId,
-          undo = false,
-          dataEdit = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]
-        };
+        dynamic doEditRequest = new JObject();
+        doEditRequest.ProjectId = pId;
+        doEditRequest.Undo = false;
+        doEditRequest.DataEdit = JToken.FromObject(dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]);
 
         editDataResult = editDataRequester.DoValidRequest(doEditRequest);
       }
@@ -113,7 +118,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"I try to get all edits for project (.*)")]
     public void AndITryToGetAllEditsForProject(long pId)
     {
-      var getAllEditsRequest = new GetEditDataRequest { projectId = pId, assetId = -1 };
+      dynamic getAllEditsRequest = new JObject();
+      getAllEditsRequest.ProjectId = pId;
+      getAllEditsRequest.AssetId = -1;
+
       getEditDataResult = getEditDataRequester.DoValidRequest(getAllEditsRequest);
     }
 
@@ -152,12 +160,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       foreach (var row in dataTable.Rows.Skip(1))
       {
-        var undoEditRequest = new EditDataRequest
-        {
-          projectId = pId,
-          undo = true,
-          dataEdit = dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]
-        };
+        dynamic undoEditRequest = new JObject();
+        undoEditRequest.ProjectId = pId;
+        undoEditRequest.Undo = true;
+        undoEditRequest.DataEdit = JToken.FromObject(dataEditContext.DataEdits[int.Parse(row.Cells.ElementAt(0).Value)]);
+
         editDataRequester.DoValidRequest(undoEditRequest);
       }
     }
@@ -182,21 +189,28 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var gridPoint = new Point { x = gridPtX, y = gridPtY };
 
       // Construct Filter from data edit (by LiftId, DesignId or both)
-      var filter = new FilterResult();
+      dynamic filter = new JObject();
       var edit = dataEditContext.DataEdits[editId];
+
       if (edit.liftNumber != null)
       {
-        filter.layerType = FilterLayerMethod.TagfileLayerNumber;
-        filter.layerNumber = edit.liftNumber;
+        filter["layerType"] = (int)FilterLayerMethod.TagfileLayerNumber;
+        filter["layerNumber"] = edit.liftNumber;
       }
       if (edit.onMachineDesignName != null)
       {
-        filter.onMachineDesignID = 3; // It's 3 because all inserted designs are named "VirtualDesign" and that design name has id 3.
+        filter["onMachineDesignID"] = 3; // It's 3 because all inserted designs are named "VirtualDesign" and that design name has id 3.
       }
 
       // Do cell datum request filtered by edited/inserted design id or layer id
-      var datumRequest = new CellDatumRequest(pId, datumType, gridPoint, filter);
-      var datumRequester = new Poster<CellDatumRequest, CellDatumResult>(fullCellDatumUri, datumRequest);
+      dynamic datumRequest = new JObject();
+      datumRequest.ProjectId = pId;
+      datumRequest.DisplayMode = datumType;
+      datumRequest.GridPoint = JToken.FromObject(gridPoint);
+      datumRequest.Filter = JToken.FromObject(filter);
+      datumRequest.FilterId = -1;
+
+      var datumRequester = new Poster<JObject, CellDatumResult>(fullCellDatumUri, datumRequest);
 
       cellDatumResult = datumRequester.DoRequest();
     }
@@ -219,15 +233,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"I submit data edit with EditId (.*) to project (.*) expecting HttpResponseCode (.*)")]
     public void GivenISubmitDataEditWithEditIdToProjectExpectingHttpResponseCode(int editId, long pId, int httpCode)
     {
-      var doEditRequest = new EditDataRequest
-      {
-        projectId = pId,
-        undo = false,
-        dataEdit = dataEditContext.DataEdits[editId]
-      };
+      dynamic doEditRequest = new JObject();
+      doEditRequest.ProjectId = pId;
+      doEditRequest.Undo = false;
+      doEditRequest.DataEdit = JToken.FromObject(dataEditContext.DataEdits[editId]);
 
       editDataRequester.CurrentRequest = doEditRequest;
-      editDataResult = editDataRequester.DoRequest(null, (int)HttpStatusCode.BadRequest);
+      editDataResult = editDataRequester.DoRequest(null, expectedHttpCode: (int)HttpStatusCode.BadRequest);
     }
 
     [Then(@"I should get Error Code (.*) and Message ""(.*)""")]

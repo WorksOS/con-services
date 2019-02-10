@@ -27,7 +27,6 @@ namespace TAGFiles.Tests
   public class TagfileValidatorTests : IClassFixture<DILoggingFixture>
   {
     private static Guid NewSiteModelGuidTfa = Guid.NewGuid();
-    private static object Lock = new object();
 
     [Fact]
     public void Test_TFASpecific_DIMocking()
@@ -85,7 +84,7 @@ namespace TAGFiles.Tests
 
       // Validate tagfile
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int)TRexTagFileResultCode.TrexTagFileReaderError, "Failed to return correct error code");
+      Assert.True(result.Code == (int) TRexTagFileResultCode.TrexTagFileReaderError, "Failed to return correct error code");
       Assert.Equal("InvalidValueTypeID", result.Message);
     }
 
@@ -217,64 +216,62 @@ namespace TAGFiles.Tests
     private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
     {
       // this setup includes the DITagFileFixture. Done here to try to avoid random test failures.
-      lock (Lock)
-      {
-        var moqStorageProxy = new Mock<IStorageProxy>();
 
-        var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
-        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(moqStorageProxy.Object);
-        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(moqStorageProxy.Object);
-        moqStorageProxyFactory.Setup(mk => mk.MutableGridStorage()).Returns(moqStorageProxy.Object);
-        moqStorageProxyFactory.Setup(mk => mk.ImmutableGridStorage()).Returns(moqStorageProxy.Object);
+      var moqStorageProxy = new Mock<IStorageProxy>();
 
-        var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
+      var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
+      moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(moqStorageProxy.Object);
+      moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(moqStorageProxy.Object);
+      moqStorageProxyFactory.Setup(mk => mk.MutableGridStorage()).Returns(moqStorageProxy.Object);
+      moqStorageProxyFactory.Setup(mk => mk.ImmutableGridStorage()).Returns(moqStorageProxy.Object);
 
-        var moqSiteModels = new Mock<ISiteModels>();
-        moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
+      var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
 
-        DIBuilder
-          .New()
-          .AddLogging()
-          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-          .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
-          .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
+      var moqSiteModels = new Mock<ISiteModels>();
+      moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
 
-          .Add(x => x.AddSingleton<ISurveyedSurfaces>(moqSurveyedSurfaces.Object))
-          .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
-          .Build();
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
+        .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
 
-        ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
+        .Add(x => x.AddSingleton<ISurveyedSurfaces>(moqSurveyedSurfaces.Object))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Build();
 
-        var moqSiteModelFactory = new Mock<ISiteModelFactory>();
-        moqSiteModelFactory.Setup(mk => mk.NewSiteModel()).Returns(mockedSiteModel);
-        moqSiteModelFactory.Setup(mk => mk.NewSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
 
-        moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      var moqSiteModelFactory = new Mock<ISiteModelFactory>();
+      moqSiteModelFactory.Setup(mk => mk.NewSiteModel()).Returns(mockedSiteModel);
+      moqSiteModelFactory.Setup(mk => mk.NewSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
 
-        // Mock the new sitemodel creation API to return just a new sitemodel
-        moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
 
-        //Moq doesn't support extention methods in IConfiguration/Root.
-        var moqConfiguration = new Mock<IConfigurationStore>();
-        var moqMinTagFileLength = 100;
-        string moqTfaServiceUrl = "http://localhost:5001/api/v2/project";
-        moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(enableTfaService);
-        moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE")).Returns(enableTfaService);
-        moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(moqMinTagFileLength);
-        moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH")).Returns(moqMinTagFileLength);
-        moqConfiguration.Setup(x => x.GetValueString("TFA_PROJECTV2_API_URL")).Returns(moqTfaServiceUrl);
+      // Mock the new sitemodel creation API to return just a new sitemodel
+      moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
 
-        var moqTfaProxy = new Mock<ITagFileAuthProjectProxy>();
-        if (enableTfaService && getProjectAndAssetUidsRequest != null)
-          moqTfaProxy.Setup(x => x.GetProjectAndAssetUids(It.IsAny<GetProjectAndAssetUidsRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(getProjectAndAssetUidsResult);
+      //Moq doesn't support extention methods in IConfiguration/Root.
+      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqMinTagFileLength = 100;
+      string moqTfaServiceUrl = "http://localhost:5001/api/v2/project";
+      moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(enableTfaService);
+      moqConfiguration.Setup(x => x.GetValueBool("ENABLE_TFA_SERVICE")).Returns(enableTfaService);
+      moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(moqMinTagFileLength);
+      moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH")).Returns(moqMinTagFileLength);
+      moqConfiguration.Setup(x => x.GetValueString("TFA_PROJECTV2_API_URL")).Returns(moqTfaServiceUrl);
 
-        DIBuilder
-          .Continue()
-          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-          .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
-          .Add(x => x.AddSingleton<ITagFileAuthProjectProxy>(moqTfaProxy.Object))
-          .Complete();
-      }
+      var moqTfaProxy = new Mock<ITagFileAuthProjectProxy>();
+      if (enableTfaService && getProjectAndAssetUidsRequest != null)
+        moqTfaProxy.Setup(x => x.GetProjectAndAssetUids(It.IsAny<GetProjectAndAssetUidsRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(getProjectAndAssetUidsResult);
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
+        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy>(moqTfaProxy.Object))
+        .Complete();
     }
   }
 }

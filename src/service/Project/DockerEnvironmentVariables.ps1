@@ -11,7 +11,7 @@
 #>
 <# #>
 
-Write-Host "Setting common variables..."
+Write-Host "Setting common variables" -ForegroundColor DarkGray
 
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_PORT", "3306", "Machine")
@@ -39,6 +39,7 @@ Write-Host "Setting common variables..."
 [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://localhost:5001/api/v2/notification", "Machine")
 [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://localhost:5001/api/v1/mock/getcustomersforme","Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://localhost:5001/api/v2", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_3DPM_API_URL", "http://localhost:5001/api/v2/mock", "Machine")
 [Environment]::SetEnvironmentVariable("TREX_IMPORTFILE_WRITE_API_URL", "http://localhost:55650/api/v1/design", "Machine")
 [Environment]::SetEnvironmentVariable("TREX_IMPORTFILE_READ_API_URL", "http://localhost:55750/api/v1/design/get", "Machine")
 [Environment]::SetEnvironmentVariable("FILTER_API_URL", "http://localhost:5001/api/v1/mock", "Machine")
@@ -91,6 +92,7 @@ Write-Host "Setting common variables..."
 [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://mockprojectwebapi:5001/api/v2/notification", "Machine")
 [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://mockprojectwebapi:5001/api/v1/mock/getcustomersforme", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://mockprojectwebapi:5001/api/v2", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_3DPM_API_URL", "http://mockprojectwebapi:5001/api/v2/mock", "Machine")
 [Environment]::SetEnvironmentVariable("TREX_IMPORTFILE_WRITE_API_URL", "http://mockprojectwebapi:5001/api/v1/design", "Machine")
 [Environment]::SetEnvironmentVariable("FILTER_API_URL", "http://mockprojectwebapi:5001/api/v1/mock", "Machine")
 [Environment]::SetEnvironmentVariable("PROJECTSERVICE_KAFKA_TOPIC_NAME","VSS.Interfaces.Events.MasterData.IProjectEvent", "Machine")

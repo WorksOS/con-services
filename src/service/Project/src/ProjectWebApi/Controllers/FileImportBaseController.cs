@@ -19,6 +19,7 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -76,9 +77,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
-      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn)
       : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
-        subscriptionRepo, fileRepo, dataOceanClient, tileServiceProxy, authn)
+        subscriptionRepo, fileRepo, dataOceanClient, authn)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;

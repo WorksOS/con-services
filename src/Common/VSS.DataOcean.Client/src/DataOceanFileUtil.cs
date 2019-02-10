@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
 {
   public class DataOceanFileUtil
   {
     public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
-    public const string DXF_FILE_EXTENSION = ".DXF";
+    public const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
+    public const string DXF_FILE_EXTENSION = ".dxf";
 
     public string FileName { get; private set; }
     public string FilePath { get; private set; }
@@ -20,7 +22,7 @@ namespace VSS.DataOcean.Client
       FileName = fileName;
       FilePath = path;
       FullFileName = $"{path}{Path.DirectorySeparatorChar}{fileName}";
-      if (Path.GetExtension(fileName).ToUpper() != DXF_FILE_EXTENSION)
+      if (Path.GetExtension(fileName).ToLower() != DXF_FILE_EXTENSION)
       {
         throw new ArgumentException($"Only DXF files are supported. {fileName} is not a DXF file.");
       }
@@ -134,6 +136,26 @@ namespace VSS.DataOcean.Client
     public static bool FileCacheable(string filename)
     {
       return filename.Contains(GENERATED_TILE_FOLDER_SUFFIX) && filename.Contains(".png");
+    }
+
+    /// <summary>
+    /// Gets the generated DXF file name
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="fileType"></param>
+    /// <returns></returns>
+    public static string GeneratedFileName(string fileName, ImportedFileType fileType)
+    {
+      if (fileType == ImportedFileType.Alignment)
+      {
+        return $"{Path.GetFileNameWithoutExtension(fileName)}{GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX}{DXF_FILE_EXTENSION}";
+      }
+
+      if (fileType == ImportedFileType.Linework)
+      {
+        return fileName;
+      }
+      throw new ArgumentException($"{fileName} is not a DXF or alignment file.");
     }
   }
 }

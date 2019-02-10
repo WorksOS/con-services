@@ -152,10 +152,10 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="numLevels"></param>
         /// <param name="cellSize"></param>
-        /// <param name="subGridfactory"></param>
+        /// <param name="subGridFactory"></param>
         public SubGridTree(byte numLevels,
                            double cellSize,
-                           ISubGridFactory subGridfactory)
+                           ISubGridFactory subGridFactory)
         {
             if (numLevels < 1 || numLevels > SubGridTreeConsts.SubGridTreeLevels)
             {
@@ -173,7 +173,7 @@ namespace VSS.TRex.SubGridTrees
             SetCellSize(cellSize);
             IndexOriginOffset = (uint)1 << (NumBitsInKeys - 1);
 
-            SubgridFactory = subGridfactory ?? throw new ArgumentException("A subgrid factory must be specified", nameof(subGridfactory));
+            SubgridFactory = subGridFactory ?? throw new ArgumentException("A subgrid factory must be specified", nameof(subGridFactory));
 
             // Construct the root node for the tree
             InitialiseRoot();

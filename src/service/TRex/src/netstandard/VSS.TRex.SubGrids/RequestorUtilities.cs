@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
@@ -26,26 +25,24 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public class RequestorUtilities : IRequestorUtilities
   {
-    //private static readonly ILogger Log = Logging.Logger.CreateLogger<RequestorUtilities>();
-
     private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
-    private static ITRexSpatialMemoryCache subGridCache;
+    private ITRexSpatialMemoryCache _subGridCache;
 
     /// <summary>
     /// The DI injected TRex spatial memory cache for general sub grid results
     /// </summary>
-    private static ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
-
+    private ITRexSpatialMemoryCache SubGridCache => _subGridCache ?? (_subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
+     
     /// <summary>
     /// The DI injected factory to create requestor instances
     /// </summary>
-    private static Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>();
+    private readonly Func<ISubGridRequestor> SubGridRequestorFactory = DIContext.Obtain<Func<ISubGridRequestor>>();
 
     /// <summary>
     /// The DI injected factory to created requests for surveyed surface information
     /// </summary>
-    private static Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
+    private readonly Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest> SurfaceElevationPatchRequestFactory = 
       DIContext.Obtain<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>();
 
     /// <summary>
@@ -53,7 +50,8 @@ namespace VSS.TRex.SubGrids
     /// ready to be used to create per-Task requestor delegates
     /// </summary>
     /// <returns></returns>
-    public (ICombinedFilter Filter,
+    public (GridDataType GridDataType,
+      ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -62,7 +60,8 @@ namespace VSS.TRex.SubGrids
         bool includeSurveyedSurfaceInformation,
         GridDataType gridDataType)
     {
-      (ICombinedFilter Filter,
+      (GridDataType GridDataType,
+      ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -94,12 +93,12 @@ namespace VSS.TRex.SubGrids
         ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
 
         if (_enableGeneralSubGridResultCaching &&
-            ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int)gridDataType])
+            ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)gridDataType])
         {
           SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
         }
 
-        return (filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray,
+        return (gridDataType, filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray,
           SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
             SubGridCacheContext);
       }
@@ -113,7 +112,8 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     /// <returns></returns>
     public ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
-      (ICombinedFilter Filter,
+      (GridDataType GridDataType,
+        ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         Guid[] FilteredSurveyedSurfacesAsArray,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
@@ -141,11 +141,11 @@ namespace VSS.TRex.SubGrids
 
         var requestor = SubGridRequestorFactory();
         requestor.Initialize(siteModel,
+          x.GridDataType,
           siteModels.StorageProxy,
           x.Filter,
           false, // Override cell restriction
           BoundingIntegerExtent2D.Inverted(),
-          SubGridTreeConsts.SubGridTreeLevels,
           int.MaxValue, // MaxCellPasses
           areaControlSet,
           new FilteredValuePopulationControl(),

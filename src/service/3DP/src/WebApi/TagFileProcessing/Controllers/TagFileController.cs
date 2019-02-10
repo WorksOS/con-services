@@ -32,8 +32,10 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TagFileController : Controller
   {
+#if RAPTOR
     private readonly ITagProcessor tagProcessor;
     private readonly IASNodeClient raptorClient;
+#endif
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
     private readonly ITransferProxy transferProxy;
@@ -44,10 +46,17 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public TagFileController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore)
+    public TagFileController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+      ITagProcessor tagProcessor, 
+#endif
+      ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
+#endif
       this.logger = logger;
       log = logger.CreateLogger<TagFileController>();
       this.transferProxy = transferProxy;
@@ -72,7 +81,12 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       //Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
       RequestExecutorContainerFactory
-        .Build<TagFileConnectedSiteSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+        .Build<TagFileConnectedSiteSubmissionExecutor>(logger,
+#if RAPTOR
+          raptorClient, 
+          tagProcessor, 
+#endif
+          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(request).ContinueWith((task) =>
         {
           if (task.IsFaulted)
@@ -111,7 +125,12 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, boundary);
 
       var responseObj = await RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+        .Build<TagFileNonDirectSubmissionExecutor>(logger,
+#if RAPTOR
+          raptorClient, 
+          tagProcessor, 
+#endif
+          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(requestExt).ConfigureAwait(false);
 
       // when we disable Raptor, allowing Trex response to return to harvester,
@@ -139,7 +158,12 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
       var result = await RequestExecutorContainerFactory
-        .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+        .Build<TagFileDirectSubmissionExecutor>(logger,
+#if RAPTOR
+          raptorClient, 
+          tagProcessor, 
+#endif
+          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)
@@ -163,7 +187,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       
       return projectData.ProjectGeofenceWKT == null
         ? null
-        : new WGS84Fence(RaptorConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
   }
 }

@@ -15,8 +15,8 @@ using VSS.TRex.SubGrids.GridFabric.Listeners;
 namespace VSS.TRex.SubGrids.GridFabric.Requests
 {
     /// <summary>
-    /// Requests subgrids from the cache compute cluster allowing in-progress updates of results to be sent back to
-    /// the calling context via a subgrid listener for processing.
+    /// Requests sub grids from the cache compute cluster allowing in-progress updates of results to be sent back to
+    /// the calling context via a sub grid listener for processing.
     /// </summary>
     public class SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         /// <summary>
-        /// The listener to which the processing engine may send in-progress updates during processing of the overall subgrids request
+        /// The listener to which the processing engine may send in-progress updates during processing of the overall sub grids request
         /// </summary>
         private SubGridListener Listener { get; set; }
 
@@ -81,8 +81,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
           PrepareArgument();
 
           Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
-          Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-          Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+          Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} sub grids");
+          Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} sub grids");
 
           CreateSubGridListener();
 
@@ -112,7 +112,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.LogInformation($"TaskResult {taskResult?.Status}: SubgridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {taskResult?.Status}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
          // Send the appropriate response to the caller
@@ -137,7 +137,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
               .ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)))
               .ContinueWith(x =>
               {
-                Log.LogInformation($"SubgridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
+                Log.LogInformation($"SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
                 return x.Result;
               });
         }

@@ -55,15 +55,18 @@ namespace VSS.MasterData.Proxies
             if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
               log.LogWarning($"Can't add header {customHeader.Key}");
         }
+
+        if (!x.Headers.Contains("Accept"))
+        {
+          if (!x.Headers.TryAddWithoutValidation("Accept", "*/*"))
+            log.LogWarning("Can't add Accept header");
+        }
       }
 
       // If we retry a request that uses a stream payload, it will not reset the position to 0
       // Causing an empty body to be sent (which is invalid for POST requests).
       if (requestStream != null && requestStream.CanSeek)
         requestStream.Seek(0, SeekOrigin.Begin);
-      
-      if (requestStream == null && (method == HttpMethod.Post || method == HttpMethod.Put))
-        throw new ArgumentException($"Empty body for POST/PUT request {nameof(requestStream)}");
 
       if (method == HttpMethod.Get)
         return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
@@ -73,7 +76,7 @@ namespace VSS.MasterData.Proxies
           x => { ApplyHeaders(customHeaders, x); }, log);
 
       if (method == HttpMethod.Delete)
-        return httpClient.DeleteAsync(endpoint);
+        return httpClient.DeleteAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
@@ -179,9 +182,6 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(
         $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
-      if (payload == null && method != HttpMethod.Get)
-        throw new ArgumentException("Can't have null payload with a non-GET method.");
-
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
       {
@@ -254,9 +254,6 @@ namespace VSS.MasterData.Proxies
 
       log.LogDebug(
         $"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
-
-      if (payload == null && (method == HttpMethod.Post || method == HttpMethod.Put))
-        throw new ArgumentException("Can't have null payload with a non-GET method.");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)

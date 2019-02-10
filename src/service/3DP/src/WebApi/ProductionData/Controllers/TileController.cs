@@ -21,10 +21,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TileController : Controller, ITileContract
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
+#endif
 
     /// <summary>
     /// LoggerFactory factory for use by executor
@@ -53,9 +55,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration Store</param>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public TileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public TileController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
@@ -74,7 +82,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public TileResult Post([FromBody] TileRequest request)
     {
       request.Validate();
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
+#if RAPTOR
+        raptorClient, 
+#endif
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as TileResult;
       return tileResult;
     }
 
@@ -91,7 +103,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public FileResult PostRaw([FromBody] TileRequest request)
     {
       request.Validate();
-      if (RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) is TileResult tileResult)
+      if (RequestExecutorContainerFactory.Build<TilesExecutor>(logger,
+#if RAPTOR
+        raptorClient, 
+#endif
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) is TileResult tileResult)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 

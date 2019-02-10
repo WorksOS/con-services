@@ -35,6 +35,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 
         if (!folderCreated) return (false, mappedFilenameResult);
 
+        log.LogDebug($"Uploading file '{fileDescriptor.FileName}' ({ms.Length} bytes), to '{mappedFilenameResult}'");
+
         try
         {
           using (var file = File.OpenWrite(mappedFilenameResult))

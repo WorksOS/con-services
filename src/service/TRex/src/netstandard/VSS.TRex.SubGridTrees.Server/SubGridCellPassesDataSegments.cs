@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegments : ISubGridCellPassesDataSegments
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridCellPassesDataSegments));
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegments>();
 
     private readonly bool _performSegmentAdditionIntegrityChecks = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS);
 
@@ -22,10 +22,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public int Count => Items?.Count ?? 0;
 
-    public ISubGridCellPassesDataSegment this[int index]
-    {
-      get { return Items[index]; }
-    }
+    public ISubGridCellPassesDataSegment this[int index] => Items[index];
 
     public int Add(ISubGridCellPassesDataSegment item)
     {
@@ -63,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Dumps the segment metadata for this subgrid to the log
+    /// Dumps the segment metadata for this sub grid to the log
     /// </summary>
     private void DumpSegmentsToLog()
     {
@@ -76,13 +73,13 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       if (segmentInfo == null)
       {
-        Log.LogCritical($"Null segment info passed to AddNewSegment for subgrid {subGrid.Moniker()}");
+        Log.LogCritical($"Null segment info passed to AddNewSegment for sub grid {subGrid.Moniker()}");
         return null;
       }
 
       if (segmentInfo.Segment != null)
       {
-        Log.LogCritical($"'Segment info passed to AddNewSegment for subgrid {subGrid.Moniker()} already contains an allocated segment");
+        Log.LogCritical($"'Segment info passed to AddNewSegment for sub grid {subGrid.Moniker()} already contains an allocated segment");
         return null;
       }
 

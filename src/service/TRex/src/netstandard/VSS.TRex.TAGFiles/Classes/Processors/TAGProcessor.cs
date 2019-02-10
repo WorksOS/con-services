@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
@@ -105,7 +106,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         EndProofingName :
          Design == string.Empty ? "No Design" : Design;
 
-      DateTime localTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
+      DateTime localTime = StartProofingDataTime + Common.Time.GPS.GetLocalGMTOffset();
 
       EndProofingName = $"{tempStr} ({localTime:yyyy/MM/dd} {localTime:HH:mm:ss})";
 
@@ -571,16 +572,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       }
     }
 
-    public override void SetMinElevMappingState(bool Value)
+    public override void SetElevationMappingModeState(ElevationMappingMode Value)
     {
-      base.SetMinElevMappingState(Value);
+      base.SetElevationMappingModeState(Value);
 
       if (DataTime != DateTime.MinValue)
-        MachineTargetValueChangesAggregator.MinElevMappingStateEvents.PutValueAtDate(DataTime, Value);
+        MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.PutValueAtDate(DataTime, Value);
       else
       {
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
-        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetMinElevMappingState', slpmcDebug);
+        //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetElevationMappingModeState', slpmcDebug);
         //{$ENDIF}
       }
     }
@@ -599,10 +600,11 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       }
     }
 
-    /*
+    protected override bool IgnoreInvalidPositions() => SiteModel.IgnoreInvalidPositions;
 
+    /*
    function MaxEpochInterval: Double; override;
-   function IgnoreInvalidPositions: Boolean; override;
+
 
    procedure SetICSonic3D                  (const Value :Byte                  ); override;
    procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;

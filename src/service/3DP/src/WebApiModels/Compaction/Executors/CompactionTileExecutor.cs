@@ -1,14 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+#if RAPTOR
 using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
+#endif
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 
@@ -35,9 +38,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<TileRequest>(item);
-        
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
+#endif
           var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
 
           using (var ms = new MemoryStream())
@@ -45,16 +49,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             fileResult.CopyTo(ms);
             return new TileResult(ms.ToArray());
           }
-        }
+#if RAPTOR
+      }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
     }
-
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(TileRequest request)
     {
       RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
@@ -77,6 +83,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
       }
+
+      // Fix for Raptor issue where the 'below' color is not being set correctly and the Red and Blue parts of the RGB are being
+      // flipped incorrectly (Delphi uses BGR not RGB like C#). 
+      // The following is a workaround to this behaviour and WILL be removed once the Raptor behaviour is properly understood (maybe fixed).
+      if (request.Mode == DisplayMode.Design3D || request.Mode == DisplayMode.Height)
+      {
+        byte[] values = BitConverter.GetBytes(request.Palettes[0].Color);
+
+        // Flip the bits represending Red and Blue in the color byte. We don't care about endian differences here; assume isLittleEndian=true.
+        var rgbRed = values[0];
+        values[0] = values[2];
+        values[2] = rgbRed;
+
+        request.Palettes[0].Color = BitConverter.ToUInt32(values, 0);
+      }
+      // End temporary fix.
 
       var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
         request.ProjectId ?? -1,
@@ -121,10 +143,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       log.LogDebug("Raptor result for Tile: " + raptorResult);
       return new TileResult(tile.ToArray(), raptorResult != TASNodeErrorStatus.asneOK);
     }
+#endif
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

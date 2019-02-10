@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {

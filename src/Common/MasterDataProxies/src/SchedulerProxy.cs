@@ -92,7 +92,7 @@ namespace VSS.MasterData.Proxies
     /// <inheritdoc />
     public async Task<Stream> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders)
     {
-      var result = await GetMasterDataStreamContent("SCHEDULER_EXTERNAL_BACKGROUND_JOB_URL", customHeaders, null, $"{jobId}/result");
+      var result = await GetMasterDataStreamContent("SCHEDULER_EXTERNAL_BACKGROUND_JOB_URL", customHeaders, null, null, null, $"{jobId}/result");
 
       if (result != null)
         return result;

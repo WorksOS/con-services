@@ -64,7 +64,7 @@ namespace VSS.Pegasus.Client
     /// <param name="dxfFileName">The path and file name of the DXF file</param>
     /// <param name="dxfUnitsType">The units of the DXF file</param>
     /// <param name="customHeaders"></param>
-    /// <returns></returns>
+    /// <returns>Metadata for the generated tiles including the zoom range</returns>
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders)
     {
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
@@ -86,15 +86,30 @@ namespace VSS.Pegasus.Client
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
 
-      //Create the top level tiles folder
-      string tileFolder = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
-      var success = await dataOceanClient.MakeFolder(tileFolder, customHeaders);
-      if (!success)
+      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
+      await DeleteDxfTiles(dxfFileName, customHeaders);
+
+      //In DataOcean this is actually a multifile not a folder
+      string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
+      //Get the parent folder id
+      var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
+      var tileFolderName = parts[parts.Length - 1];
+      var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
+      var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);
+
+      //Get the Pegasus units
+      var pegasusUnits = PegasusUnitsType.Metre;
+      switch (dxfUnitsType)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create tiles folder {tileFolder}"));
+        case DxfUnitsType.Meters:
+          break;
+        case DxfUnitsType.UsSurveyFeet:
+          pegasusUnits = PegasusUnitsType.USSurveyFoot;
+          break;
+        case DxfUnitsType.ImperialFeet:
+          pegasusUnits = PegasusUnitsType.BritishFoot;
+          break;
       }
-      var parentId = await dataOceanClient.GetFolderId(tileFolder, customHeaders);
 
       //1. Create an execution
       var units = dxfUnitsType.ToString();
@@ -111,12 +126,12 @@ namespace VSS.Pegasus.Client
             MaxZoom = maxZoomLevel,
             TileType = TILE_TYPE,
             TileOrder = TILE_ORDER,
-            MultiFile = true,
-            Public = false,
-            Name = tileFolder,
-            AngularUnit = units,
-            PlaneUnit = units,
-            VerticalUnit = units
+            MultiFile = "true",
+            Public = "false",
+            Name = tileFolderName,
+            AngularUnit = AngularUnitsType.Degree.ToString(),
+            PlaneUnit = pegasusUnits.ToString(),
+            VerticalUnit = pegasusUnits.ToString()
           }
         }
       };
@@ -137,8 +152,8 @@ namespace VSS.Pegasus.Client
       Log.LogDebug($"Starting execution for {dxfFileName}");
       var executionRoute = $"{baseRoute}/{executionResult.Execution.Id}";
       var startExecutionRoute = $"{executionRoute}/start";
-      var result = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
-      if (result == null)
+      var startResult = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
+      if (startResult == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to start execution for {dxfFileName}"));
@@ -147,12 +162,13 @@ namespace VSS.Pegasus.Client
       //3. Monitor status of execution until done
       Log.LogDebug($"Monitoring execution status for {dxfFileName}");
       DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(executionTimeout);
-      bool done = false;
+      var done = false;
+      var success = true;
       while (!done && DateTime.Now <= endJob)
       {
         if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
         executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get, null, 3, false);
-        success = executionResult.Execution.ExecutionStatus == ExecutionStatus.FINISHED;
+        success = executionResult.Execution.ExecutionStatus == ExecutionStatus.FINISHED || executionResult.Execution.ExecutionStatus == ExecutionStatus.SUCCEEDED;
         done = success || executionResult.Execution.ExecutionStatus == ExecutionStatus.FAILED;
         Log.LogDebug($"Execution status {executionResult.Execution.ExecutionStatus} for {dxfFileName}");
       }
@@ -170,9 +186,17 @@ namespace VSS.Pegasus.Client
 
       if (success)
       {
-        //4. Get the zoom range from the tile metdata file 
-        Log.LogDebug($"Getting tiles metadata for {dxfFileName}");
+        /*
+         Can't delete as not mutable
+
+        //4. Delete the execution
+        Log.LogDebug($"Deleting execution for {dxfFileName}");
+        await gracefulClient.ExecuteRequest($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Delete, null, 3, false);
+        */
+
+        //5. Get the zoom range from the tile metdata file 
         var metadataFileName = new DataOceanFileUtil(dxfFileName).TilesMetadataFileName;
+        Log.LogDebug($"Getting tiles metadata for {metadataFileName}");
         var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders);
 
         using (var sr = new StreamReader(stream))
@@ -185,6 +209,20 @@ namespace VSS.Pegasus.Client
 
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
       return metadata;
+    }
+
+    /// <summary>
+    /// Deletes the generated DXF tiles for the given DXF file
+    /// </summary>
+    /// <param name="dxfFileName">The path and file name of the DXF file</param>
+    /// <param name="customHeaders"></param>
+    /// <returns>True if successfully deleted otherwise false</returns>
+    public async Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders)
+    {
+      //In DataOcean this is actually a multifile not a folder
+      string tileFolderFullName = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
+      //To avoid 2 traversals just try the delete anyway without checking for existance.
+      return await dataOceanClient.DeleteFile(tileFolderFullName, customHeaders);
     }
 
   }

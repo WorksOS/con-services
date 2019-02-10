@@ -5,9 +5,9 @@ using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Filter = VSS.MasterData.Models.Models.Filter;
 
 namespace WebApiTests
 {
@@ -330,7 +330,7 @@ namespace WebApiTests
         new WGSPoint(38.8387897637231, -121.347275197506),
         new WGSPoint(38.8387145521594, -121.347189366818)
       };
-      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
+      var filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
                                         elevation, vibestate, listPoints, forward, layerNo);
       return JsonConvert.SerializeObject(filter);
     }

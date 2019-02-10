@@ -1,7 +1,5 @@
-﻿using System;
-using VSS.TRex.Events.Models;
+﻿using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters
@@ -22,7 +20,7 @@ namespace VSS.TRex.Filters
     public bool WantsEventMachineCompactionRMVJumpThreshold { get; set; }
     public bool WantsEventMachineAutomaticsValues { get; set; }
     public bool WantsEventMapResetValues { get; set; }
-    public bool WantsEventMinElevMappingValues { get; set; }
+    public bool WantsEventElevationMappingModeValues { get; set; }
     public bool WantsEventInAvoidZoneStateValues { get; set; }
     public bool WantsEventGPSAccuracyValues { get; set; }
     public bool WantsEventPositioningTechValues { get; set; }
@@ -31,6 +29,7 @@ namespace VSS.TRex.Filters
     public bool WantsTargetMDPValues { get; set; }
     public bool WantsLayerIDValues { get; set; }
     public bool WantsTargetCCAValues { get; set; }
+    public bool WantsEventGPSModeValues { get; set; }
 
     /// <summary>
     /// Determines if any of the population flags are set
@@ -49,7 +48,7 @@ namespace VSS.TRex.Filters
              WantsEventMachineCompactionRMVJumpThreshold ||
              WantsEventMachineAutomaticsValues ||
              WantsEventMapResetValues ||
-             WantsEventMinElevMappingValues ||
+             WantsEventElevationMappingModeValues ||
              WantsEventInAvoidZoneStateValues ||
              WantsEventGPSAccuracyValues ||
              WantsEventPositioningTechValues ||
@@ -57,7 +56,8 @@ namespace VSS.TRex.Filters
              WantsTempWarningLevelMaxValues ||
              WantsTargetMDPValues ||
              WantsLayerIDValues ||
-             WantsTargetCCAValues;
+             WantsTargetCCAValues ||
+             WantsEventGPSModeValues;
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace VSS.TRex.Filters
       WantsEventMachineCompactionRMVJumpThreshold = false;
       WantsEventMachineAutomaticsValues = false;
       WantsEventMapResetValues = false;
-      WantsEventMinElevMappingValues = false;
+      WantsEventElevationMappingModeValues = false;
       WantsEventInAvoidZoneStateValues = false;
       WantsEventGPSAccuracyValues = false;
       WantsEventPositioningTechValues = false;
@@ -85,6 +85,7 @@ namespace VSS.TRex.Filters
       WantsTargetMDPValues = false;
       WantsLayerIDValues = false;
       WantsTargetCCAValues = false;
+      WantsEventGPSModeValues = false;
     }
 
     /// <summary>
@@ -103,7 +104,7 @@ namespace VSS.TRex.Filters
       WantsEventMachineCompactionRMVJumpThreshold = true;
       WantsEventMachineAutomaticsValues = true;
       WantsEventMapResetValues = true;
-      WantsEventMinElevMappingValues = true;
+      WantsEventElevationMappingModeValues = true;
       WantsEventInAvoidZoneStateValues = true;
       WantsEventGPSAccuracyValues = true;
       WantsEventPositioningTechValues = true;
@@ -112,34 +113,36 @@ namespace VSS.TRex.Filters
       WantsTargetMDPValues = true;
       WantsLayerIDValues = true;
       WantsTargetCCAValues = true;
+      WantsEventGPSModeValues = true;
     }
 
     /// <summary>
     /// Converts the set of event population flags into a bit-flagged integer
     /// </summary>
     /// <returns></returns>
-    public int GetFlags()
+    public uint GetFlags()
     {
-      return ((WantsTargetCCVValues ? 1 : 0) * 0x1) |
-             ((WantsTargetPassCountValues ? 1 : 0) * 0x2) |
-             ((WantsTargetLiftThicknessValues ? 1 : 0) * 0x4) |
-             ((WantsEventDesignNameValues ? 1 : 0) * 0x8) |
-             ((WantsEventVibrationStateValues ? 1 : 0) * 0x10) |
-             ((WantsEventAutoVibrationStateValues ? 1 : 0) * 0x20) |
-             ((WantsEventICFlagsValues ? 1 : 0) * 0x40) |
-             ((WantsEventMachineGearValues ? 1 : 0) * 0x80) |
-             ((WantsEventMachineCompactionRMVJumpThreshold ? 1 : 0) * 0x100) |
-             ((WantsEventMachineAutomaticsValues ? 1 : 0) * 0x200) |
-             ((WantsEventMapResetValues ? 1 : 0) * 0x400) |
-             ((WantsEventMinElevMappingValues ? 1 : 0) * 0x800) |
-             ((WantsEventInAvoidZoneStateValues ? 1 : 0) * 0x1000) |
-             ((WantsEventGPSAccuracyValues ? 1 : 0) * 0x2000) |
-             ((WantsEventPositioningTechValues ? 1 : 0) * 0x4000) |
-             ((WantsTempWarningLevelMinValues ? 1 : 0) * 0x8000) |
-             ((WantsTempWarningLevelMaxValues ? 1 : 0) * 0x10000) |
-             ((WantsTargetMDPValues ? 1 : 0) * 0x20000) |
-             ((WantsLayerIDValues ? 1 : 0) * 0x40000) |
-             ((WantsTargetCCAValues ? 1 : 0) * 0x80000);
+      return (WantsTargetCCVValues ? (uint)PopulationControlFlags.WantsTargetCCVValues : 0) |
+             (WantsTargetPassCountValues ? (uint)PopulationControlFlags.WantsTargetPassCountValues : 0) |
+             (WantsTargetLiftThicknessValues ? (uint)PopulationControlFlags.WantsTargetThicknessValues : 0)  |
+             (WantsEventDesignNameValues ? (uint)PopulationControlFlags.WantsEventDesignNameValues : 0) |
+             (WantsEventVibrationStateValues ? (uint)PopulationControlFlags.WantsEventVibrationStateValues : 0) |
+             (WantsEventAutoVibrationStateValues ? (uint)PopulationControlFlags.WantsEventAutoVibrationStateValues : 0) |
+             (WantsEventICFlagsValues ? (uint)PopulationControlFlags.WantsEventICFlagsValues : 0) |
+             (WantsEventMachineGearValues ? (uint)PopulationControlFlags.WantsEventMachineGearValues : 0) |
+             (WantsEventMachineCompactionRMVJumpThreshold ? (uint)PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold : 0) |
+             (WantsEventMachineAutomaticsValues ? (uint)PopulationControlFlags.WantsEventMachineAutomaticsValues : 0) |
+             (WantsEventMapResetValues ? (uint)PopulationControlFlags.WantsEventMapResetValues : 0) |
+             (WantsEventElevationMappingModeValues ? (uint)PopulationControlFlags.WantsEventElevationMappingModeValues : 0) |
+             (WantsEventInAvoidZoneStateValues ? (uint)PopulationControlFlags.WantsEventInAvoidZoneStateValues : 0) |
+             (WantsEventGPSAccuracyValues ? (uint)PopulationControlFlags.WantsEventGPSAccuracyValues : 0) |
+             (WantsEventPositioningTechValues ? (uint)PopulationControlFlags.WantsEventPositioningTechValues : 0) |
+             (WantsTempWarningLevelMinValues ? (uint)PopulationControlFlags.WantsTempWarningLevelMinValues : 0) |
+             (WantsTempWarningLevelMaxValues ? (uint)PopulationControlFlags.WantsTempWarningLevelMaxValues : 0) |
+             (WantsTargetMDPValues ? (uint)PopulationControlFlags.WantsTargetMDPValues : 0) |
+             (WantsLayerIDValues ? (uint)PopulationControlFlags.WantsLayerIDValues : 0) |
+             (WantsTargetCCAValues ? (uint)PopulationControlFlags.WantsTargetCCAValues : 0) |
+             (WantsEventGPSModeValues ? (uint)PopulationControlFlags.WantsEventGPSModeValues : 0);
     }
 
     /// <summary>
@@ -148,26 +151,27 @@ namespace VSS.TRex.Filters
     /// <param name="flags"></param>
     public void SetFromFlags(uint flags)
     {
-      WantsTargetCCVValues = (flags & 0x1) != 0;
-      WantsTargetPassCountValues = (flags & 0x2) != 0;
-      WantsTargetLiftThicknessValues = (flags & 0x4) != 0;
-      WantsEventDesignNameValues = (flags & 0x8) != 0;
-      WantsEventVibrationStateValues = (flags & 0x10) != 0;
-      WantsEventAutoVibrationStateValues = (flags & 0x20) != 0;
-      WantsEventICFlagsValues = (flags & 0x40) != 0;
-      WantsEventMachineGearValues = (flags & 0x80) != 0;
-      WantsEventMachineCompactionRMVJumpThreshold = (flags & 0x100) != 0;
-      WantsEventMachineAutomaticsValues = (flags & 0x200) != 0;
-      WantsEventMapResetValues = (flags & 0x400) != 0;
-      WantsEventMinElevMappingValues = (flags & 0x800) != 0;
-      WantsEventInAvoidZoneStateValues = (flags & 0x1000) != 0;
-      WantsEventGPSAccuracyValues = (flags & 0x2000) != 0;
-      WantsEventPositioningTechValues = (flags & 0x4000) != 0;
-      WantsTempWarningLevelMinValues = (flags & 0x08000) != 0;
-      WantsTempWarningLevelMaxValues = (flags & 0x10000) != 0;
-      WantsTargetMDPValues = (flags & 0x20000) != 0;
-      WantsLayerIDValues = (flags & 0x40000) != 0;
-      WantsTargetCCAValues = (flags & 0x80000) != 0;
+      WantsTargetCCVValues = (flags & (uint)PopulationControlFlags.WantsTargetCCVValues) != 0;
+      WantsTargetPassCountValues = (flags & (uint)PopulationControlFlags.WantsTargetPassCountValues) != 0;
+      WantsTargetLiftThicknessValues = (flags & (uint)PopulationControlFlags.WantsTargetThicknessValues) != 0;
+      WantsEventDesignNameValues = (flags & (uint)PopulationControlFlags.WantsEventDesignNameValues) != 0;
+      WantsEventVibrationStateValues = (flags & (uint)PopulationControlFlags.WantsEventVibrationStateValues) != 0;
+      WantsEventAutoVibrationStateValues = (flags & (uint)PopulationControlFlags.WantsEventAutoVibrationStateValues) != 0;
+      WantsEventICFlagsValues = (flags & (uint)PopulationControlFlags.WantsEventICFlagsValues) != 0;
+      WantsEventMachineGearValues = (flags & (uint)PopulationControlFlags.WantsEventMachineGearValues) != 0;
+      WantsEventMachineCompactionRMVJumpThreshold = (flags & (uint)PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold) != 0;
+      WantsEventMachineAutomaticsValues = (flags & (uint)PopulationControlFlags.WantsEventMachineAutomaticsValues) != 0;
+      WantsEventMapResetValues = (flags & (uint)PopulationControlFlags.WantsEventMapResetValues) != 0;
+      WantsEventElevationMappingModeValues = (flags & (uint)PopulationControlFlags.WantsEventElevationMappingModeValues) != 0;
+      WantsEventInAvoidZoneStateValues = (flags & (uint)PopulationControlFlags.WantsEventInAvoidZoneStateValues) != 0;
+      WantsEventGPSAccuracyValues = (flags & (uint)PopulationControlFlags.WantsEventGPSAccuracyValues) != 0;
+      WantsEventPositioningTechValues = (flags & (uint)PopulationControlFlags.WantsEventPositioningTechValues) != 0;
+      WantsTempWarningLevelMinValues = (flags & (uint)PopulationControlFlags.WantsTempWarningLevelMinValues) != 0;
+      WantsTempWarningLevelMaxValues = (flags & (uint)PopulationControlFlags.WantsTempWarningLevelMaxValues) != 0;
+      WantsTargetMDPValues = (flags & (uint)PopulationControlFlags.WantsTargetMDPValues) != 0;
+      WantsLayerIDValues = (flags & (uint)PopulationControlFlags.WantsLayerIDValues) != 0;
+      WantsTargetCCAValues = (flags & (uint)PopulationControlFlags.WantsTargetCCAValues) != 0;
+      WantsEventGPSModeValues = (flags & (uint)PopulationControlFlags.WantsEventGPSModeValues) != 0;
     }
 
     /// <summary>
@@ -219,11 +223,11 @@ namespace VSS.TRex.Filters
     /// </summary>
     /// <param name="profileTypeRequired"></param>
     /// <param name="passFilter"></param>
-    /// <param name="clientGrid"></param>
+    /// <param name="eventPopulationFlags"></param>
     public void PreparePopulationControl(GridDataType profileTypeRequired,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       ICellPassAttributeFilter passFilter,
-      IClientLeafSubGrid clientGrid)
+      PopulationControlFlags eventPopulationFlags)
     {
       CalculateFlags(profileTypeRequired, // todo LiftBuildSettings,
         out bool CompactionSummaryInLiftBuildSettings, out bool WorkInProgressSummaryInLiftBuildSettings,
@@ -232,41 +236,41 @@ namespace VSS.TRex.Filters
       Clear();
 
       WantsTargetPassCountValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetPassCountValues) != 0;
+        (eventPopulationFlags & PopulationControlFlags.WantsTargetPassCountValues) != 0;
       WantsEventAutoVibrationStateValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventAutoVibrationStateValues) != 0;
-      WantsEventICFlagsValues = (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventICFlagsValues) != 0;
+        (eventPopulationFlags & PopulationControlFlags.WantsEventAutoVibrationStateValues) != 0;
+      WantsEventICFlagsValues = (eventPopulationFlags & PopulationControlFlags.WantsEventICFlagsValues) != 0;
       WantsEventMachineGearValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventMachineGearValues) != 0 ||
+        (eventPopulationFlags & PopulationControlFlags.WantsEventMachineGearValues) != 0 ||
         passFilter.HasMachineDirectionFilter;
-      WantsEventMachineCompactionRMVJumpThreshold = (clientGrid.EventPopulationFlags &
+      WantsEventMachineCompactionRMVJumpThreshold = (eventPopulationFlags &
                                                      PopulationControlFlags
                                                        .WantsEventMachineCompactionRMVJumpThreshold) != 0;
       WantsTempWarningLevelMinValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTempWarningLevelMinValues) != 0;
+        (eventPopulationFlags & PopulationControlFlags.WantsTempWarningLevelMinValues) != 0;
       WantsTempWarningLevelMaxValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTempWarningLevelMaxValues) != 0;
+        (eventPopulationFlags & PopulationControlFlags.WantsTempWarningLevelMaxValues) != 0;
       WantsEventMapResetValues =
         false; //todo LiftBuildSettings.LiftDetectionType in [icldtMapReset, icldtAutoMapReset];
       WantsEventDesignNameValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventDesignNameValues) != 0 ||
+        (eventPopulationFlags & PopulationControlFlags.WantsEventDesignNameValues) != 0 ||
         passFilter.HasDesignFilter ||
         WantsEventMapResetValues;
-      WantsTargetCCVValues = (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetCCVValues) != 0 ||
+      WantsTargetCCVValues = (eventPopulationFlags & PopulationControlFlags.WantsTargetCCVValues) != 0 ||
                              CompactionSummaryInLiftBuildSettings ||
                              WorkInProgressSummaryInLiftBuildSettings;
-      WantsTargetMDPValues = (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetMDPValues) != 0 ||
+      WantsTargetMDPValues = (eventPopulationFlags & PopulationControlFlags.WantsTargetMDPValues) != 0 ||
                              CompactionSummaryInLiftBuildSettings ||
                              WorkInProgressSummaryInLiftBuildSettings;
-      WantsTargetCCAValues = (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetCCAValues) != 0 ||
+      WantsTargetCCAValues = (eventPopulationFlags & PopulationControlFlags.WantsTargetCCAValues) != 0 ||
                              CompactionSummaryInLiftBuildSettings ||
                              WorkInProgressSummaryInLiftBuildSettings;
       WantsTargetLiftThicknessValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetThicknessValues) !=
+        (eventPopulationFlags & PopulationControlFlags.WantsTargetThicknessValues) !=
         0 || ThicknessInProgressInLiftBuildSettings
           || WorkInProgressSummaryInLiftBuildSettings; // todo || (LiftBuildSettings.LiftDetectionType in [icldtAutomatic, icldtAutoMapReset]);
       WantsEventVibrationStateValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventVibrationStateValues) != 0 ||
+        (eventPopulationFlags & PopulationControlFlags.WantsEventVibrationStateValues) != 0 ||
         passFilter.HasVibeStateFilter ||
         (profileTypeRequired == GridDataType.All ||
          profileTypeRequired == GridDataType.CCV ||
@@ -274,19 +278,19 @@ namespace VSS.TRex.Filters
          profileTypeRequired == GridDataType.RMV ||
          profileTypeRequired == GridDataType.Frequency ||
          profileTypeRequired == GridDataType.Amplitude);
-      WantsEventMinElevMappingValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventMinElevMappingValues) != 0 ||
-        passFilter.HasMinElevMappingFilter;
+      WantsEventElevationMappingModeValues =
+        (eventPopulationFlags & PopulationControlFlags.WantsEventElevationMappingModeValues) != 0 ||
+        passFilter.HasElevationMappingModeFilter;
       WantsEventInAvoidZoneStateValues =
-        false; // (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsInAvoidZoneStateValues) != 0 || passFilter.HasAvoidZoneStateFilter;
+        false; // (eventPopulationFlags & PopulationControlFlags.WantsInAvoidZoneStateValues) != 0 || passFilter.HasAvoidZoneStateFilter;
       WantsEventGPSAccuracyValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventGPSAccuracyValues) != 0 ||
+        (eventPopulationFlags & PopulationControlFlags.WantsEventGPSAccuracyValues) != 0 ||
         passFilter.HasGPSAccuracyFilter || passFilter.HasGPSToleranceFilter;
       WantsEventPositioningTechValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventPositioningTechValues) != 0 ||
+        (eventPopulationFlags & PopulationControlFlags.WantsEventPositioningTechValues) != 0 ||
         passFilter.HasPositioningTechFilter;
       WantsEventMachineAutomaticsValues =
-        (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventMachineAutomaticsValues) != 0 ||
+        (eventPopulationFlags & PopulationControlFlags.WantsEventMachineAutomaticsValues) != 0 ||
         passFilter.HasGCSGuidanceModeFilter;
       WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile || profileTypeRequired == GridDataType.CellProfile || passFilter.HasLayerIDFilter;
 
@@ -334,7 +338,7 @@ namespace VSS.TRex.Filters
                                         profileTypeRequired == GridDataType.Frequency ||
                                         profileTypeRequired == GridDataType.Amplitude);
 
-      WantsEventMinElevMappingValues = passFilter.HasMinElevMappingFilter;
+      WantsEventElevationMappingModeValues = passFilter.HasElevationMappingModeFilter;
       WantsEventInAvoidZoneStateValues = false; // todo passFilter.HasAvoidZoneStateFilter;
       WantsEventGPSAccuracyValues = passFilter.HasGPSAccuracyFilter || passFilter.HasGPSToleranceFilter;
       WantsEventPositioningTechValues = passFilter.HasPositioningTechFilter;

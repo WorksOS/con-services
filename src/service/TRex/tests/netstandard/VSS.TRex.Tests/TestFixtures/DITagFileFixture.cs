@@ -48,8 +48,8 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", subFolder, fileName), FileMode.Open, FileAccess.Read)),
-        "Converter execute returned false");
+      var fn = Path.Combine("TestData", "TAGFiles", subFolder, fileName);
+      Assert.True(converter.Execute(new FileStream(fn, FileMode.Open, FileAccess.Read)), "Converter execute returned false");
 
       return converter;
     }
@@ -69,8 +69,6 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .Continue()
 
-        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
-
         // Add the factories for the storage proxy caches, both standard and transacted, for spatial and non spatial caches in TRex
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>
           (factory => (ignite, mutability) => null))
@@ -82,7 +80,20 @@ namespace VSS.TRex.Tests.TestFixtures
           (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))))
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>
-          (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability)))));
+          (factory => (ignite, mutability) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability)))))
+        .Build();
+
+      // Set up a singleton storage proxy for mutable and immutable contexts for tests
+      var mutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+      var immutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+
+      DIBuilder
+        .Continue()
+
+        // Add the factory to create a single storage proxy instance. This is 
+        .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => mutability == StorageMutability.Mutable ? mutableStorageProxy : immutableStorageProxy))
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Build();
     }
 
     public DITagFileFixture()
@@ -120,7 +131,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
       DIBuilder.Eject();
     }

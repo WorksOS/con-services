@@ -185,7 +185,6 @@ namespace VSS.TRex.Webtools.Controllers
       var request = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
 
       var Response = request.Execute(arg);
-
       if (Response == null)
         return new JsonResult(@"Profile response is null");
 

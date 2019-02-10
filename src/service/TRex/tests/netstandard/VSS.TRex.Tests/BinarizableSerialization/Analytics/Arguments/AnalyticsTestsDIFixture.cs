@@ -7,20 +7,18 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics
 {
   public class AnalyticsTestsDIFixture
   {
-    private static object Lock = new object();
-
     public AnalyticsTestsDIFixture()
     {
-      lock (Lock)
-      {
-        DIBuilder
-          .New()
-          .AddLogging()
-          .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
-          .Complete();
-      }
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+        .Complete();
     }
 
-    public void Dispose() { } // Nothing needing doing 
+    public void Dispose()
+    {
+      DIBuilder.Eject();
+    }
   }
 }

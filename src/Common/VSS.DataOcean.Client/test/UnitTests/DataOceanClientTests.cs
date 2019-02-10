@@ -361,7 +361,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var success =
         await client.DeleteFile($"{Path.DirectorySeparatorChar}{folderName}{Path.DirectorySeparatorChar}{fileName}",
           null);
-      Assert.True(success);
+      Assert.False(success);
     }
 
 
@@ -702,6 +702,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
       var createUrl = $"{dataOceanBaseUrl}/api/files";
       var getUrl = $"{createUrl}/{expectedFile.Id}";
+      var deleteFileUrl = $"{dataOceanBaseUrl}/api/files/{expectedFileResult.File.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
@@ -714,6 +715,9 @@ namespace VSS.DataOcean.Client.UnitTests
         .ReturnsAsync(expectedUploadResult);
       gracefulMock.Setup(g => g.ExecuteRequest<DataOceanFileResult>(getUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileResult));
+      gracefulMock
+        .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 3, false))
+        .Returns(Task.CompletedTask);
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();

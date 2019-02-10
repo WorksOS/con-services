@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.TRex.Types
+﻿namespace VSS.TRex.Types
 {
-    public enum LiftThicknessType
-    {
+    public enum LiftThicknessType : byte
+  {
       Compacted,
       Uncompacted
     }

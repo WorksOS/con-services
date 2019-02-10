@@ -14,8 +14,12 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Builds this instance for specified executor type.
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient = null,
-      ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null,
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger,
+#if RAPTOR      
+      IASNodeClient raptorClient = null,
+      ITagProcessor tagProcessor = null,
+#endif
+      IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
       ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
       IDictionary<string, string> customHeaders = null)
@@ -31,8 +35,10 @@ namespace VSS.Productivity3D.Common.Interfaces
 
       executor.Initialise(
         log,
+#if RAPTOR      
         raptorClient,
         tagProcessor,
+#endif
         configStore,
         fileRepo,
         tileGenerator,

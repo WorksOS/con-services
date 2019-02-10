@@ -101,18 +101,12 @@ namespace VSS.Pegasus.Client.UnitTests
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
       var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
       var subFolderName = parts[parts.Length - 1];
-      var expectedSubFolderResult = new DataOceanDirectory
-      {
-        Id = Guid.NewGuid(),
-        Name = subFolderName,
-        ParentId = expectedTopFolderResult.Id,
-      };
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId(subFolderPath, null)).ReturnsAsync(expectedSubFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var units = DxfUnitsType.UsSurveyFeet.ToString();
@@ -128,8 +122,8 @@ namespace VSS.Pegasus.Client.UnitTests
           MaxZoom = 21,
           TileType = "xyz",
           TileOrder = "YX",
-          MultiFile = true,
-          Public = false,
+          MultiFile = "true",
+          Public = "false",
           Name = subFolderName,
           AngularUnit = units,
           PlaneUnit = units,
@@ -172,18 +166,12 @@ namespace VSS.Pegasus.Client.UnitTests
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
       var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
       var subFolderName = parts[parts.Length - 1];
-      var expectedSubFolderResult = new DataOceanDirectory
-      {
-        Id = Guid.NewGuid(),
-        Name = subFolderName,
-        ParentId = expectedTopFolderResult.Id,
-      };
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId(subFolderPath, null)).ReturnsAsync(expectedSubFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var units = DxfUnitsType.UsSurveyFeet.ToString();
@@ -199,8 +187,8 @@ namespace VSS.Pegasus.Client.UnitTests
           MaxZoom = 21,
           TileType = "xyz",
           TileOrder = "YX",
-          MultiFile = true,
-          Public = false,
+          MultiFile = "true",
+          Public = "false",
           Name = subFolderName,
           AngularUnit = units,
           PlaneUnit = units,
@@ -243,7 +231,7 @@ namespace VSS.Pegasus.Client.UnitTests
     [Fact]
     public void CanGenerateDxfTilesSuccess()
     {
-      var result = CanGenerateDxfTiles(ExecutionStatus.FINISHED).Result;
+      var result = CanGenerateDxfTiles(ExecutionStatus.SUCCEEDED).Result;
       Assert.NotNull(result);
       Assert.NotNull(result.Extents);
       Assert.NotNull(result.Extents.CoordSystem);
@@ -274,6 +262,40 @@ namespace VSS.Pegasus.Client.UnitTests
       Assert.Null(result);
     }
 
+    [Fact]
+    public void CanDeleteDxfTilesSuccess()
+    {
+      var gracefulMock = new Mock<IWebRequest>();
+
+      var dataOceanMock = new Mock<IDataOceanClient>();
+      string tileFolderFullName = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
+      dataOceanMock.Setup(d => d.DeleteFile(tileFolderFullName, null)).ReturnsAsync(true);
+
+      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      var serviceProvider2 = serviceCollection.BuildServiceProvider();
+      var client = serviceProvider2.GetRequiredService<IPegasusClient>();
+      var result = client.DeleteDxfTiles(dxfFullName, null).Result;
+      Assert.True(result);
+    }
+
+    [Fact]
+    public void CanDeleteDxfTilesFailure()
+    {
+      var gracefulMock = new Mock<IWebRequest>();
+
+      var dataOceanMock = new Mock<IDataOceanClient>();
+      string tileFolderFullName = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
+      dataOceanMock.Setup(d => d.DeleteFile(tileFolderFullName, null)).ReturnsAsync(false);
+
+      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      var serviceProvider2 = serviceCollection.BuildServiceProvider();
+      var client = serviceProvider2.GetRequiredService<IPegasusClient>();
+      var result = client.DeleteDxfTiles(dxfFullName, null).Result;
+      Assert.False(result);
+    }
+
 
     #region privates
     private Task<TileMetadata> CanGenerateDxfTiles(ExecutionStatus status)
@@ -287,18 +309,12 @@ namespace VSS.Pegasus.Client.UnitTests
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
       var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
       var subFolderName = parts[parts.Length-1];
-      var expectedSubFolderResult = new DataOceanDirectory
-      {
-        Id = Guid.NewGuid(),
-        Name = subFolderName,
-        ParentId = expectedTopFolderResult.Id,
-      };
      
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId(subFolderPath, null)).ReturnsAsync(expectedSubFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var units = DxfUnitsType.UsSurveyFeet.ToString();
@@ -314,8 +330,8 @@ namespace VSS.Pegasus.Client.UnitTests
           MaxZoom = 21,
           TileType = "xyz",
           TileOrder = "YX",
-          MultiFile = true,
-          Public = false,
+          MultiFile = "true",
+          Public = "false",
           Name = subFolderName,
           AngularUnit = units,
           PlaneUnit = units,

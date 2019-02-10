@@ -4,8 +4,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+#if RAPTOR
 using TAGProcServiceDecls;
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -28,21 +30,22 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<CompactionTagFileRequest>(item);
-
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
+#if RAPTOR
       var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY_TAGFILE");
       var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY_TAGFILE");
 
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
-
       if (useTrexGateway)
       {
-        request.Validate();
+#endif
+      request.Validate();
 
         result = await CallTRexEndpoint(request).ConfigureAwait(false);
 
         log.LogDebug(result.Code == 0
           ? $"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'."
           : $"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
+#if RAPTOR
       }
 
       if (useRaptorGateway)
@@ -74,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var data = new MemoryStream(request.Data);
       if (useRaptorGateway)
       {
-        ArchiveFile((TTAGProcServerProcessResult) result.Code, data, request.FileName, request.OrgId);
+        ArchiveFile((TAGProcServerProcessResultCode) result.Code, data, request.FileName, request.OrgId);
       }
       else if (useTrexGateway)
       {
@@ -86,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             "No tag file processing server configured."));
       }
-
+#endif
       return result;
     }
 
@@ -99,14 +102,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
       return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper((TRexTagFileResultCode)returnResult.Code));
     }
-
+#if RAPTOR
     private TagFileDirectSubmissionResult CallRaptorEndpoint(TagFileRequestLegacy tfRequest)
     {
       try
       {
 
         var data = new MemoryStream(tfRequest.Data);
-        var returnResult = (TTAGProcServerProcessResult) tagProcessor.ProjectDataServerTAGProcessorClient()
+        var returnResult = (TAGProcServerProcessResultCode) tagProcessor.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor
           (tfRequest.FileName,
             data,
@@ -121,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       catch (Exception ex)
       {
         log.LogError(ex, "PostTagFile (Direct Raptor)");
-        return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprUnknown));
+        return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.Unknown));
       }
       finally
       {
@@ -136,29 +139,29 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     /// <param name="data">Tagfile contents to archive</param>
     /// <param name="tagFileName">Tagfile name</param>
     /// <param name="tccOrgId">ID of TCC organization who owns the tagfile</param>
-    private void ArchiveFile(TTAGProcServerProcessResult resultCode, Stream data, string tagFileName, string tccOrgId)
+    private void ArchiveFile(TAGProcServerProcessResultCode resultCode, Stream data, string tagFileName, string tccOrgId)
     {
       string folderName = null;
       switch (resultCode)
       {
-        case TTAGProcServerProcessResult.tpsprOK:
+        case TAGProcServerProcessResultCode.OK:
           folderName = configStore.GetValueString("TCCSynchProductionDataArchivedFolder") ?? "Production-Data (Archived)";
           break;
 
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel:
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
-        case TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
+        case TAGProcServerProcessResultCode.OnChooseDataModelUnableToDetermineDataModel:
+        case TAGProcServerProcessResultCode.OnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
+        case TAGProcServerProcessResultCode.OnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
+        case TAGProcServerProcessResultCode.OnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
           folderName = configStore.GetValueString("TCCSynchProjectBoundaryIssueFolder") ?? "Project Boundary (Issue)";
           break;
 
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions:
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineUnableToDetermineMachine:
-        case TTAGProcServerProcessResult.tpsprOnChooseMachineUnknownMachine:
+        case TAGProcServerProcessResultCode.OnChooseMachineInvalidSubscriptions:
+        case TAGProcServerProcessResultCode.OnChooseMachineUnableToDetermineMachine:
+        case TAGProcServerProcessResultCode.OnChooseMachineUnknownMachine:
           folderName = configStore.GetValueString("TCCSynchSubscriptionIssueFolder") ?? "Subscription (Issue)";
           break;
 
-        case TTAGProcServerProcessResult.tpsprTFAServiceError:
+        case TAGProcServerProcessResultCode.TFAServiceError:
           log.LogError("TFA is likely down for {0} org {1}", tagFileName, tccOrgId);
           break;
 
@@ -192,12 +195,12 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
         // this was a global catch-all applied by TagFileProcessor
         // when TFA.getProjectId() or getAssetId failed.
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel: 
+        //case TTAGProcServerProcessResult.OnChooseDataModelUnableToDetermineDataModel: 
         
         // These were raptor errors which don't appear to be generated by TRex
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
-        //case TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
+        //case TTAGProcServerProcessResult.OnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
+        //case TTAGProcServerProcessResult.OnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
+        //case TTAGProcServerProcessResult.OnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices:
 
         // 'boundary' and 'Subscription' issues are too broad.
         //    The only thing they say is that re-subitting won't achieve anything until VL configuration is changed.
@@ -283,7 +286,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
       return $"{prefix}{parts[0]}{separator}{parts[1]}/{archiveFolder}/{nameWithoutTime}/{tagFileName}";
     }
-
+#endif
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");

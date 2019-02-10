@@ -4,19 +4,19 @@ using System.IO;
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
-    /// Defines the header written at the start of a stream containing subgrid informatation, either subgrid directory or subgrid segment.
+    /// Defines the header written at the start of a stream containing sub grid information, either sub grid directory or sub grid segment.
     /// </summary>
     public class SubGridStreamHeader
     {
-        public const int kSubGridHeaderFlag_IsSubgridDirectoryFile = 0x1;
-        public const int kSubGridHeaderFlag_IsSubgridSegmentFile = 0x2;
+        public const int kSubGridHeaderFlag_IsSubGridDirectoryFile = 0x1;
+        public const int kSubGridHeaderFlag_IsSubGridSegmentFile = 0x2;
 
         public const int kSubGridMajorVersion = 2;
         public const int kSubGridMinorVersion_Latest = 0;
 
-        public static byte[] kICServerSubgridLeafFileMoniker = new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
+        public static readonly byte[] kICServerSubGridLeafFileMoniker = new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
 
-        public static byte[] kICServerSubgridDirectoryFileMoniker = new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
+        public static readonly byte[] kICServerSubGridDirectoryFileMoniker = new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
 
 
         public byte[] Identifier = new byte[8];
@@ -28,12 +28,12 @@ namespace VSS.TRex.SubGridTrees
         public DateTime StartTime;
         public DateTime EndTime;
 
-        // FLastUpdateTimeUTC records the time at which this subgrid was last updated
+        // FLastUpdateTimeUTC records the time at which this sub grid was last updated
         // in the persistent store
         public DateTime LastUpdateTimeUTC;
 
-        public bool IsSubGridDirectoryFile => (Flags & kSubGridHeaderFlag_IsSubgridDirectoryFile) != 0;
-        public bool IsSubGridSegmentFile => (Flags & kSubGridHeaderFlag_IsSubgridSegmentFile) != 0;
+        public bool IsSubGridDirectoryFile => (Flags & kSubGridHeaderFlag_IsSubGridDirectoryFile) != 0;
+        public bool IsSubGridSegmentFile => (Flags & kSubGridHeaderFlag_IsSubGridSegmentFile) != 0;
 
         public void Read(BinaryReader reader)
         {

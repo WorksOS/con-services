@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using VSS.TRex.Common.Types;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions
 {
@@ -14,5 +15,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions
     double? Height { get; set; }
     [JsonIgnore]
     string Route { get; }
+    [JsonIgnore]
+    MachineControlPlatformType PlatformType { get; set; }
   }
 }

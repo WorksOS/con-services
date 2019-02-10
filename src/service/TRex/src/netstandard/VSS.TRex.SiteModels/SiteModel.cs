@@ -74,19 +74,14 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public bool IsTransient { get; private set; } = true;
 
-    private object machineLoadLockObject = new object();
-    private object siteProofingRunLockObject = new object();
-    private object siteModelMachineDesignsLockObject = new object();
+    private readonly object machineLoadLockObject = new object();
+    private readonly object siteProofingRunLockObject = new object();
+    private readonly object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    private IServerSubGridTree grid;
-
-    /// <summary>
-    /// The grid data for this site model
-    /// </summary>
-    public IServerSubGridTree Grid => grid;
+    public IServerSubGridTree Grid { get; private set; }
     
     private ISubGridTreeBitMask existenceMap;
 
@@ -168,7 +163,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public ISiteModelMetadata MetaData => GetMetaData();
 
-    private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
+    private readonly SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 
     /// <summary>
     /// SiteModelDesigns records all the designs that have been seen in this site model.
@@ -178,7 +173,7 @@ namespace VSS.TRex.SiteModels
     public ISiteModelDesignList SiteModelDesigns => siteModelDesigns;
 
     /// <summary>
-    /// Designs records all the design surfaces that have been imported into the sitemodel
+    /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
     private IDesigns _designs;
 
@@ -195,7 +190,7 @@ namespace VSS.TRex.SiteModels
     public bool SurveyedSurfacesLoaded => _surveyedSurfaces != null;
 
     /// <summary>
-    /// alignments records all the alignment files that have been imported into the sitemodel
+    /// alignments records all the alignment files that have been imported into the site model
     /// </summary>
     private IAlignments _alignments;
     public IAlignments Alignments => _alignments ?? (_alignments = DIContext.Obtain<IAlignmentManager>().List(ID));
@@ -207,7 +202,7 @@ namespace VSS.TRex.SiteModels
     private ISiteProofingRunList siteProofingRuns;
 
     /// <summary>
-    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
+    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this site model.
     /// Each site model proofing run records the name of the site model, machine ID, start/end times and the extents
     /// of the cell information that have been record for it.
     /// </summary>
@@ -236,7 +231,7 @@ namespace VSS.TRex.SiteModels
     public bool SiteProofingRunsLoaded => siteProofingRuns != null;
 
     /// <summary>
-    /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this sitemodel.
+    /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this site model.
     /// </summary>
     private ISiteModelMachineDesignList siteModelMachineDesigns;
 
@@ -302,7 +297,11 @@ namespace VSS.TRex.SiteModels
 
     public bool MachinesLoaded => machines != null;
 
+    /// <summary>
+    /// Default ignoring invalid positions to true for TAG files processing into this site model.
+    /// </summary>
     public bool IgnoreInvalidPositions { get; set; } = true;
+
 
     public SiteModel()
     {
@@ -310,14 +309,14 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Constructs a sitemodel from an 'origin' sitemodel that provides select information to seed the new site model
+    /// Constructs a site model from an 'origin' site model that provides select information to seed the new site model
     /// </summary>
     /// <param name="originModel"></param>
     /// <param name="originFlags"></param>
     public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this()
     {
       if (originModel.IsTransient)
-        throw new TRexException("Cannot use a transient sitemodel as an origin for constructing a new site model");
+        throw new TRexException("Cannot use a transient site model as an origin for constructing a new site model");
 
       ID = originModel.ID;
 
@@ -331,7 +330,7 @@ namespace VSS.TRex.SiteModels
 
       // SiteModelDesignNames = LastModifiedDate.SiteModelDesignNames;
 
-      grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
+      Grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
         ? originModel.Grid
         : new ServerSubGridTree(originModel.ID);
 
@@ -383,7 +382,7 @@ namespace VSS.TRex.SiteModels
       IsTransient = isTransient;
       // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
-      grid = new ServerSubGridTree(ID);
+      Grid = new ServerSubGridTree(ID);
 
       // Allow existence map loading to be deferred/lazy on reference
       existenceMap = null;
@@ -422,9 +421,6 @@ namespace VSS.TRex.SiteModels
           }
         }
 
-      // Designs
-      // Note: Design names are handled as a part of integration of machine events
-
         LastModifiedDate = Source.LastModifiedDate;
     }
 
@@ -442,11 +438,6 @@ namespace VSS.TRex.SiteModels
       writer.Write(Grid.CellSize);
 
       SiteModelExtent.Write(writer);
-
-      //FSiteModelDesigns.WriteToStream(Stream);
-
-      // Write the design names list
-      //FSiteModelDesignNames.SaveToStream(Stream);
 
       writer.Write(LastModifiedDate.ToBinary());
     }
@@ -470,7 +461,7 @@ namespace VSS.TRex.SiteModels
 
       // Read the ID of the data model from the stream.
       // If the site model already has an assigned ID then
-      // use this ID in favour of the ID read from the data model.
+      // use this ID in favor of the ID read from the data model.
       Guid LocalID = reader.ReadGuid();
 
       if (ID == Guid.Empty)
@@ -491,11 +482,6 @@ namespace VSS.TRex.SiteModels
 
       SiteModelExtent.Read(reader);
 
-      // FSiteModelDesigns.ReadFromStream(Stream);
-
-      // Read the design names list
-      //FSiteModelDesignNames.LoadFromStream(Stream);
-
       LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
     }
 
@@ -512,12 +498,12 @@ namespace VSS.TRex.SiteModels
         return true;
       }
 
-      Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
+      Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
       return false;
     }
 
     /// <summary>
-    /// Save the sitemodel metadata and core mutated state driven by TAG file ingest
+    /// Save the site model metadata and core mutated state driven by TAG file ingest
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <returns></returns>
@@ -529,7 +515,7 @@ namespace VSS.TRex.SiteModels
       {
         if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) != FileSystemErrorStatus.OK)
         {
-          Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
+          Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
           Result = false;
         }
 

@@ -10,6 +10,9 @@
 
 #>
 <# #>
+
+Write-Host "Setting common variables" -ForegroundColor DarkGray
+
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-Productivity3D-Scheduler", "Machine")

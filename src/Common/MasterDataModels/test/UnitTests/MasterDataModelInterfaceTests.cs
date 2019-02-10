@@ -20,8 +20,8 @@ namespace VSS.MasterData.Models.UnitTests
       // It can not be null, as the model can be contained within larger models which aggregate the Identifiers - it's easier to return an empty list, than check for null every time you query related models
       var type = typeof(IMasterDataModel);
 
-      // Filter Data is in master data models, to make sure we get the right assembly
-      var assembly = Assembly.GetAssembly(typeof(FilterData));
+      // BaseDataResult is in master data models, to make sure we get the right assembly
+      var assembly = Assembly.GetAssembly(typeof(BaseDataResult));
 
       // We need to be checking the master data models assembly
       Assert.AreEqual("VSS.MasterData.Models", assembly.GetName().Name);

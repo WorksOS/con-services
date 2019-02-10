@@ -12,6 +12,8 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
@@ -31,6 +33,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
       : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy, fileListProxy, repository, producer, kafkaTopicName, auxRepository)
     {
+
       FileListProxy = fileListProxy;
     }
 
@@ -132,7 +135,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         filterRequest.FilterJson = existingFilter.FilterJson;
         var updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new[] { 17, 18 });
 
-        if (updateFilterEvent != null)
+        if (filterRequest.SendKafkaMessages && updateFilterEvent != null)
         {
           var payload = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent });
           SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);
@@ -166,7 +169,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, isTransient ? new[] { 19, 20 } : new[] { 24, 25 });
 
       //Only write to kafka for persistent filters
-      if (!isTransient && createFilterEvent != null)
+      if (filterRequest.SendKafkaMessages && !isTransient && createFilterEvent != null)
       {
         var payload = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
         SendToKafka(createFilterEvent.FilterUID.ToString(), payload, 26);

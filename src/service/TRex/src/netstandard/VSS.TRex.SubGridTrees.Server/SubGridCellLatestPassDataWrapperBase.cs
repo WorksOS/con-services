@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
-    /// A wrapper for a subgrid containing all information related to the 'latest kown' information related to each cell.
+    /// A wrapper for a sub grid containing all information related to the 'latest known' information related to each cell.
     /// This includes 'existence' information which indicates if the cell in question has any cell passes recorded for it.
     /// </summary>
     public abstract class SubGridCellLatestPassDataWrapperBase
@@ -38,7 +38,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Clear all latest information for the subgrid
+        /// Clear all latest information for the sub grid
         /// </summary>
         public void Clear()
         {
@@ -57,7 +57,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Clear all latest information for the subgrid
+        /// Clear all latest information for the sub grid
         /// </summary>
         public virtual void ClearPasses()
         {

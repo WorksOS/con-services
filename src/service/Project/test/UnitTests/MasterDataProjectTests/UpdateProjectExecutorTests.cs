@@ -398,7 +398,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
           projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, null, 
-          dataOceanClient.Object, null, authn.Object);
+          dataOceanClient.Object, authn.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -591,7 +591,7 @@ namespace VSS.MasterData.ProjectTests
       (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
         _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
-        dataOceanClient.Object, null, authn.Object);
+        dataOceanClient.Object, authn.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
       return AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);

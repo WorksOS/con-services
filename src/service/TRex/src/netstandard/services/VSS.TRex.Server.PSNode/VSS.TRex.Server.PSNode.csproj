@@ -110,6 +110,7 @@
     <ProjectReference Include="..\..\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
       <Private>true</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Reports\VSS.TRex.Reports.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
       <Private>true</Private>
     </ProjectReference>
@@ -189,7 +190,7 @@
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="build" Condition="'$(SolutionDir)'!='*Undefined*'">
-    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.6.0\libs" />
+    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.7.0\libs" />
   </Target>
 
 </Project>

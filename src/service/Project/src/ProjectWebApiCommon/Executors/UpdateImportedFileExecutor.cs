@@ -68,20 +68,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             serviceExceptionHandler, raptorProxy,
             projectRepo)
           .ConfigureAwait(false);
-        existing.MinZoomLevel = addFileResult.MinZoomLevel;
-        existing.MaxZoomLevel = addFileResult.MaxZoomLevel;
 
-        //Generate DXF tiles
-        if (updateImportedFile.ImportedFileType == ImportedFileType.Linework)
+        if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
-          var project =
-            await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log,
-              serviceExceptionHandler, projectRepo);
-
-          await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, updateImportedFile.ProjectUid, customerUid,
-            updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
-            project.CoordinateSystemFileName, log, customHeaders, tileServiceProxy);
-        }
+          //Create DXF file for alignment center line
+          await ImportedFileRequestHelper.CreateGeneratedDxfFile(
+            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
+            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.FileDescriptor.FileName, updateImportedFile.DataOceanRootFolder);
+        }       
       }
 
       // if all succeeds, update Db and  put update to kafka que

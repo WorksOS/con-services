@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -17,13 +16,7 @@ namespace VSS.MasterData.Proxies
       (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
     {
       var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-
-      preAction(httpRequestMessage);
-
-      var cancellationTime = timeout.HasValue ? timeout.Value : 60000;
-      var cts = new CancellationTokenSource(cancellationTime);
-      log?.LogDebug($"Starting the request with timeout: {cancellationTime}ms");
-      return httpClient.SendAsync(httpRequestMessage,cts.Token);
+      return SendAsync(httpClient, httpRequestMessage, timeout, preAction, log);
     }
 
     public static Task<HttpResponseMessage> PostAsync
@@ -55,11 +48,24 @@ namespace VSS.MasterData.Proxies
       {
         Content = content
       };
+      return SendAsync(httpClient, httpRequestMessage, timeout, preAction, log);
+    }
+
+    public static Task<HttpResponseMessage> DeleteAsync
+      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
+    {
+      var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
+      return SendAsync(httpClient, httpRequestMessage, timeout, preAction, log);
+    }
+
+    private static Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, HttpRequestMessage httpRequestMessage, 
+      int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
+    {
       preAction(httpRequestMessage);
       var cancellationTime = timeout.HasValue ? timeout.Value : 60000;
       var cts = new CancellationTokenSource(cancellationTime);
       log?.LogDebug($"Starting the request with timeout: {cancellationTime}ms");
-      return httpClient.SendAsync(httpRequestMessage,cts.Token);
+      return httpClient.SendAsync(httpRequestMessage, cts.Token);
     }
   }
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
 using VSS.TRex.TAGFiles.Types;
@@ -72,9 +74,9 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private int _ControlStateTilt = MachineControlStateFlags.NullGCSControlState;
     private int _ControlStateSideShift = MachineControlStateFlags.NullGCSControlState;
 
-    // FAutomaticesMode records the machine automatic control state as defined by
+    // FAutomaticsMode records the machine automatic control state as defined by
     // the 5 GCS900 control state flag sets. It is currently defined as a simple
-    // on/off switch. The UpdateAutomaticsMode method examines the individial
+    // on/off switch. The UpdateAutomaticsMode method examines the individual
     // control states and sets the value of this accordingly.
     MachineAutomaticsMode _AutomaticsMode = MachineAutomaticsMode.Unknown;
 
@@ -306,6 +308,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
       return MachineDirection.Unknown;
     }
 
+    public MachineControlPlatformType GetPlatformType()
+    {
+      return MachineSerialUtilities.MapSerialToModel(HardwareID);
+    }
+
     public virtual void SetResearchData(bool value) => _ResearchData = value;
     public virtual void SetUsingCCA(bool value) => _UsingCCA = value;
 
@@ -388,7 +395,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     // values maintained in a TAccumulatedAttributeList
     public byte ValidPosition { get; set; }
 
-    public bool MinElevMapping { get; set; }
+    public ElevationMappingMode ElevationMappingMode { get; set; }
     public byte InAvoidZone { get; set; }
 
     public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
@@ -396,7 +403,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
-    public byte MachineType { get; set; } = CellPassConsts.MachineTypeNull;
+    public MachineType MachineType { get; set; } = CellPassConsts.MachineTypeNull;
 
     public DateTime UserTimeOffset { get; set; } = DateTime.MinValue;
 
@@ -558,7 +565,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public virtual void SetAgeOfCorrection(byte value) => AgeOfCorrections.Add(DataTime, value);
     public virtual void SetVolkelMeasRange(int value) => VolkelMeasureRanges.Add(DataTime, value);
     public virtual void SetVolkelMeasUtilRange(int value) => VolkelMeasureUtilRanges.Add(DataTime, value);
-    public virtual void SetMinElevMappingState(bool value) => MinElevMapping = value;
+    public virtual void SetElevationMappingModeState(ElevationMappingMode value) => ElevationMappingMode = value;
     public virtual void SetInAvoidZoneState(byte value) => InAvoidZone = value;
     public virtual void SetPositioningTechState(PositioningTech value) => PositioningTech = value;
     public virtual void SetGPSAccuracyState(GPSAccuracy AccValue, ushort LimValue)

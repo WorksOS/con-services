@@ -16,6 +16,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Common.Filters.Caching
 {
@@ -249,7 +250,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             $"Filter not found, id: { filterUid }"));
       }
 
-      return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson).GetHashCode();
+      return JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(filter.FilterJson).GetHashCode();
     }
   }
 }

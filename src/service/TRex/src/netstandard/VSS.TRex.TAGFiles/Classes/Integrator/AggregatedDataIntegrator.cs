@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -11,7 +12,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// TasksToProcess is the list of tasks the processor is working through.
         /// </summary>
-        public ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess { get; set; } = new ConcurrentQueue<AggregatedDataIntegratorTask>();
+        public ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess { get; } = new ConcurrentQueue<AggregatedDataIntegratorTask>();
 
         // FProcessEvent is used to wake up this processing thread when something arrives
         // into the FFilesToProcess list
@@ -43,18 +44,20 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // tasks to the list in a concurrent fashion if required.
         // Each task added to the process list represents a tag file that has been
         // processed
-        public bool AddTaskToProcessList(ISiteModel siteModel,
-                                      IMachine machine,
-                                      IServerSubGridTree aggregatedCellPasses,
-                                      int aggregatedCellPassCount,
-                                      IProductionEventLists aggregatedMachineEvents)
+        public void AddTaskToProcessList(ISiteModel transientSiteModel,
+                                         Guid persistentSiteModelID,
+                                         IMachine transientMachine,
+                                         Guid persistentMachineID,
+                                         IServerSubGridTree aggregatedCellPasses,
+                                         int aggregatedCellPassCount,
+                                         IProductionEventLists aggregatedMachineEvents)
         {
             AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask
             {
-                TargetSiteModel = siteModel,
-                TargetSiteModelID = siteModel.ID,
-                TargetMachine = machine,
-                TargetMachineID = machine.ID,
+                IntermediaryTargetSiteModel = transientSiteModel,
+                PersistedTargetSiteModelID = persistentSiteModelID,
+                IntermediaryTargetMachine = transientMachine,
+                PersistedTargetMachineID = persistentMachineID,
                 AggregatedCellPasses = aggregatedCellPasses,
                 AggregatedMachineEvents = aggregatedMachineEvents,
                 AggregatedCellPassCount = aggregatedCellPassCount
@@ -68,15 +71,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             System.Threading.Interlocked.Increment(ref PendingFilesToBeProcessedCount);
 
             // FProcessEvent.SetEvent;
-
-            return true;
         }
-
-        // RemoveTaskFromProcessList does the opposite of AddTaskToProcessList.
-        // This is a thread safe call, multiple threads may safely add
-        // tasks to the list in a concurrent fashion if required. A return result of false indicates the task was not present in the
-        // tasks to process list.
-        //      function RemoveTaskFromProcessList(const Task: TSVOICAggregatedDataIntegratorTask): Boolean;
 
         // CountOfTasksToProcess returns the number of tasks remaining in the
         // tasks to process list. This is a thread safe call, multiple threads may safely add

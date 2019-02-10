@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.GridFabric.Interfaces;
@@ -15,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         ISubGridDirectory Directory { get; set; }
 
         /// <summary>
-        /// The date time of the first observed cell pass within this subgrid
+        /// The date time of the first observed cell pass within this sub grid
         /// </summary>
         DateTime LeafStartTime { get; }
 
@@ -42,8 +41,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 
         bool HasAllCellPasses();
         bool HasLatestData();
-        bool LatestCellPassesOutOfDate { get; }
-        bool HaveSubgridDirectoryDetails { get; }
+        bool HasSubGridDirectoryDetails { get; }
 
         void AddPass(uint cellX, uint cellY, CellPass Pass);
 

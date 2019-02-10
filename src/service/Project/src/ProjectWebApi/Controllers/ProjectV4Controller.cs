@@ -71,8 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient,ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient, authn)
     {
@@ -171,7 +170,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName, raptorProxy, 
             subscriptionProxy, null, null, null, projectRepo, subscriptionRepo, fileRepo, 
-            null, HttpContextAccessor, dataOceanClient, null, authn)
+            null, HttpContextAccessor, dataOceanClient, authn)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -253,7 +252,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null,
             projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, 
-            dataOceanClient, null, authn)
+            dataOceanClient, authn)
           .ProcessAsync(project)
       );
 

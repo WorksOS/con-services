@@ -34,7 +34,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetCCAValues |
-        PopulationControlFlags.WantsEventMinElevMappingValues;
+        PopulationControlFlags.WantsEventElevationMappingModeValues;
 
       _gridDataType = TRex.Types.GridDataType.CCA;
     }
@@ -201,7 +201,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataCCAEntryRecord.IndicativeSizeInBytes();
+             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * SubGridCellPassDataCCAEntryRecord.IndicativeSizeInBytes();
     }
   }
 }

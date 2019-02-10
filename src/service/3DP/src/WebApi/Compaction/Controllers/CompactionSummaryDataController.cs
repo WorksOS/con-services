@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+#if RAPTOR
 using ASNodeDecls;
+#endif
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -62,7 +64,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-              .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+              .Build<SummaryCMVExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
               .Process(request) as CMVSummaryResult;
 
         var cmvSummaryResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
@@ -72,10 +78,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(cmvSummaryResult);
       }
+#if RAPTOR
       catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
       {
         return NoContent();
       }
+#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetCmvSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -119,7 +127,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .Build<SummaryMDPExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as MDPSummaryResult;
 
         var mdpSummaryResult = new CompactionMdpSummaryResult(result, mdpSettings);
@@ -129,10 +141,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(mdpSummaryResult);
       }
+#if RAPTOR
       catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
       {
         return NoContent();
       }
+#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetMdpSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -168,7 +182,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryPassCountsExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .Build<SummaryPassCountsExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
@@ -178,10 +196,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(passCountSummaryResult);
       }
+#if RAPTOR
       catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
       {
         return NoContent();
       }
+#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetPassCountSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -225,7 +245,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .Build<SummaryTemperatureExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as TemperatureSummaryResult;
 
         var temperatureSummaryResult = new CompactionTemperatureSummaryResult(result);
@@ -235,10 +259,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(temperatureSummaryResult);
       }
+#if RAPTOR
       catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
       {
         return NoContent();
       }
+#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetTemperatureSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -279,7 +305,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .Build<SummarySpeedExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SpeedSummaryResult;
 
         var speedSummaryResult = new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
@@ -289,10 +319,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(speedSummaryResult);
       }
+#if RAPTOR
       catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
       {
         return NoContent();
       }
+#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetSpeedSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -372,15 +404,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryVolumesExecutorV2>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .Build<SummaryVolumesExecutorV2>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SummaryVolumesResult;
 
         volumesSummaryResult = CompactionVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));
       }
+#if RAPTOR
       catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
       {
         return NoContent();
       }
+#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetSummaryVolumes)}: {exception.GetResult.Message} ({exception.GetResult.Code})");

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
 {
@@ -141,7 +144,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       }
     }
 
-
     [TestMethod]
     public void MapProjectSettingsToPassCountSettings()
     {
@@ -260,6 +262,125 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.IsNotNull(lbs.MachineSpeedTarget, "machineSpeedTarget should not be null");
       Assert.AreEqual(CompactionProjectSettings.DefaultSettings.CustomTargetSpeedMinimum, lbs.MachineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
       Assert.AreEqual(CompactionProjectSettings.DefaultSettings.CustomTargetSpeedMaximum, lbs.MachineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
+    }
+
+    [TestMethod]
+    [DataRow(null, "87e6bd66-54d8-4651-8907-88b15d81b2d7",
+      null, -1, null,
+      true, false, false, false, false, false,
+      null,
+      1.0, GridReportOption.Automatic,
+      0.0, 0.0, 0.0, 0.0, 0.0)]
+    [DataRow(null, "87e6bd66-54d8-4651-8907-88b15d81b2d7",
+      null, -1, null,
+      true, false, false, false, false, false,
+      "57e6bd66-54d8-4651-8907-88b15d81b2d7",
+      1.0, GridReportOption.Automatic,
+      0.0, 0.0, 0.0, 0.0, 0.0)]
+    public void MapGridReportRequestToTRexRequest(
+      long? projectId, string projectString,
+      FilterResult filter, long filterId, LiftBuildSettings liftBuildSettings,
+      bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
+      string designFileString,
+      double? gridInterval, GridReportOption gridReportOption,
+      double startNorthing, double startEasting, double endNorthing, double endEasting, double azimuth)
+    {
+      Guid? projectUid = string.IsNullOrEmpty(projectString) ? (Guid?) null : Guid.Parse(projectString);
+      var designFile = string.IsNullOrEmpty(designFileString)
+        ? (DesignDescriptor) null
+        : new DesignDescriptor(-1, null, -1, Guid.Parse(designFileString));
+      var apiRequest = CompactionReportGridRequest.CreateCompactionReportGridRequest(
+        projectId, projectUid,
+        filter, filterId, liftBuildSettings, 
+        true, false, false, false, false, false,
+        designFile,
+        gridInterval, GridReportOption.Automatic,
+        startNorthing, startEasting, endNorthing, endEasting, azimuth);
+      apiRequest.Validate();
+
+      var tRexRequest = AutoMapperUtility.Automapper.Map<CompactionReportGridTRexRequest>(apiRequest);
+      Assert.AreEqual(projectUid, tRexRequest.ProjectUid, "projectUid not mapped correctly");
+      Assert.AreEqual(apiRequest.Filter, tRexRequest.Filter, "Filter not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportCMV, tRexRequest.ReportCmv, "ReportCMV not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportMDP, tRexRequest.ReportMdp, "ReportMDP not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportTemperature, tRexRequest.ReportTemperature, "ReportTemperature not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportCutFill, tRexRequest.ReportCutFill, "ReportCutFill not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
+      if (string.IsNullOrEmpty(designFileString))
+        Assert.IsNull(tRexRequest.CutFillDesignUid, "CutFillDesignUid not mapped correctly");
+      else
+        Assert.AreEqual(designFileString, tRexRequest.CutFillDesignUid.ToString(), "CutFillDesignUid not mapped correctly");
+
+      Assert.AreEqual(apiRequest.GridInterval, tRexRequest.GridInterval, "GridInterval not mapped correctly");
+      Assert.AreEqual(apiRequest.GridReportOption, tRexRequest.GridReportOption, "GridReportOption not mapped correctly");
+      Assert.AreEqual(apiRequest.StartNorthing, tRexRequest.StartNorthing, "StartNorthing not mapped correctly");
+      Assert.AreEqual(apiRequest.StartEasting, tRexRequest.StartEasting, "StartEasting not mapped correctly");
+      Assert.AreEqual(apiRequest.EndNorthing, tRexRequest.EndNorthing, "EndNorthing not mapped correctly");
+      Assert.AreEqual(apiRequest.EndEasting, tRexRequest.EndEasting, "EndEasting not mapped correctly");
+      Assert.AreEqual(apiRequest.Azimuth, tRexRequest.Azimuth, "Azimuth not mapped correctly");
+    }
+
+    [TestMethod]
+    [DataRow(null, "87e6bd66-54d8-4651-8907-88b15d81b2d7",
+      null, -1, null,
+      true, false, false, false, false, false,
+      null, "33e6bd66-54d8-4651-8907-88b15d81b2d7",
+      2.0, 100.0, 200.0, new double[] { -1.0, -0.5, 0.0, 1.5 })]
+    [DataRow(null, "87e6bd66-54d8-4651-8907-88b15d81b2d7",
+      null, -1, null,
+      true, false, false, false, true, true,
+      "57e6bd66-54d8-4651-8907-88b15d81b2d7", "33e6bd66-54d8-4651-8907-88b15d81b2d7",
+      1.5, 50.0, 2000.0, new double[] { 0.0 })]
+    public void MapStationOffsetReportRequestToTRexRequest(
+      long? projectId, string projectString,
+      FilterResult filter, long filterId, LiftBuildSettings liftBuildSettings,
+      bool reportElevation, bool reportCmv, bool reportMdp, bool reportPassCount, bool reportTemperature, bool reportCutFill,
+      string designFileString, string alignmentFileString,
+      double crossSectionInterval, double startStation, double endStation, double[] offsets)
+    {
+      Guid? projectUid = string.IsNullOrEmpty(projectString) ? (Guid?)null : Guid.Parse(projectString);
+      var cutFillDesignDescriptor = string.IsNullOrEmpty(designFileString)
+        ? (DesignDescriptor)null
+        : new DesignDescriptor(-1, null, -1, Guid.Parse(designFileString));
+
+      var alignmentDescriptor = new DesignDescriptor(-1, null, -1, Guid.Parse(alignmentFileString));
+
+      var apiRequest = CompactionReportStationOffsetRequest.CreateRequest(
+        projectId, projectUid,
+        filter, filterId, liftBuildSettings,
+        true, false, false, false, false, false,
+        cutFillDesignDescriptor, alignmentDescriptor,
+        crossSectionInterval, startStation, endStation, offsets,
+        null, string.Empty);
+      apiRequest.Validate();
+
+      var tRexRequest = AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(apiRequest);
+      Assert.AreEqual(projectUid, tRexRequest.ProjectUid, "projectUid not mapped correctly");
+      Assert.AreEqual(apiRequest.Filter, tRexRequest.Filter, "Filter not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportCMV, tRexRequest.ReportCmv, "ReportCmv not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportMDP, tRexRequest.ReportMdp, "ReportMdp not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportTemperature, tRexRequest.ReportTemperature, "ReportTemperature not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportCutFill, tRexRequest.ReportCutFill, "ReportCutFill not mapped correctly");
+      Assert.AreEqual(apiRequest.ReportElevation, tRexRequest.ReportElevation, "ReportElevation not mapped correctly");
+      if (string.IsNullOrEmpty(designFileString))
+        Assert.IsNull(tRexRequest.CutFillDesignUid, "CutFillDesignUid not mapped correctly");
+      else
+        Assert.AreEqual(designFileString, tRexRequest.CutFillDesignUid.ToString(), "CutFillDesignUid not mapped correctly");
+
+      if (string.IsNullOrEmpty(alignmentFileString))
+        Assert.IsNull(tRexRequest.AlignmentDesignUid, "AlignmentDesignUid not mapped correctly");
+      else
+        Assert.AreEqual(alignmentFileString, tRexRequest.AlignmentDesignUid.ToString(), "AlignmentDesignUid not mapped correctly");
+
+      Assert.AreEqual(tRexRequest.CrossSectionInterval, apiRequest.CrossSectionInterval, "CrossSectionInterval not mapped correctly");
+      Assert.AreEqual(tRexRequest.StartStation, apiRequest.StartStation, "StartStation not mapped correctly");
+      Assert.AreEqual(tRexRequest.EndStation, apiRequest.EndStation, "EndStation not mapped correctly");
+      Assert.AreEqual(tRexRequest.Offsets.Length, apiRequest.Offsets.Length, "Offset count not mapped correctly");
+      Assert.AreEqual(tRexRequest.Offsets.Length > 0 ? tRexRequest.Offsets[0] : -6666, 
+                      apiRequest.Offsets.Length > 0 ? apiRequest.Offsets[0] : -6666, "Offset[0] not mapped correctly");
+
     }
   }
 }

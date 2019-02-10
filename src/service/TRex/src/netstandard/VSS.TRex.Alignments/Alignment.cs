@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
 
@@ -125,6 +127,20 @@ namespace VSS.TRex.Alignments
     public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
 
     /// <summary>
+    /// Resolves each station/offset to a NEE value
+    /// </summary>
+    /// <param name="crossSectionInterval"></param>
+    /// <param name="startStation"></param>
+    /// <param name="endStation"></param>
+    /// <param name="offsets"></param>
+    /// <returns></returns>
+    public List<StationOffsetPoint> GetOffsetPointsInNEE(double crossSectionInterval, double startStation, double endStation, double[] offsets)
+    {
+      // todo when SDK available
+      return new List<StationOffsetPoint>();
+    }
+
+    /// <summary>
     /// Determine if two Alignments are equal
     /// </summary>
     /// <param name="other"></param>
@@ -136,5 +152,6 @@ namespace VSS.TRex.Alignments
              DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
              (Extents.Equals(other.Extents));
     }
+
   }
 }

@@ -4,12 +4,12 @@ using Xunit;
 
 namespace VSS.TRex.Tests
 {
-        public class GPSModeTests
+  public class GPSModeTests
+  {
+    [Fact]
+    public void Test_GPSMode()
     {
-        [Fact]
-        public void Test_GPSMode()
-        {
-            Assert.Equal(10, Enum.GetNames(typeof(GPSMode)).Length);
-        }
+      Assert.Equal(10, Enum.GetNames(typeof(GPSMode)).Length);
     }
+  }
 }

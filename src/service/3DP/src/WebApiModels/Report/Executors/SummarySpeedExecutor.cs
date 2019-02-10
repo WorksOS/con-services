@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+#if RAPTOR
 using ASNode.SpeedSummary.RPC;
 using ASNodeDecls;
 using SVOICOptionsDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -25,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       ProcessErrorCodes();
     }
-
+#if RAPTOR
     private SpeedSummaryResult ConvertResult(TASNodeSpeedSummaryResult result)
     {
       return new SpeedSummaryResult
@@ -36,22 +38,25 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         Math.Round(result.CovegareArea, 5)
       );
     }
-
+#endif
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<SummarySpeedRequest>(item);
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SPEED"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
         	var speedSummaryRequest = new SpeedSummaryRequest(
             request.ProjectUid,
             request.Filter,
             request.LiftBuildSettings.MachineSpeedTarget);
 
           return trexCompactionDataProxy.SendSpeedSummaryRequest(speedSummaryRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         var raptorResult = raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
@@ -65,6 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(result);
 
         throw CreateServiceException<SummarySpeedExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -74,7 +80,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

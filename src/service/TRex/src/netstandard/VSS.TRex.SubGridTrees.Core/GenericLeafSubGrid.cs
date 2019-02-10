@@ -5,7 +5,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
-    /// GenericLeafSubGrid in T implements a leaf subgrid where all the cells in the leaf are generic type T.
+    /// GenericLeafSubGrid in T implements a leaf sub grid where all the cells in the leaf are generic type T.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class GenericLeafSubGrid<T> : SubGrid, IGenericLeafSubGrid<T>, ILeafSubGrid
@@ -38,7 +38,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Iterates over all the cells in the leaf subgrid calling functor on each of them.
+        /// Iterates over all the cells in the leaf sub grid calling functor on each of them.
         /// Both non-null and null values are presented to functor.
         /// </summary>
         /// <param name="functor"></param>

@@ -1,6 +1,5 @@
-﻿using System;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
+﻿using VSS.TRex.Types;
+using VSS.TRex.Events.Models;
 
 namespace VSS.TRex.Filters.Interfaces
 {
@@ -17,7 +16,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool WantsEventMachineCompactionRMVJumpThreshold { get; set; }
     bool WantsEventMachineAutomaticsValues { get; set; }
     bool WantsEventMapResetValues { get; set; }
-    bool WantsEventMinElevMappingValues { get; set; }
+    bool WantsEventElevationMappingModeValues { get; set; }
     bool WantsEventInAvoidZoneStateValues { get; set; }
     bool WantsEventGPSAccuracyValues { get; set; }
     bool WantsEventPositioningTechValues { get; set; }
@@ -47,7 +46,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// Converts the set of event population flags into a bit-flagged integer
     /// </summary>
     /// <returns></returns>
-    int GetFlags();
+    uint GetFlags();
 
     /// <summary>
     /// Converts a bit-flagged integer into the set of event population flags
@@ -61,11 +60,11 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     /// <param name="profileTypeRequired"></param>
     /// <param name="passFilter"></param>
-    /// <param name="clientGrid"></param>
+    /// <param name="eventPopulationFlags"></param>
     void PreparePopulationControl(GridDataType profileTypeRequired,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       ICellPassAttributeFilter passFilter,
-      IClientLeafSubGrid clientGrid);
+      PopulationControlFlags eventPopulationFlags);
 
     /// <summary>
     /// Prepares the set of event population control flags depending on the requested data type and filter

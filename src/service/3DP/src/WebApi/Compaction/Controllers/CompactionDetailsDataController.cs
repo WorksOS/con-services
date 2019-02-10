@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+#if RAPTOR
 using ASNodeDecls;
+#endif
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -66,7 +68,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-          .Build<CMVChangeSummaryExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Build<CMVChangeSummaryExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVChangeSummaryResult;
         var returnResult = new CompactionCmvPercentChangeResult(result);
         Log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
@@ -77,13 +83,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
+#if RAPTOR
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
           new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+#endif
       }
       finally
       {
@@ -103,13 +111,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetCmvDetailsTargets: " + Request.QueryString);
 
+#if !RAPTOR
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
       CMVRequest request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
       try
       {
         var result = RequestExecutorContainerFactory
-          .Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Build<DetailedCMVExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVDetailedResult;
 
         var returnResult = new CompactionCmvDetailedResult(result, null);
@@ -119,13 +135,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
+#if RAPTOR
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
           new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+#endif
       }
       finally
       {
@@ -150,13 +168,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result1 = RequestExecutorContainerFactory
-          .Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy:TRexCompactionDataProxy, customHeaders:CustomHeaders)
+          .Build<DetailedCMVExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy:TRexCompactionDataProxy, customHeaders:CustomHeaders)
           .Process(request) as CMVDetailedResult;
 
         if (result1 != null && result1.ConstantTargetCmv == -1)
         {
           var result2 = RequestExecutorContainerFactory
-            .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<SummaryCMVExecutor>(LoggerFactory,
+#if RAPTOR
+              RaptorClient, 
+#endif
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVSummaryResult;
 
           if (result2 != null && result2.HasData())
@@ -174,13 +200,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
+#if RAPTOR
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
           new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+#endif
       }
       finally
       {
@@ -205,7 +233,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<DetailedPassCountExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .Build<DetailedPassCountExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(passCountsRequest) as PassCountDetailedResult;
 
         var returnResult = new CompactionPassCountDetailedResult(result);
@@ -216,13 +248,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
+#if RAPTOR
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
           new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+#endif
       }
       finally
       {
@@ -260,7 +294,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionCutFillExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Build<CompactionCutFillExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient, 
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(cutFillRequest) as CompactionCutFillDetailedResult);
     }
 
@@ -299,14 +337,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result1 = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<DetailedTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Build<DetailedTemperatureExecutor>(LoggerFactory,
+#if RAPTOR
+              RaptorClient, 
+#endif
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(detailsRequest) as CompactionTemperatureDetailResult);
 
         //When TRex done for temperature details, assume it will set target in details call
         if (result1 != null && result1.TemperatureTarget == null)
         {
           var result2 = RequestExecutorContainerFactory
-            .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore,
+            .Build<SummaryTemperatureExecutor>(LoggerFactory,
+#if RAPTOR
+              RaptorClient, 
+#endif
+              configStore: ConfigStore,
               trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(summaryRequest) as TemperatureSummaryResult;
           result1.SetTargets(result2?.TargetData);
@@ -317,11 +363,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetTemperatureDetails)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
-        //return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+#if RAPTOR
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
           new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+#endif
       }
       finally
       {

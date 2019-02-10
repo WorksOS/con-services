@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using Jaeger.Thrift;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -14,6 +18,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -230,43 +235,43 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     #endregion TRex
 
     #region tiles
-
-    public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, string fileName,
-      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, ILogger log, 
-      IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy)
-    { 
-      if (importedFileType == ImportedFileType.Linework)
+    /// <summary>
+    /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
+    /// </summary>
+    /// <returns>The generated file name</returns>
+    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IRaptorProxy raptorProxy, 
+      IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn, 
+      IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
+    {
+      var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
+      //Get generated DXF file from Raptor
+      var dxfContents = await raptorProxy.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
+      //GradefulWebRequest should throw an exception if the web api call fails but just in case...
+      if (dxfContents != null && dxfContents.Length > 0)
       {
-        if (string.Compare(Path.GetExtension(coordSysFileName), ".dc", StringComparison.OrdinalIgnoreCase) != 0)
+        //Unzip it and save to DataOcean 
+        using (var archive = new ZipArchive(dxfContents))
         {
-          log.LogWarning($"Cannot generate DXF tiles because coordinate system file type is not dc");
-        }
-        else
-        {
-          try
+          if (archive.Entries.Count == 1)
           {
-            var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}{Path.DirectorySeparatorChar}";
-            var dxfFileName = $"{dataOceanPath}{fileName}";
-            var dcFileName = $"{dataOceanPath}{coordSysFileName}";
-            //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
-            var tileMetadata = await tileServiceProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
-            if (tileMetadata != null)
+            using (var stream = archive.Entries[0].Open() as DeflateStream)
+            using (var ms = new MemoryStream())
             {
-              notificationResult.MinZoomLevel = tileMetadata.MinZoom;
-              notificationResult.MaxZoomLevel = tileMetadata.MaxZoom;
+              // Unzip the file, copy to memory 
+              stream.CopyTo(ms);
+              ms.Seek(0, SeekOrigin.Begin);
+              await DataOceanHelper.WriteFileToDataOcean(
+                ms, rootFolder, customerUid, projectUid.ToString(),
+               generatedName, false, null, log, serviceExceptionHandler, dataOceanClient, authn);
             }
-          }
-          catch (Exception e)
-          {
-            log.LogError(
-              $"FileImport GenerateDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
-            throw;
           }
         }
       }
+
+      return generatedName;
     }
 
     #endregion
-    }
+  }
 
 }

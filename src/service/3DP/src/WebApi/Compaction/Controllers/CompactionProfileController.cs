@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -26,11 +27,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionProfileController : BaseController<CompactionProfileController>
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// The request factory
     /// </summary>
@@ -39,11 +41,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionProfileController(IASNodeClient raptorClient, IConfigurationStore configStore,
+    public CompactionProfileController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory) :
       base(configStore, fileListProxy, settingsManager)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.requestFactory = requestFactory;
     }
 
@@ -84,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
+      var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, OperationType.Profiling);
 
       FilterResult baseFilter = null;
       FilterResult topFilter = null;
@@ -99,10 +107,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           case VolumeCalcType.GroundToDesign:
             baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
             topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }
@@ -122,10 +130,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerProductionDataProfileRequest.Validate();
-
+#if RAPTOR
       var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(LoggerFactory, raptorClient, null, null, null, null, null, profileResultHelper)
+          .Build<CompactionProfileExecutor>(LoggerFactory, raptorClient, profileResultHelper: profileResultHelper)
           .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
       );
 
@@ -141,6 +149,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -177,7 +189,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerDesignProfileRequest.Validate();
-
+#if RAPTOR
       var slicerDesignResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionDesignProfileExecutor>(LoggerFactory, raptorClient)
@@ -186,6 +198,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       //Find the cut-fill elevations for the cell stations from the design vertex elevations
       profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -204,7 +220,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid = null)
     {
       Log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
-
+#if RAPTOR
       var projectId = await GetLegacyProjectId(projectUid);
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -220,7 +236,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       foreach (Guid impFileUid in importedFileUid)
       {
-        var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, true);
+        var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, OperationType.Profiling);
 
         var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
             .ProjectId(projectId)
@@ -231,6 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
         profileRequest.Validate();
+
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
             .Build<CompactionDesignProfileExecutor>(LoggerFactory, raptorClient)
@@ -243,6 +260,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       profileResultHelper.AddSlicerEndPoints(transformedResult);
 
       return transformedResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
   }
 }

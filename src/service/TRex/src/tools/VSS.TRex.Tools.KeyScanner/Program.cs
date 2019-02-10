@@ -21,7 +21,6 @@ namespace VSS.TRex.Tools.KeyScanner
         .Build()
         .Add(x => x.AddSingleton(new ImmutableClientServer("Webtools-Immutable")))
         .Add(x => x.AddSingleton(new MutableClientServer("Webtools-Mutable")))
-        .Build()
         .Complete();
 
       var ks = new KeyScanner();

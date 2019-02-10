@@ -9,5 +9,7 @@ namespace VSS.Pegasus.Client
   {
     Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType,
       IDictionary<string, string> customHeaders);
+
+    Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders);
   }
 }
