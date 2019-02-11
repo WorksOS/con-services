@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
@@ -24,6 +23,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.SiteModels
 {
@@ -36,36 +36,38 @@ namespace VSS.TRex.SiteModels
   // </summary>
   // <remarks>
   // Note(1): This class should never be serialized over the wire to any context for any reason. All contexts requiring access
-  // to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
+  // to a site model must use the local DIContext to access the SiteModels manager to obtain a reference to the desired site model.
   // 
-  // Note(2): All sitemodel references should be treated as immutable and ephemeral. The access period to such a reference
+  // Note(2): All site model references should be treated as immutable and ephemeral. The access period to such a reference
   // should be constrained to the life cycle of the request.
-  // Each request should obtain a new sitemodel reference to ensure it contains current versions of the information held by that sitemodel.
+  // Each request should obtain a new site model reference to ensure it contains current versions of the information held by that site model.
   // 
-  // Note(3): The sitemodel reference obtained by a reference is not singular to that request. Multiple requests may share the
-  // same sitemodel request safely.
+  // Note(3): The site model reference obtained by a reference is not singular to that request. Multiple requests may share the
+  // same site model request safely.
   // 
-  // Note(4): TRex site model change notifications manage how a sitemodel responds to mutating events made to the persistent state
-  // of that sitemodel. These changes may cause the creation of a new cloned site model that inherits elements not affected by
+  // Note(4): TRex site model change notifications manage how a site model responds to mutating events made to the persistent state
+  // of that site model. These changes may cause the creation of a new cloned site model that inherits elements not affected by
   // the mutating change, and will relinquish elements that have been to allow deferred/lazy loading on subsequent reference.
-  // Requests referencing such sitemodels will have consistent access to already referenced elements of the sitemodel
+  // Requests referencing such site models will have consistent access to already referenced elements of the site model
   // for the duration of the request. However, non-referenced spatial data elements and their cached derivatives are actively
-  // recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
+  // recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a sub grid
   // or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
   // data invalidation due to mutating changes, even of those referenced elements.
   // </remarks>
   public class SiteModel : ISiteModel, IBinaryReaderWriter
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModel>();
 
-    public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
-    public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
+    private const string kSiteModelXMLFileName = "ProductionDataModel.XML";
+    private const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
 
     private const int kMajorVersion = 1;
     private const int kMinorVersion = 0;
     private const int kMinorVersionLatest = 0;
 
     public Guid ID { get; set; } = Guid.Empty;
+
+    public DateTime CreationDate { get; private set; }
 
     public DateTime LastModifiedDate { get; set; }
 
@@ -305,7 +307,8 @@ namespace VSS.TRex.SiteModels
 
     public SiteModel()
     {
-      LastModifiedDate = DateTime.MinValue;
+      CreationDate = DateTime.UtcNow;
+      LastModifiedDate = CreationDate;
     }
 
     /// <summary>
@@ -316,19 +319,13 @@ namespace VSS.TRex.SiteModels
     public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this()
     {
       if (originModel.IsTransient)
-        throw new TRexException("Cannot use a transient site model as an origin for constructing a new site model");
+        throw new TRexSiteModelException("Cannot use a transient site model as an origin for constructing a new site model");
 
       ID = originModel.ID;
-
-      // FCreationDate:= Now;
-      // FName:= Format('SiteModel-%d', [AID]);
-      // FDescription:= '';
-
       IsTransient = false;
 
+      CreationDate = originModel.CreationDate;
       LastModifiedDate = originModel.LastModifiedDate;
-
-      // SiteModelDesignNames = LastModifiedDate.SiteModelDesignNames;
 
       Grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
         ? originModel.Grid
@@ -374,13 +371,7 @@ namespace VSS.TRex.SiteModels
     public SiteModel(Guid id, bool isTransient = true) : this()
     {
       ID = id;
-
-      // FCreationDate:= Now;
-      // FName:= Format('SiteModel-%d', [AID]);
-      // FDescription:= '';
-
       IsTransient = isTransient;
-      // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
       Grid = new ServerSubGridTree(ID);
 
@@ -388,13 +379,8 @@ namespace VSS.TRex.SiteModels
       existenceMap = null;
     }
 
-    public SiteModel( //string name,
-      //string description,
-      Guid id,
-      double cellSize) : this(id)
+    public SiteModel(Guid id, double cellSize) : this(id)
     {
-      //  FName := AName;
-      //  FDescription := ADescription;
       Grid.CellSize = cellSize;
     }
 
@@ -429,9 +415,8 @@ namespace VSS.TRex.SiteModels
       // Write the SiteModel attributes
       writer.Write(kMajorVersion);
       writer.Write(kMinorVersionLatest);
-      // writer.Write(Name);
-      // writer.Write(Description);
       writer.Write(ID.ToByteArray());
+      writer.Write(CreationDate.ToBinary());
 
       //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
 
@@ -453,11 +438,8 @@ namespace VSS.TRex.SiteModels
       if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
       {
         Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
-        throw new TRexException($"Unknown version number {MajorVersion}:{MinorVersion} in {nameof(SiteModel)}.{nameof(Read)}");
+        throw new TRexSiteModelException($"Unknown version number {MajorVersion}:{MinorVersion} in {nameof(SiteModel)}.{nameof(Read)}");
       }
-
-      // Name = reader.ReadString();
-      // Description = reader.ReadString();
 
       // Read the ID of the data model from the stream.
       // If the site model already has an assigned ID then
@@ -468,6 +450,8 @@ namespace VSS.TRex.SiteModels
       {
         ID = LocalID;
       }
+
+      CreationDate = DateTime.FromBinary(reader.ReadInt64());
 
       // FIgnoreInvalidPositions:= ReadBooleanFromStream(Stream);
 
@@ -587,7 +571,7 @@ namespace VSS.TRex.SiteModels
           }
 
           MS.Position = 0;
-          using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
+          using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
           {
             lock (this)
             {
@@ -614,7 +598,7 @@ namespace VSS.TRex.SiteModels
     /// load it from storage/cache
     /// </summary>
     /// <returns></returns>
-    public ISubGridTreeBitMask GetProductionDataExistenceMap()
+    private ISubGridTreeBitMask GetProductionDataExistenceMap()
     {
       if (existenceMap == null)
         return LoadProductionDataExistenceMapFromStorage() == FileSystemErrorStatus.OK ? existenceMap : null;
@@ -626,11 +610,11 @@ namespace VSS.TRex.SiteModels
     /// Saves the content of the existence map to storage
     /// </summary>
     /// <returns></returns>
-    protected FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
+    private FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
     {
       try
       {
-        // Serialise and write out the stream to the persistent store
+        // Serialize and write out the stream to the persistent store
         if (existenceMap == null)
           return FileSystemErrorStatus.OK;
 
@@ -649,7 +633,7 @@ namespace VSS.TRex.SiteModels
     /// Retrieves the content of the existence map from storage
     /// </summary>
     /// <returns></returns>
-    protected FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
+    private FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
     {
       try
       {
@@ -720,8 +704,6 @@ namespace VSS.TRex.SiteModels
       return new SiteModelMetadata
       {
         ID = ID,
-        //Name = Name,
-        //Description = Description,
         LastModifiedDate = LastModifiedDate,
         SiteModelExtent = SiteModelExtent,
         MachineCount = Machines?.Count ?? 0,

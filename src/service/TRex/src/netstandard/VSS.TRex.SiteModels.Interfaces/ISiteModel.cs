@@ -17,10 +17,11 @@ namespace VSS.TRex.SiteModels.Interfaces
   {
     Guid ID { get; set; }
 
+    DateTime CreationDate { get; }
     DateTime LastModifiedDate { get; set; }
 
     /// <summary>
-    /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
+    /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
     bool IsTransient { get; }
 
