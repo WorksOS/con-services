@@ -149,7 +149,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 }
                 catch (Exception E)
                 {
-                    Log.LogError(E, "Invalid tag file. Exception in TTagFile.ReadStream - FHeader.LoadFromStream:");
+                    Log.LogError(E, "Invalid tag file. Exception in TTagFile.ReadStream - Header.LoadFromStream:");
                     return TAGReadResult.InvalidDictionary;
                 }
 

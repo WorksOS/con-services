@@ -6,19 +6,19 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
-using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -160,7 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
       IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
-      IFileRepository fileRepo, IDataOceanClient dataOceanClient)
+      IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -204,11 +204,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
           //save copy to DataOcean
+          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+          if (string.IsNullOrEmpty(rootFolder))
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
+          }
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
-              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
-              false, null, log, serviceExceptionHandler, dataOceanClient, customHeaders);
+              ms, rootFolder, customerUid, projectUid.ToString(), coordinateSystemFileName,
+              false, null, log, serviceExceptionHandler, dataOceanClient, authn);
           }
 
         }
@@ -217,6 +222,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           if (isCreate)
             await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
+          //Don't hide exceptions thrown above
+          if (e is ServiceException)
+            throw;
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
       }

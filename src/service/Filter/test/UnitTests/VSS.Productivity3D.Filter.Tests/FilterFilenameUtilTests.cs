@@ -11,6 +11,8 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -76,7 +78,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
-      var resultFilter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(result.FilterDescriptor.FilterJson);
+      var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
       Assert.IsNull(resultFilter.AlignmentName);
       Assert.IsNull(resultFilter.DesignName);
     }
@@ -131,7 +133,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
-      var resultFilter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(result.FilterDescriptor.FilterJson);
+      var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
       Assert.IsNull(resultFilter.AlignmentName);
       Assert.IsNull(resultFilter.DesignName);
     }
@@ -201,7 +203,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
-      var resultFilter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(result.FilterDescriptor.FilterJson);
+      var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
       Assert.AreEqual(resultFilter.DesignName, "Large Sites Road - Trimble Road.TTM");
       Assert.IsNull(resultFilter.AlignmentName);
     }
@@ -271,7 +273,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
-      var resultFilter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(result.FilterDescriptor.FilterJson);
+      var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
       Assert.AreEqual(resultFilter.AlignmentName, "Large Sites Road.svl");
       Assert.IsNull(resultFilter.DesignName);
     }
@@ -353,7 +355,7 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
-      var resultFilter = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(result.FilterDescriptor.FilterJson);
+      var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
       Assert.AreEqual(resultFilter.AlignmentName, "Large Sites Road.svl");
       Assert.AreEqual(resultFilter.DesignName, "Large Sites Road - Trimble Road.TTM");
     }

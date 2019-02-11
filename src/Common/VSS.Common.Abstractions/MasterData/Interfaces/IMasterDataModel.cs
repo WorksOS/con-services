@@ -10,5 +10,4 @@ namespace VSS.Common.Abstractions.MasterData.Interfaces
     /// </summary>
     List<string> GetIdentifiers();
   }
-
 }

@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     /// </summary>
     public class SubGridSegmentIterator : ISubGridSegmentIterator
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridSegmentIterator));
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridSegmentIterator>();
 
         // IterationState records the progress of the iteration by recording the path through
         // the sub grid tree which marks the progress of the iteration
@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool RetrieveLatestData { get; set; } = false;
         public bool RetrieveAllPasses { get; set; } = true;
 
-        protected ISubGridCellPassesDataSegment LocateNextSubGridSegmentInIteration()
+        private ISubGridCellPassesDataSegment LocateNextSubGridSegmentInIteration()
         {
             ISubGridCellPassesDataSegment Result = null;
 
@@ -223,8 +223,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             return true;
         }
-
-        public void CurrentSubGridSegmentDestroyed() => CurrentSubGridSegment = null;
 
         public void InitialiseIterator() => IterationState.Initialise();
 

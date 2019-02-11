@@ -13,7 +13,9 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Filter=VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -252,7 +254,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    public static async Task<List<MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, 
+    public static async Task<List<Filter>> GetFilters(Guid projectUid, 
       IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
@@ -261,7 +263,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         return null;
       }
 
-      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
+      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter>(f.FilterJson)).ToList();
     }
   }
 }

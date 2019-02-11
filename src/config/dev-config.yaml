@@ -44,6 +44,10 @@ data:
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
   TREX_TAGFILE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
   TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v1/design
+  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
+#TPaaS
+  TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
+  TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token  
 #CAP configuration  
   MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Dev
   MYSQL_CAP_TABLE_PREFIX: Project
@@ -104,7 +108,8 @@ data:
   DATA_OCEAN_URL: https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
-#Logging configuration - Jaeger
-  JAEGER_AGENT_HOST: jaeger-agent.logging
-  JAEGER_AGENT_PORT: "6831"
-  JAEGER_SAMPLER_TYPE: const
+  DATA_OCEAN_ROOT_FOLDER: dev
+#Pegasus
+  PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
+  PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"

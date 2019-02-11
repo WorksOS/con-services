@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.Affinity
         }
 
         [Fact(Skip = "Requires live Ignite node")]
-        public void Test_NonSpatialAffintyKey_MutableGrid_IgniteException()
+        public void Test_NonSpatialAffinityKey_MutableGrid_IgniteException()
         {
             EnsureServer();
 

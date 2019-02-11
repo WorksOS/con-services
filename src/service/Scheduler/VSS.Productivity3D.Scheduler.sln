@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{686C8C75-9BCA-4286-A14E-28CE376472A2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{E970CFA1-8991-4878-9B72-0B595EE3B362}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{686C8C75-9BCA-4286-A14E-28CE376472A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{686C8C75-9BCA-4286-A14E-28CE376472A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{686C8C75-9BCA-4286-A14E-28CE376472A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E970CFA1-8991-4878-9B72-0B595EE3B362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E970CFA1-8991-4878-9B72-0B595EE3B362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E970CFA1-8991-4878-9B72-0B595EE3B362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E970CFA1-8991-4878-9B72-0B595EE3B362}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

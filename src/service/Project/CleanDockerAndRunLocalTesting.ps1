@@ -1,5 +1,3 @@
-#& $PSScriptRoot/DockerEnvironmentVariables.ps1
-
 Write-Host "Updating environment IP address"
 & .\UpdateEnvFileIpAddress.ps1
 

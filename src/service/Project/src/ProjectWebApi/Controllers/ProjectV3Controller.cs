@@ -19,6 +19,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -42,12 +43,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="authn"></param>
     public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IRaptorProxy raptorProxy, IFileRepository fileRepo, 
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient)
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, 
+      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-          logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>(), dataOceanClient)
+          logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>(), dataOceanClient, authn)
     { }
 
     /// <summary>

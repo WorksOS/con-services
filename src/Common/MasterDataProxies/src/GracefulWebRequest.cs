@@ -55,15 +55,18 @@ namespace VSS.MasterData.Proxies
             if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
               log.LogWarning($"Can't add header {customHeader.Key}");
         }
+
+        if (!x.Headers.Contains("Accept"))
+        {
+          if (!x.Headers.TryAddWithoutValidation("Accept", "*/*"))
+            log.LogWarning("Can't add Accept header");
+        }
       }
 
       // If we retry a request that uses a stream payload, it will not reset the position to 0
       // Causing an empty body to be sent (which is invalid for POST requests).
       if (requestStream != null && requestStream.CanSeek)
         requestStream.Seek(0, SeekOrigin.Begin);
-      
-      if (requestStream == null && (method == HttpMethod.Post || method == HttpMethod.Put))
-        throw new ArgumentException($"Empty body for POST/PUT request {nameof(requestStream)}");
 
       if (method == HttpMethod.Get)
         return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
@@ -73,7 +76,7 @@ namespace VSS.MasterData.Proxies
           x => { ApplyHeaders(customHeaders, x); }, log);
 
       if (method == HttpMethod.Delete)
-        return httpClient.DeleteAsync(endpoint);
+        return httpClient.DeleteAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
@@ -120,11 +123,11 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
+          log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
           log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
-          if (result.StatusCode != HttpStatusCode.OK)
+          if (!okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
 
@@ -179,9 +182,6 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(
         $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
-      if (payload == null && method != HttpMethod.Get)
-        throw new ArgumentException("Can't have null payload with a non-GET method.");
-
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
       {
@@ -195,12 +195,12 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
+          log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();
-          if (result.StatusCode != HttpStatusCode.OK)
+          if (!okCodes.Contains(result.StatusCode))
           {
             log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
             throw new HttpRequestException($"{result.StatusCode} {contents}");
@@ -255,9 +255,6 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(
         $"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
-      if (payload == null && (method == HttpMethod.Post || method == HttpMethod.Put))
-        throw new ArgumentException("Can't have null payload with a non-GET method.");
-
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload != null && !payload.CanSeek && retries > 0)
       {
@@ -271,7 +268,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
+          log.LogDebug($"Trying to execute {method} request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           log.LogDebug($"Request to {endpoint} completed");
 
