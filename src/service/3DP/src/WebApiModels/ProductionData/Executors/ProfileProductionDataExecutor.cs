@@ -10,6 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -124,8 +125,41 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         }
 
         profile.cells = new List<ProfileCell>();
-        VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
-        foreach (var currCell in pdsiProfile.cells)
+        ProfileCellData prevCell = null;
+
+        var profileCells = pdsiProfile.cells.Select(c => new ProfileCellData(
+          c.station,
+          c.interceptLength,
+          c.firstPassHeight,
+          c.lastPassHeight,
+          c.lowestPassHeight,
+          c.highestPassHeight,
+          c.compositeFirstPassHeight,
+          c.compositeLastPassHeight,
+          c.compositeLowestPassHeight,
+          c.compositeHighestPassHeight,
+          c.designHeight,
+          c.CCV,
+          c.TargetCCV,
+          c.CCVElev,
+          c.PrevCCV,
+          c.PrevTargetCCV,
+          c.MDP,
+          c.TargetMDP,
+          c.MDPElev,
+          c.materialTemperature,
+          c.materialTemperatureWarnMin,
+          c.materialTemperatureWarnMax,
+          c.materialTemperatureElev,
+          c.topLayerThickness,
+          c.topLayerPassCount,
+          c.topLayerPassCountTargetRange.Min,
+          c.topLayerPassCountTargetRange.Max,
+          c.cellMinSpeed,
+          c.cellMaxSpeed
+        )).ToList();
+
+        foreach (var currCell in profileCells)
         {
           var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
 
@@ -162,24 +196,24 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           bool noCCElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
           bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP || currCell.MDP == VelociraptorConstants.NO_MDP;
           bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
-          bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
-          bool noTemperatureElevation = currCell.materialTemperatureElev == VelociraptorConstants.NULL_SINGLE || noTemperatureValue;
-          bool noPassCountValue = currCell.topLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
+          bool noTemperatureValue = currCell.MaterialTemperature == VelociraptorConstants.NO_TEMPERATURE;
+          bool noTemperatureElevation = currCell.MaterialTemperatureElev == VelociraptorConstants.NULL_SINGLE || noTemperatureValue;
+          bool noPassCountValue = currCell.TopLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
 
           profile.cells.Add(new ProfileCell
           {
-            station = currCell.station,
+            station = currCell.Station,
 
-            firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.firstPassHeight,
-            highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.highestPassHeight,
-            lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lastPassHeight,
-            lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.lowestPassHeight,
+            firstPassHeight = currCell.FirstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.FirstPassHeight,
+            highestPassHeight = currCell.HighestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.HighestPassHeight,
+            lastPassHeight = currCell.LastPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.LastPassHeight,
+            lowestPassHeight = currCell.LowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.LowestPassHeight,
 
-            firstCompositeHeight = currCell.compositeFirstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeFirstPassHeight,
-            highestCompositeHeight = currCell.compositeHighestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeHighestPassHeight,
-            lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeLastPassHeight,
-            lowestCompositeHeight = currCell.compositeLowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.compositeLowestPassHeight,
-            designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.designHeight,
+            firstCompositeHeight = currCell.CompositeFirstPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.CompositeFirstPassHeight,
+            highestCompositeHeight = currCell.CompositeHighestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.CompositeHighestPassHeight,
+            lastCompositeHeight = currCell.CompositeLastPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.CompositeLastPassHeight,
+            lowestCompositeHeight = currCell.CompositeLowestPassHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.CompositeLowestPassHeight,
+            designHeight = currCell.DesignHeight == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.DesignHeight,
 
             cmvPercent = noCCVValue
               ? float.NaN : (float)currCell.CCV / (float)currCell.TargetCCV * 100.0F,
@@ -191,20 +225,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
               ? float.NaN : (float)currCell.MDP / (float)currCell.TargetMDP * 100.0F,
             mdpHeight = noMDPElevation ? float.NaN : currCell.MDPElev,
 
-            temperature = noTemperatureValue ? float.NaN : currCell.materialTemperature / 10.0F,// As temperature is reported in 10th...
-            temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev,
+            temperature = noTemperatureValue ? float.NaN : currCell.MaterialTemperature / 10.0F,// As temperature is reported in 10th...
+            temperatureHeight = noTemperatureElevation ? float.NaN : currCell.MaterialTemperatureElev,
             temperatureLevel = noTemperatureValue ? -1 :
-              (currCell.materialTemperature < currCell.materialTemperatureWarnMin ? 2 :
-                (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? 0 : 1)),
+              (currCell.MaterialTemperature < currCell.MaterialTemperatureWarnMin ? 2 :
+                (currCell.MaterialTemperature > currCell.MaterialTemperatureWarnMax ? 0 : 1)),
 
-            topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount,
-            topLayerPassCountTargetRange = new TargetPassCountRange(currCell.topLayerPassCountTargetRange.Min, currCell.topLayerPassCountTargetRange.Max),
+            topLayerPassCount = noPassCountValue ? -1 : currCell.TopLayerPassCount,
+            topLayerPassCountTargetRange = new TargetPassCountRange(currCell.TopLayerPassCountTargetRangeMin, currCell.TopLayerPassCountTargetRangeMax),
 
             passCountIndex = noPassCountValue ? -1 :
-              (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? 2 :
-                (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max ? 0 : 1)),
+              (currCell.TopLayerPassCount < currCell.TopLayerPassCountTargetRangeMin ? 2 :
+                (currCell.TopLayerPassCount > currCell.TopLayerPassCountTargetRangeMax ? 0 : 1)),
 
-            topLayerThickness = currCell.topLayerThickness == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.topLayerThickness
+            topLayerThickness = currCell.TopLayerThickness == VelociraptorConstants.NULL_SINGLE ? float.NaN : currCell.TopLayerThickness
           });
 
           prevCell = currCell;
@@ -215,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           ProfileCell lastCell = profile.cells[profile.cells.Count - 1];
           profile.cells.Add(new ProfileCell()
           {
-            station = prevCell.station + prevCell.interceptLength,
+            station = prevCell.Station + prevCell.InterceptLength,
             firstPassHeight = lastCell.firstPassHeight,
             highestPassHeight = lastCell.highestPassHeight,
             lastPassHeight = lastCell.lastPassHeight,

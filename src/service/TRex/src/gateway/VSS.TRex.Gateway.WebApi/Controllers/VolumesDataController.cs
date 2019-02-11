@@ -5,7 +5,9 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -52,7 +54,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/volumes/summary/profile")]
     [HttpPost]
-    public SummaryVolumesProfileResult PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
+    public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
     { 
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
 
@@ -61,7 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryVolumesProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(summaryVolumesProfileRequest) as SummaryVolumesProfileResult);
+          .Process(summaryVolumesProfileRequest) as ProfileDataResult<SummaryVolumesProfileCell>);
     }
   }
 }
