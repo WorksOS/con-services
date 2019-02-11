@@ -62,7 +62,7 @@ namespace VSS.TRex.Tests.SiteModels
 
       Action act = () =>
       {
-        var siteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+        var _ = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
       };
 
       act.Should().Throw<TRexSiteModelException>().WithMessage("Cannot use a transient site model as an origin for constructing a new site model");
