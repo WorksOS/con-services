@@ -89,6 +89,206 @@ namespace VSS.TRex.Tests.SiteModels
     }
 
     [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveExistenceMap()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.ExistenceMap;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveExistenceMap);
+      newSiteModel.ExistenceMap.Should().Be(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveExistenceMap()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.ExistenceMap;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.ExistenceMap.Should().NotBe(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveGrid()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Grid;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveGrid);
+      newSiteModel.Grid.Should().Be(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveGrid()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.ExistenceMap;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.ExistenceMap.Should().NotBe(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveCSIB()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.CSIB();
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveCsib);
+      newSiteModel.CSIB().Should().Be(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveCSIB()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.CSIB();
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.ExistenceMap.Should().NotBe(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveDesigns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Designs;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveDesigns);
+      newSiteModel.Designs.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveDesigns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Designs;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.Designs.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveSurveyedSurfaces()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.SurveyedSurfaces;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces);
+      newSiteModel.SurveyedSurfaces.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveSurveyedSurfaces()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.SurveyedSurfaces;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SurveyedSurfaces.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachines()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Machines;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachines);
+      newSiteModel.Machines.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachines()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Machines;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.Machines.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachineTargetValues()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.MachinesTargetValues;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachineTargetValues);
+      newSiteModel.MachinesTargetValues.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachineTargetValues()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.MachinesTargetValues;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.MachinesTargetValues.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachineDesigns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.SiteModelMachineDesigns;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachineDesigns);
+      newSiteModel.SiteModelMachineDesigns.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachineDesigns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.SiteModelMachineDesigns;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SiteModelMachineDesigns.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveProofingRuns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.SiteProofingRuns;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveProofingRuns);
+      newSiteModel.SiteProofingRuns.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveProofingRuns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.SiteProofingRuns;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SiteProofingRuns.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveAlignments()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Alignments;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveAlignments);
+      newSiteModel.Alignments.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveAlignments()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var original = originSiteModel.Alignments;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.Alignments.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
     public void Test_SiteModel_Serialization()
     {
       const int expectedSiteModelSerializedStreamSize = 96;
