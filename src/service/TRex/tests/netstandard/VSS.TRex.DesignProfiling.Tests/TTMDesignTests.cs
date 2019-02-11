@@ -157,7 +157,7 @@ namespace VSS.TRex.DesignProfiling.Tests
     {
       LoadTheDesign();
 
-      Assert.NotNull(design.SubgridOverlayIndex());
+      Assert.NotNull(design.SubGridOverlayIndex());
     }
 
     private void LoadTheGiantDesign()

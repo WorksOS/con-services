@@ -42,7 +42,7 @@ namespace VSS.TRex.Designs.Interfaces
     bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubgridY);
     bool HasFiltrationDataForSubGridPatch(double X, double Y);
     bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY);
-    ISubGridTreeBitMask SubgridOverlayIndex();
+    ISubGridTreeBitMask SubGridOverlayIndex();
     void AcquireExclusiveInterlock();
     void ReleaseExclusiveInterlock();
     List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
