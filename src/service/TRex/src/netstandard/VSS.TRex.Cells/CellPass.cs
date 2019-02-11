@@ -281,7 +281,7 @@ namespace VSS.TRex.Cells
       GPSModeStore = reader.ReadByte();
       InternalSiteModelMachineIndex = reader.ReadShort();
       Height = reader.ReadFloat();
-      Time = DateTime.FromFileTime(reader.ReadLong());
+      Time = DateTime.FromBinary(reader.ReadLong());
       CCV = reader.ReadShort();
       RadioLatency = reader.ReadByte();
       RMV = reader.ReadShort();

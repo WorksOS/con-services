@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
@@ -20,7 +23,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="loggerFactory"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
-    protected ProductionDataProfileController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore) 
+    public ProductionDataProfileController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore) 
       : base(loggerFactory, loggerFactory.CreateLogger<ProductionDataProfileController>(), serviceExceptionHandler, configStore)
     {
     }

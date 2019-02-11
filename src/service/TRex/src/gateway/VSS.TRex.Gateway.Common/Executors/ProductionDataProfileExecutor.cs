@@ -60,9 +60,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         PositionsAreGrid = request.PositionsAreGrid,
         Filters = new FilterSet(baseFilter),
         ReferenceDesignUID = refDesign,
-        StartPoint = new WGS84Point(lon: request.StartX, lat: request.StartY),
-        EndPoint = new WGS84Point(lon: request.EndX, lat: request.EndY),
-        ReturnAllPassesAndLayers = false
+        StartPoint = new WGS84Point(request.StartX, request.StartY),
+        EndPoint = new WGS84Point(request.EndX, request.EndY),
+        ReturnAllPassesAndLayers = true
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
