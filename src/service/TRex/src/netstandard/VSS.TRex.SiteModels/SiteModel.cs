@@ -432,8 +432,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       // Read the SiteModel attributes
-      int MajorVersion = reader.ReadInt32();
-      int MinorVersion = reader.ReadInt32();
+      var MajorVersion = reader.ReadInt32();
+      var MinorVersion = reader.ReadInt32();
 
       if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
       {
@@ -461,6 +461,9 @@ namespace VSS.TRex.SiteModels
         Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
         SiteModelGridCellSize = SubGridTreeConsts.DefaultCellSize;
       }
+
+      if (Grid == null)
+        Grid = new ServerSubGridTree(ID);
 
       Grid.CellSize = SiteModelGridCellSize;
 

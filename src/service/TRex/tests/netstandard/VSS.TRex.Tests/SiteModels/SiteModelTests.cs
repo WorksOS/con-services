@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -85,6 +86,31 @@ namespace VSS.TRex.Tests.SiteModels
 
       newSiteModel.Grid.Should().NotBe(originSiteModel.Grid);
       newSiteModel.Grid.CellSize.Should().Be(originSiteModel.Grid.CellSize);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Serialization()
+    {
+      const int expectedSiteModelSerializedStreamSize = 96;
+
+      var guid = Guid.NewGuid();
+      var siteModel = new SiteModel(guid, 1.23);
+
+      var stream = siteModel.ToStream();
+      stream.Length.Should().Be(expectedSiteModelSerializedStreamSize);
+
+      stream.Position = 0;
+
+      var siteModel2 = new SiteModel();
+      siteModel2.FromStream(stream);
+
+      siteModel2.ID.Should().Be(siteModel.ID);
+      siteModel2.Grid.ID.Should().Be(siteModel.Grid.ID);
+      siteModel2.Grid.CellSize.Should().Be(siteModel.Grid.CellSize);
+      siteModel2.CreationDate.Should().Be(siteModel.CreationDate);
+      siteModel2.LastModifiedDate.Should().Be(siteModel.LastModifiedDate);
+      siteModel2.IsTransient.Should().Be(siteModel.IsTransient);
+      siteModel2.SiteModelExtent.Should().BeEquivalentTo(siteModel.SiteModelExtent);
     }
   }
 }
