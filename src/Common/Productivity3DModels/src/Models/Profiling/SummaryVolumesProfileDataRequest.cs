@@ -3,19 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Enums;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Models.Models.Profiling
 {
   /// <summary>
   /// The representation of a summary volumes profile request
   /// </summary>
-  public class SummaryVolumesProfileDataRequest : ProjectID
+  public class SummaryVolumesProfileDataRequest : BaseProfileDataRequest
   {
-    /// <summary>
-    /// The base or earliest filter to be used for filter-filter and filter-design volumes.
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public FilterResult BaseFilter { get; private set; }
-
     /// <summary>
     /// The top or latest filter to be used for filter-filter and design-filter volumes
     /// </summary>
@@ -29,42 +23,6 @@ namespace VSS.Productivity3D.Models.Models
     [Required]
     public VolumesType VolumeCalcType { get; private set; }
     
-    /// <summary>
-    /// The unique identifier of the design surface to be used in either filter to design or design to filter
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public Guid? ReferenceDesignUid { get; private set; }
-
-    /// <summary>
-    ///  Start grid position x or start lon
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double StartX;
-
-    /// <summary>
-    ///  Start grid position y or start lat
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double StartY;
-
-    /// <summary>
-    ///  End grid position y or end lat
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double EndX;
-
-    /// <summary>
-    ///  End grid position y or end lat
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public double EndY;
-
-    /// <summary>
-    ///  Are positions grid or latlon
-    /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public bool PositionsAreGrid;
-
     /// <summary>
     /// Default public constructor.
     /// </summary>
@@ -95,18 +53,10 @@ namespace VSS.Productivity3D.Models.Models
       double startY,
       double endX,
       double endY
-      )
+      ) : base (projectUid, baseFilter, referenceDesignUid, positionsAreGrid, startX, startY, endX, endY)
     {
-      ProjectUid = projectUid;
-      BaseFilter = baseFilter;
       TopFilter = topFilter;
-      ReferenceDesignUid = referenceDesignUid;
       VolumeCalcType = volumeCalcType;
-      PositionsAreGrid = positionsAreGrid;
-      StartX = startX;
-      StartY = startY;
-      EndX = endX;
-      EndY = endY;
     }
 
     /// <summary>
@@ -114,7 +64,8 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public override void Validate()
     {
-      TopFilter?.Validate();
+      base.Validate();
+
       BaseFilter?.Validate();
     }
   }
