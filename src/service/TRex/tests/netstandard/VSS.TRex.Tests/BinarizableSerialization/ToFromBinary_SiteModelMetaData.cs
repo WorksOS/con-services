@@ -20,9 +20,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var argument = new SiteModelMetadata
       {
         ID = Guid.NewGuid(),
-        Name = "Site Model",
-        Description = "Test site model",
         SiteModelExtent = BoundingWorldExtent3D.Full(),
+        CreationDate = DateTime.UtcNow,
         LastModifiedDate = DateTime.UtcNow,
         MachineCount = 10,
         DesignCount = 5,

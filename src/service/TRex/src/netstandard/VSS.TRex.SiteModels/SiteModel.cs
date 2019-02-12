@@ -759,6 +759,7 @@ namespace VSS.TRex.SiteModels
       return new SiteModelMetadata
       {
         ID = ID,
+        CreationDate = CreationDate,
         LastModifiedDate = LastModifiedDate,
         SiteModelExtent = SiteModelExtent,
         MachineCount = Machines?.Count ?? 0,
