@@ -97,7 +97,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
           {
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-              float Value = SubGrid.Cells[I, J];
+              var Value = SubGrid.Cells[I, J];
               if (Value != Consts.NullHeight) // is there a value to test
               {
                 SummaryCellsScanned++;

@@ -23,7 +23,7 @@ namespace TTMPerformanceTestBenchmark
     [Benchmark]
     public void ScanAllElevationsOverGiantDesign()
     {
-      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+      var Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
       int numPatches = 0;
 
@@ -44,7 +44,7 @@ namespace TTMPerformanceTestBenchmark
         return true;
       });
 
-      Console.WriteLine($"Number of patches = {numPatches}, cells = {numPatches * 1024}");
+      Console.WriteLine($"Number of patches = {numPatches}, cells = {numPatches * 1024}, probes = {design.NumTINProbeLookups}");
     }
 
     [Benchmark]

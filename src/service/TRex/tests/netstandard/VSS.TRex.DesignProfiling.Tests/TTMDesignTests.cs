@@ -119,7 +119,7 @@ namespace VSS.TRex.DesignProfiling.Tests
     public void InterpolateHeightsTest(double probeX, double probeY)
     {
       LoadTheDesign();
-      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+      var Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
       bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
 
@@ -132,7 +132,7 @@ namespace VSS.TRex.DesignProfiling.Tests
     {
       LoadTheDesign();
 
-      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+      var Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
       DateTime _start = DateTime.Now;
       for (int i = 0; i < 10000; i++)
@@ -179,7 +179,7 @@ namespace VSS.TRex.DesignProfiling.Tests
       LoadTheGiantDesign();
       TimeSpan loadTime = DateTime.Now - _start;
 
-      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+      var Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
       int numPatches = 0;
       _start = DateTime.Now;

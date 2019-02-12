@@ -39,9 +39,9 @@ namespace VSS.TRex.Designs.Interfaces
     void WindLock();
     void UnWindLock();
     bool HasElevationDataForSubGridPatch(double X, double Y);
-    bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubgridY);
+    bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY);
     bool HasFiltrationDataForSubGridPatch(double X, double Y);
-    bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY);
+    bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubGridY);
     ISubGridTreeBitMask SubGridOverlayIndex();
     void AcquireExclusiveInterlock();
     void ReleaseExclusiveInterlock();

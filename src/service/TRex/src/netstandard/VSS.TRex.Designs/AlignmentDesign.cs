@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -18,7 +17,7 @@ namespace VSS.TRex.Designs
 
   public class AlignmentDesign : DesignBase
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentDesign>();
 
     public byte[] Data { get; set; } // assuming here there will be some kind of SDK model
 
@@ -38,7 +37,7 @@ namespace VSS.TRex.Designs
 
 
     /// <summary>
-    /// Loads the Alignment from an Alignment file, along with the subgrid existence map file if it exists (created otherwise)
+    /// Loads the Alignment from an Alignment file, along with the sub grid existence map file if it exists (created otherwise)
     /// </summary>
     /// <param name="localPathAndFileName"></param>
     /// <returns></returns>
