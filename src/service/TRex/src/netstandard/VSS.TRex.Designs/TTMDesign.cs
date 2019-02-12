@@ -24,15 +24,15 @@ namespace VSS.TRex.Designs
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TTMDesign>();
 
-    private double MinHeight;
-    private double MaxHeight;
-    private readonly double CellSize;
-    private readonly ISubGridTreeBitMask SubGridIndex;
+    private double minHeight;
+    private double maxHeight;
+    private readonly double cellSize;
+    private readonly ISubGridTreeBitMask subGridIndex;
 
     public TrimbleTINModel Data { get; }
 
-    private Triangle[] TriangleItems;
-    private XYZ[] VertexItems;
+    private Triangle[] triangleItems;
+    private XYZ[] vertexItems;
 
     public long NumTINProbeLookups = 0;
     public long NumTINHeightRequests = 0;
@@ -314,7 +314,7 @@ namespace VSS.TRex.Designs
           int triangleCount = Data.Triangles.Items.Length;
           for (int triIndex = 0; triIndex < triangleCount; triIndex++)
           {
-            cellScanner.ScanCellsOverTriangle(SubGridIndex,
+            cellScanner.ScanCellsOverTriangle(subGridIndex,
               triIndex,
               (tree, x, y) => ((ISubGridTreeBitMask)tree)[x, y],
               (tree, x, y, t) => ((ISubGridTreeBitMask)tree)[x, y] = true,
@@ -343,14 +343,14 @@ namespace VSS.TRex.Designs
     public TTMDesign(double ACellSize)
     {
       Data = new TrimbleTINModel();
-      TriangleItems = Data.Triangles.Items;
-      VertexItems = Data.Vertices.Items;
+      triangleItems = Data.Triangles.Items;
+      vertexItems = Data.Vertices.Items;
 
-      CellSize = ACellSize;
+      cellSize = ACellSize;
 
       // Create a sub grid tree bit mask index that holds one bit per on-the-ground
       // sub grid that intersects at least one triangle in the TTM.
-      SubGridIndex = new SubGridTreeSubGridExistenceBitMask
+      subGridIndex = new SubGridTreeSubGridExistenceBitMask
       {
         CellSize = SubGridTreeConsts.SubGridTreeDimension * ACellSize
       };
@@ -381,29 +381,29 @@ namespace VSS.TRex.Designs
     /// <param name="z2"></param>
     public override void GetHeightRange(out double z1, out double z2)
     {
-      if (MinHeight == Common.Consts.NullReal || MaxHeight == Common.Consts.NullReal) // better calculate them
+      if (minHeight == Common.Consts.NullReal || maxHeight == Common.Consts.NullReal) // better calculate them
       {
-        MinHeight = 1E100;
-        MaxHeight = -1E100;
+        minHeight = 1E100;
+        maxHeight = -1E100;
 
-        foreach (var vertex in VertexItems)
+        foreach (var vertex in vertexItems)
         {
-          if (vertex.Z < MinHeight) MinHeight = vertex.Z;
-          if (vertex.Z > MaxHeight) MaxHeight = vertex.Z;
+          if (vertex.Z < minHeight) minHeight = vertex.Z;
+          if (vertex.Z > maxHeight) maxHeight = vertex.Z;
         }
       }
 
-      z1 = MinHeight;
-      z2 = MaxHeight;
+      z1 = minHeight;
+      z2 = maxHeight;
     }
 
     public override bool HasElevationDataForSubGridPatch(double X, double Y)
     {
-      SubGridIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint SubGridX, out uint SubGridY);
-      return SubGridIndex[SubGridX, SubGridY];
+      subGridIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint SubGridX, out uint SubGridY);
+      return subGridIndex[SubGridX, SubGridY];
     }
 
-    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => SubGridIndex[SubGridX, SubGridY];
+    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => subGridIndex[SubGridX, SubGridY];
 
     public override bool HasFiltrationDataForSubGridPatch(double X, double Y) => false;
 
@@ -411,12 +411,12 @@ namespace VSS.TRex.Designs
 
     private double GetHeight(Triangle tri, double X, double Y)
     {
-      return XYZ.GetTriangleHeight(VertexItems[tri.Vertex0], VertexItems[tri.Vertex1], VertexItems[tri.Vertex2], X, Y);
+      return XYZ.GetTriangleHeight(vertexItems[tri.Vertex0], vertexItems[tri.Vertex1], vertexItems[tri.Vertex2], X, Y);
     }
 
     private double GetHeight2(ref Triangle tri, double X, double Y)
     {
-      return XYZ.GetTriangleHeightEx(ref VertexItems[tri.Vertex0], ref VertexItems[tri.Vertex1], ref VertexItems[tri.Vertex2], X, Y);
+      return XYZ.GetTriangleHeightEx(ref vertexItems[tri.Vertex0], ref vertexItems[tri.Vertex1], ref vertexItems[tri.Vertex2], X, Y);
     }
 
     /// <summary>
@@ -435,7 +435,7 @@ namespace VSS.TRex.Designs
     {
       if (Hint != -1)
       {
-        Z = GetHeight(TriangleItems[Hint], X, Y);
+        Z = GetHeight(triangleItems[Hint], X, Y);
         if (Z != Common.Consts.NullDouble)
         {
           Z += Offset;
@@ -463,7 +463,7 @@ namespace VSS.TRex.Designs
       for (int i = arrayReference.TriangleArrayIndex; i < limit; i++)
       {
         int triIndex = SpatialIndexOptimisedTriangles[i];
-        Z = GetHeight(TriangleItems[triIndex], X, Y);
+        Z = GetHeight(triangleItems[triIndex], X, Y);
 
         if (Z != Common.Consts.NullReal)
         {
@@ -524,16 +524,16 @@ namespace VSS.TRex.Designs
         for (int i = 0; i < triangleCount; i++)
         {
           // Get the triangle...
-          Triangle tri = TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]];
+          Triangle tri = triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]];
 
           // Get the real world bounding box for the triangle
           // Note: As sampling occurs at cell centers shrink the effective bounding box for each triangle used
           // for calculating the cell bounding box by half a cell size (less a small Epsilon) so the cell bounding box
           // captures cell centers falling in the triangle world coordinate bounding box
 
-          XYZ TriVertex0 = VertexItems[tri.Vertex0];
-          XYZ TriVertex1 = VertexItems[tri.Vertex1];
-          XYZ TriVertex2 = VertexItems[tri.Vertex2];
+          XYZ TriVertex0 = vertexItems[tri.Vertex0];
+          XYZ TriVertex1 = vertexItems[tri.Vertex1];
+          XYZ TriVertex2 = vertexItems[tri.Vertex2];
 
           double TriangleWorldExtent_MinX = Math.Min(TriVertex0.X, Math.Min(TriVertex1.X, TriVertex2.X)) + halfCellSizeMinusEpsilon;
           double TriangleWorldExtent_MinY = Math.Min(TriVertex0.Y, Math.Min(TriVertex1.Y, TriVertex2.Y)) + halfCellSizeMinusEpsilon;
@@ -571,7 +571,7 @@ namespace VSS.TRex.Designs
               if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
                 continue; // No intersection, move to next triangle
 
-              double Z = GetHeight2(ref TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
+              double Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
               if (Z != Common.Consts.NullReal)
               {
@@ -642,13 +642,13 @@ namespace VSS.TRex.Designs
       try
       {
         Data.LoadFromFile(localPathAndFileName);
-        TriangleItems = Data.Triangles.Items;
-        VertexItems = Data.Vertices.Items;
+        triangleItems = Data.Triangles.Items;
+        vertexItems = Data.Vertices.Items;
 
         Log.LogInformation($"Loaded TTM file {localPathAndFileName} containing {Data.Header.NumberOfTriangles} triangles and {Data.Header.NumberOfVertices} vertices.");
 
-        MinHeight = Common.Consts.NullReal;
-        MaxHeight = Common.Consts.NullReal;
+        minHeight = Common.Consts.NullReal;
+        maxHeight = Common.Consts.NullReal;
 
         if (!LoadSubGridIndexFile(localPathAndFileName + Consts.kDesignSubgridIndexFileExt))
           return DesignLoadResult.UnableToLoadSubgridIndex;
@@ -682,7 +682,7 @@ namespace VSS.TRex.Designs
 
         using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
         {
-          SubGridIndex.FromStream(ms);
+          subGridIndex.FromStream(ms);
         }
 
         return true;
@@ -792,7 +792,7 @@ namespace VSS.TRex.Designs
       if (!Result)
       {
         // Build the sub grid tree based spatial index
-        var indexBuilder = new OptimisedTTMSpatialIndexBuilder(Data, CellSize);
+        var indexBuilder = new OptimisedTTMSpatialIndexBuilder(Data, cellSize);
         Result = indexBuilder.ConstructSpatialIndex();
 
         if (Result)
@@ -822,7 +822,7 @@ namespace VSS.TRex.Designs
         // Write the index out to a file
         using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
-          SubGridIndex.ToStream(fs);
+          subGridIndex.ToStream(fs);
         }
 
         Log.LogInformation($"Saved sub grid index file {fileName}");
@@ -884,7 +884,7 @@ namespace VSS.TRex.Designs
     /// A reference to the internal sub grid existence map for the design
     /// </summary>
     /// <returns></returns>
-    public override ISubGridTreeBitMask SubGridOverlayIndex() => SubGridIndex;
+    public override ISubGridTreeBitMask SubGridOverlayIndex() => subGridIndex;
 
     /// <summary>
     /// Computes the requested geometric profile over the design and returns the result
