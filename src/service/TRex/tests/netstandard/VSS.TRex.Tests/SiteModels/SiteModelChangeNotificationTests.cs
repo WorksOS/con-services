@@ -18,20 +18,24 @@ namespace VSS.TRex.Tests.SiteModels
     {
       var siteModels = DIContext.Obtain<ISiteModels>();
 
+      // Create the new site model
       var guid = Guid.NewGuid();
       var siteModel = siteModels.GetSiteModel(guid, true);
 
       // Force the site model to be reloaded in a virgin state so the 'loaded' state is as expected
-      var _evt = new SiteModelAttributesChangedEvent();
-      _evt.AlignmentsModified = true;
-      _evt.CsibModified = true;
-      _evt.DesignsModified = true;
-      _evt.ExistenceMapModified = true;
-      _evt.MachineDesignsModified = true;
-      _evt.MachineTargetValuesModified = true;
-      _evt.MachinesModified = true;
-      _evt.ProofingRunsModified = true;
-      _evt.SurveyedSurfacesModified = true;
+      // as metadata registration sets all the loaded flags to 'true'
+      var _evt = new SiteModelAttributesChangedEvent
+      {
+        AlignmentsModified = true,
+        CsibModified = true,
+        DesignsModified = true,
+        ExistenceMapModified = true,
+        MachineDesignsModified = true,
+        MachineTargetValuesModified = true,
+        MachinesModified = true,
+        ProofingRunsModified = true,
+        SurveyedSurfacesModified = true
+      };
 
       siteModels.SiteModelAttributesHaveChanged(guid, _evt);
       siteModel = siteModels.GetSiteModel(guid, false);
@@ -41,8 +45,10 @@ namespace VSS.TRex.Tests.SiteModels
       var _ = loadAction.Invoke(siteModel);
       loadedFunc.Invoke(siteModel).Should().BeTrue();
 
-      var evt = new SiteModelAttributesChangedEvent();
-      evt.SiteModelID = guid;
+      var evt = new SiteModelAttributesChangedEvent
+      {
+        SiteModelID = guid
+      };
       modifyAction.Invoke(evt, modified);
 
       siteModels.SiteModelAttributesHaveChanged(guid, evt);
