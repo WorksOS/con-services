@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     private ProjectData projectDescriptor;
 
     /// <summary>
-    /// Parameterless constructor is required to support factory create function in <see cref="WebApi"/> project.
+    /// Parameter-less constructor is required to support factory create function in <see cref="WebApi"/> project.
     /// </summary>
     public ExportRequestHelper()
     { }
@@ -57,6 +57,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       userPreferences = userPrefs;
       return this;
+    }
+
+    public UserPreferenceData GetUserPreferences()
+    {
+      return userPreferences;
     }
 
     public ExportRequestHelper SetProjectDescriptor(ProjectData projectDescriptor)

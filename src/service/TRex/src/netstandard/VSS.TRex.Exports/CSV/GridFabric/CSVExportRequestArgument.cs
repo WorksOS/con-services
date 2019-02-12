@@ -1,4 +1,9 @@
-﻿using VSS.TRex.GridFabric.Arguments;
+﻿using System;
+using System.Collections.Generic;
+using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Exports.CSV.GridFabric
 {
@@ -7,89 +12,83 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportRequestArgument : BaseApplicationServiceRequestArgument
   {
-    ///// <summary>
-    ///// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
-    ///// </summary>
-    ///// 
-    //public double GridInterval { get; set; }
 
-    ///// <summary>
-    ///// Grid report option. Whether it is defined automatically or by user specified parameters.
-    ///// </summary>
-    ///// 
-    //public GridReportOption GridReportOption { get; set; }
+    /// <summary>
+    /// Type of Coordinates required in result e.g. NE
+    /// </summary>
+    public CoordType CoordType { get; private set; }
 
-    ///// <summary>
-    ///// The Northing ordinate of the location to start gridding from
-    ///// </summary>
-    //public double StartNorthing { get; set; }
+    /// <summary>
+    /// which type of passes
+    /// </summary>
+    public OutputTypes OutputType { get; private set; }
+    
+    /// <summary>
+    /// Include the names of these machines
+    /// </summary>
+    public List<CSVExportMappedMachine> MappedMachines { get; set; }
 
-    ///// <summary>
-    ///// The Easting ordinate of the location to start gridding from
-    ///// </summary>
-    //public double StartEasting { get; set; }
+    public CSVExportRequestArgument()
+    {
+      Clear();
+    }
 
-    ///// <summary>
-    ///// The Northing ordinate of the location to end gridding at
-    ///// </summary>
-    //public double EndNorthing { get; set; }
+    private void Clear()
+    {
+      CoordType = CoordType.Northeast;
+      OutputType = OutputTypes.PassCountLastPass;
+      MappedMachines = new List<CSVExportMappedMachine>();
+    }
 
-    ///// <summary>
-    ///// The Easting ordinate of the location to end gridding at
-    ///// </summary>
-    //public double EndEasting { get; set; }
+    public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
+      CoordType coordType, OutputTypes outputType, List<CSVExportMappedMachine> mappedMachines)
+    {
+      ProjectID = siteModelUid;
+      Filters = filters;
+      CoordType = coordType; 
+      OutputType  = outputType;
+      MappedMachines = mappedMachines;
+    }
 
-    ///// <summary>
-    ///// The orientation of the grid, expressed in radians
-    ///// </summary>
-    //public double Azimuth { get; set; }
+    /// <summary>
+    /// Serializes content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      base.ToBinary(writer);
+      writer.WriteInt((int)CoordType);
+      writer.WriteInt((int)OutputType);
+      var count = MappedMachines.Count;
+      writer.WriteInt(count);
+      foreach (var machine in MappedMachines)
+      {
+        writer.WriteGuid(machine.Uid);
+        writer.WriteShort(machine.InternalSiteModelMachineIndex);
+        writer.WriteString(machine.Name);
+      }
+    }
 
-    ///// <summary>
-    ///// Serializes content to the writer
-    ///// </summary>
-    ///// <param name="writer"></param>
-    //public override void ToBinary(IBinaryRawWriter writer)
-    //{
-    //  base.ToBinary(writer);
-    //  writer.WriteDouble(GridInterval);
-    //  writer.WriteInt((int) GridReportOption);
-    //  writer.WriteDouble(StartNorthing);
-    //  writer.WriteDouble(StartEasting);
-    //  writer.WriteDouble(EndNorthing);
-    //  writer.WriteDouble(EndEasting);
-    //  writer.WriteDouble(Azimuth);
-    //}
-
-    ///// <summary>
-    ///// Serializes content from the writer
-    ///// </summary>
-    ///// <param name="reader"></param>
-    //public override void FromBinary(IBinaryRawReader reader)
-    //{
-    //  base.FromBinary(reader);
-    //  GridInterval = reader.ReadDouble();
-    //  GridReportOption = (GridReportOption) reader.ReadInt();
-    //  StartNorthing = reader.ReadDouble();
-    //  StartEasting = reader.ReadDouble();
-    //  EndNorthing = reader.ReadDouble();
-    //  EndEasting = reader.ReadDouble();
-    //  Azimuth = reader.ReadDouble();
-    //}
-   
-    //public override int GetHashCode()
-    //{
-    //  unchecked
-    //  {
-    //    int hashCode = base.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ GridInterval.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ GridReportOption.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ StartNorthing.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ StartEasting.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ EndNorthing.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ EndEasting.GetHashCode();
-    //    hashCode = (hashCode * 397) ^ Azimuth.GetHashCode();
-    //    return hashCode;
-    //  }
-    //}
+    /// <summary>
+    /// Serializes content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      base.FromBinary(reader);
+      CoordType = (CoordType)reader.ReadInt();
+      OutputType = (OutputTypes)reader.ReadInt();
+      var count = reader.ReadInt();
+      MappedMachines = new List<CSVExportMappedMachine>(count);
+      for(int i = 0; i < count; i++)
+      {
+        MappedMachines.Add(new CSVExportMappedMachine()
+        {
+          Uid = reader.ReadGuid() ?? Guid.Empty,
+          InternalSiteModelMachineIndex = reader.ReadShort(),
+          Name = reader.ReadString()
+        });
+      }
+    }
   }
 }

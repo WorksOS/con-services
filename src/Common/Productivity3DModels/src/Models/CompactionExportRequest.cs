@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -37,6 +36,7 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
     [ValidFilename(256)]
     public string FileName { get; set; }
+
 
     /// <summary>
     /// Default private constructor.

@@ -19,7 +19,7 @@
     public int AssetLabelTypeID {get; set; }
 
     /// <summary>
-    /// Constractor with arguments.
+    /// Constructor with arguments.
     /// </summary>
     /// <param name="timeZone"></param>
     /// <param name="dateSeparator"></param>

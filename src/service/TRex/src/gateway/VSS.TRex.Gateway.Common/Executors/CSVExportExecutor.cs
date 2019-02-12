@@ -40,23 +40,17 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      // redundant?
-      var startEndDate = CSVExportHelper.GetDateRange(siteModel, request.Filter);
-
-      // todoJeannie should this be a matching of VSS assetName with machineName?
-      //     if so, we probably need iin machinesList AssetUID + VSS assetName
-      var machinesListGuids = CSVExportHelper.GetRequestedMachines(siteModel, request.MachineNames);
-
+     
       var filter = ConvertFilter(request.Filter, siteModel);
-      // todoJeannie is this the correct place to put this date range?
+      // setting this date is possibly redundant - depending on how TRex handles this
+      var startEndDate = CSVExportHelper.GetDateRange(siteModel, request.Filter);
       filter.AttributeFilter.StartTime = startEndDate.Item1;
       filter.AttributeFilter.EndTime = startEndDate.Item2;
 
-      // todoJeannie what if existing contributing machines in filter?
-      filter.AttributeFilter.MachinesList = machinesListGuids;
-      
       var tRexRequest = new CSVExportRequest();
       var csvExportRequestArgument = AutoMapperUtility.Automapper.Map<CSVExportRequestArgument>(request);
+      csvExportRequestArgument.MappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, request.MachineNames); 
+      
       csvExportRequestArgument.Filters = new FilterSet(filter);
 
       var response = tRexRequest.Execute(csvExportRequestArgument);

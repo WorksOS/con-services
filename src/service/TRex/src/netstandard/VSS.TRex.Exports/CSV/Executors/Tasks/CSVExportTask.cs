@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Reports.Gridded.Executors.Tasks
+namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
   /// <summary>
   /// The task responsible for receiving sub grids to be aggregated into a grid response
@@ -17,7 +26,15 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-  
+    public CSVExportRequestArgument requestArgument;
+
+    public Formatter formatter;
+
+    public CSVExportRequestResponse taskResponse = new CSVExportRequestResponse();
+
+    public float RunningHeight = Consts.NullHeight;
+    public string HeightString = string.Empty;
+
     public CSVExportTask()
     {
     }
@@ -30,6 +47,8 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     /// <param name="gridDataType"></param>
     public CSVExportTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
+      // todoJeannie formatter = new Formatter(requestArgument.userPreferences, requestArgument.OutputType, requestDescriptor.rawDataAsWhatever);
+
     }
 
     /// <summary>
@@ -51,85 +70,83 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
         return false;
       }
 
+
+      var requiredGridDataType = requestArgument.OutputType == OutputTypes.PassCountLastPass || requestArgument.OutputType == OutputTypes.VedaFinalPass ? 
+        GridDataType.CellProfile : GridDataType.CellPasses;
+
       foreach (var subGrid in subGridResponses)
       {
-        // todoJeannie may be profile (for last pass),
-        //     or something else for all passes
-        //     what is a half-pass?
-        if (subGrid is ClientCellProfileLeafSubgrid leafSubGrid)
-          ExtractRequiredValues(null, leafSubGrid);
+        if (requiredGridDataType == GridDataType.CellProfile &&
+            subGrid is ClientCellProfileLeafSubgrid profileSubGrid)
+          ExtractRequiredValues(profileSubGrid);
+
+        //if (requiredGridDataType == GridDataType.CellPasses &&
+        //    subGrid is ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
+        //  ExtractRequiredValues(allPassesSubGrid);
       }
 
       return true;
     }
 
-
-    private string[] ExtractRequiredValues(CSVExportRequestArgument CSVExportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
+    private bool ExtractRequiredValues(ClientCellProfileLeafSubgrid subGrid)
     {
-      // TICPassCountExportCalculator.ProcessAllPasses
-      // TICPassCountExportCalculator.InitComponentStrings
-      //                              .UpdateComponentStrings
+      var result = new List<string>();
 
-      var result = new string[0];
+      subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        var cell = subGrid.Cells[x, y];
 
-      //var result = new List<GriddedReportDataRow>();
-      //IClientHeightLeafSubGrid designHeights = null;
+        if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
+          return;
 
-      //if (_griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty)
-      //{
-      //  IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
-      //  if (cutFillDesign == null)
-      //  {
-      //    throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
-      //  }
+        // todoJeannie if dealing with formatted strings, what about ordering
+        result.Add(UpdateComponentStrings(cell, subgridWorldOriginX, subgridWorldOriginY));
+      });
 
-      //  cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
-      //    subGrid.CellSize, out designHeights, out var errorCode);
+      return true;
+    }
 
-      //  if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
-      //  {
-      //    string errorMessage;
-      //    if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-      //    {
-      //      errorMessage = "Gridded Report. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.";
-      //      Log.LogInformation(errorMessage);
-      //    }
-      //    else
-      //    {
-      //      errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.";
-      //      Log.LogWarning(errorMessage);
-      //    }
-      //  }
-      //}
 
-      //subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-      //{
-      //  var cell = subGrid.Cells[x, y];
+    private string UpdateComponentStrings(ClientCellProfileLeafSubgridRecord cell, double subgridWorldOriginX, double subgridWorldOriginY)
+    {
+      string resultString = string.Empty;
+      var easting = cell.CellXOffset + subgridWorldOriginX;
+      var northing = cell.CellYOffset + subgridWorldOriginY;
 
-      //  if (cell.PassCount == 0) // Nothing for us to do, as cell is not in our areaControlSet...
-      //    return;
+      if (!cell.Height.Equals(RunningHeight))
+      {
+        HeightString = formatter.FormatElevation(cell.Height);
+        RunningHeight = cell.Height;
+      }
 
-      //  result.Add(new GriddedReportDataRow
-      //  {
-      //    Easting = cell.CellXOffset + subgridWorldOriginX,
-      //    Northing = cell.CellYOffset + subgridWorldOriginY,
-      //    Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
-      //    CutFill = (griddedReportRequestArgument.ReportCutFill && (designHeights != null) &&
+      //    CutFill = (designHeights != null &&
       //               designHeights.Cells[x, y] != Consts.NullHeight)
       //      ? cell.Height - designHeights.Cells[x, y]
       //      : Consts.NullHeight,
 
-      //    // CCV is equiv to CMV in this instance
-      //    Cmv = (short)(griddedReportRequestArgument.ReportCmv ? cell.LastPassValidCCV : CellPassConsts.NullCCV),
-      //    Mdp = (short)(griddedReportRequestArgument.ReportMdp ? cell.LastPassValidMDP : CellPassConsts.NullMDP),
-      //    PassCount = (short)(griddedReportRequestArgument.ReportPassCount ? cell.PassCount : CellPassConsts.NullPassCountValue),
-      //    Temperature = (short)(griddedReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : CellPassConsts.NullMaterialTemperatureValue)
-      //  });
-      //});
-
-      return result;
+      var Cmv = (short)cell.LastPassValidCCV;
+      var Mdp = (short)cell.LastPassValidMDP;
+      var PassCount = (short)cell.PassCount;
+      var temperature = (short)cell.LastPassValidTemperature;
+      return resultString;
     }
+
+    //private string[] ExtractRequiredValues(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
+    //{
+    //  // For half-pass (e.g. 2-drum compactor), make up a single pass for each pair
+
+    //  //  // TICPassCountExportCalculator.ProcessAllPasses
+    //  //  // TICPassCountExportCalculator.InitComponentStrings
+    //  //  //                              .UpdateComponentStrings
+    //  //  var result = new string[0];
+
+    //  //  string machineNameString;
+    //  //  string CoordString;
+    //  //  string elevation;
+
+    //  return result;
+    //}
   }
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Helpers
@@ -12,7 +13,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
     {
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
-        var startEndDate = GetDateRange(siteModel);
+        var startEndDate = siteModel.GetDateRange();
 
         var startUtc = filter?.StartUtc ?? startEndDate.Item1;
         var endUtc = filter?.EndUtc ?? startEndDate.Item2;
@@ -22,51 +23,52 @@ namespace VSS.TRex.Gateway.Common.Helpers
       return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
     }
 
-    public static Tuple<DateTime, DateTime> GetDateRange(ISiteModel siteModel)
+    //private static Tuple<DateTime, DateTime> GetDateRange(ISiteModel siteModel)
+    //{
+    //  DateTime minDate = DateTime.MaxValue;
+    //  DateTime maxDate = DateTime.MinValue;
+
+    //  foreach (var machine in siteModel.Machines)
+    //  {
+    //    var events = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+    //    if (events.Count() > 0)
+    //    {
+    //      events.GetStateAtIndex(0, out DateTime eventDateFirst, out _);
+    //      if (minDate > eventDateFirst)
+    //        minDate = eventDateFirst;
+    //      if (maxDate < eventDateFirst)
+    //        maxDate = eventDateFirst;
+
+    //      if (events.Count() > 1)
+    //      {
+    //        var eventDateLast = events.LastStateDate();
+    //        if (maxDate < eventDateLast)
+    //          maxDate = eventDateLast;
+    //      }
+    //    }
+    //  }
+
+    //  return new Tuple<DateTime, DateTime>(minDate, maxDate);
+    //}
+
+    public static List<CSVExportMappedMachine> MapRequestedMachines(ISiteModel siteModel, string[] machineNames)
     {
-      DateTime minDate = DateTime.MaxValue;
-      DateTime maxDate = DateTime.MinValue;
-
-      // todoJeannie for veta, should this be limited to those machines in the machinesList - might save some processing time?
-      foreach (var machine in siteModel.Machines)
-      {
-        var events = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
-        if (events.Count() > 0)
-        {
-          events.GetStateAtIndex(0, out DateTime eventDateFirst, out _);
-          if (minDate > eventDateFirst)
-            minDate = eventDateFirst;
-          if (events.Count() > 1)
-          {
-            events.GetStateAtIndex(events.Count()-1, out DateTime eventDateLast, out _);
-            if (maxDate < eventDateLast)
-              maxDate = eventDateLast;
-          }
-        }
-      }
-
-      return new Tuple<DateTime, DateTime>(minDate, maxDate);
-    }
-
-    public static Guid[] GetRequestedMachines(ISiteModel siteModel, string[] machineNames)
-    {
+      var result = new List<CSVExportMappedMachine>();
       if (machineNames == null || machineNames.Length == 0)
       {
-        return null;
+        return result;
       }
-
-      var result = new List<Guid>();
-
+      
       foreach (var name in machineNames)
       {
-        var machine = siteModel.Machines.First(x => string.Compare(x.Name, name, StringComparison.OrdinalIgnoreCase) == 0);
+        var machine = siteModel.Machines.FirstOrDefault(x => string.Compare(x.Name, name, StringComparison.OrdinalIgnoreCase) == 0);
         if (machine != null)
         {
-          result.Add(machine.ID);
+          result.Add(new CSVExportMappedMachine() { Uid = machine.ID, InternalSiteModelMachineIndex = machine.InternalSiteModelMachineIndex, Name = machine.Name });
         }
       }
 
-      return result.ToArray();
+      return result;
     }
   }
 }

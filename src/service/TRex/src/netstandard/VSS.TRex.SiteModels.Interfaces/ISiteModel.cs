@@ -20,7 +20,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     DateTime LastModifiedDate { get; set; }
 
     /// <summary>
-    /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
+    /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
     bool IsTransient { get; }
 
@@ -102,6 +102,13 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     /// <returns></returns>
     BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList);
+
+    /// <summary>
+    /// GetDateRange returns the chronological extents of production data in the site model.
+    /// if no production data exists, then min = MaxValue and max and MinValue
+    /// </summary>
+    /// <returns></returns>
+    Tuple<DateTime, DateTime> GetDateRange();
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }

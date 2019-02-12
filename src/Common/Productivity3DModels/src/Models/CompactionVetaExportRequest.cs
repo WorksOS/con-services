@@ -2,6 +2,7 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 
@@ -28,12 +29,17 @@ namespace VSS.Productivity3D.Models.Models
     public OutputTypes OutputType { get; private set; }
 
     /// <summary>
-    /// Include data gathered from these machine names
+    /// Include the names of these machines
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "machineNames", Required = Required.Default)]
     public string[] MachineNames { get; private set; }
 
+    /// <summary>
+    /// Used for format export data
+    /// </summary>
+    [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
+    public UserPreferenceData UserPreferences { get; set; }
 
     protected CompactionVetaExportRequest()
     {
@@ -45,7 +51,8 @@ namespace VSS.Productivity3D.Models.Models
       string fileName,
       CoordType coordType,
       OutputTypes outputType,
-      string[] machineNames
+      string[] machineNames,
+      UserPreferenceData userPreferences
     )
     {
       return new CompactionVetaExportRequest
@@ -56,6 +63,7 @@ namespace VSS.Productivity3D.Models.Models
         CoordType = coordType,
         OutputType = outputType,
         MachineNames = machineNames,
+        UserPreferences = userPreferences
       };
     }
 
@@ -93,8 +101,6 @@ namespace VSS.Productivity3D.Models.Models
           }
         }
       }
-
-      // todoJeannie UserPreferences put in base?
     }
   }
 }

@@ -2,6 +2,7 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 
@@ -21,8 +22,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// which type of passes
     /// </summary>
-    [JsonProperty(PropertyName = "outputType", Required = Required.Default)]
-    public OutputTypes OutputType { get; private set; }
+    [JsonProperty(PropertyName = "coordinateOutputType", Required = Required.Default)]
+    public OutputTypes CoordinateOutputType { get; private set; }
 
     /// <summary>
     /// Output .CSV file is restricted to 65535 rows if it is true.
@@ -36,6 +37,11 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "rawDataAsDBase", Required = Required.Default)]
     public bool RawDataAsDBase { get; protected set; }
 
+    /// <summary>
+    /// Used for format export data
+    /// </summary>
+    [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
+    public UserPreferenceData UserPreferences { get; set; }
 
     protected CompactionPassCountExportRequest()
     {
@@ -48,7 +54,8 @@ namespace VSS.Productivity3D.Models.Models
       CoordType coordType,
       OutputTypes outputType,
       bool restrictOutputSize,
-      bool rawDataAsDBase
+      bool rawDataAsDBase,
+      UserPreferenceData userPreferences
     )
     {
       return new CompactionPassCountExportRequest
@@ -57,7 +64,7 @@ namespace VSS.Productivity3D.Models.Models
         Filter = filter,
         FileName = fileName,
         CoordType = coordType,
-        OutputType = outputType,
+        CoordinateOutputType = outputType,
         RestrictOutputSize = restrictOutputSize,
         RawDataAsDBase = rawDataAsDBase
       };
@@ -78,15 +85,14 @@ namespace VSS.Productivity3D.Models.Models
             "Invalid coordinates type for export report"));
       }
 
-      if (OutputType != OutputTypes.PassCountLastPass &&
-           OutputType != OutputTypes.PassCountAllPasses)
+      if (CoordinateOutputType != OutputTypes.PassCountLastPass &&
+          CoordinateOutputType != OutputTypes.PassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for passCount export"));
       }
 
-      // todoJeannie UserPreferences in base?
     }
   }
 }

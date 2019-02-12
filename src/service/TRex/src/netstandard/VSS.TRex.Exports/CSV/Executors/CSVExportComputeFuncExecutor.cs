@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -48,55 +50,29 @@ namespace VSS.TRex.Exports.CSV.Executors
         ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
 
         Guid requestDescriptor = Guid.NewGuid();
+        var gridDataType = _CSVExportRequestArgument.OutputType == OutputTypes.PassCountLastPass || _CSVExportRequestArgument.OutputType == OutputTypes.VedaFinalPass ? GridDataType.CellProfile : GridDataType.CellPasses;
 
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
           dataModelID: _CSVExportRequestArgument.ProjectID,
           siteModel: null,
-          gridDataType: GridDataType.CellProfile,
+          gridDataType: gridDataType,
           response: CSVExportRequestResponse,
           filters: _CSVExportRequestArgument.Filters,
-          cutFillDesignID: _CSVExportRequestArgument.ReferenceDesignUID,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.VetaExport), // todoJeanne
+          cutFillDesignID: Guid.Empty, 
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.VetaExport), // todoJeanne combine veta and PassCount?
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_CSVExportRequestArgument.Filters),
-          requestRequiresAccessToDesignFileExistenceMap: _CSVExportRequestArgument.ReferenceDesignUID != Guid.Empty,
+          requestRequiresAccessToDesignFileExistenceMap: false,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
           );
 
         // Set the grid TRexTask parameters for progressive processing
         processor.Task.RequestDescriptor = requestDescriptor;
         processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
-        processor.Task.GridDataType = GridDataType.CellProfile;
+        processor.Task.GridDataType = gridDataType;
 
-        // todoJeannie how to pass CSVExportRequestArgument to CSVExportTask?
-        //((CSVExportTask)processor.Task).ProcessorDelegate = 
-        //  subGrid => CSVExportRequestResponse.GriddedReportDataRowList
-        //    .AddRange(ExtractRequiredValues(_CSVExportRequestArgument, (ClientCellProfileLeafSubgrid)subGrid));
-
-
-        //// report options 0=direction,1=endpoint,2=automatic
-        //if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
-        //{
-        //  // Compute the bearing between the two points as a survey (north azimuth, clockwise increasing)
-        //  _griddedReportRequestArgument.Azimuth = Math.Atan2(_griddedReportRequestArgument.EndNorthing - _griddedReportRequestArgument.StartNorthing, _griddedReportRequestArgument.EndEasting - _griddedReportRequestArgument.StartEasting);
-        //}
-        //else
-        //{
-        //  if (_griddedReportRequestArgument.GridReportOption == GridReportOption.Automatic)
-        //  {
-        //    // automatic
-        //    _griddedReportRequestArgument.Azimuth = 0;
-        //    _griddedReportRequestArgument.StartNorthing = 0;
-        //    _griddedReportRequestArgument.StartEasting = 0;
-        //  }
-        //}
-
-        //// Interval will be >= 0.1m and <= 100.0m
-        //processor.Pipeline.AreaControlSet =
-        //  new AreaControlSet(false, _griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
-        //    _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
-        //    _griddedReportRequestArgument.Azimuth);
+        ((CSVExportTask) processor.Task).requestArgument = _CSVExportRequestArgument;
 
         if (!processor.Build())
         {
@@ -110,6 +86,9 @@ namespace VSS.TRex.Exports.CSV.Executors
         {
           throw new ArgumentException($"Unable to obtain data for CSV Export. CSVExportRequestResponse: {CSVExportRequestResponse.ResultStatus.ToString()}.");
         }
+
+      //var response        ((CSVExportTask)processor.Task).requestArgument = _CSVExportRequestArgument;
+
       }
       catch (Exception e)
       {
