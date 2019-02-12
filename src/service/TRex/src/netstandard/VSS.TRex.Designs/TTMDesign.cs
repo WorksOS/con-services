@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using VSS.TRex.Common;
@@ -23,12 +22,12 @@ namespace VSS.TRex.Designs
   /// </summary>
   public class TTMDesign : DesignBase
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<TTMDesign>();
 
-    private double FMinHeight;
-    private double FMaxHeight;
-    private readonly double FCellSize;
-    private readonly ISubGridTreeBitMask FSubGridIndex;
+    private double MinHeight;
+    private double MaxHeight;
+    private readonly double CellSize;
+    private readonly ISubGridTreeBitMask SubGridIndex;
 
     public TrimbleTINModel Data { get; }
 
@@ -315,7 +314,7 @@ namespace VSS.TRex.Designs
           int triangleCount = Data.Triangles.Items.Length;
           for (int triIndex = 0; triIndex < triangleCount; triIndex++)
           {
-            cellScanner.ScanCellsOverTriangle(FSubGridIndex,
+            cellScanner.ScanCellsOverTriangle(SubGridIndex,
               triIndex,
               (tree, x, y) => ((ISubGridTreeBitMask)tree)[x, y],
               (tree, x, y, t) => ((ISubGridTreeBitMask)tree)[x, y] = true,
@@ -347,11 +346,11 @@ namespace VSS.TRex.Designs
       TriangleItems = Data.Triangles.Items;
       VertexItems = Data.Vertices.Items;
 
-      FCellSize = ACellSize;
+      CellSize = ACellSize;
 
       // Create a sub grid tree bit mask index that holds one bit per on-the-ground
       // sub grid that intersects at least one triangle in the TTM.
-      FSubGridIndex = new SubGridTreeSubGridExistenceBitMask
+      SubGridIndex = new SubGridTreeSubGridExistenceBitMask
       {
         CellSize = SubGridTreeConsts.SubGridTreeDimension * ACellSize
       };
@@ -382,29 +381,29 @@ namespace VSS.TRex.Designs
     /// <param name="z2"></param>
     public override void GetHeightRange(out double z1, out double z2)
     {
-      if (FMinHeight == Common.Consts.NullReal || FMaxHeight == Common.Consts.NullReal) // better calculate them
+      if (MinHeight == Common.Consts.NullReal || MaxHeight == Common.Consts.NullReal) // better calculate them
       {
-        FMinHeight = 1E100;
-        FMaxHeight = -1E100;
+        MinHeight = 1E100;
+        MaxHeight = -1E100;
 
         foreach (var vertex in VertexItems)
         {
-          if (vertex.Z < FMinHeight) FMinHeight = vertex.Z;
-          if (vertex.Z > FMaxHeight) FMaxHeight = vertex.Z;
+          if (vertex.Z < MinHeight) MinHeight = vertex.Z;
+          if (vertex.Z > MaxHeight) MaxHeight = vertex.Z;
         }
       }
 
-      z1 = FMinHeight;
-      z2 = FMaxHeight;
+      z1 = MinHeight;
+      z2 = MaxHeight;
     }
 
     public override bool HasElevationDataForSubGridPatch(double X, double Y)
     {
-      FSubGridIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint SubGridX, out uint SubGridY);
-      return FSubGridIndex[SubGridX, SubGridY];
+      SubGridIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint SubGridX, out uint SubGridY);
+      return SubGridIndex[SubGridX, SubGridY];
     }
 
-    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => FSubGridIndex[SubGridX, SubGridY];
+    public override bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY) => SubGridIndex[SubGridX, SubGridY];
 
     public override bool HasFiltrationDataForSubGridPatch(double X, double Y) => false;
 
@@ -648,8 +647,8 @@ namespace VSS.TRex.Designs
 
         Log.LogInformation($"Loaded TTM file {localPathAndFileName} containing {Data.Header.NumberOfTriangles} triangles and {Data.Header.NumberOfVertices} vertices.");
 
-        FMinHeight = Common.Consts.NullReal;
-        FMaxHeight = Common.Consts.NullReal;
+        MinHeight = Common.Consts.NullReal;
+        MaxHeight = Common.Consts.NullReal;
 
         if (!LoadSubGridIndexFile(localPathAndFileName + Consts.kDesignSubgridIndexFileExt))
           return DesignLoadResult.UnableToLoadSubgridIndex;
@@ -683,7 +682,7 @@ namespace VSS.TRex.Designs
 
         using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
         {
-          FSubGridIndex.FromStream(ms);
+          SubGridIndex.FromStream(ms);
         }
 
         return true;
@@ -769,10 +768,8 @@ namespace VSS.TRex.Designs
 
         if (Result)
         {
-          if (SaveSubgridIndex(fileName))
-            Log.LogInformation($"Saved constructed sub grid index file {fileName}");
-          else
-            Log.LogError($"Unable to save sub grid index file {fileName} - continuing with unsaved index");
+          if (!SaveSubGridIndex(fileName))
+            Log.LogError("Continuing with unsaved index");
         }
         else
           Log.LogError($"Unable to create and save sub grid index file {fileName}");
@@ -795,7 +792,7 @@ namespace VSS.TRex.Designs
       if (!Result)
       {
         // Build the sub grid tree based spatial index
-        var indexBuilder = new OptimisedTTMSpatialIndexBuilder(Data, FCellSize);
+        var indexBuilder = new OptimisedTTMSpatialIndexBuilder(Data, CellSize);
         Result = indexBuilder.ConstructSpatialIndex();
 
         if (Result)
@@ -803,10 +800,8 @@ namespace VSS.TRex.Designs
           SpatialIndexOptimised = indexBuilder.SpatialIndexOptimised;
           SpatialIndexOptimisedTriangles = indexBuilder.SpatialIndexOptimisedTriangles;
 
-          if (SaveSpatialIndex(fileName))
-            Log.LogInformation($"Saved constructed spatial index file {fileName}");
-          else
-            Log.LogError($"Unable to save spatial index file {fileName} - continuing with unsaved index");
+          if (!SaveSpatialIndex(fileName))
+            Log.LogError("Continuing with unsaved index");
         }
         else
           Log.LogError($"Unable to create and save spatial index file {fileName}");
@@ -820,28 +815,26 @@ namespace VSS.TRex.Designs
     /// </summary>
     /// <param name="fileName"></param>
     /// <returns></returns>
-    private bool SaveSubgridIndex(string fileName)
+    private bool SaveSubGridIndex(string fileName)
     {
       try
       {
         // Write the index out to a file
         using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
-          FSubGridIndex.ToStream(fs);
+          SubGridIndex.ToStream(fs);
         }
 
-        if (!File.Exists(fileName))
-        {
-          Thread.Sleep(500); // Seems to be a Windows update problem hence introduce delay b4 checking again
-        }
+        Log.LogInformation($"Saved sub grid index file {fileName}");
 
         return true;
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception SaveSubGridIndex");
+        Log.LogError(e, "Exception in SaveSubGridIndex");
       }
 
+      Log.LogError($"Unable to save sub grid index file {fileName}");
       return false;
     }
 
@@ -891,7 +884,7 @@ namespace VSS.TRex.Designs
     /// A reference to the internal sub grid existence map for the design
     /// </summary>
     /// <returns></returns>
-    public override ISubGridTreeBitMask SubGridOverlayIndex() => FSubGridIndex;
+    public override ISubGridTreeBitMask SubGridOverlayIndex() => SubGridIndex;
 
     /// <summary>
     /// Computes the requested geometric profile over the design and returns the result
