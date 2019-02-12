@@ -45,7 +45,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
-    /// <param name="language"></param>    
+    /// <param name="language"></param>   
+    /// <param name="explicitFilters">If true then filters should not undergo mutation i.e. no lookbacks</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds.</returns>
     [ProjectUidVerifier]
     [Route("api/v1/reporttiles/png")]
@@ -63,7 +64,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType,
-      [FromQuery] string language = null)
+      [FromQuery] string language = null,
+      [FromQuery] bool explicitFilters = false)
     {
       Log.LogDebug("GetReportTileRaw: " + Request.QueryString);
 
@@ -77,7 +79,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       }
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
-        volumeCalcType, overlays, width, height, bbox, mapType, mode, language, string.IsNullOrEmpty(bbox));
+        volumeCalcType, overlays, width, height, bbox, mapType, mode, language, string.IsNullOrEmpty(bbox), explicitFilters);
 
       Response.Headers.Add("X-Warning", "false");
       return tileResult;
