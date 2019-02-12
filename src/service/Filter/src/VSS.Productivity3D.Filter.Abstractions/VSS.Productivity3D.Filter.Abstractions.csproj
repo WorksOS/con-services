@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
   </ItemGroup>
 
   <ItemGroup>

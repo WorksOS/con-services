@@ -8,6 +8,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.WebAPI;
@@ -35,7 +37,10 @@ namespace VSS.Productivity3D.Now3D
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IProjectListProxy, ProjectListProxy>();
       services.AddTransient<IFileListProxy, FileListProxy>();
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();
 
