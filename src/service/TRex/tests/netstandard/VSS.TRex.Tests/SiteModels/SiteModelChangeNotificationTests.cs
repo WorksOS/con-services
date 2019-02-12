@@ -59,6 +59,11 @@ namespace VSS.TRex.Tests.SiteModels
       loadedFunc.Invoke(siteModel2).Should().Be(finalState);
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="loadedFunc">Determines the 'loaded' status of the element being tested</param>
+    /// <param name="loadAction">Performs the action to load the state of the element being tested</param>
+    /// <param name="modifyAction">Performs the action to set the modified state of the change notification related to the element being tested</param>
     private void TestModAndUnModded(Func<ISiteModel, bool> loadedFunc,
       Func<ISiteModel, object> loadAction,
       Action<SiteModelAttributesChangedEvent, bool> modifyAction)
