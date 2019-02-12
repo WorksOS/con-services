@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,12 +13,13 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Velociraptor.PDSInterface;
-using SummaryVolumeProfileCell = VSS.Productivity3D.Models.ResultHandling.SummaryVolumesProfileCell;
+using SummaryVolumeProfileCell = VSS.Productivity3D.Models.ResultHandling.Profiling.SummaryVolumesProfileCell;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -145,8 +145,41 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
 
       profile.results = new List<CompactionProfileCell>();
-      ProfileCell prevCell = null;
-      foreach (var currCell in pdsiProfile.cells)
+      ProfileCellData prevCell = null;
+
+      var profileCells = pdsiProfile.cells.Select(c => new ProfileCellData(
+        c.station,
+        c.interceptLength,
+        c.firstPassHeight,
+        c.lastPassHeight,
+        c.lowestPassHeight,
+        c.highestPassHeight,
+        c.compositeFirstPassHeight,
+        c.compositeLastPassHeight,
+        c.compositeLowestPassHeight,
+        c.compositeHighestPassHeight,
+        c.designHeight,
+        c.CCV,
+        c.TargetCCV,
+        c.CCVElev,
+        c.PrevCCV,
+        c.PrevTargetCCV,
+        c.MDP,
+        c.TargetMDP,
+        c.MDPElev,
+        c.materialTemperature,
+        c.materialTemperatureWarnMin,
+        c.materialTemperatureWarnMax,
+        c.materialTemperatureElev,
+        c.topLayerThickness,
+        c.topLayerPassCount,
+        c.topLayerPassCountTargetRange.Min,
+        c.topLayerPassCountTargetRange.Max,
+        c.cellMinSpeed,
+        c.cellMaxSpeed
+      )).ToList();
+
+      foreach (var currCell in profileCells)
       {
         var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
 
@@ -157,31 +190,31 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           profile.results.Add(gapCell);
         }
 
-        var lastPassHeight = currCell.lastPassHeight == VelociraptorConstants.NULL_SINGLE
+        var lastPassHeight = currCell.LastPassHeight == VelociraptorConstants.NULL_SINGLE
           ? float.NaN
-          : currCell.lastPassHeight;
-        var lastCompositeHeight = currCell.compositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
+          : currCell.LastPassHeight;
+        var lastCompositeHeight = currCell.CompositeLastPassHeight == VelociraptorConstants.NULL_SINGLE
         ? float.NaN
-          : currCell.compositeLastPassHeight;
+          : currCell.CompositeLastPassHeight;
 
-        var designHeight = currCell.designHeight == VelociraptorConstants.NULL_SINGLE
+        var designHeight = currCell.DesignHeight == VelociraptorConstants.NULL_SINGLE
         ? float.NaN
-          : currCell.designHeight;
+          : currCell.DesignHeight;
         bool noCCVValue = currCell.TargetCCV == 0 || currCell.TargetCCV == VelociraptorConstants.NO_CCV ||
                           currCell.CCV == VelociraptorConstants.NO_CCV;
         bool noCCVElevation = currCell.CCVElev == VelociraptorConstants.NULL_SINGLE || noCCVValue;
         bool noMDPValue = currCell.TargetMDP == 0 || currCell.TargetMDP == VelociraptorConstants.NO_MDP ||
                           currCell.MDP == VelociraptorConstants.NO_MDP;
         bool noMDPElevation = currCell.MDPElev == VelociraptorConstants.NULL_SINGLE || noMDPValue;
-        bool noTemperatureValue = currCell.materialTemperature == VelociraptorConstants.NO_TEMPERATURE;
-        bool noTemperatureElevation = currCell.materialTemperatureElev == VelociraptorConstants.NULL_SINGLE ||
+        bool noTemperatureValue = currCell.MaterialTemperature == VelociraptorConstants.NO_TEMPERATURE;
+        bool noTemperatureElevation = currCell.MaterialTemperatureElev == VelociraptorConstants.NULL_SINGLE ||
                                       noTemperatureValue;
-        bool noPassCountValue = currCell.topLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
+        bool noPassCountValue = currCell.TopLayerPassCount == VelociraptorConstants.NO_PASSCOUNT;
 
         //Either have none or both speed values
-        var noSpeedValue = currCell.cellMaxSpeed == VelociraptorConstants.NO_SPEED;
-        var speedMin = noSpeedValue ? float.NaN : (float) (currCell.cellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
-        var speedMax = noSpeedValue ? float.NaN : (float) (currCell.cellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var noSpeedValue = currCell.CellMaxSpeed == VelociraptorConstants.NO_SPEED;
+        var speedMin = noSpeedValue ? float.NaN : (float) (currCell.CellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var speedMax = noSpeedValue ? float.NaN : (float) (currCell.CellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
 
         var cmvPercent = noCCVValue
           ? float.NaN
@@ -191,17 +224,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ? float.NaN
           : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
 
-        var firstPassHeight = currCell.firstPassHeight == VelociraptorConstants.NULL_SINGLE
+        var firstPassHeight = currCell.FirstPassHeight == VelociraptorConstants.NULL_SINGLE
         ? float.NaN
-          : currCell.firstPassHeight;
+          : currCell.FirstPassHeight;
 
-        var highestPassHeight = currCell.highestPassHeight == VelociraptorConstants.NULL_SINGLE
+        var highestPassHeight = currCell.HighestPassHeight == VelociraptorConstants.NULL_SINGLE
         ? float.NaN
-          : currCell.highestPassHeight;
+          : currCell.HighestPassHeight;
 
-        var lowestPassHeight = currCell.lowestPassHeight == VelociraptorConstants.NULL_SINGLE
+        var lowestPassHeight = currCell.LowestPassHeight == VelociraptorConstants.NULL_SINGLE
         ? float.NaN
-          : currCell.lowestPassHeight;
+          : currCell.LowestPassHeight;
 
         var cutFill = float.IsNaN(lastCompositeHeight) || float.IsNaN(designHeight)
           ? float.NaN
@@ -213,9 +246,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var temperature =
           noTemperatureValue
             ? float.NaN
-            : currCell.materialTemperature / 10.0F; // As temperature is reported in 10th...
-        var temperatureHeight = noTemperatureElevation ? float.NaN : currCell.materialTemperatureElev;
-        var topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount;
+            : currCell.MaterialTemperature / 10.0F; // As temperature is reported in 10th...
+        var temperatureHeight = noTemperatureElevation ? float.NaN : currCell.MaterialTemperatureElev;
+        var topLayerPassCount = noPassCountValue ? -1 : currCell.TopLayerPassCount;
         var cmvPercentChange = currCell.CCV == VelociraptorConstants.NO_CCV
           ? float.NaN
           : (currCell.PrevCCV == VelociraptorConstants.NO_CCV
@@ -224,17 +257,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         var passCountIndex = noPassCountValue || float.IsNaN(lastPassHeight)
           ? ValueTargetType.NoData
-          : (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min
+          : (currCell.TopLayerPassCount < currCell.TopLayerPassCountTargetRangeMin
             ? ValueTargetType.BelowTarget
-            : (currCell.topLayerPassCount > currCell.topLayerPassCountTargetRange.Max
+            : (currCell.TopLayerPassCount > currCell.TopLayerPassCountTargetRangeMax
               ? ValueTargetType.AboveTarget
               : ValueTargetType.OnTarget));
 
         var temperatureIndex = noTemperatureValue || noTemperatureElevation
           ? ValueTargetType.NoData
-          : (currCell.materialTemperature < currCell.materialTemperatureWarnMin
+          : (currCell.MaterialTemperature < currCell.MaterialTemperatureWarnMin
             ? ValueTargetType.BelowTarget
-            : (currCell.materialTemperature > currCell.materialTemperatureWarnMax
+            : (currCell.MaterialTemperature > currCell.MaterialTemperatureWarnMax
               ? ValueTargetType.AboveTarget
               : ValueTargetType.OnTarget));
 
@@ -252,10 +285,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         var speedIndex = noSpeedValue || float.IsNaN(lastPassHeight)
           ? ValueTargetType.NoData
-          : (currCell.cellMaxSpeed > liftBuildSettings.MachineSpeedTarget.MaxTargetMachineSpeed
+          : (currCell.CellMaxSpeed > liftBuildSettings.MachineSpeedTarget.MaxTargetMachineSpeed
             ? ValueTargetType.AboveTarget
-            : (currCell.cellMinSpeed < liftBuildSettings.MachineSpeedTarget.MinTargetMachineSpeed &&
-               currCell.cellMaxSpeed < liftBuildSettings.MachineSpeedTarget.MinTargetMachineSpeed
+            : (currCell.CellMinSpeed < liftBuildSettings.MachineSpeedTarget.MinTargetMachineSpeed &&
+               currCell.CellMaxSpeed < liftBuildSettings.MachineSpeedTarget.MinTargetMachineSpeed
               ? ValueTargetType.BelowTarget
               : ValueTargetType.OnTarget));
 
@@ -263,7 +296,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           cellType = prevCell == null ? ProfileCellType.MidPoint : ProfileCellType.Edge,
 
-          station = currCell.station,
+          station = currCell.Station,
 
           firstPassHeight = firstPassHeight,
           highestPassHeight = highestPassHeight,
@@ -303,11 +336,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
-      if (prevCell != null && prevCell.interceptLength > ProfilesHelper.ONE_MM)
+      if (prevCell != null && prevCell.InterceptLength > ProfilesHelper.ONE_MM)
       {
         var lastCell = new CompactionProfileCell(profile.results[profile.results.Count - 1])
         {
-          station = prevCell.station + prevCell.interceptLength
+          station = prevCell.Station + prevCell.InterceptLength
         };
 
         profile.results.Add(lastCell);

@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.ResultHandling
+﻿namespace VSS.Productivity3D.Models.ResultHandling.Profiling
 {
   public class SummaryVolumesProfileCell
   {

@@ -1,30 +1,29 @@
 ﻿using System.Collections.Generic;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling.Profiling
 {
   /// <summary>
   /// Represents result returned by Summary Volumes Profile request
   /// </summary>
-  public class SummaryVolumesProfileResult : ContractExecutionResult
+  public class ProfileDataResult<T> : ContractExecutionResult
   {
     public double GridDistanceBetweenProfilePoints { get; }
 
-    public List<SummaryVolumesProfileCell> ProfileCells { get; }
+    public List<T> ProfileCells { get; }
 
     public bool HasData() => (ProfileCells?.Count ?? 0) > 0;
 
     /// <summary>
     /// Default private constructor.
     /// </summary>
-    private SummaryVolumesProfileResult()
+    private ProfileDataResult()
     { }
 
     /// <summary>
     /// Override constructor with parameters.
     /// </summary>
-    public SummaryVolumesProfileResult(double gridDistanceBetweenProfilePoints, List<SummaryVolumesProfileCell> profileCells)
+    public ProfileDataResult(double gridDistanceBetweenProfilePoints, List<T> profileCells)
     {
       GridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
       ProfileCells = profileCells;
