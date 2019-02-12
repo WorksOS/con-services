@@ -89,34 +89,43 @@ namespace VSS.TRex.Tests.SiteModels
       newSiteModel.Grid.CellSize.Should().Be(originSiteModel.Grid.CellSize);
     }
 
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveExistenceMap()
+    private void TestIt(Func<ISiteModel, bool> loadedFunc,
+      Func<ISiteModel, object> loadAction,
+      SiteModelOriginConstructionFlags preservationFlags,
+      bool finalState)
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.ExistenceMapLoaded.Should().Be(false);
+      loadedFunc.Invoke(originSiteModel).Should().BeFalse();
 
-      var original = originSiteModel.ExistenceMap;
-      originSiteModel.ExistenceMapLoaded.Should().Be(true);
+      var original = loadAction.Invoke(originSiteModel);
+      loadedFunc.Invoke(originSiteModel).Should().BeTrue();
 
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveExistenceMap);
-      newSiteModel.ExistenceMapLoaded.Should().Be(true);
-      newSiteModel.ExistenceMap.Should().Be(original);
+      var newSiteModel = new SiteModel(originSiteModel, preservationFlags);
+      loadedFunc.Invoke(newSiteModel).Should().Be(finalState);
+
+      if (preservationFlags == SiteModelOriginConstructionFlags.PreserveNothing)
+        loadAction.Invoke(newSiteModel).Should().NotBe(original);
+      else
+        loadAction.Invoke(newSiteModel).Should().Be(original);
+    }
+
+    private void TestItBothWays(Func<ISiteModel, bool> loadedFunc,
+      Func<ISiteModel, object> loadAction,
+      SiteModelOriginConstructionFlags preservationFlags)
+    {
+      TestIt(loadedFunc, loadAction, preservationFlags, true);
+      TestIt(loadedFunc, loadAction, SiteModelOriginConstructionFlags.PreserveNothing, false);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveExistenceMap()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_ExistenceMap()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.ExistenceMapLoaded.Should().Be(false);
-
-      var original = originSiteModel.ExistenceMap;
-      originSiteModel.ExistenceMapLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.ExistenceMapLoaded.Should().Be(false);
-      newSiteModel.ExistenceMap.Should().NotBe(original);
+      TestItBothWays(siteModel => siteModel.ExistenceMapLoaded, siteModel => siteModel.ExistenceMap, SiteModelOriginConstructionFlags.PreserveExistenceMap);
     }
 
+    /// <summary>
+    /// Grid related tests have subtlely different semantics so are kept long hand...
+    /// </summary>
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveGrid()
     {
@@ -140,9 +149,12 @@ namespace VSS.TRex.Tests.SiteModels
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
       newSiteModel.GridLoaded.Should().Be(true);
-      newSiteModel.ExistenceMap.Should().NotBe(original);
+      newSiteModel.Grid.Should().NotBe(original);
     }
 
+    /// <summary>
+    /// CSIB related tests have subtlely different semantics so are kept long hand...
+    /// </summary>
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveCSIB()
     {
@@ -168,232 +180,55 @@ namespace VSS.TRex.Tests.SiteModels
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
       newSiteModel.CSIBLoaded.Should().Be(false);
-      newSiteModel.ExistenceMap.Should().NotBe(original);
+      newSiteModel.CSIB().Should().Be("");
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveDesigns()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_Designs()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.DesignsLoaded.Should().Be(false);
-
-      var original = originSiteModel.Designs;
-      originSiteModel.DesignsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveDesigns);
-      newSiteModel.DesignsLoaded.Should().Be(true);
-      newSiteModel.Designs.Should().BeSameAs(original);
+      TestItBothWays(siteModel => siteModel.DesignsLoaded, siteModel => siteModel.Designs, SiteModelOriginConstructionFlags.PreserveDesigns);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveDesigns()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_SurveyedSurfaces()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.DesignsLoaded.Should().Be(false);
-
-      var original = originSiteModel.Designs;
-      originSiteModel.DesignsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.DesignsLoaded.Should().Be(false);
-      newSiteModel.Designs.Should().NotBeSameAs(original);
+      TestItBothWays(siteModel => siteModel.SurveyedSurfacesLoaded, siteModel => siteModel.SurveyedSurfaces, SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveSurveyedSurfaces()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_Machines()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
-
-      var original = originSiteModel.SurveyedSurfaces;
-      originSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces);
-      newSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
-      newSiteModel.SurveyedSurfaces.Should().BeSameAs(original);
+      TestItBothWays(siteModel => siteModel.MachinesLoaded, siteModel => siteModel.Machines, SiteModelOriginConstructionFlags.PreserveMachines);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveSurveyedSurfaces()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_MachineTargetValues()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
-
-      var original = originSiteModel.SurveyedSurfaces;
-      originSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
-      newSiteModel.SurveyedSurfaces.Should().NotBeSameAs(original);
+      TestItBothWays(siteModel => siteModel.MachineTargetValuesLoaded, siteModel => siteModel.MachinesTargetValues, SiteModelOriginConstructionFlags.PreserveMachineTargetValues);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachines()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_MachineDesigns()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.MachinesLoaded.Should().Be(false);
-
-      var original = originSiteModel.Machines;
-      originSiteModel.MachinesLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachines);
-      newSiteModel.MachinesLoaded.Should().Be(true);
-      newSiteModel.Machines.Should().BeSameAs(original);
+      TestItBothWays(siteModel => siteModel.SiteModelMachineDesignsLoaded, siteModel => siteModel.SiteModelMachineDesigns, SiteModelOriginConstructionFlags.PreserveMachineDesigns);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachines()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_ProofingRuns()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.MachinesLoaded.Should().Be(false);
-
-      var original = originSiteModel.Machines;
-      originSiteModel.MachinesLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.MachinesLoaded.Should().Be(false);
-      newSiteModel.Machines.Should().NotBeSameAs(original);
+      TestItBothWays(siteModel => siteModel.SiteProofingRunsLoaded, siteModel => siteModel.SiteProofingRuns, SiteModelOriginConstructionFlags.PreserveProofingRuns);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachineTargetValues()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_Alignments()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.MachineTargetValuesLoaded.Should().Be(false);
-
-      var original = originSiteModel.MachinesTargetValues;
-      originSiteModel.MachineTargetValuesLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachineTargetValues);
-      newSiteModel.MachineTargetValuesLoaded.Should().Be(true);
-      newSiteModel.MachinesTargetValues.Should().BeSameAs(original);
+      TestItBothWays(siteModel => siteModel.AlignmentsLoaded, siteModel => siteModel.Alignments, SiteModelOriginConstructionFlags.PreserveAlignments);
     }
 
     [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachineTargetValues()
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_SiteModelDesigns()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.MachineTargetValuesLoaded.Should().Be(false);
-
-      var original = originSiteModel.MachinesTargetValues;
-      originSiteModel.MachineTargetValuesLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.MachineTargetValuesLoaded.Should().Be(false);
-      newSiteModel.MachinesTargetValues.Should().NotBeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachineDesigns()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
-
-      var original = originSiteModel.SiteModelMachineDesigns;
-      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachineDesigns);
-      newSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
-      newSiteModel.SiteModelMachineDesigns.Should().BeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachineDesigns()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
-
-      var original = originSiteModel.SiteModelMachineDesigns;
-      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
-      newSiteModel.SiteModelMachineDesigns.Should().NotBeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveProofingRuns()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SiteProofingRunsLoaded.Should().Be(false);
-
-      var original = originSiteModel.SiteProofingRuns;
-      originSiteModel.SiteProofingRunsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveProofingRuns);
-      newSiteModel.SiteProofingRunsLoaded.Should().Be(true);
-      newSiteModel.SiteProofingRuns.Should().BeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveProofingRuns()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SiteProofingRunsLoaded.Should().Be(false);
-
-      var original = originSiteModel.SiteProofingRuns;
-      originSiteModel.SiteProofingRunsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.SiteProofingRunsLoaded.Should().Be(false);
-
-      newSiteModel.SiteProofingRuns.Should().NotBeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveAlignments()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.AlignmentsLoaded.Should().Be(false);
-
-      var original = originSiteModel.Alignments;
-      originSiteModel.AlignmentsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveAlignments);
-      newSiteModel.AlignmentsLoaded.Should().Be(true);
-      newSiteModel.Alignments.Should().BeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveAlignments()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.AlignmentsLoaded.Should().Be(false);
-
-      var original = originSiteModel.Alignments;
-      originSiteModel.AlignmentsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.AlignmentsLoaded.Should().Be(false);
-      newSiteModel.Alignments.Should().NotBeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveSiteModelDesigns()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SiteModelDesignsLoaded.Should().Be(false);
-
-      var original = originSiteModel.SiteModelDesigns;
-      originSiteModel.SiteModelDesignsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveSiteModelDesigns);
-      newSiteModel.SiteModelDesignsLoaded.Should().Be(true);
-      newSiteModel.SiteModelDesigns.Should().BeSameAs(original);
-    }
-
-    [Fact]
-    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveSiteModelDesigns()
-    {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
-      originSiteModel.SiteModelDesignsLoaded.Should().Be(false);
-
-      var original = originSiteModel.SiteModelDesigns;
-      originSiteModel.SiteModelDesignsLoaded.Should().Be(true);
-
-      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.SiteModelDesignsLoaded.Should().Be(false);
-      newSiteModel.SiteModelDesigns.Should().NotBeSameAs(original);
+      TestItBothWays(siteModel => siteModel.SiteModelDesignsLoaded, siteModel => siteModel.SiteModelDesigns, SiteModelOriginConstructionFlags.PreserveSiteModelDesigns);
     }
 
     [Fact]
