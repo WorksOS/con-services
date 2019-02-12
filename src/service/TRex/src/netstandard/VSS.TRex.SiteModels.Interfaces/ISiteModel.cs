@@ -92,6 +92,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     bool IgnoreInvalidPositions { get; set; }
 
     string CSIB();
+    bool CSIBLoaded { get; }
 
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);
