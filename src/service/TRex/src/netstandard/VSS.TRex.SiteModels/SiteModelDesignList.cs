@@ -51,22 +51,6 @@ namespace VSS.TRex.SiteModels
       return design;
     }
 
-    public void InitialiseWorkingExtents()
-    {
-      lock (this)
-      {
-        ForEach(x => x.WorkingExtents.SetInverted());
-      }
-    }
-
-    public void AssignWorkingExtentsToExtents()
-    {
-      lock (this)
-      {
-        ForEach(x => x.Extents.Assign(x.WorkingExtents));
-      }
-    }
-
     /// <summary>
     /// Saves the content of the proofing run list into the persistent store
     /// Note: It uses a storage proxy delegate to support the TAG file ingest pipeline that creates transactional storage

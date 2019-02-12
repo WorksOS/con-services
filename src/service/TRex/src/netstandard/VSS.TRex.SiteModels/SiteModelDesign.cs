@@ -14,17 +14,9 @@ namespace VSS.TRex.SiteModels
 
     public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 
-    /// <summary>
-    /// WorkingExtents is used as a working area for computing modified
-    /// design extents by operations such as data deletion. It is not persisted
-    /// in the design description
-    /// </summary>
-    public BoundingWorldExtent3D WorkingExtents { get; set; } = new BoundingWorldExtent3D();
-
     public SiteModelDesign()
     {
       Extents.Clear();
-      WorkingExtents.Clear();
     }
 
     public SiteModelDesign(string name, BoundingWorldExtent3D extents) : this()
