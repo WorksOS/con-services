@@ -8,7 +8,6 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
@@ -79,12 +78,15 @@ namespace VSS.TRex.SiteModels
     private readonly object machineLoadLockObject = new object();
     private readonly object siteProofingRunLockObject = new object();
     private readonly object siteModelMachineDesignsLockObject = new object();
+    private readonly object siteModelDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
     /// </summary>
     public IServerSubGridTree Grid { get; private set; }
-    
+
+    public bool GridLoaded => Grid != null;
+
     private ISubGridTreeBitMask existenceMap;
 
     /// <summary>
@@ -120,7 +122,10 @@ namespace VSS.TRex.SiteModels
         return csib;
 
       if (!IsTransient)
-        return string.Empty;
+      {
+        csib = string.Empty;
+        return csib;
+      }
 
       FileSystemErrorStatus readResult =
         DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID,
@@ -129,11 +134,15 @@ namespace VSS.TRex.SiteModels
           out MemoryStream csibStream);
 
       if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
-        return null;
+      {
+        csib = string.Empty;
+        return csib;
+      }
 
       using (csibStream)
       {
-        return Encoding.ASCII.GetString(csibStream.ToArray());
+        csib = Encoding.ASCII.GetString(csibStream.ToArray());
+        return csib;
       }
     }
 
@@ -143,7 +152,7 @@ namespace VSS.TRex.SiteModels
     /// the CSIB to be loaded via the CSIB property
     /// </summary>
     public bool CSIBLoaded => csib != null;
-    
+
     // MachinesTargetValues stores a list of target values, one list per machine,
     // that record how the configured target CCV and pass count settings on each
     // machine has changed over time.
@@ -165,14 +174,36 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public ISiteModelMetadata MetaData => GetMetaData();
 
-    private readonly SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
+    private ISiteModelDesignList _siteModelDesigns;
 
     /// <summary>
     /// SiteModelDesigns records all the designs that have been seen in this site model.
     /// Each site model designs records the name of the site model and the extents
     /// of the cell information that have been record for it.
     /// </summary>
-    public ISiteModelDesignList SiteModelDesigns => siteModelDesigns;
+    public ISiteModelDesignList SiteModelDesigns
+    {
+      get
+      {
+        if (_siteModelDesigns == null)
+        {
+          lock (siteModelDesignsLockObject)
+          {
+            if (_siteModelDesigns != null)
+              return _siteModelDesigns;
+
+            _siteModelDesigns = new SiteModelDesignList();
+
+            if (!IsTransient)
+              _siteModelDesigns.LoadFromPersistentStore(ID);
+          }
+        }
+
+        return _siteModelDesigns;
+      }
+    }
+
+    public bool SiteModelDesignsLoaded => _siteModelDesigns != null;
 
     private IDesigns _designs;
 
@@ -334,6 +365,10 @@ namespace VSS.TRex.SiteModels
         ? originModel.Grid
         : new ServerSubGridTree(originModel.ID);
 
+      csib = (originFlags & SiteModelOriginConstructionFlags.PreserveCsib) != 0
+        ? originModel.CSIB()
+        : null;
+
       existenceMap = originModel.ExistenceMapLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
         ? originModel.ExistenceMap
         : null;
@@ -365,6 +400,10 @@ namespace VSS.TRex.SiteModels
       // Machine target values are an extension vector from machines. If the machine have not changed
       machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
         ? originModel.MachinesTargetValues
+        : null;
+
+      _siteModelDesigns = originModel.SiteModelDesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSiteModelDesigns) != 0
+        ? originModel.SiteModelDesigns
         : null;
 
       // Reload the bits that need to be reloaded
@@ -538,6 +577,16 @@ namespace VSS.TRex.SiteModels
         try
         {
           siteModelMachineDesigns?.SaveToPersistentStore(storageProxy);
+        }
+        catch (Exception e)
+        {
+          Log.LogError(e, $"Failed to save machine design name list for site model {ID} to persistent store:");
+          Result = false;
+        }
+
+        try
+        {
+          _siteModelDesigns?.SaveToPersistentStore(ID, storageProxy);
         }
         catch (Exception e)
         {

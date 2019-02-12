@@ -15,6 +15,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_Default()
     {
       var siteModel = new SiteModel();
+      siteModel.GridLoaded.Should().Be(false);
 
       siteModel.CreationDate.Should().BeAfter(DateTime.UtcNow.AddSeconds(-1));
       siteModel.LastModifiedDate.Should().Be(siteModel.CreationDate);
@@ -92,9 +93,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveExistenceMap()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.ExistenceMapLoaded.Should().Be(false);
+
       var original = originSiteModel.ExistenceMap;
+      originSiteModel.ExistenceMapLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveExistenceMap);
+      newSiteModel.ExistenceMapLoaded.Should().Be(true);
       newSiteModel.ExistenceMap.Should().Be(original);
     }
 
@@ -102,9 +107,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveExistenceMap()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.ExistenceMapLoaded.Should().Be(false);
+
       var original = originSiteModel.ExistenceMap;
+      originSiteModel.ExistenceMapLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.ExistenceMapLoaded.Should().Be(false);
       newSiteModel.ExistenceMap.Should().NotBe(original);
     }
 
@@ -112,9 +121,12 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveGrid()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.GridLoaded.Should().Be(true);
+
       var original = originSiteModel.Grid;
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveGrid);
+      newSiteModel.GridLoaded.Should().Be(true);
       newSiteModel.Grid.Should().Be(original);
     }
 
@@ -122,9 +134,12 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveGrid()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.GridLoaded.Should().Be(true);
+
       var original = originSiteModel.ExistenceMap;
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.GridLoaded.Should().Be(true);
       newSiteModel.ExistenceMap.Should().NotBe(original);
     }
 
@@ -132,9 +147,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveCSIB()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.CSIBLoaded.Should().Be(false);
+
       var original = originSiteModel.CSIB();
+      originSiteModel.CSIBLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveCsib);
+      newSiteModel.CSIBLoaded.Should().Be(true);
       newSiteModel.CSIB().Should().Be(original);
     }
 
@@ -142,9 +161,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveCSIB()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.CSIBLoaded.Should().Be(false);
+
       var original = originSiteModel.CSIB();
+      originSiteModel.CSIBLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.CSIBLoaded.Should().Be(false);
       newSiteModel.ExistenceMap.Should().NotBe(original);
     }
 
@@ -152,9 +175,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveDesigns()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.DesignsLoaded.Should().Be(false);
+
       var original = originSiteModel.Designs;
+      originSiteModel.DesignsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveDesigns);
+      newSiteModel.DesignsLoaded.Should().Be(true);
       newSiteModel.Designs.Should().BeSameAs(original);
     }
 
@@ -162,9 +189,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveDesigns()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.DesignsLoaded.Should().Be(false);
+
       var original = originSiteModel.Designs;
+      originSiteModel.DesignsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.DesignsLoaded.Should().Be(false);
       newSiteModel.Designs.Should().NotBeSameAs(original);
     }
 
@@ -172,9 +203,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveSurveyedSurfaces()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
+
       var original = originSiteModel.SurveyedSurfaces;
+      originSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces);
+      newSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
       newSiteModel.SurveyedSurfaces.Should().BeSameAs(original);
     }
 
@@ -182,9 +217,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveSurveyedSurfaces()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
+
       var original = originSiteModel.SurveyedSurfaces;
+      originSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
       newSiteModel.SurveyedSurfaces.Should().NotBeSameAs(original);
     }
 
@@ -192,9 +231,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachines()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.MachinesLoaded.Should().Be(false);
+
       var original = originSiteModel.Machines;
+      originSiteModel.MachinesLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachines);
+      newSiteModel.MachinesLoaded.Should().Be(true);
       newSiteModel.Machines.Should().BeSameAs(original);
     }
 
@@ -202,9 +245,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachines()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.MachinesLoaded.Should().Be(false);
+
       var original = originSiteModel.Machines;
+      originSiteModel.MachinesLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.MachinesLoaded.Should().Be(false);
       newSiteModel.Machines.Should().NotBeSameAs(original);
     }
 
@@ -212,9 +259,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachineTargetValues()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.MachineTargetValuesLoaded.Should().Be(false);
+
       var original = originSiteModel.MachinesTargetValues;
+      originSiteModel.MachineTargetValuesLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachineTargetValues);
+      newSiteModel.MachineTargetValuesLoaded.Should().Be(true);
       newSiteModel.MachinesTargetValues.Should().BeSameAs(original);
     }
 
@@ -222,9 +273,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachineTargetValues()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.MachineTargetValuesLoaded.Should().Be(false);
+
       var original = originSiteModel.MachinesTargetValues;
+      originSiteModel.MachineTargetValuesLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.MachineTargetValuesLoaded.Should().Be(false);
       newSiteModel.MachinesTargetValues.Should().NotBeSameAs(original);
     }
 
@@ -232,9 +287,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMachineDesigns()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
+
       var original = originSiteModel.SiteModelMachineDesigns;
+      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveMachineDesigns);
+      newSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
       newSiteModel.SiteModelMachineDesigns.Should().BeSameAs(original);
     }
 
@@ -242,9 +301,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMachineDesigns()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
+
       var original = originSiteModel.SiteModelMachineDesigns;
+      originSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
       newSiteModel.SiteModelMachineDesigns.Should().NotBeSameAs(original);
     }
 
@@ -252,9 +315,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveProofingRuns()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SiteProofingRunsLoaded.Should().Be(false);
+
       var original = originSiteModel.SiteProofingRuns;
+      originSiteModel.SiteProofingRunsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveProofingRuns);
+      newSiteModel.SiteProofingRunsLoaded.Should().Be(true);
       newSiteModel.SiteProofingRuns.Should().BeSameAs(original);
     }
 
@@ -262,9 +329,14 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveProofingRuns()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SiteProofingRunsLoaded.Should().Be(false);
+
       var original = originSiteModel.SiteProofingRuns;
+      originSiteModel.SiteProofingRunsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SiteProofingRunsLoaded.Should().Be(false);
+
       newSiteModel.SiteProofingRuns.Should().NotBeSameAs(original);
     }
 
@@ -272,9 +344,13 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveAlignments()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.AlignmentsLoaded.Should().Be(false);
+
       var original = originSiteModel.Alignments;
+      originSiteModel.AlignmentsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveAlignments);
+      newSiteModel.AlignmentsLoaded.Should().Be(true);
       newSiteModel.Alignments.Should().BeSameAs(original);
     }
 
@@ -282,10 +358,133 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveAlignments()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.AlignmentsLoaded.Should().Be(false);
+
       var original = originSiteModel.Alignments;
+      originSiteModel.AlignmentsLoaded.Should().Be(true);
 
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.AlignmentsLoaded.Should().Be(false);
       newSiteModel.Alignments.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveSiteModelDesigns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SiteModelDesignsLoaded.Should().Be(false);
+
+      var original = originSiteModel.SiteModelDesigns;
+      originSiteModel.SiteModelDesignsLoaded.Should().Be(true);
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveSiteModelDesigns);
+      newSiteModel.SiteModelDesignsLoaded.Should().Be(true);
+      newSiteModel.SiteModelDesigns.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveSiteModelDesigns()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      originSiteModel.SiteModelDesignsLoaded.Should().Be(false);
+
+      var original = originSiteModel.SiteModelDesigns;
+      originSiteModel.SiteModelDesignsLoaded.Should().Be(true);
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+      newSiteModel.SiteModelDesignsLoaded.Should().Be(false);
+      newSiteModel.SiteModelDesigns.Should().NotBeSameAs(original);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMultiple()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var _1 = originSiteModel.Alignments;
+      var _2 = originSiteModel.Designs;
+      var _3 = originSiteModel.SiteModelDesigns;
+      var _4 = originSiteModel.SiteProofingRuns;
+      var _5 = originSiteModel.MachinesTargetValues;
+      var _6 = originSiteModel.SiteModelMachineDesigns;
+      var _7 = originSiteModel.Machines;
+      var _8 = originSiteModel.SurveyedSurfaces;
+      var _9 = originSiteModel.Machines;
+      var _10 = originSiteModel.ExistenceMap;
+
+      var newSiteModel = new SiteModel(originSiteModel,
+                                       SiteModelOriginConstructionFlags.PreserveExistenceMap |
+                                       SiteModelOriginConstructionFlags.PreserveGrid |
+                                       SiteModelOriginConstructionFlags.PreserveCsib |
+                                       SiteModelOriginConstructionFlags.PreserveDesigns |
+                                       SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces |
+                                       SiteModelOriginConstructionFlags.PreserveMachines |
+                                       SiteModelOriginConstructionFlags.PreserveMachineTargetValues |
+                                       SiteModelOriginConstructionFlags.PreserveMachineDesigns |
+                                       SiteModelOriginConstructionFlags.PreserveSiteModelDesigns |
+                                       SiteModelOriginConstructionFlags.PreserveProofingRuns |
+                                       SiteModelOriginConstructionFlags.PreserveAlignments);
+
+      newSiteModel.AlignmentsLoaded.Should().Be(true);
+      newSiteModel.DesignsLoaded.Should().Be(true);
+      newSiteModel.SiteModelDesignsLoaded.Should().Be(true);
+      newSiteModel.SiteProofingRunsLoaded.Should().Be(true);
+      newSiteModel.MachineTargetValuesLoaded.Should().Be(true);
+      newSiteModel.SiteModelMachineDesignsLoaded.Should().Be(true);
+      newSiteModel.MachinesLoaded.Should().Be(true);
+      newSiteModel.SurveyedSurfacesLoaded.Should().Be(true);
+      newSiteModel.MachinesLoaded.Should().Be(true);
+      newSiteModel.ExistenceMapLoaded.Should().Be(true);
+
+      newSiteModel.Alignments.Should().BeSameAs(originSiteModel.Alignments);
+      newSiteModel.Designs.Should().BeSameAs(originSiteModel.Designs);
+      newSiteModel.SiteModelDesigns.Should().BeSameAs(originSiteModel.SiteModelDesigns);
+      newSiteModel.SiteProofingRuns.Should().BeSameAs(originSiteModel.SiteProofingRuns);
+      newSiteModel.MachinesTargetValues.Should().Be(originSiteModel.MachinesTargetValues);
+      newSiteModel.SiteModelMachineDesigns.Should().BeSameAs(originSiteModel.SiteModelMachineDesigns);
+      newSiteModel.Machines.Should().BeSameAs(originSiteModel.Machines);
+      newSiteModel.SurveyedSurfaces.Should().BeSameAs(originSiteModel.SurveyedSurfaces);
+      newSiteModel.Machines.Should().BeSameAs(originSiteModel.Machines);
+      newSiteModel.ExistenceMap.Should().Be(originSiteModel.ExistenceMap);
+    }
+
+    [Fact]
+    public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMultiple()
+    {
+      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var _1 = originSiteModel.Alignments;
+      var _2 = originSiteModel.Designs;
+      var _3 = originSiteModel.SiteModelDesigns;
+      var _4 = originSiteModel.SiteProofingRuns;
+      var _5 = originSiteModel.MachinesTargetValues;
+      var _6 = originSiteModel.SiteModelMachineDesigns;
+      var _7 = originSiteModel.Machines;
+      var _8 = originSiteModel.SurveyedSurfaces;
+      var _9 = originSiteModel.Machines;
+      var _10 = originSiteModel.ExistenceMap;
+
+      var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
+
+      newSiteModel.AlignmentsLoaded.Should().Be(false);
+      newSiteModel.DesignsLoaded.Should().Be(false);
+      newSiteModel.SiteModelDesignsLoaded.Should().Be(false);
+      newSiteModel.SiteProofingRunsLoaded.Should().Be(false);
+      newSiteModel.MachineTargetValuesLoaded.Should().Be(false);
+      newSiteModel.SiteModelMachineDesignsLoaded.Should().Be(false);
+      newSiteModel.MachinesLoaded.Should().Be(false);
+      newSiteModel.SurveyedSurfacesLoaded.Should().Be(false);
+      newSiteModel.MachinesLoaded.Should().Be(false);
+      newSiteModel.ExistenceMapLoaded.Should().Be(false);
+
+      newSiteModel.Alignments.Should().NotBeSameAs(originSiteModel.Alignments);
+      newSiteModel.Designs.Should().NotBeSameAs(originSiteModel.Designs);
+      newSiteModel.SiteModelDesigns.Should().NotBeSameAs(originSiteModel.SiteModelDesigns);
+      newSiteModel.SiteProofingRuns.Should().NotBeSameAs(originSiteModel.SiteProofingRuns);
+      newSiteModel.MachinesTargetValues.Should().NotBe(originSiteModel.MachinesTargetValues);
+      newSiteModel.SiteModelMachineDesigns.Should().NotBeSameAs(originSiteModel.SiteModelMachineDesigns);
+      newSiteModel.Machines.Should().NotBeSameAs(originSiteModel.Machines);
+      newSiteModel.SurveyedSurfaces.Should().NotBeSameAs(originSiteModel.SurveyedSurfaces);
+      newSiteModel.Machines.Should().NotBeSameAs(originSiteModel.Machines);
+      newSiteModel.ExistenceMap.Should().NotBe(originSiteModel.ExistenceMap);
     }
 
     [Fact]

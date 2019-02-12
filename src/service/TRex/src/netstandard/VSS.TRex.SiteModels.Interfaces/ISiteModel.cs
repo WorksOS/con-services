@@ -30,6 +30,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     IServerSubGridTree Grid { get; }
 
+    bool GridLoaded { get; }
+
     BoundingWorldExtent3D SiteModelExtent { get; }
 
     /// <summary>
@@ -50,6 +52,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// of the cell information that have been record for it.
     /// </summary>
     ISiteModelDesignList SiteModelDesigns { get; }
+
+    bool SiteModelDesignsLoaded { get; }
 
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the site model
