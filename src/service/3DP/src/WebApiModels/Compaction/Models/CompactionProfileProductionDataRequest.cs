@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// <summary>
     /// The base filter to use for a summary volumes profile. 
     /// </summary>
-    [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
+    [JsonProperty(PropertyName = "baseFilter", Required = Required.Default)]
     public FilterResult baseFilter { get; private set; }
 
     /// <summary>
