@@ -2,8 +2,6 @@
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-//using BenchmarkDotNet.Attributes;
-//using BenchmarkDotNet.Running;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common.Utilities;
@@ -42,21 +40,21 @@ namespace TTMPerformanceTestBenchmark
           if (design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTreeConsts.SubGridTreeDimension, 0))
             numPatches++;
         });
-
+        
         return true;
       });
 
       Console.WriteLine($"Number of patches = {numPatches}, cells = {numPatches * 1024}");
     }
 
-    //[Benchmark]
+    [Benchmark]
     public void LoadTheGiantDesign()
     {
       TrimbleTINModel readonly_tin2 = new TrimbleTINModel();
       readonly_tin2.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
     }
 
-    //[Benchmark]
+    [Benchmark]
     public void ProfileAcrossTheGiantDesign()
     {
       var profile = design.ComputeProfile(new[]
@@ -86,15 +84,14 @@ namespace TTMPerformanceTestBenchmark
       //design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm"); // 165Mb
 
       design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
-
-      //ScanAllElevationsOverGiantDesign();
-      //ProfileAcrossTheGiantDesign();
     }
 
     [GlobalCleanup]
     public void GlobalCleanup()
     {
       DIBuilder.Eject();
+      design = null;
+      readonly_tin = null;
     }
   }
 
