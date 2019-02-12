@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
@@ -39,6 +43,23 @@ namespace VSS.Productivity3D.Filter.Proxy
         return null;
       }
 
+    }
+
+    /// <summary>
+    /// Create a filter using the filter service
+    /// </summary>
+    /// <param name="projectUid">The Project UID for the Filter</param>
+    /// <param name="request">The request, this determines if the filter is persistent / transient based on the filter service rules</param>
+    /// <param name="customHeaders">Custom headers</param>
+    public async Task<FilterDescriptorSingleResult> CreateFilter(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders = null)
+    {
+      var jsonData = JsonConvert.SerializeObject(request);
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
+      {
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        return await SendRequest<FilterDescriptorSingleResult>("FILTER_API_URL", ms, customHeaders, $"/filter/{projectUid}",
+          null, HttpMethod.Put);
+      }
     }
 
     /// <summary>
