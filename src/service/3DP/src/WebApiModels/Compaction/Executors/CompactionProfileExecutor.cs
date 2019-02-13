@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 #if RAPTOR
 using SVOICOptionsDecls;
 using SVOICProfileCell;
@@ -73,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
           UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
 #endif
-            ProcessProductionDataWithTRexGateway(request)
+        ProcessProductionDataWithTRexGateway(request)
 #if RAPTOR
             : ProcessProductionDataWithRaptor(request)
 #endif
@@ -153,6 +155,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private CompactionProfileResult<CompactionProfileCell> ProcessProductionDataWithTRexGateway(CompactionProfileProductionDataRequest request)
     {
+      if (request.IsAlignmentDesign)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.baseFilter,
@@ -501,6 +507,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithTRexGateway(CompactionProfileProductionDataRequest request)
     {
+      if (request.IsAlignmentDesign)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+
       var volumeCalcType = request.volumeCalcType ?? VolumeCalcType.None;
 
       var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(

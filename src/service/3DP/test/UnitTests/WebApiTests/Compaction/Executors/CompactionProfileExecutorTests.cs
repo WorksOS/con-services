@@ -99,6 +99,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
     
       raptorClient
@@ -112,7 +114,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, liftBuildSettings, false, null, null, null, null, null);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+        .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
 
       var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
       Assert.IsNotNull(result, ExecutorFailed);
@@ -914,6 +916,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
       using (var ms = new MemoryStream())
       {
@@ -931,7 +935,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           liftBuildSettings, false, null, null, null, null, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -1181,6 +1185,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
       using (var ms = new MemoryStream())
       {
@@ -1198,7 +1204,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           liftBuildSettings, false, null, null, null, calcType, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -1382,6 +1388,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
       using (var msProdData = new MemoryStream())
       using (var msSumVol = new MemoryStream())
@@ -1406,7 +1414,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           liftBuildSettings, false, null, null, null, calcType, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(pdPackager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);

@@ -69,7 +69,7 @@
     <Compile Remove=".\ProductionData\Executors\GetMachineIdsExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetLayerIdsExecutor.cs" />    
     <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\ProfileProductionDataExecutor.cs" />    
+    <!--<Compile Remove=".\ProductionData\Executors\ProfileProductionDataExecutor.cs" />-->    
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />
