@@ -14,7 +14,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.TRex.Tests.Reports.StationOffset
 {
-  public class ReportDataValidationUtilityTests 
+  public class ReportDataValidationUtilityTests : IDisposable
   {
     [Theory]
     [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", null)]
@@ -259,6 +259,10 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       Assert.Equal($"Alignment design {alignmentDesignUid} is not found.", ex.GetResult.Message);
     }
 
+    public void Dispose()
+    {
+      DIBuilder.Eject();
+    }
   }
 }
 

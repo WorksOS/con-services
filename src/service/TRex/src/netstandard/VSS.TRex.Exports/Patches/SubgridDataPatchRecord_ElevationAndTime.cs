@@ -75,8 +75,8 @@ namespace VSS.TRex.Exports.Patches
       //IGenericClientLeafSubGrid<float> elevSubGrid = (IGenericClientLeafSubGrid<float>)subGrid;
 
       ClientHeightAndTimeLeafSubGrid elevSubGrid = (ClientHeightAndTimeLeafSubGrid)subGrid;
-      float[,] elevations = elevSubGrid.Cells;
-      long[,] times = elevSubGrid.Times;
+      var elevations = elevSubGrid.Cells;
+      var times = elevSubGrid.Times;
 
       if (elevSubGrid.Cells == null)
       {
@@ -84,7 +84,7 @@ namespace VSS.TRex.Exports.Patches
         return;
       }
 
-      // Determine the minimum/maximum non-null elevation/time in the subgrid
+      // Determine the minimum/maximum non-null elevation/time in the sub grid
       double minElevation = DOUBLE_VALUE;
       double maxElevation = -DOUBLE_VALUE;
       uint minTime = TIME_MAXIMUM_VALUE;
@@ -92,7 +92,7 @@ namespace VSS.TRex.Exports.Patches
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        float valueHeight = elevations[x, y];
+        var valueHeight = elevations[x, y];
         
         if (Math.Abs(valueHeight - CellPassConsts.NullHeight) > Consts.TOLERANCE_DIMENSION)
         {
@@ -128,8 +128,8 @@ namespace VSS.TRex.Exports.Patches
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        float valueHeight = elevations[x, y];
-        uint valueTime = (uint)times[x, y];
+        var valueHeight = elevations[x, y];
+        var valueTime = (uint)times[x, y];
 
         if (Math.Abs(valueHeight - CellPassConsts.NullHeight) < Consts.TOLERANCE_DIMENSION)
         {

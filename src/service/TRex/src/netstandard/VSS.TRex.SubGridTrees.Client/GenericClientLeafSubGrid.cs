@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Client
         private static ILogger Log = Logging.Logger.CreateLogger("GenericClientLeafSubGrid");
 
         /// <summary>
-        /// The array of cell values this subgrid client class maintains
+        /// The array of cell values this sub grid client class maintains
         /// </summary>
         public T[,] Cells { get; set; } = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
@@ -22,12 +22,12 @@ namespace VSS.TRex.SubGridTrees.Client
         protected static readonly T[,] NullCells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
-        /// Represented a T element configured as the null value for cells is this client leaf subgrid
+        /// Represented a T element configured as the null value for cells is this client leaf sub grid
         /// </summary>
         public abstract T NullCell();
 
         /// <summary>
-        /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+        /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
         /// and using the default cell size and index origin offset
         /// </summary>
         public GenericClientLeafSubGrid() : base(null, null, SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset)
@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Returns a direct copy of the cells content of this subgrid.
+        /// Returns a direct copy of the cells content of this sub grid.
         /// </summary>
         /// <returns></returns>
         public T[,] Clone2DArray()
@@ -59,7 +59,7 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Iterates over all the cells in the leaf subgrid calling functor on each of them.
+        /// Iterates over all the cells in the leaf sub grid calling functor on each of them.
         /// Both non-null and null values are presented to functor. If functor returns false
         /// the ForEach terminates and returns false.
         /// </summary>
@@ -82,7 +82,7 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Iterates over all the cells in the leaf subgrid calling functor on each of them.
+        /// Iterates over all the cells in the leaf sub grid calling functor on each of them.
         /// Both non-null and null values are presented to functor.
         /// </summary>
         /// <param name="functor"></param>
@@ -107,8 +107,8 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
+        /// Assign cell information from a previously cached result held in the general sub grid result cache
+        /// using the supplied map to control which cells from the caches sub grid should be copied into this
         /// client leaf sub grid
         /// </summary>
         /// <param name="source"></param>
@@ -140,7 +140,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void DumpToLog(string title)
         {
-          Log.LogDebug($"Subgrid {Moniker()}: {title}");
+          Log.LogDebug($"Sub grid {Moniker()}: {title}");
         }
     }
 }

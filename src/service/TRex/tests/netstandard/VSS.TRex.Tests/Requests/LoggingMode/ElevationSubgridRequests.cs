@@ -219,7 +219,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + (PASSES_IN_DECREMENTING_ELEVATION_LIST - 1) * HEIGHT_DECREMENT);
     }
 
-    [Fact(Skip = "Not complete, WIP...")]
+    [Fact]
     public void Test_ElevationSubGridRequests_SingleCell_QueryWithMixedElevationMappingModes_WithFilterOnMinimumElevationMode()
     {
       var siteModel = Utilities.CreateSiteModelWithSingleCellWithMixedElevationModePasses(BASE_TIME, TIME_INCREMENT_SECONDS, BASE_HEIGHT, HEIGHT_DECREMENT, PASSES_IN_DECREMENTING_ELEVATION_LIST);
@@ -233,9 +233,9 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       var requestors = CreateRequestorsForSingleCellTesting(siteModel, GridDataType.Height, new[] { filter });
       var subGridHeight = RequestAllSubGridsForSingleCellTesting<IClientHeightLeafSubGrid>(siteModel, requestors).First();
 
-      // Until elevation mode behaviour implement, this should return the most recent minimum elevation pass
-      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT);
+      // This should return the lowest elevation of the last set of cell passes recorded by the excavator machine in the final excavation
+      // and trimming operations, meaning the selected elevation should be BASE_HEIGHT + 2 * HEIGHT_DECREMENT
+      subGridHeight.Cells[0, 0].Should().Be(BASE_HEIGHT + 2 * HEIGHT_DECREMENT);
     }
-
   }
 }

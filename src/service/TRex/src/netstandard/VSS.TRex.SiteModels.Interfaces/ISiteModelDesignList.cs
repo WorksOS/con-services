@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
-  public interface ISiteModelDesignList : IList<ISiteModelDesign>
+  public interface ISiteModelDesignList : IList<ISiteModelDesign>, IBinaryReaderWriter
   {
     ISiteModelDesign CreateNew(string name, BoundingWorldExtent3D extents);
 
@@ -15,5 +18,10 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// <param name="designName"></param>
     /// <returns></returns>
     ISiteModelDesign this[string designName] { get; }
+
+    void SaveToPersistentStore(Guid projectUid, IStorageProxy storageProxy);
+
+    void LoadFromPersistentStore(Guid projectUid);
+
   }
 }
