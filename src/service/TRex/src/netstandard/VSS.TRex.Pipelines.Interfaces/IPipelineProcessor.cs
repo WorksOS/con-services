@@ -10,7 +10,7 @@ namespace VSS.TRex.Pipelines.Interfaces
   public interface IPipelineProcessor
   {
     /// <summary>
-    /// Reference to the site model incolved in the request
+    /// Reference to the site model involved in the request
     /// </summary>
     ISiteModel SiteModel { get; set; }
 
@@ -20,22 +20,22 @@ namespace VSS.TRex.Pipelines.Interfaces
     bool PipelineAborted { get; set; }
 
     /// <summary>
-    /// The task to be fitted to the pipelien to mediate subgrid retrieval and procesing
+    /// The task to be fitted to the pipeline to mediate sub grid retrieval and processing
     /// </summary>
     ITRexTask Task { get; set; }
 
     /// <summary>
-    /// The pipe lien used to retrive subgrids from the cluster compute layer
+    /// The pipe lien used to retrieve sub grids from the cluster compute layer
     /// </summary>
     ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
-    /// The request analyser used to determine the subgrids to be sent to the cluster compute layer
+    /// The request analyser used to determine the sub grids to be sent to the cluster compute layer
     /// </summary>
     IRequestAnalyser RequestAnalyser { get; set; }
 
     /// <summary>
-    /// The respons esupplied to the pipeline processor
+    /// The response supplied to the pipeline processor
     /// </summary>
     ISubGridsPipelinedReponseBase Response { get; set; }
 
@@ -63,18 +63,18 @@ namespace VSS.TRex.Pipelines.Interfaces
     BoundingWorldExtent3D OverrideSpatialExtents { get; set; }
 
     /// <summary>
-    /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
+    /// A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria
     /// </summary>
     BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
 
     /// <summary>
-    /// Builds the pipeline configured per the supplied state ready to exesute the request
+    /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
     /// <returns></returns>
     bool Build();
 
     /// <summary>
-    /// Performing all processing activities to retrieve subgrids
+    /// Performing all processing activities to retrieve sub grids
     /// </summary>
     void Process();
 
@@ -90,6 +90,6 @@ namespace VSS.TRex.Pipelines.Interfaces
 
     ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
     ISubGridTreeBitMask OverallExistenceMap { get; set; }
-    ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
+    ISubGridTreeBitMask DesignSubGridOverlayMap { get; set; }
   }
 }
