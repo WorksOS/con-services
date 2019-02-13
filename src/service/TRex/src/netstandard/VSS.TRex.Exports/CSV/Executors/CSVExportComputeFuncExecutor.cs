@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
@@ -18,7 +17,7 @@ namespace VSS.TRex.Exports.CSV.Executors
   /// </summary>
   public class CSVExportComputeFuncExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportComputeFuncExecutor>();
 
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
@@ -73,6 +72,7 @@ namespace VSS.TRex.Exports.CSV.Executors
         processor.Task.GridDataType = gridDataType;
 
         ((CSVExportTask) processor.Task).requestArgument = _CSVExportRequestArgument;
+        ((CSVExportTask) processor.Task).formatter = new Formatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, /* todoJeannie implement isRawDataAs3*/ false);
 
         if (!processor.Build())
         {
@@ -87,7 +87,7 @@ namespace VSS.TRex.Exports.CSV.Executors
           throw new ArgumentException($"Unable to obtain data for CSV Export. CSVExportRequestResponse: {CSVExportRequestResponse.ResultStatus.ToString()}.");
         }
 
-      //var response        ((CSVExportTask)processor.Task).requestArgument = _CSVExportRequestArgument;
+        CSVExportRequestResponse.dataRows = ((CSVExportTask) processor.Task).taskResponse.dataRows;
 
       }
       catch (Exception e)

@@ -10,7 +10,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   public class CSVExportRequest : GenericASNodeRequest<CSVExportRequestArgument, CSVExportRequestComputeFunc, CSVExportRequestResponse>
   // Declare class like this to delegate the request to the cluster compute layer
   {
-    public CSVExportRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    public CSVExportRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.REPORTING_ROLE)
     {
     }
   }

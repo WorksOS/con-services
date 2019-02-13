@@ -39,9 +39,10 @@ namespace VSS.Productivity3D.Models.Models
 
     /// <summary>
     /// Used for format export data
+    ///   note that some of these items are defaulted in 3dp due to issues with comma-delimitation etc
     /// </summary>
     [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
-    public UserPreferenceData UserPreferences { get; set; }
+    public UserPreferences UserPreferences { get; set; }
 
     protected CompactionPassCountExportRequest()
     {
@@ -55,7 +56,7 @@ namespace VSS.Productivity3D.Models.Models
       OutputTypes outputType,
       bool restrictOutputSize,
       bool rawDataAsDBase,
-      UserPreferenceData userPreferences
+      UserPreferences userPreferences
     )
     {
       return new CompactionPassCountExportRequest

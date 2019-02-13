@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Exports.CSV.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -9,12 +8,12 @@ using VSS.TRex.Storage.Models;
 namespace VSS.TRex.Exports.CSV.GridFabric
 {
   /// <summary>
-  /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 
+  /// The grid compute function responsible for coordinating sub grids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
   public class CSVExportRequestComputeFunc : BaseComputeFunc, IComputeFunc<CSVExportRequestArgument, CSVExportRequestResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportRequestComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection

@@ -7,10 +7,10 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments;
 using VSS.TRex.Designs.Storage;
+using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
@@ -65,6 +65,7 @@ namespace VSS.TRex.Gateway.Common.Converters
           cfg.AddProfile<CombinedFilterProfile>();
           cfg.AddProfile<DesignResultProfile>();
           cfg.AddProfile<ReportingProfile>();
+          cfg.AddProfile<ExportingProfile>();
         }
       );
 
@@ -276,6 +277,28 @@ namespace VSS.TRex.Gateway.Common.Converters
             opt => opt.Ignore())
           .ForMember(x => x.ReferenceDesignUID,
             opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
+      }
+    }
+
+    public class ExportingProfile : Profile
+    {
+      public ExportingProfile()
+      {
+        CreateMap<UserPreferences, CSVExportUserPreferences>()
+          ;
+        CreateMap <CompactionVetaExportRequest, CSVExportRequestArgument>()
+          .ForMember(x => x.ProjectID,
+            opt => opt.MapFrom(f => f.ProjectUid))
+          .ForMember(x => x.TRexNodeID,
+            opt => opt.Ignore())
+          .ForMember(x => x.Filters,
+            opt => opt.Ignore())
+          .ForMember(x => x.ReferenceDesignUID,
+            opt => opt.Ignore())
+          // MappedMachines are mapped separately using CSVExportHelper.MapRequestedMachines()
+          .ForMember(x => x.MappedMachines,
+            opt => opt.Ignore())
+          ;
 
       }
     }

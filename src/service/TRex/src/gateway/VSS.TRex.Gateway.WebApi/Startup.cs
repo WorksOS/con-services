@@ -15,6 +15,8 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.GridFabric.Servers.Client;
@@ -62,6 +64,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>();
+      services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
 
       services.AddOpenTracing(builder =>
       {

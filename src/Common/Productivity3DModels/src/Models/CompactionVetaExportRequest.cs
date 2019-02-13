@@ -37,9 +37,10 @@ namespace VSS.Productivity3D.Models.Models
 
     /// <summary>
     /// Used for format export data
+    ///   note that some of these items are defaulted in 3dp due to issues with comma-delimitation etc
     /// </summary>
     [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
-    public UserPreferenceData UserPreferences { get; set; }
+    public UserPreferences UserPreferences { get; set; }
 
     protected CompactionVetaExportRequest()
     {
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.Models.Models
       CoordType coordType,
       OutputTypes outputType,
       string[] machineNames,
-      UserPreferenceData userPreferences
+      UserPreferences userPreferences
     )
     {
       return new CompactionVetaExportRequest

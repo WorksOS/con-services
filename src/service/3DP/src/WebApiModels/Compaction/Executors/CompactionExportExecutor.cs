@@ -11,7 +11,6 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -37,7 +36,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var helper = item as ExportRequestHelper;
         var request = CastRequestObjectTo<ExportReport>(item);
 
         if (
@@ -59,7 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           // todoJeannie note that only OutputTypes.VedaAllPasses is currently supported in 3dp
           var compactionVetaExportRequest =
-            CompactionVetaExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.MachineNames, helper.GetUserPreferences());
+            CompactionVetaExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.MachineNames, request.UserPrefs);
 
           return trexCompactionDataProxy.SendVetaExportRequest(compactionVetaExportRequest, customHeaders).Result;
         }
@@ -70,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request?.ExportType == ExportTypes.PassCountExport)
           {
             var compactionPassCountExportRequest =
-              CompactionPassCountExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.RestrictSize, request.RawData, helper.GetUserPreferences());
+              CompactionPassCountExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.RestrictSize, request.RawData, request.UserPrefs);
 
             return trexCompactionDataProxy.SendPassCountExportRequest(compactionPassCountExportRequest, customHeaders).Result;
 

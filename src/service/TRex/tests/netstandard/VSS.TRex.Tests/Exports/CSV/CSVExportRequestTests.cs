@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       Guid projectUid, FilterResult filter, string fileName,
       CoordType coordType, OutputTypes outputType, string[] machineNames)
     {
-      var userPreferences = new UserPreferenceData();
+      var userPreferences = new UserPreferences();
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
         coordType, outputType, machineNames, userPreferences);
@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       Guid projectUid, FilterResult filter, string fileName,
       CoordType coordType, OutputTypes outputType, string[] machineNames)
     {
-      var userPreferences = new UserPreferenceData();
+      var userPreferences = new UserPreferences();
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
         coordType, outputType, machineNames, userPreferences);
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CoordType coordType, OutputTypes outputType, string[] machineNames,
       string errorMessage)
     {
-      var userPreferences = new UserPreferenceData();
+      var userPreferences = new UserPreferences();
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
         coordType, outputType, machineNames, userPreferences);
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.Exports.CSV
      Guid projectUid, FilterResult filter, string fileName,
      CoordType coordType, OutputTypes outputType, bool restrictOutputSize, bool rawDataAsDBase)
     {
-      var userPreferences = new UserPreferenceData();
+      var userPreferences = new UserPreferences();
       var request = CompactionPassCountExportRequest.CreateRequest(
         projectUid, filter, fileName,
         coordType, outputType, restrictOutputSize, rawDataAsDBase, userPreferences);
@@ -100,7 +100,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CoordType coordType, OutputTypes outputType, bool restrictOutputSize, bool rawDataAsDBase,
       string errorMessage)
     {
-      var userPreferences = new UserPreferenceData();
+      var userPreferences = new UserPreferences();
       var request = CompactionPassCountExportRequest.CreateRequest(
         projectUid, filter, fileName,
         coordType, outputType, restrictOutputSize, rawDataAsDBase, userPreferences);

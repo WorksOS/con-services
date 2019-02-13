@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Filters;
 using Xunit;
 using VSS.TRex.Tests.Analytics.Common;
@@ -40,7 +41,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
           new CSVExportMappedMachine() {Uid = Guid.NewGuid(), InternalSiteModelMachineIndex = 0, Name = "Machine 1"},
           new CSVExportMappedMachine() {Uid = Guid.NewGuid(), InternalSiteModelMachineIndex = 1, Name = "Machine 2"},
           new CSVExportMappedMachine() {Uid = Guid.NewGuid(), InternalSiteModelMachineIndex = 2, Name = "Machine 3"}
-        }
+        },
+        new CSVExportUserPreferences()
       );
 
       SimpleBinarizableInstanceTester.TestClass(request, "Empty CSVExportRequestArgument not same after round trip serialisation");

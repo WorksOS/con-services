@@ -20,12 +20,68 @@ using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 using FluentAssertions;
+using VSS.TRex.Exports.CSV.GridFabric;
+using VSS.TRex.Gateway.Common.Converters;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
   public class CSVExportExecutorTests : IClassFixture<DITagFileFixture>
   {
-    // todoJeannie
+    [Theory]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "/", ":", TemperatureUnitEnum.Celsius, "/", ":" )]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "%", "^", TemperatureUnitEnum.Fahrenheit, "%", "^")]
+    public void CSVExportExecutor_MapUserPreferences(string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
+      string dateSeparator, string timeSeparator, TemperatureUnitEnum temperatureUnits,
+      string expectedDateSeparator, string expectedTimeSeparator)
+    {
+      var userPreference = new UserPreferences()
+      { DateSeparator = dateSeparator, TimeSeparator = timeSeparator,
+        DecimalSeparator = decimalSeparator, ThousandsSeparator = thousandsSeparator,
+        Units = (int)units, TemperatureUnits = (int)temperatureUnits
+      };
+
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreference);
+      csvUserPreference.DecimalSeparator.Should().Be(decimalSeparator);
+      csvUserPreference.ThousandsSeparator.Should().Be(thousandsSeparator);
+      csvUserPreference.Units.Should().Be(units);
+      csvUserPreference.TemperatureUnits.Should().Be(temperatureUnits);
+      csvUserPreference.DateSeparator.Should().Be(expectedDateSeparator);
+      csvUserPreference.TimeSeparator.Should().Be(expectedTimeSeparator);
+    }
+
+    [Theory]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "/", ":", "/", ":")]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "%", "^", "%", "^")]
+    public void CSVExportExecutor_MapRequestToArgument(string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
+      string dateSeparator, string timeSeparator,
+      string expectedDateSeparator, string expectedTimeSeparator)
+    {
+      var projectUid = Guid.NewGuid();
+      FilterResult filter = null;
+      var fileName = "gotAFilename";
+      var coordType = CoordType.LatLon;
+      var outputType = OutputTypes.VedaAllPasses;
+      var theMachineName = "first machineName";
+      string[] machineNames = new string[] { theMachineName };
+      var userPreference = new UserPreferences()
+        { DateSeparator = dateSeparator, TimeSeparator = timeSeparator,
+          DecimalSeparator = decimalSeparator, ThousandsSeparator = thousandsSeparator, Units = (int)units };
+     
+      var request = CompactionVetaExportRequest.CreateRequest(
+        projectUid, filter, fileName,
+        coordType, outputType, machineNames, userPreference);
+      request.Validate();
+      var csvExportRequestArgument = AutoMapperUtility.Automapper.Map<CSVExportRequestArgument>(request);
+
+      csvExportRequestArgument.OutputType.Should().Be(outputType);
+
+      // these are mapped separately using CSVExportHelper.MapRequestedMachines()
+      csvExportRequestArgument.MappedMachines.Count.Should().Be(0);
+      csvExportRequestArgument.UserPreferences.DecimalSeparator.Should().Be(decimalSeparator);
+      csvExportRequestArgument.UserPreferences.DateSeparator.Should().Be(expectedDateSeparator);
+      csvExportRequestArgument.UserPreferences.TimeSeparator.Should().Be(expectedTimeSeparator);
+    }
+
 
     [Fact]
     public void CSVExportExecutor_SiteModelNotFound()
@@ -36,7 +92,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var coordType = CoordType.LatLon;
       var outputType = OutputTypes.VedaAllPasses;
       string[] machineNames = new string[] {"first machineName"};
-      var userPreferences = new UserPreferenceData();
+      var userPreferences = new UserPreferences();
 
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,

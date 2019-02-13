@@ -1,14 +1,15 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Exports.CSV.GridFabric;
 
 namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
   public class Formatter
   {
-    public UserPreferenceData userPreference;
+    // these are public for unit tests
+    public CSVExportUserPreferences userPreference;
     public OutputTypes coordinateOutputType;
     public readonly bool isRawDataAsDBaseRequired = false;
     public readonly string nullString;
@@ -24,10 +25,10 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public string exportDateTimeFormatString;
 
     private NumberFormatInfo nfiDefault;
-    public NumberFormatInfo nfiUser;
+    private NumberFormatInfo nfiUser;
 
 
-    public Formatter(UserPreferenceData userPreference, OutputTypes coordinateOutputType, bool isRawDataAsDBaseRequired = false)
+    public Formatter(CSVExportUserPreferences userPreference, OutputTypes coordinateOutputType, bool isRawDataAsDBaseRequired = false)
     {
       this.userPreference = userPreference;
       this.coordinateOutputType = coordinateOutputType;
@@ -47,12 +48,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     /// This method provides differences required for export format
     /// </summary>
     /// <param name="newUserPreference"></param>
-    private void SetupUserPreferences(UserPreferenceData newUserPreference)
+    private void SetupUserPreferences(CSVExportUserPreferences newUserPreference)
     {
       switch (newUserPreference.Units)
       {
-        case "US":
-        case "US Standard": // USSurveyFeet
+        case UnitsTypeEnum.US: // USSurveyFeet
         {
           distanceConversionFactor = USFeetToMeters;
           speedUnitString = "mph";
@@ -60,7 +60,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           distanceUnitString = "FT";
           break;
         }
-        case "Metric":
+        case UnitsTypeEnum.Metric:
         {
           distanceConversionFactor = 1.0;
           speedUnitString = "km/h";
@@ -68,7 +68,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           distanceUnitString = "m";
           break;
         }
-        case "Imperial":
+        case UnitsTypeEnum.Imperial:
         {
           distanceConversionFactor = ImperialFeetToMeters;
           speedUnitString = "mph";

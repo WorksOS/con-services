@@ -22,35 +22,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
 
       return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
     }
-
-    //private static Tuple<DateTime, DateTime> GetDateRange(ISiteModel siteModel)
-    //{
-    //  DateTime minDate = DateTime.MaxValue;
-    //  DateTime maxDate = DateTime.MinValue;
-
-    //  foreach (var machine in siteModel.Machines)
-    //  {
-    //    var events = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
-    //    if (events.Count() > 0)
-    //    {
-    //      events.GetStateAtIndex(0, out DateTime eventDateFirst, out _);
-    //      if (minDate > eventDateFirst)
-    //        minDate = eventDateFirst;
-    //      if (maxDate < eventDateFirst)
-    //        maxDate = eventDateFirst;
-
-    //      if (events.Count() > 1)
-    //      {
-    //        var eventDateLast = events.LastStateDate();
-    //        if (maxDate < eventDateLast)
-    //          maxDate = eventDateLast;
-    //      }
-    //    }
-    //  }
-
-    //  return new Tuple<DateTime, DateTime>(minDate, maxDate);
-    //}
-
+    
     public static List<CSVExportMappedMachine> MapRequestedMachines(ISiteModel siteModel, string[] machineNames)
     {
       var result = new List<CSVExportMappedMachine>();

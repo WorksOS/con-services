@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Pipelines.Tasks;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
@@ -24,16 +18,19 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   /// </summary>
   public class CSVExportTask : PipelinedSubGridTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportTask>();
 
     public CSVExportRequestArgument requestArgument;
 
     public Formatter formatter;
 
+    // todoJeannie a CSVExportRequestResponse is defined as the pipeline response object
+    //    can I access that instead of creating another   local?
     public CSVExportRequestResponse taskResponse = new CSVExportRequestResponse();
 
-    public float RunningHeight = Consts.NullHeight;
-    public string HeightString = string.Empty;
+    private long DataLength = 0;
+    private float RunningHeight = Consts.NullHeight;
+    
 
     public CSVExportTask()
     {
@@ -47,8 +44,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     /// <param name="gridDataType"></param>
     public CSVExportTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
-      // todoJeannie formatter = new Formatter(requestArgument.userPreferences, requestArgument.OutputType, requestDescriptor.rawDataAsWhatever);
-
+      formatter = new Formatter(requestArgument.UserPreferences, requestArgument.OutputType, /* todoJeannie implement isRawDataAs3*/ false);
     }
 
     /// <summary>
@@ -101,22 +97,23 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           return;
 
         // todoJeannie if dealing with formatted strings, what about ordering
-        result.Add(UpdateComponentStrings(cell, subgridWorldOriginX, subgridWorldOriginY));
+        taskResponse.dataRows.Add(UpdateComponentStrings(cell, subgridWorldOriginX, subgridWorldOriginY));
       });
 
       return true;
     }
 
 
-    private string UpdateComponentStrings(ClientCellProfileLeafSubgridRecord cell, double subgridWorldOriginX, double subgridWorldOriginY)
+    private string UpdateComponentStrings(ClientCellProfileLeafSubgridRecord cell, double subGridWorldOriginX, double subGridWorldOriginY)
     {
-      string resultString = string.Empty;
-      var easting = cell.CellXOffset + subgridWorldOriginX;
-      var northing = cell.CellYOffset + subgridWorldOriginY;
+      var heightString = string.Empty;
+
+      var easting = cell.CellXOffset + subGridWorldOriginX;
+      var northing = cell.CellYOffset + subGridWorldOriginY;
 
       if (!cell.Height.Equals(RunningHeight))
       {
-        HeightString = formatter.FormatElevation(cell.Height);
+        heightString = formatter.FormatElevation(cell.Height);
         RunningHeight = cell.Height;
       }
 
@@ -129,8 +126,42 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var Mdp = (short)cell.LastPassValidMDP;
       var PassCount = (short)cell.PassCount;
       var temperature = (short)cell.LastPassValidTemperature;
+
+      string resultString = $"{heightString},";
+      DataLength += resultString.Length - 1; // Forget the last ',' character
       return resultString;
     }
+
+    //private string BuildRow()
+    //{
+    //  //AddStringToBuffer(LastPassTimeString);
+    //  //AddStringToBuffer(CoordString);
+    //  //AddStringToBuffer(HeightString);
+    //  //AddStringToBuffer(PassCountString);
+    //  //AddStringToBuffer(LastPassValidRadioLatencyString);
+    //  //AddStringToBuffer(DesignNameString);
+    //  //AddQuotedStringToBuffer(MachineNameString);
+    //  //AddStringToBuffer(MachineSpeedString);
+    //  //AddStringToBuffer(LastPassValidGPSModeString);
+    //  //AddStringToBuffer(GPSAccuracyToleranceString);
+    //  //AddStringToBuffer(TargetPassCountString);
+    //  //AddStringToBuffer('Yes');
+    //  //AddStringToBuffer(LayerIDString);
+    //  //AddStringToBuffer(LastPassValidCCVString);
+    //  //AddStringToBuffer(TargetCCVString);
+    //  //AddStringToBuffer(LastPassValidMDPString);
+    //  //AddStringToBuffer(TargetMDPString);
+    //  //AddStringToBuffer(LastPassValidRMVString);
+    //  //AddStringToBuffer(LastPassValidFreqString);
+    //  //AddStringToBuffer(LastPassValidAmpString);
+    //  //AddStringToBuffer(TargetThicknessString);
+    //  //AddStringToBuffer(EventMachineGearString);
+    //  //AddStringToBuffer(EventVibrationStateString);
+    //  //AddStringToBuffer(LastPassValidTemperatureString);
+
+    //  DataLength += resultString.Length - 1; // Forget the last ',' character
+    //  return resultString;
+    //}
 
     //private string[] ExtractRequiredValues(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
     //{

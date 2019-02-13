@@ -27,7 +27,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
     public CSVExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
-      : base(loggerFactory, loggerFactory.CreateLogger<DetailsDataController>(), serviceExceptionHandler, configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<CSVExportController>(), serviceExceptionHandler, configStore)
     {
     }
 

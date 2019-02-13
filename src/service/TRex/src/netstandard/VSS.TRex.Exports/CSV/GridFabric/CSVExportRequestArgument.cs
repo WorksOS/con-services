@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 
@@ -12,11 +13,10 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportRequestArgument : BaseApplicationServiceRequestArgument
   {
-
     /// <summary>
     /// Type of Coordinates required in result e.g. NE
     /// </summary>
-    public CoordType CoordType { get; private set; }
+    private CoordType CoordType { get; set; }
 
     /// <summary>
     /// which type of passes
@@ -28,6 +28,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     /// </summary>
     public List<CSVExportMappedMachine> MappedMachines { get; set; }
 
+    public CSVExportUserPreferences UserPreferences { get; set; }
+
     public CSVExportRequestArgument()
     {
       Clear();
@@ -38,16 +40,18 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       CoordType = CoordType.Northeast;
       OutputType = OutputTypes.PassCountLastPass;
       MappedMachines = new List<CSVExportMappedMachine>();
+      UserPreferences = new CSVExportUserPreferences();
     }
 
     public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
-      CoordType coordType, OutputTypes outputType, List<CSVExportMappedMachine> mappedMachines)
+      CoordType coordType, OutputTypes outputType, List<CSVExportMappedMachine> mappedMachines, CSVExportUserPreferences userPreferences)
     {
       ProjectID = siteModelUid;
       Filters = filters;
       CoordType = coordType; 
       OutputType  = outputType;
       MappedMachines = mappedMachines;
+      UserPreferences = userPreferences;
     }
 
     /// <summary>
@@ -67,6 +71,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         writer.WriteShort(machine.InternalSiteModelMachineIndex);
         writer.WriteString(machine.Name);
       }
+
+      UserPreferences.ToBinary(writer);
     }
 
     /// <summary>
@@ -88,6 +94,22 @@ namespace VSS.TRex.Exports.CSV.GridFabric
           InternalSiteModelMachineIndex = reader.ReadShort(),
           Name = reader.ReadString()
         });
+      }
+
+      UserPreferences = new CSVExportUserPreferences();
+      UserPreferences.FromBinary(reader);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ CoordType.GetHashCode();
+        hashCode = (hashCode * 397) ^ OutputType.GetHashCode();
+        hashCode = (hashCode * 397) ^ MappedMachines.GetHashCode();
+        hashCode = (hashCode * 397) ^ UserPreferences.GetHashCode();
+        return hashCode;
       }
     }
   }
