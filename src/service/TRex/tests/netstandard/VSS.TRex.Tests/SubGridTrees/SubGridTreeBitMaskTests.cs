@@ -14,28 +14,48 @@ namespace VSS.TRex.Tests.SubGridTrees
       mask.Should().NotBeNull();
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_SubGridTreeBitMask_GetCell()
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(1, 1)]
+    [InlineData(0, SubGridTreeConsts.SubGridTreeDimension - 1)]
+    [InlineData(SubGridTreeConsts.SubGridTreeDimension - 1, 0)]
+    [InlineData(SubGridTreeConsts.SubGridTreeDimension - 1, SubGridTreeConsts.SubGridTreeDimension - 1)]
+    [InlineData(SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension)]
+    [InlineData(100, 100)]
+    [InlineData(1000, 1000)]
+    [InlineData(10000, 10000)]
+    [InlineData(100000, 100000)]
+    [InlineData(1000000, 1000000)]
+    [InlineData(10000000, 10000000)]
+    [InlineData(100000000, 100000000)]
+    [InlineData(1000000000, 1000000000)]
+    public void Test_SubGridTreeBitMask_GetCellAndSetCell(uint x, uint y)
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+
+      mask.GetCell(x, y).Should().BeFalse();
+      mask.SetCell(x, y, true);
+      mask.GetCell(x, y).Should().BeTrue();
+      mask.SetCell(x, y, false);
+      mask.GetCell(x, y).Should().BeFalse();
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_SubGridTreeBitMask_SetCell()
-    {
-      Assert.True(false);
-    }
-
-    [Fact(Skip = "Not Implemented")]
-    public void Test_SubGridTreeBitMask_GetLeaf()
-    {
-      Assert.True(false);
-    }
-
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_SubGridTreeBitMask_RemoveLeafOwningCell()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+
+      // Check removing non-existing leaf is a null op
+      mask.RemoveLeafOwningCell(0, 0);
+
+      // Add a cell (causing a leaf to be added), then remove it
+      mask[0, 0] = true;
+      mask.CountBits().Should().Be(1);
+      mask.CountLeafSubGridsInMemory().Should().Be(1);
+
+      mask.RemoveLeafOwningCell(0, 0);
+      mask.CountBits().Should().Be(0);
+      mask.CountLeafSubGridsInMemory().Should().Be(0);
     }
 
     [Fact]

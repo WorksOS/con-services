@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
         /// <returns></returns>
         static bool SerializeOut(ISubGridTree tree, BinaryWriter writer)
         {
-            long SubGridCount = tree.CountLeafSubgridsInMemory();
+            long SubGridCount = tree.CountLeafSubGridsInMemory();
 
             writer.Write(tree.ID.ToByteArray());
             writer.Write(SubGridCount);

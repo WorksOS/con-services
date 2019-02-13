@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core;
@@ -135,10 +134,8 @@ namespace VSS.TRex.SubGridTrees
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-            SubGridTreeNodeBitmapSubGrid bitmapSubGrid = (SubGridTreeNodeBitmapSubGrid)SubGrid;
-
             // Free the node containing the bits for the cells in the leaf
-            bitmapSubGrid.SetSubGrid(SubGridX, SubGridY, null);
+            ((SubGridTreeNodeBitmapSubGrid)SubGrid).SetSubGrid(SubGridX, SubGridY, null);
         }
 
         /// <summary>
