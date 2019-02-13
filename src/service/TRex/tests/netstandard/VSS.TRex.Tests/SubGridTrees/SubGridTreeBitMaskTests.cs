@@ -55,16 +55,73 @@ namespace VSS.TRex.Tests.SubGridTrees
       Assert.True(false);
     }
 
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_SubGridTreeBitMask_LeafExists()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask.SetCell(x, y, true);
+      }
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask.LeafExists(x, y).Should().BeTrue();
+      }
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 1000000;
+        uint y = j * 1000000;
+
+        mask.LeafExists(x, y).Should().BeFalse();
+      }
     }
 
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_SubGridTreeBitMask_SetOp_OR()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask.SetCell(x, y, true);
+      }
+
+      int expectedBitCount = 10000;
+      mask.CountBits().Should().Be(expectedBitCount);
+
+      // Make a copy of mask
+      var secondMask = new SubGridTreeBitMask();
+      secondMask.SetOp_OR(mask);
+      secondMask.CountBits().Should().Be(expectedBitCount);
+
+      var thirdMask = new SubGridTreeBitMask();
+      secondMask.SetOp_OR(thirdMask);
+      secondMask.CountBits().Should().Be(expectedBitCount);
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        secondMask[x, y].Should().BeTrue();
+      }
     }
 
     [Fact]
