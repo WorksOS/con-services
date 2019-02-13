@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: 3dapp-prod
+  namespace: prod
+data: 
+# TCC configuration
+  TCCBASEURL: https://www.myconnectedsite.com
+  TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
+  TCCUSERNAME: vlproduction
+  TCCPWD: vlproduction_key5
+  TCCORG: vlproduction
+#Jaeger configuration
+  JAEGER_AGENT_HOST: jaeger-agent.logging
+  JAEGER_AGENT_PORT: "6831"
+  JAEGER_SAMPLER_TYPE: const
+#MySql configuration
+  MYSQL_SERVER_NAME_VSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
+  MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
+  MYSQL_PORT: "3306"
+#Kafka configuration
+  KAFKA_URI: 10.211.16.11
+  KAFKA_PORT: "9092"
+  KAFKA_OFFSET: latest
+  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
+#Service references  
+  ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
+  DISSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/dissociateprojectsubscription
+  CONNECTED_SITE_GATEWAY_URL: http://connectedsite.prod.services.myvisionlink.com/api/position
+  COORDSYSPOST_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0/coordsystem
+  COORDSYSVALIDATE_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0/coordsystem/validation
+  CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
+  FILTER_API_URL: https://api.trimble.com/t/trimble.com/vss-3dfilter/1.0
+  GEOFENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0
+  IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
+  IMPORTED_FILE_API_URL2: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfile
+  PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
+  PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project
+  PROJECT_INTERNAL_BASE_URL: http://project.prod.k8s.services.myvisionlink.com
+  PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4
+  RAPTOR_3DPM_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
+  RAPTOR_NOTIFICATION_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/notification
+  RAPTOR_PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
+  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/background
+  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
+  VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
+  TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
+#Misc stuff
+  TILE_RENDER_MAX_ZOOM_LEVEL: "21"
+  TILE_RENDER_MAX_ZOOM_RANGE: "14"
+  TILE_RENDER_WAIT_INTERVAL: "2000"
+  CUSTOM_INIT_SCRIPT: zookeeper_check.sh
+  LOG_MAX_CHAR: "1000"
+  SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
+  DOWNLOAD_FOLDER: C:/temp/
+  ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
+  AWS_TAGFILE_BUCKET_NAME: vss-prod-directtagfile-archives
+#AWS configuration  
+  AWS_BUCKET_NAME: vss-exports-stg
+  AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
+  AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
+#Raptor configuration
+  ASNODEIP: 10.97.96.150
+  ENABLE_CONNECTED_SITE_GATEWAY: "false"
+  ENABLE_RAPTOR_GATEWAY_TAGFILE: "false"
+  ENABLE_TREX_GATEWAY_LINEWORKFILE: "false"
+  ENABLE_TREX_GATEWAY_TAGFILE: "false"
+  ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
+  ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
+  ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
+  ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
+  IONODEIP: 10.97.96.165
+  SHAREUNC: \\prod-iolv01.vssengg.com\ProductionData
+  RAPTORUSERNAME: svcRaptor
+  TCCSynchOtherIssueFolder: Other... (Issue)
+  TCCSynchProductionDataArchivedFolder: Production-Data (Archived)
+  TCCSynchProjectBoundaryIssueFolder: Project Boundary (Issue)
+  TCCSynchSubscriptionIssueFolder: Subscription (Issue)
+#Cache
+  MAX_FILE_SIZE: "100000000"
+  TILE_CACHE_LIFE: 00:15:00
+  CUSTOMER_CACHE_LIFE: 00:30:00
+  ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
+  FILTER_CACHE_LIFE: 00:15:00
+  GEOFENCE_CACHE_LIFE: 00:15:00
+  IMPORTED_FILE_CACHE_LIFE: 00:15:00
+  PROJECT_CACHE_LIFE: 00:30:00
+  PROJECT_SETTINGS_CACHE_LIFE: 00:15:00
+  TILE_RENDER_JOB_TIMEOUT: 00:00:10  
+  DEFAULT_CONNECTION_LIMIT: "64"
+  LIBUV_THREAD_COUNT: "32"
+  MAX_IO_THREADS: "1024"
+  MAX_WORKER_THREADS: "512"
+  MIN_IO_THREADS: "1024"
+  MIN_WORKER_THREADS: "512"
+  SCHEDULED_JOB_TIMEOUT: "900000"
+#Notifications
+  NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
+  PUSH_NO_AUTHENTICATION_HEADER: "true" 
+#DataOcean
+  DATA_OCEAN_URL: https://api-usw2.trimblepaas.com/data_ocean-v1.0
+  DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
+  DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
+#Pegasus
+  PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus_stage-v1.0
+  PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
+  PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
+
