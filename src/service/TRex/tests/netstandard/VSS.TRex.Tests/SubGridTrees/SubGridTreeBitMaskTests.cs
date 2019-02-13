@@ -1,11 +1,5 @@
 ﻿using VSS.TRex.SubGridTrees;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Common;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
@@ -13,10 +7,11 @@ namespace VSS.TRex.Tests.SubGridTrees
 {
   public class SubGridTreeBitMaskTests
   {
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_SubGridTreeBitMask_SubGridTreeBitMask()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+      mask.Should().NotBeNull();
     }
 
     [Fact(Skip = "Not Implemented")]
@@ -43,10 +38,21 @@ namespace VSS.TRex.Tests.SubGridTrees
       Assert.True(false);
     }
 
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_SubGridTreeBitMask_CountBits()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask.SetCell(x, y, true);
+      }
+
+      mask.CountBits().Should().Be(10000);
     }
 
     [Fact(Skip = "Not Implemented")]
