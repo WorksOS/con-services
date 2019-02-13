@@ -378,15 +378,13 @@ namespace VSS.TRex.SubGridTrees
         public ISubGrid ConstructPathToCell(uint cellX, uint cellY,
                                             SubGridPathConstructionType pathType)
         {
-            byte subGridCellX, subGridCellY;
-
             ISubGrid result = null;
             INodeSubGrid subGrid = Root;
 
             // First descend through the node levels of the tree
             for (byte I = 1; I < NumLevels - 1; I++) // Yes, -1 because we choose a sub grid cell from the next level down...
             {
-                if (subGrid.GetSubGridContainingCell(cellX, cellY, out subGridCellX, out subGridCellY))
+                if (subGrid.GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
                 {
                     // Walk into this cell in the sub grid as the next level down in this path exists
                     subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY) as INodeSubGrid;
@@ -437,7 +435,7 @@ namespace VSS.TRex.SubGridTrees
                     case SubGridPathConstructionType.CreateLeaf:
                         // Get the local sub grid index in this sub grid that the leaf sub grid that
                         // contains the cell resides at
-                        subGrid.GetSubGridCellIndex(cellX, cellY, out subGridCellX, out subGridCellY);
+                        subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridCellX, out byte subGridCellY);
 
                         // Check if the leaf sub grid already exists, if not then create it.
                         result = subGrid.GetSubGrid(subGridCellX, subGridCellY);

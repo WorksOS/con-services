@@ -187,10 +187,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public bool LeafExists(uint CellX, uint CellY)
-        {
-            return ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
-        }
+        public bool LeafExists(uint CellX, uint CellY) => ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
 
         /// <summary>
         /// Takes a source SubGridBitMask instance and performs a bitwise OR of the contents of source against the

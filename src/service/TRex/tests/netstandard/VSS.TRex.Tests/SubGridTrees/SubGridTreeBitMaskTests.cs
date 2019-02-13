@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     }
 
     [Fact]
-    public void Test_SubGridTreeBitMask_LeafExists()
+    public void Test_SubGridTreeBitMask_LeafExists_Positive()
     {
       var mask = new SubGridTreeBitMask();
 
@@ -77,12 +77,27 @@ namespace VSS.TRex.Tests.SubGridTrees
 
         mask.LeafExists(x, y).Should().BeTrue();
       }
+    }
+
+    [Fact]
+    public void Test_SubGridTreeBitMask_LeafExists_Negative()
+    {
+      var mask = new SubGridTreeBitMask();
 
       for (uint i = 0; i < 100; i++)
       for (uint j = 0; j < 100; j++)
       {
-        uint x = i * 1000000;
-        uint y = j * 1000000;
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask.SetCell(x, y, true);
+      }
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = (i + 1) * 1000000;
+        uint y = (j + 1) * 1000000;
 
         mask.LeafExists(x, y).Should().BeFalse();
       }
