@@ -46,6 +46,14 @@ namespace VSS.Productivity3D.Now3D
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
+
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
+      });
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
