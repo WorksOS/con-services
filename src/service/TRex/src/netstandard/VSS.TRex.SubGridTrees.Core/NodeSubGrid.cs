@@ -285,7 +285,7 @@ namespace VSS.TRex.SubGridTrees.Core
             return (leafFunctor(subGrid)) ? SubGridProcessNodeSubGridResult.OK : SubGridProcessNodeSubGridResult.TerminateProcessing;
 
           // Node sub grids are descended into recursively to continue processing
-          return (!((INodeSubGrid) (subGrid)).ScanSubGrids(Extent, leafFunctor, nodeFunctor)) ? SubGridProcessNodeSubGridResult.TerminateProcessing : SubGridProcessNodeSubGridResult.OK;
+          return !((INodeSubGrid)subGrid).ScanSubGrids(Extent, leafFunctor, nodeFunctor) ? SubGridProcessNodeSubGridResult.TerminateProcessing : SubGridProcessNodeSubGridResult.OK;
         },
         SubGridMinX, SubGridMinY, SubGridMaxX, SubGridMaxY);
 

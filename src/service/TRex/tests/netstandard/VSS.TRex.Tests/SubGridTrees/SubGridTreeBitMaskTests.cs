@@ -67,14 +67,52 @@ namespace VSS.TRex.Tests.SubGridTrees
       Assert.True(false);
     }
 
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_SubGridTreeBitMask_SetOp_AND()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask.SetCell(x, y, true);
+      }
+
+      int expectedBitCount = 10000;
+      mask.CountBits().Should().Be(expectedBitCount);
+
+      // Make a copy of mask
+      var secondMask = new SubGridTreeBitMask();
+      secondMask.SetOp_OR(mask);
+      secondMask.CountBits().Should().Be(expectedBitCount);
+
+      // Check ANDing mask and second mask results in the same bit count
+      secondMask.SetOp_AND(mask);
+      secondMask.CountBits().Should().Be(expectedBitCount);
+
+      for (uint i = 0; i < 100; i++)
+      for (uint j = 0; j < 100; j++)
+      {
+        uint x = i * 10;
+        uint y = j * 10;
+
+        mask[x, y].Should().BeTrue();
+      }
+
+      // Check ANDing with empty mask clears all bits in mask
+      var emptyMask = new SubGridTreeBitMask();
+      emptyMask.CountBits().Should().Be(0);
+      mask.SetOp_AND(emptyMask);
+
+      mask.CountBits().Should().Be(0);
     }
 
     [Theory]
     [InlineData(0, 0)]
+    [InlineData(1, 1)]
     [InlineData(0, SubGridTreeConsts.SubGridTreeDimension - 1)]
     [InlineData(SubGridTreeConsts.SubGridTreeDimension - 1, 0)]
     [InlineData(SubGridTreeConsts.SubGridTreeDimension - 1, SubGridTreeConsts.SubGridTreeDimension - 1)]
@@ -85,6 +123,8 @@ namespace VSS.TRex.Tests.SubGridTrees
     [InlineData(100000, 100000)]
     [InlineData(1000000, 1000000)]
     [InlineData(10000000, 10000000)]
+    [InlineData(100000000, 100000000)]
+    [InlineData(1000000000, 1000000000)]
     public void Test_SubGridTreeBitMask_ClearCellIfSet_SingleCellAtLocation(uint x, uint y)
     {
       var mask = new SubGridTreeBitMask();
