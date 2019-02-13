@@ -115,7 +115,7 @@ namespace VSS.TRex.SubGrids
     /// <param name="sieveBitmask"></param>
     /// <param name="subGridWorldOriginX"></param>
     /// <returns></returns>
-    public static bool ComputeSieveBitmaskFloat(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
+    public static bool ComputeSieveBitmaskFloat(double subGridWorldOriginX, double subGridWorldOriginY, 
       AreaControlSet areaControlSet, double siteModelCellSize, FilteredValueAssignmentContext assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask)
     {
       sieveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);

@@ -29,7 +29,7 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
 
         TimeSpan bestTime = TimeSpan.MaxValue;
 
-        float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];  
+        var Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];  
 
         for (int i = 0; i < 100; i++)
         {

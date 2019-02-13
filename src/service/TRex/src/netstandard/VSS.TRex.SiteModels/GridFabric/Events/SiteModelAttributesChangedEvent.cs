@@ -8,7 +8,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   /// <summary>
   /// Contains all relevant information detailing a mutating change event made to a site model that effects the metadata and
   /// other information either directly contained within a site model (eg: project extents, cell size etc) or referenced by it
-  /// (eg: machines, target event lists, designs, sitemodels etc)
+  /// (eg: machines, target event lists, designs, site models etc)
   /// </summary>
   public class SiteModelAttributesChangedEvent : BaseRequestResponse, ISiteModelAttributesChangedEvent
   {
@@ -25,8 +25,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
 
     /// <summary>
-    /// A serialized bit mask subgrid tree representing the set of subgrids that have been changed in a
-    /// mutating event on the sitemodel such as TAG file processing
+    /// A serialized bit mask sub grid tree representing the set of sub grids that have been changed in a
+    /// mutating event on the site model such as TAG file processing
     /// </summary>
     public byte[] ExistenceMapChangeMask { get; set;  }
 

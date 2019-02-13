@@ -105,7 +105,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();

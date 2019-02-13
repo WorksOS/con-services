@@ -13,7 +13,7 @@ namespace MockProjectWebApi.Controllers
     [Route("api/oauth2/token")]
     [HttpPost]
     public TPaasOauthResult DummyBearerTokenPost(
-      [FromQuery] string grantType)
+      [FromForm] string grantType)
     {
       var res = new TPaasOauthResult()
       {

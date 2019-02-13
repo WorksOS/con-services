@@ -5,6 +5,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
@@ -37,9 +38,10 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public int TopMostLayerCompactionHalfPassCount;
 
-    private ICellPassAttributeFilter PassFilter;
+    private readonly ICellPassAttributeFilter PassFilter;
+    private readonly ICellPassAttributeFilterProcessingAnnex PassFilterAnnex;
 
-    private ICellSpatialFilter CellFilter;
+    private readonly ICellSpatialFilter CellFilter;
 
     /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
@@ -68,6 +70,7 @@ namespace VSS.TRex.Profiling
       CellLiftBuilder = cellLiftBuilder;
 
       PassFilter = filterSet.Filters[0].AttributeFilter;
+      PassFilterAnnex = new CellPassAttributeFilterProcessingAnnex();
       CellFilter = filterSet.Filters[0].SpatialFilter;
     }
 
@@ -246,10 +249,9 @@ namespace VSS.TRex.Profiling
                   Dummy_LiftBuildSettings.IncludeSuperseded)
               {
                 ProfileCell.CellPreviousMeasuredCCV = ProfileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
-                if (Dummy_LiftBuildSettings.OverrideMachineCCV)
-                  ProfileCell.CellPreviousMeasuredTargetCCV = Dummy_LiftBuildSettings.OverridingMachineCCV;
-                else
-                  ProfileCell.CellPreviousMeasuredTargetCCV = ProfileCell.Passes.FilteredPassData[PassSearchIdx].TargetValues.TargetCCV;
+                ProfileCell.CellPreviousMeasuredTargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV 
+                  ? Dummy_LiftBuildSettings.OverridingMachineCCV 
+                  : ProfileCell.Passes.FilteredPassData[PassSearchIdx].TargetValues.TargetCCV;
                 break;
               }
 
@@ -286,10 +288,9 @@ namespace VSS.TRex.Profiling
           {
             ProfileCell.CellCCA = ProfileCell.Layers[I].CCA;
             ProfileCell.CellCCAElev = ProfileCell.Layers[I].CCA_Elev;
-            if (ProfileCell.Layers[I].TargetCCA == CellPassConsts.NullCCA)
-              ProfileCell.CellTargetCCA = GetTargetCCA(ProfileCell.Layers[I].CCA_MachineID, ProfileCell.Layers[I].CCA_Time);
-            else
-              ProfileCell.CellTargetCCA = ProfileCell.Layers[I].TargetCCA;
+            ProfileCell.CellTargetCCA = ProfileCell.Layers[I].TargetCCA == CellPassConsts.NullCCA 
+              ? GetTargetCCA(ProfileCell.Layers[I].CCA_MachineID, ProfileCell.Layers[I].CCA_Time) 
+              : ProfileCell.Layers[I].TargetCCA;
 
             DataStillRequiredForCCA = false;
           }
@@ -409,33 +410,33 @@ namespace VSS.TRex.Profiling
     public override bool Analyze(List<ProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
     {
       //{$IFDEF DEBUG}
-      //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), slmcDebug);
+      //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), ...);
       //{$ENDIF}
 
-      SubGridCellAddress CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
+      SubGridCellAddress CurrentSubGridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
       ISubGrid SubGrid = null;
       IServerLeafSubGrid _SubGridAsLeaf = null;
       ProfileCell = null;
 //      FilterDesignElevations = null;
-      bool IgnoreSubgrid = false;
+      bool IgnoreSubGrid = false;
 
       for (int I = 0; I < ProfileCells.Count; I++)
       {
         ProfileCell = ProfileCells[I];
 
-        // get subgrid setup iterator and set cell address
-        // get subgrid origin for cell address
-        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+        // get sub grid setup iterator and set cell address
+        // get sub grid origin for cell address
+        SubGridCellAddress ThisSubGridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
           ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
-        if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin)) // if we have a new subgrid to fetch
+        if (!CurrentSubGridOrigin.Equals(ThisSubGridOrigin)) // if we have a new sub grid to fetch
         {
-          IgnoreSubgrid = false;
-          CurrentSubgridOrigin = ThisSubgridOrigin;
+          IgnoreSubGrid = false;
+          CurrentSubGridOrigin = ThisSubGridOrigin;
           SubGrid = null;
 
-          // Does the subgrid tree contain this node in it's existence map?
-          if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
+          // Does the sub grid tree contain this node in it's existence map?
+          if (PDExistenceMap[CurrentSubGridOrigin.X, CurrentSubGridOrigin.Y])
             SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
               (StorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
 
@@ -452,7 +453,7 @@ namespace VSS.TRex.Profiling
             CompositeHeightsGrid = null;
           }
 
-          if (!LiftFilterMask<ProfileCell>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
+          if (!LiftFilterMask<ProfileCell>.ConstructSubGridCellFilterMask(SiteModel.Grid, CurrentSubGridOrigin,
             ProfileCells, FilterMask, I, CellFilter, SurfaceDesignMaskDesign))
             continue;
 
@@ -473,18 +474,18 @@ namespace VSS.TRex.Profiling
             }
           }
 
-          if (!LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
+          if (!LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, PassFilterAnnex, ProfileCell,
             CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
           {
             if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-              IgnoreSubgrid = true;
+              IgnoreSubGrid = true;
             else
               Log.LogError("Call to RequestDesignElevationPatch in TICServerProfiler for filter failed to return an elevation patch.");
             continue;
           }
         }
 
-        if (SubGrid != null && !IgnoreSubgrid)
+        if (SubGrid != null && !IgnoreSubGrid)
         {
           if (_SubGridAsLeaf != null)
           {
@@ -501,11 +502,11 @@ namespace VSS.TRex.Profiling
               ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasTemperatureData;
           }
 
-          // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
+          // get cell address relative to sub grid and SetCellCoordinatesInSubGrid
           cellPassIterator.SetCellCoordinatesInSubgrid(
             (byte) (ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
             (byte) (ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
-          PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
+          PassFilterAnnex.InitializeFilteringForCell(PassFilter, cellPassIterator.CellX, cellPassIterator.CellY);
 
           if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))
           {

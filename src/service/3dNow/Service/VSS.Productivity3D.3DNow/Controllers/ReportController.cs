@@ -1,17 +1,40 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Models.Models;
+using Newtonsoft.Json;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Now3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.Now3D.Controllers
 {
   public class ReportController : BaseController
   {
-    public ReportController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    private readonly IProjectListProxy projectListProxy;
+    private readonly IFileListProxy fileListProxy;
+    private readonly IFilterServiceProxy filterServiceProxy;
+    private readonly IRaptorProxy raptorProxy;
+
+    public ReportController(ILoggerFactory loggerFactory, 
+      IServiceExceptionHandler serviceExceptionHandler, 
+      IProjectListProxy projectListProxy, 
+      IFileListProxy fileListProxy, 
+      IFilterServiceProxy filterServiceProxy,
+      IRaptorProxy raptorProxy) : base(loggerFactory, serviceExceptionHandler)
     {
+      this.projectListProxy = projectListProxy;
+      this.fileListProxy = fileListProxy;
+      this.filterServiceProxy = filterServiceProxy;
+      this.raptorProxy = raptorProxy;
     }
 
     /// <summary>
@@ -19,41 +42,35 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/passcount/summary")]
     [ProducesResponseType(typeof(PassCountSummaryResult), 200)]
-    public IActionResult PasscountReport([FromQuery, BindRequired]Filter filter)
+    public async Task<IActionResult> PasscountReport([FromQuery, BindRequired]SimpleFilter filter)
     {
-      Log.LogInformation($"PasscountReport Filter: {filter}");
       // Request projectUid, filterUid (optional) 
       // Default filter to project extents, no design
       // URL:  api/v2/passcounts/summary
       // Returns PassCountSummaryResult
-      return Json(new PassCountSummaryResult(new TargetPassCountRange(0, 0), 
-        true, 
-        0, 
-        0, 
-        0, 
-        0, 
-        0));
+      Log.LogInformation($"PasscountReport Filter: {filter}");
+      var filterUid = await ConvertSimpleFilter(filter);
+
+      var result = await ExecuteRequest<CompactionPassCountSummaryResult>("/passcounts/summary", Guid.Parse(filter.ProjectUid), filterUid);
+      return Json(result);
     }
 
     /// <summary>
     /// Gets the CMV Summary report for the project extents
     /// </summary>
     [HttpGet("api/v1/reports/cmv/summary")]
-    [ProducesResponseType(typeof(CMVSummaryResult), 200)]
-    public IActionResult CmvReport([FromQuery, BindRequired]Filter filter)
+    [ProducesResponseType(typeof(CompactionCmvSummaryResult), 200)]
+    public async Task<IActionResult> CmvReport([FromQuery, BindRequired]SimpleFilter filter)
     {
-      Log.LogInformation($"CmvReport Filter: {filter}");
-      // Request: CMVRequest
+      // Request: projectUid, filterUid (optional) 
       // Default filter to project extents, no design
-      // URL api/v1/compaction/cmv/summary
-      // Response CMVSummaryResult
-      return Json(new CMVSummaryResult(0, 
-        0, 
-        true, 
-        0, 
-        0, 
-        0, 
-        0));
+      // URL api/v2/cmv/summary
+      // Response CompactionCmvSummaryResult
+      Log.LogInformation($"CmvReport Filter: {filter}");
+      var filterUid = await ConvertSimpleFilter(filter);
+
+      var result = await ExecuteRequest<CompactionCmvSummaryResult>("/cmv/summary", Guid.Parse(filter.ProjectUid), filterUid);
+      return Json(result);
     }
 
     /// <summary>
@@ -61,51 +78,46 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/mdp/summary")]
     [ProducesResponseType(typeof(CompactionMdpSummaryResult), 200)]
-    public IActionResult MdpReport([FromQuery, BindRequired]Filter filter)
+    public async Task<IActionResult> MdpReport([FromQuery, BindRequired]SimpleFilter filter)
     {
-      Log.LogInformation($"MdpReport Filter: {filter}");
       // Request: projectUid and filterUid (optional)
       // Url api/v2/mdp/summary
       // Returns CompactionMdpSummaryResult
-      return Json(new CompactionMdpSummaryResult(
-        new MDPSummaryResult(0, 
-          0,
-          true, 
-          0, 
-          0, 
-          0, 
-          0),
-        new MDPSettings(0,
-          0,
-          0,
-          0,
-          0,
-          true)));
+      Log.LogInformation($"MdpReport Filter: {filter}");
+
+      var filterUid = await ConvertSimpleFilter(filter);
+
+      var result = await ExecuteRequest<CompactionMdpSummaryResult>("/mdp/summary", Guid.Parse(filter.ProjectUid), filterUid);
+      return Json(result);
     }
 
     /// <summary>
     /// Gets a Volumes (Ground to Design) summary report for the project
     /// </summary>
     [HttpGet("api/v1/reports/volumes/summary")]
-    [ProducesResponseType(typeof(SummaryVolumesResult), 200)]
-    public IActionResult VolumesReport([FromQuery, BindRequired]Filter filter)
+    [ProducesResponseType(typeof(CompactionVolumesSummaryResult), 200)]
+    public async Task<IActionResult> VolumesReport([FromQuery, BindRequired]SimpleFilter filter)
     {
       Log.LogInformation($"VolumesReport Filter: {filter}");
       // Ground to design only
       // SummaryVolumesRequest
 
       // Returns SummaryVolumesResult
-      return Json(SummaryVolumesResult.Create(BoundingBox3DGrid.CreatBoundingBox3DGrid(0,
-          0,
-          0,
-          0,
-          0,
-          0), 
-        0,
-        0,
-        0,
-        0,
-        0));
+      var filterUid = await ConvertSimpleFilter(filter);
+
+      // Base UID needs to be filter
+      // Top UID needs to be design
+      var route = $"/volumes/summary?projectUid={filter.ProjectUid}&baseUid={filterUid}&topUid={filter.DesignFileUid}";
+      var result = await raptorProxy.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
+
+      if (result != null)
+        return Json(result);
+
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
+        (int)Now3DExecutionStates.ErrorCodes.GeneralError, 
+        null,
+        "No Data");
+      return null;
     }
 
     /// <summary>
@@ -113,13 +125,114 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// </summary>
     [HttpGet("api/v1/reports/cutfill/details")]
     [ProducesResponseType(typeof(CompactionCutFillDetailedResult), 200)]
-    public IActionResult CutFillReport([FromQuery, BindRequired]Filter filter)
+    public async Task<IActionResult> CutFillReport([FromQuery, BindRequired]SimpleFilter filter)
     {
-      Log.LogInformation($"CutFillReport Filter: {filter}");
       // Request orojectUid, filterUid (optional), cutfillDesignUid
       // Url api/v2/cutfill/details"
       // Returns CompactionCutFillDetailedResult
-      return Json(new CompactionCutFillDetailedResult(new[] {0.0d}));
+      Log.LogInformation($"CutFillReport Filter: {filter}");
+      var filterUid = await ConvertSimpleFilter(filter);
+
+      var additionalParams = new Dictionary<string, string>
+      {
+        {"cutfillDesignUid", filter.DesignFileUid}
+      };
+      
+      var result = await ExecuteRequest<CompactionCutFillDetailedResult>("/cutfill/details", Guid.Parse(filter.ProjectUid), filterUid, additionalParams);
+      return Json(result);
+    }
+
+    /// <summary>
+    /// Helper method to execute a request against 3dp and throw a service exception if the request fails
+    /// </summary>
+    private async Task<T> ExecuteRequest<T>(string baseEndPoint, Guid projectUid, Guid filterUid, Dictionary<string, string> additionalParams = null) where T : class
+    {
+      var route = $"{baseEndPoint}?projectUid={projectUid}&filterUid={filterUid}";
+
+      if (additionalParams != null)
+      {
+        foreach (var (key, value) in additionalParams)
+        {
+          route += $"&{key}={value}";
+        }
+      }
+
+      var result = await raptorProxy.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
+
+      if (result != null)
+        return result;
+
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
+        (int)Now3DExecutionStates.ErrorCodes.GeneralError, 
+        null,
+        "No Data");
+      return null;
+    }
+
+    /// <summary>
+    /// Convert a simple filter into a Real Filter via the Filter service
+    /// </summary>
+    /// <returns>Filter UID</returns>
+    private async Task<Guid> ConvertSimpleFilter(SimpleFilter simpleFilter)
+    {
+      if (simpleFilter == null)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest,
+          (int) Now3DExecutionStates.ErrorCodes.FilterConvertFailure,
+          null,
+          "No Simple Filter found");
+      }
+
+      var project = await projectListProxy.GetProjectForCustomer(CustomerUid, simpleFilter.ProjectUid, CustomHeaders);
+      if (project == null)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
+          (int) Now3DExecutionStates.ErrorCodes.FilterConvertFailure,
+          null,
+          $"Cannot find project {simpleFilter.ProjectUid} for Customer {CustomerUid}");
+      }
+
+      var file = await fileListProxy.GetFileForProject(simpleFilter.ProjectUid, UserId, simpleFilter.DesignFileUid,
+        CustomHeaders);
+
+      if (file == null)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
+          (int) Now3DExecutionStates.ErrorCodes.FilterConvertFailure,
+          null,
+          $"Cannot find file {simpleFilter.DesignFileUid} for project {simpleFilter.ProjectUid}");
+      }
+
+      var filterModel = Filter.Abstractions.Models.Filter.CreateFilter(simpleFilter.StartDateUtc,
+        simpleFilter.EndDateUtc,
+        simpleFilter.DesignFileUid,
+        file.Name,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        simpleFilter.LiftNumber);
+
+      var filterRequest = FilterRequest.Create(filterModel);
+
+      var result = await filterServiceProxy.CreateFilter(simpleFilter.ProjectUid, filterRequest, CustomHeaders);
+
+      if (result.Code != 0)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
+          (int)Now3DExecutionStates.ErrorCodes.DataError, 
+          result.Code.ToString(),
+          result.Message);
+      }
+
+      var guid  = Guid.Parse(result.FilterDescriptor.FilterUid);
+
+      Log.LogInformation($"Converted Simple filter '{JsonConvert.SerializeObject(simpleFilter)}' to a " +
+        $"{nameof(FilterRequest)}: '{JsonConvert.SerializeObject(filterRequest)}'. FilterUID: {guid}");
+
+      return guid;
     }
   }
 }

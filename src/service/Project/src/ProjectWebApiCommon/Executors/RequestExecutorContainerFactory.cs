@@ -8,7 +8,9 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -26,7 +28,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
-      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null
+      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
+      ITPaaSApplicationAuthentication authn = null
       ) 
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -39,11 +42,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var executor = new TExecutor();
 
       executor.Initialise(
-        log, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, headers,
-        producer, kafkaTopicName,
-        raptorProxy, subscriptionProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, customerRepo, httpContextAccessor, dataOceanClient
+        log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
+        producer, kafkaTopicName, raptorProxy, subscriptionProxy, persistantTransferProxy, 
+        filterServiceProxy, tRexImportFileProxy, projectRepo, subscriptionRepo, fileRepo, customerRepo, 
+        httpContextAccessor, dataOceanClient, authn
         );
 
       return executor;

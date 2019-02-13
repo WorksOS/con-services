@@ -166,7 +166,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     protected override void SetDesign(string Value)
     {
       // If the design being loaded changed, then update the extents of the design
-      // in the designs list in the sitemodel
+      // in the designs list in the site model
 
       if (Design != "" && Design != Value)
         UpdateCurrentDesignExtent();

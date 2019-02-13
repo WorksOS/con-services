@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
@@ -12,7 +11,7 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace VSS.MasterData.Proxies
 {
   /// <summary>
-  /// Proxy for Raptor services.
+  /// Proxy for TPaaS services.
   /// </summary>
   public class TPaasProxy : BaseProxy, ITPaasProxy
   {
@@ -25,9 +24,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="grantType">Project UID</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<TPaasOauthResult> Get3DPmSchedulerBearerToken(string grantType, Dictionary<string, string> customHeaders)
+    public async Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, Dictionary<string, string> customHeaders)
     {
-      log.LogDebug($"RaptorProxy.Get3dPmSchedulerBearerToken: grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+      log.LogDebug($"GetApplicationBearerToken: grantType: {grantType} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
       var payLoadToSend = $"grant_type={grantType}";
       var tPaasOauthResult = new TPaasOauthResult();
       try
@@ -41,7 +40,7 @@ namespace VSS.MasterData.Proxies
       }
     
       var resultString = tPaasOauthResult == null ? "null" : JsonConvert.SerializeObject(tPaasOauthResult);
-      var message = $"TPaasProxy.Get3DPmSchedulerBearerToken: response: {resultString}";
+      var message = $"GetApplicationBearerToken: response: {resultString}";
       log.LogDebug(message);
 
       return tPaasOauthResult;

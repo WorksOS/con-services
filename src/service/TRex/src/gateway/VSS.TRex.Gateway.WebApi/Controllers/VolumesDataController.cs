@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -41,6 +45,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         RequestExecutorContainer
           .Build<SummaryVolumesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(summaryVolumesRequest) as SummaryVolumesResult);
+    }
+
+    /// <summary>
+    /// Get the summary volumes profile report for two surfaces.
+    /// </summary>
+    /// <param name="summaryVolumesProfileRequest"></param>
+    /// <returns></returns>
+    [Route("api/v1/volumes/summary/profile")]
+    [HttpPost]
+    public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
+    { 
+      Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
+
+      summaryVolumesProfileRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryVolumesProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(summaryVolumesProfileRequest) as ProfileDataResult<SummaryVolumesProfileCell>);
     }
   }
 }

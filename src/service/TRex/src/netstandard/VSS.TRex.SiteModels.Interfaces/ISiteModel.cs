@@ -17,6 +17,7 @@ namespace VSS.TRex.SiteModels.Interfaces
   {
     Guid ID { get; set; }
 
+    DateTime CreationDate { get; }
     DateTime LastModifiedDate { get; set; }
 
     /// <summary>
@@ -28,6 +29,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// The grid data for this site model
     /// </summary>
     IServerSubGridTree Grid { get; }
+
+    bool GridLoaded { get; }
 
     BoundingWorldExtent3D SiteModelExtent { get; }
 
@@ -49,6 +52,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// of the cell information that have been record for it.
     /// </summary>
     ISiteModelDesignList SiteModelDesigns { get; }
+
+    bool SiteModelDesignsLoaded { get; }
 
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the site model
@@ -87,6 +92,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     bool IgnoreInvalidPositions { get; set; }
 
     string CSIB();
+    bool CSIBLoaded { get; }
 
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);

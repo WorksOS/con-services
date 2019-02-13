@@ -59,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("DeleteImportedFileV4. Unable to set Imported File event to deleted.", 51);
       this.DynamicAddwithOffset("CreateImportedFileV4. Unable to store updated Imported File event to database.", 52);
       this.DynamicAddwithOffset("WriteFileToRepository: Unable to write file to TCC.", 53);
-      this.DynamicAddwithOffset("Unable to put delete fileDescriptor from TCC. TCC code {0} message {1}", 54);
+      this.DynamicAddwithOffset("Unable to delete fileDescriptor from TCC. TCC code {0} message {1}", 54);
       this.DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
       this.DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
       this.DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 57);
@@ -120,6 +120,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Cannot delete a design, surveyed surface, or alignment file which is used in a filter.", 112);
       this.DynamicAddwithOffset("ImportedFile environment variable configuration will result in file being ignored.", 113);
       this.DynamicAddwithOffset("FileImport AddFile in TRex failed. Reason: {0} {1}.", 114);
+      this.DynamicAddwithOffset("Unable to obtain DataOcean root folder.", 115);
+      this.DynamicAddwithOffset("Unable to write file to DataOcean.", 116);
+      this.DynamicAddwithOffset("Unable to delete file from DataOcean", 117);
+
     }
   }
 }

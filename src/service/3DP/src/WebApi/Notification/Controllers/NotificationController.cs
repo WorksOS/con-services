@@ -20,6 +20,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 #if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
@@ -404,7 +405,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    private async Task<List<Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
+    private async Task<List<Filter.Abstractions.Models.Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)
@@ -412,7 +413,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         return null;
       }
 
-      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter>(f.FilterJson)).ToList();
+      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(f.FilterJson)).ToList();
     }
 
     /// <summary>

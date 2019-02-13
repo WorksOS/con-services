@@ -29,6 +29,7 @@ using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -63,15 +64,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="authn"></param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore store,
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient, INotificationHubClient notificationHubClient,ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient)
+        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient, authn)
     {
       this._logger = logger;
       this.HttpContextAccessor = httpContextAccessor;
@@ -166,10 +168,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, dataOceanClient)
+            customerUid, userId, null, customHeaders, producer, kafkaTopicName, raptorProxy, 
+            subscriptionProxy, null, null, null, projectRepo, subscriptionRepo, fileRepo, 
+            null, HttpContextAccessor, dataOceanClient, authn)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -250,7 +251,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, dataOceanClient)
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, 
+            dataOceanClient, authn)
           .ProcessAsync(project)
       );
 
@@ -268,14 +270,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Create a scheduler job to update an exisiting project in the bacground
+    /// Create a scheduler job to update an existing project in the background
     /// </summary>
     /// <param name="projectRequest">The project request model to be used in the update</param>
     /// <param name="scheduler">The scheduler used to queue the job</param>
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
     [Route("api/v4/project/background")]
     [HttpPut]
-    public async Task<ScheduleJobResult> RequestUpdteProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    public async Task<ScheduleJobResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
     {
       if (projectRequest == null)
       {

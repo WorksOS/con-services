@@ -1,5 +1,3 @@
-& $PSScriptRoot/DockerEnvironmentVariables.ps1
-
 Write-Host "Stopping Docker containers" -ForegroundColor DarkGray
 docker stop $(docker ps -aq)
 

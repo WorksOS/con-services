@@ -74,7 +74,7 @@ namespace VSS.TRex.Designs
 
     public abstract bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY);
 
-    public virtual ISubGridTreeBitMask SubgridOverlayIndex() => null;
+    public virtual ISubGridTreeBitMask SubGridOverlayIndex() => null;
 
     public void AcquireExclusiveInterlock() => Monitor.Enter(this);
     public void ReleaseExclusiveInterlock() => Monitor.Exit(this);

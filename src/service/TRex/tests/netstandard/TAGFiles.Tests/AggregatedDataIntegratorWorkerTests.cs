@@ -19,16 +19,11 @@ namespace TAGFiles.Tests
 
   public class AggregatedDataIntegratorWorkerTests : IClassFixture<DITagFileFixture>
   {
-    [Fact(Skip = "Not Implemented")]
+    [Fact()]
     public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
     {
-      Assert.True(false);
-    }
-
-    [Fact(Skip = "Not Implemented")]
-    public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest1()
-    {
-      Assert.True(false);
+      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      Assert.NotNull(integrator);
     }
 
     [Fact]

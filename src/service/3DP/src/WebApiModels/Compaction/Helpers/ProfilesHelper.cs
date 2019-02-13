@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -12,14 +13,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public const int PROFILE_TYPE_HEIGHT = 2;
     public const double ONE_MM = 0.001;
 #if RAPTOR
-    public static bool CellGapExists(Velociraptor.PDSInterface.ProfileCell prevCell, Velociraptor.PDSInterface.ProfileCell currCell, out double prevStationIntercept)
+    public static bool CellGapExists(ProfileCellData prevCell, ProfileCellData currCell, out double prevStationIntercept)
     {
-      return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
+      return CellGapExists(prevCell?.Station, prevCell?.InterceptLength, currCell.Station, out prevStationIntercept);
     }
 
-    public static bool CellGapExists(Velociraptor.PDSInterface.SummaryVolumesProfileCell prevCell, Velociraptor.PDSInterface.SummaryVolumesProfileCell currCell, out double prevStationIntercept)
+    public static bool CellGapExists(SummaryVolumesProfileCell prevCell, SummaryVolumesProfileCell currCell, out double prevStationIntercept)
     {
-      return CellGapExists(prevCell?.station, prevCell?.interceptLength, currCell.station, out prevStationIntercept);
+      return CellGapExists(prevCell?.Station, prevCell?.InterceptLength, currCell.Station, out prevStationIntercept);
     }
 
     private static bool CellGapExists(double? prevStation, double? prevInterceptLength, double currStation, out double prevStationIntercept)

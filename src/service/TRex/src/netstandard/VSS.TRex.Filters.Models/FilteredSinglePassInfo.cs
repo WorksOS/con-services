@@ -9,7 +9,7 @@
         /// <summary>
         /// PassCount stores the number of passes present in the cell from which
         /// the single pass was filtered. In cases where the pass count is derived as
-        /// a count of the number of passes that represent compactive effort and include
+        /// a count of the number of passes that represent compaction effort and include
         /// compaction machines for which a 'pass' over the ground is considered to
         /// only represent a 'half pass', then this count will include the whole number
         /// of 'full' passes for those machine where a full pass is defined as two
@@ -23,7 +23,7 @@
         public FilteredPassData FilteredPassData;
 
         /// <summary>
-        /// Intialise the filtered singlepass to a null state
+        /// Initialize the filtered single pass to a null state
         /// </summary>
         public void Clear()
         {
