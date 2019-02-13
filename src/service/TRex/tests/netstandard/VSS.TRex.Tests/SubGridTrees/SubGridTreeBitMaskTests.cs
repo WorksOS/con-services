@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.SubGridTrees;
 using FluentAssertions;
+using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
@@ -75,10 +76,41 @@ namespace VSS.TRex.Tests.SubGridTrees
       mask.CountBits().Should().Be(10000);
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_SubGridTreeBitMask_ComputeCellsWorldExtents()
+    [Fact]
+    public void Test_SubGridTreeBitMask_ComputeCellsWorldExtents_EmptyMask()
     {
-      Assert.True(false);
+      var mask = new SubGridTreeBitMask();
+      mask.ComputeCellsWorldExtents().Should().BeEquivalentTo(BoundingWorldExtent3D.Inverted());
+    }
+
+
+    [Fact]
+    public void Test_SubGridTreeBitMask_ComputeCellsWorldExtents_SingleCellAtOrigin()
+    {
+      var mask = new SubGridTreeBitMask();
+      mask[SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset] = true;
+
+      var extent = mask.ComputeCellsWorldExtents();
+
+      extent.MinX.Should().BeApproximately(0, 0.00001);
+      extent.MaxX.Should().BeApproximately(mask.CellSize, 0.00001);
+      extent.MinY.Should().BeApproximately(0, 0.00001);
+      extent.MaxY.Should().BeApproximately(mask.CellSize, 0.00001);
+    }
+
+    [Fact]
+    public void Test_SubGridTreeBitMask_ComputeCellsWorldExtents_TwoCells()
+    {
+      var mask = new SubGridTreeBitMask();
+      mask[SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset] = true;
+      mask[SubGridTreeConsts.DefaultIndexOriginOffset + 1000, SubGridTreeConsts.DefaultIndexOriginOffset + 1000] = true;
+
+      var extent = mask.ComputeCellsWorldExtents();
+
+      extent.MinX.Should().BeApproximately(0, 0.00001);
+      extent.MaxX.Should().BeApproximately(1001 * mask.CellSize, 0.00001);
+      extent.MinY.Should().BeApproximately(0, 0.00001);
+      extent.MaxY.Should().BeApproximately(1001 * mask.CellSize, 0.00001);
     }
 
     [Fact]

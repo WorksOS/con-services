@@ -25,7 +25,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     ITRexTask Task { get; set; }
 
     /// <summary>
-    /// The pipe lien used to retrieve sub grids from the cluster compute layer
+    /// The pipe line used to retrieve sub grids from the cluster compute layer
     /// </summary>
     ISubGridPipelineBase Pipeline { get; set; }
 
