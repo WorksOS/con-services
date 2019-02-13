@@ -52,11 +52,11 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
         Header.Read(reader);
 
-        // Commented out for now...
-        //if (FileSignatureToANSIString(Header.FileSignature) != kTTMFileIdentifier)
-        //{
-        //    Raise ETTMReadError.Create('File is not a Trimble TIN Model.');
-        //}
+        var identifier = System.Text.Encoding.ASCII.GetString(Header.FileSignature);
+        if (identifier != Consts.TTMFileIdentifier)
+        {
+          throw new TTMFileReadException("File is not a Trimble TIN Model.");
+        }
 
         // Check file version
         if (Header.FileMajorVersion != Consts.TTMMajorVersion
@@ -101,6 +101,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// Loads a TrimbleTINModel from a stream
     /// </summary>
     /// <param name="stream"></param>
+    /// <param name="bytes"></param>
     public void LoadFromStream(Stream stream, byte [] bytes)
     {
       using (BinaryReader reader = new BinaryReader(stream))

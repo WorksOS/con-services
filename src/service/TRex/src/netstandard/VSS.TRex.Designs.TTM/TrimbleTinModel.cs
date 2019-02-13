@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using VSS.TRex.Designs.TTM.Exceptions;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
@@ -92,11 +93,11 @@ namespace VSS.TRex.Designs.TTM
           Header = TTMHeader.NewHeader();
           Header.Read(reader);
 
-          // Commented out for now...
-          //if (FileSignatureToANSIString(Header.FileSignature) != kTTMFileIdentifier)
-          //{
-          //    Raise ETTMReadError.Create('File is not a Trimble TIN Model.');
-          //}
+          var identifier = Encoding.ASCII.GetString(Header.FileSignature);
+          if (identifier != Consts.TTMFileIdentifier)
+          {
+            throw new TTMFileReadException("File is not a Trimble TIN Model.");
+          }
 
           // Check file version
           if (Header.FileMajorVersion != Consts.TTMMajorVersion
