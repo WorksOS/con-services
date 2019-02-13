@@ -14,6 +14,7 @@
         SurveyedSurfaces,
         Designs,
         Machines,
+        MachineDesigns,
         MachineDesignNames,
         ProofingRuns,
         Alignments

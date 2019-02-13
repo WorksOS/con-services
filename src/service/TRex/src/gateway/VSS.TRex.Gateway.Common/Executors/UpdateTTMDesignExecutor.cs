@@ -113,7 +113,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           var designSurface = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             extents);
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubgridOverlayIndex());
+          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
         }
 
         if (request.FileType == ImportedFileType.SurveyedSurface)
@@ -123,7 +123,7 @@ namespace VSS.TRex.Gateway.Common.Executors
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             request.SurveyedUtc ?? DateTime.MinValue, // validation will have ensured this exists
             extents);
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubgridOverlayIndex());
+          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
         }
 
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required

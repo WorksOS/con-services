@@ -57,6 +57,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCach
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{35BAC88E-3EA1-4883-A09D-F0C71607930A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{09104DD3-AA5F-4937-A611-6B2AEE5084B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,10 @@ Global
 		{35BAC88E-3EA1-4883-A09D-F0C71607930A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35BAC88E-3EA1-4883-A09D-F0C71607930A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35BAC88E-3EA1-4883-A09D-F0C71607930A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{DF47FD4C-29DC-4CC4-89DA-D244765E739A} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 		{06CEFE72-5656-4B57-92E4-3890B56F9937} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 		{35BAC88E-3EA1-4883-A09D-F0C71607930A} = {8C971052-2D17-4456-9ECB-EBA1FD3C07B7}
+		{09104DD3-AA5F-4937-A611-6B2AEE5084B7} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FA01801-9906-482F-8016-493112DB9267}

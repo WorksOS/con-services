@@ -34,7 +34,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     public static void FromBytes<T>(this T item, byte[] bytes) where T : class, IBinaryReaderWriter => FromBytes(bytes, item.Read);
 
     /// <summary>
-    /// An extension method providing a FromBytes() semantic to deserialize a byte array via the class defined Read() implementation
+    /// An extension method providing a FromBytes() semantic to deserialize a stream via the class defined Read() implementation
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>

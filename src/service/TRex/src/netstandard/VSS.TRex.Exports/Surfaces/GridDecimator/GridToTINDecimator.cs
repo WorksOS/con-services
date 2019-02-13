@@ -271,7 +271,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           if (numElevationsToScan < NumValuesFromThisSubgrid)
             NumValuesFromThisSubgrid = numElevationsToScan;
 
-          // Set all the elavations for cells in this subgrid to null 
+          // Set all the elevations for cells in this sub grid to null 
           for (int i = 0; i < NumValuesFromThisSubgrid; i++)
             elevations[elevationIndex++] = NullVertexHeight;
 
@@ -284,7 +284,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         }
         else
         {
-          float elev = CacheSubgrid.Items[SubGridX, SubGridY];
+          var elev = CacheSubgrid.Items[SubGridX, SubGridY];
 
           if (elev == Common.Consts.NullHeight)
           {

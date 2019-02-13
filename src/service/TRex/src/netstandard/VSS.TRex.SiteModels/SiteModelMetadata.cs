@@ -13,8 +13,7 @@ namespace VSS.TRex.SiteModels
     private const byte VERSION_NUMBER = 1;
 
     public Guid ID { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public DateTime CreationDate { get; set; }
     public DateTime LastModifiedDate { get; set; }
     public BoundingWorldExtent3D SiteModelExtent { get; set; }
     public int MachineCount { get; set; }
@@ -28,8 +27,7 @@ namespace VSS.TRex.SiteModels
       writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteGuid(ID);
-      writer.WriteString(Name);
-      writer.WriteString(Description);
+      writer.WriteLong(CreationDate.ToBinary());
       writer.WriteLong(LastModifiedDate.ToBinary());
 
       writer.WriteBoolean(SiteModelExtent != null);
@@ -49,8 +47,7 @@ namespace VSS.TRex.SiteModels
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       ID = reader.ReadGuid() ?? Guid.Empty;
-      Name = reader.ReadString();
-      Description = reader.ReadString();
+      CreationDate = DateTime.FromBinary(reader.ReadLong());
       LastModifiedDate = DateTime.FromBinary(reader.ReadLong());
 
       if (reader.ReadBoolean())

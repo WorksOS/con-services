@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// </summary>
   public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>, IClientHeightLeafSubGrid
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
 
     /// <summary>
     /// Surveyed surface map records which cells hold cell pass heights that were derived
@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientHeightLeafSubGrid()
     {
@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientHeightLeafSubGrid() : base()
@@ -132,7 +132,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in this client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf sub grid
     /// </summary>
     /// <returns></returns>
     public override float NullCell() => Consts.NullHeight;

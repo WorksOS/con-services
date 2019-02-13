@@ -163,7 +163,7 @@ namespace VSS.TRex.SiteModels
           | (!message.SurveyedSurfacesModified ? SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces : 0)
           | (!message.MachinesModified ? SiteModelOriginConstructionFlags.PreserveMachines : 0)
           | (!message.MachineTargetValuesModified ? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0)
-          | (!message.MachineDesignsModified ? SiteModelOriginConstructionFlags.PreserveMachineDesigns : 0)
+          | (!message.MachineDesignsModified ? SiteModelOriginConstructionFlags.PreserveMachineDesigns | SiteModelOriginConstructionFlags.PreserveSiteModelDesigns : 0)
           | (!message.ProofingRunsModified ? SiteModelOriginConstructionFlags.PreserveProofingRuns : 0)
           | (!message.AlignmentsModified ? SiteModelOriginConstructionFlags.PreserveAlignments : 0)
           ;

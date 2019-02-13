@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
