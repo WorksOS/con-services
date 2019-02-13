@@ -45,11 +45,47 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
             Assert.False(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections true");
         }
-      
-        [Fact(Skip = "Not Implemented")]
+
+        private void Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect(Action<CellPassAttributeFilter, bool> setAspect, 
+          Func<CellPassAttributeFilter, bool> getAspect)
+        {
+          CellPassAttributeFilter filter = new CellPassAttributeFilter();
+
+          filter.AnyFilterSelections.Should().BeFalse();
+          getAspect.Invoke(filter).Should().BeFalse();
+          setAspect.Invoke(filter, true);
+
+          filter.AnyFilterSelections.Should().BeTrue();
+          getAspect.Invoke(filter).Should().BeTrue();
+
+          filter.HasTimeFilter = true;
+          filter.ClearFilter();
+
+          filter.AnyFilterSelections.Should().BeFalse();
+          filter.HasTimeFilter.Should().BeFalse();
+        }
+
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearFilter()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasTimeFilter = state, filter => filter.HasTimeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasCompactionMachinesOnlyFilter = state, filter => filter.HasCompactionMachinesOnlyFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasDesignFilter = state, filter => filter.HasDesignFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasElevationMappingModeFilter = state, filter => filter.HasElevationMappingModeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasElevationRangeFilter = state, filter => filter.HasElevationRangeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasElevationTypeFilter = state, filter => filter.HasElevationTypeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGCSGuidanceModeFilter = state, filter => filter.HasGCSGuidanceModeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGPSAccuracyFilter = state, filter => filter.HasGPSAccuracyFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerIDFilter = state, filter => filter.HasLayerIDFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGPSToleranceFilter = state, filter => filter.HasGPSToleranceFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerStateFilter = state, filter => filter.HasLayerStateFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasMachineDirectionFilter = state, filter => filter.HasMachineDirectionFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasMachineFilter = state, filter => filter.HasMachineFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPassTypeFilter = state, filter => filter.HasPassTypeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasVibeStateFilter = state, filter => filter.HasVibeStateFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPassCountRangeFilter = state, filter => filter.HasPassCountRangeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasTemperatureRangeFilter = state, filter => filter.HasTemperatureRangeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPositioningTechFilter = state, filter => filter.HasPositioningTechFilter);
         }
 
         private void Test_CellPassAttributeFilter_ClearFilter_Aspect
@@ -430,7 +466,7 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearSurveyedSurfaceExclusionList()
         {
           Test_CellPassAttributeFilter_ClearFilter_Aspect("SurveyedSurfaceExclusionList",
-            x => { x.SurveyedSurfaceExclusionList = new Guid[] {Guid.Empty}; },
+            x => { x.SurveyedSurfaceExclusionList = new [] {Guid.Empty}; },
             x => x.SurveyedSurfaceExclusionList.Length == 1 && x.SurveyedSurfaceExclusionList[0] == Guid.Empty,
             x => { x.ClearSurveyedSurfaceExclusionList(); },
             x => (x.SurveyedSurfaceExclusionList?.Length ?? 0) == 0);
