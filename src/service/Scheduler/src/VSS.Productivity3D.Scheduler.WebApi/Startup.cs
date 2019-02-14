@@ -22,9 +22,11 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.WebApi.Common;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
-using VSS.Productivity3D.Scheduler.WebAPI.Middleware;
+using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
+using VSS.Productivity3D.Scheduler.WebAPI.Middleware; 
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -110,8 +112,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITransferProxy, TransferProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();
+      services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+      services.AddSingleton<IVSSJobRunner, VSSHangfireJobRunner>();
 
       services.AddOpenTracing(builder =>
       {
