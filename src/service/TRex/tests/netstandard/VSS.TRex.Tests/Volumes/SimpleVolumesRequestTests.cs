@@ -65,8 +65,8 @@ namespace VSS.TRex.Tests.Volumes
                         response.CutArea.HasValue &&
                         response.FillArea.HasValue &&
                         !response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
-                        // No LL converesion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
-                        "Reponse is null, unexpected");
+                        // No LL conversion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
+                        "Response is null, unexpected");
         }
 
         [Fact(Skip = "Not running tests requiring Ignite nodes")]
@@ -103,8 +103,8 @@ namespace VSS.TRex.Tests.Volumes
                         response.CutArea.HasValue &&
                         response.FillArea.HasValue &&
                         !response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
-                // No LL converesion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
-                "Reponse is null, unexpected");
+                // No LL conversion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
+                "Response is null, unexpected");
         }
     }
 }

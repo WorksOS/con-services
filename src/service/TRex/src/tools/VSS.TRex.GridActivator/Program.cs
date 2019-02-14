@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Apache.Ignite.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -15,6 +17,7 @@ namespace VSS.TRex.GridActivator
     {
       DIBuilder.New()
         .AddLogging()
+        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Complete();
     }
