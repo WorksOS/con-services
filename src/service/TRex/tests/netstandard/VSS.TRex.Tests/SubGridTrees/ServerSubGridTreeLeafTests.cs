@@ -145,8 +145,8 @@ namespace VSS.TRex.Tests.SubGridTrees
                 leaf.LeafEndTime == DateTime.MinValue &&
                 leaf.LeafStartTime == DateTime.MaxValue &&
                 leaf.Level == SubGridTreeConsts.SubGridTreeLevels &&
-                leaf.IsLeafSubGrid() == true,
-                "Leaf not initialised as expected after AllocateFullPassStacks");
+                leaf.IsLeafSubGrid(),
+                "Leaf not initialized as expected after AllocateFullPassStacks");
         }
 
         [Fact()]
@@ -233,10 +233,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             CellPass pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
 
-            pass.Time.AddMinutes(1);
+            pass.Time = pass.Time.AddMinutes(1);
             leaf.AddPass(0, 0, pass);
 
-            pass.Time.AddMinutes(1);
+            pass.Time = pass.Time.AddMinutes(1);
             leaf.AddPass(0, 0, pass);
 
             leaf.ComputeLatestPassInformation(true, StorageProxy.Instance(StorageMutability.Mutable));
