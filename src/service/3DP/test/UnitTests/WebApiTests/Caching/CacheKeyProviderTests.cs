@@ -16,6 +16,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Caching
 {
@@ -85,6 +86,12 @@ namespace VSS.Productivity3D.WebApiTests.Caching
   {
     public void ClearCacheItem(string uid, string userId = null)
     { }
+
+    Task<FilterDescriptorSingleResult> IFilterServiceProxy.CreateFilter(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders)
+    {
+      throw new NotImplementedException();
+    }
+
 
 #pragma warning disable 1998
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
