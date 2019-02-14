@@ -162,7 +162,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.baseFilter,
-        request.volumeDesignDescriptor.FileUid,
+        request.volumeDesignDescriptor?.FileUid,
         request.gridPoints != null,
         request.gridPoints?.x1 ?? request.wgs84Points.lon1,
         request.gridPoints?.x2 ?? request.wgs84Points.lon2,
@@ -413,7 +413,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         profile.results.Add(lastCell);
       }
-      profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
+
+      if (profile.results.Count > 0)
+        profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
       
       profile.gridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
 
@@ -517,7 +519,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.ProjectUid ?? Guid.Empty,
         request.baseFilter,
         request.topFilter,
-        request.volumeDesignDescriptor.FileUid,
+        request.volumeDesignDescriptor?.FileUid,
         ConvertVolumeCalcType(volumeCalcType),
         request.gridPoints != null,
         request.gridPoints?.x1 ?? request.wgs84Points.lon1,
@@ -742,7 +744,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         profile.results.Add(lastCell);
       }
-      profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
+
+      if (profile.results.Count > 0)
+        profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
 
       profile.gridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
 

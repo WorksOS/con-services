@@ -53,10 +53,28 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="summaryVolumesProfileRequest"></param>
     /// <returns></returns>
     [Route("api/v1/volumes/summary/profile")]
-    [HttpPost]
-    public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
-    { 
+    //[HttpPost]
+    //public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
+    [HttpGet]
+    public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile()
+    {
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
+
+      // Debugging code only
+      Guid projectUid = Guid.Parse("ff91dd40-1569-4765-a2bc-014321f76ace");
+      FilterResult baseFilter = new FilterResult();
+      FilterResult topFilter = new FilterResult();
+      Guid? referenceDesignUid = null;
+      VolumesType volumeCalcType = VolumesType.Between2Filters;
+      baseFilter.ReturnEarliest = true;
+      topFilter.ReturnEarliest = false;
+      //var summaryVolumesProfileRequest = new SummaryVolumesProfileDataRequest(projectUid, baseFilter, topFilter, referenceDesignUid, volumeCalcType, true, 2744.3073344000004, 1165.0196288000002, 2744.3073344000004, 1162.9496000000001);
+      var summaryVolumesProfileRequest = new SummaryVolumesProfileDataRequest(projectUid, baseFilter, topFilter, referenceDesignUid, volumeCalcType, 
+        false,
+        -115.02014869,
+        36.20696322,
+        -115.02014869,
+        36.20694457);
 
       summaryVolumesProfileRequest.Validate();
 

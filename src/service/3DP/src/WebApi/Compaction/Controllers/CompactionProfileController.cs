@@ -125,6 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
+          .ProjectUid(projectUid)
           .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .Filter(filter)

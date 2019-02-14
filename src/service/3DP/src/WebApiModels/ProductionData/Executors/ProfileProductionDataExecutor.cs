@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.Filter,
-        request.alignmentDesign.FileUid,
+        request.alignmentDesign?.FileUid,
         request.gridPoints != null,
         request.gridPoints?.x1 ?? request.wgs84Points.lon1,
         request.gridPoints?.x2 ?? request.wgs84Points.lon2,
