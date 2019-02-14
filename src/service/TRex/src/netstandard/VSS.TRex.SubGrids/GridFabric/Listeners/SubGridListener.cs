@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
             finally
             {
               // Tell the pipeline that a set of sub grid have been completely processed
-              TRexTask.PipeLine.SubgridsProcessed(responseCount);
+              TRexTask.PipeLine.SubGridsProcessed(responseCount);
             }
           }
           finally

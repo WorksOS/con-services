@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       Assert.NotNull(analyser);
       Assert.NotNull(analyser.ProdDataMask);
-      Assert.NotNull(analyser.SurveydSurfaceOnlyMask);
+      Assert.NotNull(analyser.SurveyedSurfaceOnlyMask);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ namespace VSS.TRex.Tests.Pipelines
     {
       RequestAnalyser analyser = new RequestAnalyser();
 
-      Assert.Throws<ArgumentException>(() => analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Throws<ArgumentException>(() => analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Fact]
@@ -51,11 +51,11 @@ namespace VSS.TRex.Tests.Pipelines
 
       RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Null());
 
-      Assert.Equal(0, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
 
       analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
 
-      Assert.Equal(0, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Fact]
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Full());
 
-      Assert.Equal(0, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Fact]
@@ -88,7 +88,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Full());
 
-      Assert.Equal(1, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(1, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Fact]
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       RequestAnalyser analyser = new RequestAnalyser(PipeLine, new BoundingWorldExtent3D(0, 0, 1000, 1000));
 
-      Assert.Equal(1, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(1, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Fact]
@@ -126,7 +126,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
 
-      Assert.Equal(0, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(0, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Fact]
@@ -147,7 +147,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       RequestAnalyser analyser = new RequestAnalyser(PipeLine, BoundingWorldExtent3D.Inverted());
 
-      Assert.Equal(10000, analyser.CountOfSubgridsThatWillBeSubmitted());
+      Assert.Equal(10000, analyser.CountOfSubGridsThatWillBeSubmitted());
     }
 
     [Theory]
@@ -177,8 +177,8 @@ namespace VSS.TRex.Tests.Pipelines
         SinglePageRequestSize = pageSize
       };
 
-      Assert.True(expectedCount == analyser.CountOfSubgridsThatWillBeSubmitted(),$"CountOfSubgridsThatWillBeSubmitted() not {expectedCount}, = {analyser.CountOfSubgridsThatWillBeSubmitted()}");
-      Assert.True(numberInRequest == analyser.TotalNumberOfSubgridsToRequest, $"analyser.TotalNumberOfSubgridsToRequest not {numberInRequest}, = {analyser.TotalNumberOfSubgridsToRequest}");
+      Assert.True(expectedCount == analyser.CountOfSubGridsThatWillBeSubmitted(),$"CountOfSubGridsThatWillBeSubmitted() not {expectedCount}, = {analyser.CountOfSubGridsThatWillBeSubmitted()}");
+      Assert.True(numberInRequest == analyser.TotalNumberOfSubGridsToRequest, $"analyser.TotalNumberOfSubGridsToRequest not {numberInRequest}, = {analyser.TotalNumberOfSubGridsToRequest}");
     }
   }
 }

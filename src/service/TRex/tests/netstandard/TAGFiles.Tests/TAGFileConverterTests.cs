@@ -71,7 +71,7 @@ namespace TAGFiles.Tests
 
       result.All(x => x.ProcessedCellPassCount == 16525).Should().Be(true);
       result.All(x => x.ProcessedEpochCount == 1478).Should().Be(true);
-      result.All(x => x.SiteModelGridAggregator.CountLeafSubgridsInMemory() == 12).Should().Be(true);
+      result.All(x => x.SiteModelGridAggregator.CountLeafSubGridsInMemory() == 12).Should().Be(true);
     }
 
     [Fact]

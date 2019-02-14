@@ -163,6 +163,8 @@ namespace VSS.TRex.Filters
       ClearGPSTolerance();
       ClearTemperatureRange();
       ClearPassCountRange();
+      ClearPositioningTech();
+
       ReturnEarliestFilteredCellPass = false;
       FilterTemperatureByLastPass = false;
 

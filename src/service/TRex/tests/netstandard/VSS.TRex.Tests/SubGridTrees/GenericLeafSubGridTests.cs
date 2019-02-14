@@ -65,41 +65,5 @@ namespace VSS.TRex.Tests.SubGridTrees
                 // As expected
             }
         }
-
-        /*
-        [Fact(Skip = "Not Implemented")]
-        public void Test_GenericLeafSubGridTests_Read_BinaryFormatter()
-        {
-            Assert.True(false,"Not implemented");
-        }
-
-        [Fact]
-        public void Test_GenericLeafSubGridTests_Write_BinaryFormatter()
-        {
-            double[,] ary = new double[32, 32];
-
-            BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
-
-            bf.Serialize(ms, ary);
-
-            ms.Position = 0;
-
-            double[,] ary2 = (double[,])bf.Deserialize(ms);
-
-            bool areSame = true;
-
-            for (int i = 0; i < 32*32; i++)
-            {
-                if (ary[i / 32, i% 32] != ary2[i / 32, i % 32])
-                {
-                    areSame = false;
-                    break;
-                }
-            }
-
-            Assert.True(areSame, "The two arrays are not the same");
-        }
-        */
     }
 }

@@ -60,7 +60,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new TTMFileReadException($"Failed to read vertices", E);
+        throw new TTMFileReadException("Failed to read vertices", E);
       }
     }
 
