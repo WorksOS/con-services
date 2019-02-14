@@ -53,9 +53,10 @@ namespace TCCToDataOcean
       ImportedFileType.Alignment
     };
 
-    public Migrator(IProjectRepository projectRepository, IConfigurationStore configStore,
+    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IWebApiUtils webApiUtils, IImportFile importFile, IMigrationSettings migrationSettings)
     {
+      Log = logger.CreateLogger<Migrator>();
       ProjectRepo = projectRepository;
       ConfigStore = configStore;
       FileRepo = fileRepo;
@@ -187,10 +188,11 @@ namespace TCCToDataOcean
 
       using (var fileContents = await FileRepo.GetFile(FileSpaceId, $"{file.Path}/{file.Name}"))
       {
-        var tempPath = Path.Combine(TemporaryFolder, file.ImportedFileUid);
+        var tempPath = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp", file.ProjectUid, file.ImportedFileUid);
+        Directory.CreateDirectory(tempPath);
+        
         tempFileName = Path.Combine(tempPath, file.Name);
 
-        Directory.CreateDirectory(tempPath);
 
         Log.LogInformation($"Creating temporary file {tempFileName} for file {file.ImportedFileUid}");
 

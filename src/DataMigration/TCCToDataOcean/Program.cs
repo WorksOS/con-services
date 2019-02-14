@@ -27,7 +27,7 @@ namespace TCCToDataOcean
       var migrator = serviceProvider.GetRequiredService<IMigrator>();
 
       var migrationSettings = (MigrationSettings)serviceProvider.GetRequiredService<IMigrationSettings>();
-      migrationSettings.IsDebug = true;
+      migrationSettings.IsDebug = false;
 
       var success = migrator.MigrateFilesForAllActiveProjects().Result;
     }
