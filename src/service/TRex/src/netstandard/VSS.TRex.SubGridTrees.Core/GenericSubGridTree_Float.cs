@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.SubGridTrees.Core
 {
   /// <summary>
-  /// A basic float based subgrid tree.
+  /// A basic float based sub grid tree.
   /// </summary>
   public class GenericSubGridTree_Float : GenericSubGridTree<float, GenericLeafSubGrid_Float>
   {

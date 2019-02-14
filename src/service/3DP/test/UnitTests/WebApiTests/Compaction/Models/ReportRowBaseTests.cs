@@ -1,4 +1,6 @@
-﻿using ASNodeRaptorReports;
+﻿#if RAPTOR
+using ASNodeRaptorReports;
+#endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Common;
@@ -17,8 +19,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void ShouldSerializeElevation_returns_correct_result_When_Elevation_is_set(bool reportElevation, double elevation, bool expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, reportElevation, false, false, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { Elevation = elevation }, request);
-
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Elevation = elevation }, request);
+#endif
       Assert.AreEqual(expectedResult, row.ShouldSerializeElevation());
     }
 
@@ -30,7 +35,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void ShouldSerializeCutFill_returns_correct_result_When_CutFill_is_set(bool reportCutFill, double cutFill, bool expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, false, false, false, reportCutFill, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { CutFill = cutFill }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { CutFill = cutFill }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeCutFill());
     }
@@ -43,7 +52,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void ShouldSerializeCMV_returns_correct_result_When_CMV_is_set(bool reportCmv, short cmv, bool expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, reportCmv, false, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { CMV = cmv }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Cmv = cmv }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeCMV());
     }
@@ -56,7 +69,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void ShouldSerializeMDP_returns_correct_result_When_MDP_is_set(bool reportMdp, short mdp, bool expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, reportMdp, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { MDP = mdp }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Mdp = mdp }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeMDP());
     }
@@ -69,7 +86,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void ShouldSerializePassCount_returns_correct_result_When_PassCount_is_set(bool reportPasscount, short passCount, bool expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, false, reportPasscount, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { PassCount = passCount }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { PassCount = passCount }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializePassCount());
     }
@@ -82,7 +103,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void ShouldSerializeTemperature_returns_correct_result_When_Temperature_is_set(bool reportTemperature, short temperature, bool expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, false, false, reportTemperature, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { Temperature = temperature }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Temperature = temperature }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.ShouldSerializeTemperature());
     }
@@ -93,7 +118,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void MDP_returns_original_value_divided_by_10(short mdp, double expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, true, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { MDP = mdp }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Mdp = mdp }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.MDP);
     }
@@ -104,7 +133,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void CMV_returns_original_value_divided_by_10(short cmv, double expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, true, false, false, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { CMV = cmv }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Cmv = cmv }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.CMV);
     }
@@ -115,7 +148,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     public void Temperature_returns_original_value_divided_by_10(short temperature, double expectedResult)
     {
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, null, 0, null, false, false, false, true, false, false, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+#if RAPTOR
       var row = GridRow.CreateRow(new TGridRow { Temperature = temperature }, request);
+#else
+      var row = GridRow.CreateRow(new GriddedReportDataRowBase { Temperature = temperature }, request);
+#endif
 
       Assert.AreEqual(expectedResult, row.Temperature);
     }

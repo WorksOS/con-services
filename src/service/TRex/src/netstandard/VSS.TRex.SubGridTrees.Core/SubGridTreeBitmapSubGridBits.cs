@@ -9,8 +9,8 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
-    /// Represents a subgrid in terms of one bit per cell in the subgrid. Many bit-wise operations are supported
-    /// allowing efficient manipulation of bit masks representing subgrids and trees.
+    /// Represents a sub grid in terms of one bit per cell in the sub grid. Many bit-wise operations are supported
+    /// allowing efficient manipulation of bit masks representing sub grids and trees.
     /// </summary>
     public class SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
     {
@@ -26,7 +26,7 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// The code used in serialized bit masks to indicate the number of set bits is in the range 
-        /// 1..SubGridTreeConsts.CellsPerSubgrid and so are explicitly written
+        /// 1..SubGridTreeConsts.CellsPerSubGrid and so are explicitly written
         /// </summary>
         private const byte Serialisation_ArbitraryBitsSet = 2;
 
@@ -58,8 +58,8 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool this[byte x, byte y]
         {
-            get { return BitSet(x, y); }
-            set { SetBitValue(x, y, value); }
+            get => BitSet(x, y); 
+            set => SetBitValue(x, y, value); 
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="options"></param>
         public SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions options)
         {
-            Bits = new uint[SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
+            Bits = new uint[SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
 
             if (options == SubGridBitsCreationOptions.Filled)
             {
@@ -92,13 +92,13 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits source)
         {
-          Bits = new uint[SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
+          Bits = new uint[SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
 
           Assign(source);
         }
 
         /// <summary>
-        /// Set all the bits in subgrid bits structure to 0.
+        /// Set all the bits in sub grid bits structure to 0.
         /// </summary>
         public void Clear()
         {
@@ -106,12 +106,12 @@ namespace VSS.TRex.SubGridTrees
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
-            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubgridBitsHelper.BytesInBitsArray);
+            Buffer.BlockCopy(SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
             //Array.Clear(Bits, 0, Bits.Length);
         }
 
         /// <summary>
-        /// Set all the bits in subgrid bits structure to 1.
+        /// Set all the bits in sub grid bits structure to 1.
         /// </summary>
         public void Fill()
         {
@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
-            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Fill, 0, Bits, 0, SubgridBitsHelper.BytesInBitsArray);
+            Buffer.BlockCopy(SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Fill, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="source"></param>
         public void Assign(SubGridTreeBitmapSubGridBits source)
         {
-            Buffer.BlockCopy(source.Bits, 0, Bits, 0, SubgridBitsHelper.BytesInBitsArray);
+            Buffer.BlockCopy(source.Bits, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
         }
 
         /// <summary>
@@ -337,7 +337,7 @@ namespace VSS.TRex.SubGridTrees
         {
             uint result = 0;
 
-            for (int i = 0; i < SubgridBitsHelper.BitsArrayLength; i++)
+            for (int i = 0; i < SubGridBitsHelper.BitsArrayLength; i++)
                 result += BitCounterHelper.CountSetBits(Bits[i]);
 
             return result;
@@ -389,7 +389,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Adds all the rows containing bits together as if they were numbers. This provides fast determination of empty, full or partial bitsets
+        /// Adds all the rows containing bits together as if they were numbers. This provides fast determination of empty, full or partial bit sets
         /// </summary>
         /// <returns></returns>
         public long SumBitRows()
@@ -401,40 +401,6 @@ namespace VSS.TRex.SubGridTrees
 
             return result;
         }
-
-        /*
-          // Not implemented in Next Gen. Any similar requirement can extract the bits and set them externally
-                class function TSubGridTreeLeafBitmapSubGridBits.FromVariant(const Vrnt: Variant): TSubGridTreeLeafBitmapSubGridBits;
-                var
-                  Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
-                begin
-                  Packager := TSubGridTreeLeafBitmapSubGridBitsPackager.Create;
-
-                  try
-                    Packager.FromVariant(Vrnt);
-                    Result := Packager.Bits;
-                  finally
-                    Packager.Free;
-                  end;
-                end;
-                */
-
-        /*
-       // Not implemented in Next Gen. Any similar requirement can extract the bits and set them externally
-       function TSubGridTreeLeafBitmapSubGridBits.ToVariant: Variant;
-       var
-         Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
-       begin
-         Packager := TSubGridTreeLeafBitmapSubGridBitsPackager.Create;
-
-         try
-           Packager.Bits := Self;
-           Result := Packager.ToVariant;
-         finally
-           Packager.Free;
-         end;
-       end;
-        */
 
         /// <summary>
         /// Set the bit at the location identified by [CellX, CellY] to set (1)

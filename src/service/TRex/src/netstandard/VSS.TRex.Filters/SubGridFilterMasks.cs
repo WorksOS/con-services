@@ -9,7 +9,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.Filters
 {
     /// <summary>
-    /// Methods that support the calculation of subgrid filter masks controlling which cells in a subgrid
+    /// Methods that support the calculation of sub grid filter masks controlling which cells in a sub grid
     /// are valid for processing
     /// </summary>
     public static class SubGridFilterMasks
@@ -39,17 +39,17 @@ namespace VSS.TRex.Filters
 
             ICellSpatialFilter SpatialFilter = Filter.SpatialFilter;
 
-            // Attempt to satisfy the calculation below on the basis of the subgrid wholly resizing in the override and filter spatial restrictions
+            // Attempt to satisfy the calculation below on the basis of the sub grid wholly resizing in the override and filter spatial restrictions
             if (SpatialFilter.Fence.IncludesExtent(new BoundingWorldExtent3D(OX, OY,
                                                                              OX + cellSize * SubGridTreeConsts.SubGridTreeDimension,
                                                                              OY + cellSize * SubGridTreeConsts.SubGridTreeDimension)))
             {
-                // The extent of the subgrid is wholly contained in the filter, therefore there is no need to iterate though all the cells
+                // The extent of the sub grid is wholly contained in the filter, therefore there is no need to iterate though all the cells
                 // individually...
 
                 FilterMask.Fill();
 
-                // ... unless there is an override spatial cell restriction that does not enclose the extent of the subgrid
+                // ... unless there is an override spatial cell restriction that does not enclose the extent of the sub grid
                 if (AHasOverrideSpatialCellRestriction &&
                     !AOverrideSpatialCellRestriction.Encloses(new BoundingIntegerExtent2D((int)originX, (int)originY,
                                                                                           (int)originX + SubGridTreeConsts.SubGridTreeDimension,
@@ -102,7 +102,7 @@ namespace VSS.TRex.Filters
                 }
             }
 
-            // Handle the case when the passed in subgrid is a server leaf subgrid. In this case, construct the PDMask so that
+            // Handle the case when the passed in sub grid is a server leaf sub grid. In this case, construct the PDMask so that
             // it denotes the production data cells (only) that were selected by the spatial filter.
             bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is IServerLeafSubGrid;
             if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
@@ -116,17 +116,15 @@ namespace VSS.TRex.Filters
         }
 
 
-        public static bool ConstructSubgridCellFilterMask(ILeafSubGrid SubGridAsLeaf,
-                                        ISiteModel SiteModel,
-                                        ICombinedFilter Filter,
-                                        SubGridTreeBitmapSubGridBits CellOverrideMask,
-                                        bool AHasOverrideSpatialCellRestriction,
-                                        BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
-                                        SubGridTreeBitmapSubGridBits PDMask,
-                                        SubGridTreeBitmapSubGridBits FilterMask)
+        public static bool ConstructSubGridCellFilterMask(ILeafSubGrid SubGridAsLeaf,
+                                                          ISiteModel SiteModel,
+                                                          ICombinedFilter Filter,
+                                                          SubGridTreeBitmapSubGridBits CellOverrideMask,
+                                                          bool AHasOverrideSpatialCellRestriction,
+                                                          BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
+                                                          SubGridTreeBitmapSubGridBits PDMask,
+                                                          SubGridTreeBitmapSubGridBits FilterMask)
         {
-            bool Result = true;
-
             ConstructSubgridSpatialAndPositionalMask(SubGridAsLeaf, SiteModel, Filter,
                                                      AHasOverrideSpatialCellRestriction, AOverrideSpatialCellRestriction,
                                                      PDMask, FilterMask);
@@ -155,7 +153,7 @@ namespace VSS.TRex.Filters
 
             PDMask.AndWith(FilterMask);           
 
-            return Result;
+            return true;
         }
     }
 }

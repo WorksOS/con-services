@@ -13,7 +13,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.SubGrids.GridFabric.Requests
 {
     /// <summary>
-    /// The SubGridRequests GridFabric class sends a request to the grid for a collection of subgrids to be processed according 
+    /// The SubGridRequests GridFabric class sends a request to the grid for a collection of sub grids to be processed according 
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
     /// them to the TRex node identified by the TRexNodeId property
     /// </summary>
@@ -21,11 +21,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-      // ReSharper disable once StaticMemberInGenericType
-      private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         /// <summary>
-        /// Task is the business logic that will handle the response to the subgrids request
+        /// Task is the business logic that will handle the response to the sub grids request
         /// </summary>
         public ITRexTask TRexTask;
 
@@ -40,34 +40,34 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         public Guid SiteModelID { get; set; } = Guid.Empty;
 
         /// <summary>
-        /// The request ID assigned to the activity requiring these subgrids to be requested. This ID is used to funnel 
+        /// The request ID assigned to the activity requiring these sub grids to be requested. This ID is used to funnel 
         /// traffic from the processing cluster into the correct processing context
         /// </summary>
         public Guid RequestID { get; set; } = Guid.Empty;
 
         /// <summary>
-        /// The identifier of the TRex Node that is issuing the request for subgrids and which wants to receive the processed
-        /// subgrid responses
+        /// The identifier of the TRex Node that is issuing the request for sub grids and which wants to receive the processed
+        /// sub grid responses
         /// </summary>
         public string TRexNodeId { get; set; } = string.Empty;
 
         /// <summary>
-        /// The type of grid data to be retrieved from the subgrid requests
+        /// The type of grid data to be retrieved from the sub grid requests
         /// </summary>
         public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
-        /// A subgrid bit mask tree identifying all the production data subgrids that require processing
+        /// A sub grid bit mask tree identifying all the production data sub grids that require processing
         /// </summary>
         public ISubGridTreeBitMask ProdDataMask { get; set; }
 
         /// <summary>
-        /// A subgrid bit mask tree identifying all the surveyed surface subgrids that require processing
+        /// A sub grid bit mask tree identifying all the surveyed surface sub grids that require processing
         /// </summary>
         public ISubGridTreeBitMask SurveyedSurfaceOnlyMask { get; set; }
 
         /// <summary>
-        /// The set of filters to be applied to the subgrids being processed
+        /// The set of filters to be applied to the sub grids being processed
         /// </summary>
         public IFilterSet Filters { get; set; }
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         public bool IncludeSurveyedSurfaceInformation { get; set; }
 
         /// <summary>
-        /// The design to be used in cases of cut/fill subgrid requests
+        /// The design to be used in cases of cut/fill sub grid requests
         /// </summary>
         public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
@@ -85,7 +85,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
         /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
-        /// of subgrid processing is returned as a set of partitioned results from the Broadcast() invocation.
+        /// of sub grid processing is returned as a set of partitioned results from the Broadcast() invocation.
         /// </summary>
         public SubGridRequestsBase()
         {
@@ -170,14 +170,14 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         }
 
       /// <summary>
-      /// Executes a request for a number of subgrids to be processed according to filters and other
+      /// Executes a request for a number of sub grids to be processed according to filters and other
       /// parameters
       /// </summary>
       /// <returns></returns>
       public abstract TSubGridRequestsResponse Execute();
 
       /// <summary>
-      /// Executes a request for a number of subgrids to be processed according to filters and other
+      /// Executes a request for a number of sub grids to be processed according to filters and other
       /// parameters
       /// </summary>
       /// <returns></returns>

@@ -14,7 +14,9 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -109,6 +111,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IHttpContextAccessor httpContextAccessor;
 
     protected IDataOceanClient dataOceanClient;
+    protected ITPaaSApplicationAuthentication authn;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -206,9 +209,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
-      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
-      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient=null)
+      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, 
+      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, 
+      ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
+      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, 
+      IDataOceanClient dataOceanClient= null,
+      ITPaaSApplicationAuthentication authn = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -230,6 +236,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
+      this.authn = authn;
     }
 
     /// <summary>

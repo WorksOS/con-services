@@ -8,11 +8,11 @@ using VSS.TRex.Common.Utilities;
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
   /// <summary>
-    /// TSubGridSegmentIteratorStateIndex records iteration progress across a subgrid
+    /// TSubGridSegmentIteratorStateIndex records iteration progress across a sub grid
     /// </summary>
     public class IteratorStateIndex : IIteratorStateIndex
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(IteratorStateIndex));
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<IteratorStateIndex>();
 
         public DateTime StartSegmentTime { get; set; } = DateTime.MinValue;
         public DateTime EndSegmentTime { get; set; } = DateTime.MaxValue;
@@ -199,7 +199,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (IterationDirection != IterationDirection.Forwards)
             {
-                Log.LogCritical("Extension of segment list only valid if iterator is travelling forwards through the list");
+                Log.LogCritical("Extension of segment list only valid if iterator is traveling forwards through the list");
                 return;
             }
 

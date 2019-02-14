@@ -36,22 +36,12 @@ namespace VSS.TRex.GridFabric
     /// <summary>
     /// The cluster group of nodes in the grid that are available for responding to design/profile requests
     /// </summary>
-    private IClusterGroup _group;
-
-    protected IClusterGroup _Group
-    {
-      get { return _group; }
-    }
+    protected IClusterGroup _Group { get; private set; }
 
     /// <summary>
     /// The compute interface from the cluster group projection
     /// </summary>
-    private ICompute _compute;
-
-    protected ICompute _Compute
-    {
-      get { return _compute; }
-    }
+    protected ICompute _Compute { get; private set; }
 
     public string Role { get; set; } = "";
 
@@ -111,7 +101,7 @@ namespace VSS.TRex.GridFabric
     }
 
     /// <summary>
-    /// Acquires references to group and compute topology projections on the Ignite grid that may accept requests from this requestor
+    /// Acquires references to group and compute topology projections on the Ignite grid that may accept requests from this request
     /// </summary>
     public void AcquireIgniteTopologyProjections()
     {
@@ -123,21 +113,21 @@ namespace VSS.TRex.GridFabric
         }
 
         //_group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
-        _group = _ignite?.GetCluster().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
+        _Group = _ignite?.GetCluster().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
 
-        if (_group == null)
+        if (_Group == null)
         {
           Log.LogInformation($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
         }
 
-        if (_group?.GetNodes().Count == 0)
+        if (_Group?.GetNodes().Count == 0)
         {
           Log.LogInformation($"_group cluster topology is empty for role {Role} on grid {GridName}");
         }
 
-        _compute = _group?.GetCompute();
+        _Compute = _Group?.GetCompute();
 
-        if (_compute == null)
+        if (_Compute == null)
         {
           Log.LogInformation($"_compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
         }

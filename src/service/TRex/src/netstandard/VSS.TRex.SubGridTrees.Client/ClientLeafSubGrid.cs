@@ -14,9 +14,9 @@ namespace VSS.TRex.SubGridTrees.Client
 {
     /// <summary>
     /// ClientLeafSubGrid is a local base class for sub grid tree
-    /// leaf subgrid derivatives. This class defines support for assigning filtered
+    /// leaf sub grid derivatives. This class defines support for assigning filtered
     /// values to cells in the grid, and also adds a cache map to it. The cache
-    /// map records which cells in the subgrid contain information that has been
+    /// map records which cells in the sub grid contain information that has been
     /// retrieved from the server.
     /// </summary>
     public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
@@ -29,16 +29,16 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
         /// </summary>
-        public GridDataType GridDataType { get { return _gridDataType; } } 
+        public GridDataType GridDataType => _gridDataType;
 
         /// <summary>
-        /// CellSize is a copy of the cell size from the parent subgrid. It is replicated here
+        /// CellSize is a copy of the cell size from the parent sub grid. It is replicated here
         /// to remove SubGridTree binding in other processing contexts
         /// </summary>
         public double CellSize { get; set; }
 
         /// <summary>
-        /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent subgrid. It is replicated here
+        /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent sub grid. It is replicated here
         ///to remove SubGridTree binding in other processing contexts
         /// </summary>
         public uint IndexOriginOffset { get; set; }
@@ -52,15 +52,15 @@ namespace VSS.TRex.SubGridTrees.Client
 
         public abstract bool LeafContentEquals(IClientLeafSubGrid other);
 
-      /// <summary>
-        /// The requested display mode driving the request of these subgrids of data
+        /// <summary>
+        /// The requested display mode driving the request of these sub grids of data
         /// </summary>
-        public DisplayMode ProfileDisplayMode { get; set; }
+        protected DisplayMode ProfileDisplayMode { get; set; }
 
         /// <summary>
-        /// A map of flags indicating which grid data types are supported by the intermediary subgrid result cache
+        /// A map of flags indicating which grid data types are supported by the intermediary sub grid result cache
         /// </summary>
-        public static bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
+        public static readonly bool[] SupportsAssignationFromCachedPreProcessedClientSubGrid = // GridDataType
         {
           false, // All = $00000000;
           true,  // CCV = $00000001;
@@ -78,8 +78,8 @@ namespace VSS.TRex.SubGridTrees.Client
           true, // HeightAndTime = $0000000D;
 
           // Note: Composite heights are used for profiling only 
-          // These subgrids are very large and profiling heavily optimizes for specific cells so
-          // don't cache these subgrids
+          // These sub grids are very large and profiling heavily optimizes for specific cells so
+          // don't cache these sub grids
           false, // CompositeHeights = $0000000E;
           true,  // MDP = $0000000F;
           true,  // MDPPercent = $00000010;
@@ -97,7 +97,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
           // SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
           // used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
-          // general subgrid result cache along with HeightAndTime results that are derived from production data
+          // general sub grid result cache along with HeightAndTime results that are derived from production data
           // and SurveyedSurfaceHeightAndTime results
           true, // SurveyedSurfaceHeightAndTime = 0x0000001C
         };
@@ -113,8 +113,8 @@ namespace VSS.TRex.SubGridTrees.Client
         public SubGridTreeBitmapSubGridBits FilterMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
-        /// Constructor the the base client subgrid. This decorates the standard (owner, parent, level)
-        /// constructor from the base with the cell size and index origin offset parameters from the subgrid tree
+        /// Constructor the the base client sub grid. This decorates the standard (owner, parent, level)
+        /// constructor from the base with the cell size and index origin offset parameters from the sub grid tree
         /// this leaf is derived from.
         /// </summary>
         /// <param name="owner"></param>
@@ -138,7 +138,7 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Assign the result of filtering a cell (based on filtering and other criteria) into a cell in this client leaf subgrid
+        /// Assign the result of filtering a cell (based on filtering and other criteria) into a cell in this client leaf sub grid
         /// </summary>
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
@@ -149,8 +149,8 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Determine if the value proposed for assignation to a cell in this client leaf subgrid is null with respect
-        /// to the nullability criteria of that client leaf subgrid
+        /// Determine if the value proposed for assignation to a cell in this client leaf sub grid is null with respect
+        /// to the nullability criteria of that client leaf sub grid
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
@@ -194,16 +194,16 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
+        /// Assign cell information from a previously cached result held in the general sub grid result cache
+        /// using the supplied map to control which cells from the caches sub grid should be copied into this
         /// client leaf sub grid
         /// </summary>
         /// <param name="source"></param>
         public abstract void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source);
    
         /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
+        /// Assign cell information from a previously cached result held in the general sub grid result cache
+        /// using the supplied map to control which cells from the caches sub grid should be copied into this
         /// client leaf sub grid
         /// </summary>
         /// <param name="source"></param>
@@ -211,7 +211,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public abstract void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
         /// <summary>
-        /// Assigns the state of one client leaf sub grid to this client leaf subgrid
+        /// Assigns the state of one client leaf sub grid to this client leaf sub grid
         /// Note: The cell values are explicitly NOT copied in this operation
         /// </summary>
         /// <param name="source"></param>
@@ -231,7 +231,7 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Dumps the contents of this client leaf subgrid into the log in a human readable form
+        /// Dumps the contents of this client leaf sub grid into the log in a human readable form
         /// </summary>
         /// <param name="title"></param>
         public virtual void DumpToLog(string title)
@@ -267,7 +267,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
             if ((GridDataType)reader.ReadInt32() != GridDataType)
             {
-                Debug.Assert(false, "GridDataType in stream does not match GridDataType of local subgrid instance");
+                Debug.Assert(false, "GridDataType in stream does not match GridDataType of local sub grid instance");
             }
 
             CellSize = reader.ReadDouble();
@@ -291,13 +291,13 @@ namespace VSS.TRex.SubGridTrees.Client
       }
 
       /// <summary>
-      /// Facades the OriginX property of this subgrid for use in the spatial caching implementation
+      /// Facades the OriginX property of this sub grid for use in the spatial caching implementation
       /// </summary>
-      public uint CacheOriginX { get => OriginX; }
+      public uint CacheOriginX => OriginX;
 
       /// <summary>
-      /// Facades the OriginY property of this subgrid for use in the spatial caching implementation
+      /// Facades the OriginY property of this sub grid for use in the spatial caching implementation
       /// </summary>
-      public uint CacheOriginY { get => OriginY; }
+      public uint CacheOriginY => OriginY; 
     }
 }

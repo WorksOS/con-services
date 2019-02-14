@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+#if RAPTOR
 using ASNodeDecls;
 using ASNodeRaptorReports;
+#endif
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -10,6 +14,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -34,22 +39,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
-
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET"), out var useTrexGateway);
-
-        MemoryStream responseData;
-        var success = 1;
 
         if (useTrexGateway)
         {
-          responseData =
-            (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
+#endif
+          var responseData = trexCompactionDataProxy
+            .SendStationOffsetReportRequest(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), customHeaders).Result;
+
           return responseData.Length > 0
-            ? ConvertStationOffsetResult(request, responseData)
+            ? ConvertTRexStationOffsetResult(request, responseData)
             : CreateNullStationOffsetReturnedResult();
+#if RAPTOR
         }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
@@ -63,13 +69,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         "Null stationOffset stream returned");
     }
 
+    private CompactionReportResult ConvertTRexStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
+    {
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+    }
+
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(CompactionReportStationOffsetRequest request)
     {
       var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
       var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
       var userPreferences =
-        ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
+        ExportRequestHelper.ConvertToRaptorUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
       var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
         request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
@@ -113,7 +126,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       throw CreateServiceException<CompactionReportStationOffsetExecutor>();
     }
 
-
     private CompactionReportResult ConvertStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
     {
       log.LogDebug($"{nameof(ConvertStationOffsetResult)}");
@@ -148,10 +160,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
+#endif
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

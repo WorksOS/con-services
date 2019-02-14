@@ -10,7 +10,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CombinedFilter : ICombinedFilter
   {
-/// <summary>
+    /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     public ICellPassAttributeFilter AttributeFilter { get; set; }
@@ -39,17 +39,6 @@ namespace VSS.TRex.Filters
       var combinedFilter = new CombinedFilter();
       configure(combinedFilter);
       return combinedFilter;
-    }
-
-    /// <summary>
-    /// Creates a new combined filter based on a supplied spatial filter and a newly created
-    /// attribute filter
-    /// </summary>
-    /// <param name="spatialFilter"></param>
-    public CombinedFilter(ICellSpatialFilter spatialFilter)
-    {
-      AttributeFilter = new CellPassAttributeFilter();
-      SpatialFilter = spatialFilter;
     }
 
     public CombinedFilter(IBinaryRawReader reader)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Policy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
@@ -62,7 +61,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="endY"></param>
     /// <returns></returns>
     [HttpGet("compositeelevations/{siteModelID}")]
-    public JsonResult ComputeCompositeElevaionProfile(string siteModelID,
+    public JsonResult ComputeCompositeElevationProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
@@ -185,7 +184,6 @@ namespace VSS.TRex.Webtools.Controllers
       var request = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
 
       var Response = request.Execute(arg);
-
       if (Response == null)
         return new JsonResult(@"Profile response is null");
 

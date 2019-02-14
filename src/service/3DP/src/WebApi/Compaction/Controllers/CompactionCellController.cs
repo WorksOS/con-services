@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -68,7 +71,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
+#if RAPTOR
       return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient).Process(request) as CompactionCellDatumResult;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
     /// <summary>
@@ -110,7 +118,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2Executor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Build<CompactionPatchV2Executor>(LoggerFactory,
+#if RAPTOR
+          RaptorClient, 
+#endif
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(patchRequest));
 
       return Ok(v2PatchRequestResponse);

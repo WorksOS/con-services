@@ -7,8 +7,13 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Gateway.WebApi.ActionServices;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -31,32 +36,52 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get station-offset report stream for the specified project, filter etc.
     /// </summary>
-    /// <param name="stationOffsetRequest"></param>
+    /// <param name="reportStationOffsetRequest"></param>
+    /// <param name="reportDataValidationUtility"></param>
     /// <returns></returns>
     [Route("api/v1/report/stationoffset")]
     [HttpPost]
-    public FileResult PostStationOffsetReport([FromBody] CompactionReportStationOffsetRequest stationOffsetRequest)
+    public FileResult PostStationOffsetReport(
+      [FromBody] CompactionReportStationOffsetTRexRequest reportStationOffsetRequest,
+      [FromServices] IReportDataValidationUtility reportDataValidationUtility)
     {
       Log.LogInformation($"{nameof(PostStationOffsetReport)}: {Request.QueryString}");
 
-      stationOffsetRequest.Validate();
+      reportStationOffsetRequest.Validate();
+      reportDataValidationUtility.ValidateData((object) reportStationOffsetRequest);
+    
+      var stationOffsetReportDataResult = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<StationOffsetReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(reportStationOffsetRequest) as GriddedReportDataResult);
 
-      throw new ServiceException(HttpStatusCode.NotImplemented, 
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"StationOffset report has not been implemented in Trex yet. ProjectUid: {stationOffsetRequest.ProjectUid}"));
+      if (stationOffsetReportDataResult?.GriddedData == null)
+      {
+        var code = stationOffsetReportDataResult == null ? HttpStatusCode.BadRequest : HttpStatusCode.NoContent;
+        var exCode = stationOffsetReportDataResult == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ValidationError;
+
+        throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get stationOffset report data for projectUid: {reportStationOffsetRequest.ProjectUid}"));
+      }
+
+      return new FileStreamResult(new MemoryStream(stationOffsetReportDataResult?.GriddedData), "application/octet-stream");
     }
 
     /// <summary>
     /// Get grid report for the specified project, filter etc.
     /// </summary>
     /// <param name="reportGridRequest"></param>
+    /// <param name="reportDataValidationUtility"></param>
     /// <returns></returns>
     [Route("api/v1/report/grid")]
     [HttpPost]
-    public FileResult PostGriddedReport([FromBody] CompactionReportGridRequest reportGridRequest)
+    public FileResult PostGriddedReport(
+      [FromBody] CompactionReportGridTRexRequest reportGridRequest,
+      [FromServices] IReportDataValidationUtility reportDataValidationUtility)
     {
       Log.LogInformation($"{nameof(PostGriddedReport)}: {Request.QueryString}");
 
       reportGridRequest.Validate();
+      reportDataValidationUtility.ValidateData((object)reportGridRequest);
 
       var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -73,5 +98,35 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       return new FileStreamResult(new MemoryStream(griddedReportDataResult?.GriddedData), "application/octet-stream");
     }
+
+    //private void ValidateDataAvailable(object compactionReportTRexRequest)
+    //{
+    //  var request = compactionReportTRexRequest as CompactionReportTRexRequest;
+    //  if (DIContext.Obtain<ISiteModels>().GetSiteModel(request.ProjectUid, false) == null)
+    //  {
+    //    throw new ServiceException(HttpStatusCode.BadRequest,
+    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+    //        $"Project: {request.ProjectUid} is not found."));
+    //  }
+
+    //  if (request.CutFillDesignUid.HasValue &&
+    //      DIContext.Obtain<IDesignManager>().List(request.ProjectUid).Locate(request.CutFillDesignUid.Value) == null)
+    //  {
+    //    throw new ServiceException(HttpStatusCode.BadRequest,
+    //      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+    //        $"CutFill design {request.CutFillDesignUid.Value} is not found."));
+    //  }
+
+    //  if (compactionReportTRexRequest.GetType() == typeof(CompactionReportStationOffsetTRexRequest))
+    //  {
+    //    var alignmentUid = (compactionReportTRexRequest as CompactionReportStationOffsetTRexRequest).AlignmentDesignUid;
+    //    if (DIContext.Obtain<IAlignmentManager>().List(request.ProjectUid).Locate(alignmentUid) == null)
+    //    {
+    //      throw new ServiceException(HttpStatusCode.BadRequest,
+    //        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+    //          $"Alignment design {alignmentUid} is not found."));
+    //    }
+    //  }
+    //}
   }
 }

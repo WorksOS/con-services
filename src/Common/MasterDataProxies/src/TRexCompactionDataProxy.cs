@@ -269,7 +269,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="stationOffsetRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+    public Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetTRexRequest stationOffsetRequest,
       IDictionary<string, string> customHeaders = null)
     {
       var request = JsonConvert.SerializeObject(stationOffsetRequest);
@@ -285,7 +285,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="gridRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<Stream> SendGridReportRequest(CompactionReportGridRequest gridRequest,
+    public Task<Stream> SendGridReportRequest(CompactionReportGridTRexRequest gridRequest,
       IDictionary<string, string> customHeaders = null)
     {
       var request = JsonConvert.SerializeObject(gridRequest);

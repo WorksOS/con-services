@@ -41,6 +41,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// Reads a TrimbleTINModel using the provided reader
     /// </summary>
     /// <param name="reader"></param>
+    /// <param name="bytes"></param>
     public void Read(BinaryReader reader, byte[] bytes)
     {
       string LoadErrMsg = "";
@@ -51,11 +52,11 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
         Header.Read(reader);
 
-        // Commented out for now...
-        //if (FileSignatureToANSIString(FHeader.FileSignature) != kTTMFileIdentifier)
-        //{
-        //    Raise ETTMReadError.Create('File is not a Trimble TIN Model.');
-        //}
+        var identifier = System.Text.Encoding.ASCII.GetString(Header.FileSignature);
+        if (identifier != Consts.TTMFileIdentifier)
+        {
+          throw new TTMFileReadException("File is not a Trimble TIN Model.");
+        }
 
         // Check file version
         if (Header.FileMajorVersion != Consts.TTMMajorVersion
@@ -64,7 +65,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
           throw new TTMFileReadException($"TTM_Optimized.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
         }
 
-        // ModelName = (String)(InternalNameToANSIString(fHeader.DTMModelInternalName));
+        // ModelName = (String)(InternalNameToANSIString(Header.DTMModelInternalName));
         // Not handled for now
         ModelName = "Reading not implemented";
 
@@ -100,6 +101,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// Loads a TrimbleTINModel from a stream
     /// </summary>
     /// <param name="stream"></param>
+    /// <param name="bytes"></param>
     public void LoadFromStream(Stream stream, byte [] bytes)
     {
       using (BinaryReader reader = new BinaryReader(stream))

@@ -13,8 +13,6 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class SegmentRetirementQueueItem : IBinarizable, IFromToBinary
   {
-    private ISubGridSpatialAffinityKeyFactory KeyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
-
     private const byte VERSION_NUMBER = 1;
     /// <summary>
     /// The project this segment retirement queue item refers to
@@ -66,6 +64,8 @@ namespace VSS.TRex.TAGFiles.Models
       {
         int numKeys = reader.ReadInt();
         SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
+
+        var KeyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
 
         for (int i = 0; i < numKeys; i++)
         {

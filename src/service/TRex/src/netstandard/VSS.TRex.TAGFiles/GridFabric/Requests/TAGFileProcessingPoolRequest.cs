@@ -1,7 +1,8 @@
 ﻿using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Requests;
 
-namespace VSS.TRex.GridFabric.Requests
+namespace VSS.TRex.TAGFiles.GridFabric.Requests
 {
     /// <summary>
     ///  Represents a request that can be made against the design profiler cluster group in the TRex grid

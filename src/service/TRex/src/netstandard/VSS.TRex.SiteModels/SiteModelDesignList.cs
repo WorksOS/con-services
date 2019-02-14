@@ -1,14 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels
 {
   public class SiteModelDesignList : List<ISiteModelDesign>, ISiteModelDesignList
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelDesignList>();
+
+    private const int READER_WRITER_VERSION = 1;
+    private const string LIST_STREAM_NAME = "SiteModelDesigns";
 
     /// <summary>
     /// Indexer supporting locating designs by the design name
@@ -42,20 +51,69 @@ namespace VSS.TRex.SiteModels
       return design;
     }
 
-    public void InitialiseWorkingExtents()
+    /// <summary>
+    /// Saves the content of the proofing run list into the persistent store
+    /// Note: It uses a storage proxy delegate to support the TAG file ingest pipeline that creates transactional storage
+    /// proxies to manage graceful rollback of changes if needed
+    /// </summary>
+    public void SaveToPersistentStore(Guid projectUid, IStorageProxy storageProxy)
     {
-      lock (this)
+      storageProxy.WriteStreamToPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, this.ToStream(), this);
+    }
+
+    /// <summary>
+    /// Loads the content of the proofing run list from the persistent store. If there is no item in the persistent store containing
+    /// proofing runs for this site model them return an empty list.
+    /// </summary>
+    public void LoadFromPersistentStore(Guid projectUid)
+    {
+      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out MemoryStream ms);
+      if (ms == null)
+        return;
+
+      using (ms)
       {
-        ForEach(x => x.WorkingExtents.SetInverted());
+        this.FromStream(ms);
       }
     }
 
-    public void AssignWorkingExtentsToExtents()
+    /// <summary>
+    /// Deserializes the list of proofing runs using the given reader
+    /// </summary>
+    /// <param name="reader"></param>
+
+    public void Read(BinaryReader reader)
     {
-      lock (this)
+      int version = reader.ReadInt32();
+      if (version != READER_WRITER_VERSION)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION, version);
+
+      int count = reader.ReadInt32();
+      Capacity = count;
+
+      for (int i = 0; i < count; i++)
       {
-        ForEach(x => x.Extents.Assign(x.WorkingExtents));
+        string name = reader.ReadString();
+        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        extents.Read(reader);
+
+        Add(new SiteModelDesign(name, extents));
       }
     }
+
+    public void Write(BinaryWriter writer)
+    {
+      writer.Write(READER_WRITER_VERSION);
+
+      writer.Write((int)Count);
+
+      for (int i = 0; i < Count; i++)
+      {
+        writer.Write(this[i].Name);
+        this[i].Extents.Write(writer);
+      }
+    }
+
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

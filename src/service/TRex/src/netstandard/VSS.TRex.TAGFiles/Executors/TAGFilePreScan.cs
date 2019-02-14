@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
@@ -27,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Executors
     public string RadioType { get; set; } = string.Empty;
     public string RadioSerial { get; set; } = string.Empty;
 
-    public byte MachineType { get; set; } = CellPassConsts.MachineTypeNull;
+    public MachineType MachineType { get; set; } = CellPassConsts.MachineTypeNull;
 
     public string MachineID { get; set; } = string.Empty;
     public string HardwareID { get; set; } = string.Empty;
@@ -35,6 +37,8 @@ namespace VSS.TRex.TAGFiles.Executors
     public string ApplicationVersion { get; set; } = string.Empty;
 
     public string DesignName { get; set; } = string.Empty;
+
+    public MachineControlPlatformType PlatformType {get; set;}
 
 
     public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
@@ -86,6 +90,7 @@ namespace VSS.TRex.TAGFiles.Executors
       HardwareID = Processor.HardwareID;
       ApplicationVersion = Processor.ApplicationVersion;
       DesignName = Processor.Design;
+      PlatformType = Processor.GetPlatformType();
     }
 
     /// <summary>

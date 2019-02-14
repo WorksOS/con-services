@@ -3,7 +3,6 @@ using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Cells
 {
@@ -29,90 +28,6 @@ namespace VSS.TRex.Cells
   public struct CellPass
   {
     /// <summary>
-    /// Helper class that maps the two bites in the GPSMode byte to the four pass type values
-    /// </summary>
-    public static class PassTypeHelper
-    {
-      /// <summary>
-      /// Sets the appropriate bits in the GPSModeStore corresponding to the desired pass type
-      /// </summary>
-      /// <param name="value"></param>
-      /// <param name="_passType"></param>
-      /// <returns></returns>
-      public static byte SetPassType(byte value, PassType _passType)
-      {
-        byte result = value;
-
-        switch (_passType)
-        {
-          case PassType.Front: // val 0
-						{
-              result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit6);
-              result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit7);
-              break;
-            }
-          case PassType.Rear: // val 1
-            {
-							result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit6);
-							result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit7);
-							break;
-            }
-          case PassType.Track: // val 2
-            {
-              result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit6);
-              result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit7);
-              break;
-            }
-          case PassType.Wheel: // val 3
-            {
-              result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit6);
-              result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit7);
-              break;
-            }
-          default:
-            {
-              throw new ArgumentException($"Unknown pass type supplied to SetPassType {_passType}", "_passType");
-            }
-        }
-
-        return result;
-      }
-
-      /// <summary>
-      /// Extracts the PassType enum value from the bi flags used to represent it
-      /// </summary>
-      /// <param name="value"></param>
-      /// <returns></returns>
-      public static PassType GetPassType(byte value)
-      {
-        byte testByte = 0;
-
-        if ((value & (1 << (int)GPSFlagBits.GPSSBit6)) != 0)
-        {
-          testByte = 1;
-        }
-        if ((value & (1 << (int)GPSFlagBits.GPSSBit7)) != 0)
-        {
-          testByte += 2;
-        }
-
-        return (PassType)testByte;
-      }
-
-      /// <summary>
-      /// Determines if a PassType encoded in the PassType enum is a member of the 
-      /// PassTypeSet flag enum
-      /// </summary>
-      /// <param name="PassTypeSet"></param>
-      /// <param name="PassType"></param>
-      /// <returns></returns>
-      public static bool PassTypeSetContains(PassTypeSet PassTypeSet, PassType PassType)
-      {
-        return ((int)PassTypeSet & (1 << (int) PassType)) != 0;
-      }
-    }
-
-    /// <summary>
     /// GPSModeStore stores the GPS mode in the lowest 4 bits of the GPSModeStore byte. The remaining 4 bits are
     /// available for use, probably as flags.
     /// </summary>
@@ -123,8 +38,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     public GPSMode gpsMode
     {
-      get { return (GPSMode)(GPSModeStore & 0x0F); }
-      set { GPSModeStore = (byte)((GPSModeStore & 0xF0) | ((byte)value & 0x0F)); }
+      get => (GPSMode)(GPSModeStore & CellPassConsts.GPSModeStoreMask); 
+      set => GPSModeStore = (byte)((GPSModeStore & ~CellPassConsts.GPSModeStoreMask) | ((byte)value & CellPassConsts.GPSModeStoreMask)); 
     }
 
     /// <summary>
@@ -132,8 +47,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     public bool HalfPass
     {
-      get { return (GPSModeStore & (1 << (int)GPSFlagBits.GPSSBitHalfPass)) != 0; }
-      set { GPSModeStore = (byte)(value ? GPSModeStore | 1 << (int)GPSFlagBits.GPSSBitHalfPass : GPSModeStore & ~(1 << (int)GPSFlagBits.GPSSBitHalfPass)); }
+      get => (GPSModeStore & (1 << (int)GPSFlagBits.GPSSBitHalfPass)) != 0; 
+      set => GPSModeStore = (byte)(value ? GPSModeStore | 1 << (int)GPSFlagBits.GPSSBitHalfPass : GPSModeStore & ~(1 << (int)GPSFlagBits.GPSSBitHalfPass)); 
     }
 
     /// <summary>
@@ -141,15 +56,15 @@ namespace VSS.TRex.Cells
     /// </summary>
     public PassType PassType
     {
-      get { return PassTypeHelper.GetPassType(GPSModeStore); }
-      set { GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); }
+      get => PassTypeHelper.GetPassType(GPSModeStore); 
+      set => GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); 
     }
 
     /// <summary>
     /// The external descriptor for a machine within a project. This is immutable and once a machine is created in the project. The machine
     /// may always be referred to via this descriptor
     /// </summary>
-    /// Note: This is removed in favour of CellPasses only ever containing the internal sitemodel machine index
+    /// Note: This is removed in favor of CellPasses only ever containing the internal site model machine index
     /// public long MachineID { get; set; }
 
     /// <summary>
@@ -209,7 +124,7 @@ namespace VSS.TRex.Cells
     public short MDP { get; set; }
 
     /// <summary>
-    /// The measured CCA (Caterpillar COmpaction Algorithm) value, for this pass
+    /// The measured CCA (Caterpillar Compaction Algorithm) value, for this pass
     /// </summary>
     public byte CCA { get; set; }
 
@@ -337,7 +252,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -358,7 +273,7 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Deserializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
@@ -366,7 +281,7 @@ namespace VSS.TRex.Cells
       GPSModeStore = reader.ReadByte();
       InternalSiteModelMachineIndex = reader.ReadShort();
       Height = reader.ReadFloat();
-      Time = DateTime.FromFileTime(reader.ReadLong());
+      Time = DateTime.FromBinary(reader.ReadLong());
       CCV = reader.ReadShort();
       RadioLatency = reader.ReadByte();
       RMV = reader.ReadShort();

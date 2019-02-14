@@ -4,11 +4,13 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Machines;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
@@ -18,8 +20,10 @@ using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -28,14 +32,17 @@ namespace VSS.TRex.Tests.TestFixtures
     public DITAGFileAndSubGridRequestsFixture() : base()
     {
       // Provide the surveyed surface request mock
-      Mock<ISurfaceElevationPatchRequest> surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
+      var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
       surfaceElevationPatchRequest.Setup(x => x.Execute(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(new ClientHeightAndTimeLeafSubGrid());
 
       // Provide the mocks for spatial caching
-      Mock<ITRexSpatialMemoryCacheContext> tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
+      var tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
 
-      Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
+      var tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
+
+      var mockImmutableSpatialAffinityPartitionMap = new Mock<IImmutableSpatialAffinityPartitionMap>();
+      mockImmutableSpatialAffinityPartitionMap.Setup(x => x.PrimaryPartitions()).Returns(Enumerable.Range(0, (int) Consts.NUMPARTITIONS_PERDATACACHE).Select(x => true).ToArray());
 
       DIBuilder
         .Continue()
@@ -63,11 +70,19 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
           factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder) => new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder)))
 
+        // Register a DI factory for ImmutableSpatialAffinityPartitionMap to represent an affinity partition map with just one partition
+        .Add(x => x.AddSingleton<IImmutableSpatialAffinityPartitionMap>(mockImmutableSpatialAffinityPartitionMap.Object))
+
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+
         .Complete();
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
+      base.Dispose();
+
       DIBuilder.Eject();
   }
 
@@ -86,7 +101,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
@@ -108,6 +123,15 @@ namespace VSS.TRex.Tests.TestFixtures
 
       targetSiteModel.Should().NotBe(null);
       ProcessedTasks.Count.Should().Be(_tagFiles.Count);
+
+      // Cause the latest cell pass information to be created for all sub grids
+      targetSiteModel.Grid.Root.ScanSubGrids(targetSiteModel.Grid.FullCellExtent(),
+        leaf =>
+        {
+          if (leaf is IServerLeafSubGrid Leaf)
+            Leaf.ComputeLatestPassInformation(true, DIContext.Obtain<ISiteModels>().StorageProxy);
+          return true;
+        });
 
       return targetSiteModel;
     }

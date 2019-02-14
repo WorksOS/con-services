@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+#if RAPTOR
 using ASNodeDecls;
-using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
+using VSS.Productivity3D.Common.Proxies;
+#endif
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -32,11 +34,12 @@ namespace VSS.Productivity3D.Common.Executors
       try
       {
         var request = CastRequestObjectTo<TileRequest>(item);
-
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
           var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
 
           using (var ms = new MemoryStream())
@@ -44,16 +47,18 @@ namespace VSS.Productivity3D.Common.Executors
             fileResult.CopyTo(ms);
             return new TileResult(ms.ToArray());
           }
+#if RAPTOR
         }
 
         return ProcessWithRaptor(request);
+#endif
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
     }
-
+#if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(TileRequest request)
     {
       RaptorConverters.convertGridOrLLBoundingBox(
@@ -113,10 +118,12 @@ namespace VSS.Productivity3D.Common.Executors
       log.LogDebug("Raptor result for Tile: " + raptorResult);
       return new TileResult(tile.ToArray(), raptorResult != TASNodeErrorStatus.asneOK);
     }
-
+#endif
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

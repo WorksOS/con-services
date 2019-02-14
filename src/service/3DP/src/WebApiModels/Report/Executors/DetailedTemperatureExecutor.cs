@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+#if RAPTOR
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -20,9 +22,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       var request = CastRequestObjectTo<TemperatureDetailsRequest>(item);
 
       var temperatureTargets = request.Targets.Select(t => (int) t).ToArray(); // already converted to 10ths 
-
+#if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_TEMPERATURE"))
       {
+#endif
         var temperatureDetailsRequest = new TemperatureDetailRequest(
           request.ProjectUid,
           request.Filter,
@@ -31,6 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var temperatureDetailsResult = trexCompactionDataProxy.SendTemperatureDetailsRequest(temperatureDetailsRequest, customHeaders).Result as TemperatureDetailResult;
 
         return new CompactionTemperatureDetailResult(temperatureDetailsResult);
+#if RAPTOR
       }
 
       var filter = RaptorConverters.ConvertFilter(request.Filter);
@@ -51,6 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         return new CompactionTemperatureDetailResult(temperatureDetails.Percents);
 
       throw CreateServiceException<DetailedTemperatureExecutor>((int)raptorResult);
+#endif
     }
   }
 }

@@ -225,6 +225,8 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
 
     public void ClearDynamic()
     {
+      if (DynamicCount == 0) return;
+
       names.RemoveRange(names.Count - DynamicCount, DynamicCount);
       values.RemoveRange(values.Count - DynamicCount, DynamicCount);
       DynamicCount = 0;

@@ -18,6 +18,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;

@@ -3,17 +3,26 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using VSS.TRex.Designs.TTM.Exceptions;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
 {
   public class TrimbleTINModel : TriangleMesh
   {
-    private string FModelName;
-    private TTMEdges FEdges;
-    private TTMStartPoints FStartPoints;
-    private TTMHeader FHeader;
-    private bool FLoading;
+    public string ModelName { get; set; }
+
+    public TTMStartPoints StartPoints { get; private set; }
+
+    public TTMEdges Edges { get; private set; }
+
+    public TTMHeader Header = TTMHeader.NewHeader(); 
+
+    public double CoordinateResolution { get; set; }
+    public double ElevationResolution { get; set; }
+
+    public bool Loading { get; private set; }
+
 
     protected short CalcFloatSize(double MaxValue, double Resolution)
     {
@@ -36,38 +45,37 @@ namespace VSS.TRex.Designs.TTM
       triangles = new TTMTriangles();
     }
 
-
     protected override void SnapToOutputResolution()
     {
       SetUpSizes();
-      (Vertices as TTMVertices).SnapToOutputResolution(FHeader);
+      (Vertices as TTMVertices).SnapToOutputResolution(Header);
     }
 
     public TrimbleTINModel() : base()
     {
-      FEdges = new TTMEdges();
-      FStartPoints = new TTMStartPoints();
+      Edges = new TTMEdges();
+      StartPoints = new TTMStartPoints();
       CoordinateResolution = Consts.DefaultCoordinateResolution;
       ElevationResolution = Consts.DefaultElevationResolution;
     }
 
-    public void SetUpSizes()
+    private void SetUpSizes()
     {
       double MinElevation = 0, MaxElevation = 0;
 
-      Vertices.GetLimits(ref FHeader.MinimumEasting, ref FHeader.MinimumNorthing, ref MinElevation,
-        ref FHeader.MaximumEasting, ref FHeader.MaximumNorthing, ref MaxElevation);
+      Vertices.GetLimits(ref Header.MinimumEasting, ref Header.MinimumNorthing, ref MinElevation,
+        ref Header.MaximumEasting, ref Header.MaximumNorthing, ref MaxElevation);
 
-      FHeader.EastingOffsetValue = (FHeader.MinimumEasting + FHeader.MaximumEasting) / 2;
-      FHeader.NorthingOffsetValue = (FHeader.MinimumNorthing + FHeader.MaximumNorthing) / 2;
-      FHeader.VertexCoordinateSize = (byte) CalcFloatSize(Math.Max(
-          FHeader.MaximumEasting - FHeader.EastingOffsetValue,
-          FHeader.MaximumNorthing - FHeader.NorthingOffsetValue),
+      Header.EastingOffsetValue = (Header.MinimumEasting + Header.MaximumEasting) / 2;
+      Header.NorthingOffsetValue = (Header.MinimumNorthing + Header.MaximumNorthing) / 2;
+      Header.VertexCoordinateSize = (byte) CalcFloatSize(Math.Max(
+          Header.MaximumEasting - Header.EastingOffsetValue,
+          Header.MaximumNorthing - Header.NorthingOffsetValue),
         CoordinateResolution);
-      FHeader.VertexValueSize = (byte) CalcFloatSize(Math.Max(Math.Abs(MinElevation), Math.Abs(MaxElevation)),
+      Header.VertexValueSize = (byte) CalcFloatSize(Math.Max(Math.Abs(MinElevation), Math.Abs(MaxElevation)),
         ElevationResolution);
-      FHeader.VertexNumberSize = (byte) CalcIntSize(Vertices.Count);
-      FHeader.TriangleNumberSize = (byte) CalcIntSize(Triangles.Count);
+      Header.VertexNumberSize = (byte) CalcIntSize(Vertices.Count);
+      Header.TriangleNumberSize = (byte) CalcIntSize(Triangles.Count);
 
     }
 
@@ -75,50 +83,50 @@ namespace VSS.TRex.Designs.TTM
     {
       string LoadErrMsg = "";
 
-      FLoading = true;
+      Loading = true;
       try
       {
         try
         {
           LoadErrMsg = "Error reading header";
 
-          FHeader = TTMHeader.NewHeader();
-          FHeader.Read(reader);
+          Header = TTMHeader.NewHeader();
+          Header.Read(reader);
 
-          // Commented out for now...
-          //if (FileSignatureToANSIString(FHeader.FileSignature) != kTTMFileIdentifier)
-          //{
-          //    Raise ETTMReadError.Create('File is not a Trimble TIN Model.');
-          //}
+          var identifier = Encoding.ASCII.GetString(Header.FileSignature);
+          if (identifier != Consts.TTMFileIdentifier)
+          {
+            throw new TTMFileReadException("File is not a Trimble TIN Model.");
+          }
 
           // Check file version
-          if (FHeader.FileMajorVersion != Consts.TTMMajorVersion
-              || FHeader.FileMinorVersion != Consts.TTMMinorVersion)
+          if (Header.FileMajorVersion != Consts.TTMMajorVersion
+              || Header.FileMinorVersion != Consts.TTMMinorVersion)
           {
-            throw new Exception($"TTM.Read(): Unable to read this version {FHeader.FileMajorVersion}: {FHeader.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
+            throw new Exception($"TTM.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
           }
 
           Clear();
 
-          // ModelName = (String)(InternalNameToANSIString(fHeader.DTMModelInternalName));
+          // ModelName = (String)(InternalNameToANSIString(Header.DTMModelInternalName));
           // Not handled for now
           ModelName = "Reading not implemented";
 
           LoadErrMsg = "Error reading vertices";
-          reader.BaseStream.Position = FHeader.StartOffsetOfVertices;
-          (Vertices as TTMVertices).Read(reader, FHeader);
+          reader.BaseStream.Position = Header.StartOffsetOfVertices;
+          (Vertices as TTMVertices).Read(reader, Header);
 
           LoadErrMsg = "Error reading triangles";
-          reader.BaseStream.Position = FHeader.StartOffsetOfTriangles;
-          (Triangles as TTMTriangles).Read(reader, FHeader, Vertices);
+          reader.BaseStream.Position = Header.StartOffsetOfTriangles;
+          (Triangles as TTMTriangles).Read(reader, Header, Vertices);
 
           LoadErrMsg = "Error reading edges";
-          reader.BaseStream.Position = FHeader.StartOffsetOfEdgeList;
-          Edges.Read(reader, FHeader, Triangles as TTMTriangles);
+          reader.BaseStream.Position = Header.StartOffsetOfEdgeList;
+          Edges.Read(reader, Header, Triangles as TTMTriangles);
 
           LoadErrMsg = "Error reading start points";
-          reader.BaseStream.Position = FHeader.StartOffsetOfStartPoints;
-          StartPoints.Read(reader, FHeader, Triangles);
+          reader.BaseStream.Position = Header.StartOffsetOfStartPoints;
+          StartPoints.Read(reader, Header, Triangles);
         }
         catch (Exception E)
         {
@@ -129,7 +137,7 @@ namespace VSS.TRex.Designs.TTM
       }
       finally
       {
-        FLoading = false;
+        Loading = false;
       }
     }
 
@@ -147,55 +155,55 @@ namespace VSS.TRex.Designs.TTM
       // Write a blank header now, and go back later and fix it up
       long HeaderPos = writer.BaseStream.Position;
 
-      FHeader.FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
-      FHeader.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName ?? "Un-named Model\0");
-      if (FHeader.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
+      Header.FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
+      Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName ?? "Un-named Model\0");
+      if (Header.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
       {
-        Array.Resize(ref FHeader.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
+        Array.Resize(ref Header.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
       }
 
-      FHeader.Write(writer);
+      Header.Write(writer);
 
       PadToBoundary(writer);
 
-      FHeader.FileMajorVersion = Consts.TTMMajorVersion;
-      FHeader.FileMinorVersion = Consts.TTMMinorVersion;
+      Header.FileMajorVersion = Consts.TTMMajorVersion;
+      Header.FileMinorVersion = Consts.TTMMinorVersion;
 
-      FHeader.CoordinateUnits = 1; // Metres
-      FHeader.VertexValueUnits = 1; // Metres
-      FHeader.InterpolationMethod = 1; // Linear
+      Header.CoordinateUnits = 1; // Metres
+      Header.VertexValueUnits = 1; // Metres
+      Header.InterpolationMethod = 1; // Linear
 
       SetUpSizes();
 
-      FHeader.StartOffsetOfVertices = (int) writer.BaseStream.Position;
-      FHeader.NumberOfVertices = Vertices.Count;
-      FHeader.VertexRecordSize = (short) (2 * FHeader.VertexCoordinateSize + FHeader.VertexValueSize);
-      (Vertices as TTMVertices).Write(writer, FHeader);
+      Header.StartOffsetOfVertices = (int) writer.BaseStream.Position;
+      Header.NumberOfVertices = Vertices.Count;
+      Header.VertexRecordSize = (short) (2 * Header.VertexCoordinateSize + Header.VertexValueSize);
+      (Vertices as TTMVertices).Write(writer, Header);
       PadToBoundary(writer);
 
-      FHeader.StartOffsetOfTriangles = (int) writer.BaseStream.Position;
-      FHeader.NumberOfTriangles = Triangles.Count;
-      FHeader.TriangleRecordSize = (short) (3 * FHeader.VertexNumberSize + 3 * FHeader.TriangleNumberSize);
+      Header.StartOffsetOfTriangles = (int) writer.BaseStream.Position;
+      Header.NumberOfTriangles = Triangles.Count;
+      Header.TriangleRecordSize = (short) (3 * Header.VertexNumberSize + 3 * Header.TriangleNumberSize);
       Vertices.NumberVertices();
-      (Triangles as TTMTriangles).Write(writer, FHeader);
+      (Triangles as TTMTriangles).Write(writer, Header);
       PadToBoundary(writer);
 
-      FHeader.StartOffsetOfEdgeList = (int) writer.BaseStream.Position;
-      FHeader.NumberOfEdgeRecords = Edges.Count();
-      FHeader.EdgeRecordSize = FHeader.TriangleNumberSize;
-      Edges.Write(writer, FHeader);
+      Header.StartOffsetOfEdgeList = (int) writer.BaseStream.Position;
+      Header.NumberOfEdgeRecords = Edges.Count();
+      Header.EdgeRecordSize = Header.TriangleNumberSize;
+      Edges.Write(writer, Header);
       PadToBoundary(writer);
 
-      FHeader.StartOffsetOfStartPoints = (int) (writer.BaseStream.Position);
-      FHeader.NumberOfStartPoints = StartPoints.Count();
-      FHeader.StartPointRecordSize = (short) (2 * FHeader.VertexCoordinateSize + FHeader.TriangleNumberSize);
-      StartPoints.Write(writer, FHeader);
+      Header.StartOffsetOfStartPoints = (int) (writer.BaseStream.Position);
+      Header.NumberOfStartPoints = StartPoints.Count();
+      Header.StartPointRecordSize = (short) (2 * Header.VertexCoordinateSize + Header.TriangleNumberSize);
+      StartPoints.Write(writer, Header);
 
       // Fix up header
       long EndPos = writer.BaseStream.Position;
       writer.BaseStream.Position = HeaderPos;
 
-      FHeader.Write(writer);
+      Header.Write(writer);
 
       writer.BaseStream.Position = EndPos;
     }
@@ -230,9 +238,9 @@ namespace VSS.TRex.Designs.TTM
         LoadFromStream(ms);
       }
 
-      if (FModelName.Length == 0)
+      if (ModelName.Length == 0)
       {
-        FModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
+        ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
       }
     }
 
@@ -291,7 +299,7 @@ namespace VSS.TRex.Designs.TTM
 
     public void BuildStartPointList()
     {
-      FStartPoints.Clear();
+      StartPoints.Clear();
 
       if (Triangles.Count == 0)
       {
@@ -310,7 +318,7 @@ namespace VSS.TRex.Designs.TTM
         Debug.Assert(TriangleNum >= 0);
 
         XYZ Centroid = Triangles[TriangleNum].Centroid();
-        FStartPoints.Add(new TTMStartPoint(Centroid.X, Centroid.Y, Triangles[TriangleNum]));
+        StartPoints.Add(new TTMStartPoint(Centroid.X, Centroid.Y, Triangles[TriangleNum]));
       }
     }
 
@@ -319,36 +327,9 @@ namespace VSS.TRex.Designs.TTM
     {
       base.Clear();
 
-      FEdges.Clear();
-      FStartPoints.Clear();
-      FModelName = "";
-    }
-
-
-    public string ModelName
-    {
-      get { return FModelName; }
-      set { FModelName = value; }
-    }
-
-    public TTMStartPoints StartPoints
-    {
-      get { return FStartPoints; }
-    }
-
-    public TTMEdges Edges
-    {
-      get { return FEdges; }
-    }
-
-    public TTMHeader Header = TTMHeader.NewHeader(); //{ get { return FHeader; } }
-
-    public double CoordinateResolution { get; set; }
-    public double ElevationResolution { get; set; }
-
-    public bool Loading
-    {
-      get { return FLoading; }
+      Edges.Clear();
+      StartPoints.Clear();
+      ModelName = "";
     }
 
     // procedure RemoveDuplicateTriangles;

@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             int counter = 0;
 
             SubGridUtilities.SubGridDimensionalIterator((x, y) => counter++);
-            Assert.Equal(SubGridTreeConsts.SubGridTreeCellsPerSubgrid, counter);
+            Assert.Equal(SubGridTreeConsts.SubGridTreeCellsPerSubGrid, counter);
         }
     }
 }

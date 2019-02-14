@@ -15,9 +15,9 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 namespace VSS.TRex.SubGrids.GridFabric.Listeners
 {
   /// <summary>
-  /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back
-  /// to the local context for further processing when using a progressive style of subgrid requesting. 
-  /// Subgrids are sent in groups as serialized streams held in memory streams to minimize serialization/deserialization overhead
+  /// SubGridListener implements a listening post for sub grid results being sent by processing nodes back
+  /// to the local context for further processing when using a progressive style of sub grid requesting. 
+  /// Sub grids are sent in groups as serialized streams held in memory streams to minimize serialization/deserialization overhead
   /// </summary>
   public class SubGridListener : IMessageListener<byte[]>, IBinarizable, IFromToBinary
   {
@@ -31,20 +31,20 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     private int responseCounter;
 
     /// <summary>
-    /// Local reference to the client subgrid factory
+    /// Local reference to the client sub grid factory
     /// </summary>
-    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
+    private IClientLeafSubGridFactory clientLeafSubGridFactory;
 
     private IClientLeafSubGridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
-    /// The reference to the TRexTask responsible for handling the returned subgrid information from the processing cluster
+    /// The reference to the TRexTask responsible for handling the returned sub grid information from the processing cluster
     /// </summary>
     private readonly ITRexTask TRexTask;
 
     /// <summary>
-    /// Processes a response containing a set of subgrids from the subgrid processor for a request
+    /// Processes a response containing a set of sub grids from the sub grid processor for a request
     /// </summary>
     /// <param name="message"></param>
     private void ProcessResponse(byte[] message)
@@ -53,7 +53,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       {
         using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
         {
-          // Read the number of subgrid present in the stream
+          // Read the number of sub grid present in the stream
           int responseCount = reader.ReadInt32();
 
           // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
@@ -66,28 +66,24 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
             for (int i = 0; i < responseCount; i++)
             {
-              int subgridCount = reader.ReadInt32();
-              clientGrids[i] = new IClientLeafSubGrid[subgridCount];
+              int subGridCount = reader.ReadInt32();
+              clientGrids[i] = new IClientLeafSubGrid[subGridCount];
 
-              for (int j = 0; j < subgridCount; j++)
+              for (int j = 0; j < subGridCount; j++)
               {
                 clientGrids[i][j] = ClientLeafSubGridFactory.GetSubGrid(TRexTask.GridDataType);
 
-                // Check if the returned subgrid is null
+                // Check if the returned sub grid is null
                 if (reader.ReadBoolean())
-                {
                   clientGrids[i][j].Read(reader, buffer);
-                }
                 else
-                {
-                  Log.LogWarning($"Subgrid at position [{i},{j}] in subgrid response array is null");
-                }
+                  Log.LogWarning($"Sub grid at position [{i},{j}] in sub grid response array is null");
               }
             }
 
             // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
 
-            // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialized into the TRexTask
+            // Send the decoded grid to the PipelinedTask, but ensure sub grids are serialized into the TRexTask
             // (no assumption of thread safety within the TRexTask itself)
             try
             {
@@ -103,24 +99,19 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
                   }
                   else
                   {
-                    Log.LogInformation(
-                      $"Processing response#{thisResponseCount} FAILED (from thread {Thread.CurrentThread.ManagedThreadId})");
+                    Log.LogInformation($"Processing response#{thisResponseCount} FAILED (from thread {Thread.CurrentThread.ManagedThreadId})");
                   }
                 }
               }
             }
             finally
             {
-              // Tell the pipeline that a set of subgrid have been completely processed
-              TRexTask.PipeLine.SubgridsProcessed(responseCount);
+              // Tell the pipeline that a set of sub grid have been completely processed
+              TRexTask.PipeLine.SubGridsProcessed(responseCount);
             }
-
           }
           finally
           {
-            // Return the client grid to the factory for recycling now its role is complete here... when using ConcurrentBag
-            // ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrid);
-
             // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
             ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, responseCount);
           }
@@ -142,7 +133,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     }
 
     /// <summary>
-    /// Constructor accepting a rexTask to pass subgrids into
+    /// Constructor accepting a rexTask to pass sub grids into
     /// </summary>
     /// <param name="tRexTask"></param>
     public SubGridListener(ITRexTask tRexTask)
@@ -151,13 +142,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     }
 
     /// <summary>
-    /// The subgrid response listener has no serializable state
+    /// The sub grid response listener has no serializable state
     /// </summary>
     /// <param name="writer"></param>
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     /// <summary>
-    /// The subgrid response listener has no serializable state
+    /// The sub grid response listener has no serializable state
     /// </summary>
     /// <param name="reader"></param>
     public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());

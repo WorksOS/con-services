@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Models
 {
@@ -10,9 +11,9 @@ namespace VSS.TRex.Filters.Models
   public struct FilteredPassData
   {
     /// <summary>
-    /// The type of the machine (eg: dozer, grader, compactor, etc) that collected the pass represented here.
+    /// The type of the machine (eg: bulldozer, grader, compactor, etc) that collected the pass represented here.
     /// </summary>
-    public byte MachineType;   // Derived from the machine ID in the FilteredPass record
+    public MachineType MachineType;   // Derived from the machine ID in the FilteredPass record
 
     public CellPass FilteredPass;
     public CellTargets TargetValues;
@@ -42,12 +43,12 @@ namespace VSS.TRex.Filters.Models
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(MachineType);
+      writer.WriteByte((byte)MachineType);
 
       FilteredPass.ToBinary(writer);
       TargetValues.ToBinary(writer);
@@ -55,12 +56,12 @@ namespace VSS.TRex.Filters.Models
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      MachineType = reader.ReadByte();
+      MachineType = (MachineType)reader.ReadByte();
 
       FilteredPass.FromBinary(reader);
       TargetValues.FromBinary(reader);

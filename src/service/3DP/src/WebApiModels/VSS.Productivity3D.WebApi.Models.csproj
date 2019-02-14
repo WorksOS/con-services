@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net471;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>VSS.3DProductivity.WebApiModels</AssemblyName>
     <PackageId>WebApiModels</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -13,26 +13,81 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.4" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="Polly" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.3" />
     <PackageReference Include="DotNetCore.CAP" Version="2.3.0" />
     <PackageReference Include="DotNetCore.CAP.Kafka" Version="2.3.0" />
     <PackageReference Include="DotNetCore.CAP.MySql" Version="2.3.0" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageReference Include="AutoMapper" Version="8.0.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">    
+    <Compile Remove=".\Compaction\Executors\CompactionCellDatumExecutor.cs" />
+    <Compile Remove=".\Compaction\Executors\CompactionDesignProfileExecutor.cs" />    
+    <Compile Remove=".\Compaction\Executors\CompactionPatchExecutor.cs" />
+    <Compile Remove=".\Compaction\Executors\CompactionProfileExecutor.cs" />    
+    <Compile Remove=".\Compaction\Executors\DxfTileExecutor.cs" />
+    <Compile Remove=".\Compaction\Executors\LineworkFileExecutor.cs" />
+    <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
+
+    <Compile Remove=".\Compaction\Models\LineworkRequest.cs" />
+    <Compile Remove=".\Compaction\Models\Reports\OffsetStatistics.cs" />
+    <Compile Remove=".\Compaction\Models\Reports\StationOffsetReport.cs" />
+    <Compile Remove=".\Compaction\Models\Reports\StationOffsetRow.cs" />    
+    <Compile Remove=".\Compaction\Models\Reports\StationRow.cs" />
+    
+    <Compile Remove=".\Compaction\ResultHandling\DxfLineworkFileResult.cs" />
+
+    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutor.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorGet.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorPost.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateConversionExecutor.cs" />
+    
+    <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
+    <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
+    
+    <Compile Remove=".\ProductionData\Executors\CCAColorPaletteExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\CellPassesExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\DesignExecutor.cs" />    
+    <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\GetMachineDesignsExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\GetMachineIdsExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\GetLayerIdsExecutor.cs" />    
+    <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\ProfileProductionDataExecutor.cs" />    
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPost.cs" />
+    <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPut.cs" />
+    <Compile Remove=".\ProductionData\ResultHandling\CompactionDesignProfile.cs" />    
+
+    <Compile Remove=".\Report\Executors\CompactionCellDatumExecutor.cs" />
+    <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />    
+    <Compile Remove=".\Report\Executors\ElevationStatisticsExecutor.cs" />
+    <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />    
+    <Compile Remove=".\Report\Executors\ExportReportExecutor.cs" />
+    <Compile Remove=".\Report\Executors\ProjectStatisticsExecutor.cs" />    
+    <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />    
+    <Compile Remove=".\Report\Executors\SummaryVolumesExecutor.cs" />
+    <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
+  </ItemGroup>
+
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
@@ -55,7 +110,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

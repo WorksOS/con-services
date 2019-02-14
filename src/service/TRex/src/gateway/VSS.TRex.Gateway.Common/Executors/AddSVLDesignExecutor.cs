@@ -46,8 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as DesignRequest;
-      if (request == null)
+      if (!(item is DesignRequest request))
       {
         ThrowRequestTypeCastException<DesignRequest>();
         return null; // to keep compiler happy
@@ -85,7 +84,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         // todo possibly, when SDK avail
         /* var existanceMaps = DIContext.Obtain<IExistenceMaps>();
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubgridOverlayIndex());
+          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubGridOverlayIndex());
           */
 
         log.LogInformation($"#Out# AddSVLDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");

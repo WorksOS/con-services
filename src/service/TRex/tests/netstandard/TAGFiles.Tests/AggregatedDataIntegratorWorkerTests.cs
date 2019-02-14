@@ -11,6 +11,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace TAGFiles.Tests
@@ -18,16 +19,11 @@ namespace TAGFiles.Tests
 
   public class AggregatedDataIntegratorWorkerTests : IClassFixture<DITagFileFixture>
   {
-    [Fact(Skip = "Not Implemented")]
+    [Fact()]
     public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
     {
-      Assert.True(false);
-    }
-
-    [Fact(Skip = "Not Implemented")]
-    public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest1()
-    {
-      Assert.True(false);
+      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      Assert.NotNull(integrator);
     }
 
     [Fact]
@@ -39,7 +35,7 @@ namespace TAGFiles.Tests
       // Create the site model and machine etc to aggregate the processed TAG file into
       //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       converter.Machine.ID = targetMachine.ID;
 
@@ -56,7 +52,7 @@ namespace TAGFiles.Tests
       worker.ProcessTask(ProcessedTasks);
 
       ProcessedTasks.Count.Should().Be(1);
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(12);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
     }
 
     [Fact]
@@ -69,7 +65,7 @@ namespace TAGFiles.Tests
       // Create the site model and machine etc to aggregate the processed TAG file into
       //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       converter1.Machine.ID = targetMachine.ID;
       converter2.Machine.ID = targetMachine.ID;
@@ -89,7 +85,7 @@ namespace TAGFiles.Tests
       worker.ProcessTask(ProcessedTasks);
 
       ProcessedTasks.Count.Should().Be(2);
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(12);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
     }
 
     [Theory]
@@ -111,7 +107,7 @@ namespace TAGFiles.Tests
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", 1, 1, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, 1, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
@@ -135,7 +131,7 @@ namespace TAGFiles.Tests
       ProcessedTasks.Count.Should().Be(numToTake);
 
       // Check the set of TAG files created the expected number of sub grids
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubGridCount);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
     }
 
     [Fact]

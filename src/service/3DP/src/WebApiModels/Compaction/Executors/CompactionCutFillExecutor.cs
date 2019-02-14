@@ -1,7 +1,9 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -29,11 +31,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<CutFillDetailsRequest>(item);
-
+#if RAPTOR
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CUTFILL"))
         {
+#endif
           return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
-        }
+#if RAPTOR
+      }
 
         var filter = RaptorConverters.ConvertFilter(request.Filter);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
@@ -55,15 +59,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           return new CompactionCutFillDetailedResult(cutFillDetails.Percents);
 
         throw CreateServiceException<CompactionCutFillExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
     }
+
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -32,10 +34,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<CMVRequest>(item);
+#if RAPTOR
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
+#endif
           var cmvSummaryRequest = new CMVSummaryRequest(
             request.ProjectUid, 
             request.Filter,
@@ -45,6 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.CmvSettings.MinCMVPercent);
 
           return trexCompactionDataProxy.SendCMVSummaryRequest(cmvSummaryRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
@@ -60,6 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(cmvSummary);
 
         throw CreateServiceException<SummaryCMVExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -69,9 +75,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
 
+#if RAPTOR
     private CMVSummaryResult ConvertResult(TCMVSummary summary)
     {
       return new CMVSummaryResult(
@@ -97,5 +106,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         OverrideTargetCMV = settings.OverrideTargetCMV
       };
     }
+#endif
   }
 }

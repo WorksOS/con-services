@@ -8,7 +8,7 @@ namespace VSS.TRex.Pipelines.Tasks
     /// <summary>
     /// ITaskBase/TaskBase is an interface/base class implementation that other classes 
     /// may extend to provide specific handling logic for responses from queries, such as 
-    /// subgrids and profile sections that require additional processing to arrive at 
+    /// sub grids and profile sections that require additional processing to arrive at 
     /// the final result (such as a rendered tile)
     /// </summary>
     public abstract class TaskBase : ITRexTask
@@ -29,7 +29,7 @@ namespace VSS.TRex.Pipelines.Tasks
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
-        /// The node wanting to receive the results of task bases subgrid requests to the PSNode clustered processing layer
+        /// The node wanting to receive the results of task bases sub grid requests to the PSNode clustered processing layer
         /// </summary>
         public string TRexNodeID { get; set; } = string.Empty;
 
@@ -72,7 +72,7 @@ namespace VSS.TRex.Pipelines.Tasks
         public virtual void Cancel() => IsCancelled = true;
 
         /// <summary>
-        /// A reference to a subgrid processing pipeline associated with this task
+        /// A reference to a sub grid processing pipeline associated with this task
         /// </summary>
         public ISubGridPipelineBase PipeLine { get; set; }
     }

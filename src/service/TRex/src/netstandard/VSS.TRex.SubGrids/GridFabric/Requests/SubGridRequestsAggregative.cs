@@ -9,7 +9,7 @@ using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 namespace VSS.TRex.SubGrids.GridFabric.Requests
 {
     /// <summary>
-    /// Performs subgrid requests where the processing result is aggregated and returned as one of set of partitioned responses
+    /// Performs sub grid requests where the processing result is aggregated and returned as one of set of partitioned responses
     /// from the cache compute cluster
     /// </summary>
     public class SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> 
@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         }
 
         /// <summary>
-        /// Overrides the base Execute() semantics to add a listener available for aggregated processing of subgrids in the request engine.
+        /// Overrides the base Execute() semantics to add a listener available for aggregated processing of sub grids in the request engine.
         /// </summary>
         /// <returns></returns>
         public override TSubGridRequestsResponse Execute()
@@ -38,8 +38,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             PrepareArgument();
 
             Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
-            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} sub grids");
+            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} sub grids");
 
             TSubGridRequestsResponse taskResult = null;
 
@@ -56,11 +56,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubgridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
-            // Advise the pipeline of all the subgrids that were examined in the aggregated processing
-            TRexTask.PipeLine.SubgridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
+            // Advise the pipeline of all the sub grids that were examined in the aggregated processing
+            TRexTask.PipeLine.SubGridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
 
             // Notify the pipeline that all processing has been completed for it
             TRexTask.PipeLine.PipelineCompleted = true;
@@ -70,7 +70,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         }
 
         /// <summary>
-        /// Overrides the base Execute() semantics to add a listener available for aggregated processing of subgrids in the request engine.
+        /// Overrides the base Execute() semantics to add a listener available for aggregated processing of sub grids in the request engine.
         /// </summary>
         /// <returns></returns>
         public override Task<TSubGridRequestsResponse> ExecuteAsync()
@@ -81,8 +81,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             PrepareArgument();
          
             Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
-            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} sub grids");
+            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} sub grids");
                 
             // Construct the function to be used
             IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
@@ -90,8 +90,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             // Invoke it
             return Task.Run(() => func.Invoke(arg)).ContinueWith(result =>
             {        
-                // Advise the pipeline of all the subgrids that were examined in the aggregated processing
-                TRexTask.PipeLine.SubgridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
+                // Advise the pipeline of all the sub grids that were examined in the aggregated processing
+                TRexTask.PipeLine.SubGridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
            
                // Notify the pipeline that all processing has been completed for it
                TRexTask.PipeLine.PipelineCompleted = true;

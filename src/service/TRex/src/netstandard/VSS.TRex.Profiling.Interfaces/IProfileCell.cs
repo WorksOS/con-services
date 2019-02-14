@@ -55,17 +55,5 @@ namespace VSS.TRex.Profiling.Interfaces
 
     int TotalNumberOfHalfPasses(bool includeSupersededLayers);
     int TotalNumberOfWholePasses(bool includeSupersededLayers);
-
-    /// <summary>
-    /// Serializes content to the writer
-    /// </summary>
-    /// <param name="writer"></param>
-    void ToBinary(IBinaryRawWriter writer);
-
-    /// <summary>
-    /// Serializes content from the writer
-    /// </summary>
-    /// <param name="reader"></param>
-    void FromBinary(IBinaryRawReader reader);
   }
 }

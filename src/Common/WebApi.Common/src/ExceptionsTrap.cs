@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 
 namespace VSS.WebApi.Common
@@ -70,6 +71,7 @@ namespace VSS.WebApi.Common
     {
       log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetFullContent} statusCode: {ex.Code} {ex.StackTrace}");
       context.Response.StatusCode = (int)ex.Code;
+      context.Response.ContentType = ContentTypeConstants.ApplicationJson;
       await context.Response.WriteAsync(ex.GetContent);
     }
 

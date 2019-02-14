@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.TestFixtures;
@@ -28,8 +26,6 @@ namespace VSS.TRex.Tests.Filters
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
-            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialized");
-
             filter.ClearFilter();
 
             Assert.False(filter.AnyFilterSelections, "AnyFilterSelections not false");
@@ -49,11 +45,47 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
             Assert.False(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections true");
         }
-      
-        [Fact(Skip = "Not Implemented")]
+
+        private void Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect(Action<CellPassAttributeFilter, bool> setAspect, 
+          Func<CellPassAttributeFilter, bool> getAspect)
+        {
+          CellPassAttributeFilter filter = new CellPassAttributeFilter();
+
+          filter.AnyFilterSelections.Should().BeFalse();
+          getAspect.Invoke(filter).Should().BeFalse();
+          setAspect.Invoke(filter, true);
+
+          filter.AnyFilterSelections.Should().BeTrue();
+          getAspect.Invoke(filter).Should().BeTrue();
+
+          filter.HasTimeFilter = true;
+          filter.ClearFilter();
+
+          filter.AnyFilterSelections.Should().BeFalse();
+          filter.HasTimeFilter.Should().BeFalse();
+        }
+
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearFilter()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasTimeFilter = state, filter => filter.HasTimeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasCompactionMachinesOnlyFilter = state, filter => filter.HasCompactionMachinesOnlyFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasDesignFilter = state, filter => filter.HasDesignFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasElevationMappingModeFilter = state, filter => filter.HasElevationMappingModeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasElevationRangeFilter = state, filter => filter.HasElevationRangeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasElevationTypeFilter = state, filter => filter.HasElevationTypeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGCSGuidanceModeFilter = state, filter => filter.HasGCSGuidanceModeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGPSAccuracyFilter = state, filter => filter.HasGPSAccuracyFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerIDFilter = state, filter => filter.HasLayerIDFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasGPSToleranceFilter = state, filter => filter.HasGPSToleranceFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasLayerStateFilter = state, filter => filter.HasLayerStateFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasMachineDirectionFilter = state, filter => filter.HasMachineDirectionFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasMachineFilter = state, filter => filter.HasMachineFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPassTypeFilter = state, filter => filter.HasPassTypeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasVibeStateFilter = state, filter => filter.HasVibeStateFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPassCountRangeFilter = state, filter => filter.HasPassCountRangeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasTemperatureRangeFilter = state, filter => filter.HasTemperatureRangeFilter);
+          Test_CellPassAttributeFilter_ClearFilterAll_CheckByAspect((filter, state) => filter.HasPositioningTechFilter = state, filter => filter.HasPositioningTechFilter);
         }
 
         private void Test_CellPassAttributeFilter_ClearFilter_Aspect
@@ -230,13 +262,13 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_CompareTo_PassCountRange()
         {
           Test_CellPassAttributeFilter_CompareTo_Aspect("PassCountRange", x => {
-                                                                         x.HasPassCountRangeFilter = true; x.PasscountRangeMin = 1;
-                                                                         x.PasscountRangeMax = 4;
+                                                                         x.HasPassCountRangeFilter = true; x.PassCountRangeMin = 1;
+                                                                         x.PassCountRangeMax = 4;
                                                                        });
         }
 
 
-    [Fact()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearDesigns()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Designs",
@@ -272,34 +304,56 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact()]
-        public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
+        public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialization()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter()
+            var filterAnnex = new CellPassAttributeFilterProcessingAnnex()
             {
-                ElevationRangeIsInitialised = true,
-                ElevationRangeDesignElevations = new VSS.TRex.SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
+                ElevationRangeIsInitialized = true,
+                ElevationRangeDesignElevations = new TRex.SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
             };
-            filter.ClearElevationRangeFilterInitialisation();
 
-            Assert.True(filter.ElevationRangeIsInitialised == false && filter.ElevationRangeDesignElevations == null);
+            filterAnnex.ClearElevationRangeFilterInitialization();
+
+            Assert.True(filterAnnex.ElevationRangeIsInitialized == false && filterAnnex.ElevationRangeDesignElevations == null);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearElevationType()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationType",
+            x => {
+              x.HasElevationTypeFilter = true;
+              x.ElevationType = ElevationType.First;
+            },
+            x => x.HasElevationTypeFilter && x.ElevationType == ElevationType.First,
+            x => { x.ClearElevationType(); },
+            x => !x.HasElevationTypeFilter && x.ElevationType == ElevationType.Last);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearGPSAccuracy()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("GPSAccuracy",
+            x => {
+              x.HasGPSAccuracyFilter = true;
+              x.GPSAccuracy = GPSAccuracy.Fine;
+            },
+            x => x.HasGPSAccuracyFilter && x.GPSAccuracy == GPSAccuracy.Fine,
+            x => { x.ClearGPSAccuracy(); },
+            x => !x.HasGPSAccuracyFilter && x.GPSAccuracy == GPSAccuracy.Unknown);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearGPSTolerance()
         {
-            Assert.True(false);
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("GPSTolerance",
+            x => {
+              x.HasGPSToleranceFilter = true;
+              x.GPSTolerance = 123;
+            },
+            x => x.HasGPSToleranceFilter && x.GPSTolerance == 123,
+            x => { x.ClearGPSTolerance(); },
+            x => !x.HasGPSToleranceFilter && x.GPSTolerance == Consts.kMaxGPSAccuracyErrorLimit);
         }
 
         [Fact()]
@@ -408,11 +462,14 @@ namespace VSS.TRex.Tests.Filters
                                                             x => !x.HasPositioningTechFilter);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_ClearSurveyedSurfaceExclusionList()
         {
-            Assert.True(false);
-
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("SurveyedSurfaceExclusionList",
+            x => { x.SurveyedSurfaceExclusionList = new [] {Guid.Empty}; },
+            x => x.SurveyedSurfaceExclusionList.Length == 1 && x.SurveyedSurfaceExclusionList[0] == Guid.Empty,
+            x => { x.ClearSurveyedSurfaceExclusionList(); },
+            x => (x.SurveyedSurfaceExclusionList?.Length ?? 0) == 0);
         }
 
         [Fact()]
@@ -489,7 +546,7 @@ namespace VSS.TRex.Tests.Filters
         }
 
         [Fact(Skip = "Not Implemented")]
-        public void Test_CellPassAttributeFilter_InitaliaseFilteringForCell()
+        public void Test_CellPassAttributeFilter_InitialiseFilteringForCell()
         {
             Assert.True(false);
 

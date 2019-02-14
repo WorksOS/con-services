@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
     [TestClass]
     public class ConvertFilterTests : RaptorConvertersTests
     {
-      private static Filter CreateFilter(
+      private static Filter.Abstractions.Models.Filter CreateFilter(
         long? onMachineDesignId = null,
         ElevationType elevationType = ElevationType.First,
         bool? vibeStateOn = null,
@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
         int? passCountRangeMin = null,
         int? passCountRangeMax = null)
       {
-        return Filter.CreateFilter(
+        return Filter.Abstractions.Models.Filter.CreateFilter(
         new DateTime(2019, 1, 10),
         new DateTime(2019, 1, 20),
         "",

@@ -63,14 +63,14 @@ namespace VSS.TRex.Pipelines.Interfaces
         Guid DataModelID { get; set; }
 
         /// <summary>
-        /// Advise the client of the pipeline that a single subgrid has been processed
+        /// Advise the client of the pipeline that a single sub grid has been processed
         /// </summary>
-        void SubgridProcessed();
+        void SubGridProcessed();
 
         /// <summary>
-        /// Advise the client of the pipeline that a group of numProcessed subgrids has been processed
+        /// Advise the client of the pipeline that a group of numProcessed sub grids has been processed
         /// </summary>
-        void SubgridsProcessed(long numProcessed);
+        void SubGridsProcessed(long numProcessed);
 
         /// <summary>
         /// The set of filter the pipeline requests are operating under
@@ -78,19 +78,19 @@ namespace VSS.TRex.Pipelines.Interfaces
         IFilterSet FilterSet { get; set; }
 
         /// <summary>
-        /// Map of all subgrids requiring information be requested from them
+        /// Map of all sub grids requiring information be requested from them
         /// </summary>
         ISubGridTreeBitMask OverallExistenceMap { get; set; }
       
         /// <summary>
-        /// Map of all subgrids that specifically require production data to be requested for them
+        /// Map of all sub grids that specifically require production data to be requested for them
         /// </summary>
         ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
       
         /// <summary>
-        /// Map of all subgrids that require elevation data to be extracted from a design surface
+        /// Map of all sub grids that require elevation data to be extracted from a design surface
         /// </summary>
-        ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
+        ISubGridTreeBitMask DesignSubGridOverlayMap { get; set; }
 
         /// <summary>
         /// Initiates processing of the pipeline
@@ -104,6 +104,6 @@ namespace VSS.TRex.Pipelines.Interfaces
 
         IRequestAnalyser RequestAnalyser { get; set; }
 
-        long SubgridsRemainingToProcess { get; }
+        long SubGridsRemainingToProcess { get; }
     }
 }

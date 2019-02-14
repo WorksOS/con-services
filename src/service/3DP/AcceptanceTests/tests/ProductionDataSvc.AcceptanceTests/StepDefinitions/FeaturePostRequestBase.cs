@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Gherkin.Ast;
+﻿using Gherkin.Ast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
@@ -11,7 +9,7 @@ using Feature = Xunit.Gherkin.Quick.Feature;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  public abstract class FeaturePostRequestBase<TRequest, TResponse> : Feature where TRequest : RequestBase, new() where TResponse : ResponseBase
+  public abstract class FeaturePostRequestBase<TRequest, TResponse> : Feature where TRequest : JObject, new() where TResponse : ResponseBase
   {
     protected Poster<TRequest, TResponse> PostRequestHandler;
 
@@ -43,13 +41,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I POST with no parameters I expect response code (\d+)")]
     public void WhenIPostWithNoParametersIExpectResponseCode(int httpCode)
     {
-      PostRequestHandler.DoRequest(null, httpCode);
+      PostRequestHandler.DoRequest(null, expectedHttpCode: httpCode);
     }
 
     [When(@"I POST with parameter ""(.*)"" I expect response code (\d+)")]
     public void WhenIPostWithParameterIExpectResponseCode(string parameterValue, int httpCode)
     {
-      PostRequestHandler.DoRequest(parameterValue, httpCode);
+      PostRequestHandler.DoRequest(parameterValue, expectedHttpCode: httpCode);
+    }
+
+    [When(@"I POST Content-Type ""(.*)"" with parameter ""(.*)"" I expect response code (\d+)")]
+    public void WhenIPostWithParameterAndContentTypeIExpectResponseCode(string contentType, string parameterValue, int httpCode)
+    {
+      PostRequestHandler.DoRequest(parameterValue, contentType, httpCode);
     }
 
     [Then(@"the response should match ""(.*)"" from the repository")]
@@ -96,15 +100,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
     }
-
-    private static void TrySetProperty(object obj, string property, object value)
+    
+    /// <summary>
+    /// Adds and sets a new property on the JObject receiver.
+    /// </summary>
+    private static void TrySetProperty(JObject obj, string property, string value)
     {
-      var prop = obj.GetType().GetProperty(property, BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance);
-
-      if (prop != null && prop.CanWrite)
-      {
-        prop.SetValue(obj, Convert.ChangeType(value, prop.PropertyType));
-      }
+      // All inputs are strings despite their type, because their origin is a .feature file.
+      obj[property] = value;
     }
 
     protected void AssertObjectsAreEqual<T>(T expectedResult)

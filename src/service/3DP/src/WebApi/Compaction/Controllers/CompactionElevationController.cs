@@ -32,11 +32,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionElevationController : BaseController<CompactionElevationController>
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
     /// </summary>
@@ -50,11 +51,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionElevationController(IASNodeClient raptorClient, IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
+    public CompactionElevationController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
       ICompactionSettingsManager settingsManager, IProductionDataRequestFactory productionDataRequestFactory) :
       base(configStore, fileListProxy, settingsManager)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.elevProxy = elevProxy;
       requestFactory = productionDataRequestFactory;
     }
@@ -156,11 +163,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
+#if RAPTOR
         var returnResult =
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
             .Process(request) as ProjectStatisticsResult;
         Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
       }
       catch (ServiceException se)
       {
@@ -202,11 +214,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
+
       var project = await ((RaptorPrincipal) User).GetProject(projectId);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(Guid.Parse(project.ProjectUid));
 
       try
       {
+#if RAPTOR
         var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
         var returnResult = new ProjectExtentsResult
         {
@@ -217,7 +231,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         };
 
         //In case we have rogue tag files distorting the extents, restrict to project boundary
-        var projectPoints = RaptorConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
+        var projectPoints = CommonConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
         var projMinLat = projectPoints.Min(p => p.Lat);
         var projMinLng = projectPoints.Min(p => p.Lon);
         var projMaxLat = projectPoints.Max(p => p.Lat);
@@ -242,6 +256,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
+#else
+        throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
       }
       catch (ServiceException se)
       {

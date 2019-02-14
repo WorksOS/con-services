@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -9,7 +10,8 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
   {
     public FilterProfile()
     {
-      CreateMap<MasterData.Repositories.DBModels.Filter, FilterDescriptor>();
+      CreateMap<MasterData.Repositories.DBModels.Filter, FilterDescriptor>()
+        .ForMember(x => x.ContainsBoundary, opt => opt.Ignore());
       CreateMap<FilterRequestFull, CreateFilterEvent>()
         .ForMember(x => x.ActionUTC, opt => opt.Ignore())
         .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
@@ -17,11 +19,13 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
         .ForMember(x => x.UserUID, opt => opt.Ignore());
 
 #pragma warning restore CS0612 // Type or member is obsolete
-      CreateMap<CreateFilterEvent, FilterDescriptor>();
+      CreateMap<CreateFilterEvent, FilterDescriptor>()
+        .ForMember(x => x.ContainsBoundary, opt => opt.Ignore());
 #pragma warning disable CS0612 // Type or member is obsolete
 
 #pragma warning restore CS0612 // Type or member is obsolete
-      CreateMap<UpdateFilterEvent, FilterDescriptor>();
+      CreateMap<UpdateFilterEvent, FilterDescriptor>()
+        .ForMember(x => x.ContainsBoundary, opt => opt.Ignore());
 #pragma warning disable CS0612 // Type or member is obsolete
 
 #pragma warning restore CS0612 // Type or member is obsolete

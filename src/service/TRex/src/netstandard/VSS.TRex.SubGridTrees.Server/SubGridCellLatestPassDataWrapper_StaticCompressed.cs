@@ -140,7 +140,7 @@ namespace VSS.TRex.SubGridTrees.Server
             });
 
             // For ease of management convert all the cell passes into a single list for the following operations
-            CellPass[] allCellPassesArray = new CellPass[SubGridTreeConsts.SubGridTreeCellsPerSubgrid];
+            CellPass[] allCellPassesArray = new CellPass[SubGridTreeConsts.SubGridTreeCellsPerSubGrid];
             int cellPassIndex = 0;
 
             SubGridUtilities.SubGridDimensionalIterator((col, row) => allCellPassesArray[cellPassIndex++] = cellPasses[col, row]);
@@ -174,7 +174,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 new BitFieldArrayRecordsDescriptor
                 {
-                    NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubgrid,
+                    NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubGrid,
                     BitsPerRecord = NumBitsPerCellPass
                 }
             };
@@ -349,11 +349,11 @@ namespace VSS.TRex.SubGridTrees.Server
             long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
             Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
 
-            Result.CCV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV));
-            Result.RMV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RMV));
-            Result.MDP = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MDP));
-            Result.MaterialTemperature = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MaterialTemperature));
-            Result.CCA = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCA));
+            Result.CCV = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV);
+            Result.RMV = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RMV);
+            Result.MDP = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MDP);
+            Result.MaterialTemperature = (ushort)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MaterialTemperature);
+            Result.CCA = (byte)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCA);
 
             return Result;
         }

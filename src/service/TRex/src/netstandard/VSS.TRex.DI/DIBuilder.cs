@@ -12,15 +12,15 @@ namespace VSS.TRex.DI
   /// </summary>
   public class DIBuilder
   {
-    public static DIBuilder Instance;
+    private static DIBuilder Instance;
 
     public IServiceProvider ServiceProvider { get; private set; }
-    public IServiceCollection ServiceCollection { get; set; }
+    private IServiceCollection ServiceCollection { get; set; }
   
     /// <summary>
     /// Default constructor for DI implementation
     /// </summary>
-    public DIBuilder()
+    private DIBuilder()
     {
        ServiceCollection = new ServiceCollection();
     }
@@ -28,7 +28,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Default constructor for DI implementation
     /// </summary>
-    public DIBuilder(IServiceCollection serviceCollection)
+    private DIBuilder(IServiceCollection serviceCollection)
     {
        ServiceCollection = serviceCollection;
     }
@@ -90,7 +90,7 @@ namespace VSS.TRex.DI
       Logging.Logger.Inject(loggerFactory);
 
       // Add the logging related services to the collection
-      return Add(x => { x.AddSingleton<ILoggerFactory>(loggerFactory); });
+      return Add(x => { x.AddSingleton(loggerFactory); });
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Performs the Inject operation into the DIContext as a fluent operation from the DIImplementation
     /// </summary>
-    public DIBuilder Inject()
+    private DIBuilder Inject()
     {
       DIContext.Inject(ServiceProvider);
       return this;

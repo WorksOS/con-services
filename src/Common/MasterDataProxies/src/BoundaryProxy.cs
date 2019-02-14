@@ -41,7 +41,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="userId">The user ID</param>
     public void ClearCacheItem(string filterUid, string userId = null)
     {
-      ClearCacheItem<FilterData>(filterUid, userId);
+      ClearCacheByTag(filterUid);
     }
 
     public async Task<GeofenceData> GetBoundaryForProject(string projectUid, string geofenceUid,

@@ -8,7 +8,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null GPS tolerance value
     /// </summary>
-    public const ushort NullGPSTolerance = UInt16.MaxValue;
+    public const ushort NullGPSTolerance = ushort.MaxValue;
 
     /// <summary>
     /// Null machine speed value
@@ -18,7 +18,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null Pass Count value
     /// </summary>
-    public const ushort NullPassCountValue = UInt16.MinValue;
+    public const ushort NullPassCountValue = ushort.MinValue;
 
     /// <summary>
     /// Conversion ratio between temperature in whole degrees and tenths of degrees reported by some measurements from machines
@@ -119,7 +119,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null machine type value
     /// </summary>
-    public const byte MachineTypeNull = 0;
+    public const MachineType MachineTypeNull = (MachineType)0;
 
     /// <summary>
     /// Null value for the Volkel compaction sensor measurement range (defined as int, but null is byte.MaxValue)
@@ -160,5 +160,10 @@ namespace VSS.TRex.Common.CellPasses
     /// The CCA value, which a lift is marked as thick at.
     /// </summary>
     public const byte THICK_LIFT_CCA_VALUE = 120;
+
+    /// <summary>
+    /// The mask to be applied to the GPSModeStore member of the cell pass to access the GPSMode enumeration value
+    /// </summary>
+    public const byte GPSModeStoreMask = 0b00001111;
   }
 }

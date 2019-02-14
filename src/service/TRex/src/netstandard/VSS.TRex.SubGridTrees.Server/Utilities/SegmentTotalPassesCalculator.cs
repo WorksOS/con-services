@@ -5,7 +5,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     public static class SegmentTotalPassesCalculator
     {
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in the given subgrid segment
+        /// Calculate the total number of passes from all the cells present in the given sub grid segment
         /// </summary>
         /// <param name="segment"></param>
         /// <param name="TotalPasses"></param>
@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             uint _TotalPasses = 0;
             uint _MaxPassCount = 0;
 
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 uint ThePassCount = segment.PassCount(i, j);
 

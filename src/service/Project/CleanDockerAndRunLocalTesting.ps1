@@ -1,4 +1,5 @@
-& $PSScriptRoot/DockerEnvironmentVariables.ps1
+Write-Host "Updating environment IP address"
+& .\UpdateEnvFileIpAddress.ps1
 
 Write-Host "Stopping Docker containers" -ForegroundColor DarkGray
 docker stop $(docker ps -aq)
@@ -42,6 +43,7 @@ Write-Host "Building Docker containers" -ForegroundColor DarkGray
 $logToFile = IF ($args -contains "--no-log") { "" } ELSE { "> C:\Temp\output.log" }
 $detach = IF ($args -contains "--detach") { "--detach" } ELSE { "" }
 
+Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose --file docker-compose-local.yml up --build $detach $logToFile"
 
 [Console]::ResetColor()

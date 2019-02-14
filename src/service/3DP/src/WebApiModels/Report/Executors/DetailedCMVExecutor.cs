@@ -1,8 +1,10 @@
 ﻿using System;
+#if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -35,15 +37,17 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = CastRequestObjectTo<CMVRequest>(item);
-
+#if RAPTOR
         if (!request.IsCustomCMVTargets || !bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
           useTrexGateway = false;
 
         if (useTrexGateway)
         {
+#endif
           var settings = (CMVSettingsEx) request.CmvSettings;
           var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
           return trexCompactionDataProxy.SendCMVDetailsRequest(cmvDetailsRequest, customHeaders).Result;
+#if RAPTOR
         }
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
@@ -82,7 +86,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(cmvDetails);
 
         throw CreateServiceException<DetailedCMVExecutor>((int)raptorResult);
-      }
+#endif
+        }
       finally
       {
         ContractExecutionStates.ClearDynamic();
@@ -91,9 +96,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
 
+#if RAPTOR
     private CMVDetailedResult ConvertResult(TCMVDetails details)
     {
       return new CMVDetailedResult(details.Percents);
@@ -112,6 +120,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         OverrideTargetCMV = settings.OverrideTargetCMV
       };
     }
+
     private TCMVSettingsExt ConvertSettingsExt(CMVSettingsEx settings)
     {
       return new TCMVSettingsExt()
@@ -126,6 +135,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         CMVDetailPercents = settings.CustomCMVDetailTargets
       };
     }
-
+#endif
   }
 }

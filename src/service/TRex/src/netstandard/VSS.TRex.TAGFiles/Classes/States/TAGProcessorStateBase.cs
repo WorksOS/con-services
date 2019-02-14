@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
 using VSS.TRex.TAGFiles.Types;
@@ -307,6 +308,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
       return MachineDirection.Unknown;
     }
 
+    public MachineControlPlatformType GetPlatformType()
+    {
+      return MachineSerialUtilities.MapSerialToModel(HardwareID);
+    }
+
     public virtual void SetResearchData(bool value) => _ResearchData = value;
     public virtual void SetUsingCCA(bool value) => _UsingCCA = value;
 
@@ -397,7 +403,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
-    public byte MachineType { get; set; } = CellPassConsts.MachineTypeNull;
+    public MachineType MachineType { get; set; } = CellPassConsts.MachineTypeNull;
 
     public DateTime UserTimeOffset { get; set; } = DateTime.MinValue;
 

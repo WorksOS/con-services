@@ -27,24 +27,5 @@ namespace VSS.TRex.Tests
 
             Assert.NotNull(render);
         }
-
-        [Fact(Skip = "not implemented")]
-        public void Test_RenderOverlayTile_Execute()
-        {
-        /*    RenderOverlayTile render = new RenderOverlayTile(1,
-                                                             DisplayMode.Height,
-                                                             new XYZ(0, 0),
-                                                             new XYZ(100, 100),
-                                                             true, // CoordsAreGrid
-                                                             100, //PixelsX
-                                                             100, // PixelsY
-                                                             null, // Filter1
-                                                             null, // Filter2
-                                                             long.MinValue,// DesignDescriptor.Null(),
-                                                             Color.Black,
-                                                             string.Empty);
-           Bitmap bmp = render.Execute();
-           Assert.NotNull(bmp);*/
-        }
     }
 }

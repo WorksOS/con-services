@@ -104,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         {
             // Note the fact that this sub grid will be changed and become dirty as a result
             // of the cell pass integration
-            TargetSubGrid.Dirty = true;
+            TargetSubGrid.SetDirty();
 
             // As the integration is into the live database these segments do
             // need to be involved with the cache, so instruct the iterator to
@@ -233,7 +233,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 // they have been created, but never populated with cell passes.
                 // The sub grid persistent layer may implement a rule that no empty
                 // sub grids are saved to disk if this becomes an issue...
-                Result.Dirty = true;
+                Result.SetDirty();
 
                 Result.AllocateLeafFullPassStacks();
                 if (Result.Directory.SegmentDirectory.Count == 0)

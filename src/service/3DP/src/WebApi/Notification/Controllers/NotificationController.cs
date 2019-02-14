@@ -20,7 +20,10 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+#if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
+#endif
 using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
@@ -35,11 +38,12 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class NotificationController : Controller
   {
+#if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
+#endif
     /// <summary>
     /// LoggerFactory for logging
     /// </summary>
@@ -113,12 +117,18 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
+    public NotificationController(
+#if RAPTOR
+      IASNodeClient raptorClient, 
+#endif
+      ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
       IFilterServiceProxy filterServiceProxy, IResponseCache cache, IProjectListProxy projectProxy, IDataCache dataCache)
     {
+#if RAPTOR
       this.raptorClient = raptorClient;
+#endif
       this.logger = logger;
       log = logger.CreateLogger<NotificationController>();
       this.fileRepo = fileRepo;
@@ -249,6 +259,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
         projectDescr.LegacyProjectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, fileUid, userEmailAddress, legacyFileId);
       request.Validate();
+#if RAPTOR
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       await ClearFilesCaches(projectUid, customHeaders);
@@ -256,6 +267,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
+#else
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#endif
     }
 
 
@@ -389,7 +404,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    private async Task<List<Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
+    private async Task<List<Filter.Abstractions.Models.Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)
@@ -397,7 +412,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         return null;
       }
 
-      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter>(f.FilterJson)).ToList();
+      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(f.FilterJson)).ToList();
     }
 
     /// <summary>

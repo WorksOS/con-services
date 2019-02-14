@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.SubGridTrees;
 
 namespace GuidHashCodeBenchmark
 {
@@ -15,13 +16,13 @@ namespace GuidHashCodeBenchmark
       guid = Guid.NewGuid();
     }
 
-    [Benchmark]
+    //[Benchmark]
     public void GuidHashCode_UsingByteArrays()
     {
       int hash = GuidHashCode.Hash_Old(guid);
     }
 
-    [Benchmark]
+    //[Benchmark]
     public void GuidHashCode_UsingLessByteArrays_Safe()
     {
       int hash = GuidHashCode.Hash(guid);
@@ -63,10 +64,90 @@ namespace GuidHashCodeBenchmark
       return (int)(hilo >> 32) ^ (int)hilo;
     }
 
-    [Benchmark]
+    //[Benchmark]
     public void GuidHashCode_UsingSpanByte()
     {
       int hash = HashWithSpan(guid);
+    }
+
+    private void DoSomethingWithAddress(SubGridCellAddress address)
+    {
+      if (address.X == 123456 || address.Y == 45678)
+        Console.WriteLine("Ooops!");
+    }
+
+    private void DoSomethingWithAddressAsStruct(SubGridCellAddress address)
+    {
+      if (address.X == 123456 || address.Y == 45678)
+        Console.WriteLine("Ooops!");
+    }
+
+    [Benchmark]
+    public void ScanAllSetBitsAsSubGridAddresses_AllAlloced()
+    {
+      for (uint lots = 0; lots < 50; lots++)
+        for (uint i = 0; i < 32; i++)
+          for (uint j = 0; j < 32; j++)
+            DoSomethingWithAddress(new SubGridCellAddress(i, j));
+    }
+
+    [Benchmark]
+    public void ScanAllSetBitsAsSubGridAddresses_SingleAlloced()
+    {
+      SubGridCellAddress address = new SubGridCellAddress();
+
+      for (uint lots = 0; lots < 50; lots++)
+      for (uint i = 0; i < 32; i++)
+      for (uint j = 0; j < 32; j++)
+      {
+        address.X = i;
+        address.Y = j;
+
+        DoSomethingWithAddress(address);
+      }
+    }
+
+    [Benchmark]
+    public void ScanAllSetBitsAsSubGridAddresses_SingleAllocedSameStructAsInterface()
+    {
+      SubGridCellAddress address = new SubGridCellAddress(12, 34);
+
+      for (uint lots = 0; lots < 50; lots++)
+      for (uint i = 0; i < 32; i++)
+      for (uint j = 0; j < 32; j++)
+      {
+        DoSomethingWithAddress(address);
+      }
+    }
+
+    [Benchmark]
+    public void ScanAllSetBitsAsSubGridAddresses_SingleAllocedSameStructAsStruct()
+    {
+      SubGridCellAddress address = new SubGridCellAddress(12, 34);
+
+      for (uint lots = 0; lots < 50; lots++)
+      for (uint i = 0; i < 32; i++)
+      for (uint j = 0; j < 32; j++)
+      {
+        DoSomethingWithAddressAsStruct(address);
+      }
+    }
+
+    private void DoSomethingWithAddress2(uint x, uint y)
+    {
+      if (x == 123456 || y == 56789)
+        Console.WriteLine("Ooops!");
+    }
+
+    [Benchmark]
+    public void ScanAllSetBitsAsSubGridAddresses_NoStruct()
+    {
+      for (uint lots = 0; lots < 50; lots++)
+      for (uint i = 0; i < 32; i++)
+      for (uint j = 0; j < 32; j++)
+      {
+        DoSomethingWithAddress2(i, j);
+      }
     }
 
     [GlobalCleanup]

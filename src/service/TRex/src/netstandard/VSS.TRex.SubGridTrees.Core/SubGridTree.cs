@@ -15,9 +15,9 @@ using VSS.TRex.Common.Utilities.ExtensionMethods;
 Glossary
 
 1.	SubGrid : A structure that stores a square section of a much larger grid.
-    The larger grid is an aggregate of the subgrids it contains.
+    The larger grid is an aggregate of the sub grids it contains.
 2.	Cell : An entry in the list of references contained in a sub-grid. A cell
-    may be a reference to another subgrid, a reference to a totally different
+    may be a reference to another sub grid, a reference to a totally different
     class of object, or be null.
 3.	‘On-the-ground cell’: A cell whose purpose is to record information about
     a single ‘grid cell’. Eg: The height, or radio latency, or Caterpillar
@@ -58,7 +58,7 @@ This structure is tended to provide the following capabilities:
 This sub grid tree is not aware of the structured or storage mechanism used for
 the bottom leaf nodes (ie: the nodes containing the actual cell data). Thus, the
 access mechanisms chiefly revolve around sub-grids, rather than actual cells
-themselves, apart from cell X/Y location references used to locate subgrids.
+themselves, apart from cell X/Y location references used to locate sub grids.
 */
 
 namespace VSS.TRex.SubGridTrees
@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public class SubGridTree : ISubGridTree, IEnumerator<ISubGrid>
     {
-        private static ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
 
         /****************************** Internal members **************************/
 
@@ -83,9 +83,9 @@ namespace VSS.TRex.SubGridTrees
         private double MaxOrdinate;
 
         /// <summary>
-        /// The first (top) subgrid in the tree. All other subgrids in the tree descend via this root node.
+        /// The first (top) sub grid in the tree. All other sub grids in the tree descend via this root node.
         /// </summary>
-        public INodeSubGrid Root { get; set; }
+        public INodeSubGrid Root { get; private set; }
 
         /// <summary>
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
@@ -94,12 +94,12 @@ namespace VSS.TRex.SubGridTrees
         public Guid ID { get; set; }
 
         /// <summary>
-        /// The number of levels defined in this subgrid tree. 
+        /// The number of levels defined in this sub grid tree. 
         /// A 6 level tree typically defines leaf cells as relating to on-the-ground cell in the real world
         /// coordinate system (eg: cells tracking passes made by construction machines)
-        /// A 5 level tree typically defines leaf cells that represent some aspect of the subgrids in the 
-        /// 6th layer of the tree containing on-the-ground leaf cells (eg: subgrid existence map)
-        /// This property is assignable only at the time the subgrid tree is constructed.
+        /// A 5 level tree typically defines leaf cells that represent some aspect of the sub grids in the 
+        /// 6th layer of the tree containing on-the-ground leaf cells (eg: sub grid existence map)
+        /// This property is assignable only at the time the sub grid tree is constructed.
         /// </summary>
         public byte NumLevels { get; }
 
@@ -115,9 +115,9 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// The real world size on the ground of a cell in the grid. This applies to tree with different numbers of levels.
-        /// This property is assignable only at the time the subgrid tree is constructed.
+        /// This property is assignable only at the time the sub grid tree is constructed.
         /// </summary>
-        public double CellSize { get { return cellSize; } set { SetCellSize(value); } }
+        public double CellSize { get => cellSize; set => SetCellSize(value); }
 
         /// <summary>
         /// Setter for the CellSize property that sets related members of the class dependent on the value of CellSize
@@ -131,14 +131,14 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// The subgrid factory to create subgrids for the subgrid tree
+        /// The sub grid factory to create sub grids for the sub grid tree
         /// </summary>
-        private ISubGridFactory SubgridFactory { get; }
+        private ISubGridFactory SubGridFactory { get; }
 
-        // CreateNewSubgrid creates a new subgrid relevant to the requested level
-        // in the tree. This new subgrid is not added into the tree structure -
+        // CreateNewSubGrid creates a new sub grid relevant to the requested level
+        // in the tree. This new sub grid is not added into the tree structure -
         // it is unattached until explicitly inserted.
-        public ISubGrid CreateNewSubgrid(byte level) => SubgridFactory.GetSubGrid(this, level);
+        public ISubGrid CreateNewSubGrid(byte level) => SubGridFactory.GetSubGrid(this, level);
 
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
@@ -147,15 +147,15 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// Base Sub Grid Tree constructor. Creates a tree with the requested number of levels, 
-        /// using the requested cell size for leaf cells and the supplied subgrid factory to create
-        /// its leaf and node subgrids
+        /// using the requested cell size for leaf cells and the supplied sub grid factory to create
+        /// its leaf and node sub grids
         /// </summary>
         /// <param name="numLevels"></param>
         /// <param name="cellSize"></param>
-        /// <param name="subGridfactory"></param>
+        /// <param name="subGridFactory"></param>
         public SubGridTree(byte numLevels,
                            double cellSize,
-                           ISubGridFactory subGridfactory)
+                           ISubGridFactory subGridFactory)
         {
             if (numLevels < 1 || numLevels > SubGridTreeConsts.SubGridTreeLevels)
             {
@@ -173,7 +173,7 @@ namespace VSS.TRex.SubGridTrees
             SetCellSize(cellSize);
             IndexOriginOffset = (uint)1 << (NumBitsInKeys - 1);
 
-            SubgridFactory = subGridfactory ?? throw new ArgumentException("A subgrid factory must be specified", nameof(subGridfactory));
+            SubGridFactory = subGridFactory ?? throw new ArgumentException("A sub grid factory must be specified", nameof(subGridFactory));
 
             // Construct the root node for the tree
             InitialiseRoot();
@@ -192,7 +192,7 @@ namespace VSS.TRex.SubGridTrees
         private void InitialiseRoot()
         {
             // Free & recreate the root node
-            Root = CreateNewSubgrid(1) as INodeSubGrid;
+            Root = CreateNewSubGrid(1) as INodeSubGrid;
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// FullCellExtent returns the total extent of cells within this subgrid tree. 
+        /// FullCellExtent returns the total extent of cells within this sub grid tree. 
         /// </summary>
         /// <returns></returns>
         public BoundingIntegerExtent2D FullCellExtent()
@@ -308,9 +308,9 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// ScanSubgrids scans all subgrids at a requested level in the tree that
-        /// intersect the given real world extent. Each subgrid that exists in the
-        /// extent is passed to the OnProcessLeafSubgrid event for processing 
+        /// ScanSubGrids scans all sub grids at a requested level in the tree that
+        /// intersect the given real world extent. Each sub grid that exists in the
+        /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
         /// <param name="extent"></param>
         /// <param name="leafFunctor"></param>
@@ -328,15 +328,15 @@ namespace VSS.TRex.SubGridTrees
                 return false;
             }
 
-            // Given the on-the-ground cell extents we can now ask the subgrids to recursively scan themselves.
+            // Given the on-the-ground cell extents we can now ask the sub grids to recursively scan themselves.
 
             return Root.ScanSubGrids(cellExtent, leafFunctor, nodeFunctor);
         }
 
         /// <summary>
-        /// ScanSubgrids scans all subgrids at a requested level in the tree that
-        /// intersect the given cell address space extent. Each subgrid that exists in the
-        /// extent is passed to the OnProcessLeafSubgrid event for processing 
+        /// ScanSubGrids scans all sub grids at a requested level in the tree that
+        /// intersect the given cell address space extent. Each sub grid that exists in the
+        /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
         /// <param name="extent"></param>
         /// <param name="leafFunctor"></param>
@@ -350,8 +350,8 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// ScanSubgrids scans all subgrids. Each subgrid that exists in the
-        /// extent is passed to the OnProcessLeafSubgrid event for processing 
+        /// ScanAllSubGrids scans all sub grids. Each sub grid that exists in the
+        /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
         /// <param name="leafFunctor"></param>
         /// <param name="nodeFunctor"></param>
@@ -363,13 +363,13 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// ConstructPathToCell constructs all necessary subgrids in all levels in
+        /// ConstructPathToCell constructs all necessary sub grids in all levels in
         /// the tree so that there is a path that can be traversed from the root of the
-        /// tree to the leaf subgrid that will contain the cell identified by
+        /// tree to the leaf sub grid that will contain the cell identified by
         /// CellX and CellY. If PathType is pctCreateLeaf it returns the leaf
-        /// subgrid instance into which the caller may place the cell data. If
-        /// PathType is pctCreatePathToLeaf it returns the node subgrid instance that
-        /// owns the leaf subgrid that contains the cell
+        /// sub grid instance into which the caller may place the cell data. If
+        /// PathType is pctCreatePathToLeaf it returns the node sub grid instance that
+        /// owns the leaf sub grid that contains the cell
         /// </summary>
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
@@ -378,44 +378,42 @@ namespace VSS.TRex.SubGridTrees
         public ISubGrid ConstructPathToCell(uint cellX, uint cellY,
                                             SubGridPathConstructionType pathType)
         {
-            byte subGridCellX, subGridCellY;
-
             ISubGrid result = null;
             INodeSubGrid subGrid = Root;
 
             // First descend through the node levels of the tree
-            for (byte I = 1; I < NumLevels - 1; I++) // Yes, -1 because we choose a subgrid cell from the next level down...
+            for (byte I = 1; I < NumLevels - 1; I++) // Yes, -1 because we choose a sub grid cell from the next level down...
             {
-                if (subGrid.GetSubGridContainingCell(cellX, cellY, out subGridCellX, out subGridCellY))
+                if (subGrid.GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
                 {
-                    // Walk into this cell in the subgrid as the next level down in this path exists
+                    // Walk into this cell in the sub grid as the next level down in this path exists
                     subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY) as INodeSubGrid;
                 }
                 else
                 {
                     if (pathType == SubGridPathConstructionType.ReturnExistingLeafOnly)
                     {
-                        // We do not need to descend further - the leaf subgrid we are interested in does not exist.
-                        break;
+                        // We do not need to descend further - the leaf sub grid we are interested in does not exist.
+                        return null;
                     }
 
                     INodeSubGrid lockSubGrid = subGrid;
-                    // Obtain a lock on the node subgrid to create and add the new child node subgrid to it
+                    // Obtain a lock on the node sub grid to create and add the new child node sub grid to it
                     lock (lockSubGrid)
                     {
-                        // Check to see if another thread was able to create the subgrid before the
+                        // Check to see if another thread was able to create the sub grid before the
                         // lock was obtained. Is so just return it
                         if (subGrid.GetSubGridContainingCell(cellX, cellY, out subGridCellX, out subGridCellY))
                         {
-                            // Walk into this cell in the subgrid as the next level down in this path exists
+                            // Walk into this cell in the sub grid as the next level down in this path exists
                             subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY) as INodeSubGrid;
                         }
                         else
                         {
-                            // We need to create a new subgrid
-                            ISubGrid newSubGrid = CreateNewSubgrid((byte) (I + 1));
+                            // We need to create a new sub grid
+                            ISubGrid newSubGrid = CreateNewSubGrid((byte) (I + 1));
 
-                            // ... and add it into this subgrid as the subgrid cell coordinates
+                            // ... and add it into this sub grid as the sub grid cell coordinates
                             // returned by GetSubGridContainingCell ...
                              subGrid.SetSubGrid(subGridCellX, subGridCellY, newSubGrid);
 
@@ -427,31 +425,31 @@ namespace VSS.TRex.SubGridTrees
             }
 
             // Now check to see if the cell in the node level directly above the leaf
-            // level contains a reference to the appropriate leaf subgrid
+            // level contains a reference to the appropriate leaf sub grid
             if (subGrid != null)
             {
-                // If requested, create the new leaf subgrid, otherwise return the
-                // node subgrid stored in SubGrid to the caller
+                // If requested, create the new leaf sub grid, otherwise return the
+                // node sub grid stored in SubGrid to the caller
                 switch (pathType)
                 {
                     case SubGridPathConstructionType.CreateLeaf:
-                        // Get the local subgrid index in this subgrid that the leaf subgrid that
+                        // Get the local sub grid index in this sub grid that the leaf sub grid that
                         // contains the cell resides at
-                        subGrid.GetSubGridCellIndex(cellX, cellY, out subGridCellX, out subGridCellY);
+                        subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridCellX, out byte subGridCellY);
 
-                        // Check if the leaf subgrid already exists, if not then create it.
+                        // Check if the leaf sub grid already exists, if not then create it.
                         result = subGrid.GetSubGrid(subGridCellX, subGridCellY);
 
                         if (result == null)
                         {
-                            // Lock the node subgrid model while creating the new child leaf subgrid within it.
+                            // Lock the node sub grid model while creating the new child leaf sub grid within it.
                             lock (subGrid)
                             {
                                 // Check another thread has not created it before acquisition of the lock
                                 result = subGrid.GetSubGrid(subGridCellX, subGridCellY);
                                 if (result == null)
                                 {
-                                   result = CreateNewSubgrid(NumLevels);
+                                   result = CreateNewSubGrid(NumLevels);
                                    subGrid.SetSubGrid(subGridCellX, subGridCellY, result);
                                 }
                             }
@@ -464,7 +462,7 @@ namespace VSS.TRex.SubGridTrees
 
                     case SubGridPathConstructionType.ReturnExistingLeafOnly:
 
-                        // Get the local subgrid index in this subgrid that the leaf subgrid that
+                        // Get the local sub grid index in this sub grid that the leaf sub grid that
                         // contains the cell resides at
                         subGrid.GetSubGridCellIndex(cellX, cellY, out subGridCellX, out subGridCellY);
 
@@ -482,18 +480,18 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// CountLeafSubgridsInMemory counts the number of leaf subgrids within the tree that currently reside in memory.
+        /// CountLeafSubGridsInMemory counts the number of leaf sub grids within the tree that currently reside in memory.
         /// </summary>
-        /// <returns>The number of leaf subgrids in the tree</returns>
-        public int CountLeafSubgridsInMemory()
+        /// <returns>The number of leaf sub grids in the tree</returns>
+        public int CountLeafSubGridsInMemory()
         {
             int count = 0;
 
-            return ScanAllSubGrids(subgrid => { count++; return true; }) ? count : -1;
+            return ScanAllSubGrids(subGrid => { count++; return true; }) ? count : -1;
         }
 
         /// <summary>
-        /// LocateSubGridContaining attempts to locate a subgrid at the level in the tree
+        /// LocateSubGridContaining attempts to locate a sub grid at the level in the tree
         /// given by Level that contains the on-the-ground cell identified by
         /// CellX and CellY
         /// </summary>
@@ -505,7 +503,7 @@ namespace VSS.TRex.SubGridTrees
         {
             ISubGrid subGrid = Root;
 
-            // Walk down the tree looking for the subgrid that contains the cell with the given X, Y location
+            // Walk down the tree looking for the sub grid that contains the cell with the given X, Y location
             while (subGrid != null && subGrid.Level < level)
             {
                 if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
@@ -517,7 +515,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// LocateSubGridContaining attempts to locate a subgrid at the level in the tree,
+        /// LocateSubGridContaining attempts to locate a sub grid at the level in the tree,
         /// but defaults to looking at the bottom level CellX and CellY
         /// </summary>
         /// <param name="cellX"></param>
@@ -528,8 +526,8 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
         /// except that it walks as far through the tree as it can up to the designated
-        /// Level to find the requested cell, then returns that subgrid.
-        /// The returned node may be a leaf subgrid or a node subgrid
+        /// Level to find the requested cell, then returns that sub grid.
+        /// The returned node may be a leaf sub grid or a node sub grid
         /// </summary>
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
@@ -537,9 +535,9 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public ISubGrid LocateClosestSubGridContaining(uint cellX, uint cellY, byte level)
         {
-            // Walk down the tree looking for the subgrid that contains the cell
-            // with the given X, Y location. Stop when we reach the leaf subgrid level,
-            // or we can't descend any further through the tree, and return that subgrid.
+            // Walk down the tree looking for the sub grid that contains the cell
+            // with the given X, Y location. Stop when we reach the leaf sub grid level,
+            // or we can't descend any further through the tree, and return that sub grid.
 
             ISubGrid subGrid = Root;
 
@@ -625,11 +623,11 @@ namespace VSS.TRex.SubGridTrees
       }
 
       /// <summary>
-      /// CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
-      /// it to the caller. The newly created subgrid is _not_ attached to this grid.
+      /// CreateUnattachedLeaf Creates an instance of a sub grid leaf node and returns
+      /// it to the caller. The newly created sub grid is _not_ attached to this grid.
       /// </summary>
       /// <returns></returns>
-      public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubgrid(NumLevels) as ILeafSubGrid;
+      public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubGrid(NumLevels) as ILeafSubGrid;
 
       public IEnumerator<ISubGrid> GetEnumerator()
       {
@@ -656,43 +654,43 @@ namespace VSS.TRex.SubGridTrees
       }
 
       /// <summary>
-      /// The header string to be written into a serialized subgrid tree
+      /// The header string to be written into a serialized sub grid tree
       /// </summary>
       /// <returns></returns>
       public virtual string SerialisedHeaderName() => string.Empty;
 
       /// <summary>
-      /// The header version to be written into a serialized subgrid tree
+      /// The header version to be written into a serialized sub grid tree
       /// </summary>
       /// <returns></returns>
       public virtual int SerialisedVersion() => 0;
 
       /// <summary>
-      /// The internal logic to serialise out the content of the subgrid tree using the SubGridTreePersistor
+      /// The internal logic to serialise out the content of the sub grid tree using the SubGridTreePersistor
       /// </summary>
       /// <param name="reader"></param>
       private void SerialiseInReader(BinaryReader reader) => SubGridTreePersistor.Read(this, SerialisedHeaderName(), SerialisedVersion(), reader);
 
       /// <summary>
-      /// The internal logic to serialise in the content of the subgrid tree using the SubGridTreePersistor
+      /// The internal logic to serialise in the content of the sub grid tree using the SubGridTreePersistor
       /// </summary>
       /// <param name="writer"></param>
       private void SerialiseOutWriter(BinaryWriter writer) => SubGridTreePersistor.Write(this, SerialisedHeaderName(), SerialisedVersion(), writer);
 
       /// <summary>
-      /// Serializes the content of the subgrid tree to a byte array
+      /// Serializes the content of the sub grid tree to a byte array
       /// </summary>
       /// <returns></returns>
       public byte[] ToBytes() => FromToBytes.ToBytes(SerialiseOutWriter);
 
       /// <summary>
-      /// Deserializes the content of the subgrid tree from a byte array
+      /// Deserializes the content of the sub grid tree from a byte array
       /// </summary>
       /// <returns></returns>
       public void FromBytes(byte[] bytes) => FromToBytes.FromBytes(bytes, SerialiseInReader);
 
       /// <summary>
-      /// Serializes the content of the subgrid tree to a memory stream
+      /// Serializes the content of the sub grid tree to a memory stream
       /// </summary>
       /// <returns></returns>
       public MemoryStream ToStream() => FromToBytes.ToStream(SerialiseOutWriter);
@@ -700,7 +698,7 @@ namespace VSS.TRex.SubGridTrees
       public void ToStream(Stream stream) => FromToBytes.ToStream(stream, SerialiseOutWriter);
 
       /// <summary>
-      /// Deserializes the content of the subgrid tree from a memory stream
+      /// Deserializes the content of the sub grid tree from a memory stream
       /// </summary>
       /// <returns></returns>
       public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);

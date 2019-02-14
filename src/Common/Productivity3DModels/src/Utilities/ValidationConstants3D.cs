@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Models.Utilities
     /// <summary>
     /// Default spacing interval for the sampled points.
     /// </summary>
-    public const double DEFAULT_SPACING_INERVAL = 1.0;
+    public const double DEFAULT_SPACING_INTERVAL = 1.0;
 
     /// <summary>
     /// Production data minimum patch size.

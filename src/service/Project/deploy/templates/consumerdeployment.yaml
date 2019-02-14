@@ -1,9 +1,9 @@
 {{- $name :=       printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
-{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-cfg-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}-consumer
+  name: {{ $name }}-csr
   labels:
     app: {{ $name }}
 spec:
@@ -29,7 +29,7 @@ spec:
             name: {{ .Values.globalConfig }}-secret
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
-        name: {{ $name }}-consumer     
+        name: {{ $name }}-csr     
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:

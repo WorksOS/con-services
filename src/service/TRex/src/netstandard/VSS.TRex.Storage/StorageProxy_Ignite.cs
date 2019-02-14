@@ -97,8 +97,8 @@ namespace VSS.TRex.Storage
     /// </summary>
     /// <param name="dataModelID"></param>
     /// <param name="streamName"></param>
-    /// <param name="subgridX"></param>
-    /// <param name="subgridY"></param>
+    /// <param name="subGridX"></param>
+    /// <param name="subGridY"></param>
     /// <param name="segmentIdentifier"></param>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
@@ -106,7 +106,7 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
       string streamName,
-      uint subgridX, uint subgridY,
+      uint subGridX, uint subGridY,
       string segmentIdentifier,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
@@ -114,7 +114,7 @@ namespace VSS.TRex.Storage
     {
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subgridX, subgridY, segmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subGridX, subGridY, segmentIdentifier);
 
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
@@ -191,15 +191,15 @@ namespace VSS.TRex.Storage
     /// </summary>
     /// <param name="dataModelID"></param>
     /// <param name="streamName"></param>
-    /// <param name="subgridX"></param>
-    /// <param name="subgridY"></param>
+    /// <param name="subGridX"></param>
+    /// <param name="subGridY"></param>
     /// <param name="segmentIdentifier"></param>
     /// <param name="streamType"></param>
     /// <param name="stream"></param>
     /// <returns></returns>
     public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
       string streamName,
-      uint subgridX, uint subgridY,
+      uint subGridX, uint subGridY,
       string segmentIdentifier,
       FileSystemStreamType streamType,
       out MemoryStream stream)
@@ -208,7 +208,7 @@ namespace VSS.TRex.Storage
 
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subgridX, subgridY, segmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subGridX, subGridY, segmentIdentifier);
 
         //Log.LogInformation($"Getting key:{streamName}");
 

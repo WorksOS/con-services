@@ -5,6 +5,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Common;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -44,10 +45,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           case VolumeCalcType.GroundToDesign:
             baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, OperationType.Profiling);
             break;
           case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
+            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, OperationType.Profiling);
             topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
             break;
         }

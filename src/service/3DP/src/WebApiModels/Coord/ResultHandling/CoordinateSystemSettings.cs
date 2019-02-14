@@ -1,6 +1,7 @@
 ﻿using System;
-using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
 {
@@ -74,7 +75,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
     /// 4 - Seven Parameters
     /// 5 - Grid
     /// </summary>
-    public TCoordinateSystemDatumMethod datumMethodType { get; private set; }
+    public CoordinateSystemDatumMethodType datumMethodType { get; private set; }
     /// <summary>
     /// The coordinate system latitude shift for grid datum file name.
     /// Grid transformation method.
@@ -158,7 +159,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
     /// 2 - Constant Separation Geoid 
     /// 3 - Site Calibrated Geoid Record
     /// </summary>
-    public TCoordinateSystemGeoidMethod geoidMethodType { get; private set; }
+    public CoordinateSystemGeoidMethodType geoidMethodType { get; private set; }
     /// <summary> 
     /// The coordinate system grid geoid model file name.
     /// Grid Geoid method.
@@ -214,7 +215,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
     /// <summary>
     /// The coordinate system projection parameters.
     /// </summary>
-    public TProjectionParameters projectionParameters { get; private set; }
+    public ProjectionParameter[] projectionParameters { get; private set; }
     /// <summary>
     /// The coordinate system azimuth direction.
     /// </summary>
@@ -272,7 +273,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
       // Datum...
       string datumName,
       string datumMethod,
-      TCoordinateSystemDatumMethod datumMethodType,
+      CoordinateSystemDatumMethodType datumMethodType,
       string latitudeShiftDatumGridFileName,
       string longitudeShiftDatumGridFileName,
       bool isDatumGridHeightShiftDefined,
@@ -289,7 +290,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
       // Geoid...
       string geoidName,
       string geoidMethod,
-      TCoordinateSystemGeoidMethod geoidMethodType,
+      CoordinateSystemGeoidMethodType geoidMethodType,
       string geoidFileName,
       double geoidConstantSeparation,
       double geoidOriginX,
@@ -301,7 +302,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
       double geoidScaleFactor,
       // Projection
       string projectionType,
-      TProjectionParameters projectionParameters,
+      ProjectionParameter[] projectionParameters,
       string azimuthDirection,
       string positiveCoordinateDirection,
       // Others...

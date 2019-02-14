@@ -1009,9 +1009,9 @@ namespace TAGFiles.Tests
       var matcher = new TAGMachineTypeValueMatcher(sink, state);
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0),
-              100),
+          (byte)MachineType.Dozer),
           "Matcher process function returned false");
-      Assert.Equal(100, sink.MachineType);
+      Assert.Equal(MachineType.Dozer, sink.MachineType);
     }
 
     [Fact()]
@@ -1028,10 +1028,6 @@ namespace TAGFiles.Tests
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 1),
           "Matcher process function returned false");
       sink.ElevationMappingMode.Should().Be(ElevationMappingMode.MinimumElevation);
-
-      Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 2),
-        "Matcher process function returned false");
-      sink.ElevationMappingMode.Should().Be(ElevationMappingMode.MaximumElevation);
 
       Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0), 3),
           "Matcher process function returned false");

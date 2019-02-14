@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// </summary>
   public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>, IClientHeightLeafSubGrid
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
 
     /// <summary>
     /// Surveyed surface map records which cells hold cell pass heights that were derived
@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientHeightLeafSubGrid()
     {
@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientHeightLeafSubGrid() : base()
@@ -66,7 +66,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightAndTimeResults);
 
-      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
     }
@@ -79,7 +79,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightLeaf);
 
-      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
     }
@@ -132,7 +132,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in this client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf sub grid
     /// </summary>
     /// <returns></returns>
     public override float NullCell() => Consts.NullHeight;
@@ -190,8 +190,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       SurveyedSurfaceMap.Write(writer, buffer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
-      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
+      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
     }
 
     /// <summary>
@@ -207,8 +207,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       SurveyedSurfaceMap.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
+      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       return base.IndicativeSizeInBytes() + 
              SurveyedSurfaceMap.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float);
+             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
     }
   }
 }

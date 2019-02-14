@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net471;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>VSS.Productivity3D.Common</AssemblyName>
     <PackageId>Common</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -29,8 +29,21 @@
     <PackageReference Include="NodaTime" Version="2.4.2" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.58" />
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.76" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+    <Compile Remove=".\Executors\CellDatumExecutor.cs" />
+    <Compile Remove=".\Interfaces\IASNodeClient.cs" />
+    <Compile Remove=".\Interfaces\ITagProcessor.cs" />
+    <Compile Remove=".\Proxies\ASNodeClient.cs" />
+    <Compile Remove=".\Proxies\RaptorConverters.cs" />
+    <Compile Remove=".\Proxies\TAGProcessor.cs" />
+    <Compile Remove=".\ResultHandling\RaptorResult.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +54,7 @@
     <ProjectReference Include="..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
   </ItemGroup>
   
   <ItemGroup>
@@ -75,7 +89,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
