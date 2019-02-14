@@ -303,7 +303,8 @@ namespace VSS.TRex.Tests.SubGridTrees
           tree.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreatePathToLeaf);
 
           var subGrid = tree.LocateClosestSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels);
-          subGrid.Should().BeNull();
+          subGrid.Should().NotBeNull();
+          subGrid.Level.Should().Be(SubGridTreeConsts.SubGridTreeLevels - 1);
 
           tree.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreateLeaf);
 
