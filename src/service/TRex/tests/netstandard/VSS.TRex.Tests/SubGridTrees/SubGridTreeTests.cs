@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
@@ -264,22 +265,50 @@ namespace VSS.TRex.Tests.SubGridTrees
                           "Cell location not at the origin [IndexOriginOffset, IndexOriginOffset] as expected");
         }
 
-        [Fact(Skip = "Not Implemented")]
-        public void Test_SubGridTree_LocateSubGridContaining_SpecificLevel()
+        [Fact]
+        public void Test_SubGridTree_LocateSubGridContaining_SpecificLevel_EmptyTree()
         {
-            Assert.True(false,"Not Implemented");
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var root = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, 1);
+          root.Should().NotBeNull();
+
+          var leaf = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels);
+          leaf.Should().BeNull();
         }
 
-        [Fact(Skip = "Not Implemented")]
-        public void Test_SubGridTree_LocateSubGridContaining_BottomLevel()
+        [Fact]
+        public void Test_SubGridTree_LocateSubGridContaining_BottomLevel_EmptyTree()
         {
-            Assert.True(false,"Not Implemented");
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      
+          var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
+          subGrid.Should().BeNull();
         }
 
-        [Fact(Skip = "Not Implemented")]
-        public void Test_SubGridTree_LocateSubGridContaining_LocateClosestSubGridContaining()
+        [Fact]
+        public void Test_SubGridTree_LocateSubGridContaining_BottomLevel_NonEmptyTree()
         {
-            Assert.True(false,"Not Implemented");
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+          tree.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreateLeaf);
+
+          var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
+          subGrid.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Test_SubGridTree_LocateSubGridContaining_LocateClosestSubGridContaining_NoLeaves()
+        {
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+          tree.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreatePathToLeaf);
+
+          var subGrid = tree.LocateClosestSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels);
+          subGrid.Should().BeNull();
+
+          tree.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreateLeaf);
+
+          subGrid = tree.LocateClosestSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels);
+          subGrid.Should().NotBeNull();
         }
 
         [Fact]
