@@ -347,7 +347,7 @@ namespace VSS.TRex.SubGrids
                 {
                     float ProdHeight;
                     long ProdTime;
-                    float SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
+                    var SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
                     long SurveyedSurfaceCellTime = SurfaceElevations.Times[x, y];
 
                     // If we got back a surveyed surface elevation...

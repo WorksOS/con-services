@@ -11,14 +11,14 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 {
   /// <summary>
-  /// The task responsible for receiving subgrids to be processed into a TIN surface
+  /// The task responsible for receiving sub grids to be processed into a TIN surface
   /// </summary>
   public class SurfaceTask : PipelinedSubGridTask
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// The collection of subgrids being collected for a patch response
+    /// The collection of sub grids being collected for a patch response
     /// </summary>
     public List<GenericLeafSubGrid_Float> SurfaceSubgrids = new List<GenericLeafSubGrid_Float>();
 
@@ -36,7 +36,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     }
 
     /// <summary>
-    /// Accept a subgrid response from the processing engine and incorporate into the result for the request.
+    /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
     /// <param name="response"></param>
     /// <returns></returns>
@@ -52,11 +52,11 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 
       if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
       {
-        Log.LogWarning("No subgrid responses returned");
+        Log.LogWarning("No sub grid responses returned");
         return false;
       }
 
-      // Convert the ClientHeightLeafSubgrid into a GenericLeafSubGrid_Float...
+      // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid_Float...
 
       foreach (var subGrid in subGridResponses)
       {

@@ -63,7 +63,7 @@ namespace VSS.TRex.SiteModels
 
     /// <summary>
     /// Loads the content of the proofing run list from the persistent store. If there is no item in the persistent store containing
-    /// proofing runs for this sitemodel them return an empty list.
+    /// proofing runs for this site model them return an empty list.
     /// </summary>
     public void LoadFromPersistentStore()
     {

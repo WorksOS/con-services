@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Tests the assignation of a height and time leaf subgrid to a height subgrid
+    /// Tests the assignation of a height and time leaf sub grid to a height sub grid
     /// </summary>
     [Fact(Skip = "Not Implemented")]
     public void Test_HeightClientLeafSubGridTests_Assign()

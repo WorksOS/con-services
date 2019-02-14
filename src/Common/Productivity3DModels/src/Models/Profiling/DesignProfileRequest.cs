@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Models.Models.Profiling
 {
   /// <summary>
   /// The representation of a summary volumes request

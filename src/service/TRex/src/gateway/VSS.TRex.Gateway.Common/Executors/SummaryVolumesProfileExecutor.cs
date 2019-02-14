@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -8,20 +9,21 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.Models.Profiling;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common;
-using VSS.TRex.Profiling.GridFabric.Requests;
+using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
-using VSS.TRex.Types;
-using VSS.TRex.Profiling.Models;
-using VSS.TRex.Filters;
+using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Profiling.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
   /// <summary>
-  /// Processes the request to get Summary Volumes statistics.
+  /// Processes the request to get Summary Volumes profile.
   /// </summary>
   public class SummaryVolumesProfileExecutor : BaseExecutor
   {
@@ -42,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       SummaryVolumesProfileDataRequest request = item as SummaryVolumesProfileDataRequest;
       if (request == null)
-        ThrowRequestTypeCastException<SummaryVolumesDataRequest>();
+        ThrowRequestTypeCastException<SummaryVolumesProfileDataRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
       var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
@@ -64,7 +66,6 @@ namespace VSS.TRex.Gateway.Common.Executors
         ReturnAllPassesAndLayers = false,
         VolumeType = ConvertVolumesType(request.VolumeCalcType)
       };
-
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var svRequest = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
@@ -104,9 +105,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    private SummaryVolumesProfileResult ConvertResult(ProfileRequestResponse<SummaryVolumeProfileCell> result)
+    private ProfileDataResult<SummaryVolumesProfileCell> ConvertResult(ProfileRequestResponse<SummaryVolumeProfileCell> result)
     {
-      var profileCells = result.ProfileCells.Select(pc => 
+      List<SummaryVolumesProfileCell> profileCells = result.ProfileCells.Select(pc => 
         new SummaryVolumesProfileCell(
           pc.Station, 
           pc.InterceptLength, 
@@ -117,9 +118,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           pc.LastCellPassElevation2))
         .ToList();
 
-      return new SummaryVolumesProfileResult(result.GridDistanceBetweenProfilePoints, profileCells);
+      return new ProfileDataResult<SummaryVolumesProfileCell>(result.GridDistanceBetweenProfilePoints, profileCells);
     }
-
-
   }
 }

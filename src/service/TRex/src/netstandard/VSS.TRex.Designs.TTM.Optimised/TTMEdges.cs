@@ -16,7 +16,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     public int[] Items;
 
     /// <summary>
-    /// Reads in the collection of esged from the TIN model using the provided reader
+    /// Reads in the collection of edges from the TIN model using the provided reader
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="header"></param>
@@ -36,7 +36,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new TTMFileReadException($"Failed to read edges", E);
+        throw new TTMFileReadException("Failed to read edges", E);
       }
     }
   }

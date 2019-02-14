@@ -4,12 +4,12 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Machines;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling;
@@ -72,6 +72,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
         // Register a DI factory for ImmutableSpatialAffinityPartitionMap to represent an affinity partition map with just one partition
         .Add(x => x.AddSingleton<IImmutableSpatialAffinityPartitionMap>(mockImmutableSpatialAffinityPartitionMap.Object))
+
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
 
         .Complete();
     }

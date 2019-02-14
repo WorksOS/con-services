@@ -91,7 +91,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         // todo possibly, when SDK avail
         /* var existanceMaps = DIContext.Obtain<IExistenceMaps>();
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubgridOverlayIndex());
+          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubGridOverlayIndex());
           */
 
         log.LogInformation($"#Out# UpdateSVLDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");

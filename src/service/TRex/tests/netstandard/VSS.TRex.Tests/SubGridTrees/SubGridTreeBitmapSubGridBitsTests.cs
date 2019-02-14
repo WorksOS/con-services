@@ -400,7 +400,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal((bits1 | bits2), bits1);
 
             bits2.SetBit(1, 1);
-            Assert.True((bits1 | bits2).IsFull(), "ORing after clearin/setting bits did not return full mask");
+            Assert.True((bits1 | bits2).IsFull(), "ORing after clearing/setting bits did not return full mask");
         }
 
         [Fact]

@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
@@ -130,9 +132,9 @@ namespace VSS.MasterData.Proxies
           if (!okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
-
+            var serviceException = ParseServiceError(result.StatusCode, contents);
             // The contents will contain a message from the end point s
-            throw new HttpRequestException($"{result.StatusCode} {contents}");
+            throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
           return result.Content;
@@ -203,7 +205,9 @@ namespace VSS.MasterData.Proxies
           if (!okCodes.Contains(result.StatusCode))
           {
             log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
-            throw new HttpRequestException($"{result.StatusCode} {contents}");
+           
+            var serviceException = ParseServiceError(result.StatusCode, contents);
+            throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
           log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.StatusCode}");
@@ -276,7 +280,8 @@ namespace VSS.MasterData.Proxies
           {
             var contents = await result.Content.ReadAsStringAsync();
             log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
-            throw new HttpRequestException($"{result.StatusCode} {contents}");
+            var serviceException = ParseServiceError(result.StatusCode, contents);
+            throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
 
           log.LogDebug($"Request returned status {result.StatusCode}");
@@ -295,5 +300,28 @@ namespace VSS.MasterData.Proxies
       }
     }
 
+    /// <summary>
+    /// Attempt to parse the result body, and convert to a service exception
+    /// Returns null if not in the correct format (will not throw a new exception)
+    /// </summary>
+    /// <returns>Service Exception if in the correct format, else null</returns>
+    private static ServiceException ParseServiceError(HttpStatusCode code, string contents)
+    {
+      ServiceException serviceException = null;
+      // Attempt to parse the service exception result
+      try
+      {
+        var serviceExecutionResult = JsonConvert.DeserializeObject<ContractExecutionResult>(contents);
+        serviceException = new ServiceException(code, serviceExecutionResult);
+      }
+      catch
+      {
+        // ignored
+        // Not the type we wanted, move along
+        serviceException = null;
+      }
+
+      return serviceException;
+    }
   }
 }

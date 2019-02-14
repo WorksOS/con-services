@@ -200,7 +200,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       // Add the leaf to the site model existence map
       siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
-      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(1);
+      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(1);
 
       // Add three passes, each separated by 10 seconds and descending by 100mm each pass
       for (int i = 0; i < PASSES_IN_DECREMENTING_ELEVATION_LIST; i++)

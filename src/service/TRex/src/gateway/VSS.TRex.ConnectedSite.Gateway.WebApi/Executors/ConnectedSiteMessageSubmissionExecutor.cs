@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -87,15 +88,25 @@ namespace VSS.TRex.ConnectedSite.Gateway.Executors
               default:
                 throw new NotImplementedException("Unknown ConnectedSite Message Type");
             }
-            var response = await client.PostMessage(message);
+            if (!(message.PlatformType == Common.Types.MachineControlPlatformType.EC520 
+              || message.PlatformType == Common.Types.MachineControlPlatformType.UNKNOWN))
+            {
+              var response = await client.PostMessage(message);
 
-            if (response.IsSuccessStatusCode)
-            {
-              result = ConnectedSiteMessageResult.Create(0, await response.Content.ReadAsStringAsync());
-            } else
-            {
-              result = ConnectedSiteMessageResult.Create((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+              if (response.IsSuccessStatusCode)
+              {
+                result = ConnectedSiteMessageResult.Create(0, await response.Content.ReadAsStringAsync());
+              }
+              else
+              {
+                result = ConnectedSiteMessageResult.Create((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+              }
             }
+            else
+            {
+              result = ConnectedSiteMessageResult.Create((int)HttpStatusCode.PreconditionFailed, $"Received a {message.PlatformType} tag, no message sent");
+            }
+
           }
         }
       }

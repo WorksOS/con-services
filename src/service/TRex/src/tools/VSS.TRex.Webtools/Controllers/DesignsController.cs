@@ -193,7 +193,7 @@ namespace VSS.TRex.Webtools.Controllers
         var design = DIContext.Obtain<IDesignManager>()
           .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), extents);
 
-        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubGridOverlayIndex());
       }
       catch (Exception e)
       {
@@ -218,7 +218,7 @@ namespace VSS.TRex.Webtools.Controllers
         var design = DIContext.Obtain<ISurveyedSurfaceManager>()
           .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), surveyedUtc, extents);
 
-        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, design.ID, TTM.SubGridOverlayIndex());
       }
       catch (Exception e)
       {
@@ -245,7 +245,7 @@ namespace VSS.TRex.Webtools.Controllers
           .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName, 0), extents);
 
         // todo when SDK avail
-        //DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, alignmentDesign.SubgridOverlayIndex());
+        //DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, alignmentDesign.SubGridOverlayIndex());
       }
       catch (Exception e)
       {

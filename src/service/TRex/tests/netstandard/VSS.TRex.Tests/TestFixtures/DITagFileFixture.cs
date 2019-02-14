@@ -3,7 +3,6 @@ using System.IO;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
@@ -30,7 +29,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITagFileFixture : IDisposable
+  public class DITagFileFixture : DILoggingFixture, IDisposable
   {
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
@@ -102,15 +101,13 @@ namespace VSS.TRex.Tests.TestFixtures
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
 
         .Add(x => AddProxyCacheFactoriesToDI())
 
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
@@ -133,6 +130,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public virtual void Dispose()
     {
+      base.Dispose();
+
       DIBuilder.Eject();
     }
   }
