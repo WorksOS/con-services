@@ -12,13 +12,13 @@ using VSS.TRex.Common.Utilities;
 namespace VSS.TRex.Pipelines
 {
   /// <summary>
-  /// RequestAnalyzer examines the set of parameters defining a request and determines the full set of subgrids
+  /// RequestAnalyzer examines the set of parameters defining a request and determines the full set of sub grids
   /// the need to be requested, and the production data/surveyed surface aspects of those requests.
-  /// Its implementation was modeled on the activities of the Legacy TSVOICSubGridSubmissionThread class.
+  /// Its implementation was modeled on the activities of the Legacy SVO ICSubGridSubmissionThread class.
   /// </summary>
   public class RequestAnalyser : IRequestAnalyser
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<RequestAnalyser>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<RequestAnalyser>();
 
     private IExistenceMaps existenceMaps = null;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
@@ -29,18 +29,18 @@ namespace VSS.TRex.Pipelines
     public ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
-    /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+    /// The resulting bitmap sub grid tree mask of all sub grids containing production data that need to be requested
     /// </summary>
     public ISubGridTreeBitMask ProdDataMask { get; set; }
 
     /// <summary>
-    /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+    /// The resulting bitmap sub grid tree mask of all sub grids containing production data that need to be requested
     /// </summary>
-    public ISubGridTreeBitMask SurveydSurfaceOnlyMask { get; set; }
+    public ISubGridTreeBitMask SurveyedSurfaceOnlyMask { get; set; }
 
     /// <summary>
     /// A cell coordinate level (rather than world coordinate) boundary that acts as an optional final override of the spatial area
-    /// within which subgrids are being requested
+    /// within which sub grids are being requested
     /// </summary>
     public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
 
@@ -50,29 +50,29 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
-    public long TotalNumberOfSubgridsAnalysed { get; set; }
-    public long TotalNumberOfSubgridsToRequest { get; set; }
-    public long TotalNumberOfCandidateSubgrids { get; set; }
+    public long TotalNumberOfSubGridsAnalysed { get; set; }
+    public long TotalNumberOfSubGridsToRequest { get; set; }
+    public long TotalNumberOfCandidateSubGrids { get; set; }
 
     protected bool ScanningFullWorldExtent;
 
     /// <summary>
-    /// Indicates if the request analyzer is only counting the subgrid requests that will be made
+    /// Indicates if the request analyzer is only counting the sub grid requests that will be made
     /// </summary>
     private bool CountingRequestsOnly { get; set; } = false;
 
     /// <summary>
-    /// Indicates if only a single page of subgrid requests will be processed
+    /// Indicates if only a single page of sub grid requests will be processed
     /// </summary>
     public bool SubmitSinglePageOfRequests { get; set; } = false;
 
     /// <summary>
-    /// The number of subgrids present in a requested page of subgrids
+    /// The number of sub grids present in a requested page of sub grids
     /// </summary>
     public int SinglePageRequestSize { get; set; } = -1;
 
     /// <summary>
-    /// The page number of the page of subgrids to be requested
+    /// The page number of the page of sub grids to be requested
     /// </summary>
     public int SinglePageRequestNumber { get; set; } = -1;
 
@@ -82,11 +82,11 @@ namespace VSS.TRex.Pipelines
     public RequestAnalyser()
     {
       ProdDataMask = new SubGridTreeSubGridExistenceBitMask();
-      SurveydSurfaceOnlyMask = new SubGridTreeSubGridExistenceBitMask();
+      SurveyedSurfaceOnlyMask = new SubGridTreeSubGridExistenceBitMask();
     }
 
     /// <summary>
-    /// Constructor accepting the pipeline (analyzer client) and the bounding world coordinate extents within which subgrids
+    /// Constructor accepting the pipeline (analyzer client) and the bounding world coordinate extents within which sub grids
     /// are being requested
     /// </summary>
     /// <param name="pipeline"></param>
@@ -103,9 +103,9 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     protected void PerformScanning()
     {
-      TotalNumberOfSubgridsToRequest = 0;
-      TotalNumberOfSubgridsAnalysed = 0;
-      TotalNumberOfCandidateSubgrids = 0;
+      TotalNumberOfSubGridsToRequest = 0;
+      TotalNumberOfSubGridsAnalysed = 0;
+      TotalNumberOfCandidateSubGrids = 0;
 
       BoundingWorldExtent3D FilterRestriction = new BoundingWorldExtent3D();
 
@@ -167,19 +167,19 @@ namespace VSS.TRex.Pipelines
     }
 
     /// <summary>
-    /// Performs scanning operations across subgrids, determining if they should be included in the request
+    /// Performs scanning operations across sub grids, determining if they should be included in the request
     /// </summary>
     /// <param name="SubGrid"></param>
     /// <returns></returns>
     protected bool SubGridEvent(ISubGrid SubGrid)
     {
-      // The given subgrid is a leaf subgrid containing a bit mask recording subgrid inclusion in the overall subgrid map 
-      // being iterated over. This map includes, production data only subgrids, surveyed surface data only subgrids and
-      // subgrids that will have both types of data retrieved for them. The analyzer needs to separate out the two in terms
-      // of the masks of subgrids that needs to be queried, one for production data (and optionally surveyed surface data) and 
+      // The given sub grid is a leaf sub grid containing a bit mask recording sub grid inclusion in the overall sub grid map 
+      // being iterated over. This map includes, production data only sub grids, surveyed surface data only sub grids and
+      // sub grids that will have both types of data retrieved for them. The analyzer needs to separate out the two in terms
+      // of the masks of sub grids that needs to be queried, one for production data (and optionally surveyed surface data) and 
       // one for surveyed surface data only. 
-      // Get the matching subgrid from the production data only bit mask subgrid tree and use this subgrid to be able to separate
-      // the two sets of subgrids
+      // Get the matching sub grid from the production data only bit mask sub grid tree and use this sub grid to be able to separate
+      // the two sets of sub grids
 
       SubGridTreeLeafBitmapSubGrid ProdDataSubGrid =
         Pipeline.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as
@@ -198,12 +198,12 @@ namespace VSS.TRex.Pipelines
       }
       else
       {
-        // Calculate the range of cells in this subgrid we need to scan and request. The steps below
+        // Calculate the range of cells in this sub grid we need to scan and request. The steps below
         // calculate the on-the-ground cell indices of the world coordinate bounding extents, then
-        // determine the subgrid indices of the cell within this subgrid that contains those
-        // cells, then determines the subgrid extents in this subgrid to scan over
+        // determine the sub grid indices of the cell within this sub grid that contains those
+        // cells, then determines the sub grid extents in this sub grid to scan over
         // Remember, each on-the-ground element (bit) in the existence map represents an
-        // entire on-the-ground subgrid (32x32 OTG cells) in the matching sub grid tree.
+        // entire on-the-ground sub grid (32x32 OTG cells) in the matching sub grid tree.
 
         // Expand the number of cells scanned to create the rendered tile by a single cell width
         // on all sides to ensure the boundaries of tiles are rendered right to the edge of the tile.
@@ -224,7 +224,7 @@ namespace VSS.TRex.Pipelines
         SubGrid.GetSubGridCellIndex(ScanMaxX, ScanMaxY, out ScanMaxXb, out ScanMaxYb);
       }
 
-      // Iterate over the sub range of cells (bits) in this subgrid and request the matching subgrids
+      // Iterate over the sub range of cells (bits) in this sub grid and request the matching sub grids
 
       for (byte I = ScanMinXb; I <= ScanMaxXb; I++)
       {
@@ -232,24 +232,24 @@ namespace VSS.TRex.Pipelines
         {
           if (CastSubGrid.Bits.BitSet(I, J))
           {
-            TotalNumberOfCandidateSubgrids++;
+            TotalNumberOfCandidateSubGrids++;
 
-            // If there is a design subgrid overlay map supplied to the renderer then
-            // check to see if this subgrid is in the map, and if so then continue. If it is
-            // not in the map then it does not need to be considered. Design subgrid overlay
-            // indices contain a single bit for each on the ground subgrid (32x32 cells),
+            // If there is a design sub grid overlay map supplied to the renderer then
+            // check to see if this sub grid is in the map, and if so then continue. If it is
+            // not in the map then it does not need to be considered. Design sub grid overlay
+            // indices contain a single bit for each on the ground sub grid (32x32 cells),
             // which means they are only 5 levels deep. This means the (OriginX + I, OriginY + J)
-            // origin coordinates correctly identify the single bits that denote the subgrids.
+            // origin coordinates correctly identify the single bits that denote the sub grids.
 
-            if (Pipeline.DesignSubgridOverlayMap != null)
+            if (Pipeline.DesignSubGridOverlayMap != null)
             {
-              if (!Pipeline.DesignSubgridOverlayMap.GetCell(SubGrid.OriginX + I, SubGrid.OriginY + J))
+              if (!Pipeline.DesignSubGridOverlayMap.GetCell(SubGrid.OriginX + I, SubGrid.OriginY + J))
                 continue;
             }
 
-            // If there is a spatial filter in play then determine if the subgrid about to be requested intersects the spatial filter extent
+            // If there is a spatial filter in play then determine if the sub grid about to be requested intersects the spatial filter extent
 
-            bool SubgridSatisfiesFilter = true;
+            bool SubGridSatisfiesFilter = true;
             foreach (ICombinedFilter filter in Pipeline.FilterSet.Filters)
             {
               if (filter == null)
@@ -259,7 +259,7 @@ namespace VSS.TRex.Pipelines
 
               if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
               {
-                SubgridSatisfiesFilter =
+                SubGridSatisfiesFilter =
                   spatialFilter.Fence.IntersectsExtent(
                     CastSubGrid.Owner.GetCellExtents(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J));
               }
@@ -270,34 +270,34 @@ namespace VSS.TRex.Pipelines
                   CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J,
                     out double centerX, out double centerY);
 
-                  SubgridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
+                  SubGridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
                     spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2;
                 }
               }
 
-              if (!SubgridSatisfiesFilter)
+              if (!SubGridSatisfiesFilter)
                 break;
             }
 
-            if (SubgridSatisfiesFilter)
+            if (SubGridSatisfiesFilter)
             {
-              TotalNumberOfSubgridsAnalysed++;
+              TotalNumberOfSubGridsAnalysed++;
 
               if (SubmitSinglePageOfRequests)
               {
-                if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize < SinglePageRequestNumber)
+                if ((TotalNumberOfSubGridsAnalysed - 1) / SinglePageRequestSize < SinglePageRequestNumber)
                   continue;
 
-                if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
-                  return false; // Returning false halts scanning of subgrids
+                if ((TotalNumberOfSubGridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
+                  return false; // Returning false halts scanning of sub grids
               }
 
-              // Add the leaf subgrid identified by the address below, along with the production data and surveyed surface
-              // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
+              // Add the leaf sub grid identified by the address below, along with the production data and surveyed surface
+              // flags to the sub grid tree being used to aggregate all the sub grids that need to be queried for the request
 
-              TotalNumberOfSubgridsToRequest++;
+              TotalNumberOfSubGridsToRequest++;
 
-              // If a single page of subgrids is being requested determine if the subgrid in question is a 
+              // If a single page of sub grids is being requested determine if the sub grid in question is a 
               // part of the page, and if the page has been filled yet.
               if (CountingRequestsOnly)
                 continue;
@@ -309,9 +309,9 @@ namespace VSS.TRex.Pipelines
               }
               else
               {
-                // Note: This is ONLY recording the subgrids that have surveyed surface data required, but not production data 
+                // Note: This is ONLY recording the sub grids that have surveyed surface data required, but not production data 
                 // as a delta to the production data requests
-                SurveydSurfaceOnlyMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);
+                SurveyedSurfaceOnlyMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);
               }
             }
           }
@@ -322,17 +322,17 @@ namespace VSS.TRex.Pipelines
     }
 
     /// <summary>
-    /// Counts the number of subgrids that will be submitted to the processing engine given the request parameters
+    /// Counts the number of sub grids that will be submitted to the processing engine given the request parameters
     /// supplied to the request analyzer.
     /// </summary>
     /// <returns></returns>
-    public long CountOfSubgridsThatWillBeSubmitted()
+    public long CountOfSubGridsThatWillBeSubmitted()
     {
       try
       {
         CountingRequestsOnly = true;
 
-        return Execute() ? TotalNumberOfSubgridsToRequest : -1;
+        return Execute() ? TotalNumberOfSubGridsToRequest : -1;
       }
       finally
       {

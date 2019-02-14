@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       // Add the leaf to the site model existence map
       siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
 
-      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(1);
+      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(1);
 
       CellPass[] _passes = passes.ToArray();
 
@@ -230,7 +230,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       };
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out processedTasks);
 
-      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubgrids);
+      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubgrids);
 
       // Ensure there are two appropriate elevation mapping mode events
       siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(expectedEvents);

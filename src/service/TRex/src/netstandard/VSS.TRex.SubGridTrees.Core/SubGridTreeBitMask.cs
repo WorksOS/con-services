@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
@@ -63,7 +63,7 @@ namespace VSS.TRex.SubGridTrees
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-            return (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.BitSet(SubGridX, SubGridY);
+            return ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.BitSet(SubGridX, SubGridY);
         }
 
         /// <inheritdoc />
@@ -81,11 +81,11 @@ namespace VSS.TRex.SubGridTrees
 
             if (SubGrid == null)
             {
-                Debug.Assert(false, "Unable to create cell sub grid for bitmask");
+                throw new TRexSubGridTreeException("Unable to create cell sub grid for bitmask");
             }
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
-            (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
+            ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace VSS.TRex.SubGridTrees
 
             ScanAllSubGrids(x => 
             {
-                SubGridCellsExtents.Include((x as SubGridTreeLeafBitmapSubGrid).ComputeCellsExtents());
+                SubGridCellsExtents.Include(((SubGridTreeLeafBitmapSubGrid)x).ComputeCellsExtents());
                 return true;
             });
 
@@ -134,10 +134,8 @@ namespace VSS.TRex.SubGridTrees
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-            SubGridTreeNodeBitmapSubGrid bitmapSubGrid = SubGrid as SubGridTreeNodeBitmapSubGrid;
-
             // Free the node containing the bits for the cells in the leaf
-            bitmapSubGrid.SetSubGrid(SubGridX, SubGridY, null);
+            ((SubGridTreeNodeBitmapSubGrid)SubGrid).SetSubGrid(SubGridX, SubGridY, null);
         }
 
         /// <summary>
@@ -150,7 +148,7 @@ namespace VSS.TRex.SubGridTrees
 
             ScanAllSubGrids(x => 
             {
-                totalBits += (x as SubGridTreeLeafBitmapSubGrid).Bits.CountBits();
+                totalBits += ((SubGridTreeLeafBitmapSubGrid)x).Bits.CountBits();
                 return true;
             });
 
@@ -186,10 +184,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public bool LeafExists(uint CellX, uint CellY)
-        {
-            return ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
-        }
+        public bool LeafExists(uint CellX, uint CellY) => ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
 
         /// <summary>
         /// Takes a source SubGridBitMask instance and performs a bitwise OR of the contents of source against the
@@ -204,16 +199,16 @@ namespace VSS.TRex.SubGridTrees
             {
                 if (x != null)
                 {
-                    bitMapSubGrid = ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf) as SubGridTreeLeafBitmapSubGrid;
+                    bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
                     if (bitMapSubGrid != null)
                     {
                         // In this instance, x is a sub grid from the tree we are OR-ing with this
                         // one, and BitMapSubGrid is a grid retrieved from this tree
-                        bitMapSubGrid.Bits.OrWith((x as SubGridTreeLeafBitmapSubGrid).Bits);
+                        bitMapSubGrid.Bits.OrWith(((SubGridTreeLeafBitmapSubGrid)x).Bits);
                     }
                     else
                     {
-                        Debug.Assert(false, "Failed to create bit map sub grid in SetOp_OR");
+                        throw new TRexSubGridTreeException("Failed to create bit map sub grid in SetOp_OR");
                     }
                 }
 
@@ -228,8 +223,6 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="Source"></param>
         public void SetOp_AND(ISubGridTreeBitMask Source)
         {
-            SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
-
             /* Previous implementation iterated across the source, when only iteration across 'this' is required as
              * sub grids not present in this tree are implicitly 'false' so will never generate any true bits needing storing.
              * Similarly, sub grids in source that are not present in this will never generate any true bits requiring storing
@@ -238,11 +231,11 @@ namespace VSS.TRex.SubGridTrees
                 if (x == null)
                     return true; // Keep the scan going
 
-                bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)(ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf));
+                var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)(ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf));
                 if (bitMapSubGrid != null)
                     bitMapSubGrid.Bits = bitMapSubGrid.Bits & ((SubGridTreeLeafBitmapSubGrid)x).Bits;
                 else
-                    Debug.Assert(false, "Failed to create bit map sub grid in SetOp_AND");
+                    throw new TRexSubGridTreeException("Failed to create bit map sub grid in SetOp_AND");
 
                 return true; // Keep the scan going
             });
@@ -253,9 +246,11 @@ namespace VSS.TRex.SubGridTrees
             {
                 if (x != null)
                 {
-                    bitMapSubGrid = Source.LocateSubGridContaining(x.OriginX, x.OriginY) as SubGridTreeLeafBitmapSubGrid;
-                    if (bitMapSubGrid != null)
-                        (x as SubGridTreeLeafBitmapSubGrid).Bits.AndWith(bitMapSubGrid.Bits);
+                    var bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)Source.LocateSubGridContaining(x.OriginX, x.OriginY);
+                    if (bitMapSubGrid == null)
+                        ((SubGridTreeLeafBitmapSubGrid)x).Bits.Clear(); // No sub grid in source, clear sub grid in 'this'
+                    else
+                        ((SubGridTreeLeafBitmapSubGrid)x).Bits.AndWith(bitMapSubGrid.Bits);
                 }
 
                 return true; // Keep the scan going
@@ -277,7 +272,7 @@ namespace VSS.TRex.SubGridTrees
             if (SubGrid == null)
                 return false;
 
-            SubGridTreeLeafBitmapSubGrid bitmapSubGrid = SubGrid as SubGridTreeLeafBitmapSubGrid;
+            SubGridTreeLeafBitmapSubGrid bitmapSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
 
             bitmapSubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 

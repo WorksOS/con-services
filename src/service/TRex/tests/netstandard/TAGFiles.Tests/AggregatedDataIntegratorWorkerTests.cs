@@ -52,7 +52,7 @@ namespace TAGFiles.Tests
       worker.ProcessTask(ProcessedTasks);
 
       ProcessedTasks.Count.Should().Be(1);
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(12);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ namespace TAGFiles.Tests
       worker.ProcessTask(ProcessedTasks);
 
       ProcessedTasks.Count.Should().Be(2);
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(12);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
     }
 
     [Theory]
@@ -131,7 +131,7 @@ namespace TAGFiles.Tests
       ProcessedTasks.Count.Should().Be(numToTake);
 
       // Check the set of TAG files created the expected number of sub grids
-      targetSiteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubGridCount);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
     }
 
     [Fact]

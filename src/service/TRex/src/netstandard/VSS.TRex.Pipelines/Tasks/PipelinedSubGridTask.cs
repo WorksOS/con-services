@@ -7,7 +7,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Pipelines.Tasks
 {
     /// <summary>
-    /// A base class implementing activities that accept subgrids from a pipelined subgrid query process
+    /// A base class implementing activities that accept sub grids from a pipelined sub grid query process
     /// </summary>
     public class PipelinedSubGridTask : TaskBase 
     {
@@ -27,7 +27,7 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Transfers a single subgrid response from a query context into the task processing context
+        /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
@@ -39,12 +39,12 @@ namespace VSS.TRex.Pipelines.Tasks
                 return true;
             }
 
-            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
+            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubGridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
             return false;
         }
 
         /// <summary>
-        /// Cancels the currently executing pipline by instructing it to abort
+        /// Cancels the currently executing pipeline by instructing it to abort
         /// </summary>
         public override void Cancel()
         {
@@ -72,7 +72,7 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Transfers a single subgrid response from a query context into the task processing context
+        /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
         /// <param name="responses"></param>
         /// <returns></returns>
@@ -84,7 +84,7 @@ namespace VSS.TRex.Pipelines.Tasks
                 return true;
             }
 
-            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
+            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubGridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
 
             return responses.All(TransferResponse);
         }

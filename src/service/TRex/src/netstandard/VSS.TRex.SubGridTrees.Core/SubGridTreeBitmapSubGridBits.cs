@@ -402,40 +402,6 @@ namespace VSS.TRex.SubGridTrees
             return result;
         }
 
-        /*
-          // Not implemented in Next Gen. Any similar requirement can extract the bits and set them externally
-                class function TSubGridTreeLeafBitmapSubGridBits.FromVariant(const Vrnt: Variant): TSubGridTreeLeafBitmapSubGridBits;
-                var
-                  Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
-                begin
-                  Packager := TSubGridTreeLeafBitmapSubGridBitsPackager.Create;
-
-                  try
-                    Packager.FromVariant(Vrnt);
-                    Result := Packager.Bits;
-                  finally
-                    Packager.Free;
-                  end;
-                end;
-                */
-
-        /*
-       // Not implemented in Next Gen. Any similar requirement can extract the bits and set them externally
-       function TSubGridTreeLeafBitmapSubGridBits.ToVariant: Variant;
-       var
-         Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
-       begin
-         Packager := TSubGridTreeLeafBitmapSubGridBitsPackager.Create;
-
-         try
-           Packager.Bits := Self;
-           Result := Packager.ToVariant;
-         finally
-           Packager.Free;
-         end;
-       end;
-        */
-
         /// <summary>
         /// Set the bit at the location identified by [CellX, CellY] to set (1)
         /// </summary>

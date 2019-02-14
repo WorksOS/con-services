@@ -160,7 +160,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             BoundingWorldExtent3D extent = tree.FullGridExtent();
 
-            // World extents cover the entire possible coordiante space a real world coordinate system will use
+            // World extents cover the entire possible coordinate space a real world coordinate system will use
             Assert.True(tree.CellSize == 1.0 &&
                           extent.MinX < extent.MaxX && extent.MinY < extent.MaxY &&
                           (Math.Abs(extent.MinX) - (tree.IndexOriginOffset * tree.CellSize)) < 0.1 &&
@@ -237,12 +237,12 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            Assert.Equal(0, tree.CountLeafSubgridsInMemory());
+            Assert.Equal(0, tree.CountLeafSubGridsInMemory());
 
             // Add a leaf node and check the count is now 1
             ISubGrid subgrid = tree.ConstructPathToCell(0, 0, SubGridPathConstructionType.CreateLeaf);
 
-            Assert.Equal(1, tree.CountLeafSubgridsInMemory());
+            Assert.Equal(1, tree.CountLeafSubGridsInMemory());
         }
 
         [Fact]

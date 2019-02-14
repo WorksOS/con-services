@@ -11,27 +11,27 @@ namespace VSS.TRex.Pipelines.Interfaces
     ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
-    /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+    /// The resulting bitmap sub grid tree mask of all sub grids containing production data that need to be requested
     /// </summary>
     ISubGridTreeBitMask ProdDataMask { get; set; }
 
     /// <summary>
-    /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+    /// The resulting bitmap sub grid tree mask of all sub grids containing production data that need to be requested
     /// </summary>
-    ISubGridTreeBitMask SurveydSurfaceOnlyMask { get; set; }
+    ISubGridTreeBitMask SurveyedSurfaceOnlyMask { get; set; }
 
     /// <summary>
-    /// Indicates if only a single page of subgrid requests will be processed
+    /// Indicates if only a single page of sub grid requests will be processed
     /// </summary>
     bool SubmitSinglePageOfRequests { get; set; }
 
     /// <summary>
-    /// The number of subgrids present in a requested page of subgrids
+    /// The number of sub grids present in a requested page of sub grids
     /// </summary>
     int SinglePageRequestSize { get; set; }
 
     /// <summary>
-    /// The page number of the page of subgrids to be requested
+    /// The page number of the page of sub grids to be requested
     /// </summary>
     int SinglePageRequestNumber { get; set; }
 
@@ -47,14 +47,14 @@ namespace VSS.TRex.Pipelines.Interfaces
     bool Execute();
 
     /// <summary>
-    /// Counts the number of subgrids that will be submitted to the processing engine given the request parameters
-    /// supplied to th erequest analyser.
+    /// Counts the number of sub grids that will be submitted to the processing engine given the request parameters
+    /// supplied to the request analyser.
     /// </summary>
     /// <returns></returns>
-    long CountOfSubgridsThatWillBeSubmitted();
+    long CountOfSubGridsThatWillBeSubmitted();
 
-    long TotalNumberOfSubgridsAnalysed { get; set; }
-    long TotalNumberOfSubgridsToRequest { get; set; }
-    long TotalNumberOfCandidateSubgrids { get; set; }
+    long TotalNumberOfSubGridsAnalysed { get; set; }
+    long TotalNumberOfSubGridsToRequest { get; set; }
+    long TotalNumberOfCandidateSubGrids { get; set; }
   }
 }
