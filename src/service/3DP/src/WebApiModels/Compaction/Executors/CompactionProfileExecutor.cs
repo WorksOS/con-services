@@ -164,10 +164,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.baseFilter,
         request.volumeDesignDescriptor?.FileUid,
         request.gridPoints != null,
-        request.gridPoints?.x1 ?? request.wgs84Points.lon1,
-        request.gridPoints?.x2 ?? request.wgs84Points.lon2,
-        request.gridPoints?.y1 ?? request.wgs84Points.lat1,
-        request.gridPoints?.y2 ?? request.wgs84Points.lat2,
+        request.gridPoints?.x1 ?? (request.wgs84Points?.lon1 ?? 0.0),
+        request.gridPoints?.x2 ?? (request.wgs84Points?.lon2 ?? 0.0),
+        request.gridPoints?.y1 ?? (request.wgs84Points?.lat1 ?? 0.0),
+        request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0),
         request.returnAllPassesAndLayers
       );
 
@@ -522,10 +522,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.volumeDesignDescriptor?.FileUid,
         ConvertVolumeCalcType(volumeCalcType),
         request.gridPoints != null,
-        request.gridPoints?.x1 ?? request.wgs84Points.lon1,
-        request.gridPoints?.x2 ?? request.wgs84Points.lon2,
-        request.gridPoints?.y1 ?? request.wgs84Points.lat1,
-        request.gridPoints?.y2 ?? request.wgs84Points.lat2
+        request.gridPoints?.x1 ?? (request.wgs84Points?.lon1 ?? 0.0),
+        request.gridPoints?.x2 ?? (request.wgs84Points?.lon2 ?? 0.0),
+        request.gridPoints?.y1 ?? (request.wgs84Points?.lat1 ?? 0.0),
+        request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0)
       );
 
       var trexResult = trexCompactionDataProxy.SendSummaryVolumesProfileDataRequest(summaryVolumesProfileDataRequest, customHeaders).Result;
