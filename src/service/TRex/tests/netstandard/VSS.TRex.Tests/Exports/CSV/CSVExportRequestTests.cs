@@ -7,7 +7,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using VSS.MasterData.Models.FIlters;
-using VSS.MasterData.Models.Models;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -25,7 +24,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var userPreferences = new UserPreferences();
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, machineNames, userPreferences);
+        coordType, outputType, userPreferences, machineNames);
       request.Validate();
     }
 
@@ -39,7 +38,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var userPreferences = new UserPreferences();
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, machineNames, userPreferences);
+        coordType, outputType, userPreferences, machineNames);
 
       var validate = new ValidFilenameAttribute(256);
       var result = validate.IsValid(request.FileName);
@@ -64,7 +63,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var userPreferences = new UserPreferences();
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, machineNames, userPreferences);
+        coordType, outputType, userPreferences, machineNames);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
@@ -84,7 +83,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var userPreferences = new UserPreferences();
       var request = CompactionPassCountExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, restrictOutputSize, rawDataAsDBase, userPreferences);
+        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
       request.Validate();
     }
    
@@ -103,7 +102,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var userPreferences = new UserPreferences();
       var request = CompactionPassCountExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, restrictOutputSize, rawDataAsDBase, userPreferences);
+        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
 
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);

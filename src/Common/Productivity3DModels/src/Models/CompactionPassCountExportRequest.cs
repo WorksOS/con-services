@@ -2,7 +2,6 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 
@@ -22,8 +21,15 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// which type of passes
     /// </summary>
-    [JsonProperty(PropertyName = "coordinateOutputType", Required = Required.Default)]
-    public OutputTypes CoordinateOutputType { get; private set; }
+    [JsonProperty(PropertyName = "outputType", Required = Required.Default)]
+    public OutputTypes OutputType { get; private set; }
+
+    /// <summary>
+    /// Used for format export data
+    ///   note that some of these items are defaulted in 3dp due to issues with comma-delimitation etc
+    /// </summary>
+    [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
+    public UserPreferences UserPreferences { get; set; }
 
     /// <summary>
     /// Output .CSV file is restricted to 65535 rows if it is true.
@@ -37,13 +43,6 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "rawDataAsDBase", Required = Required.Default)]
     public bool RawDataAsDBase { get; protected set; }
 
-    /// <summary>
-    /// Used for format export data
-    ///   note that some of these items are defaulted in 3dp due to issues with comma-delimitation etc
-    /// </summary>
-    [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
-    public UserPreferences UserPreferences { get; set; }
-
     protected CompactionPassCountExportRequest()
     {
     }
@@ -54,9 +53,9 @@ namespace VSS.Productivity3D.Models.Models
       string fileName,
       CoordType coordType,
       OutputTypes outputType,
+      UserPreferences userPreferences,
       bool restrictOutputSize,
-      bool rawDataAsDBase,
-      UserPreferences userPreferences
+      bool rawDataAsDBase
     )
     {
       return new CompactionPassCountExportRequest
@@ -65,7 +64,8 @@ namespace VSS.Productivity3D.Models.Models
         Filter = filter,
         FileName = fileName,
         CoordType = coordType,
-        CoordinateOutputType = outputType,
+        OutputType = outputType,
+        UserPreferences = userPreferences,
         RestrictOutputSize = restrictOutputSize,
         RawDataAsDBase = rawDataAsDBase
       };
@@ -86,8 +86,8 @@ namespace VSS.Productivity3D.Models.Models
             "Invalid coordinates type for export report"));
       }
 
-      if (CoordinateOutputType != OutputTypes.PassCountLastPass &&
-          CoordinateOutputType != OutputTypes.PassCountAllPasses)
+      if (OutputType != OutputTypes.PassCountLastPass &&
+          OutputType != OutputTypes.PassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

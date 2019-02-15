@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Client.Types;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.CSV.Executors.Tasks
@@ -23,17 +21,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public CSVExportRequestArgument requestArgument;
 
     public Formatter formatter;
-
-    // todoJeannie a CSVExportRequestResponse is defined as the pipeline response object
-    //    can I access that instead of creating another   local?
     public CSVExportRequestResponse taskResponse = new CSVExportRequestResponse();
-
-    private long DataLength = 0;
-    private float RunningHeight = Consts.NullHeight;
     
-
     public CSVExportTask()
     {
+      // todoJeannie does it come in here?
     }
 
     /// <summary>
@@ -44,7 +36,8 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     /// <param name="gridDataType"></param>
     public CSVExportTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
-      formatter = new Formatter(requestArgument.UserPreferences, requestArgument.OutputType, /* todoJeannie implement isRawDataAs3*/ false);
+      //todoJeannie does it actually come in here?
+      formatter = new Formatter(requestArgument.UserPreferences, requestArgument.OutputType, requestArgument.RawDataAsDBase);
     }
 
     /// <summary>
@@ -66,16 +59,29 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         return false;
       }
 
-
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
+      
       var requiredGridDataType = requestArgument.OutputType == OutputTypes.PassCountLastPass || requestArgument.OutputType == OutputTypes.VedaFinalPass ? 
         GridDataType.CellProfile : GridDataType.CellPasses;
 
+      // todoJeannie what to do if this goes over?
+      int runningRowCount = 0;
+
       foreach (var subGrid in subGridResponses)
       {
+        //if (requestArgument.CoordType == CoordType.LatLon)
+        //  SetupLLPositions(csibName, subGrid); // todoJeannie validate in executor that CSIB is loaded and avail
         if (requiredGridDataType == GridDataType.CellProfile &&
-            subGrid is ClientCellProfileLeafSubgrid profileSubGrid)
-          ExtractRequiredValues(profileSubGrid);
+            subGrid is ClientCellProfileLeafSubgrid )
+          /*ExtractRequiredValues(profileSubGrid)*/;
+        {
+          var subGridExportProcessor = new SubGridExportProcessor(formatter, requestArgument, siteModel, runningRowCount);
+          var rows = subGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileLeafSubgrid);
+          runningRowCount += rows.Count;
+          taskResponse.dataRows.AddRange(rows);
+        }
 
+        // todojeannie CellPasses
         //if (requiredGridDataType == GridDataType.CellPasses &&
         //    subGrid is ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
         //  ExtractRequiredValues(allPassesSubGrid);
@@ -83,101 +89,6 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       return true;
     }
-
-    private bool ExtractRequiredValues(ClientCellProfileLeafSubgrid subGrid)
-    {
-      var result = new List<string>();
-
-      subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
-      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-      {
-        var cell = subGrid.Cells[x, y];
-
-        if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
-          return;
-
-        // todoJeannie if dealing with formatted strings, what about ordering
-        taskResponse.dataRows.Add(UpdateComponentStrings(cell, subgridWorldOriginX, subgridWorldOriginY));
-      });
-
-      return true;
-    }
-
-
-    private string UpdateComponentStrings(ClientCellProfileLeafSubgridRecord cell, double subGridWorldOriginX, double subGridWorldOriginY)
-    {
-      var heightString = string.Empty;
-
-      var easting = cell.CellXOffset + subGridWorldOriginX;
-      var northing = cell.CellYOffset + subGridWorldOriginY;
-
-      if (!cell.Height.Equals(RunningHeight))
-      {
-        heightString = formatter.FormatElevation(cell.Height);
-        RunningHeight = cell.Height;
-      }
-
-      //    CutFill = (designHeights != null &&
-      //               designHeights.Cells[x, y] != Consts.NullHeight)
-      //      ? cell.Height - designHeights.Cells[x, y]
-      //      : Consts.NullHeight,
-
-      var Cmv = (short)cell.LastPassValidCCV;
-      var Mdp = (short)cell.LastPassValidMDP;
-      var PassCount = (short)cell.PassCount;
-      var temperature = (short)cell.LastPassValidTemperature;
-
-      string resultString = $"{heightString},";
-      DataLength += resultString.Length - 1; // Forget the last ',' character
-      return resultString;
-    }
-
-    //private string BuildRow()
-    //{
-    //  //AddStringToBuffer(LastPassTimeString);
-    //  //AddStringToBuffer(CoordString);
-    //  //AddStringToBuffer(HeightString);
-    //  //AddStringToBuffer(PassCountString);
-    //  //AddStringToBuffer(LastPassValidRadioLatencyString);
-    //  //AddStringToBuffer(DesignNameString);
-    //  //AddQuotedStringToBuffer(MachineNameString);
-    //  //AddStringToBuffer(MachineSpeedString);
-    //  //AddStringToBuffer(LastPassValidGPSModeString);
-    //  //AddStringToBuffer(GPSAccuracyToleranceString);
-    //  //AddStringToBuffer(TargetPassCountString);
-    //  //AddStringToBuffer('Yes');
-    //  //AddStringToBuffer(LayerIDString);
-    //  //AddStringToBuffer(LastPassValidCCVString);
-    //  //AddStringToBuffer(TargetCCVString);
-    //  //AddStringToBuffer(LastPassValidMDPString);
-    //  //AddStringToBuffer(TargetMDPString);
-    //  //AddStringToBuffer(LastPassValidRMVString);
-    //  //AddStringToBuffer(LastPassValidFreqString);
-    //  //AddStringToBuffer(LastPassValidAmpString);
-    //  //AddStringToBuffer(TargetThicknessString);
-    //  //AddStringToBuffer(EventMachineGearString);
-    //  //AddStringToBuffer(EventVibrationStateString);
-    //  //AddStringToBuffer(LastPassValidTemperatureString);
-
-    //  DataLength += resultString.Length - 1; // Forget the last ',' character
-    //  return resultString;
-    //}
-
-    //private string[] ExtractRequiredValues(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
-    //{
-    //  // For half-pass (e.g. 2-drum compactor), make up a single pass for each pair
-
-    //  //  // TICPassCountExportCalculator.ProcessAllPasses
-    //  //  // TICPassCountExportCalculator.InitComponentStrings
-    //  //  //                              .UpdateComponentStrings
-    //  //  var result = new string[0];
-
-    //  //  string machineNameString;
-    //  //  string CoordString;
-    //  //  string elevation;
-
-    //  return result;
-    //}
   }
 }
 

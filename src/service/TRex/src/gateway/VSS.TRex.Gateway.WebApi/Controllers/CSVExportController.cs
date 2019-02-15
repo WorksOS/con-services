@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -7,6 +6,8 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Exports.CSV.GridFabric;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using FileSystem = System.IO.File;
@@ -43,11 +44,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetVetaExport)}: {Request.QueryString}");
 
       compactionVetaExportRequest.Validate();
+      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CSVExportRequest>(compactionVetaExportRequest);
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(compactionVetaExportRequest) as CSVExportResult);
+          .Process(compactionCSVExportRequest) as CSVExportResult);
 
       const string CSV_EXTENSION = ".csv";
       const string ZIP_EXTENSION = ".zip";
@@ -80,35 +82,30 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetPassCountExport)}: {Request.QueryString}");
 
       compactionPassCountExportRequest.Validate();
+      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CSVExportRequest>(compactionPassCountExportRequest);
 
-      throw new NotImplementedException();
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(compactionCSVExportRequest) as CSVExportResult);
 
-      //Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+      const string CSV_EXTENSION = ".csv";
+      const string ZIP_EXTENSION = ".zip";
 
-      //compactionPassCountExportRequest.Validate();
+      // todoJeannie on s3?
+      var fullFileName = BuildFullFilePath(compactionPassCountExportRequest.FileName, ZIP_EXTENSION);
 
-      //var result = WithServiceExceptionTryExecute(() =>
-      //  RequestExecutorContainer
-      //    .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-      //    .Process(compactionPassCountExportRequest) as  /* todoJeannie */ TINSurfaceExportResult);
+      if (FileSystem.Exists(fullFileName))
+        FileSystem.Delete(fullFileName);
 
-      //const string CSV_EXTENSION = ".csv";
-      //const string ZIP_EXTENSION = ".zip";
+      using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
+      {
+        var entry = zipFile.CreateEntry(compactionPassCountExportRequest.FileName + CSV_EXTENSION);
+        using (var stream = entry.Open())
+          new MemoryStream(result?.CSVData).CopyTo(stream);
+      }
 
-      //// todoJeannie on s3?
-      //var fullFileName = BuildFullFilePath(compactionPassCountExportRequest.FileName, ZIP_EXTENSION);
-
-      //if (FileSystem.Exists(fullFileName))
-      //  FileSystem.Delete(fullFileName);
-
-      //using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
-      //{
-      //  var entry = zipFile.CreateEntry(compactionPassCountExportRequest.FileName + CSV_EXTENSION);
-      //  using (var stream = entry.Open())
-      //    new MemoryStream(result?.TINData).CopyTo(stream);
-      //}
-
-      //return new CompactionExportResult(fullFileName);
+      return new CompactionExportResult(fullFileName);
     }
 
     private string BuildFullFilePath(string filename, string extension)

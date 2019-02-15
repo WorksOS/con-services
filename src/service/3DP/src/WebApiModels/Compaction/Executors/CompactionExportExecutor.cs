@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           // todoJeannie note that only OutputTypes.VedaAllPasses is currently supported in 3dp
           var compactionVetaExportRequest =
-            CompactionVetaExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.MachineNames, request.UserPrefs);
+            CompactionVetaExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.MachineNames);
 
           return trexCompactionDataProxy.SendVetaExportRequest(compactionVetaExportRequest, customHeaders).Result;
         }
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request?.ExportType == ExportTypes.PassCountExport)
           {
             var compactionPassCountExportRequest =
-              CompactionPassCountExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.RestrictSize, request.RawData, request.UserPrefs);
+              CompactionPassCountExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
 
             return trexCompactionDataProxy.SendPassCountExportRequest(compactionPassCountExportRequest, customHeaders).Result;
 

@@ -8,11 +8,11 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -33,11 +33,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as CompactionVetaExportRequest;
+      var request = item as CompactionCSVExportRequest;
 
       if (request == null)
       {
-        ThrowRequestTypeCastException<CompactionVetaExportRequest>();
+        ThrowRequestTypeCastException<CompactionCSVExportRequest>();
         return null; // to keep compiler happy
       }
 
@@ -49,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       filter.AttributeFilter.StartTime = startEndDate.Item1;
       filter.AttributeFilter.EndTime = startEndDate.Item2;
 
-      var tRexRequest = new CSVExportRequest();
+      var tRexRequest = new Exports.CSV.GridFabric.CSVExportRequest();
       var csvExportRequestArgument = AutoMapperUtility.Automapper.Map<CSVExportRequestArgument>(request);
       csvExportRequestArgument.MappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, request.MachineNames);
 
@@ -61,7 +61,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       byte[] toReturn = Write(columnHeaders, response.dataRows);
       // todoJeannie veta vs passcount? setup Headers, sort and string together dataRows
       //    then zip and encrypt (or v.v?)
-
+      //   see:
+      // /src/Common/Productivity3DModels/src/Models/DxfFileRequest.cs
+      // public byte[] GetFileAsByteArray(IFormFile file) 
       return new CSVExportResult(toReturn);
     }
 
@@ -118,7 +120,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     private const string columnHeaders6aF = "_c";
     private const string columnHeaders6bF = "_f";
 
-    private string CreateHeaders(CompactionVetaExportRequest request)
+    private string CreateHeaders(CompactionCSVExportRequest request)
     {
       // no translations in raptor, so none here
 

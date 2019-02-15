@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.Exports.CSV.GridFabric
@@ -16,6 +15,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public string DecimalSeparator { get; set; }
     public UnitsTypeEnum Units { get; set; }
     public TemperatureUnitEnum TemperatureUnits { get; set; }
+    public double ProjectTimeZoneOffset { get; set; }
 
     public const string DefaultDateSeparator = "-";
     public const string DefaultTimeSeparator = ":";
@@ -32,6 +32,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       DecimalSeparator = DefaultDecimalSeparator;
       Units = DefaultUnits;
       TemperatureUnits = DefaultTemperatureUnits;
+      ProjectTimeZoneOffset = 0;
     }
 
 
@@ -41,7 +42,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       string thousandsSeparator,
       string decimalSeparator,
       UnitsTypeEnum units,
-      TemperatureUnitEnum temperatureUnits
+      TemperatureUnitEnum temperatureUnits,
+      double projectTimeZoneOffset
     )
     {
       return new CSVExportUserPreferences()
@@ -51,7 +53,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         ThousandsSeparator = thousandsSeparator,
         DecimalSeparator = decimalSeparator,
         Units = units,
-        TemperatureUnits = temperatureUnits
+        TemperatureUnits = temperatureUnits,
+        ProjectTimeZoneOffset = projectTimeZoneOffset
       };
     }
 
@@ -63,6 +66,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       writer.WriteString(DecimalSeparator);
       writer.WriteInt((int)Units);
       writer.WriteInt((int)TemperatureUnits);
+      writer.WriteDouble(ProjectTimeZoneOffset);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -73,6 +77,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       DecimalSeparator = reader.ReadString();
       Units = (UnitsTypeEnum)reader.ReadInt();
       TemperatureUnits = (TemperatureUnitEnum)reader.ReadInt();
+      ProjectTimeZoneOffset = reader.ReadDouble();
     }
 
     public override int GetHashCode()
@@ -86,6 +91,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         hashCode = (hashCode * 397) ^ DecimalSeparator.GetHashCode();
         hashCode = (hashCode * 397) ^ Units.GetHashCode();
         hashCode = (hashCode * 397) ^ TemperatureUnits.GetHashCode();
+        hashCode = (hashCode * 397) ^ ProjectTimeZoneOffset.GetHashCode();
         return hashCode;
       }
     }

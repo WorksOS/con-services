@@ -2,7 +2,6 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 
@@ -29,18 +28,19 @@ namespace VSS.Productivity3D.Models.Models
     public OutputTypes OutputType { get; private set; }
 
     /// <summary>
+    /// Used for format export data
+    ///   note that some of these items are defaulted in 3dp due to issues with comma-delimitation etc
+    /// </summary>
+    [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
+    public UserPreferences UserPreferences { get; set; }
+
+    /// <summary>
     /// Include the names of these machines
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "machineNames", Required = Required.Default)]
     public string[] MachineNames { get; private set; }
 
-    /// <summary>
-    /// Used for format export data
-    ///   note that some of these items are defaulted in 3dp due to issues with comma-delimitation etc
-    /// </summary>
-    [JsonProperty(PropertyName = "userPreferences", Required = Required.Always)]
-    public UserPreferences UserPreferences { get; set; }
 
     protected CompactionVetaExportRequest()
     {
@@ -51,9 +51,9 @@ namespace VSS.Productivity3D.Models.Models
       FilterResult filter,
       string fileName,
       CoordType coordType,
-      OutputTypes outputType,
-      string[] machineNames,
-      UserPreferences userPreferences
+      OutputTypes coordinateOutputType,
+      UserPreferences userPreferences,
+      string[] machineNames
     )
     {
       return new CompactionVetaExportRequest
@@ -62,9 +62,9 @@ namespace VSS.Productivity3D.Models.Models
         Filter = filter,
         FileName = fileName,
         CoordType = coordType,
-        OutputType = outputType,
+        OutputType = coordinateOutputType,
+        UserPreferences = userPreferences,
         MachineNames = machineNames,
-        UserPreferences = userPreferences
       };
     }
 

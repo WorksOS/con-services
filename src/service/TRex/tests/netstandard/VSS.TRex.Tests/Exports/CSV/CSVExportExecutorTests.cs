@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
@@ -22,6 +21,7 @@ using Xunit;
 using FluentAssertions;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Requests;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -52,7 +52,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Theory]
     [InlineData("&", "@", UnitsTypeEnum.Metric, "/", ":", "/", ":")]
     [InlineData("&", "@", UnitsTypeEnum.Metric, "%", "^", "%", "^")]
-    public void CSVExportExecutor_MapRequestToArgument(string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
+    public void CSVExportExecutor_MapVetaRequestToCommonExportRequest(string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
       string dateSeparator, string timeSeparator,
       string expectedDateSeparator, string expectedTimeSeparator)
     {
@@ -69,17 +69,104 @@ namespace VSS.TRex.Tests.Exports.CSV
      
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, machineNames, userPreference);
+        coordType, outputType, userPreference, machineNames);
+      request.Validate();
+      var compactionCsvExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+
+      compactionCsvExportRequest.CoordType.Should().Be(coordType);
+      compactionCsvExportRequest.OutputType.Should().Be(outputType);
+
+      compactionCsvExportRequest.UserPreferences.DecimalSeparator.Should().Be(decimalSeparator);
+      compactionCsvExportRequest.UserPreferences.DateSeparator.Should().Be(expectedDateSeparator);
+      compactionCsvExportRequest.UserPreferences.TimeSeparator.Should().Be(expectedTimeSeparator);
+
+      compactionCsvExportRequest.MachineNames.Should().Equal(machineNames);
+      compactionCsvExportRequest.RestrictOutputSize.Should().Be(false);
+      compactionCsvExportRequest.RawDataAsDBase.Should().Be(false);
+    }
+
+
+    [Theory]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "/", ":", true, false, "/", ":")]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "%", "^", false, true, "%", "^")]
+    public void CSVExportExecutor_MapPassCountRequestToCommonExportRequest(string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
+      string dateSeparator, string timeSeparator, bool restrictOutputSize, bool rawDataAsDBase,
+      string expectedDateSeparator, string expectedTimeSeparator)
+    {
+      var projectUid = Guid.NewGuid();
+      FilterResult filter = null;
+      var fileName = "gotAFilename";
+      var coordType = CoordType.LatLon;
+      var outputType = OutputTypes.PassCountLastPass;
+      var userPreference = new UserPreferences()
+      {
+        DateSeparator = dateSeparator,
+        TimeSeparator = timeSeparator,
+        DecimalSeparator = decimalSeparator,
+        ThousandsSeparator = thousandsSeparator,
+        Units = (int)units
+      };
+
+      var request = CompactionPassCountExportRequest.CreateRequest(
+        projectUid, filter, fileName,
+        coordType, outputType, userPreference, restrictOutputSize, rawDataAsDBase);
+      request.Validate();
+      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+
+      compactionCSVExportRequest.CoordType.Should().Be(coordType);
+      compactionCSVExportRequest.OutputType.Should().Be(outputType);
+
+      compactionCSVExportRequest.UserPreferences.DecimalSeparator.Should().Be(decimalSeparator);
+      compactionCSVExportRequest.UserPreferences.DateSeparator.Should().Be(expectedDateSeparator);
+      compactionCSVExportRequest.UserPreferences.TimeSeparator.Should().Be(expectedTimeSeparator);
+
+      compactionCSVExportRequest.MachineNames.Length.Should().Be(0);
+      compactionCSVExportRequest.RestrictOutputSize.Should().Be(restrictOutputSize);
+      compactionCSVExportRequest.RawDataAsDBase.Should().Be(rawDataAsDBase);
+    }
+
+
+    [Theory]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "/", ":", true, false, "/", ":")]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, "%", "^", false, true, "%", "^")]
+    public void CSVExportExecutor_MapCommonExportRequestToArgument(string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
+      string dateSeparator, string timeSeparator, bool restrictOutputSize, bool rawDataAsDBase,
+      string expectedDateSeparator, string expectedTimeSeparator)
+    {
+      var projectUid = Guid.NewGuid();
+      FilterResult filter = null;
+      var fileName = "gotAFilename";
+      var coordType = CoordType.LatLon;
+      var outputType = OutputTypes.VedaAllPasses;
+      var theMachineName = "first machineName";
+      string[] machineNames = new string[] { theMachineName };
+      var userPreference = new UserPreferences()
+      {
+        DateSeparator = dateSeparator,
+        TimeSeparator = timeSeparator,
+        DecimalSeparator = decimalSeparator,
+        ThousandsSeparator = thousandsSeparator,
+        Units = (int)units
+      };
+
+      var request = CompactionCSVExportRequest.CreateRequest(
+        projectUid, filter, fileName,
+        coordType, outputType, userPreference, machineNames, restrictOutputSize, rawDataAsDBase);
       request.Validate();
       var csvExportRequestArgument = AutoMapperUtility.Automapper.Map<CSVExportRequestArgument>(request);
 
+      csvExportRequestArgument.CoordType.Should().Be(coordType);
       csvExportRequestArgument.OutputType.Should().Be(outputType);
 
-      // these are mapped separately using CSVExportHelper.MapRequestedMachines()
-      csvExportRequestArgument.MappedMachines.Count.Should().Be(0);
       csvExportRequestArgument.UserPreferences.DecimalSeparator.Should().Be(decimalSeparator);
       csvExportRequestArgument.UserPreferences.DateSeparator.Should().Be(expectedDateSeparator);
       csvExportRequestArgument.UserPreferences.TimeSeparator.Should().Be(expectedTimeSeparator);
+
+      // these are mapped separately using CSVExportHelper.MapRequestedMachines()
+      csvExportRequestArgument.MappedMachines.Count.Should().Be(0);
+
+      csvExportRequestArgument.RestrictOutputSize.Should().Be(restrictOutputSize);
+      csvExportRequestArgument.RawDataAsDBase.Should().Be(rawDataAsDBase);
     }
 
 
@@ -96,14 +183,15 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var request = CompactionVetaExportRequest.CreateRequest(
         projectUid, filter, fileName,
-        coordType, outputType, machineNames, userPreferences);
+        coordType, outputType, userPreferences, machineNames);
       request.Validate();
+      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
       var executor = RequestExecutorContainer
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
-      var result = Assert.Throws<ServiceException>(() => executor.Process(request));
+      var result = Assert.Throws<ServiceException>(() => executor.Process(compactionCSVExportRequest));
       result.Code.Should().Be(HttpStatusCode.BadRequest);
       result.GetResult.Code.Should().Be(ContractExecutionStatesEnum.InternalProcessingError);
       result.GetResult.Message.Should().Be($"Site model {projectUid} is unavailable");
@@ -127,7 +215,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportExecutor_EndDateOnly()
     {
-      var filter = Filter.CreateFilter(
+      var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
         new DateTime(2019, 1, 10),
         null,"","",
         new List<MachineDetails>(), null, null, null, null, null, null

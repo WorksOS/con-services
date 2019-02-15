@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.Models.Enums;
+﻿using System;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using FluentAssertions;
@@ -12,20 +13,19 @@ namespace VSS.TRex.Tests.Exports.CSV
   public class CSVExportFormatterTests : IClassFixture<DITagFileFixture>
   {
     [Fact]
-    public void CSVExportFormatter_Default()
+    public void FormatterInitializationDefault()
     {
       var userPreferences = DefaultUserPreferences();
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
-      OutputTypes coordinateOutputType = OutputTypes.PassCountAllPasses;
-      bool isRawDataAsDBaseRequired = false;
+      OutputTypes outputType = OutputTypes.PassCountAllPasses;
 
-      var formatter = new Formatter(csvUserPreference, coordinateOutputType, isRawDataAsDBaseRequired);
+      var formatter = new Formatter(csvUserPreference, outputType, false);
       formatter.userPreference.DateSeparator.Should().Be("-");
       formatter.userPreference.TimeSeparator.Should().Be(":");
       formatter.userPreference.DecimalSeparator.Should().Be(".");
       formatter.userPreference.ThousandsSeparator.Should().Be(",");
-      formatter.coordinateOutputType.Should().Be(coordinateOutputType);
-      formatter.isRawDataAsDBaseRequired.Should().Be(isRawDataAsDBaseRequired);
+      formatter.outputType.Should().Be(outputType);
+      formatter.isRawDataAsDBaseRequired.Should().Be(false);
       formatter.nullString.Should().Be("?");
 
       formatter.userPreference.Units.Should().Be(UnitsTypeEnum.US);
@@ -33,26 +33,26 @@ namespace VSS.TRex.Tests.Exports.CSV
       formatter.speedUnitString.Should().Be("mph");
       formatter.speedConversionFactor.Should().Be(Formatter.USFeetToMeters * 5280);
       formatter.distanceUnitString.Should().Be("FT");
-      formatter.exportDateTimeFormatString.Should().Be("yyyy-mmm-dd hh:nn:ss.zzz");
+      formatter.exportDateTimeFormatString.Should().Be("yyyy-MMM-dd HH:mm:ss.fff");
     }
 
     [Theory]
     [InlineData("*", "$", "&", "@", UnitsTypeEnum.US, OutputTypes.VedaAllPasses, false,
         "?", Formatter.USFeetToMeters, "mph", Formatter.USFeetToMeters * 5280, "FT",
-        "yyyy-mmm-dd hh:nn:ss.zzz")]
+        "yyyy-MMM-dd HH:mm:ss.fff")]
     [InlineData("-", ":", ".", ",", UnitsTypeEnum.US, OutputTypes.PassCountLastPass, true,
       "", Formatter.USFeetToMeters, "mph", Formatter.USFeetToMeters * 5280, "FT",
-      "yyyy-mmm-dd hh:nn:ss.zzz")]
+      "yyyy-MMM-dd HH:mm:ss.fff")]
     [InlineData("*", "$", "&", "@", UnitsTypeEnum.Metric, OutputTypes.PassCountLastPass, false,
       "?", 1.0, "km/h", 1000, "m",
-      "yyyy*mmm*dd hh$nn$ss&zzz")]
+      "yyyy*MMM*dd HH$mm$ss&fff")]
     [InlineData("-", ":", ".", ",", UnitsTypeEnum.Imperial, OutputTypes.PassCountLastPass, false,
       "?", Formatter.ImperialFeetToMeters, "mph", Formatter.ImperialFeetToMeters * 5280, "ft",
-      "yyyy-mmm-dd hh:nn:ss.zzz")]
-    public void CSVExportFormatter_Variable
+      "yyyy-MMM-dd HH:mm:ss.fff")]
+    public void FormatterInitialization
       (string dateSeparator, string timeSeparator, string decimalSeparator, string thousandsSeparator,
       UnitsTypeEnum units,
-      OutputTypes coordinateOutputType, bool isRawDataAsDBaseRequired,
+      OutputTypes outputType, bool isRawDataAsDBaseRequired,
       string expectedNullString, double expectedDistanceConversionFactor, 
       string expectedSpeedUnitString, double expectedSpeedConversionFactor,
       string expectedDistanceUnitString, string expectedExportDateTimeFormatString
@@ -66,12 +66,12 @@ namespace VSS.TRex.Tests.Exports.CSV
         };
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreference);
 
-      var formatter = new Formatter(csvUserPreference, coordinateOutputType, isRawDataAsDBaseRequired);
+      var formatter = new Formatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
       formatter.userPreference.DateSeparator.Should().Be(dateSeparator);
       formatter.userPreference.TimeSeparator.Should().Be(timeSeparator);
       formatter.userPreference.DecimalSeparator.Should().Be(decimalSeparator);
       formatter.userPreference.ThousandsSeparator.Should().Be(thousandsSeparator);
-      formatter.coordinateOutputType.Should().Be(coordinateOutputType);
+      formatter.outputType.Should().Be(outputType);
       formatter.isRawDataAsDBaseRequired.Should().Be(isRawDataAsDBaseRequired);
       // this depends on isRawDataAsDBaseRequired
       formatter.nullString.Should().Be(expectedNullString);
@@ -84,38 +84,57 @@ namespace VSS.TRex.Tests.Exports.CSV
       formatter.exportDateTimeFormatString.Should().Be(expectedExportDateTimeFormatString);
     }
 
-
     [Theory]
-    [InlineData("&", "@", UnitsTypeEnum.Metric, false, 24666.7123112f, "24@666&710m")]
-    [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80@927&380FT")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80@927&530ft")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80@927&530")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, -3.4E38f, "")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, -3.4E38f, "?")]
-    public void CSVExportFormatter_FloatToString
-      (string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
-        bool isRawDataAsDBaseRequired,
-        float value, string expectedResult
-      )
+    [InlineData("-", ":", ".", OutputTypes.PassCountLastPass, "13 Nov 77 18:34:12.123456", 0, "1977-Nov-13 18:34:12.123")]
+    [InlineData("/", ":", ".", OutputTypes.PassCountLastPass, "13 Nov 77 6:34:12.123456", -13, "1977/Nov/12 17:34:12.123")]
+    [InlineData("&", "@", "^", OutputTypes.PassCountLastPass, "13 Nov 77 18:34:12.123456", 13.5, "1977&Nov&14 08@04@12^123")]
+    public void CellPassDateToString
+    (string dateSeparator, string timeSeparator, string decimalSeparator, OutputTypes outputType,
+      string value, double timeZoneOffset, string expectedResult)
     {
-      var userPreferences = new UserPreferences()
-       { DecimalSeparator = decimalSeparator, ThousandsSeparator = thousandsSeparator, Units = (int) units };
+      DateTime valueDateTime = DateTime.Parse(value);
+
+      var userPreferences = new UserPreferences(
+        "",
+        dateSeparator, timeSeparator, ",", decimalSeparator, timeZoneOffset, 
+        0, 1, 0, 1, 1, 1);
+
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
 
-      OutputTypes coordinateOutputType = OutputTypes.PassCountLastPass;
-      var formatter = new Formatter(csvUserPreference, coordinateOutputType, isRawDataAsDBaseRequired);
+      var formatter = new Formatter(csvUserPreference, outputType, false);
+      var result = formatter.FormatCellPassTime(valueDateTime);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, false, 24666.7123112f, "24@666&713m")]
+    [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80@927&374FT")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80@927&536ft")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80@927&536")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, -3.4E38f, "")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, -3.4E38f, "?")]
+    public void FormatElevationString
+    (string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
+      bool isRawDataAsDBaseRequired,
+      float value, string expectedResult
+    )
+    {
+      var userPreferences = new UserPreferences()
+        { DecimalSeparator = decimalSeparator, ThousandsSeparator = thousandsSeparator, Units = (int)units };
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+
+      OutputTypes outputType = OutputTypes.PassCountLastPass;
+      var formatter = new Formatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
       var result = formatter.FormatElevation(value);
       result.Should().Be(expectedResult);
     }
+
     private UserPreferences DefaultUserPreferences()
     {
       return new UserPreferences(
         string.Empty,
         CSVExportUserPreferences.DefaultDateSeparator,
         CSVExportUserPreferences.DefaultTimeSeparator,
-        //Hardwire number format as "xxx,xxx.xx" or it causes problems with the CSV file as comma is the column separator.
-        //To respect user preferences requires Raptor to enclose formatted numbers in quotes.
-        //This bug is present in CG since it uses user preferences separators.
         CSVExportUserPreferences.DefaultThousandsSeparator,
         CSVExportUserPreferences.DefaultDecimalSeparator,
         0,

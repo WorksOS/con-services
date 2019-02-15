@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 
@@ -16,19 +15,21 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     /// <summary>
     /// Type of Coordinates required in result e.g. NE
     /// </summary>
-    private CoordType CoordType { get; set; }
+    public CoordType CoordType { get; set; }
 
-    /// <summary>
-    /// which type of passes
-    /// </summary>
     public OutputTypes OutputType { get; private set; }
-    
-    /// <summary>
-    /// Include the names of these machines
-    /// </summary>
-    public List<CSVExportMappedMachine> MappedMachines { get; set; }
+
 
     public CSVExportUserPreferences UserPreferences { get; set; }
+
+    // the following machineNames is for veta export only
+    public List<CSVExportMappedMachine> MappedMachines { get; set; }
+
+    // the following 2 flags are for passcount export only
+    public bool RestrictOutputSize { get; private set; }
+
+    public bool RawDataAsDBase { get; private set; }
+
 
     public CSVExportRequestArgument()
     {
@@ -44,14 +45,17 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     }
 
     public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
-      CoordType coordType, OutputTypes outputType, List<CSVExportMappedMachine> mappedMachines, CSVExportUserPreferences userPreferences)
+      CoordType coordType, OutputTypes outputType, CSVExportUserPreferences userPreferences,
+      List<CSVExportMappedMachine> mappedMachines, bool restrictOutputSize, bool rawDataAsDBase)
     {
       ProjectID = siteModelUid;
       Filters = filters;
       CoordType = coordType; 
       OutputType  = outputType;
-      MappedMachines = mappedMachines;
       UserPreferences = userPreferences;
+      MappedMachines = mappedMachines;
+      RestrictOutputSize = restrictOutputSize;
+      RawDataAsDBase = rawDataAsDBase;
     }
 
     /// <summary>
@@ -63,6 +67,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       base.ToBinary(writer);
       writer.WriteInt((int)CoordType);
       writer.WriteInt((int)OutputType);
+      UserPreferences.ToBinary(writer);
       var count = MappedMachines.Count;
       writer.WriteInt(count);
       foreach (var machine in MappedMachines)
@@ -71,8 +76,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         writer.WriteShort(machine.InternalSiteModelMachineIndex);
         writer.WriteString(machine.Name);
       }
-
-      UserPreferences.ToBinary(writer);
+      writer.WriteBoolean(RestrictOutputSize);
+      writer.WriteBoolean(RawDataAsDBase);
     }
 
     /// <summary>
@@ -84,6 +89,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       base.FromBinary(reader);
       CoordType = (CoordType)reader.ReadInt();
       OutputType = (OutputTypes)reader.ReadInt();
+      UserPreferences = new CSVExportUserPreferences();
+      UserPreferences.FromBinary(reader);
       var count = reader.ReadInt();
       MappedMachines = new List<CSVExportMappedMachine>(count);
       for(int i = 0; i < count; i++)
@@ -95,9 +102,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
           Name = reader.ReadString()
         });
       }
-
-      UserPreferences = new CSVExportUserPreferences();
-      UserPreferences.FromBinary(reader);
+      RestrictOutputSize = reader.ReadBoolean();
+      RawDataAsDBase = reader.ReadBoolean();
     }
 
     public override int GetHashCode()
@@ -107,8 +113,10 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         int hashCode = base.GetHashCode();
         hashCode = (hashCode * 397) ^ CoordType.GetHashCode();
         hashCode = (hashCode * 397) ^ OutputType.GetHashCode();
-        hashCode = (hashCode * 397) ^ MappedMachines.GetHashCode();
         hashCode = (hashCode * 397) ^ UserPreferences.GetHashCode();
+        hashCode = (hashCode * 397) ^ MappedMachines.GetHashCode();
+        hashCode = (hashCode * 397) ^ RestrictOutputSize.GetHashCode();
+        hashCode = (hashCode * 397) ^ RawDataAsDBase.GetHashCode();
         return hashCode;
       }
     }

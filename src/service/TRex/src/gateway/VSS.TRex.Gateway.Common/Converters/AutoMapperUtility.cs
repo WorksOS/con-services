@@ -11,6 +11,7 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
@@ -285,8 +286,23 @@ namespace VSS.TRex.Gateway.Common.Converters
       public ExportingProfile()
       {
         CreateMap<UserPreferences, CSVExportUserPreferences>()
+          .ForMember(x => x.ProjectTimeZoneOffset,
+            opt => opt.MapFrom(f => f.TimeZoneOffset))
           ;
-        CreateMap <CompactionVetaExportRequest, CSVExportRequestArgument>()
+
+        CreateMap<CompactionVetaExportRequest, CompactionCSVExportRequest>()
+          .ForMember(x => x.RestrictOutputSize,
+            opt => opt.UseValue(false))
+          .ForMember(x => x.RawDataAsDBase,
+          opt => opt.UseValue(false))
+          ;
+
+        CreateMap<CompactionPassCountExportRequest, CompactionCSVExportRequest>()
+          .ForMember(x => x.MachineNames,
+            opt => opt.UseValue(new string[0]))
+          ;
+
+        CreateMap<CompactionCSVExportRequest, CSVExportRequestArgument>()
           .ForMember(x => x.ProjectID,
             opt => opt.MapFrom(f => f.ProjectUid))
           .ForMember(x => x.TRexNodeID,
