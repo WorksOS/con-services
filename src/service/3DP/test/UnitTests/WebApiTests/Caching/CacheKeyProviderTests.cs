@@ -100,6 +100,11 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       return new FilterDescriptor { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() };
     }
 
+    public Task<FilterDescriptorSingleResult> CreateFilter(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders = null)
+    {
+      throw new NotImplementedException();
+    }
+
 #pragma warning disable 1998
     public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
 #pragma warning restore 1998
