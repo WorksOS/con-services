@@ -6,13 +6,14 @@ services:
     deploy:
       replicas: 1
     logging:
-      driver: none
+      driver: json-file
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=10.97.96.150
      - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=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
+     - AWS_DESIGNIMPORT_BUCKET_NAME=vss-exports-stg
      - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives
      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.k8s.vspengg.com/api/status
      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
