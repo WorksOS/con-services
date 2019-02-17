@@ -10,7 +10,7 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
-    public DILoggingFixture()
+    public void SetupFixture()
     {
       DIBuilder
         .New()
@@ -19,6 +19,11 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Complete();
+    }
+
+    public DILoggingFixture()
+    {
+      SetupFixture();
     }
 
     public void Dispose()
