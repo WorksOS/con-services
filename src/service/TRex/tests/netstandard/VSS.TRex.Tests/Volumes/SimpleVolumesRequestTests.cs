@@ -4,17 +4,15 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
 using VSS.TRex.Volumes.GridFabric.Arguments;
+using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
 {
-    public class SimpleVolumesRequestTests : IClassFixture<DILoggingFixture>
-  {
-        // [Fact(Skip = "Not running tests requiring Ignite nodes")]
-        // SimpleVolumesServer Server = SimpleVolumesServer.NewInstance();
-
+    public class SimpleVolumesRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+    {
         [Fact]
         public void Test_SimpleVolumesRequest_Creation1()
         {
@@ -31,15 +29,18 @@ namespace VSS.TRex.Tests.Volumes
             Assert.NotNull(request);
         }
 
-        [Fact(Skip = "Not running tests requiring Ignite nodes")]
-        public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute()
+        [Fact]
+        public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_NoData()
         {
+            DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting<SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+            DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+
             SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
-            SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
+            SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument
             {
                 ProjectID = Guid.NewGuid(),
                 VolumeType = VolumeComputationType.Between2Filters,
-                BaseFilter = new CombinedFilter()
+                BaseFilter = new CombinedFilter
                 {
                     AttributeFilter = 
                     {
@@ -59,25 +60,27 @@ namespace VSS.TRex.Tests.Volumes
             // response with null values
 
             Assert.NotNull(response);
-            Assert.True(response.Cut.HasValue &&
-                        response.Fill.HasValue &&
-                        response.TotalCoverageArea.HasValue &&
-                        response.CutArea.HasValue &&
-                        response.FillArea.HasValue &&
-                        !response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
-                        // No LL conversion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
-                        "Response is null, unexpected");
-        }
+            Assert.True(!response.Cut.HasValue &&
+                        !response.Fill.HasValue &&
+                        !response.TotalCoverageArea.HasValue &&
+                        !response.CutArea.HasValue &&
+                        !response.FillArea.HasValue &&
+                        response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
+              // No LL conversion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
+              "Response values are not null, unexpected");
+    }
 
-        [Fact(Skip = "Not running tests requiring Ignite nodes")]
-        public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute()
-        {
+        [Fact]
+        public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_NoData()
+        {       
+            DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+
             SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
-            SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
+            SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument
             {
                 ProjectID = Guid.NewGuid(), // = 6; This needs to change to refer to an actual project
                 VolumeType = VolumeComputationType.Between2Filters,
-                BaseFilter = new CombinedFilter()
+                BaseFilter = new CombinedFilter
                 {
                     AttributeFilter =
                     {
@@ -97,14 +100,14 @@ namespace VSS.TRex.Tests.Volumes
             // response with null values
 
             Assert.NotNull(response);
-            Assert.True(response.Cut.HasValue &&
-                        response.Fill.HasValue &&
-                        response.TotalCoverageArea.HasValue &&
-                        response.CutArea.HasValue &&
-                        response.FillArea.HasValue &&
-                        !response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
+            Assert.True(!response.Cut.HasValue &&
+                        !response.Fill.HasValue &&
+                        !response.TotalCoverageArea.HasValue &&
+                        !response.CutArea.HasValue &&
+                        !response.FillArea.HasValue &&
+                        response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
                 // No LL conversion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
-                "Response is null, unexpected");
+                "Response values are not null, unexpected");
         }
     }
 }
