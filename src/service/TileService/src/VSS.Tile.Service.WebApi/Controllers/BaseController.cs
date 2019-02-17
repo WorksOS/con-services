@@ -140,7 +140,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Get the generated tile for the request
     /// </summary>
     protected async Task<FileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, Guid? topUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, DisplayMode? mode, string language, bool adjustBoundingBox)
+      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, DisplayMode? mode, string language, bool adjustBoundingBox, bool explicitFilters=false)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
@@ -193,7 +193,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var request = TileGenerationRequest.CreateTileGenerationRequest(filterUid, baseUid, topUid, 
         cutFillDesignUid, volumeCalcType, geofences, alignmentPoints, customFilterBoundary, 
         designFilterBoundary, alignmentFilterBoundary, designBoundary, dxfFiles, overlayTypes, 
-        width, height, mapType, mode, language, project, mapParameters, CustomHeaders, null);
+        width, height, mapType, mode, language, project, mapParameters, CustomHeaders, null, explicitFilters);
 
       request.Validate();
 

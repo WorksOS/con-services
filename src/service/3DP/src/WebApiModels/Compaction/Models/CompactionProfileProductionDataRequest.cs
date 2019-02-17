@@ -46,6 +46,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     [JsonProperty(PropertyName = "volumeDesignDescriptor", Required = Required.Default)]
     public DesignDescriptor volumeDesignDescriptor { get; private set; }
 
+    [JsonIgnore]
+    public bool ExplicitFilters { get; set; }
+
 
 
     public static CompactionProfileProductionDataRequest CreateCompactionProfileProductionDataRequest(
@@ -65,7 +68,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       FilterResult baseFilter,
       FilterResult topFilter,
       VolumeCalcType? volumeCalcType,
-      DesignDescriptor volumeDesignDescriptor
+      DesignDescriptor volumeDesignDescriptor,
+      bool explicitFilters = false
     )
     {
       return new CompactionProfileProductionDataRequest
@@ -86,7 +90,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         baseFilter = baseFilter,
         topFilter = topFilter,
         volumeCalcType = volumeCalcType,
-        volumeDesignDescriptor = volumeDesignDescriptor
+        volumeDesignDescriptor = volumeDesignDescriptor,
+        ExplicitFilters = explicitFilters
       };
     }
 

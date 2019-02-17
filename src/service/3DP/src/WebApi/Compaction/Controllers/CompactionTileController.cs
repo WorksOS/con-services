@@ -119,7 +119,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] bool explicitFilters = false)
     {
       Log.LogDebug($"{nameof(GetProductionDataTile)}: " + Request.QueryString);
 
@@ -133,7 +134,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
           boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
-          volumeCalcType, CustomHeaders));
+          volumeCalcType, CustomHeaders, explicitFilters));
 
       return tileResult;
     }
@@ -188,7 +189,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] bool explicitFilters=false)
     {
       Log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
@@ -205,7 +207,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
           boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
-          volumeCalcType, CustomHeaders));
+          volumeCalcType, CustomHeaders, explicitFilters));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
