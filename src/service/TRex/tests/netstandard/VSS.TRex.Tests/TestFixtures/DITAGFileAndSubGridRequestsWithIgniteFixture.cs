@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -51,6 +53,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Continue()
         .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => gridName => mockIgnite.Object))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton(mockCompute))
         .Complete();
     }
