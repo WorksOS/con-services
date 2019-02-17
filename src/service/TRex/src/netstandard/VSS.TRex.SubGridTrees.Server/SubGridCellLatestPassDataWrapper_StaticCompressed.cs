@@ -25,6 +25,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         private struct EncodedFieldDescriptorsStruct
         {
+            public EncodedBitFieldDescriptor InternalMachineID;
             public EncodedBitFieldDescriptor Time;
             public EncodedBitFieldDescriptor Height;
             public EncodedBitFieldDescriptor CCV;
@@ -38,6 +39,7 @@ namespace VSS.TRex.SubGridTrees.Server
             /// </summary>
             public void Init()
             {
+                InternalMachineID.Init();
                 Time.Init();
                 Height.Init();
                 CCV.Init();
@@ -54,6 +56,7 @@ namespace VSS.TRex.SubGridTrees.Server
             /// <param name="buffer"></param>
             public void Write(BinaryWriter writer, byte [] buffer)
             {
+                InternalMachineID.Write(writer);
                 Time.Write(writer);
                 Height.Write(writer);
                 CCV.Write(writer);
@@ -70,6 +73,7 @@ namespace VSS.TRex.SubGridTrees.Server
             /// <param name="buffer"></param>
             public void Read(BinaryReader reader, byte [] buffer)
             {
+                InternalMachineID.Read(reader);
                 Time.Read(reader);
                 Height.Read(reader);
                 CCV.Read(reader);
@@ -85,7 +89,8 @@ namespace VSS.TRex.SubGridTrees.Server
             /// <param name="NumBitsPerCellPass"></param>
             public void CalculateTotalOffsetBits(out int NumBitsPerCellPass)
             {
-                Time.OffsetBits = 0;
+                InternalMachineID.OffsetBits = 0;
+                Time.OffsetBits = (ushort)(InternalMachineID.OffsetBits + InternalMachineID.RequiredBits);
                 Height.OffsetBits = (ushort)(Time.OffsetBits + Time.RequiredBits);
                 CCV.OffsetBits = (ushort)(Height.OffsetBits + Height.RequiredBits);
                 RMV.OffsetBits = (ushort)(CCV.OffsetBits + CCV.RequiredBits);
@@ -157,6 +162,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // from the lowest values of those attributes. Reuse the existing fields in the
             // cell passes list to avoid having to allocate an extra memory block
 
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.InternalSiteModelMachineIndex).ToArray(), 0xffff, CellPassConsts.NullInternalSiteModelMachineIndex, false, ref EncodedFieldDescriptors.InternalMachineID);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.Time);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
@@ -185,6 +191,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 foreach (CellPass pass in allCellPassesArray)
                 {
+                    BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex, EncodedFieldDescriptors.InternalMachineID);
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedTime(pass.Time, FirstRealCellPassTime), EncodedFieldDescriptors.Time);
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedHeight(pass.Height), EncodedFieldDescriptors.Height);
                     BF_CellPasses.StreamWrite(pass.CCV, EncodedFieldDescriptors.CCV);
@@ -200,6 +207,18 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
+        /// <summary>
+        /// Reads the internal machine index from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public short ReadInternalMachineIndex(int Col, int Row)
+        {
+          int BitLocation = (Col * SubGridTreeConsts.SubGridTreeDimension + Row) * NumBitsPerCellPass + EncodedFieldDescriptors.InternalMachineID.OffsetBits;
+          return (short)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.InternalMachineID);
+    }
+     
         /// <summary>
         /// ReadTime will read the time from the latest cell identified by the Row and Col
         /// </summary>
@@ -337,11 +356,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
             int CellPassBitLocation = ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass;
 
-            CellPass Result = new CellPass()
-            {
-                //MachineID = Cells.CellPass.NullMachineID // No machine IDs supported in latest cell pass data.
-                InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex // No machine IDs supported in latest cell pass data.
-            };
+            CellPass Result = new CellPass();
+
+            Result.InternalSiteModelMachineIndex = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.InternalMachineID);
 
             long IntegerTime = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time);
             Result.Time = IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddSeconds(IntegerTime);
