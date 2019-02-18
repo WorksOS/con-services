@@ -16,8 +16,8 @@ namespace VSS.TRex.Events
   /// <summary>
   /// ProductionEvents implements a generic event list without using class instances for each event
   /// </summary>
-  /// <typeparam name="V"></typeparam>
-  public class ProductionEvents<V> : IProductionEvents<V>
+  /// <typeparam name="T"></typeparam>
+  public class ProductionEvents<T> : IProductionEvents<T>
   {
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -31,7 +31,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The structure that contains all information about this type of event.
     /// All events occur at a point in time, have some optional flags and contain a state 
-    /// defined by the generic V type
+    /// defined by the generic T type
     /// </summary>
     public struct Event
     {
@@ -57,15 +57,15 @@ namespace VSS.TRex.Events
       public DateTime Date { set; get; }
 
       /// <summary>
-      /// State defines the value of the generic event type. whose type is defined by the V generic type.
+      /// State defines the value of the generic event type. whose type is defined by the T generic type.
       /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
       /// appropriate default (or null) value
       /// </summary>
-      public V State { get; set; }
+      public T State { get; set; }
 
       public byte Flags;
 
-      public bool EquivalentTo(Event other) => !IsCustomEvent && !other.IsCustomEvent && EqualityComparer<V>.Default.Equals(State, other.State);
+      public bool EquivalentTo(Event other) => !IsCustomEvent && !other.IsCustomEvent && EqualityComparer<T>.Default.Equals(State, other.State);
     }
 
     /// <summary>
@@ -85,9 +85,9 @@ namespace VSS.TRex.Events
     /// </summary>
 //        public DateTime LastUpdateTimeUTC { get => lastUpdateTimeUTC; set => lastUpdateTimeUTC = value; }
 
-    public Action<BinaryWriter, V> SerialiseStateOut { get; set; }
+    public Action<BinaryWriter, T> SerialiseStateOut { get; set; }
 
-    public Func<BinaryReader, V> SerialiseStateIn { get; set; }
+    public Func<BinaryReader, T> SerialiseStateIn { get; set; }
 
     /// <summary>
     /// The event type this list stores
@@ -108,8 +108,8 @@ namespace VSS.TRex.Events
 
     public ProductionEvents(long machineID, Guid siteModelID,
       ProductionEventType eventListType,
-      Action<BinaryWriter, V> serialiseStateOut,
-      Func<BinaryReader, V> serialiseStateIn)
+      Action<BinaryWriter, T> serialiseStateOut,
+      Func<BinaryReader, T> serialiseStateIn)
     {
       MachineID = machineID;
       SiteModelID = siteModelID;
@@ -173,7 +173,7 @@ namespace VSS.TRex.Events
     /// <param name="index"></param>
     /// <param name="dateTime"></param>
     /// <param name="state"></param>
-    public void GetStateAtIndex(int index, out DateTime dateTime, out V state)
+    public void GetStateAtIndex(int index, out DateTime dateTime, out T state)
     {
       dateTime = Events[index].Date;
       state = Events[index].State;
@@ -184,7 +184,7 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <param name="index"></param>
     /// <param name="state"></param>
-    public void SetStateAtIndex(int index, V state)
+    public void SetStateAtIndex(int index, T state)
     {
       Events[index] = new Event
       {
@@ -199,7 +199,7 @@ namespace VSS.TRex.Events
     /// <param name="dateTime"></param>
     /// <param name="value"></param>
     /// <returns>The event instance that was added to the list</returns>
-    public virtual void PutValueAtDate(DateTime dateTime, V value)
+    public virtual void PutValueAtDate(DateTime dateTime, T value)
     {
       PutValueAtDate(new Event
       {
@@ -213,7 +213,7 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <param name="events"></param>
     /// <returns>The event instance that was added to the list</returns>
-    public virtual void PutValuesAtDates(IEnumerable<(DateTime, V)> events)
+    public virtual void PutValuesAtDates(IEnumerable<(DateTime, T)> events)
     {
       foreach (var evt in events)
       {
@@ -459,7 +459,7 @@ namespace VSS.TRex.Events
       immutableWriter.Write(MinorVersion);
       immutableWriter.Write((int)EventListType);
 
-      V lastState = Events[0].State;
+      T lastState = Events[0].State;
       var filteredEventCount = 0;
       var countPosition = immutableWriter.BaseStream.Position;
       immutableWriter.Write(filteredEventCount);
@@ -564,7 +564,7 @@ namespace VSS.TRex.Events
     /// <param name="stateChangeIndex"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default)
+    public virtual T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue = default)
     {
       if (Events.Count == 0)
       {
@@ -633,13 +633,13 @@ namespace VSS.TRex.Events
     /// to the end of the list and require collation to sort & remove duplicates
     /// </summary>
     /// <param name="eventsList"></param>
-    public void CopyEventsFrom(IProductionEvents<V> eventsList)
+    public void CopyEventsFrom(IProductionEvents<T> eventsList)
     {
       // If the numbers of events being added here become significant, then
       // it may be worth using an event merge process similar to the one done
       // in cell pass integration
 
-      foreach (Event Event in ((ProductionEvents<V>) eventsList).Events)
+      foreach (Event Event in ((ProductionEvents<T>) eventsList).Events)
         PutValueAtDate(Event);
     }
 
@@ -647,7 +647,7 @@ namespace VSS.TRex.Events
     /// Returns the state of the last element in the events list
     /// </summary>
     /// <returns></returns>
-    public V LastStateValue(V defaultValue = default(V)) => Events.Count == 0 ? defaultValue : Events.Last().State;
+    public T LastStateValue(T defaultValue = default(T)) => Events.Count == 0 ? defaultValue : Events.Last().State;
 
     /// <summary>
     /// Returns the date of the last element in the events list
