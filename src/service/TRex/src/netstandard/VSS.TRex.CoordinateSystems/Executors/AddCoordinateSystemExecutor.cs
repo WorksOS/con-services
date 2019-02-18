@@ -3,6 +3,8 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 
@@ -43,7 +45,8 @@ namespace VSS.TRex.CoordinateSystems.Executors
         }
 
         // Notify listeners of the coordinate system change
-        // TODO: Listener end points are not yet implemented
+        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, projectID, CsibChanged: true);
       }
       catch (Exception e)
       {
