@@ -375,18 +375,17 @@ namespace VSS.TRex.SubGrids
           if ((_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
               && !(_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.LatestElevation))
           {
-            var internalMachineIndex = _globalLatestCells[StripeIndex, J].InternalSiteModelMachineIndex;
-            var machine = _siteModel.Machines[internalMachineIndex];
+            var internalMachineIndex = _globalLatestCells.ReadInternalMachineIndex(StripeIndex, J);
+            var machine = _siteModel.Machines[internalMachineIndex]; 
 
             bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
             var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.LastStateValue();
-            //var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_globalLatestCells[StripeIndex, J].Time, out _);
 
             bool minimumElevationMappingModeAtLatestCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
 
             if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
             {
-              // It is not possible to use the latest cell pass to answer the query - force the query engine  into the cell pass examination work flow
+              // It is not possible to use the latest cell pass to answer the query - force the query engine into the cell pass examination work flow
               _useLastPassGrid = false;
               _canUseGlobalLatestCells = false;
             }
