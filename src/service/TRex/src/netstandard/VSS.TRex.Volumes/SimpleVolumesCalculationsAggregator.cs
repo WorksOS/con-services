@@ -388,19 +388,15 @@ namespace VSS.TRex.Volumes
                     // By convention BaseSubGrid is always the first sub grid in the array,
                     // regardless of whether it really forms the 'top' or 'bottom' of the interval.
 
-                    IClientLeafSubGrid TopSubGrid;
                     IClientLeafSubGrid BaseSubGrid = subGridResult[0];
 
                     if (BaseSubGrid == null)
                     {
-                        Log.LogWarning("#W# .SummariseSubgridResult BaseSubGrid is null");
+                        Log.LogWarning("#W# SummariseSubGridResult BaseSubGrid is null");
                         return;
                     }
 
-                    if (subGrids.Length > 1)
-                        TopSubGrid = subGridResult[1]; 
-                    else
-                        TopSubGrid = NullHeightSubgrid;
+                    IClientLeafSubGrid TopSubGrid = subGridResult.Length > 1 ? subGridResult[1] : NullHeightSubgrid;
 
                     ProcessVolumeInformationForSubgrid(BaseSubGrid as ClientHeightLeafSubGrid, TopSubGrid as ClientHeightLeafSubGrid);
                 }

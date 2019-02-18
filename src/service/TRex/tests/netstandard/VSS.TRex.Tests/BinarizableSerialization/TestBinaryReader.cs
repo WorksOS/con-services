@@ -9,10 +9,10 @@ namespace VSS.TRex.Tests.BinarizableSerialization
 
   /// <summary>
   /// Binary reader implementation. 
-  /// </summary>rea
+  /// </summary>
   public class TestBinaryReader : IBinaryReader, IBinaryRawReader
   {
-    private readonly BinaryReader br = null;
+    private readonly BinaryReader br;
 
     public TestBinaryReader(MemoryStream ms)
     {
@@ -69,7 +69,6 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     public byte[] ReadByteArray(string fieldName)
     {
       throw new NotImplementedException();
-      ;
       //return ReadField(fieldName, ReadByteArray, BinaryTypeId.ArrayByte);
     }
 
