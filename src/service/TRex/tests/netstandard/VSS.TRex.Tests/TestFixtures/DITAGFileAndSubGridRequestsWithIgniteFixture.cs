@@ -8,6 +8,7 @@ using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.DI;
+using VSS.TRex.Exceptions;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.GridFabric.Arguments;
@@ -65,15 +66,6 @@ namespace VSS.TRex.Tests.TestFixtures
       // Wire up Ignite Compute Apply and Broadcast apis on the Compute interface
       var mockCompute = new Mock<ICompute>();
 
-      //mockCompute.Setup(x => x.Apply(It.IsAny<IComputeFunc<BaseRequestArgument, BaseRequestResponse>>(), It.IsAny<BaseRequestArgument>())).Returns((IComputeFunc<BaseRequestArgument, BaseRequestResponse> func, BaseRequestArgument argument) => func.Invoke(argument));
-      //mockCompute.Setup(x => x.Broadcast(It.IsAny<IComputeFunc<BaseRequestArgument, BaseRequestResponse>>(), It.IsAny<BaseRequestArgument>())).Returns((IComputeFunc<BaseRequestArgument, BaseRequestResponse> func, BaseRequestArgument argument) => new List<BaseRequestResponse> { func.Invoke(argument) });
-
-      //mockCompute.Setup(x => x.Apply(It.IsAny<IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesRequestArgument>>(), It.IsAny<SimpleVolumesRequestArgument>())).Returns((IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesRequestArgument> func, SimpleVolumesRequestArgument argument) => func.Invoke(argument));
-      //mockCompute.Setup(x => x.Broadcast(It.IsAny<IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesRequestArgument>>(), It.IsAny<SimpleVolumesRequestArgument>())).Returns((IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesRequestArgument> func, SimpleVolumesRequestArgument argument) => new List<SimpleVolumesRequestResponse> { func.Invoke(argument) });
-
-      //mockCompute.Setup(x => x.Apply(It.IsAny<BaseComputeFunc>(), It.IsAny<BaseRequestArgument>())).Returns((BaseComputeFunc func, BaseRequestArgument argument) => func.Invoke(argument));
-      //mockCompute.Setup(x => x.Broadcast(It.IsAny<BaseComputeFunc>(), It.IsAny<BaseRequestArgument>())).Returns(BaseComputeFunc func, BaseRequestArgument argument) => new List<BaseRequestResponse> { func.Invoke(argument) });
-
       // Pretend there is a single node in the cluster group
       var mockClusterNode = new Mock<IClusterNode>();
       mockClusterNode.Setup(x => x.GetAttribute<string>("TRexNodeId")).Returns("UnitTest-TRexNodeId");
@@ -84,7 +76,6 @@ namespace VSS.TRex.Tests.TestFixtures
       var messagingDictionary = new Dictionary<object, object>(); // topic => listener
      
       var mockMessaging = new Mock<IMessaging>();
-      //mockMessaging.Setup(x => x.LocalListen(It.IsAny<SubGridListener>(), It.IsAny<object>())).Callback((SubGridListener listener, object topic) =>
       mockMessaging.Setup(x => x.LocalListen(It.IsAny<IMessageListener<byte[]>>(), It.IsAny<object>())).Callback((IMessageListener<byte[]> listener, object topic) =>
       {
         messagingDictionary.Add(topic, listener);
@@ -92,7 +83,10 @@ namespace VSS.TRex.Tests.TestFixtures
       mockMessaging.Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>())).Callback((object message, object topic) =>
       {
         messagingDictionary.TryGetValue(topic, out var listener);
-        (listener as SubGridListener).Invoke(Guid.Empty, message as byte[]);
+        if (listener is SubGridListener _listener)
+         _listener.Invoke(Guid.Empty, message as byte[]);
+        else
+          throw new TRexException($"Type of listener ({listener}) not SubGridListener as expected.");
       });
 
 
@@ -119,7 +113,6 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton(mockCompute))
-       // .Add(x => x.AddSingleton(messagingDictionary))
         .Complete();
     }
 
@@ -127,20 +120,23 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var mockCompute = DIContext.Obtain<Mock<ICompute>>();
       mockCompute.Setup(x => x.Apply(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => func.Invoke(argument));
-      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => new Task<TResponse>(() => func.Invoke(argument)));
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
+      {
+        var task = new Task<TResponse>(() => func.Invoke(argument));
+        task.Start();
+        return task;
+      });
     }
 
     public static void AddClusterComputeGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
     {
       var mockCompute = DIContext.Obtain<Mock<ICompute>>();
       mockCompute.Setup(x => x.Broadcast(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => new List<TResponse> { func.Invoke(argument) });
-      //mockCompute.Setup(x => x.BroadcastAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => new Task<ICollection<TResponse>>(() => new List<TResponse> {func.Invoke(argument)}));
       mockCompute.Setup(x => x.BroadcastAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
-        //var response = func.Invoke(argument);
         var task = new Task<ICollection<TResponse>>(() => new List<TResponse>{ func.Invoke(argument) });
         task.Start();
-        return task; //new List<TResponse> {func.Invoke(argument)});
+        return task; 
       });
     }
   }
