@@ -164,8 +164,6 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // these are mapped separately using CSVExportHelper.MapRequestedMachines()
       csvExportRequestArgument.MappedMachines.Count.Should().Be(0);
-
-      csvExportRequestArgument.RestrictOutputSize.Should().Be(restrictOutputSize);
       csvExportRequestArgument.RawDataAsDBase.Should().Be(rawDataAsDBase);
     }
 

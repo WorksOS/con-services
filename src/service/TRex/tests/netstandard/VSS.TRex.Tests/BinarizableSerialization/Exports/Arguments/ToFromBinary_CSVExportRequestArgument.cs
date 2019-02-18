@@ -42,8 +42,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
           new CSVExportMappedMachine() {Uid = Guid.NewGuid(), InternalSiteModelMachineIndex = 0, Name = "Machine 1"},
           new CSVExportMappedMachine() {Uid = Guid.NewGuid(), InternalSiteModelMachineIndex = 1, Name = "Machine 2"},
           new CSVExportMappedMachine() {Uid = Guid.NewGuid(), InternalSiteModelMachineIndex = 2, Name = "Machine 3"}
-        },
-        false, false
+        }, false
       );
 
       SimpleBinarizableInstanceTester.TestClass(request, "Empty CSVExportRequestArgument not same after round trip serialisation");

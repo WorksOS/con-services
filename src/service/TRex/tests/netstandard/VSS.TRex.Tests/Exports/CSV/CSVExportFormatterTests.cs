@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       OutputTypes outputType = OutputTypes.PassCountAllPasses;
 
       var formatter = new Formatter(csvUserPreference, outputType, false);
-      formatter.userPreference.DateSeparator.Should().Be("-");
+      formatter.userPreference.DateSeparator.Should().Be("/");
       formatter.userPreference.TimeSeparator.Should().Be(":");
       formatter.userPreference.DecimalSeparator.Should().Be(".");
       formatter.userPreference.ThousandsSeparator.Should().Be(",");
@@ -28,12 +28,12 @@ namespace VSS.TRex.Tests.Exports.CSV
       formatter.isRawDataAsDBaseRequired.Should().Be(false);
       formatter.nullString.Should().Be("?");
 
-      formatter.userPreference.Units.Should().Be(UnitsTypeEnum.US);
-      formatter.distanceConversionFactor.Should().Be(Formatter.USFeetToMeters);
-      formatter.speedUnitString.Should().Be("mph");
-      formatter.speedConversionFactor.Should().Be(Formatter.USFeetToMeters * 5280);
-      formatter.distanceUnitString.Should().Be("FT");
-      formatter.exportDateTimeFormatString.Should().Be("yyyy-MMM-dd HH:mm:ss.fff");
+      formatter.userPreference.Units.Should().Be(UnitsTypeEnum.Metric);
+      formatter.distanceConversionFactor.Should().Be(1.0);
+      formatter.speedUnitString.Should().Be("km/h");
+      formatter.speedConversionFactor.Should().Be(1000);
+      formatter.distanceUnitString.Should().Be("m");
+      formatter.exportDateTimeFormatString.Should().Be("yyyy/MMM/dd HH:mm:ss.fff");
     }
 
     [Theory]

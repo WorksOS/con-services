@@ -16,102 +16,152 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
-  public class SubGridExportProcessor
+  public class CSVExportSubGridProcessor
   {
+    private int maxRowCountPerFile = Int32.MaxValue;
     private Formatter formatter;
     private CSVExportRequestArgument requestArgument;
     private ISiteModel siteModel;
-    private int runningRowCount;
 
     private XYZ[] LLHCoords = null;
     private DateTime runningLastPassTime = DateTime.MinValue;
-    private string cellPassTimeString = string.Empty;
+    private string cellPassTimeString;
     private double runningNorthing = Consts.NullDouble;
     private double runningEasting = Consts.NullDouble;
-    private string coordString = string.Empty;
+    private string coordString;
     private float runningHeight = Consts.NullHeight;
-    private string heightString = string.Empty;
+    private string heightString;
     private int runningDesignNameID = Consts.kNoDesignNameID;
-    private string lastDesignNameString = string.Empty;
-    private int runningMachineID = -1;
-    private string lastMachineNameString = string.Empty;
-    private int runningMachineSpeed = Consts.NullMachineSpeed;
-    private string machineSpeedString = string.Empty;
+    private string lastDesignNameString;
+    private short runningMachineID = -1;
+    private string lastMachineNameString;
+    private ushort runningMachineSpeed = Consts.NullMachineSpeed;
+    private string machineSpeedString;
     private GPSMode runningGPSMode = GPSMode.NoGPS;
-    private string gpsModeString = "S_28169_Not_Applicable";
+    private string gpsModeString = "Not_Applicable";
     private Types.GPSAccuracy runningGPSAccuracy = Types.GPSAccuracy.Unknown;
-    private int runningGPSTolerance = CellPassConsts.NullGPSTolerance;
-    private string gpsAccuracyToleranceString = string.Empty;
+    private ushort runningGPSTolerance = CellPassConsts.NullGPSTolerance;
+    private string gpsAccuracyToleranceString;
     private int runningTargetPassCount = CellPassConsts.NullPassCountValue;
-    private string targetPassCountString = string.Empty; // todoJeannie should be approp nullString
+    private string targetPassCountString;
     private short runningLastPassValidCCV = CellPassConsts.NullCCV;
-    private string lastPassValidCCVString = string.Empty;
+    private string lastPassValidCCVString;
     private short runningTargetCCV = CellPassConsts.NullCCV;
-    private string lastTargetCCVString = string.Empty;
+    private string lastTargetCCVString;
     private short runningLastPassValidMDP = CellPassConsts.NullCCV;
-    private string lastPassValidMDPString = string.Empty;
+    private string lastPassValidMDPString;
     private short runningTargetMDP = CellPassConsts.NullCCV;
-    private string lastTargetMDPString = string.Empty;
+    private string lastTargetMDPString;
     private short runningValidRMV = CellPassConsts.NullCCV;
-    private string lastValidRMVString = string.Empty;
+    private string lastValidRMVString;
     private ushort runningValidFreq = CellPassConsts.NullFrequency;
-    private string lastValidFreqString = string.Empty;
+    private string lastValidFreqString;
     private ushort runningValidAmp = CellPassConsts.NullAmplitude;
-    private string lastValidAmpString = string.Empty;
-    private double runningTargetThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
-    private string lastTargetThicknessString = string.Empty;
+    private string lastValidAmpString;
+    private float runningTargetThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
+    private string lastTargetThicknessString;
     private MachineGear runningEventMachineGear = MachineGear.Null;
-    private string lastEventMachineGearString = "S_27793_Sensor_Failed";
+    private string lastEventMachineGearString;
     private VibrationState runningEventVibrationState = VibrationState.Invalid;
-    private string lastEventVibrationStateString = "S_28169_Not_Applicable";
+    private string lastEventVibrationStateString;
     private ushort runningLastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
-    private string lastPassValidTemperatureString = string.Empty;
+    private string lastPassValidTemperatureString;
 
-    public SubGridExportProcessor(Formatter formatter, CSVExportRequestArgument requestArgument, ISiteModel siteModel, int runningRowCount)
+    public CSVExportSubGridProcessor(Formatter formatter, 
+      CSVExportRequestArgument requestArgument, ISiteModel siteModel)
     {
       this.formatter = formatter;
       this.requestArgument = requestArgument;
       this.siteModel = siteModel;
-      this.runningRowCount = runningRowCount;
+      cellPassTimeString = coordString = heightString = lastDesignNameString = lastMachineNameString =
+        machineSpeedString = gpsAccuracyToleranceString = targetPassCountString = lastPassValidCCVString = 
+        lastTargetCCVString = lastPassValidMDPString = lastTargetMDPString = lastValidRMVString = 
+        lastValidFreqString = lastValidAmpString = lastTargetThicknessString = lastEventMachineGearString = 
+        lastEventVibrationStateString = lastPassValidTemperatureString = formatter.nullString;
     }
 
-    public List<string> ProcessSubGrid(ClientCellProfileLeafSubgrid subGrid)
+    public List<string> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
     {
       var rows = new List<string>();
       int runningIndexLLHCoords = 0;
       if (requestArgument.CoordType == CoordType.LatLon)
-        LLHCoords = SetupLLPositions(siteModel.CSIB(), subGrid); // todoJeannie validate CSIB in executor that CSIB is loaded and avail
+        LLHCoords = SetupLLPositions(siteModel.CSIB(), lastPassSubGrid);
 
-      subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+      lastPassSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        if (requestArgument.RestrictOutputSize && runningRowCount >= 65535)
-        {
-          // todoJeannie log and/or return error?
-          // multifile output (CSVReset())?
-          return;
-        }
-
-        var cell = subGrid.Cells[x, y];
+        var cell = lastPassSubGrid.Cells[x, y];
         if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
           return;
 
-        // todoJeannie if dealing with formatted strings, what about ordering
         rows.Add(FormatADataRow(cell, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
         runningIndexLLHCoords++;
-        runningRowCount++;
 
       });
 
-      if (requestArgument.RestrictOutputSize && runningRowCount >= 65535)
+      return rows;
+    }
+
+    public List<string> ProcessSubGrid(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
+    {
+      var rows = new List<string>();
+      int runningIndexLLHCoords = 0;
+      if (requestArgument.CoordType == CoordType.LatLon)
+        LLHCoords = SetupLLPositions(siteModel.CSIB(), allPassesSubGrid);
+
+      allPassesSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        // todoJeannie log and/or return error?
-        // multifile output?
-        return rows;
-      }
+        var cell = allPassesSubGrid.Cells[x, y];
+        foreach (var cellPass in cell.CellPasses)
+        {
+          // todoJeannie half passes
+          rows.Add(FormatADataRow(cellPass, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
+        }
+        runningIndexLLHCoords++;
+      });
 
       return rows;
     }
+
+    //public List<string> ProcessSubGrid(IClientLeafSubGrid subGrid) 
+    //{
+    //  var rows = new List<string>();
+    //  int runningIndexLLHCoords = 0;
+    //  if (requestArgument.CoordType == CoordType.LatLon)
+    //    LLHCoords = SetupLLPositions(siteModel.CSIB(), subGrid); // todoJeannie validate CSIB in executor that CSIB is loaded and avail
+
+    //  subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+
+    //  SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+    //  {
+    //    if (subGrid is ClientCellProfileLeafSubgrid profileSubGrid)
+    //    {
+    //      var cell = profileSubGrid.Cells[x, y];
+    //      if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
+    //        return;
+
+    //      rows.Add(FormatADataRow(cell, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
+    //      runningIndexLLHCoords++;
+    //    }
+
+    //    if (subGrid is ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
+    //    {
+    //      var cell = allPassesSubGrid.Cells[x, y];
+    //      foreach (var cellPass in cell.CellPasses)
+    //      {
+    //        // todoJeannie half passes
+    //        rows.Add(FormatADataRow(cellPass, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
+    //      };
+    //      runningIndexLLHCoords++;
+    //    }
+
+    //  });
+
+    //  return rows;
+    //}
 
     private string FormatADataRow(ClientCellProfileLeafSubgridRecord cell, double subGridWorldOriginX, double subGridWorldOriginY, int runningIndexLLHCoords)
     {
@@ -152,7 +202,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       }
       resultString += $"{lastDesignNameString},";
 
-      if (!cell.Equals(runningMachineID))
+      if (!cell.InternalSiteModelMachineIndex.Equals(runningMachineID))
       {
         lastMachineNameString = FormatMachineName(cell.InternalSiteModelMachineIndex);
         runningMachineID = cell.InternalSiteModelMachineIndex;
@@ -188,9 +238,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       }
       resultString += $"{targetPassCountString},";
 
-      resultString += $"Yes,";
+      resultString += $"{cell.TotalWholePasses},"; 
 
-      resultString += $"{cell.LayersCount},"; // todo should this be layerID?
+      resultString += $"{cell.LayersCount},"; // for cellPasses this contains layerID
 
       if (!cell.LastPassValidCCV.Equals(runningLastPassValidCCV))
       {
@@ -211,7 +261,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         lastPassValidMDPString = formatter.FormatCompactionCCVTypes(cell.LastPassValidMDP);
         runningLastPassValidMDP = cell.LastPassValidMDP;
       }
-      resultString += $"{lastPassValidCCVString},";
+      resultString += $"{lastPassValidMDPString},";
 
       if (!cell.TargetMDP.Equals(runningTargetMDP))
       {
@@ -267,14 +317,14 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         lastPassValidTemperatureString = formatter.FormatLastPassValidTemperature(cell.LastPassValidTemperature);
         runningLastPassValidTemperature = cell.LastPassValidTemperature;
       }
-      resultString += $"{lastPassValidTemperatureString},";
+      resultString += $"{lastPassValidTemperatureString}"; // no training comma
 
       return resultString;
     }
 
 
     // creates an array of NEE for a sub grid
-    //  which is sends to Coordinate service
+    //  which is sent to Coordinate service
     //  to resolve into a list of LHH (in same order)
     // Note: only adds entry where cellPassCount exists, so may not be 1024 entries
     private XYZ[] SetupLLPositions(string csibName, IClientLeafSubGrid subGrid)
@@ -315,23 +365,23 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       {
         var design = siteModel.SiteModelMachineDesigns.Locate(designNameId);
         if (design != null)
-          return string.Format($"{design.Name},");
-        return string.Format($"{designNameId},");
+          return string.Format($"{design.Name}");
+        return string.Format($"{designNameId}");
       }
 
-      return requestArgument.RawDataAsDBase ? string.Empty : "?";
+      return  formatter.nullString;
     }
 
     private string FormatMachineName(int machineId)
     {
       if (machineId > -1 && requestArgument.MappedMachines != null && requestArgument.MappedMachines.Count > 0)
       {
-        var machine = requestArgument.MappedMachines.Where(m => m.InternalSiteModelMachineIndex == machineId).FirstOrDefault();
+        var machine = requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
         if (machine != null)
-          return string.Format($"{machine.Name},");
+          return string.Format($"\"{machine.Name}\"");
       }
 
-      return string.Format($"Unknown,");
+      return string.Format($"\"Unknown\"");
     }
   }
 }

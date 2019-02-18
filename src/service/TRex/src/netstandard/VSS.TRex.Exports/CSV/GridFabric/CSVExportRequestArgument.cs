@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 
@@ -12,9 +13,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportRequestArgument : BaseApplicationServiceRequestArgument
   {
-    /// <summary>
-    /// Type of Coordinates required in result e.g. NE
-    /// </summary>
     public CoordType CoordType { get; set; }
 
     public OutputTypes OutputType { get; private set; }
@@ -22,12 +20,10 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     public CSVExportUserPreferences UserPreferences { get; set; }
 
-    // the following machineNames is for veta export only
+    // MappedMachines is for veta export only
     public List<CSVExportMappedMachine> MappedMachines { get; set; }
 
-    // the following 2 flags are for passcount export only
-    public bool RestrictOutputSize { get; private set; }
-
+    // RawDataAsDBase is for pass count export only
     public bool RawDataAsDBase { get; private set; }
 
 
@@ -38,6 +34,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     private void Clear()
     {
+      Filters = new FilterSet(new CombinedFilter());
       CoordType = CoordType.Northeast;
       OutputType = OutputTypes.PassCountLastPass;
       MappedMachines = new List<CSVExportMappedMachine>();
@@ -46,7 +43,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
       CoordType coordType, OutputTypes outputType, CSVExportUserPreferences userPreferences,
-      List<CSVExportMappedMachine> mappedMachines, bool restrictOutputSize, bool rawDataAsDBase)
+      List<CSVExportMappedMachine> mappedMachines, bool rawDataAsDBase)
     {
       ProjectID = siteModelUid;
       Filters = filters;
@@ -54,7 +51,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       OutputType  = outputType;
       UserPreferences = userPreferences;
       MappedMachines = mappedMachines;
-      RestrictOutputSize = restrictOutputSize;
       RawDataAsDBase = rawDataAsDBase;
     }
 
@@ -76,7 +72,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         writer.WriteShort(machine.InternalSiteModelMachineIndex);
         writer.WriteString(machine.Name);
       }
-      writer.WriteBoolean(RestrictOutputSize);
       writer.WriteBoolean(RawDataAsDBase);
     }
 
@@ -102,7 +97,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
           Name = reader.ReadString()
         });
       }
-      RestrictOutputSize = reader.ReadBoolean();
       RawDataAsDBase = reader.ReadBoolean();
     }
 
@@ -115,7 +109,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         hashCode = (hashCode * 397) ^ OutputType.GetHashCode();
         hashCode = (hashCode * 397) ^ UserPreferences.GetHashCode();
         hashCode = (hashCode * 397) ^ MappedMachines.GetHashCode();
-        hashCode = (hashCode * 397) ^ RestrictOutputSize.GetHashCode();
         hashCode = (hashCode * 397) ^ RawDataAsDBase.GetHashCode();
         return hashCode;
       }

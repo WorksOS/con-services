@@ -46,7 +46,7 @@ namespace VSS.TRex.SubGrids
         private IClientLeafSubGrid ClientGrid;
         private ISurfaceElevationPatchArgument SurfaceElevationPatchArg;
 
-        public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
         private AreaControlSet AreaControlSet;
 
         // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)

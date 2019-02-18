@@ -213,8 +213,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].GPSTolerance = LastPass.EventValues.GPSTolerance;
       Cells[cellX, cellY].GPSAccuracy = LastPass.EventValues.GPSAccuracy;
       Cells[cellX, cellY].TargetPassCount = LastPass.TargetValues.TargetPassCount;
-//      Cells[cellX, cellY].TotalWholePasses = cellProfileFromContext.TotalNumberOfWholePasses(true); // include superseded layers
-//      Cells[cellX, cellY].TotalHalfPasses = cellProfileFromContext.TotalNumberOfHalfPasses(true); // include superseded layers
+      Cells[cellX, cellY].TotalWholePasses = cellProfileFromContext.TotalNumberOfWholePasses(true); // include superseded layers
       Cells[cellX, cellY].LayersCount = cellProfileFromContext.Layers.Count();
 
       cellProfileFromContext.Passes.LastPassValidCCVDetails(out var lastPassValidCCV, out var _targetCCV); // get details from last VALID pass

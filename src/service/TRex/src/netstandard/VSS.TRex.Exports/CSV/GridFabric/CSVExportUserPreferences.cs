@@ -17,11 +17,11 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public TemperatureUnitEnum TemperatureUnits { get; set; }
     public double ProjectTimeZoneOffset { get; set; }
 
-    public const string DefaultDateSeparator = "-";
+    public const string DefaultDateSeparator = "/";
     public const string DefaultTimeSeparator = ":";
     public const string DefaultThousandsSeparator = ",";
     public const string DefaultDecimalSeparator = ".";
-    public const UnitsTypeEnum DefaultUnits = UnitsTypeEnum.US;
+    public const UnitsTypeEnum DefaultUnits = UnitsTypeEnum.Metric;
     public const TemperatureUnitEnum DefaultTemperatureUnits = TemperatureUnitEnum.Celsius;
 
     public CSVExportUserPreferences()

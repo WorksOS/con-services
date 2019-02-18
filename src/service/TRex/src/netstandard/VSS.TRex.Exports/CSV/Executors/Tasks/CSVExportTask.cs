@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Pipelines.Tasks;
@@ -8,6 +8,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
@@ -19,10 +20,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportTask>();
 
     public CSVExportRequestArgument requestArgument;
-
     public Formatter formatter;
     public CSVExportRequestResponse taskResponse = new CSVExportRequestResponse();
-    
+
     public CSVExportTask()
     {
       // todoJeannie does it come in here?
@@ -60,31 +60,16 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       }
 
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
-      
-      var requiredGridDataType = requestArgument.OutputType == OutputTypes.PassCountLastPass || requestArgument.OutputType == OutputTypes.VedaFinalPass ? 
-        GridDataType.CellProfile : GridDataType.CellPasses;
-
-      // todoJeannie what to do if this goes over?
-      int runningRowCount = 0;
 
       foreach (var subGrid in subGridResponses)
       {
-        //if (requestArgument.CoordType == CoordType.LatLon)
-        //  SetupLLPositions(csibName, subGrid); // todoJeannie validate in executor that CSIB is loaded and avail
-        if (requiredGridDataType == GridDataType.CellProfile &&
-            subGrid is ClientCellProfileLeafSubgrid )
-          /*ExtractRequiredValues(profileSubGrid)*/;
-        {
-          var subGridExportProcessor = new SubGridExportProcessor(formatter, requestArgument, siteModel, runningRowCount);
-          var rows = subGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileLeafSubgrid);
-          runningRowCount += rows.Count;
-          taskResponse.dataRows.AddRange(rows);
-        }
-
-        // todojeannie CellPasses
-        //if (requiredGridDataType == GridDataType.CellPasses &&
-        //    subGrid is ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
-        //  ExtractRequiredValues(allPassesSubGrid);
+        var subGridExportProcessor = new CSVExportSubGridProcessor(formatter, requestArgument, siteModel);
+        List<string> rows;
+        if (subGrid is ClientCellProfileLeafSubgrid grid)
+          rows = subGridExportProcessor.ProcessSubGrid(grid);
+        else
+          rows = subGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid);
+        taskResponse.dataRows.AddRange(rows);
       }
 
       return true;

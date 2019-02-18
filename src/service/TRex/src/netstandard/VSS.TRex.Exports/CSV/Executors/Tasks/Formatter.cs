@@ -138,30 +138,40 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     {
       if (value == Consts.NullMachineSpeed)
         return nullString;
-      return FormatDisplayVelocity(value / 100, -1);
+      return FormatDisplayVelocity(value/100.00, -1);
     }
 
     public string FormatGPSMode(GPSMode value)
     {
+      var result = string.Empty;
       switch (value)
       {
-        case GPSMode.Old: return "S_27782_Old_Position";
-        case GPSMode.AutonomousPosition: return "S_27786_Autonomous";
-        case GPSMode.Float: return "S_27787_RTK_Float";
-        case GPSMode.Fixed: return "S_27788_RTK_Fixed";
-        case GPSMode.DGPS: return "S_27789_Differential_GPS";
-        case GPSMode.SBAS: return "S_28028_SBAS";
-        case GPSMode.LocationRTK: return "S_28026_Location_RTK";
-        case GPSMode.NoGPS: return "S_28169_Not_Applicable";
-        default: return $"unknown: {value}";
+        case GPSMode.Old: result = "Old Position"; break;
+        case GPSMode.AutonomousPosition: result = "Autonomous"; break;
+        case GPSMode.Float: result = "Float"; break;
+        case GPSMode.Fixed: result = "RTK Fixed"; break;
+        case GPSMode.DGPS: result = "Differential_GPS"; break;
+        case GPSMode.SBAS: result = "SBAS"; break;
+        case GPSMode.LocationRTK: result = "Location_RTK"; break;
+        case GPSMode.NoGPS: result = "Not_Applicable"; break;
+        default: result = $"unknown: {value}"; break;
       }
+
+      return result;
     }
 
     public string FormatGPSAccuracy(GPSAccuracy gpsAccuracy, int gpsTolerance)
     {
       if (gpsTolerance == CellPassConsts.NullGPSTolerance)
         return nullString;
-      return string.Format($"{FormatGPSAccuracyValue(gpsAccuracy)} ({FormatDisplayDistance(gpsTolerance / 1000)})");
+
+      var toleranceString = nullString;
+      if (isRawDataAsDBaseRequired)
+        toleranceString = FormatDisplayDistanceUnitless(gpsTolerance / 1000.000);
+      else
+        toleranceString = FormatDisplayDistance(gpsTolerance / 1000.000);
+
+      return string.Format($"{FormatGPSAccuracyValue(gpsAccuracy)} ({toleranceString})");
     }
 
     public string FormatPassCount(int value)
@@ -212,33 +222,39 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     public string FormatMachineGearValue(MachineGear value)
     {
+      var result = string.Empty;
       switch (value)
       {
-        case MachineGear.Neutral: return "S_27790_Neutral";
-        case MachineGear.Forward: return "S_27791_Forward";
-        case MachineGear.Reverse: return "S_27792_Reverse";
-        case MachineGear.Forward2: return "S_27794_Forward_2";
-        case MachineGear.Forward3: return "S_27795_Forward_3";
-        case MachineGear.Forward4: return "S_27796_Forward_4";
-        case MachineGear.Forward5: return "S_27797_Forward_5";
-        case MachineGear.Reverse2: return "S_27798_Reverse_2";
-        case MachineGear.Reverse3: return "S_27799_Reverse_3";
-        case MachineGear.Reverse4: return "S_27800_Reverse_4";
-        case MachineGear.Reverse5: return "S_27801_Reverse_5";
-        case MachineGear.Park: return "S_28168_Park";
-        default: return "S_27793_Sensor_Failed";
+        case MachineGear.Neutral: result = "Neutral"; break;
+        case MachineGear.Forward: result = "Forward"; break;
+        case MachineGear.Reverse: result = "Reverse"; break;
+        case MachineGear.Forward2: result = "Forward_2"; break;
+        case MachineGear.Forward3: result = "Forward_3"; break;
+        case MachineGear.Forward4: result = "Forward_4"; break;
+        case MachineGear.Forward5: result = "Forward_5"; break;
+        case MachineGear.Reverse2: result = "Reverse_2"; break;
+        case MachineGear.Reverse3: result = "Reverse_3"; break;
+        case MachineGear.Reverse4: result = "Reverse_4"; break;
+        case MachineGear.Reverse5: result = "Reverse_5"; break;
+        case MachineGear.Park: result = "Park"; break;
+        default: result = "Sensor_Failed"; break;
       }
+
+      return result;
     }
 
     public string FormatEventVibrationState(VibrationState value)
     {
+      var result = string.Empty;
       switch (value)
       {
-        case VibrationState.Off: return "S_27802_Off";
-        case VibrationState.On: return "S_27803_On";
-        case VibrationState.Invalid: return "S_28169_Not_Applicable";
-        default: return $"unknown: {value}";
+        case VibrationState.Off: result = "Off"; break;
+        case VibrationState.On: result = "On"; break;
+        case VibrationState.Invalid: result = "Not_Applicable"; break;
+        default: result = $"unknown: {value}"; break;
       }
+
+      return result;
     }
 
     // As Material Temperature is reported in 10th of a degree Celsius...
@@ -260,16 +276,19 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     private string FormatGPSAccuracyValue(GPSAccuracy value)
     {
+      var result = string.Empty;
       switch (value)
       {
-        case GPSAccuracy.Fine: return "S_28445_Fine";
-        case GPSAccuracy.Medium: return "S_28447_Medium";
-        case GPSAccuracy.Coarse: return "S_28446_Coarse";
-        default: return $"unknown: {value}";
+        case GPSAccuracy.Fine: result = "Fine"; break;
+        case GPSAccuracy.Medium: result = "Medium"; break;
+        case GPSAccuracy.Coarse: result = "Coarse"; break;
+        default: result = $"unknown: {value}"; break;
       }
+
+      return result;
     }
 
-    private string FormatDisplayVelocity(int value, int dp)
+    private string FormatDisplayVelocity(double value, int dp)
     {
       if (value == Consts.NullMachineSpeed)
         return nullString;

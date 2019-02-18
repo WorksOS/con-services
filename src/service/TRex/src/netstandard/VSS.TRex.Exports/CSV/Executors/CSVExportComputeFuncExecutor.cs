@@ -49,7 +49,8 @@ namespace VSS.TRex.Exports.CSV.Executors
         ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
 
         Guid requestDescriptor = Guid.NewGuid();
-        var gridDataType = _CSVExportRequestArgument.OutputType == OutputTypes.PassCountLastPass || _CSVExportRequestArgument.OutputType == OutputTypes.VedaFinalPass ? GridDataType.CellProfile : GridDataType.CellPasses;
+        var gridDataType = _CSVExportRequestArgument.OutputType == OutputTypes.PassCountLastPass || _CSVExportRequestArgument.OutputType == OutputTypes.VedaFinalPass 
+          ? GridDataType.CellProfile : GridDataType.CellPasses;
 
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
           dataModelID: _CSVExportRequestArgument.ProjectID,

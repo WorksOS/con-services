@@ -42,6 +42,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
+      // todoJeannie validate CSIB in executor that CSIB is loaded and avail if outputType == LL
 
       var filter = ConvertFilter(request.Filter, siteModel);
       // setting this date is possibly redundant - depending on how TRex handles this
@@ -49,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       filter.AttributeFilter.StartTime = startEndDate.Item1;
       filter.AttributeFilter.EndTime = startEndDate.Item2;
 
-      var tRexRequest = new Exports.CSV.GridFabric.CSVExportRequest();
+      var tRexRequest = new CSVExportRequest();
       var csvExportRequestArgument = AutoMapperUtility.Automapper.Map<CSVExportRequestArgument>(request);
       csvExportRequestArgument.MappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, request.MachineNames);
 
@@ -61,9 +62,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       byte[] toReturn = Write(columnHeaders, response.dataRows);
       // todoJeannie veta vs passcount? setup Headers, sort and string together dataRows
       //    then zip and encrypt (or v.v?)
-      //   see:
-      // /src/Common/Productivity3DModels/src/Models/DxfFileRequest.cs
-      // public byte[] GetFileAsByteArray(IFormFile file) 
+      // for passCount&restrictOutputSize, split files, (FileName := Format('%s(%.2d)', [FileName, FFileCount]);) rename) and zip 
+      //   see: // /src/Common/Productivity3DModels/src/Models/DxfFileRequest.cs
+      //        public byte[] GetFileAsByteArray(IFormFile file) 
       return new CSVExportResult(toReturn);
     }
 
