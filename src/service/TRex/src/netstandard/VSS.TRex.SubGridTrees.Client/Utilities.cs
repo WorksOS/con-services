@@ -21,5 +21,18 @@ namespace VSS.TRex.SubGridTrees.Client
                     return DataType;
             }
         }
+
+      /// <summary>
+      /// Determines valid relationships between the data type of a possibly derived client grid and the underlying
+      /// grid data type a sub grid retriever is tasked with retrieving
+      /// </summary>
+      /// <param name="baseType"></param>
+      /// <param name="derivedType"></param>
+      public static bool DerivedGridDataTypesAreCompatible(GridDataType baseType, GridDataType derivedType)
+      {
+        return baseType == derivedType ||
+               baseType == GridDataType.Height && derivedType == GridDataType.HeightAndTime ||
+               baseType == GridDataType.CutFill && derivedType == GridDataType.Height;
+      }
     }
 }

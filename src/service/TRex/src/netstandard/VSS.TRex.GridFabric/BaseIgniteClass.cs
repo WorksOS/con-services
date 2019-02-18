@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric
@@ -86,7 +88,7 @@ namespace VSS.TRex.GridFabric
 
       try
       {
-        _ignite = Ignition.TryGetIgnite(GridName);
+        _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(GridName);
 
         if (_ignite == null)
         {

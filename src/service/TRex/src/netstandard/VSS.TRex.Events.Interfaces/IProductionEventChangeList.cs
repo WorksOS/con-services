@@ -44,7 +44,7 @@ namespace VSS.TRex.Events.Interfaces
 
     V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V));
 
-    V LastStateValue();
+    V LastStateValue(V defaultValue = default(V));
     DateTime LastStateDate();
 
     void GetStateAtIndex(int index, out DateTime dateTime, out V state);

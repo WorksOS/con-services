@@ -647,7 +647,7 @@ namespace VSS.TRex.Events
     /// Returns the state of the last element in the events list
     /// </summary>
     /// <returns></returns>
-    public V LastStateValue() => Events.Last().State;
+    public V LastStateValue(V defaultValue = default(V)) => Events.Count == 0 ? defaultValue : Events.Last().State;
 
     /// <summary>
     /// Returns the date of the last element in the events list

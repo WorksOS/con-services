@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Cells;
+﻿using System;
+using FluentAssertions;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client;
@@ -34,10 +36,25 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     /// <summary>
     /// Tests the assignation of a height and time leaf sub grid to a height sub grid
     /// </summary>
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
     public void Test_HeightClientLeafSubGridTests_Assign()
     {
-      Assert.True(false, "Not implemented");
+      var clientGridHeight = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      var clientGridHeightAndTime = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
+
+      // Fill in the height and time grid
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGridHeightAndTime.Times[x, y] = DateTime.UtcNow.Ticks;
+        clientGridHeightAndTime.Cells[x, y] = x + y;
+      });
+
+      clientGridHeight.Assign(clientGridHeightAndTime);
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGridHeight.Cells[x, y].Should().Be(x + y);
+      });
     }
 
     [Fact]

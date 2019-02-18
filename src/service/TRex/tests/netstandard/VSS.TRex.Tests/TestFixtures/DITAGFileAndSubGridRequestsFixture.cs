@@ -27,9 +27,14 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
+  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture
   {
     public DITAGFileAndSubGridRequestsFixture() : base()
+    {
+      SetupFixture();
+    }
+
+    public new void SetupFixture()
     {
       // Provide the surveyed surface request mock
       var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
@@ -78,13 +83,6 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Complete();
     }
-
-    public override void Dispose()
-    {
-      base.Dispose();
-
-      DIBuilder.Eject();
-  }
 
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried

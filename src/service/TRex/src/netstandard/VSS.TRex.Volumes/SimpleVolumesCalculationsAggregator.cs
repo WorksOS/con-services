@@ -160,17 +160,19 @@ namespace VSS.TRex.Volumes
             // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;
 
-            // Query the patch of elevations from the surface model for this sub grid
-            ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(),
-            CellSize, out DesignHeights, out ProfilerRequestResult);
-            
-            if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
-                ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+              // Query the patch of elevations from the surface model for this sub grid
+            if (ActiveDesign != null)
             {
-                Log.LogError($"Design profiler sub grid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
-                return;
+                ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult);
+             
+                if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
+                    ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                {
+                    Log.LogError($"Design profiler sub grid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
+                    return;
+                }
             }
-
+         
             SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             //const bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)

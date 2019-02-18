@@ -591,8 +591,10 @@ namespace VSS.TRex.SubGrids
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
-      if (clientGrid.GridDataType != _gridDataType)
-        throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] does not match grid data type of retriever [{_gridDataType}]");
+      if (!Utilities.DerivedGridDataTypesAreCompatible(_gridDataType, clientGrid.GridDataType))
+      {
+        throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] is not compatible with the grid data type of retriever [{_gridDataType}]");
+      }
 
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 
