@@ -177,6 +177,9 @@ namespace VSS.TRex.Tests.TestFixtures
       });
 
       totalCells.Should().Be(expectedCellCount);
+
+      var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
+      siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
     }
   }
 }
