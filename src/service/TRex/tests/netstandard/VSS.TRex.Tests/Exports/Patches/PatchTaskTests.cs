@@ -17,8 +17,8 @@ namespace VSS.TRex.Tests.Exports.Patches
       PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All);
 
       Assert.NotNull(task);
-      Assert.NotNull(task.PatchSubgrids);
-      Assert.True(0 == task.PatchSubgrids.Count, "Patched subgrid count not 0 after creation");
+      Assert.NotNull(task.PatchSubGrids);
+      Assert.True(0 == task.PatchSubGrids.Count, "Patched subgrid count not 0 after creation");
     }
 
     [Fact]
@@ -36,9 +36,9 @@ namespace VSS.TRex.Tests.Exports.Patches
 
       task.TransferResponse(new IClientLeafSubGrid[] {transferSubgrid});
 
-      Assert.True(task.PatchSubgrids.Count == 1,
-        $"Count of transferred subgrids not 1 as expected (= {task.PatchSubgrids.Count}");
-      Assert.True(task.PatchSubgrids[0] == transferSubgrid,
+      Assert.True(task.PatchSubGrids.Count == 1,
+        $"Count of transferred subgrids not 1 as expected (= {task.PatchSubGrids.Count}");
+      Assert.True(task.PatchSubGrids[0] == transferSubgrid,
         $"Transferred subgrid is not the same as the one passed into the task.");
     }
   }

@@ -1,10 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Requests;
@@ -128,7 +134,6 @@ namespace VSS.TRex.Tests.Volumes
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
 
-      // This is a no data test, so the response will be null
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
@@ -149,8 +154,127 @@ namespace VSS.TRex.Tests.Volumes
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
 
-      // This is a no data test, so the response will be null
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+    }
+
+    public ISiteModel NewEmptyModel()
+    {
+      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      return siteModel;
+    }
+
+    private void CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(SimpleVolumesResponse response)
+    {
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(0, EPSILON);
+      response.Fill.Should().BeApproximately(4.5 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.CutArea.Should().BeApproximately(0, EPSILON);
+      response.FillArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+    }
+
+    private void BuildModelForSingleCellSmmaryVolume(out ISiteModel siteModel, float heightIncrement)
+    {
+      var baseTime = DateTime.UtcNow;
+      var baseHeight = 1.0f;
+
+      siteModel = NewEmptyModel();
+      var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
+      var cellPasses = Enumerable.Range(0, 10).Select(x =>
+        new CellPass
+        {
+          InternalSiteModelMachineIndex = bulldozerMachineIndex,
+          Time = baseTime.AddMinutes(x),
+          Height = baseHeight + x * heightIncrement,
+          PassType = PassType.Front
+        });
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
+        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
+    }
+
+    [Fact]
+    public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleCell_WithFill()
+    {
+      AddClusterComputeGridRouting();
+
+      BuildModelForSingleCellSmmaryVolume(out var siteModel, 0.5f);
+
+      var request = new SimpleVolumesRequest_ClusterCompute();
+      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+
+      CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(response);
+    }
+
+    [Fact]
+    public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleCell_WithFill()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      BuildModelForSingleCellSmmaryVolume(out var siteModel, 0.5f);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+
+      CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(response);
+    }
+
+    private void CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(SimpleVolumesResponse response)
+    {
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(4.50 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.Fill.Should().BeApproximately(0, EPSILON);
+      response.CutArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.FillArea.Should().BeApproximately(0, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+    }
+
+    [Fact]
+    public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute_SingleCell_WithCut()
+    {
+      AddClusterComputeGridRouting();
+
+      BuildModelForSingleCellSmmaryVolume(out var siteModel, -0.5f);
+
+      var request = new SimpleVolumesRequest_ClusterCompute();
+      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+
+      CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(response);
+    }
+
+    [Fact]
+    public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute_SingleCell_WithCut()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      BuildModelForSingleCellSmmaryVolume(out var siteModel, -0.5f);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
+
+      CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(response);
     }
   }
 }

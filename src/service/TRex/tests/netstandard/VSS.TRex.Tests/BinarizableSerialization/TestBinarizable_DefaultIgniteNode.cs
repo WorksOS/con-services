@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     public static IIgnite GetIgnite(bool force = false)
     {
       if (!force)
-        throw new InvalidOperationException("RunningI Ignite nodes in unit tests is undesirable is possible...");
+        throw new InvalidOperationException("Running Ignite nodes in unit tests is undesirable if possible...");
 
       lock (lockObj)
       {
