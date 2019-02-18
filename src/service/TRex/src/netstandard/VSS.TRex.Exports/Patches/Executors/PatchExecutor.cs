@@ -130,7 +130,7 @@ namespace VSS.TRex.Exports.Patches.Executors
         processor.Process();
 
         if (PatchSubGridsResponse.ResultStatus == RequestErrorStatus.OK)
-          PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubgrids;
+          PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubGrids;
       }
       catch (Exception E)
       {

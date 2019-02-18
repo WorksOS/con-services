@@ -9,16 +9,16 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Exports.Patches.Executors.Tasks
 {
   /// <summary>
-  /// The task responsible for receiving subgrids to be aggregated into a Patch response
+  /// The task responsible for receiving sub grids to be aggregated into a Patch response
   /// </summary>
   public class PatchTask : PipelinedSubGridTask
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// The collection of subgrids being collected for a patch response
+    /// The collection of sub grids being collected for a patch response
     /// </summary>
-    public List<IClientLeafSubGrid> PatchSubgrids = new List<IClientLeafSubGrid>();
+    public List<IClientLeafSubGrid> PatchSubGrids = new List<IClientLeafSubGrid>();
 
     public PatchTask()
     { }
@@ -34,7 +34,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     }
 
     /// <summary>
-    /// Accept a subgrid response from the processing engine and incorporate into the result for the request.
+    /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
     /// <param name="response"></param>
     /// <returns></returns>
@@ -50,7 +50,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
 
       if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
       {
-        Log.LogWarning("No subgrid responses returned");
+        Log.LogWarning("No sub grid responses returned");
         return false;
       }
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
         if (subGrid == null)
           continue;
 
-        PatchSubgrids.Add(subGrid);
+        PatchSubGrids.Add(subGrid);
       }
 
       return true;
