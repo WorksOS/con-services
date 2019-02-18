@@ -2,9 +2,11 @@
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using System;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -29,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         private void InstantiateCache()
         {
-            IIgnite ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+            IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
 
             QueueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 

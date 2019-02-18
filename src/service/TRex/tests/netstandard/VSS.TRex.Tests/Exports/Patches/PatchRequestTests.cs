@@ -55,10 +55,10 @@ namespace VSS.TRex.Tests.Exports.Patches
           Time = baseTime.AddMinutes(x),
           Height = baseHeight + x * heightIncrement,
           PassType = PassType.Front
-        });
+        }).ToArray();
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
-        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
+        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
     }
 
     private PatchRequestArgument SimplePatchRequestArgument(Guid projectUid)

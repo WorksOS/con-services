@@ -5,7 +5,9 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Queues
 {
@@ -38,8 +40,8 @@ namespace VSS.TRex.GridFabric.Queues
 
         public TestQueueHolder()
         {
-          //  MutableClientServer Server = new MutableClientServer(new [] { "TestQueue2" });
-            IIgnite Ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+            //  MutableClientServer Server = new MutableClientServer(new [] { "TestQueue2" });
+            IIgnite Ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
             QueueCache = Ignite.GetOrCreateCache<long, TestQueueItem>(
                 new CacheConfiguration
                 {
