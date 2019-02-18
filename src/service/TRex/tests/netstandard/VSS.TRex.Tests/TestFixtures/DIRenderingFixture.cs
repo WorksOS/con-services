@@ -6,20 +6,14 @@ using VSS.TRex.Rendering.Implementations.Core2;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DIRenderingFixture : IDisposable
+  public class DIRenderingFixture : DITAGFileAndSubGridRequestsWithIgniteFixture
   {
     public DIRenderingFixture()
     {
       DIBuilder
-        .New()
-        .AddLogging()
+        .Continue()
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
         .Complete();
-    }
-
-    public void Dispose()
-    {
-      DIBuilder.Eject();
     }
   }
 }

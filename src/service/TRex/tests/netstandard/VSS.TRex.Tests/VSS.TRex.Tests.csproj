@@ -115,6 +115,9 @@
     <None Update="TestData\Export\Patches\TestTAGFile.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Rendering\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SummaryVolumes\TestTAGFile.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
