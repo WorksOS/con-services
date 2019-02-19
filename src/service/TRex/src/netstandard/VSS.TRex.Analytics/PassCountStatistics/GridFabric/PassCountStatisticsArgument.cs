@@ -10,7 +10,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.
+    /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.
     /// </summary>
     public bool OverrideTargetPassCount { get; set; }
 

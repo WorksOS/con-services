@@ -19,6 +19,7 @@ using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 
@@ -56,6 +57,8 @@ namespace VSS.TRex.Tests.TestFixtures
           return new SurfaceTask();
         case PipelineProcessorTaskStyle.GriddedReport:
           return new GriddedReportTask();
+        case PipelineProcessorTaskStyle.PVMRendering:
+          return new PVMRenderingTask();
         default:
           return null;
       }

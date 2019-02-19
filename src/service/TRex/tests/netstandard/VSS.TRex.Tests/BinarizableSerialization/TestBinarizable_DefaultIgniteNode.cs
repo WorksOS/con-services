@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   public static class TestBinarizable_DefaultIgniteNode
   {
     private static IIgnite _ignite;
-    private static object lockObj = new object();
+    private static readonly object lockObj = new object();
 
     public static IIgnite GetIgnite(bool force = false)
     {

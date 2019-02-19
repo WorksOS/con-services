@@ -1,16 +1,13 @@
 ﻿using System;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Executors;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Types;
 using Xunit;
 using Draw = System.Drawing;
 
-namespace VSS.TRex.Tests
+namespace VSS.TRex.Tests.Rendering
 {
   public class RenderOverlayTileTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
@@ -24,8 +21,7 @@ namespace VSS.TRex.Tests
         true, // CoordsAreGrid
         100, //PixelsX
         100, // PixelsY
-        null, // Filter1
-        null, // Filter2
+        null, // Filters
         Guid.Empty, // DesignDescriptor.Null(),
         Draw.Color.Black,
         string.Empty);

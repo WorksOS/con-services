@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -23,9 +22,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     public ushort PixelsX { get; set; } = 256;
     public ushort PixelsY { get; set; } = 256;
 
-    public ICombinedFilter Filter1 { get; set; }
-    public ICombinedFilter Filter2 { get; set; }
-
     public TileRenderRequestArgument()
     { }
 
@@ -35,8 +31,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
                                      bool coordsAreGrid,
                                      ushort pixelsX,
                                      ushort pixelsY,
-                                     ICombinedFilter filter1,
-                                     ICombinedFilter filter2,
+                                     IFilterSet filters,
                                      Guid referenceDesignUid)
     {
       ProjectID = siteModelID;
@@ -45,8 +40,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       CoordsAreGrid = coordsAreGrid;
       PixelsX = pixelsX;
       PixelsY = pixelsY;
-      Filter1 = filter1;
-      Filter2 = filter2;
+      Filters = filters;
       ReferenceDesignUID = referenceDesignUid;
     }
 
@@ -68,12 +62,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       writer.WriteBoolean(CoordsAreGrid);
       writer.WriteInt(PixelsX);
       writer.WriteInt(PixelsY);
-
-      writer.WriteBoolean(Filter1 != null);
-      Filter1?.ToBinary(writer);
-
-      writer.WriteBoolean(Filter2 != null);
-      Filter2?.ToBinary(writer);
     }
 
     /// <summary>
@@ -100,18 +88,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       CoordsAreGrid = reader.ReadBoolean();
       PixelsX = (ushort)reader.ReadInt();
       PixelsY = (ushort)reader.ReadInt();
-
-      if (reader.ReadBoolean())
-      {
-        Filter1 = new CombinedFilter();
-        Filter1.FromBinary(reader);
-      }
-
-      if (reader.ReadBoolean())
-      {
-        Filter2 = new CombinedFilter();
-        Filter2.FromBinary(reader);
-      }
     }
   }
 }

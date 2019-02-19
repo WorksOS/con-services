@@ -87,7 +87,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
 
               if (passCountValue.MeasuredPassCount != CellPassConsts.NullPassCountValue) // Is there a value to test...
               {
-                // This part is releated to Summary data
+                // This part is related to Summary data
                 if (OverrideTargetPassCount)
                 {
                   if (LastPassCountTargetRange.Min != OverridingTargetPassCountRange.Min && LastPassCountTargetRange.Max != OverridingTargetPassCountRange.Max)
