@@ -65,6 +65,9 @@ namespace MockProjectWebApi.Services
       filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesTopFilter20170621);
       filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeEarliest);
       filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeLatest);
+      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesWithExplicitFilter1Nov);
+      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesWithExplicitFilter1NovFirstPass);
+
 
       FilterData.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1, filters);
 
