@@ -5,8 +5,16 @@ using VSS.Common.Abstractions.Clients.ProfileX.Enums;
 
 namespace VSS.Common.Abstractions.Clients.ProfileX.Models
 {
-  public class ProjectModel
+  public class ProjectResponseModel
   {
+    /// <summary>
+    /// Response model, we can't create directly
+    /// </summary>
+    [JsonConstructor]
+    private ProjectResponseModel()
+    {
+      
+    }
     /// <summary>
     /// TRN ID of the project
     /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +18,7 @@ namespace VSS.ProfileX.Client.UnitTests
     protected ILogger Log { get; set; }
 
     [TestInitialize]
-    public void SetupServices()
+    public async Task SetupServices()
     {
       string loggerRepoName = $"Tests::{GetType().Name}";
       Log4NetProvider.RepoName = loggerRepoName;
@@ -42,7 +43,8 @@ namespace VSS.ProfileX.Client.UnitTests
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
 
-      if (!PretestChecks())
+      var pretest = await PretestChecks();
+      if (!pretest)
       {
         Assert.Inconclusive("Pretest checks for test failed");
       }
@@ -50,6 +52,6 @@ namespace VSS.ProfileX.Client.UnitTests
 
     protected abstract IServiceCollection SetupTestServices(IServiceCollection services, IConfigurationStore configuration);
 
-    protected virtual bool PretestChecks() => true;
+    protected virtual Task<bool> PretestChecks() => Task.FromResult(true);
   }
 }

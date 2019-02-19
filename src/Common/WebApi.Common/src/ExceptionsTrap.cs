@@ -71,7 +71,7 @@ namespace VSS.WebApi.Common
     {
       log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetFullContent} statusCode: {ex.Code} {ex.StackTrace}");
       context.Response.StatusCode = (int)ex.Code;
-      context.Response.ContentType = ContentTypeConstants.ApplicationJson;
+      context.Response.ContentType = ContentTypeConstants.APPLICATION_JSON;
       await context.Response.WriteAsync(ex.GetContent);
     }
 

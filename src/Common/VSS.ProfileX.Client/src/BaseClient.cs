@@ -38,7 +38,7 @@ namespace VSS.ProfileX.Client
 
     protected Task<TRes> GetData<TRes>(string route,
       IDictionary<string, string> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TRes: class, new()
+      IDictionary<string, string> customHeaders = null) where TRes: class
     {
       var url = ConvertToUrl(route, parameters);
       Log.LogDebug($"GetData: {url}");
@@ -46,7 +46,7 @@ namespace VSS.ProfileX.Client
       return webClient.ExecuteRequest<TRes>(url, null, customHeaders, HttpMethod.Get);
     }
 
-    protected Task<TRes> PostData<TReq, TRes>(string route,
+    protected async Task<TRes> PostData<TReq, TRes>(string route,
       TReq request,
       IDictionary<string, string> parameters = null,
       IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, new()
@@ -58,7 +58,8 @@ namespace VSS.ProfileX.Client
         var url = ConvertToUrl(route, parameters);
         Log.LogDebug($"PostData: {url}");
         // TODO attempt to catch an error from here
-        return webClient.ExecuteRequest<TRes>(url, ms, customHeaders, HttpMethod.Post);
+        // Need to await here, or else stream is closed
+        return await webClient.ExecuteRequest<TRes>(url, ms, customHeaders, HttpMethod.Post);
       }
     }
 
@@ -71,7 +72,7 @@ namespace VSS.ProfileX.Client
       return webClient.ExecuteRequest(url, null, customHeaders, HttpMethod.Delete);
     }
 
-    protected Task<TRes> UpdateData<TReq, TRes>(string route,
+    protected async Task<TRes> UpdateData<TReq, TRes>(string route,
       TReq request,
       IDictionary<string, string> parameters = null,
       IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, new()
@@ -83,7 +84,21 @@ namespace VSS.ProfileX.Client
         var url = ConvertToUrl(route, parameters);
         Log.LogDebug($"UpdateData: {url}");
         // TODO attempt to catch an error from here
-        return webClient.ExecuteRequest<TRes>(url, ms, customHeaders, HttpMethod.Put);
+        // Need to await here, or else stream is closed
+        return await webClient.ExecuteRequest<TRes>(url, ms, customHeaders, HttpMethod.Put);
+      }
+    }
+
+    protected Task CallEndpoint<TReq>(string route, TReq request, HttpMethod method, IDictionary<string, string> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TReq : class
+    {
+      var url = ConvertToUrl(route, parameters);
+      Log.LogDebug($"GetMethod: {url}");
+
+      var payload = JsonConvert.SerializeObject(request);
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+      {
+        return webClient.ExecuteRequest(url, ms, customHeaders, HttpMethod.Get);
       }
     }
 

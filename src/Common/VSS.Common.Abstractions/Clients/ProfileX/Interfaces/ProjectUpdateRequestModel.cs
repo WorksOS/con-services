@@ -36,14 +36,14 @@ namespace VSS.Common.Abstractions.Clients.ProfileX.Interfaces
     /// <summary>
     /// Project End Date
     /// </summary>
-    [JsonProperty("name", Required = Required.Always)]
+    [JsonProperty("endDate", Required = Required.Always)]
     [JsonConverter(typeof(CustomDateFormatConverter), "yyyy-MM-dd")]
     public DateTime EndDate { get; set; }
 
     /// <summary>
     /// Project Locations
     /// </summary>
-    [JsonProperty("name", Required = Required.Always)]
+    [JsonProperty("locations", Required = Required.Always)]
     public List<ProjectLocation> Locations { get; set; }
   }
 }

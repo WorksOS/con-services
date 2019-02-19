@@ -16,6 +16,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Caching
 {
@@ -91,6 +92,11 @@ namespace VSS.Productivity3D.WebApiTests.Caching
 #pragma warning restore 1998
     {
       return new FilterDescriptor { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() };
+    }
+
+    public Task<FilterDescriptorSingleResult> CreateFilter(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders = null)
+    {
+      return null;
     }
 
 #pragma warning disable 1998

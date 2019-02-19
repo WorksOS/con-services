@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using Microsoft.Extensions.Logging;
@@ -49,9 +50,9 @@ namespace VSS.ProfileX.Client
       return GetData<ProjectListResponseModel>("/profiles/projects/me", parameters, customHeaders);
     }
 
-    public Task<ProjectModel> RetrieveProjectById(string trnId, IDictionary<string, string> customHeaders = null)
+    public Task<ProjectResponseModel> RetrieveProjectById(string trnId, IDictionary<string, string> customHeaders = null)
     {
-      return GetData<ProjectModel>($"/profiles/projects/{trnId}", null, customHeaders);
+      return GetData<ProjectResponseModel>($"/profiles/projects/{trnId}", null, customHeaders);
     }
 
     public Task DeleteProject(string trnId, IDictionary<string, string> customHeaders = null)
@@ -59,5 +60,34 @@ namespace VSS.ProfileX.Client
       return DeleteData($"/profiles/projects/{trnId}", null, customHeaders);
     }
 
+    public Task CreateExternalReferences(string projectTrnId, UpsertExternalReferenceRequestModel references,
+      IDictionary<string, string> customHeaders = null)
+    {
+      return CallEndpoint($"/profiles/projects/{projectTrnId}/externalrefs", references, HttpMethod.Post,
+        customHeaders);
+    }
+
+    public Task UpdateExternalReferences(string projectTrnId, UpsertExternalReferenceRequestModel references,
+      IDictionary<string, string> customHeaders = null)
+    {
+      return CallEndpoint($"/profiles/projects/{projectTrnId}/externalrefs", 
+        references, 
+        HttpMethod.Put,
+        customHeaders);
+    }
+
+    public Task<ProjectExternalReferencesResponse> GetExternalReferencesForProject(string projectTrnId, IDictionary<string, string> customHeaders = null)
+    {
+      return GetData<ProjectExternalReferencesResponse>($"/profiles/projects/{projectTrnId}/externalrefs", 
+        null,
+        customHeaders);
+    }
+
+    public Task DeleteProjectExternalReferences(string projectTrnId, IDictionary<string, string> customHeaders = null)
+    {
+      return DeleteData($"/profiles/projects/{projectTrnId}/externalrefs",
+        null,
+        customHeaders);
+    }
   }
 }
