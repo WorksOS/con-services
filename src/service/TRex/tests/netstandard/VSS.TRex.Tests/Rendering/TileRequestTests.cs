@@ -45,8 +45,8 @@ namespace VSS.TRex.Tests.Rendering
         Mode = displayMode,
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        PixelsX = 100,
-        PixelsY = 100
+        PixelsX = 256,
+        PixelsY = 256
       };
     }
 
@@ -89,16 +89,20 @@ namespace VSS.TRex.Tests.Rendering
       // Convert the response into a bitmap
       var bmp = System.Drawing.Bitmap.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData));
       bmp.Should().NotBeNull();
-      bmp.Height.Should().Be(100);
-      bmp.Width.Should().Be(100);
+      bmp.Height.Should().Be(256);
+      bmp.Width.Should().Be(256);
     }
 
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
     [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
     [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    //[InlineData(DisplayMode.CutFill)]
     public void Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -119,8 +123,12 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
     [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
     [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    //[InlineData(DisplayMode.CutFill)]
     public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -138,9 +146,13 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
     [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
     [InlineData(DisplayMode.MachineSpeed)]
-    public void Test_TileRenderRequest_Execute_SingleTAGFileSiteModel(DisplayMode displayMode)
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    //[InlineData(DisplayMode.CutFill)]
+    public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -156,6 +168,8 @@ namespace VSS.TRex.Tests.Rendering
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
 
       CheckSimpleRenderTileReponse(response);
+
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
   }
 }
