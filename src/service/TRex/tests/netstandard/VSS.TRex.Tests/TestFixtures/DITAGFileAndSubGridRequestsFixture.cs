@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -21,15 +22,21 @@ using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
+  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture
   {
     public DITAGFileAndSubGridRequestsFixture() : base()
+    {
+      SetupFixture();
+    }
+
+    public new void SetupFixture()
     {
       // Provide the surveyed surface request mock
       var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
@@ -79,13 +86,6 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public override void Dispose()
-    {
-      base.Dispose();
-
-      DIBuilder.Eject();
-  }
-
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried
     /// </summary>
@@ -134,6 +134,52 @@ namespace VSS.TRex.Tests.TestFixtures
         });
 
       return targetSiteModel;
+    }
+
+    public static void AddSingleCellWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass> passes, int expectedCellCount, int expectedPasssCount)
+    {
+      // Construct the sub grid to hold the cell being tested
+      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      leaf.Should().NotBeNull();
+
+      leaf.AllocateLeafFullPassStacks();
+      leaf.CreateDefaultSegment();
+      leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());
+      leaf.AllocateLeafLatestPassGrid();
+
+      // Add the leaf to the site model existence map
+      siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+
+      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(1);
+
+      CellPass[] _passes = passes.ToArray();
+
+      byte subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
+      byte subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+
+      foreach (var pass in _passes)
+        leaf.AddPass(subGridX, subGridY, pass);
+
+      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY);
+      cellPasses.Length.Should().Be(expectedPasssCount);
+
+      // Assign global latest cell pass to the appropriate pass
+      leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
+
+      // Ensure the pass data existence map records the existence of a non null value in the cell
+      leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
+
+      // Count the number of non-null elevation cells to verify a correct setup
+      long totalCells = 0;
+      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x => {
+        totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
+        return true;
+      });
+
+      totalCells.Should().Be(expectedCellCount);
+
+      var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
+      siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
     }
   }
 }

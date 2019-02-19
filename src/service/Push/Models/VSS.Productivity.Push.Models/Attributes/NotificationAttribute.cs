@@ -7,6 +7,7 @@ namespace VSS.Productivity.Push.Models.Attributes
   /// Attribute to be used when requiring a method to be invoked on a certain type of notification from the INotificationHubClient
   /// The Key and Type must be an exact match for this Attribute to be hit
   /// Note: The method signature *must be* 'void method(Guid uid)` where the Uid is for the Type in question
+  /// or 'void method(object parameters)` where parameters is a model specific to the notification
   /// </summary>
   [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
   public class NotificationAttribute : Attribute

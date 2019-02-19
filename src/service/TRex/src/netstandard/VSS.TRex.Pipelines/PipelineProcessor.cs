@@ -328,6 +328,7 @@ namespace VSS.TRex.Pipelines
     protected void ConfigurePipeline()
     {
       Pipeline.GridDataType = GridDataType;
+      Pipeline.PipelineTask.GridDataType = GridDataType;
 
       Pipeline.RequestDescriptor = RequestDescriptor;
 

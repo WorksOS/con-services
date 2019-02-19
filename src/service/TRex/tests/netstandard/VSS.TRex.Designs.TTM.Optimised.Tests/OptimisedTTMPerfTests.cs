@@ -6,18 +6,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
   public class OptimisedTTMPerfTests
   {
     [Fact(Skip = "File too big to add to source control")]
-    public void Test_TINLoad()
-    {
-      VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel tin = new VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel();
-
-      // 165Mb TIN 
-      DateTime startTime = DateTime.Now;
-      tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
-      DateTime endTime = DateTime.Now;
-      Assert.True(false, $"Duration to load file containing {tin.Triangles.Items.Length} triangles and {tin.Vertices.Items.Length} vertices: {endTime - startTime}");
-    }
-
-    [Fact(Skip = "File too big to add to source control")]
     public void Test_TINLoad2()
     {
       VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel readonly_tin = new VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel();
@@ -64,17 +52,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
         Assert.True(readwrite_tin.StartPoints[i].Triangle.Tag == readonly_tin.StartPoints.Items[i].Triangle + 1, 
           $"Startpoint TAGs vary at index {i}, {readwrite_tin.StartPoints[i].Triangle.Tag} vs {readonly_tin.StartPoints.Items[i].Triangle + 1}");
       }
-    }
-
-    [Fact(Skip = "File too big to add to source control")]
-    public void Test_TINLoadAndSave()
-    {
-      VSS.TRex.Designs.TTM.TrimbleTINModel readwrite_tin = new VSS.TRex.Designs.TTM.TrimbleTINModel();
-
-      // 165Mb TIN 
-      readwrite_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
-
-      readwrite_tin.SaveToFile(@"C:\Temp\5644616_oba9c0bd14_FRL.ttm(write from unit test)");
     }
   }
 }

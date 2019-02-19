@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;

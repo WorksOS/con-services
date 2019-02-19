@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using System;
 using System.Linq;
+using VSS.TRex.DI;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Grids
@@ -25,7 +26,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// <returns></returns>
     public IIgnite Grid(StorageMutability mutability)
     {
-      return igniteGrids[(int) mutability] ?? (igniteGrids[(int) mutability] = Ignition.TryGetIgnite(TRexGrids.GridName(mutability)));
+      return igniteGrids[(int) mutability] ?? (igniteGrids[(int) mutability] = DIContext.Obtain<Func<string, IIgnite>>()(TRexGrids.GridName(mutability)));
     }
 
     private void CreateCache()
@@ -47,12 +48,12 @@ namespace VSS.TRex.GridFabric.Grids
     {
       if (gridName.Equals(TRexGrids.MutableGridName()))
       {
-        return igniteGrids[(int)StorageMutability.Mutable] ?? (igniteGrids[(int)StorageMutability.Mutable] = Ignition.TryGetIgnite(gridName));
+        return igniteGrids[(int)StorageMutability.Mutable] ?? (igniteGrids[(int)StorageMutability.Mutable] = DIContext.Obtain<Func<string, IIgnite>>()(gridName));
       }
 
       if (gridName.Equals(TRexGrids.ImmutableGridName()))
       {
-        return igniteGrids[(int)StorageMutability.Immutable] ?? (igniteGrids[(int)StorageMutability.Immutable] = Ignition.TryGetIgnite(gridName));
+        return igniteGrids[(int)StorageMutability.Immutable] ?? (igniteGrids[(int)StorageMutability.Immutable] = DIContext.Obtain<Func<string, IIgnite>>()(gridName));
       }
 
       throw new ArgumentException($"{gridName} is an unknown grid to create a reference for.");

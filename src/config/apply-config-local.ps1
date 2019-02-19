@@ -2,12 +2,13 @@
 
 # This script assumes the following:
 #
-# 1. Configuration files are in YAML format.
-# 2. All configuration key/value pairs start after the 'data:' line.
-# 3. Comments start with #.
-# 4. Key names may be mixed case.
-# 5. Keys are delimetered by a colon character.
-# 6. Environment variables at set at the Machine level.
+#   1. Configuration files are in YAML format.
+#   2. All configuration key/value pairs start after the 'data:' line.
+#   3. Comments start with #.
+#   4. Key names may be mixed case.
+#   5. Keys are delimetered by a colon character.
+#   6. Environment variables at set at the Machine level.
+#   7. It is safe to remove double quotes from values. Numbers are only escaped for ingestion into Helm.
 
 # USAGE:
 # All parameters are optional, defaults will be used if parameters are not provided, e.g.
@@ -45,7 +46,7 @@ function ProcessConfigFile {
 
         $key, $value = $line -split ':', 2
         $key = $key.Trim()
-        $value = $value.Trim()
+        $value = $value.Trim().Trim('"')
 
         Write-Host "  " $key ": " -ForegroundColor Gray -NoNewline
         Write-Host $value -ForegroundColor DarkGray

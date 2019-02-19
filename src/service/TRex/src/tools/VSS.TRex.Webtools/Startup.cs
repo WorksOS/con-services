@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Apache.Ignite.Core;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -74,6 +76,7 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite);
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
