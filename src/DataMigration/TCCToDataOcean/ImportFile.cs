@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TCCToDataOcean.Interfaces;
@@ -20,21 +19,22 @@ namespace TCCToDataOcean
 {
   public class ImportFile : IImportFile
   {
-    private readonly ITPaaSApplicationAuthentication Authentication;
     private readonly IRestClient RestClient;
-    private ILogger Log;
+    private readonly ILogger Log;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
     private const string BOUNDARY_BLOCK_DELIMITER = "--";
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
+    private readonly string BearerToken;
 
     public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient)
     {
       Log = loggerFactory.CreateLogger<ImportFile>();
 
-      Authentication = authentication;
+      BearerToken = "Bearer " + authentication.GetApplicationBearerToken();
+
       RestClient = restClient;
     }
 
@@ -43,12 +43,6 @@ namespace TCCToDataOcean
     /// </summary>
     public FileDataResult GetImportedFilesFromWebApi(string uri, string customerUid)
     {
-      //var response = RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, customerUid);
-      //return JsonConvert.DeserializeObject<FileDataResult>(response.Result, new JsonSerializerSettings
-      //{
-      //  Formatting = Formatting.Indented
-      //});
-
       var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, customerUid)).Result;
 
       // TODO (Aaron) handle non 200 result codes.
@@ -90,7 +84,7 @@ namespace TCCToDataOcean
           uri = $"{uri}&{param}";
         }
       }
-          
+
       var response = UploadFileToWebApi(fullFileName, uri, fileDescr.CustomerUid, importOptions.HttpMethod);
 
       try
@@ -116,21 +110,23 @@ namespace TCCToDataOcean
     /// <returns>Repsonse from web api as string</returns>
     private string UploadFileToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
+      Log.LogInformation($"{nameof(UploadFileToWebApi)}: Filename: {fullFileName}, CustomerUid: {customerUid}");
+
       try
       {
         var name = new DirectoryInfo(fullFileName).Name;
-        Byte[] bytes = File.ReadAllBytes(fullFileName);
+        byte[] bytes = File.ReadAllBytes(fullFileName);
         var fileSize = bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
+
         for (var offset = 0; offset < chunks; offset++)
         {
           var startByte = offset * CHUNK_SIZE;
           var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
           if (fileSize - endByte < CHUNK_SIZE)
           {
-            // The last chunk will be bigger than the chunk size,
-            // but less than 2*chunkSize
+            // The last chunk will be bigger than the chunk size but less than 2*chunkSize
             endByte = fileSize;
           }
 
@@ -143,7 +139,7 @@ namespace TCCToDataOcean
           using (var content = new MemoryStream())
           {
             FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
-            result = DoHttpRequest(uri, httpMethod, content, customerUid, contentType);
+            result = DoHttpRequest(uri, httpMethod, content.ToArray(), customerUid, contentType);
           }
         }
         //The last chunk should have the result
@@ -156,37 +152,18 @@ namespace TCCToDataOcean
     }
 
     /// <summary>
-    /// Send HTTP request for importing a file with json payload
-    /// </summary>
-    public string DoHttpRequest(string resourceUri, HttpMethod httpMethod, string payloadData, string customerUid, string contentType)
-    {
-      byte[] bytes = new UTF8Encoding().GetBytes(payloadData);
-      return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType);
-    }
-
-    /// <summary>
-    /// Send HTTP request for importing a file with binary (file contents) payload
-    /// </summary>
-    public string DoHttpRequest(string resourceUri, HttpMethod httpMethod, MemoryStream payloadData, string customerUid, string contentType)
-    {
-      byte[] bytes = payloadData.ToArray();
-      return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType);
-    }
-
-    /// <summary>
     /// Send HTTP request for importing a file
     /// </summary>
     private string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType)
     {
-      if (!(WebRequest.Create(resourceUri) is HttpWebRequest request))
-      {
-        return string.Empty;
-      }
+      Log.LogInformation($"{nameof(DoHttpRequest)}: {httpMethod.Method}, Uri: {resourceUri}");
+
+      if (!(WebRequest.Create(resourceUri) is HttpWebRequest request)) { return string.Empty; }
 
       request.Method = httpMethod.Method;
-      request.Headers["Authorization"] = Authentication.GetApplicationBearerToken();
-      request.Headers["X-VisionLink-CustomerUid"] = customerUid; 
-      //request.Headers["X-VisionLink-ClearCache"] = "true";
+      request.Headers["Authorization"] = BearerToken;
+      request.Headers["X-VisionLink-CustomerUid"] = customerUid;
+      request.Headers["X-JWT-Assertion"] = "eyJ0eXAiOiJKV1QiLCJhbGciOiJTSEEyNTZ3aXRoUlNBIiwieDV0IjoiWW1FM016UTRNVFk0TkRVMlpEWm1PRGRtTlRSbU4yWmxZVGt3TVdFelltTmpNVGt6TURFelpnPT0ifQ==.eyJpc3MiOiJ3c28yLm9yZy9wcm9kdWN0cy9hbSIsImV4cCI6IjE0NTU1Nzc4MjM5MzAiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3N1YnNjcmliZXIiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hcHBsaWNhdGlvbmlkIjoxMDc5LCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2FwcGxpY2F0aW9ubmFtZSI6IlV0aWxpemF0aW9uIERldmVsb3AgQ0kiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2FwcGxpY2F0aW9udGllciI6IiIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvYXBpY29udGV4dCI6Ii90L3RyaW1ibGUuY29tL3V0aWxpemF0aW9uYWxwaGFlbmRwb2ludCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvdmVyc2lvbiI6IjEuMCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvdGllciI6IlVubGltaXRlZCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMva2V5dHlwZSI6IlBST0RVQ1RJT04iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3VzZXJ0eXBlIjoiQVBQTElDQVRJT04iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2VuZHVzZXIiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbmR1c2VyVGVuYW50SWQiOiIxIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbWFpbGFkZHJlc3MiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9naXZlbm5hbWUiOiJDbGF5IiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9sYXN0bmFtZSI6IkFuZGVyc29uIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9vbmVUaW1lUGFzc3dvcmQiOm51bGwsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvcm9sZSI6IlN1YnNjcmliZXIscHVibGlzaGVyIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy91dWlkIjoiMjM4ODY5YWYtY2E1Yy00NWUyLWI0ZjgtNzUwNjE1YzhhOGFiIn0=.kTaMf1IY83fPHqUHTtVHn6m6aQ9wFch6c0FsNDQ7x1k=";
 
       if (payloadData != null)
       {
@@ -195,28 +172,33 @@ namespace TCCToDataOcean
         writeStream.Write(payloadData, 0, payloadData.Length);
       }
 
+      string responseString = string.Empty;
+
       try
       {
-        string responseString;
         using (var response = (HttpWebResponse)request.GetResponseAsync().Result)
         {
+          Log.LogInformation($"{nameof(DoHttpRequest)}: Response returned status code: {response.StatusCode}");
           responseString = GetStringFromResponseStream(response);
+          Log.LogTrace($"{nameof(DoHttpRequest)}: {responseString}");
         }
-        return responseString;
       }
       catch (AggregateException ex)
       {
         foreach (var e in ex.InnerExceptions)
         {
-          if (!(e is WebException)) continue;
+          if (!(e is WebException)) { continue; }
+
           var webException = (WebException)e;
           var response = webException.Response as HttpWebResponse;
-          if (response == null) continue;
-          var resp = GetStringFromResponseStream(response);
-          return resp;
+
+          if (response == null) { continue; }
+
+          return GetStringFromResponseStream(response);
         }
-        return string.Empty;
       }
+
+      return responseString;
     }
 
     /// <summary>
@@ -273,15 +255,12 @@ namespace TCCToDataOcean
     {
       var readStream = response.GetResponseStream();
 
-      if (readStream != null)
-      {
-        var reader = new StreamReader(readStream);
-        var responseString = reader.ReadToEnd();
-        reader.Dispose();
-        return Regex.Replace(responseString, "(?<!\r)\n", "\r\n");
-      }
+      if (readStream == null) { return string.Empty; }
 
-      return string.Empty;
+      using (var reader = new StreamReader(readStream))
+      {
+        return Regex.Replace(reader.ReadToEnd(), "(?<!\r)\n", "\r\n");
+      }
     }
   }
 }

@@ -3,4 +3,4 @@ $ipV4 = ( Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $nul
 $ipV4
 
 (Get-Content docker-compose-local.env) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content docker-compose-local.env
-(Get-Content DockerEnvironmentVariables.ps1) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content DockerEnvironmentVariables.ps1
+(Get-Content build/yaml/testing-configmap.yaml) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content build/yaml/testing-configmap.yaml

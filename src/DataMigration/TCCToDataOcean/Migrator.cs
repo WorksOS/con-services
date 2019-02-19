@@ -37,11 +37,13 @@ namespace TCCToDataOcean
     private readonly MigrationSettings MigrationSettings;
     private readonly string FileSpaceId;
     private readonly string ProjectApiUrl;
+    private readonly string UploadFileApiUrl;
     private readonly string ImportedFileApiUrl;
     private readonly string TemporaryFolder;
 
     private const string ProjectWebApiKey = "PROJECT_API_URL";
     private const string ImportedFileWebApiKey = "IMPORTED_FILE_API_URL";
+    private const string UploadFileApiKey = "IMPORTED_FILE_API_URL2";
     private const string TccFilespaceKey = "TCCFILESPACEID";
     private const string TemporaryFolderKey = "TEMPORARY_FOLDER";
 
@@ -65,6 +67,7 @@ namespace TCCToDataOcean
       ImportFile = importFile;
       FileSpaceId = GetEnvironmentVariable(TccFilespaceKey, 48);
       ProjectApiUrl = GetEnvironmentVariable(ProjectWebApiKey, 1);
+      UploadFileApiUrl = GetEnvironmentVariable(UploadFileApiKey, 1);
       ImportedFileApiUrl = GetEnvironmentVariable(ImportedFileWebApiKey, 3);
       TemporaryFolder = GetEnvironmentVariable(TemporaryFolderKey, 2);
       MigrationSettings = (MigrationSettings)migrationSettings;
@@ -81,7 +84,9 @@ namespace TCCToDataOcean
 
       foreach (var project in projects)
       {
-        projectTasks.Add(MigrateProject(project));
+    //    if (project.ProjectUID.ToLower() != "5183f7ec-ddb0-4305-a318-aba839a0bc30") continue;
+        
+       projectTasks.Add(MigrateProject(project));
       }
 
       await Task.WhenAll(projectTasks);
@@ -206,7 +211,7 @@ namespace TCCToDataOcean
 
       var result = MigrationSettings.IsDebug
         ? new FileDataSingleResult()
-        : ImportFile.SendRequestToFileImportV4(ImportedFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
+        : ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
       Log.LogInformation($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
 

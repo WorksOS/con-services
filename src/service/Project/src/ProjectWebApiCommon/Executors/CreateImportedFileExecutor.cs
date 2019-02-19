@@ -98,14 +98,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             serviceExceptionHandler, authn, dataOceanClient, configStore, createimportedfile.FileName, createimportedfile.DataOceanRootFolder);
         }
 
-        //Generate DXF tiles
-        if (createimportedfile.ImportedFileType == ImportedFileType.Linework)
-        {
-          await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, createimportedfile.ProjectUid, customerUid,
-            createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
-            project.CoordinateSystemFileName, log, customHeaders, tileServiceProxy);
-        }
-
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
