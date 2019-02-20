@@ -70,18 +70,17 @@ namespace VSS.Productivity3D.Push.Clients
       {
         if (methodInfo.DeclaringType == null)
           continue;
-
-        Invoke(methodInfo, notification.Uid);
-         
+ 
+        Invoke(methodInfo, notification.Parameters == null ? notification.Uid : notification.Parameters);
       }
       Logger.LogInformation($"Got a notification with key {JsonConvert.SerializeObject(notification)}");
     }
 
     /// <summary>
     /// This method will attempt to invoke the Method with a Notification Attribute attached
-    /// The method must have a signature 'void MethodName(Guid)'
+    /// The method must have a signature 'void MethodName(Guid)' or 'void MethodName(object)'
     /// </summary>
-    private void Invoke(MethodInfo method, Guid uid)
+    private void Invoke(MethodInfo method, object uidOrParams)
     {
       var classInstance = ActivatorUtilities.CreateInstance(serviceProvider, method.DeclaringType);
 
@@ -92,14 +91,14 @@ namespace VSS.Productivity3D.Push.Clients
       }
 
       var parameters = method.GetParameters();
-      // Validate that we only have one parameter, and it is a Guid
-      if (parameters.Length != 1 || parameters[0].ParameterType != typeof(Guid) || method.ReturnType != typeof(void))
+      // Validate that we only have one parameter, and it is a Guid or an object
+      if (parameters.Length != 1 || (parameters[0].ParameterType != typeof(Guid) && parameters[0].ParameterType != typeof(object)) || method.ReturnType != typeof(void))
       {
-        Logger.LogError($"Attempting to execute {method.DeclaringType.FullName}::{method.Name}, but it's signature is incorrect. " +
-                        $"It should be {typeof(void).Name} {method.Name}({typeof(Guid).FullName})");
+        Logger.LogError($"Attempting to execute {method.DeclaringType.FullName}::{method.Name}, but its signature is incorrect. " +
+                        $"It should be {typeof(void).Name} {method.Name}({typeof(Guid).FullName}) or {typeof(void).Name} {method.Name}({typeof(object).FullName})");
       }
 
-      Task.Run(() => method.Invoke(classInstance, new object[] {uid}));
+      Task.Run(() => method.Invoke(classInstance, new object[] {uidOrParams}));
     }
 
     /// <summary>

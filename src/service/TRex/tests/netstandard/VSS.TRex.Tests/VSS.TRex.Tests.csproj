@@ -112,6 +112,18 @@
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Analytics\PassCount\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Export\Patches\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Rendering\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SummaryVolumes\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0187J008YU--TNZ 323F GS520--190123002153.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

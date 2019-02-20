@@ -1,6 +1,5 @@
 ﻿using VSS.TRex.SubGridTrees;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;

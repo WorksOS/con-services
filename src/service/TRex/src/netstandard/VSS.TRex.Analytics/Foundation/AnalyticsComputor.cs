@@ -82,7 +82,7 @@ namespace VSS.TRex.Analytics.Foundation
               overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
             );
 
-          // Assign the provided aggregator into the pipelined subgrid task
+          // Assign the provided aggregator into the pipelined sub grid task
           ((IAggregatedPipelinedSubGridTask)processor.Task).Aggregator = Aggregator;
 
           if (!processor.Build())

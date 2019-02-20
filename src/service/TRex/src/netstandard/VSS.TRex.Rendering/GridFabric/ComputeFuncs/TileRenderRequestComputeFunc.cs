@@ -11,6 +11,7 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
@@ -38,7 +39,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
             try
             {
                 // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
-                // subgrid results to it.
+                // sub grid results to it.
                 arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
                 Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
@@ -50,7 +51,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                      new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),
                      arg.CoordsAreGrid,
                      arg.PixelsX, arg.PixelsY,
-                     arg.Filter1, arg.Filter2,
+                     arg.Filters,
                      arg.ReferenceDesignUID,
                      Draw.Color.Black,
                      arg.TRexNodeID);
@@ -67,7 +68,11 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
                 // Get the rendering factory from the DI context
                 IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
-                return RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+                var response = RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+                if (response != null)
+                    response.ResultStatus = bmp == null ? RequestErrorStatus.Unknown : RequestErrorStatus.OK;
+
+                return response;
             }
             finally
             {

@@ -2,10 +2,11 @@
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -14,9 +15,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// Represents a buffered queue of TAG files awaiting processing. The queue of TAG files is stored in a 
     /// partitioned Ignite cache based on the ProjectUID
     /// </summary>
-    public class TAGFileBufferQueue
+    public class TAGFileBufferQueue : ITAGFileBufferQueue
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueue>();
 
         /// <summary>
         /// The Ignite cache reference that holds the TAG files. This cache is keyed on the TAG file name and uses the
@@ -30,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         private void InstantiateCache()
         {
-            IIgnite ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+            IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
 
             QueueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 

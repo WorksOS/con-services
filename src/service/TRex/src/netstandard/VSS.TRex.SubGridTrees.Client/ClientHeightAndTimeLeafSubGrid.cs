@@ -9,8 +9,8 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
   /// Client leaf sub grid that tracks height and time for each cell
-  /// This class is derived from the height leaf subgrid and decorated with times to allow efficient copy
-  /// operations for serialisation and assignation to the height leaf subgrid where the times are removed.
+  /// This class is derived from the height leaf sub grid and decorated with times to allow efficient copy
+  /// operations for serialisation and assignation to the height leaf sub grid where the times are removed.
   /// </summary>
  public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
   {
@@ -22,12 +22,12 @@ namespace VSS.TRex.SubGridTrees.Client
     public long[,] Times = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     /// <summary>
-    /// An array containing the content of null times for all the cells in the subgrid
+    /// An array containing the content of null times for all the cells in the sub grid
     /// </summary>
     public static long[,] nullTimes = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientHeightAndTimeLeafSubGrid()
     {
@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientHeightAndTimeLeafSubGrid() : base()
@@ -113,8 +113,8 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Assign cell information from a previously cached result held in the general subgrid result cache
-    /// using the supplied map to control which cells from the caches subgrid should be copied into this
+    /// Assign cell information from a previously cached result held in the general sub grid result cache
+    /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
@@ -127,8 +127,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
 
     /// <summary>
-    /// Assign cell information from a previously cached result held in the general subgrid result cache
-    /// using the supplied map to control which cells from the caches subgrid should be copied into this
+    /// Assign cell information from a previously cached result held in the general sub grid result cache
+    /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>

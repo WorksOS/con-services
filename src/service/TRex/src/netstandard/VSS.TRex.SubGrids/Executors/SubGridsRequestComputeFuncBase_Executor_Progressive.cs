@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Messaging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models;
@@ -77,7 +79,7 @@ namespace VSS.TRex.SubGrids.Executors
     {
       contextEstablishmentResponse = SubGridRequestsResponseResult.OK;
 
-      IIgnite Ignite = Ignition.TryGetIgnite(TRexGrids.ImmutableGridName());
+      IIgnite Ignite = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName());
       IClusterGroup group = Ignite?.GetCluster().ForAttribute("TRexNodeId", tRexNodeIDAsString);
 
       if (group == null)

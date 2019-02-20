@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
@@ -8,10 +7,12 @@ using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
@@ -69,7 +70,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       // Get the ignite grid and cache references
 
-      IIgnite _ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+      IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
 
       if (_ignite == null)
       {
