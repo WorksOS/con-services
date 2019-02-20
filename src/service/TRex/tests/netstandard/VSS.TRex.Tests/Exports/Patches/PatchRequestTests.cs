@@ -95,10 +95,9 @@ namespace VSS.TRex.Tests.Exports.Patches
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
-        Path.Combine(corePath, "TestTAGFile.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);

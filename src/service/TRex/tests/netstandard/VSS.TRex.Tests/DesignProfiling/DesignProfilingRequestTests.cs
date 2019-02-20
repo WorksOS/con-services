@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       AddDesignProfilerGridRouting();
 
       var siteModel = NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, Path.Combine("TestData", "Common"), "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
 
       var request = new DesignProfileRequest();
       var response = request.Execute(new CalculateDesignProfileArgument

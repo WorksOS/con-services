@@ -1,5 +1,4 @@
-﻿using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -44,7 +43,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       AddDesignProfilerGridRouting();
 
       var siteModel = NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, Path.Combine("TestData", "Common"), "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
 
       // Get the cell location of the probe position. Note that the request will return the sub grid
       // that contains this cell, so the origin location of the sub grid may not be the same as the cell location
@@ -95,7 +94,7 @@ namespace VSS.TRex.Tests.DesignProfiling
         response2.CalcResult.Should().Be(DesignProfilerRequestResult.OK);
         response2.Heights.Should().NotBeNull();
 
-        response2.Heights.ForEach((x, y) => response2.Heights.Cells[x, y].Should().BeApproximately((float)(response.Heights.Cells[x, y] + offset), 0.001f));
+        response2.Heights.ForEach((x, y) => response2.Heights.Cells[x, y].Should().BeApproximately((float)(response.Heights.Cells[x, y] + offset), TestHelper.ALLOWED_HEIGHT_TOLERANCE_AS_FLOAT));
       }
     }
   }

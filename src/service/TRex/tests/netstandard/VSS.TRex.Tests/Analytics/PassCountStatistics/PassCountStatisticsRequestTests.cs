@@ -195,10 +195,9 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
-        Path.Combine(corePath, "TestTAGFile.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
@@ -228,10 +227,9 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
-        Path.Combine(corePath, "TestTAGFile.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
