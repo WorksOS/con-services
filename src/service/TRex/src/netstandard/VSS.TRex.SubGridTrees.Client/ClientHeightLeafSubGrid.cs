@@ -20,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Surveyed surface map records which cells hold cell pass heights that were derived
     /// from a surveyed surface
     /// </summary>
-    public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public readonly SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
     /// Initialise the null cell values for the client sub grid
@@ -103,12 +103,12 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// Fills the contents of the client leaf sub grid with a known, non-null test pattern of values
     /// </summary>
     public override void FillWithTestPattern() => ForEach((x, y) => Cells[x, y] = x + y);
 
     /// <summary>
-    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -147,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Dumps elevations from subgrid to the log
+    /// Dumps elevations from sub grid to the log
     /// </summary>
     /// <param name="title"></param>
     public override void DumpToLog(string title)
@@ -158,7 +158,7 @@ namespace VSS.TRex.SubGridTrees.Client
         I, J : Integer;
         S : String;
       begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of height map for subgrid %s', [Moniker]) , slmcDebug);
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of height map for sub grid %s', [Moniker]) , slmcDebug);
 
         for I := 0 to kSubGridTreeDimension - 1 do
           begin

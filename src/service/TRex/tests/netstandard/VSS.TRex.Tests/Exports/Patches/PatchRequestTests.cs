@@ -95,7 +95,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "Export", "Patches");
+      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
         Path.Combine(corePath, "TestTAGFile.tag"),

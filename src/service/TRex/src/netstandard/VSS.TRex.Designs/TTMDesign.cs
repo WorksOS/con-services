@@ -616,13 +616,13 @@ namespace VSS.TRex.Designs
 
       if (loadIndices)
       {
-        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.kDesignSubgridIndexFileExt), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
         if (!isDownloaded)
         {
           return DesignLoadResult.UnableToLoadSubgridIndex;
         }
 
-        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.kDesignSpatialIndexFileExt), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
         if (!isDownloaded)
         {
           return DesignLoadResult.UnableToLoadSpatialIndex;
@@ -651,10 +651,10 @@ namespace VSS.TRex.Designs
         minHeight = Common.Consts.NullReal;
         maxHeight = Common.Consts.NullReal;
 
-        if (!LoadSubGridIndexFile(localPathAndFileName + Consts.kDesignSubgridIndexFileExt, saveIndexFiles))
+        if (!LoadSubGridIndexFile(localPathAndFileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, saveIndexFiles))
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
-        if (!LoadSpatialIndexFile(localPathAndFileName + Consts.kDesignSpatialIndexFileExt, saveIndexFiles))
+        if (!LoadSpatialIndexFile(localPathAndFileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, saveIndexFiles))
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
         Log.LogInformation(

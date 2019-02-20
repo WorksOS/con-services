@@ -25,9 +25,12 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         CalculateDesignProfile Executor = new CalculateDesignProfile();
 
+        var profile = Executor.Execute(arg, out var calcResult);
+
         var result = new CalculateDesignProfileResponse
         {
-          Profile = Executor.Execute(arg),  
+          Profile = profile,
+          RequestResult = calcResult
         };
 
         Log.LogInformation($"Profile result: {result.Profile?.Count ?? -1} vertices");

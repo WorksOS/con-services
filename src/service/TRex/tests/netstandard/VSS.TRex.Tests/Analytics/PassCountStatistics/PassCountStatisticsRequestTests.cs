@@ -195,7 +195,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var corePath = Path.Combine("TestData", "Analytics", "PassCount");
+      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
         Path.Combine(corePath, "TestTAGFile.tag"),
@@ -228,7 +228,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var corePath = Path.Combine("TestData", "Analytics", "PassCount");
+      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
         Path.Combine(corePath, "TestTAGFile.tag"),

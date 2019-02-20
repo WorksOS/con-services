@@ -123,7 +123,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "SummaryVolumes");
+      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
         Path.Combine(corePath, "TestTAGFile.tag"),
@@ -143,7 +143,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "SummaryVolumes");
+      var corePath = Path.Combine("TestData", "Common");
       var tagFiles = new[]
       {
         Path.Combine(corePath, "TestTAGFile.tag"),

@@ -78,13 +78,13 @@ namespace VSS.TRex.Designs
       // todo when SDK available
       //if (loadIndices)
       //{
-      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.kDesignSubgridIndexFileExt), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
       //  if (!isDownloaded)
       //  {
       //    return DesignLoadResult.UnableToLoadSubgridIndex;
       //  }
 
-      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.kDesignSpatialIndexFileExt), TRexServerConfig.PersistentCacheStoreLocation).Result;
+      //  isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation).Result;
       //  if (!isDownloaded)
       //  {
       //    return DesignLoadResult.UnableToLoadSpatialIndex;
