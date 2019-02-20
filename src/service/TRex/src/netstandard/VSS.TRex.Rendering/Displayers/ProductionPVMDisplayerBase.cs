@@ -19,38 +19,38 @@ namespace VSS.TRex.Rendering.Displayers
     protected ISubGrid SubGrid;
 
     // Various quantities useful when displaying a sub grid full of grid data
-    private int StepX;
-    private int StepY;
+    private int stepX;
+    private int stepY;
 
-    //protected int StepXWorld;
-    //protected int StepYWorld;
+    //protected int stepXWorld; 
+    //protected int stepYWorld;
 
-    private double StepXIncrement;
-    private double StepYIncrement;
-    private double StepXIncrementOverTwo;
-    private double StepYIncrementOverTwo;
+    private double stepXIncrement;
+    private double stepYIncrement;
+    private double stepXIncrementOverTwo;
+    private double stepYIncrementOverTwo;
 
     // Various quantities useful when iterating across cells in a sub grid and drawing them
 
     protected int north_row, east_col;
-    private double CurrentNorth;
-    private double CurrentEast;
+    private double currentNorth;
+    private double currentEast;
 
-    private double _CellSize;
-    //protected double _OneThirdCellSize;
-    //protected double _HalfCellSize;
-    //protected double _TwoThirdsCellSize;
+    private double cellSize;
+    //protected double oneThirdCellSize;
+    //protected double halfCellSize;
+    //protected double twoThirdsCellSize;
 
-    // AccumulatingScanLine is a flag indicating we are accumulating cells together
+    // accumulatingScanLine is a flag indicating we are accumulating cells together
     // to for a scan line of cells that we will display in one hit
-    private bool AccumulatingScanLine;
+    private bool accumulatingScanLine;
 
-    // CellStripStartX and CellStripEndX record the start and end of the strip we are displaying
-    private double CellStripStartX;
-    private double CellStripEndX;
+    // cellStripStartX and cellStripEndX record the start and end of the strip we are displaying
+    private double cellStripStartX;
+    private double cellStripEndX;
 
-    // CellStripColour records the colour of the strip of cells we will draw
-    private Draw.Color CellStripColour;
+    // cellStripColour records the colour of the strip of cells we will draw
+    private Draw.Color cellStripColour;
 
     // OriginX/y and LimitX/Y denote the extents of the physical world area covered by
     // the display context being drawn into
@@ -59,36 +59,36 @@ namespace VSS.TRex.Rendering.Displayers
     // ICOptions is a transient reference an IC options object to be used while rendering
     // ICOptions : TSVOICOptions;
 
-    private bool FDisplayParametersCalculated;
+    private bool displayParametersCalculated;
 
     private void CalculateDisplayParameters()
     {
       // Set the cell size for displaying the grid. If we will be processing
-      // representative grids then set _CellSize to be the size of a leaf
+      // representative grids then set cellSize to be the size of a leaf
       // sub grid in the sub grid tree
-      //_OneThirdCellSize = _CellSize * (1 / 3.0);
-      //_HalfCellSize = _CellSize / 2.0;
-      //_TwoThirdsCellSize = _CellSize * (2 / 3.0);
+      //_OneThirdCellSize = cellSize * (1 / 3.0);
+      //_HalfCellSize = cellSize / 2.0;
+      //_TwoThirdsCellSize = cellSize * (2 / 3.0);
 
-      double StepsPerPixelX = MapView.XPixelSize / _CellSize;
-      double StepsPerPixelY = MapView.YPixelSize / _CellSize;
+      double StepsPerPixelX = MapView.XPixelSize / cellSize;
+      double StepsPerPixelY = MapView.YPixelSize / cellSize;
 
-      StepX = Math.Min(MAX_STEP_SIZE, Math.Max(1, (int)Math.Truncate(StepsPerPixelX)));
-      StepY = Math.Min(MAX_STEP_SIZE, Math.Max(1, (int)Math.Truncate(StepsPerPixelY)));
+      stepX = Math.Min(MAX_STEP_SIZE, Math.Max(1, (int)Math.Truncate(StepsPerPixelX)));
+      stepY = Math.Min(MAX_STEP_SIZE, Math.Max(1, (int)Math.Truncate(StepsPerPixelY)));
 
-      StepXIncrement = StepX * _CellSize;
-      StepYIncrement = StepY * _CellSize;
+      stepXIncrement = stepX * cellSize;
+      stepYIncrement = stepY * cellSize;
 
-      StepXIncrementOverTwo = StepXIncrement / 2;
-      StepYIncrementOverTwo = StepYIncrement / 2;
+      stepXIncrementOverTwo = stepXIncrement / 2;
+      stepYIncrementOverTwo = stepYIncrement / 2;
     }
 
-    protected virtual bool DoRenderSubGrid<T>(ISubGrid subGrid)
+    protected virtual bool DoRenderSubGrid<T>(ISubGrid subGrid) where T : ISubGrid
     {
-      if (!(subGrid is T grid))
+      if (!(subGrid is T))
         return false;
 
-      SubGrid = (ISubGrid)grid;
+      SubGrid = subGrid;
 
       bool DrawCellStrips;
 
@@ -102,35 +102,35 @@ namespace VSS.TRex.Rendering.Displayers
 
       // Calculate the world coordinate location of the origin (bottom left corner)
       // of this sub grid
-      SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
+      subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
       // Draw the background of the sub grid if a pixel is less than 1 meter is width
       // if (MapView.XPixelSize < 1.0)
-      //    MapView.DrawRect(SubGridWorldOriginX, SubGridWorldOriginY + _CellSize * 32, _CellSize * 32, _CellSize * 32, true,
+      //    MapView.DrawRect(SubGridWorldOriginX, SubGridWorldOriginY + cellSize * 32, cellSize * 32, cellSize * 32, true,
       //    ((SubGrid.OriginX >> 5) + (SubGrid.OriginY >> 5)) % 2 == 0 ? Draw.Color.Black : Draw.Color.Blue);
 
       // Skip-Iterate through the cells drawing them in strips
 
-      double Temp = SubGridWorldOriginY / StepYIncrement;
-      CurrentNorth = (Math.Truncate(Temp) * StepYIncrement) - StepYIncrementOverTwo;
-      north_row = (int)Math.Floor((CurrentNorth - SubGridWorldOriginY) / _CellSize);
+      double temp = subGridWorldOriginY / stepYIncrement;
+      currentNorth = (Math.Truncate(temp) * stepYIncrement) - stepYIncrementOverTwo;
+      north_row = (int)Math.Floor((currentNorth - subGridWorldOriginY) / cellSize);
 
       while (north_row < 0)
       {
-        north_row += StepY;
-        CurrentNorth += StepYIncrement;
+        north_row += stepY;
+        currentNorth += stepYIncrement;
       }
 
       while (north_row < SubGridTreeConsts.SubGridTreeDimension)
       {
-        Temp = SubGridWorldOriginX / StepXIncrement;
-        CurrentEast = (Math.Truncate(Temp) * StepXIncrement) + StepXIncrementOverTwo;
-        east_col = (int)Math.Floor((CurrentEast - SubGridWorldOriginX) / _CellSize);
+        temp = subGridWorldOriginX / stepXIncrement;
+        currentEast = (Math.Truncate(temp) * stepXIncrement) + stepXIncrementOverTwo;
+        east_col = (int)Math.Floor((currentEast - subGridWorldOriginX) / cellSize);
 
         while (east_col < 0)
         {
-          east_col += StepX;
-          CurrentEast += StepXIncrement;
+          east_col += stepX;
+          currentEast += stepXIncrement;
         }
 
         if (DrawCellStrips)
@@ -143,15 +143,15 @@ namespace VSS.TRex.Rendering.Displayers
           else
             DoRenderCell();
 
-          CurrentEast += StepXIncrement;
-          east_col += StepX;
+          currentEast += stepXIncrement;
+          east_col += stepX;
         }
 
         if (DrawCellStrips)
           DoEndRowScan();
 
-        CurrentNorth += StepYIncrement;
-        north_row += StepY;
+        currentNorth += stepYIncrement;
+        north_row += stepY;
       }
 
       return true;
@@ -159,11 +159,11 @@ namespace VSS.TRex.Rendering.Displayers
 
     protected virtual void DoRenderCell()
     {
-      Draw.Color Colour = DoGetDisplayColour();
+      Draw.Color colour = DoGetDisplayColour();
 
-      if (Colour != Draw.Color.Empty)
-        MapView.DrawRect(CurrentEast, CurrentNorth,
-                         _CellSize, _CellSize, true, Colour);
+      if (colour != Draw.Color.Empty)
+        MapView.DrawRect(currentEast, currentNorth,
+                         cellSize, cellSize, true, colour);
     }
 
     // SupportsCellStripRendering enables a displayer to advertise is it capable
@@ -176,67 +176,67 @@ namespace VSS.TRex.Rendering.Displayers
     // clNone as the colour).
     protected abstract Draw.Color DoGetDisplayColour();
 
-    private void DoStartRowScan() => AccumulatingScanLine = false;
+    private void DoStartRowScan() => accumulatingScanLine = false;
 
     private void DoEndRowScan()
     {
-      if (AccumulatingScanLine)
+      if (accumulatingScanLine)
         DoRenderStrip();
     }
 
     private void DoAccumulateStrip()
     {
-      Draw.Color DisplayColour = DoGetDisplayColour();
+      Draw.Color displayColour = DoGetDisplayColour();
 
-      if (DisplayColour != Draw.Color.Empty) // There's something to draw
+      if (displayColour != Draw.Color.Empty) // There's something to draw
       {
         // Set the end of the strip to current east
-        CellStripEndX = CurrentEast;
+        cellStripEndX = currentEast;
 
-        if (!AccumulatingScanLine) // We should start accumulating one
+        if (!accumulatingScanLine) // We should start accumulating one
         {
-          AccumulatingScanLine = true;
-          CellStripColour = DisplayColour;
-          CellStripStartX = CurrentEast;
+          accumulatingScanLine = true;
+          cellStripColour = displayColour;
+          cellStripStartX = currentEast;
         }
         else // ... We're already accumulating one, we might need to draw it and start again
         {
-          if (CellStripColour != DisplayColour)
+          if (cellStripColour != displayColour)
           {
             DoRenderStrip();
 
-            AccumulatingScanLine = true;
-            CellStripColour = DisplayColour;
-            CellStripStartX = CurrentEast;
+            accumulatingScanLine = true;
+            cellStripColour = displayColour;
+            cellStripStartX = currentEast;
           }
         }
       }
       else // The cell should not be drawn
       {
-        if (AccumulatingScanLine) // We have accumulated something that should be drawn
+        if (accumulatingScanLine) // We have accumulated something that should be drawn
           DoRenderStrip();
       }
     }
 
     private void DoRenderStrip()
     {
-      if (!AccumulatingScanLine)
+      if (!accumulatingScanLine)
         return;
 
-      if (CellStripColour == Draw.Color.Empty)
+      if (cellStripColour == Draw.Color.Empty)
         return;
 
-      MapView.DrawRect(CellStripStartX - StepXIncrementOverTwo,
-                       CurrentNorth - StepYIncrementOverTwo,
-                       (CellStripEndX - CellStripStartX) + StepXIncrement,
-                       StepYIncrement,
+      MapView.DrawRect(cellStripStartX - stepXIncrementOverTwo,
+                       currentNorth - stepYIncrementOverTwo,
+                       (cellStripEndX - cellStripStartX) + stepXIncrement,
+                       stepYIncrement,
                        true,
-                       CellStripColour);
+                       cellStripColour);
 
-      AccumulatingScanLine = false;
+      accumulatingScanLine = false;
     }
 
-    // public double CellSize { get => _CellSize; set => _CellSize = value; }
+    // public double CellSize { get => cellSize; set => cellSize = value; }
 
     // property ICOptions : TSVOICOptions read FICOptions write FICOptions;
 
@@ -256,11 +256,11 @@ namespace VSS.TRex.Rendering.Displayers
         return false;
       }
 
-      if (!FDisplayParametersCalculated)
+      if (!displayParametersCalculated)
       {
-        _CellSize = subGridResult.SubGrid.CellSize;
+        cellSize = subGridResult.SubGrid.CellSize;
         CalculateDisplayParameters();
-        FDisplayParametersCalculated = true;
+        displayParametersCalculated = true;
       }
 
       HasRenderedSubGrid = true;
@@ -268,21 +268,21 @@ namespace VSS.TRex.Rendering.Displayers
       return DoRenderSubGrid<IClientLeafSubGrid>(subGridResult.SubGrid);
     }
 
-    public bool RenderSubGrid(IClientLeafSubGrid ClientSubGrid)
+    public bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
     {
-      if (ClientSubGrid == null)
+      if (clientSubGrid == null)
         return true;
 
-      if (!FDisplayParametersCalculated)
+      if (!displayParametersCalculated)
       {
-        _CellSize = ClientSubGrid.CellSize;
+        cellSize = clientSubGrid.CellSize;
         CalculateDisplayParameters();
-        FDisplayParametersCalculated = true;
+        displayParametersCalculated = true;
       }
 
       HasRenderedSubGrid = true;
 
-      return DoRenderSubGrid<IClientLeafSubGrid>(ClientSubGrid);
+      return DoRenderSubGrid<IClientLeafSubGrid>(clientSubGrid);
     }
   }
 }
