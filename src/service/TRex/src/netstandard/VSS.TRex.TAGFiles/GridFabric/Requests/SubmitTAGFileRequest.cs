@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core.Compute;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.ComputeFuncs;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
-using VSS.TRex.GridFabric.Requests;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Requests
 {
@@ -31,12 +29,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public override SubmitTAGFileResponse Execute(SubmitTAGFileRequestArgument arg)
-        {
-            Task<SubmitTAGFileResponse> taskResult = _Compute.ApplyAsync(func, arg);
-
-            // Send the appropriate response to the caller
-            return taskResult.Result;
-        }
+        public override SubmitTAGFileResponse Execute(SubmitTAGFileRequestArgument arg) => _Compute.Apply(func, arg);
     }
 }

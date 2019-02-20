@@ -5,9 +5,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-#if RAPTOR
-#endif
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -115,6 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           result.DxfData?.CopyTo(stream);
         }        
       }
+
       // Don't forget to seek back, or else the content length will be 0
       outputStream.Seek(0, SeekOrigin.Begin);
       return new FileStreamResult(outputStream, "application/zip");

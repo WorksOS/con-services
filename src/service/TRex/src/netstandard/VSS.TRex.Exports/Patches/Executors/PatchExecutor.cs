@@ -125,12 +125,12 @@ namespace VSS.TRex.Exports.Patches.Executors
         // If this is the first page requested then count the total number of patches required for all subgrids to be returned
         if (DataPatchPageNumber == 0)
           PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
-            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubgridsThatWillBeSubmitted() / (double)DataPatchPageSize));
+            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubGridsThatWillBeSubmitted() / (double)DataPatchPageSize));
 
         processor.Process();
 
         if (PatchSubGridsResponse.ResultStatus == RequestErrorStatus.OK)
-          PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubgrids;
+          PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubGrids;
       }
       catch (Exception E)
       {

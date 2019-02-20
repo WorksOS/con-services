@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
@@ -66,8 +67,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           hasGridCoords,
           request.Width, // PixelsX
           request.Height, // PixelsY
-          ConvertFilter(request.Filter1, siteModel),
-          ConvertFilter(request.Filter2, siteModel),
+          new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
           request.DesignDescriptor.FileUid ?? Guid.Empty
         )) as TileRenderResponse_Core2;
 

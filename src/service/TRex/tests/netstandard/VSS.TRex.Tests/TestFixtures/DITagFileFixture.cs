@@ -3,7 +3,6 @@ using System.IO;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
@@ -30,7 +29,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITagFileFixture : IDisposable
+  public class DITagFileFixture : DILoggingFixture
   {
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
@@ -96,15 +95,13 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build();
     }
 
-    public DITagFileFixture()
+    public new void SetupFixture()
     {
       var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
 
         .Add(x => AddProxyCacheFactoriesToDI())
 
@@ -131,9 +128,9 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public virtual void Dispose()
+    public DITagFileFixture()
     {
-      DIBuilder.Eject();
+      SetupFixture();
     }
   }
 }

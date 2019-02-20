@@ -193,7 +193,7 @@ namespace VSS.TRex.Volumes
 
             PipeLine.OverallExistenceMap = OverallExistenceMap;
             PipeLine.ProdDataExistenceMap = ProdDataExistenceMap;
-            PipeLine.DesignSubgridOverlayMap = DesignSubgridOverlayMap;
+            PipeLine.DesignSubGridOverlayMap = DesignSubgridOverlayMap;
 
             // Initialise a request analyser to provide to the pipeline
             PipeLine.RequestAnalyser = DIContext.Obtain<IRequestAnalyser>();
@@ -329,7 +329,7 @@ namespace VSS.TRex.Volumes
                             if (x.Result)
                               Log.LogInformation("WaitForCompletion successful");
                             else // No signal was received, the wait timed out...            
-                              Log.LogInformation($"WaitForCompletion timed out with {PipeLine.SubgridsRemainingToProcess} subgrids remaining to be processed");
+                              Log.LogInformation($"WaitForCompletion timed out with {PipeLine.SubGridsRemainingToProcess} subgrids remaining to be processed");
                           }).Wait();
                         }
 

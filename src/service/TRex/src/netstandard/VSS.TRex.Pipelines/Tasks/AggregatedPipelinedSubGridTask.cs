@@ -6,8 +6,8 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 namespace VSS.TRex.Pipelines.Tasks
 {
   /// <summary>
-  /// Provides pipelined task semantics for workflows where the subgrids being processed are being aggregated into
-  /// a summarised version rather than being passed through to the requesting context
+  /// Provides pipelined task semantics for work flows where the sub grids being processed are being aggregated into
+  /// a summarized version rather than being passed through to the requesting context
   /// </summary>
   public class AggregatedPipelinedSubGridTask : PipelinedSubGridTask, IAggregatedPipelinedSubGridTask
   {
@@ -21,7 +21,7 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Constructor acceoting an aggregator and defaulting all other internal Task state
+        /// Constructor accepting an aggregator and defaulting all other internal Task state
         /// </summary>
         /// <param name="aggregator"></param>
         public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : this()
@@ -30,7 +30,7 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Transfers a single subgrid response from a query context into the task processing context
+        /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>

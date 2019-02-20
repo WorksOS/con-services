@@ -60,7 +60,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
 
             // Advise the pipeline of all the sub grids that were examined in the aggregated processing
-            TRexTask.PipeLine.SubgridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
+            TRexTask.PipeLine.SubGridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
 
             // Notify the pipeline that all processing has been completed for it
             TRexTask.PipeLine.PipelineCompleted = true;
@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             return Task.Run(() => func.Invoke(arg)).ContinueWith(result =>
             {        
                 // Advise the pipeline of all the sub grids that were examined in the aggregated processing
-                TRexTask.PipeLine.SubgridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
+                TRexTask.PipeLine.SubGridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
            
                // Notify the pipeline that all processing has been completed for it
                TRexTask.PipeLine.PipelineCompleted = true;

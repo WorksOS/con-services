@@ -126,7 +126,7 @@ namespace VSS.TRex.DesignProfiling.Tests
       Assert.True(result, "Heights interpolation returned false");
     }
 
-    [Theory]
+    [Theory(Skip = "Performance test - should be moved into a benchmarking utility context")]
     [InlineData(247500.0, 193350.0)]
     public void InterpolateHeightsTestPerf(double probeX, double probeY)
     {
@@ -172,7 +172,7 @@ namespace VSS.TRex.DesignProfiling.Tests
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Performance test - should be moved into a benchmarking utility context")]
     public void ScanAllElevationsOverGiantDesign()
     {
       DateTime _start = DateTime.Now;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
@@ -21,13 +22,13 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.GridFabric.Servers.Compute;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
-using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -75,6 +76,7 @@ namespace VSS.TRex.Server.PSNode
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))

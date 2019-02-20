@@ -9,18 +9,18 @@ using VSS.TRex.SubGridTrees.Types;
 namespace VSS.TRex.SubGridTrees.Core
 {
   /// <summary>
-  /// Base class for 'node' subgrids that form the structure of a subgrid tree at all levels from the root
-  /// to the level above the leaf subgrids at the bottom layer of the tree.
+  /// Base class for 'node' sub grids that form the structure of a sub grid tree at all levels from the root
+  /// to the level above the leaf sub grids at the bottom layer of the tree.
   /// </summary>
   public class NodeSubGrid : SubGrid, INodeSubGrid
   {
     /// <summary>
-    /// The array of sparse cell references that form the known cells in this subgrid
+    /// The array of sparse cell references that form the known cells in this sub grid
     /// </summary>
     private SubGridTreeSparseCellRecord[] _sparseCells;
 
     /// <summary>
-    /// The number of sparse cells in the subgrid
+    /// The number of sparse cells in the sub grid
     /// </summary>
     private short _sparseCellCount;
 
@@ -30,10 +30,10 @@ namespace VSS.TRex.SubGridTrees.Core
     private ISubGrid[,] _cells;
 
     /// <summary>
-    /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references
+    /// The limit under which node sub grids are represented by sparse lists rather than a complete sub grid array of child sub grid references
     /// </summary>
     /// <returns></returns>
-    private readonly int _subGridTreeNodeCellSparcityLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT);
+    private readonly int _subGridTreeNodeCellSparcityLimit = DIContext.Obtain<IConfigurationStore>()?.GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT) ?? Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT;
 
     /// <summary>
     /// Default no-arg constructor
@@ -45,7 +45,7 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// Base constructor for a Node type subgrid.
+    /// Base constructor for a Node type sub grid.
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="parent"></param>
@@ -59,11 +59,11 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// Clears the content from the node subgrid.
+    /// Clears the content from the node sub grid.
     /// </summary>
     public override void Clear()
     {
-      ForEachSubGrid((i, j, subgrid) =>
+      ForEachSubGrid((i, j, subGrid) =>
       {
         SetSubGrid(i, j, null);
         return SubGridProcessNodeSubGridResult.OK;
@@ -75,25 +75,25 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// DeleteSubgrid removes the subgrid present at the cell coordinates given
-    /// by SubGridX and SubGridY within this subgrid. The removed subgrid is freed.
-    /// This operation is by definition only relevant to node subgrids. Leaf
-    /// subgrids do not contain child subgrids
+    /// DeleteSubGrid removes the sub grid present at the cell coordinates given
+    /// by SubGridX and SubGridY within this sub grid. The removed sub grid is freed.
+    /// This operation is by definition only relevant to node sub grids. Leaf
+    /// sub grids do not contain child sub grids
     /// </summary>
     /// <param name="SubGridX"></param>
     /// <param name="SubGridY"></param>
-    public void DeleteSubgrid(int SubGridX, int SubGridY)
+    public void DeleteSubGrid(int SubGridX, int SubGridY)
     {
-      ISubGrid Subgrid = GetSubGrid(SubGridX, SubGridY);
+      ISubGrid SubGrid = GetSubGrid(SubGridX, SubGridY);
 
-      if (Subgrid != null)
+      if (SubGrid != null)
       {
         SetSubGrid(SubGridX, SubGridY, null);
       }
     }
 
     /// <summary>
-    /// Retrieves a child subgrid at the X, Y location from those that make up the subgrids within this subgrid.
+    /// Retrieves a child sub grid at the X, Y location from those that make up the sub grids within this sub grid.
     /// </summary>
     /// <param name="X"></param>
     /// <param name="Y"></param>
@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Core
 
     /// <summary>
     /// GetSubGridContainingCell takes an on the ground cell coordinate and returns
-    /// the subgrid X an Y address in this subgrid that contains it.
+    /// the sub grid X an Y address in this sub grid that contains it.
     /// </summary>
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
@@ -134,14 +134,14 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// IsEmpty determines if this node subgrid references any other subgrids lower in the tree
+    /// IsEmpty determines if this node sub grid references any other sub grids lower in the tree
     /// </summary>
     /// <returns></returns>
     public override bool IsEmpty()
     {
       bool AnyNonNullItems = false;
 
-      ForEachSubGrid(subgrid =>
+      ForEachSubGrid(subGrid =>
       {
         AnyNonNullItems = true; // Found a non-null one, can stop looking now
         return SubGridProcessNodeSubGridResult.TerminateProcessing;
@@ -151,9 +151,9 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
-    /// as single parameter (ISubGrid) reference to that subgrid. 
-    /// Child subgrid references in this subgrid that are null are not presented to functor.
+    /// Iterate over every child sub grid that is present within this sub grid. Each sub grid is presented to functor
+    /// as single parameter (ISubGrid) reference to that sub grid. 
+    /// Child sub grid references in this sub grid that are null are not presented to functor.
     /// </summary>
     /// <param name="functor"></param>
     public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor)
@@ -162,9 +162,9 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
-    /// as single parameter (ISubGrid) reference to that subgrid. 
-    /// Child subgrid references in this subgrid that are null are not presented to functor.
+    /// Iterate over every child sub grid that is present within this sub grid. Each sub grid is presented to functor
+    /// as single parameter (ISubGrid) reference to that sub grid. 
+    /// Child sub grid references in this sub grid that are null are not presented to functor.
     /// </summary>
     /// <param name="functor"></param>
     /// <param name="minSubGridCellX"></param>
@@ -180,18 +180,18 @@ namespace VSS.TRex.SubGridTrees.Core
       if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
           minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
       {
-        throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
+        throw new ArgumentException("Min/max sub grid cell X/Y bounds are out of range");
       }
 
-      // Make use of the three parameter functor version of ForEachSubgrid and ignore the subgrid location parameters.
-      ForEachSubGrid((x, y, subgrid) => functor(subgrid),
+      // Make use of the three parameter functor version of ForEachSubGrid and ignore the sub grid location parameters.
+      ForEachSubGrid((x, y, subGrid) => functor(subGrid),
         minSubGridCellX, minSubGridCellY, maxSubGridCellX, maxSubGridCellY);
     }
 
     /// <summary>
-    /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
-    /// as single parameter (ISubGrid) reference to that subgrid. 
-    /// Child subgrid references in this subgrid that are null are not presented to functor.
+    /// Iterate over every child sub grid that is present within this sub grid. Each sub grid is presented to functor
+    /// as single parameter (ISubGrid) reference to that sub grid. 
+    /// Child sub grid references in this sub grid that are null are not presented to functor.
     /// </summary>
     /// <param name="functor"></param>
     public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor)
@@ -215,7 +215,7 @@ namespace VSS.TRex.SubGridTrees.Core
       if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
           minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
       {
-        throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
+        throw new ArgumentException("Min/max sub grid cell X/Y bounds are out of range");
       }
 
       if (_cells != null)
@@ -249,12 +249,12 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// ScanSubGrids scans all subgrids at a requested level in the tree that
-    /// intersect the given real world extent. Each subgrid that exists in the
-    /// extent is passed to the OnProcessLeafSubgrid event for processing 
+    /// ScanSubGrids scans all sub grids at a requested level in the tree that
+    /// intersect the given real world extent. Each sub grid that exists in the
+    /// extent is passed to the OnProcessLeafSubGrid event for processing 
     /// leafFunctor and nodeFunctor are delegate/events called when scanning
-    /// leaf subgrids in the sub grid tree (or any other events where the
-    /// a leaf subgrid needs to passed to a processor). A return result of False 
+    /// leaf sub grids in the sub grid tree (or any other events where the
+    /// a leaf sub grid needs to passed to a processor). A return result of False 
     /// from a functor indicates the receiver of the event has requested the scanning process stop.
     /// </summary>
     /// <param name="Extent"></param>
@@ -265,7 +265,7 @@ namespace VSS.TRex.SubGridTrees.Core
       Func<ISubGrid, bool> leafFunctor = null,
       Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
     {
-      // Allow the scanner to deal with the node subgrid and short circuit scanning here is desired
+      // Allow the scanner to deal with the node sub grid and short circuit scanning here is desired
       if (nodeFunctor != null && nodeFunctor(this) == SubGridProcessNodeSubGridResult.TerminateProcessing)
         return false;
 
@@ -275,17 +275,17 @@ namespace VSS.TRex.SubGridTrees.Core
       uint ScanMaxX = (uint) Math.Min(OriginX + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxX);
       uint ScanMaxY = (uint) Math.Min(OriginY + AxialCellCoverageByThisSubGrid() - 1, Extent.MaxY);
 
-      // Convert the on-the-ground cell indexes into subgrid indexes at this level in the sub grid tree
+      // Convert the on-the-ground cell indexes into sub grid indexes at this level in the sub grid tree
       GetSubGridCellIndex(ScanMinX, ScanMinY, out byte SubGridMinX, out byte SubGridMinY);
       GetSubGridCellIndex(ScanMaxX, ScanMaxY, out byte SubGridMaxX, out byte SubGridMaxY);
 
-      ForEachSubGrid(subgrid =>
+      ForEachSubGrid(subGrid =>
         {
-          if (leafFunctor != null && subgrid.IsLeafSubGrid()) // Leaf subgrids are passed to leafFunctor
-            return (leafFunctor(subgrid)) ? SubGridProcessNodeSubGridResult.OK : SubGridProcessNodeSubGridResult.TerminateProcessing;
+          if (leafFunctor != null && subGrid.IsLeafSubGrid()) // Leaf sub grids are passed to leafFunctor
+            return (leafFunctor(subGrid)) ? SubGridProcessNodeSubGridResult.OK : SubGridProcessNodeSubGridResult.TerminateProcessing;
 
-          // Node subgrids are descended into recursively to continue processing
-          return (!((INodeSubGrid) (subgrid)).ScanSubGrids(Extent, leafFunctor, nodeFunctor)) ? SubGridProcessNodeSubGridResult.TerminateProcessing : SubGridProcessNodeSubGridResult.OK;
+          // Node sub grids are descended into recursively to continue processing
+          return !((INodeSubGrid)subGrid).ScanSubGrids(Extent, leafFunctor, nodeFunctor) ? SubGridProcessNodeSubGridResult.TerminateProcessing : SubGridProcessNodeSubGridResult.OK;
         },
         SubGridMinX, SubGridMinY, SubGridMaxX, SubGridMaxY);
 
@@ -293,21 +293,21 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     /// <summary>
-    /// Set a child subgrid at the X, Y location into the set of subgrids that are contained in this subgrid.
+    /// Set a child sub grid at the X, Y location into the set of sub grids that are contained in this sub grid.
     /// </summary>
     /// <param name="X"></param>
     /// <param name="Y"></param>
     /// <param name="Value"></param>
     public override void SetSubGrid(int X, int Y, ISubGrid Value)
     {
-      // Set the origin position and level for the subgrid as these quantities are
-      // relative to the location of the subgrid in the tree. Throw an exception if the 
-      // level of the subgrid is not 0 (null), and is not the same as this.Level + 1
+      // Set the origin position and level for the sub grid as these quantities are
+      // relative to the location of the sub grid in the tree. Throw an exception if the 
+      // level of the sub grid is not 0 (null), and is not the same as this.Level + 1
       // (ie: the caller is trying to be too clever!)
       if (Value != null)
       {
         if (Value.Level != 0 && Value.Level != Level + 1)
-          throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
+          throw new ArgumentException("Level of sub grid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
 
         Value.Parent = this;
         Value.SetOriginPosition((uint) X, (uint) Y);
@@ -335,7 +335,7 @@ namespace VSS.TRex.SubGridTrees.Core
         }
         else
         {
-          // Create the full array of subgrid references now the number of subgrids is too large to 
+          // Create the full array of sub grid references now the number of sub grids is too large to 
           // fit into the sparcity constraint
           _cells = new ISubGrid[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
@@ -348,7 +348,7 @@ namespace VSS.TRex.SubGridTrees.Core
           _sparseCellCount = 0;
           _sparseCells = null;
 
-          // Add the new subgrid into the Cells array
+          // Add the new sub grid into the Cells array
           _cells[X, Y] = Value;
         }
       }
@@ -379,7 +379,7 @@ namespace VSS.TRex.SubGridTrees.Core
     {
       int count = 0;
 
-      ForEachSubGrid(subgrid =>
+      ForEachSubGrid(subGrid =>
       {
         count++;
         return SubGridProcessNodeSubGridResult.OK;

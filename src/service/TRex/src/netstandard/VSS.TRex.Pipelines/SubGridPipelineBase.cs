@@ -33,12 +33,12 @@ namespace VSS.TRex.Pipelines
         public SemaphoreSlim PipelineSignalEvent { get; } = new SemaphoreSlim(0, 1);
 
         /// <summary>
-       /// Records how may subgrid results there are pending to be processed through the Task assigned to this pipeline.
-        /// As each subgrid result is processed in the task, the task pings the pipeline to note another task has been 
+       /// Records how may sub grid results there are pending to be processed through the Task assigned to this pipeline.
+        /// As each sub grid result is processed in the task, the task pings the pipeline to note another task has been 
         /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
         /// </summary>
-        private long subgridsRemainingToProcess = 0;
-        public long SubgridsRemainingToProcess => subgridsRemainingToProcess;
+        private long subGridsRemainingToProcess = 0;
+        public long SubGridsRemainingToProcess => subGridsRemainingToProcess;
 
         public ITRexTask PipelineTask { get; set; }
 
@@ -54,7 +54,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public Guid RequestDescriptor { get; set; }
 
-        // FMaximumOutstandingSubgridRequests : Integer;
+        // FMaximumOutstandingSubGridRequests : Integer;
 
         public Guid DataModelID { get; set; } = Guid.Empty;
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.Pipelines
         public ISubGridTreeBitMask OverallExistenceMap { get; set; }
 
         /// <summary>
-        /// ProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
+        /// ProdDataExistenceMap is the sub grid existence map for the data model referenced by FDataModelID
         /// </summary>
         public ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
 
@@ -74,12 +74,12 @@ namespace VSS.TRex.Pipelines
         public bool IncludeSurveyedSurfaceInformation { get; set; } = true;
 
         /// <summary>
-        /// DesignSubgridOverlayMap is the subgrid index for subgrids that cover the design being related to for cut/fill operations
+        /// DesignSubGridOverlayMap is the sub grid index for sub grids that cover the design being related to for cut/fill operations
         /// </summary>
-        public ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
+        public ISubGridTreeBitMask DesignSubGridOverlayMap { get; set; }
 
         /// <summary>
-        /// The set of filters to be made available to the subgrid processing for this request
+        /// The set of filters to be made available to the sub grid processing for this request
         /// </summary>
         public IFilterSet FilterSet { get; set; }
 
@@ -117,7 +117,7 @@ namespace VSS.TRex.Pipelines
         // public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
      
         /// <summary>
-        /// The request analyzer to be used to identify the set of subgrids required for the request.
+        /// The request analyzer to be used to identify the set of sub grids required for the request.
         /// If no analyzer is supplied then a default analyzer will be created as need by the pipeline
         /// </summary>
         public IRequestAnalyser RequestAnalyser { get; set; }
@@ -129,28 +129,28 @@ namespace VSS.TRex.Pipelines
         }
 
         /// <summary>
-        /// Advises that a single subgrid has been processed and can be removed from the tally of
-        /// subgrids awaiting results. 
+        /// Advises that a single sub grid has been processed and can be removed from the tally of
+        /// sub grids awaiting results. 
         /// This is typically used by progressive queries where a SubGridListener
-        /// is responsible for receiving and coordinating handling of subgrid results
+        /// is responsible for receiving and coordinating handling of sub grid results
         /// </summary>
-        public void SubgridProcessed()
+        public void SubGridProcessed()
         {
-            if (Interlocked.Decrement(ref subgridsRemainingToProcess) <= 0)
+            if (Interlocked.Decrement(ref subGridsRemainingToProcess) <= 0)
             {
                 AllSubgridsProcessed();
             }
         }
 
         /// <summary>
-        /// Advises that a group of subgrids has been processed and can be removed from the tally of
-        /// subgrids awaiting results.
+        /// Advises that a group of sub grids has been processed and can be removed from the tally of
+        /// sub grids awaiting results.
         /// This is typically used by aggregative queries where the cache compute cluster aggregates
-        /// subgrid results within each partition and returns pre-aggregated results
+        /// sub grid results within each partition and returns pre-aggregated results
         /// </summary>
-        public void SubgridsProcessed(long numProcessed)
+        public void SubGridsProcessed(long numProcessed)
         {
-            if (Interlocked.Add(ref subgridsRemainingToProcess, -numProcessed) <= 0)
+            if (Interlocked.Add(ref subGridsRemainingToProcess, -numProcessed) <= 0)
             {
                 AllSubgridsProcessed();
             }
@@ -201,33 +201,33 @@ namespace VSS.TRex.Pipelines
         // Procedure AbortAndShutdown;
 
         /// <summary>
-        /// Orchestrates sending subgrid requests to the compute cluster and handling the result
+        /// Orchestrates sending sub grid requests to the compute cluster and handling the result
         /// </summary>
         /// <returns></returns>
         public bool Initiate()
         {
-            // First analyze the request to determine the set of subgrids that will need to be requested
+            // First analyze the request to determine the set of sub grids that will need to be requested
             if (!RequestAnalyser.Execute())
             {
                 // Leave gracefully...
                 return false;
             }
 
-            subgridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubgridsToRequest;
+            subGridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
 
-            Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existence map");
+            Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids to be requested, compared to {OverallExistenceMap.CountBits()} sub grids in production existence map");
 
-            if (RequestAnalyser.TotalNumberOfSubgridsToRequest == 0)
+            if (RequestAnalyser.TotalNumberOfSubGridsToRequest == 0)
             {
-                // There are no subgrids to be requested, leave quietly
-                Log.LogInformation("No subgrids analyzed from request to be submitted to processing engine");
+                // There are no sub grids to be requested, leave quietly
+                Log.LogInformation("No sub grids analyzed from request to be submitted to processing engine");
 
                 return false;
             }
 
-            Log.LogInformation($"START: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids");
+            Log.LogInformation($"START: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
 
-            // Send the subgrid request mask to the grid fabric layer for processing
+            // Send the sub grid request mask to the grid fabric layer for processing
             var requestor = new TSubGridRequestor
             {
                 TRexTask = PipelineTask,
@@ -237,7 +237,7 @@ namespace VSS.TRex.Pipelines
                 RequestedGridDataType = GridDataType,
                 IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
                 ProdDataMask = RequestAnalyser.ProdDataMask,
-                SurveyedSurfaceOnlyMask = RequestAnalyser.SurveydSurfaceOnlyMask,
+                SurveyedSurfaceOnlyMask = RequestAnalyser.SurveyedSurfaceOnlyMask,
                 Filters = FilterSet,
                 ReferenceDesignID = ReferenceDesignID,
                 AreaControlSet = AreaControlSet
@@ -245,7 +245,7 @@ namespace VSS.TRex.Pipelines
 
             var Response = requestor.Execute();
 
-            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids");
+            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
 
             return Response.ResponseCode == SubGridRequestsResponseResult.OK;
         }
