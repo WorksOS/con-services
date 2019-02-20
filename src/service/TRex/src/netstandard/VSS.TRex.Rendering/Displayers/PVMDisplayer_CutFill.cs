@@ -6,7 +6,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
+  /// Plan View Map  renderer for cut fill information presented as rendered tiles
   /// </summary>
   public class PVMDisplayer_CutFill : PVMDisplayerBase
   {

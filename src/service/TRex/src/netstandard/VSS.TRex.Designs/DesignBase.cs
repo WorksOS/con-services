@@ -27,7 +27,7 @@ namespace VSS.TRex.Designs
     {
     }
 
-    public abstract DesignLoadResult LoadFromFile(string fileName);
+    public abstract DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
 
     public abstract DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);
 

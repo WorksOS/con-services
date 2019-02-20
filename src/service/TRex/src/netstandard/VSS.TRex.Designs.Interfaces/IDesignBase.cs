@@ -14,7 +14,7 @@ namespace VSS.TRex.Designs.Interfaces
     long DataModelID { get; set; }
     bool IsStale { get; set; }
     bool Locked { get; }
-    DesignLoadResult LoadFromFile(string fileName);
+    DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
     DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);
     void GetExtents(out double x1, out double y1, out double x2, out double y2);
     void GetHeightRange(out double z1, out double z2);

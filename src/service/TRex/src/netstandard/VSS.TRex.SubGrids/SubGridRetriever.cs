@@ -253,6 +253,7 @@ namespace VSS.TRex.SubGrids
           cellPass.Height = _globalLatestCells.ReadHeight(x, y);
           break;
         case GridDataType.HeightAndTime:
+        case GridDataType.CutFill:
           cellPass.Height = _globalLatestCells.ReadHeight(x, y);
           cellPass.Time = _globalLatestCells.ReadTime(x, y);
           break;

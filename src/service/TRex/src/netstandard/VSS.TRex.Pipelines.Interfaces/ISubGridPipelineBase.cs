@@ -105,5 +105,7 @@ namespace VSS.TRex.Pipelines.Interfaces
         IRequestAnalyser RequestAnalyser { get; set; }
 
         long SubGridsRemainingToProcess { get; }
+
+        Guid ReferenceDesignID { get; set; }
     }
 }
