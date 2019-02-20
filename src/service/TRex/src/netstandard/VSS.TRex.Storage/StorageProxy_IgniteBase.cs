@@ -114,7 +114,7 @@ namespace VSS.TRex.Storage
       FileSystemStreamType streamType,
       object source)
     {
-      if ((mutableStream == null && source == null)  || immutableCache == null)
+      if ((mutableStream == null && source == null) || immutableCache == null)
       {
         return null;
       }

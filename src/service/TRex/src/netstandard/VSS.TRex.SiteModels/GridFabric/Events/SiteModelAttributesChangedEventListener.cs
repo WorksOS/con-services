@@ -1,10 +1,10 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Messaging;
+﻿using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 
@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
-            MsgGroup = Ignition.TryGetIgnite(GridName)?.GetCluster().GetMessaging();
+            MsgGroup = DIContext.Obtain<ITRexGridFactory>().Grid(GridName)?.GetCluster().GetMessaging();
 
             if (MsgGroup != null)
             {

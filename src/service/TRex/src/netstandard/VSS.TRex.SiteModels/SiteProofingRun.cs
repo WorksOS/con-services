@@ -26,18 +26,11 @@ namespace VSS.TRex.SiteModels
     public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 
     /// <summary>
-    /// The WorkingExtents is used as a working area for computing modified proofing run extents by operations such as data deletion. 
-    /// It is not persisted in the proofing run description.
-    /// </summary>
-    public BoundingWorldExtent3D WorkingExtents { get; set; } = new BoundingWorldExtent3D();
-
-    /// <summary>
     /// Default public constructor.
     /// </summary>
     public SiteProofingRun()
     {
       Extents.Clear();
-      WorkingExtents.Clear();
     }
 
     /// <summary>

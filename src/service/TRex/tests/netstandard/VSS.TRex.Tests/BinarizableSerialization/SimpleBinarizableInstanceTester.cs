@@ -1,7 +1,9 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System.IO;
+using Apache.Ignite.Core.Binary;
 using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Serialisation;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -19,10 +21,15 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="U"></typeparam>
     /// <param name="instance"></param>
     /// <param name="failureMsg"></param>
-    public static T TestAClassBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, IFromToBinary, new() where T : TestBinarizable_Class<U>
+    public static T TestAClassBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, IFromToBinary, new() where T : TestBinarizable_Class<U>, new()
     {
-      var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
-      var result = binObj.Deserialize<T>();
+      var bw = new TestBinaryWriter();
+      instance.member.ToBinary(bw);
+
+      var br = new TestBinaryReader(bw._stream.BaseStream as MemoryStream);
+      var result = new T();
+
+      result.member.FromBinary(br);
       
       if (failureMsg != "")
         result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
@@ -40,10 +47,15 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="U"></typeparam>
     /// <param name="instance"></param>
     /// <param name="failureMsg"></param>
-    public static T TestAnExtensionBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, new() where T : TestBinarizable_Extension<U>
+    public static T TestAnExtensionBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, new() where T : TestBinarizable_Extension<U>, new()
     {
-      var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
-      var result = binObj.Deserialize<T>();
+      var bw = new TestBinaryWriter();
+      instance.WriteBinary(bw);
+
+      var br = new TestBinaryReader(bw._stream.BaseStream as MemoryStream);
+      var result = new T();
+
+      result.ReadBinary(br);
 
       if (failureMsg != "")
         result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
@@ -61,10 +73,15 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="U"></typeparam>
     /// <param name="instance"></param>
     /// <param name="failureMsg"></param>
-    public static T TestAStructBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : struct, IFromToBinary where T : TestBinarizable_Struct<U>
+    public static T TestAStructBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : struct, IFromToBinary where T : TestBinarizable_Struct<U>, new()
     {
-      var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
-      var result = binObj.Deserialize<T>();
+      var bw = new TestBinaryWriter();
+      instance.member.ToBinary(bw);
+
+      var br = new TestBinaryReader(bw._stream.BaseStream as MemoryStream);
+      var result = new T();
+
+      result.member.FromBinary(br);
 
       if (failureMsg != "")
         result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
@@ -113,8 +130,12 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="T"></typeparam>
     public static void TestNonBinarizableClass<T>() where T : class, IFromToBinary, new()
     {
-      Assert.Throws<TRexNonBinarizableException>(() => 
-        TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(new TestBinarizable_Class<T>()));
+      Assert.Throws<TRexNonBinarizableException>(() =>
+      {
+        var instance = new TestBinarizable_Class<T>();
+        var bw = new TestBinaryWriter();
+        instance.WriteBinary(bw);
+      });
     }
     
     /// <summary>

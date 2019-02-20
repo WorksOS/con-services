@@ -74,7 +74,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       // Get the ignite grid and cache references
 
-      IIgnite mutableIgnite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+      IIgnite mutableIgnite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
 
       if (mutableIgnite == null)
       {

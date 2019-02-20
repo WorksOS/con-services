@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;

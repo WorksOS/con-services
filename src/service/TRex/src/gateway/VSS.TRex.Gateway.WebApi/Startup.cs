@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Apache.Ignite.Core;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,9 +43,12 @@ namespace VSS.TRex.Gateway.WebApi
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+
       // Add framework services.
       DIBuilder.New(services)
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
 
@@ -58,7 +63,6 @@ namespace VSS.TRex.Gateway.WebApi
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager()))
         .Build();
 
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>();

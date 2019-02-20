@@ -18,8 +18,8 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Pipelines
 {
   /// <summary>
-  /// Supports construction and configuration of a subgrid request pipeline that mediates and orchestrates
-  /// subgrid based queries
+  /// Supports construction and configuration of a sub grid request pipeline that mediates and orchestrates
+  /// sub grid based queries
   /// </summary>
   public class PipelineProcessor : IPipelineProcessor
   {
@@ -41,8 +41,8 @@ namespace VSS.TRex.Pipelines
     public Guid[] SurveyedSurfaceExclusionList = new Guid[0];
 
     /// <summary>
-    /// The set of filters to be executed for each subgrid examined in the request. Each filters will result in a computed
-    /// subgrid variation for subsequent business logic in the pipeline task to operate on.
+    /// The set of filters to be executed for each sub grid examined in the request. Each filters will result in a computed
+    /// sub grid variation for subsequent business logic in the pipeline task to operate on.
     /// </summary>
     public IFilterSet Filters;
 
@@ -69,12 +69,12 @@ namespace VSS.TRex.Pipelines
 
     public ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
     public ISubGridTreeBitMask OverallExistenceMap { get; set; }
-    public ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
+    public ISubGridTreeBitMask DesignSubGridOverlayMap { get; set; }
 
     /// <summary>
     /// Flag indicating if all surveyed surface have been excluded from the request due to time filtering constraints
     /// </summary>
-    public bool SurveyedSurfacesExludedViaTimeFiltering;
+    public bool SurveyedSurfacesExcludedViaTimeFiltering;
 
     /// <summary>
     /// The identifier for any cut/fill design reference being supplied to the request
@@ -87,17 +87,17 @@ namespace VSS.TRex.Pipelines
     public bool PipelineAborted { get; set; }
 
     /// <summary>
-    /// The task to be fitted to the pipeline to mediate subgrid retrieval and processing
+    /// The task to be fitted to the pipeline to mediate sub grid retrieval and processing
     /// </summary>
     public ITRexTask Task { get; set; }
 
     /// <summary>
-    /// The pipe lien used to retrieve subgrids from the cluster compute layer
+    /// The pipe line used to retrieve sub grids from the cluster compute layer
     /// </summary>
     public ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
-    /// The request analyzer used to determine the subgrids to be sent to the cluster compute layer
+    /// The request analyzer used to determine the sub grids to be sent to the cluster compute layer
     /// </summary>
     public IRequestAnalyser RequestAnalyser { get; set; }
 
@@ -119,7 +119,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// If this request involves a relationship with a design then ensure the existence map
     /// for the design is loaded in to memory to allow the request pipeline to confine
-    /// subgrid requests that overlay the actual design
+    /// sub grid requests that overlay the actual design
     /// </summary>
     public bool RequestRequiresAccessToDesignFileExistenceMap { get; set; }
 
@@ -217,7 +217,7 @@ namespace VSS.TRex.Pipelines
         return false;
       }
 
-      // Get the current production data existence map from the sitemodel
+      // Get the current production data existence map from the site model
       ProdDataExistenceMap = SiteModel.ExistenceMap;
       
       if (ProdDataExistenceMap == null)
@@ -226,7 +226,7 @@ namespace VSS.TRex.Pipelines
         return false;
       }
 
-      // Obtain the subgrid existence map for the project
+      // Obtain the sub grid existence map for the project
       // Retrieve the existence map for the datamodel
       OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask
       {
@@ -254,7 +254,7 @@ namespace VSS.TRex.Pipelines
               return false;
             }
 
-            SurveyedSurfacesExludedViaTimeFiltering |= FilterSurveyedSurfaces.Count > 0;
+            SurveyedSurfacesExcludedViaTimeFiltering |= FilterSurveyedSurfaces.Count > 0;
           }
         }
       }
@@ -288,7 +288,7 @@ namespace VSS.TRex.Pipelines
 
       // If this request involves a relationship with a design then ensure the existence map
       // for the design is loaded in to memory to allow the request pipeline to confine
-      // subgrid requests that overlay the actual design
+      // sub grid requests that overlay the actual design
       if (RequestRequiresAccessToDesignFileExistenceMap)
       {
         if (CutFillDesignID == Guid.Empty)
@@ -298,16 +298,16 @@ namespace VSS.TRex.Pipelines
             return false;
         }
 
-        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
+        DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
-        if (DesignSubgridOverlayMap == null)
+        if (DesignSubGridOverlayMap == null)
         {
-          Log.LogError($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {DataModelID}");
+          Log.LogError($"Failed to request sub grid overlay index for design {CutFillDesignID} in datamodel {DataModelID}");
           Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
           return false;
         }
 
-        DesignSubgridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize;
+        DesignSubGridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize;
       }
 
       // Impose the final restriction on the spatial extents from the client context
@@ -328,6 +328,7 @@ namespace VSS.TRex.Pipelines
     protected void ConfigurePipeline()
     {
       Pipeline.GridDataType = GridDataType;
+      Pipeline.PipelineTask.GridDataType = GridDataType;
 
       Pipeline.RequestDescriptor = RequestDescriptor;
 
@@ -337,7 +338,7 @@ namespace VSS.TRex.Pipelines
 
       Pipeline.DataModelID = DataModelID;
 
-      //TODO Readd when lift build settings are supported
+      //TODO Re-add when lift build settings are supported
       // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
@@ -362,14 +363,14 @@ namespace VSS.TRex.Pipelines
 
       Pipeline.OverallExistenceMap = OverallExistenceMap;
       Pipeline.ProdDataExistenceMap = ProdDataExistenceMap;
-      Pipeline.DesignSubgridOverlayMap = DesignSubgridOverlayMap;
+      Pipeline.DesignSubGridOverlayMap = DesignSubGridOverlayMap;
 
       // Assign the filter set into the pipeline
       Pipeline.FilterSet = Filters;
 
       Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
 
-      Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
+      Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExcludedViaTimeFiltering;
 
 //      Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
 
@@ -379,7 +380,7 @@ namespace VSS.TRex.Pipelines
     }
 
     /// <summary>
-    /// Performing all processing activities to retrieve subgrids
+    /// Performing all processing activities to retrieve sub grids
     /// </summary>
     public void Process()
     {
@@ -392,7 +393,7 @@ namespace VSS.TRex.Pipelines
             if (x.Result)
               Log.LogInformation("WaitForCompletion successful");
             else // No signal was received, the wait timed out...            
-              Log.LogInformation($"WaitForCompletion timed out with {Pipeline.SubgridsRemainingToProcess} subgrids remaining to be processed");
+              Log.LogInformation($"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
           }).Wait();
         }
 

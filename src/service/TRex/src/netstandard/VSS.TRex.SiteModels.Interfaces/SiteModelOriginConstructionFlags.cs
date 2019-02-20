@@ -5,6 +5,7 @@ namespace VSS.TRex.SiteModels.Interfaces
   [Flags]
   public enum SiteModelOriginConstructionFlags
   {
+    PreserveNothing = 0x0,
     PreserveExistenceMap = 0x1,
     PreserveGrid = 0x2,
     PreserveCsib = 0x4,
@@ -13,7 +14,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     PreserveMachines = 0x20,
     PreserveMachineTargetValues = 0x40,
     PreserveMachineDesigns = 0x80,
-    PreserveProofingRuns = 0x100,
-    PreserveAlignments = 0x200,
+    PreserveSiteModelDesigns = 0x100,
+    PreserveProofingRuns = 0x200,
+    PreserveAlignments = 0x400
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 
 namespace TestUtility.Model.WebApi

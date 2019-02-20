@@ -1,8 +1,9 @@
-﻿using Apache.Ignite.Core;
+﻿using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
+using VSS.TRex.Storage.Models;
 using Xunit;
 
 namespace TAGFiles.Tests
@@ -10,18 +11,17 @@ namespace TAGFiles.Tests
     public class TAGFileBufferQueueManagerTests
     {
         private static MutableClientServer TAGClientServer;
-        private static IIgnite ignite;
 
         private static void EnsureServer()
         {
             try
             {
-                ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+                _ = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
             }
             catch
             {
                 TAGClientServer = TAGClientServer ?? new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-                ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+                _ = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
             }
         }
 

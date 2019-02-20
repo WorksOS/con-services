@@ -43,7 +43,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new TTMFileReadException($"Failed to read start points", E);
+        throw new TTMFileReadException("Failed to read start points", E);
       }
     }
   }

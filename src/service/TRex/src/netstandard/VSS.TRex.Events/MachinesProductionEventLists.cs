@@ -14,7 +14,7 @@ namespace VSS.TRex.Events
     private static readonly ILogger Log = Logging.Logger.CreateLogger<MachinesProductionEventLists>();
 
     /// <summary>
-    /// The Sitemodel instance that owns this set of machines target values
+    /// The site model instance that owns this set of machines target values
     /// </summary>
     private readonly ISiteModel Owner;
 
@@ -25,7 +25,7 @@ namespace VSS.TRex.Events
     private IProductionEventLists[] MachineIDMap;
 
     /// <summary>
-    /// Constructor for the machines events within the sitemodel supplier as owner
+    /// Constructor for the machines events within the site model supplier as owner
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="machineCount"></param>

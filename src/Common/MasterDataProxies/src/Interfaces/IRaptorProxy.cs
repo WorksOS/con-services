@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
@@ -57,6 +58,8 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     Task<T> ExecuteGenericV1Request<T>(string route, string query, IDictionary<string, string> customHeaders = null);
+
+    Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null);
 
     Task<BaseDataResult> InvalidateCache(string projectUid,
       IDictionary<string, string> customHeaders = null);

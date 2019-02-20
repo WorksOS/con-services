@@ -68,14 +68,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             serviceExceptionHandler, raptorProxy,
             projectRepo)
           .ConfigureAwait(false);
-
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
           await ImportedFileRequestHelper.CreateGeneratedDxfFile(
             customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.FileDescriptor.FileName, updateImportedFile.DataOceanRootFolder);
-        }       
+        }          
       }
 
       // if all succeeds, update Db and  put update to kafka que

@@ -34,6 +34,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Read(BinaryReader reader, byte[] buffer);
     void Write(BinaryWriter writer, byte[] buffer);
 
+    short ReadInternalMachineIndex(int Col, int Row);
+
     DateTime ReadTime(int Col, int Row);
     float ReadHeight(int Col, int Row);
     short ReadCCV(int Col, int Row);

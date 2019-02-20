@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -18,6 +19,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
@@ -74,6 +76,7 @@ namespace VSS.TRex.Server.Application
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
@@ -100,6 +103,7 @@ namespace VSS.TRex.Server.Application
         // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
         .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
           factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => null /* new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)*/))
+
 
         .Complete();
     }

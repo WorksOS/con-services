@@ -485,7 +485,21 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
-
+    /// <summary>
+    /// Execute a generic request against v2 raptor endpoint
+    /// </summary>
+    /// <typeparam name="T">Expected response type</typeparam>
+    /// <param name="route">Route on v1 endpoint</param>
+    /// <param name="payload">Object to post</param>
+    /// <param name="customHeaders">Authn\z headers</param>
+    /// <returns></returns>
+    public async Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ExecuteGenericV2Request: route: {route}");
+      var response = await SendRequest<T>("RAPTOR_3DPM_API_URL", body, customHeaders, route, method);
+      log.LogDebug("RaptorProxy.ExecuteGenericV2Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      return response;
+    }
   }
 
   /// <summary>

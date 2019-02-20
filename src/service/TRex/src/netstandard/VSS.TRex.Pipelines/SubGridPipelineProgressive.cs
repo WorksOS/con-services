@@ -27,7 +27,7 @@ namespace VSS.TRex.Pipelines
     /// Default no-arg constructor
     /// </summary>
     /// <param name="task"></param>
-    public SubGridPipelineProgressive( /*int AID, */ ITRexTask task) : base( /*AID,*/ task)
+    public SubGridPipelineProgressive(ITRexTask task) : base(task)
     {
     }
   }

@@ -120,9 +120,7 @@ namespace VSS.TRex.SiteModels
       {
         metaData = new SiteModelMetadata
         {
-          ID = siteModelID,
-          Name = name,
-          Description = description
+          ID = siteModelID
         };
       }
 

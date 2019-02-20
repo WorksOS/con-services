@@ -3,9 +3,11 @@ using System.Reflection;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -32,10 +34,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       Log.LogInformation("Establishing segment retirement queue cache context");
 
       // Get the ignite grid and cache references
-      ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+
+      ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
       ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> queueCache = ignite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.SegmentRetirementQueueCacheName());
 
-      // Create a thread to periodically (needed if we don't go down the service route
+      // Todo: Create a thread to periodically (needed if we don't go down the service route
       // ....
 
       Log.LogInformation("Completed segment retirement queue manager initialisation");

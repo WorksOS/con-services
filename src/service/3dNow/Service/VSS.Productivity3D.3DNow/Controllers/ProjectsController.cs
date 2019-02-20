@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Now3D.Models;
@@ -17,8 +19,8 @@ namespace VSS.Productivity3D.Now3D.Controllers
     private readonly IProjectListProxy projectListProxy;
     private readonly IFileListProxy fileListProxy;
 
-    public ProjectsController(ILoggerFactory loggerFactory, ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
-      :base(loggerFactory)
+    public ProjectsController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, ICustomerProxy customerProxy, IProjectListProxy projectListProxy, IFileListProxy fileListProxy)
+      :base(loggerFactory, serviceExceptionHandler)
     {
       this.customerProxy = customerProxy;
       this.projectListProxy = projectListProxy;
@@ -53,7 +55,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
       };
 
       var headers = CustomHeaders;
-      headers["X-VisionLink-CustomerUID"] = customerData.uid; 
+      // We want to remove any customer UID passed in, and replace it with the customer in question
+      if (headers.ContainsKey(HeaderConstants.X_VISION_LINK_CUSTOMER_UID))
+        headers.Remove(HeaderConstants.X_VISION_LINK_CUSTOMER_UID);
+      
+      headers.Add(HeaderConstants.X_VISION_LINK_CUSTOMER_UID, customerData.uid);
 
       var projects = await projectListProxy.GetProjectsV4(customerData.uid, headers);
 

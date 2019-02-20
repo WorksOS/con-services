@@ -43,49 +43,6 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.LastStateValue().Should().Be(events.Last().Item2);
     }
 
-    public static void AddSingleCellWithPasses(ISiteModel siteModel, uint originX, uint originY, IEnumerable<CellPass> passes, int expectedCellCount, int expectedPasssCount)
-    {
-      // Construct the sub grid to hold the cell being tested
-      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
-      leaf.Should().NotBeNull();
-
-      leaf.AllocateLeafFullPassStacks();
-      leaf.CreateDefaultSegment();
-      leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());
-      leaf.AllocateLeafLatestPassGrid();
-
-      // Add the leaf to the site model existence map
-      siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
-
-      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(1);
-
-      CellPass[] _passes = passes.ToArray();
-
-      foreach (var pass in _passes)
-        leaf.AddPass(originX, originY, pass);
-
-      byte cellX = (byte)(originX & SubGridTreeConsts.SubGridLocalKeyMask);
-      byte cellY = (byte)(originY & SubGridTreeConsts.SubGridLocalKeyMask);
-
-      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(cellX, cellY);
-      cellPasses.Length.Should().Be(expectedPasssCount);
-
-      // Assign global latest cell pass to the appropriate pass
-      leaf.Directory.GlobalLatestCells[cellX, cellY] = cellPasses.Last();
-
-      // Ensure the pass data existence map records the existence of a non null value in the cell
-      leaf.Directory.GlobalLatestCells.PassDataExistenceMap[cellX, cellY] = true;
-
-      // Count the number of non-null elevation cells to verify a correct setup
-      long totalCells = 0;
-      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x => {
-        totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
-        return true;
-      });
-
-      totalCells.Should().Be(expectedCellCount);
-    }
-
     public static ISiteModel CreateSiteModelWithSingleCellWithMinimumElevationPasses(DateTime baseTime, int timeIncrementSeconds, float baseHeight, float heightDecrement, int numPassesToCreate)
     {
       // Set up a model with a single sub grid with a single cell containing two cell passes and a single
@@ -116,7 +73,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
           PassType = PassType.Front
         });
 
-      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
@@ -162,7 +119,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       foreach (var cellPass in cellPasses)
         siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
 
-      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
 
       // Add a set of passes in the second minute to capture elevation mode filling
       cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
@@ -178,7 +135,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       foreach (var cellPass in cellPasses)
         siteModel.MachinesTargetValues[bulldozerMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.LatestElevation);
 
-      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 2 * numPassesToCreate);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 2 * numPassesToCreate);
 
       // Add a set of passes in the third minute to capture latest elevation mode cutting back through the original cut zone
       cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
@@ -194,7 +151,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       foreach (var cellPass in cellPasses)
         siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
 
-      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 3 * numPassesToCreate);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 3 * numPassesToCreate);
 
       // Add a set of passes in the fourth minute to mimic side trimming of the hole while in minimum elevation mode.
       // Use half the height increment of these passes to discriminate them from the cutting passes created above,.
@@ -207,7 +164,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
           PassType = PassType.Front
         });
 
-      AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 4 * numPassesToCreate);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 4 * numPassesToCreate);
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
@@ -230,7 +187,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       };
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out processedTasks);
 
-      siteModel.Grid.CountLeafSubgridsInMemory().Should().Be(expectedSubgrids);
+      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubgrids);
 
       // Ensure there are two appropriate elevation mapping mode events
       siteModel.MachinesTargetValues[0].ElevationMappingModeStateEvents.Count().Should().Be(expectedEvents);

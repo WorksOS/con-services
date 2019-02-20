@@ -40,10 +40,10 @@ namespace VSS.Productivity3D.Now3D.Models
 
     public override string ToString()
     {
-      return $"ProjectUid: {ProjectUid}" +
-             $"DesignFileUid: {DesignFileUid}" +
-             $"StartDateUtc: {(StartDateUtc.HasValue ? StartDateUtc.Value.ToString("Z") : "<none>")}, " +
-             $"EndDateUtc: {(EndDateUtc.HasValue ? EndDateUtc.Value.ToString("Z") : "<none>")}, " +
+      return $"ProjectUid: {ProjectUid} " +
+             $"DesignFileUid: {DesignFileUid} " +
+             $"StartDateUtc: {(StartDateUtc.HasValue ? StartDateUtc.Value.ToString("O") : "<none>")}, " +
+             $"EndDateUtc: {(EndDateUtc.HasValue ? EndDateUtc.Value.ToString("O") : "<none>")}, " +
              $"LiftNumber: {(LiftNumber.HasValue ? LiftNumber.Value.ToString() : "<none>")} ";
     }
   }

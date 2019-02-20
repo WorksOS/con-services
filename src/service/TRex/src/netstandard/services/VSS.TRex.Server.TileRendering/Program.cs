@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
@@ -19,6 +20,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Abstractions;
@@ -67,6 +69,7 @@ namespace VSS.TRex.Server.TileRendering
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
