@@ -66,9 +66,9 @@ namespace VSS.TRex.Rendering.Displayers
       // Set the cell size for displaying the grid. If we will be processing
       // representative grids then set cellSize to be the size of a leaf
       // sub grid in the sub grid tree
-      //_OneThirdCellSize = cellSize * (1 / 3.0);
-      //_HalfCellSize = cellSize / 2.0;
-      //_TwoThirdsCellSize = cellSize * (2 / 3.0);
+      // oneThirdCellSize = cellSize * (1 / 3.0);
+      // halfCellSize = cellSize / 2.0;
+      // twoThirdsCellSize = cellSize * (2 / 3.0);
 
       double StepsPerPixelX = MapView.XPixelSize / cellSize;
       double StepsPerPixelY = MapView.YPixelSize / cellSize;
@@ -236,8 +236,6 @@ namespace VSS.TRex.Rendering.Displayers
       accumulatingScanLine = false;
     }
 
-    // public double CellSize { get => cellSize; set => cellSize = value; }
-
     // property ICOptions : TSVOICOptions read FICOptions write FICOptions;
 
     public MapSurface MapView { get; set; }
@@ -246,26 +244,6 @@ namespace VSS.TRex.Rendering.Displayers
 
     public ProductionPVMDisplayerBase()
     {
-    }
-
-    public bool RenderSubGrid(SubGridTreeLeafSubGridBaseResult subGridResult)
-    {
-      if (!(subGridResult.SubGrid is IClientLeafSubGrid))
-      {
-        Log.LogError($"Sub grid type {subGridResult.SubGrid} does not implement IClientLeafSubGrid");
-        return false;
-      }
-
-      if (!displayParametersCalculated)
-      {
-        cellSize = subGridResult.SubGrid.CellSize;
-        CalculateDisplayParameters();
-        displayParametersCalculated = true;
-      }
-
-      HasRenderedSubGrid = true;
-
-      return DoRenderSubGrid<IClientLeafSubGrid>(subGridResult.SubGrid);
     }
 
     public bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
