@@ -27,10 +27,10 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, false,
         out ISiteModel siteModel, out CSVExportRequestArgument requestArgument, out Formatter formatter);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(formatter, requestArgument, siteModel);
+      var subGridProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, formatter);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 
@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.PassCountLastPass, false,
         out ISiteModel siteModel, out CSVExportRequestArgument requestArgument, out Formatter formatter);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(formatter, requestArgument, siteModel);
+      var subGridProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, formatter);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       string row0 = @"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
@@ -53,10 +53,10 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, true,
         out ISiteModel siteModel, out CSVExportRequestArgument requestArgument, out Formatter formatter);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(formatter, requestArgument, siteModel);
+      var subGridProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, formatter);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808,525.440,376,730.880,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
+      string row0 = @"2019/Jan/23 00:22:10.033,808525.440,376730.880,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
       rows[0].Should().Be(row0);
     }
     
@@ -66,24 +66,24 @@ namespace VSS.TRex.Tests.Exports.CSV
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out ISiteModel siteModel, out CSVExportRequestArgument requestArgument, out Formatter formatter);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(formatter, requestArgument, siteModel);
+      var subGridProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, formatter);
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019-Jan-23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019-Jan-23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
     
     [Fact]
-    public void PassCountAllPassesNotDbase()
+    public void PassCountAllPassesNotDBase()
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out ISiteModel siteModel, out CSVExportRequestArgument requestArgument, out Formatter formatter);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(formatter, requestArgument, siteModel);
+      var subGridProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, formatter);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       rows.Count.Should().Be(384);
-      string row0 = @"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 
@@ -95,8 +95,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       var csvExportUserPreference = new CSVExportUserPreferences();
       requestArgument = new CSVExportRequestArgument
       (
-        siteModel.ID, new FilterSet(new CombinedFilter()),
-        coordType, outputType, csvExportUserPreference, new List<CSVExportMappedMachine>(), false
+        siteModel.ID, new FilterSet(new CombinedFilter()), "the filename",
+        coordType, outputType, csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
       );
 
       formatter = new Formatter(csvExportUserPreference, outputType, isRawDataAsDBaseRequired);

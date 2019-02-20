@@ -107,10 +107,10 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Theory]
-    [InlineData("&", "@", UnitsTypeEnum.Metric, false, 24666.7123112f, "24@666&713m")]
-    [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80@927&374FT")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80@927&536ft")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80@927&536")]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, false, 24666.7123112f, "24666.713m")]
+    [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80927.374FT")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80927.536ft")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80927.536")]
     [InlineData("&", "@", UnitsTypeEnum.Imperial, true, -3.4E38f, "")]
     [InlineData("&", "@", UnitsTypeEnum.Imperial, false, -3.4E38f, "?")]
     public void FormatElevationString

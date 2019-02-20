@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Exports.CSV.GridFabric
@@ -11,40 +10,20 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportRequestResponse : SubGridsPipelinedResponseBase
   {
-    // todoJeannie base.ResultStatus
-    //  0="Problem occured processing export."
-    //  1="No Data"
-    //  2="Timed out"
-    //  3="Unknown Error"
-    //  4="Cancelled"
-    //  5="Maximum records reached"
-
-    // todoJeannie byte[]? or just pass a HUGE string of ALL rows?
-    // todoJeannie sort assuming northing and easting are first or do specific? 
-    public List<string> dataRows;
+    public string fileName = string.Empty;
 
     public CSVExportRequestResponse()
-    {
-      Clear();
-    }
-
-    private void Clear()
-    {
-      dataRows = new List<string>();
-    }
+    { }
     
-    /// <summary>
+    
+     /// <summary>
      /// Serializes content to the writer
      /// </summary>
      /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
-      writer.WriteInt(dataRows.Count);
-      foreach (var r in dataRows)
-      {
-        writer.WriteString(r);
-      }
+      writer.WriteString(fileName);
     }
 
     /// <summary>
@@ -54,12 +33,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
-      var count = reader.ReadInt();
-      dataRows = new List<string>(count);
-      for (int i = 0; i < count; i++)
-      {
-        dataRows.Add(reader.ReadString());
-      }
+      fileName = reader.ReadString();
     }
   }
 }

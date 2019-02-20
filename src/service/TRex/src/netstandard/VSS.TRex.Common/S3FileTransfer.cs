@@ -63,13 +63,10 @@ namespace VSS.TRex.Common
     /// Writes a file to S3
     ///  AWS Transfer Utility will create the 'directory' if not already there
     /// </summary>
-    /// <param name="sourcePath"></param>
-    /// <param name="siteModelUid"></param>
-    /// <param name="fileName"></param>
-    public static bool WriteFile(string sourcePath, Guid siteModelUid, string fileName )
+    /// <param name="localFullPath"></param>
+    /// <param name="s3FullPath"></param>
+    public static bool WriteFile(string localFullPath, string s3FullPath)
     {
-      var localFullPath = Path.Combine(sourcePath, fileName);
-      var s3FullPath = $"{siteModelUid.ToString()}/{fileName}";
       try
       {
         var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
@@ -77,10 +74,24 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception writing design to s3:");
+        Log.LogError(e, "Exception writing file to s3:");
         return false;
       }
       return true;
+    }
+
+    /// <summary>
+    /// Writes a file to S3
+    ///  AWS Transfer Utility will create the 'directory' if not already there
+    /// </summary>
+    /// <param name="sourcePath"></param>
+    /// <param name="siteModelUid"></param>
+    /// <param name="fileName"></param>
+    public static bool WriteFile(string sourcePath, Guid siteModelUid, string fileName)
+    {
+      var localFullPath = Path.Combine(sourcePath, fileName);
+      var s3FullPath = $"{siteModelUid.ToString()}/{fileName}";
+      return WriteFile(localFullPath, s3FullPath);
     }
   }
 }

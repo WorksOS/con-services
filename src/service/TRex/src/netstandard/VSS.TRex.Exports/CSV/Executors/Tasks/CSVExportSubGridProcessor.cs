@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text;
+using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -18,10 +23,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
   public class CSVExportSubGridProcessor
   {
-    private int maxRowCountPerFile = Int32.MaxValue;
-    private Formatter formatter;
-    private CSVExportRequestArgument requestArgument;
-    private ISiteModel siteModel;
+    private static ILogger log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
+
+    private readonly ISiteModel siteModel;
+    private readonly CSVExportRequestArgument requestArgument;
+    private readonly Formatter formatter;
 
     private XYZ[] LLHCoords = null;
     private DateTime runningLastPassTime = DateTime.MinValue;
@@ -67,12 +73,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private ushort runningLastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
     private string lastPassValidTemperatureString;
 
-    public CSVExportSubGridProcessor(Formatter formatter, 
-      CSVExportRequestArgument requestArgument, ISiteModel siteModel)
+    public CSVExportSubGridProcessor(ISiteModel siteModel, CSVExportRequestArgument requestArgument, Formatter formatter)
     {
-      this.formatter = formatter;
-      this.requestArgument = requestArgument;
       this.siteModel = siteModel;
+      this.requestArgument = requestArgument;
+      this.formatter = formatter;
       cellPassTimeString = coordString = heightString = lastDesignNameString = lastMachineNameString =
         machineSpeedString = gpsAccuracyToleranceString = targetPassCountString = lastPassValidCCVString = 
         lastTargetCCVString = lastPassValidMDPString = lastTargetMDPString = lastValidRMVString = 
@@ -107,6 +112,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     {
       var rows = new List<string>();
       int runningIndexLLHCoords = 0;
+      int halfPassCount = 0;
       if (requestArgument.CoordType == CoordType.LatLon)
         LLHCoords = SetupLLPositions(siteModel.CSIB(), allPassesSubGrid);
 
@@ -117,7 +123,15 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         var cell = allPassesSubGrid.Cells[x, y];
         foreach (var cellPass in cell.CellPasses)
         {
-          // todoJeannie half passes
+          // we only include the 2nd part of a half pass
+          if (cellPass.HalfPass)
+          {
+            halfPassCount++;
+            if (halfPassCount < 2)
+              continue;
+            halfPassCount = 0;
+          }
+
           rows.Add(FormatADataRow(cellPass, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
         }
         runningIndexLLHCoords++;
@@ -126,52 +140,15 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       return rows;
     }
 
-    //public List<string> ProcessSubGrid(IClientLeafSubGrid subGrid) 
-    //{
-    //  var rows = new List<string>();
-    //  int runningIndexLLHCoords = 0;
-    //  if (requestArgument.CoordType == CoordType.LatLon)
-    //    LLHCoords = SetupLLPositions(siteModel.CSIB(), subGrid); // todoJeannie validate CSIB in executor that CSIB is loaded and avail
-
-    //  subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
-
-    //  SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-    //  {
-    //    if (subGrid is ClientCellProfileLeafSubgrid profileSubGrid)
-    //    {
-    //      var cell = profileSubGrid.Cells[x, y];
-    //      if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
-    //        return;
-
-    //      rows.Add(FormatADataRow(cell, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
-    //      runningIndexLLHCoords++;
-    //    }
-
-    //    if (subGrid is ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
-    //    {
-    //      var cell = allPassesSubGrid.Cells[x, y];
-    //      foreach (var cellPass in cell.CellPasses)
-    //      {
-    //        // todoJeannie half passes
-    //        rows.Add(FormatADataRow(cellPass, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
-    //      };
-    //      runningIndexLLHCoords++;
-    //    }
-
-    //  });
-
-    //  return rows;
-    //}
-
     private string FormatADataRow(ClientCellProfileLeafSubgridRecord cell, double subGridWorldOriginX, double subGridWorldOriginY, int runningIndexLLHCoords)
     {
-      var resultString = string.Empty;
+      var resultString = new StringBuilder();
       if (!cell.LastPassTime.Equals(runningLastPassTime))
       {
         cellPassTimeString = formatter.FormatCellPassTime(cell.LastPassTime);
         runningLastPassTime = cell.LastPassTime;
       }
-      resultString += $"{cellPassTimeString},";
+      resultString.Append($"{cellPassTimeString},");
 
       var northing = cell.CellYOffset + subGridWorldOriginY;
       var easting = cell.CellXOffset + subGridWorldOriginX;
@@ -181,47 +158,47 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         runningNorthing = northing;
         runningEasting = easting;
       }
-      resultString += $"{coordString},";
+      resultString.Append($"{coordString},");
 
       if (!cell.Height.Equals(runningHeight))
       {
         heightString = formatter.FormatElevation(cell.Height);
         runningHeight = cell.Height;
       }
-      resultString += $"{heightString},";
+      resultString.Append($"{heightString},");
 
-      resultString += $"{cell.PassCount.ToString()},";
+      resultString.Append($"{cell.PassCount.ToString()},");
 
       var lastPassValidRadioLatencyString = formatter.FormatRadioLatency(cell.LastPassValidRadioLatency);
-      resultString += $"{lastPassValidRadioLatencyString},";
+      resultString.Append($"{lastPassValidRadioLatencyString},");
 
       if (!cell.EventDesignNameID.Equals(runningDesignNameID))
       {
         lastDesignNameString = FormatDesignNameID(cell.EventDesignNameID);
         runningDesignNameID = cell.EventDesignNameID;
       }
-      resultString += $"{lastDesignNameString},";
+      resultString.Append($"{lastDesignNameString},");
 
       if (!cell.InternalSiteModelMachineIndex.Equals(runningMachineID))
       {
         lastMachineNameString = FormatMachineName(cell.InternalSiteModelMachineIndex);
         runningMachineID = cell.InternalSiteModelMachineIndex;
       }
-      resultString += $"{lastMachineNameString},";
+      resultString.Append($"{lastMachineNameString},");
 
       if (!cell.MachineSpeed.Equals(runningMachineSpeed))
       {
         machineSpeedString = formatter.FormatSpeed(cell.MachineSpeed);
         runningMachineSpeed = cell.MachineSpeed;
       }
-      resultString += $"{machineSpeedString},";
+      resultString.Append($"{machineSpeedString},");
 
       if (!cell.LastPassValidGPSMode.Equals(runningGPSMode))
       {
         gpsModeString = formatter.FormatGPSMode(cell.LastPassValidGPSMode);
         runningGPSMode = cell.LastPassValidGPSMode;
       }
-      resultString += $"{gpsModeString},";
+      resultString.Append($"{gpsModeString},");
 
       if (!(cell.GPSAccuracy.Equals(runningGPSAccuracy) && cell.GPSTolerance.Equals(runningGPSTolerance)))
       {
@@ -229,97 +206,97 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         runningGPSAccuracy = cell.GPSAccuracy;
         runningGPSTolerance = cell.GPSTolerance;
       }
-      resultString += $"{gpsAccuracyToleranceString},";
+      resultString.Append($"{gpsAccuracyToleranceString},");
 
       if (!cell.TargetPassCount.Equals(runningTargetPassCount))
       {
         targetPassCountString = formatter.FormatPassCount(cell.TargetPassCount);
         runningTargetPassCount = cell.TargetPassCount;
       }
-      resultString += $"{targetPassCountString},";
+      resultString.Append($"{targetPassCountString},");
 
-      resultString += $"{cell.TotalWholePasses},"; 
+      resultString.Append($"{cell.TotalWholePasses},");
 
-      resultString += $"{cell.LayersCount},"; // for cellPasses this contains layerID
+      resultString.Append($"{cell.LayersCount},"); // for cellPasses this contains layerID
 
       if (!cell.LastPassValidCCV.Equals(runningLastPassValidCCV))
       {
         lastPassValidCCVString = formatter.FormatCompactionCCVTypes(cell.LastPassValidCCV);
         runningLastPassValidCCV = cell.LastPassValidCCV;
       }
-      resultString += $"{lastPassValidCCVString},";
+      resultString.Append($"{lastPassValidCCVString},");
 
       if (!cell.TargetCCV.Equals(runningTargetCCV))
       {
         lastTargetCCVString = formatter.FormatCompactionCCVTypes(cell.TargetCCV);
         runningTargetCCV = cell.TargetCCV;
       }
-      resultString += $"{lastTargetCCVString},";
+      resultString.Append($"{lastTargetCCVString},");
 
       if (!cell.LastPassValidMDP.Equals(runningLastPassValidMDP))
       {
         lastPassValidMDPString = formatter.FormatCompactionCCVTypes(cell.LastPassValidMDP);
         runningLastPassValidMDP = cell.LastPassValidMDP;
       }
-      resultString += $"{lastPassValidMDPString},";
+      resultString.Append($"{lastPassValidMDPString},");
 
       if (!cell.TargetMDP.Equals(runningTargetMDP))
       {
         lastTargetMDPString = formatter.FormatCompactionCCVTypes(cell.TargetMDP);
         runningTargetMDP = cell.TargetMDP;
       }
-      resultString += $"{lastTargetMDPString},";
+      resultString.Append($"{lastTargetMDPString},");
 
       if (!cell.LastPassValidRMV.Equals(runningValidRMV))
       {
         lastValidRMVString = formatter.FormatCompactionCCVTypes(cell.LastPassValidRMV);
         runningValidRMV = cell.LastPassValidRMV;
       }
-      resultString += $"{lastValidRMVString},";
+      resultString.Append($"{lastValidRMVString},");
 
       if (!cell.LastPassValidFreq.Equals(runningValidFreq))
       {
         lastValidFreqString = formatter.FormatFrequency(cell.LastPassValidFreq);
         runningValidFreq = cell.LastPassValidFreq;
       }
-      resultString += $"{lastValidFreqString},";
+      resultString.Append($"{lastValidFreqString},");
 
       if (!cell.LastPassValidAmp.Equals(runningValidAmp))
       {
         lastValidAmpString = formatter.FormatAmplitude(cell.LastPassValidAmp);
         runningValidAmp = cell.LastPassValidAmp;
       }
-      resultString += $"{lastValidAmpString},";
+      resultString.Append($"{lastValidAmpString},");
 
       if (!cell.TargetThickness.Equals(runningTargetThickness))
       {
         lastTargetThicknessString = formatter.FormatTargetThickness(cell.TargetThickness);
         runningTargetThickness = cell.TargetThickness;
       }
-      resultString += $"{lastTargetThicknessString},";
+      resultString.Append($"{lastTargetThicknessString},");
 
       if (!cell.EventMachineGear.Equals(runningEventMachineGear))
       {
         lastEventMachineGearString = formatter.FormatMachineGearValue(cell.EventMachineGear);
         runningEventMachineGear = cell.EventMachineGear;
       }
-      resultString += $"{lastEventMachineGearString},";
+      resultString.Append($"{lastEventMachineGearString},");
 
       if (!cell.EventVibrationState.Equals(runningEventVibrationState))
       {
         lastEventVibrationStateString = formatter.FormatEventVibrationState(cell.EventVibrationState);
         runningEventVibrationState = cell.EventVibrationState;
       }
-      resultString += $"{lastEventVibrationStateString},";
+      resultString.Append($"{lastEventVibrationStateString},");
 
       if (!cell.LastPassValidTemperature.Equals(runningLastPassValidTemperature))
       {
         lastPassValidTemperatureString = formatter.FormatLastPassValidTemperature(cell.LastPassValidTemperature);
         runningLastPassValidTemperature = cell.LastPassValidTemperature;
       }
-      resultString += $"{lastPassValidTemperatureString}"; // no training comma
+      resultString.Append($"{lastPassValidTemperatureString}"); // no training comma
 
-      return resultString;
+      return resultString.ToString();
     }
 
 
@@ -347,7 +324,13 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var result = ConvertCoordinates.NEEToLLH(csibName, NEECoords);
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
-        // todoJeannie throw exception
+        //Log.LogInformation("Summary volume failure, could not convert bounding area from grid to WGS coordinates");
+        //response.ResponseCode = SubGridRequestsResponseResult.Failure;
+
+        log.LogError($"#Out# CSVExportExecutor. Unable to convert NEE to LLH : Project: {siteModel.ID}");
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+         new ContractExecutionResult((int) RequestErrorStatus.ExportCoordConversionError, "Missing ProjectUID.")); 
+
       }
       return result.LLHCoordinates;
     }

@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments;
@@ -56,7 +58,7 @@ namespace VSS.TRex.Server.Reports
       {
         case PipelineProcessorTaskStyle.GriddedReport:
           return new GriddedReportTask();
-        case PipelineProcessorTaskStyle.VetaExport:
+        case PipelineProcessorTaskStyle.CSVExport:
           return new CSVExportTask();
         default:
           return null;
@@ -93,6 +95,8 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME")))
+
         .Complete();
     }
 

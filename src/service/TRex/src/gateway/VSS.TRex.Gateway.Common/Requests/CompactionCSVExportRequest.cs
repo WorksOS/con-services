@@ -16,15 +16,15 @@ namespace VSS.TRex.Gateway.Common.Requests
 
     public UserPreferences UserPreferences { get; private set; }
 
-    // the following machineNames is for veta export only
+    // machineNames is for veta export only
     public string[] MachineNames { get; private set; }
 
-    // the following 2 flags are for passcount export only
+    // the following 2 flags are for pass count export only
     public bool RestrictOutputSize { get; private set; }
 
     public bool RawDataAsDBase { get; private set; }
 
-    protected CompactionCSVExportRequest()
+    private CompactionCSVExportRequest()
     {
     }
 

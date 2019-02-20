@@ -123,7 +123,7 @@ namespace VSS.TRex.Webtools.Controllers
         throw new ArgumentException($"Unable to copy design file to S3: {fileNameOnly}");
 
       // download to appropriate local location and add to site model
-      string downloadLocalPath = DesignHelper.EstablishLocalDesignFilepath(siteModelUid);
+      string downloadLocalPath = FilePathHelper.EstablishLocalDesignFilepath(siteModelUid);
       var downloadedok = await S3FileTransfer.ReadFile(Guid.Parse(siteModelUid), fileNameOnly, downloadLocalPath).ConfigureAwait(false);
       if (!downloadedok)
         throw new ArgumentException($"Unable to restore same design file from S3: {fileNameOnly}");

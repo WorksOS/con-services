@@ -65,7 +65,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         // load core file from s3 to local
-        var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
+        var localPath = FilePathHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
 
         AlignmentDesign alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);

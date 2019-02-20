@@ -13,6 +13,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportRequestArgument : BaseApplicationServiceRequestArgument
   {
+    public string FileName { get; set; }
+
     public CoordType CoordType { get; set; }
 
     public OutputTypes OutputType { get; private set; }
@@ -23,7 +25,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     // MappedMachines is for veta export only
     public List<CSVExportMappedMachine> MappedMachines { get; set; }
 
-    // RawDataAsDBase is for pass count export only
+    // RestrictOutputSize and RawDataAsDBase are for pass count export only
+    public bool RestrictOutputSize { get; private set; }
     public bool RawDataAsDBase { get; private set; }
 
 
@@ -34,23 +37,28 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     private void Clear()
     {
+      FileName = string.Empty;
       Filters = new FilterSet(new CombinedFilter());
       CoordType = CoordType.Northeast;
       OutputType = OutputTypes.PassCountLastPass;
-      MappedMachines = new List<CSVExportMappedMachine>();
       UserPreferences = new CSVExportUserPreferences();
+      MappedMachines = new List<CSVExportMappedMachine>();
+      RestrictOutputSize = false;
+      RawDataAsDBase = false;
     }
 
     public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
-      CoordType coordType, OutputTypes outputType, CSVExportUserPreferences userPreferences,
-      List<CSVExportMappedMachine> mappedMachines, bool rawDataAsDBase)
+      string fileName, CoordType coordType, OutputTypes outputType, CSVExportUserPreferences userPreferences,
+      List<CSVExportMappedMachine> mappedMachines, bool restrictOutputSize, bool rawDataAsDBase)
     {
       ProjectID = siteModelUid;
       Filters = filters;
+      FileName = fileName;
       CoordType = coordType; 
       OutputType  = outputType;
       UserPreferences = userPreferences;
       MappedMachines = mappedMachines;
+      RestrictOutputSize = restrictOutputSize;
       RawDataAsDBase = rawDataAsDBase;
     }
 
@@ -61,6 +69,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+      writer.WriteString(FileName);
       writer.WriteInt((int)CoordType);
       writer.WriteInt((int)OutputType);
       UserPreferences.ToBinary(writer);
@@ -72,6 +81,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         writer.WriteShort(machine.InternalSiteModelMachineIndex);
         writer.WriteString(machine.Name);
       }
+      writer.WriteBoolean(RestrictOutputSize);
       writer.WriteBoolean(RawDataAsDBase);
     }
 
@@ -82,6 +92,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+      FileName = reader.ReadString();
       CoordType = (CoordType)reader.ReadInt();
       OutputType = (OutputTypes)reader.ReadInt();
       UserPreferences = new CSVExportUserPreferences();
@@ -97,6 +108,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
           Name = reader.ReadString()
         });
       }
+      RestrictOutputSize = reader.ReadBoolean();
       RawDataAsDBase = reader.ReadBoolean();
     }
 
@@ -105,10 +117,12 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       unchecked
       {
         int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ FileName.GetHashCode();
         hashCode = (hashCode * 397) ^ CoordType.GetHashCode();
         hashCode = (hashCode * 397) ^ OutputType.GetHashCode();
         hashCode = (hashCode * 397) ^ UserPreferences.GetHashCode();
         hashCode = (hashCode * 397) ^ MappedMachines.GetHashCode();
+        hashCode = (hashCode * 397) ^ RestrictOutputSize.GetHashCode();
         hashCode = (hashCode * 397) ^ RawDataAsDBase.GetHashCode();
         return hashCode;
       }

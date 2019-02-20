@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.CSV.GridFabric;
@@ -49,23 +50,24 @@ namespace VSS.TRex.Exports.CSV.Executors
         ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
 
         Guid requestDescriptor = Guid.NewGuid();
-        var gridDataType = _CSVExportRequestArgument.OutputType == OutputTypes.PassCountLastPass || _CSVExportRequestArgument.OutputType == OutputTypes.VedaFinalPass 
-          ? GridDataType.CellProfile : GridDataType.CellPasses;
+        var gridDataType = _CSVExportRequestArgument.OutputType == OutputTypes.PassCountLastPass || _CSVExportRequestArgument.OutputType == OutputTypes.VedaFinalPass
+          ? GridDataType.CellProfile
+          : GridDataType.CellPasses;
 
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
           dataModelID: _CSVExportRequestArgument.ProjectID,
           siteModel: null,
           gridDataType: gridDataType,
-          response: CSVExportRequestResponse,
+          response: new SubGridsPipelinedResponseBase(),
           filters: _CSVExportRequestArgument.Filters,
-          cutFillDesignID: Guid.Empty, 
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.VetaExport), // todoJeanne combine veta and PassCount?
+          cutFillDesignID: Guid.Empty,
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.CSVExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_CSVExportRequestArgument.Filters),
           requestRequiresAccessToDesignFileExistenceMap: false,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
-          );
+        );
 
         // Set the grid TRexTask parameters for progressive processing
         processor.Task.RequestDescriptor = requestDescriptor;
@@ -73,32 +75,52 @@ namespace VSS.TRex.Exports.CSV.Executors
         processor.Task.GridDataType = gridDataType;
 
         ((CSVExportTask) processor.Task).requestArgument = _CSVExportRequestArgument;
-        ((CSVExportTask) processor.Task).formatter = new Formatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, /* todoJeannie implement isRawDataAs3*/ false);
+        ((CSVExportTask) processor.Task).formatter = new Formatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, _CSVExportRequestArgument.RawDataAsDBase);
 
         if (!processor.Build())
         {
-          Log.LogError($"Failed to build pipeline processor for request to model {_CSVExportRequestArgument.ProjectID}");
+          Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
           return false;
         }
-        
+
         processor.Process();
 
-        if (CSVExportRequestResponse.ResultStatus != RequestErrorStatus.OK)
+        if (processor.Response.ResultStatus != RequestErrorStatus.OK)
         {
-          throw new ArgumentException($"Unable to obtain data for CSV Export. CSVExportRequestResponse: {CSVExportRequestResponse.ResultStatus.ToString()}.");
+          Log.LogError($"Failed to obtain data for CSV Export, for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}. response: {processor.Response.ResultStatus.ToString()}.");
+          return false;
         }
 
-        CSVExportRequestResponse.dataRows = ((CSVExportTask) processor.Task).taskResponse.dataRows;
+        if (((CSVExportTask) processor.Task).dataRows.Count > 0)
+        {
+          var csvExportFileWriter = new CSVExportFileWriter(_CSVExportRequestArgument);
+          var s3FullPath = csvExportFileWriter.PersistResult(((CSVExportTask) processor.Task).dataRows);
+
+          if (!string.IsNullOrEmpty(s3FullPath))
+          {
+            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
+            CSVExportRequestResponse.fileName = s3FullPath;
+          }
+          else
+          {
+            Log.LogError($"CSV export failed to write to S3. project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}.");
+            return false;
+          }
+        }
+        else
+        {
+          CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportNoDataFound;
+        }
 
       }
       catch (Exception e)
       {
         Log.LogError(e, "ExecutePipeline raised exception");
+        CSVExportRequestResponse.ResultStatus = RequestErrorStatus.Exception;
         return false;
       }
 
       return true;
     }
-
   }
 }

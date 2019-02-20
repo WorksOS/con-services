@@ -19,7 +19,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   public abstract class BaseExecutor : RequestExecutorContainer
   {
     private const string ERROR_MESSAGE_PRODUCTION_DATA = "Failed to get/update data requested by {0}";
-    private const string ERROR_MESSAGE_DESIGN_FILE = "Failed to get/update design file requested by {0}";
+    private const string ERROR_MESSAGE = "Failed to complete TRex webAPI request: {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
 
     protected BaseExecutor()
@@ -229,18 +229,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.InvalidPlanExtents);
       ContractExecutionStates.DynamicAddwithOffset("No design provided",
         (int)RequestErrorStatus.NoDesignProvided);
-      ContractExecutionStates.DynamicAddwithOffset("No data on production data export",
-        (int)RequestErrorStatus.ExportNoData);
-      ContractExecutionStates.DynamicAddwithOffset("Production data export timeout",
-        (int)RequestErrorStatus.ExportTimeOut);
-      ContractExecutionStates.DynamicAddwithOffset("Production data export cancelled",
-        (int)RequestErrorStatus.ExportCancelled);
-      ContractExecutionStates.DynamicAddwithOffset("Production data export limit reached",
-        (int)RequestErrorStatus.ExportLimitReached);
-      ContractExecutionStates.DynamicAddwithOffset("Invalid data range on production data export",
-        (int)RequestErrorStatus.ExportInvalidDateRange);
-      ContractExecutionStates.DynamicAddwithOffset("No overlap on production data export ranges",
-        (int)RequestErrorStatus.ExportDateRangesNoOverlap);
+      ContractExecutionStates.DynamicAddwithOffset("Unable to load CSIB for LatLong conversion",
+        (int)RequestErrorStatus.ExportInvalidCSIB);
+      ContractExecutionStates.DynamicAddwithOffset("Unable to convert NEE to LLH",
+        (int)RequestErrorStatus.ExportCoordConversionError);
+      ContractExecutionStates.DynamicAddwithOffset("No Production data was found",
+        (int)RequestErrorStatus.ExportNoDataFound);
+      ContractExecutionStates.DynamicAddwithOffset("Unable to load zip file to s3",
+        (int)RequestErrorStatus.ExportUnableToLoadFileToS3);
       ContractExecutionStates.DynamicAddwithOffset(
         "Invalid page size or number for patch request. Try reducing the area being requested.",
         (int)RequestErrorStatus.InvalidArgument);
@@ -268,7 +264,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ServiceException CreateServiceException<T>(HttpStatusCode statusCode, int contractExecutionStatesEnum, RequestErrorStatus resultStatus = RequestErrorStatus.OK, string detailedMessage = null)
     {
-      var errorMessage = string.Format(ERROR_MESSAGE_DESIGN_FILE, typeof(T).Name);
+      var errorMessage = string.Format(ERROR_MESSAGE, typeof(T).Name);
 
       if (resultStatus != RequestErrorStatus.OK)
         errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int)resultStatus));

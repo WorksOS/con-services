@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         log.LogInformation($"#In# AddTTMDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
         // load core file from s3 to local
-        var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
+        var localPath = FilePathHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
         
         TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);

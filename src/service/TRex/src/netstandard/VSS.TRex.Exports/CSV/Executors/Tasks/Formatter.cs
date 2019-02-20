@@ -40,6 +40,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       nullString = isRawDataAsDBaseRequired ? string.Empty : "?";
 
       SetupUserPreferences(userPreference);
+
       nfiDefault = NumberFormatInfo.GetInstance(CultureInfo.InvariantCulture).Clone() as NumberFormatInfo;
       nfiUser = NumberFormatInfo.GetInstance(CultureInfo.InvariantCulture).Clone() as NumberFormatInfo;
       nfiUser.NumberDecimalSeparator = userPreference.DecimalSeparator;
@@ -105,15 +106,19 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     public string FormatCellPos(double value)
     {
+      string result;
+
       if (isRawDataAsDBaseRequired)
-        return FormatDisplayDistanceUnitless(value);
-      return FormatDisplayDistance(value);
+        result =  FormatDisplayDistanceUnitless(value, false);
+      else
+        result = FormatDisplayDistance(value, false);
+      return result;
     }
 
-    public string RadiansToLatLongString(double latLong, int decimalPlaces)
+    public string RadiansToLatLongString(double latLong, int dp)
     {
       var latLonDegrees = MathUtilities.RadiansToDegrees(latLong);
-      return DoubleToStrF(latLonDegrees, 18, decimalPlaces, true);
+      return DoubleToStrF(latLonDegrees, 18, true, dp);
     }
 
     public string FormatElevation(double value)
@@ -122,9 +127,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         return nullString;
 
       if (isRawDataAsDBaseRequired)
-        return FormatDisplayDistanceUnitless(value);
+        return FormatDisplayDistanceUnitless(value, false);
 
-      return FormatDisplayDistance(value);
+      return FormatDisplayDistance(value, false);
     }
 
     public string FormatRadioLatency(int value)
@@ -167,9 +172,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       var toleranceString = nullString;
       if (isRawDataAsDBaseRequired)
-        toleranceString = FormatDisplayDistanceUnitless(gpsTolerance / 1000.000);
+        toleranceString = FormatDisplayDistanceUnitless(gpsTolerance / 1000.000, false);
       else
-        toleranceString = FormatDisplayDistance(gpsTolerance / 1000.000);
+        toleranceString = FormatDisplayDistance(gpsTolerance / 1000.000, false);
 
       return string.Format($"{FormatGPSAccuracyValue(gpsAccuracy)} ({toleranceString})");
     }
@@ -186,7 +191,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     {
       if (value == CellPassConsts.NullCCV)
         return nullString;
-      return string.Format($"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18,1, true)}"); 
+      return string.Format($"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1)}"); 
     }
 
     public string FormatFrequency(ushort value)
@@ -194,9 +199,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (value == CellPassConsts.NullFrequency)
         return nullString;
       if (isRawDataAsDBaseRequired)
-        return DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, 1, true);
+        return DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1);
 
-      return DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, 1, true) + "Hz";
+      return DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1) + "Hz";
     }
 
     public string FormatAmplitude(ushort value)
@@ -204,9 +209,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (value == CellPassConsts.NullAmplitude)
         return nullString;
       if (isRawDataAsDBaseRequired)
-        return DoubleToStrF(value / CellPassConsts.AmplitudeRatio, 18, 2, true);
+        return DoubleToStrF(value / CellPassConsts.AmplitudeRatio, 18, true, 2);
 
-      return DoubleToStrF(value / CellPassConsts.AmplitudeRatio, 18, 2, true) + "mm";
+      return DoubleToStrF(value / CellPassConsts.AmplitudeRatio, 18, true, 2) + "mm";
     }
 
     public string FormatTargetThickness(double value)
@@ -215,9 +220,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         return nullString;
 
       if (isRawDataAsDBaseRequired)
-        return FormatDisplayDistanceUnitless(value);
+        return FormatDisplayDistanceUnitless(value, false);
 
-      return FormatDisplayDistance(value);
+      return FormatDisplayDistance(value, false);
     }
 
     public string FormatMachineGearValue(MachineGear value)
@@ -271,7 +276,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         tempSymbol = "F";
         tempValue = tempValue * 9 / 5 + 32;
       }
-      return DoubleToStrF(tempValue, 18, 1) + "°" + tempSymbol;
+      return DoubleToStrF(tempValue, 18, false, 1) + "°" + tempSymbol;
     }
 
     private string FormatGPSAccuracyValue(GPSAccuracy value)
@@ -296,23 +301,23 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (dp < 0)
         dp = 1;
 
-      var result = DoubleToStrF((value * 3600) / speedConversionFactor, 20, dp, true);
+      var result = DoubleToStrF((value * 3600) / speedConversionFactor, 20, true, dp);
       if (!isRawDataAsDBaseRequired)
         result += speedUnitString;
       return result;
     }
 
-    private string FormatDisplayDistanceUnitless(double value, int dp = -1)
+    private string FormatDisplayDistanceUnitless(double value, bool isUserFormattingRequired, int dp = -1)
     {
       if (dp < 0)
         dp = defaultDecimalPlaces;
 
-      return DistanceDoubleToStrF(value, 20, dp);
+      return DistanceDoubleToStrF(value, 20, isUserFormattingRequired, dp);
     }
 
-    private string FormatDisplayDistance(double value, int dp = -1)
+    private string FormatDisplayDistance(double value, bool isUserFormattingRequired, int dp = -1)
     {
-      string result = FormatDisplayDistanceUnitless(value, dp);
+      string result = FormatDisplayDistanceUnitless(value, isUserFormattingRequired, dp);
 
       if (!value.Equals(Consts.NullHeight))
         result += distanceUnitString;
@@ -320,26 +325,26 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     }
 
     // Converts a value(in meters) to a string in the current distance units 
-    private string DistanceDoubleToStrF(double value, int precision, int digits)
+    private string DistanceDoubleToStrF(double value, int precision, bool isUserFormattingRequired, int dp )
     {
       if (value.Equals(Consts.NullHeight))
         return nullString;
 
-      return (DoubleToStrF(value / distanceConversionFactor, precision, digits, true));
+      return (DoubleToStrF(value / distanceConversionFactor, precision, isUserFormattingRequired, dp));
     }
 
-    private string DoubleToStrF(double value, int precision, int digits)
+    private string DoubleToStrF(double value, int precision, bool isUserFormattingRequired, int dp)
     {
-      nfiDefault.NumberDecimalDigits = digits;
-      var result = value.ToString("N", nfiDefault);
-      return result;
-    }
-
-    private string DoubleToStrF(double value, int precision, int digits, bool isUserFormattingRequired)
-    {
-      nfiUser.NumberDecimalDigits = digits;
-      var result = value.ToString("N", nfiUser);
-      return result;
+      if (isUserFormattingRequired)
+      {
+        nfiUser.NumberDecimalDigits = dp;
+        return value.ToString("N", nfiUser);
+      }
+      else
+      {
+        nfiDefault.NumberDecimalDigits = dp;
+        return value.ToString("F", nfiDefault);
+      }
     }
 
   }

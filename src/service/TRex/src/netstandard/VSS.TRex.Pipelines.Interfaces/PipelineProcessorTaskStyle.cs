@@ -8,7 +8,7 @@
     PatchExport,
     PVMRendering,
     GriddedReport,
-    VetaExport,
+    CSVExport,
     PassCountExport
   }
 }
