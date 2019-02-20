@@ -1,26 +1,16 @@
-Write "Updating environment IP address"
-& .\UpdateEnvFileIpAddress.ps1
+[console]::ResetColor()
 
-Write cleanup docker images
-# Setting the COMPOSE_CONVERT_WINDOWS_PATHS environment variable before trying 
-# to bring up the containers seems to fix the docker-compose bug reported here: https://github.com/docker/for-win/issues/1829
-$Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
+# If regularly re running the script on the same service it's faster to opt out of setting the environment vars each time.
+IF (-not($args -contains "--no-vars")) { & .\set-environment-variables.ps1 }
 
-docker stop $(docker ps -a -q)
-docker rm $(docker ps -a -q)
-docker rmi $(docker images -q --filter "dangling=true")
-docker rmi 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db
-docker rmi 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer
-docker rmi vsstagfileauthservice_accepttest
-docker rmi vsstagfileauthservice_webapi
+Write-Host "Stopping Docker containers"
+docker ps -q | ForEach-Object { docker stop $_ }
 
-$Cmd = 'aws'
-$Args = 'ecr', 'get-login'
+# This is not ideal; but too often the containers fail to start due to drive or volume errors on the existing containers.
+Write-Host "Removing old application containers"
+docker ps -aq --filter "name=tagfileauth_" | ForEach-Object { docker rm $_ }
 
-$LoginID = &$Cmd $Args
-
-$LoginID = $LoginID -replace "-e none", " "
-Write $LoginID
-Invoke-Expression $LoginID
+Write-Host "Connecting to image host" -ForegroundColor DarkGray
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 & .\RunLocalTesting.bat
