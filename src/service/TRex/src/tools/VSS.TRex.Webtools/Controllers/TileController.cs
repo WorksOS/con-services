@@ -49,8 +49,7 @@ namespace VSS.TRex.Webtools.Controllers
         pixelsY: pixelsY,
         extents: new BoundingWorldExtent3D(minX, minY, maxX, maxY),
         mode: (DisplayMode) mode,
-        filter1: new CombinedFilter(),
-        filter2: new CombinedFilter(),
+        filters: new FilterSet(new CombinedFilter(), new CombinedFilter()),
         referenceDesignUid: Guid.Empty
       )) as TileRenderResponse_Core2;
 

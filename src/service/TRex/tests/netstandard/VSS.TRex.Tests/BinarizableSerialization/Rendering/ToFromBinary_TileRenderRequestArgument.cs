@@ -19,18 +19,16 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
     [Fact]
     public void Test_TileRenderRequestArgument()
     {
-      var argument = new TileRenderRequestArgument()
+      var argument = new TileRenderRequestArgument
       {
         ProjectID = Guid.NewGuid(),
-        Filters = new FilterSet(new CombinedFilter()),
+        Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
         ReferenceDesignUID = Guid.Empty,
         Mode = DisplayMode.Height,
         CoordsAreGrid =  true,
         PixelsX = 100,
         PixelsY = 200,
         Extents = BoundingWorldExtent3D.Inverted(),
-        Filter1 = new CombinedFilter(),
-        Filter2 = new CombinedFilter()
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom TileRenderRequestArgument not same after round trip serialisation");

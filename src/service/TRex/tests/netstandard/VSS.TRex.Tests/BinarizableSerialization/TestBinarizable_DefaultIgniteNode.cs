@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core;
+﻿using System;
+using Apache.Ignite.Core;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
@@ -8,10 +9,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   public static class TestBinarizable_DefaultIgniteNode
   {
     private static IIgnite _ignite;
-    private static object lockObj = new object();
+    private static readonly object lockObj = new object();
 
-    public static IIgnite GetIgnite()
+    public static IIgnite GetIgnite(bool force = false)
     {
+      if (!force)
+        throw new InvalidOperationException("Running Ignite nodes in unit tests is undesirable if possible...");
+
       lock (lockObj)
       {
         if (_ignite != null)

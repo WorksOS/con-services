@@ -38,21 +38,21 @@ namespace VSS.TRex.Events.Interfaces
     List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
   }
 
-  public interface IProductionEvents<V> : IProductionEvents
+  public interface IProductionEvents<T> : IProductionEvents
   {
-    void CopyEventsFrom(IProductionEvents<V> eventsList);
+    void CopyEventsFrom(IProductionEvents<T> eventsList);
 
-    V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V));
+    T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue = default(T));
 
-    V LastStateValue();
+    T LastStateValue(T defaultValue = default(T));
     DateTime LastStateDate();
 
-    void GetStateAtIndex(int index, out DateTime dateTime, out V state);
+    void GetStateAtIndex(int index, out DateTime dateTime, out T state);
 
-    void SetStateAtIndex(int index, V state);
+    void SetStateAtIndex(int index, T state);
 
-    void PutValueAtDate(DateTime dateTime, V state);
+    void PutValueAtDate(DateTime dateTime, T state);
 
-    void PutValuesAtDates(IEnumerable<(DateTime, V)> events);
+    void PutValuesAtDates(IEnumerable<(DateTime, T)> events);
   }
 }

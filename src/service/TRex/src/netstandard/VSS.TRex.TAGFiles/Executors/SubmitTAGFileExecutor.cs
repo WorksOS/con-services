@@ -7,7 +7,6 @@ using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.TAGFiles.Classes;
-using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
@@ -25,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
-    private static TAGFileBufferQueue queue = new TAGFileBufferQueue();
+    private readonly ITAGFileBufferQueue queue = DIContext.Obtain<ITAGFileBufferQueue>();
 
 
     /// <summary>
@@ -38,7 +37,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <returns></returns>
-    public static SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
+    public SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
       Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}");
       

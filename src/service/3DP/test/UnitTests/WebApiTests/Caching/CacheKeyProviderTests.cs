@@ -87,6 +87,12 @@ namespace VSS.Productivity3D.WebApiTests.Caching
     public void ClearCacheItem(string uid, string userId = null)
     { }
 
+    Task<FilterDescriptorSingleResult> IFilterServiceProxy.CreateFilter(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders)
+    {
+      throw new NotImplementedException();
+    }
+
+
 #pragma warning disable 1998
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
 #pragma warning restore 1998

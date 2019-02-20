@@ -73,14 +73,15 @@ namespace VSS.TRex.Filters
       // RMV Jump Threshold...
       if (PopulationControl.WantsEventMachineCompactionRMVJumpThreshold)
       {
-        throw new NotImplementedException("PopulationControl.WantsEventMachineCompactionRMVJumpThreshold not implemented");
+        filteredPass.EventValues.EventMachineRMVThreshold = values.RMVJumpThresholdEvents.GetValueAtDate(_Time, out _);
+
+        // TODO: PopulationControl.WantsEventMachineCompactionRMVJumpThreshold does not honour global RMV override values
         /*
         if TICSiteModel(Owner).GetMachineRMVOverrideState(filteredPass.FilteredPass.InternalSiteModelMachineIndex,
           UseMachineRMVThreshold, OverrideRMVJumpThreshold))
         {
           if (UseMachineRMVThreshold)
-            filteredPass.EventValues.EventMachineRMVThreshold =
-              values.RMVJumpThresholdEvents.GetValueAtDate(_Time, out int _);
+            filteredPass.EventValues.EventMachineRMVThreshold = values.RMVJumpThresholdEvents.GetValueAtDate(_Time, out _);
           else
             filteredPass.EventValues.EventMachineRMVThreshold = OverrideRMVJumpThreshold;
         }
