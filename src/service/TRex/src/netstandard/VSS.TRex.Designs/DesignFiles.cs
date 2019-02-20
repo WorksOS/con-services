@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.Exceptions;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs
@@ -43,10 +43,7 @@ end;
     public bool RemoveDesignFromCache(Guid designUid, IDesignBase design, bool deleteFile)
     {
       if (deleteFile)
-      {
-        Debug.Assert(false, "Delete file not implemented");
-        return false;
-      }
+        throw new TRexException("Delete file not implemented");
 
       if (designs.TryGetValue(designUid, out _))
       {
@@ -63,8 +60,7 @@ end;
         if (designs.TryGetValue(designUid, out _))
         {
           // The design is already there...
-          Debug.Assert(false, $"Error adding design {designUid} to designs, already present.");
-          return;
+          throw new TRexException($"Error adding design {designUid} to designs, already present.");
         }
 
         designs.Add(designUid, design);
@@ -97,7 +93,7 @@ end;
 
         IDesign designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID).Designs.Locate(designUid);
 
-        string designFilePathAndName = Path.Combine(DesignHelper.EstablishLocalDesignFilepath(DataModelID.ToString()),
+        string designFilePathAndName = Path.Combine(DesignHelper.EstablishLocalDesignFilepath(DataModelID),
           designRef.Get_DesignDescriptor().FileName);
 
         if (!File.Exists(designFilePathAndName))
