@@ -9,6 +9,8 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Coord.Contracts;
 #if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
