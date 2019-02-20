@@ -41,7 +41,7 @@ namespace VSS.TRex.Designs
     /// </summary>
     /// <param name="localPathAndFileName"></param>
     /// <returns></returns>
-    public override DesignLoadResult LoadFromFile(string localPathAndFileName)
+    public override DesignLoadResult LoadFromFile(string localPathAndFileName, bool saveIndexFiles = true)
     {
       // todo when SDK available
       try

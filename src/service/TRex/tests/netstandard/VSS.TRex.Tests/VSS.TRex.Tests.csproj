@@ -118,6 +118,9 @@
     <None Update="TestData\Export\Patches\TestTAGFile.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Rendering\Bug36372.ttm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Rendering\TestTAGFile.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

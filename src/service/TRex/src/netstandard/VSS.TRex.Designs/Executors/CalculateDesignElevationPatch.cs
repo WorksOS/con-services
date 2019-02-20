@@ -13,7 +13,7 @@ namespace VSS.TRex.Designs.Executors
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
 
-        private static IDesignFiles designs = null;
+        private static IDesignFiles designs;
 
         private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
 
@@ -51,7 +51,7 @@ namespace VSS.TRex.Designs.Executors
 
             try
             {
-                // Check to see if this subgrid has any design surface underlying it
+                // Check to see if this sub grid has any design surface underlying it
                 // from which to calculate an elevation patch. If not, don't bother...
                 if (!Design.HasElevationDataForSubGridPatch(originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
                                                             originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
@@ -94,7 +94,7 @@ namespace VSS.TRex.Designs.Executors
                 // Perform the design profile calculation
                 try
                 {
-                    /* Test code to force all subgrids to have 0 elevations from a design
+                    /* Test code to force all sub grids to have 0 elevations from a design
                     ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTreeConsts.DefaultIndexOriginOffset);
                     test.SetToZeroHeight();
                     return test;

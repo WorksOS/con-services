@@ -636,8 +636,9 @@ namespace VSS.TRex.Designs
     /// Loads the TTM design from a TTM file, along with the sub grid existence map file if it exists (created otherwise)
     /// </summary>
     /// <param name="localPathAndFileName"></param>
+    /// <param name="saveIndexFiles"></param>
     /// <returns></returns>
-    public override DesignLoadResult LoadFromFile(string localPathAndFileName)
+    public override DesignLoadResult LoadFromFile(string localPathAndFileName, bool saveIndexFiles = true)
     {
       try
       {
@@ -650,10 +651,10 @@ namespace VSS.TRex.Designs
         minHeight = Common.Consts.NullReal;
         maxHeight = Common.Consts.NullReal;
 
-        if (!LoadSubGridIndexFile(localPathAndFileName + Consts.kDesignSubgridIndexFileExt))
+        if (!LoadSubGridIndexFile(localPathAndFileName + Consts.kDesignSubgridIndexFileExt, saveIndexFiles))
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
-        if (!LoadSpatialIndexFile(localPathAndFileName + Consts.kDesignSpatialIndexFileExt))
+        if (!LoadSpatialIndexFile(localPathAndFileName + Consts.kDesignSpatialIndexFileExt, saveIndexFiles))
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
         Log.LogInformation(
@@ -755,8 +756,9 @@ namespace VSS.TRex.Designs
     /// Loads a sub grid existence map for the design from a file
     /// </summary>
     /// <param name="fileName"></param>
+    /// <param name="saveIndexFile"></param>
     /// <returns></returns>
-    private bool LoadSubGridIndexFile(string fileName)
+    private bool LoadSubGridIndexFile(string fileName, bool saveIndexFile)
     {
       Log.LogInformation($"Loading sub grid index file {fileName}");
 
@@ -768,7 +770,7 @@ namespace VSS.TRex.Designs
 
         if (Result)
         {
-          if (!SaveSubGridIndex(fileName))
+          if (saveIndexFile && !SaveSubGridIndex(fileName))
             Log.LogError("Continuing with unsaved index");
         }
         else
@@ -782,8 +784,9 @@ namespace VSS.TRex.Designs
     /// Loads a sub grid spatial index for the design from a file
     /// </summary>
     /// <param name="fileName"></param>
+    /// <param name="saveIndexFile"></param>
     /// <returns></returns>
-    private bool LoadSpatialIndexFile(string fileName)
+    private bool LoadSpatialIndexFile(string fileName, bool saveIndexFile)
     {
       Log.LogInformation($"Loading spatial index file {fileName}");
 
@@ -800,7 +803,7 @@ namespace VSS.TRex.Designs
           SpatialIndexOptimised = indexBuilder.SpatialIndexOptimised;
           SpatialIndexOptimisedTriangles = indexBuilder.SpatialIndexOptimisedTriangles;
 
-          if (!SaveSpatialIndex(fileName))
+          if (saveIndexFile && !SaveSpatialIndex(fileName))
             Log.LogError("Continuing with unsaved index");
         }
         else
