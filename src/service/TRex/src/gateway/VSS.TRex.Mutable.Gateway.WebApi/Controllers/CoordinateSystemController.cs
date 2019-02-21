@@ -1,16 +1,16 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Executors.Coords;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {
   /// <summary>
-  /// Controller for adding/getting coordinate system definition data to/forom a site model/project
+  /// Controller for adding coordinate system definition data to a site model/project
   /// and performing coordinates conversion. 
   /// </summary>
   public class CoordinateSystemController : BaseController

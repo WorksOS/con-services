@@ -1,27 +1,16 @@
-﻿using System;
-using System.Net;
-using System.Text;
+﻿using System.Text;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.TRex.CoordinateSystems;
-using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
-using VSS.TRex.CoordinateSystems.GridFabric.ComputeFuncs;
-using VSS.TRex.CoordinateSystems.GridFabric.Requests;
 using VSS.TRex.CoordinateSystems.Models;
 
-namespace VSS.TRex.Gateway.Common.Executors
+namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
-  /// <summary>
-  /// Processes the request to post coordinate system definition data.
-  /// </summary>
-  public class CoordinateSystemPostExecutor : BaseExecutor
+  public class CoordinateSystemBaseExecutor : BaseExecutor
   {
     private const string STR_DATUM_DIRECTION_TO_WGS84 = "Local To WGS84";
     private const string STR_DATUM_DIRECTION_TO_LOCAL = "WGS84 To Local";
@@ -41,7 +30,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     private const string GRID_DATUM = "GridDatum";
     private const string WGS84_DATUM = "WGS84";
 
-    public CoordinateSystemPostExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
+    public CoordinateSystemBaseExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
     {
     }
@@ -49,47 +38,17 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public CoordinateSystemPostExecutor()
+    public CoordinateSystemBaseExecutor()
     {
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      var request = item as CoordinateSystemFile;
-
-      if (request == null)
-        ThrowRequestTypeCastException<CoordinateSystemFile>();
-
-      var siteModel = GetSiteModel(request.ProjectUid);
-
-      var csd = ConvertCoordinates.DCFileContentToCSD(request.CSFileName, request.CSFileContent);
-
-      if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));
-
-      var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
-
-      var addCoordSystemResponse = addCoordinateSystemRequest.Execute(new AddCoordinateSystemArgument()
-      {
-        ProjectID = siteModel.ID,
-        CSIB = csd.CoordinateSystem.Id
-      });
-
-      if (addCoordSystemResponse != null && addCoordSystemResponse.Succeeded)
-        return ConvertResult(request.CSFileName, csd.CoordinateSystem);
-
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        $"Failed to post Coordinate System definition data. Project UID: {siteModel.ID}"));
-    }
-
-    private ContractExecutionResult ConvertResult(string csFileName, CoordinateSystem coordSystem)
+    protected ContractExecutionResult ConvertResult(string csFileName, CoordinateSystem coordSystem)
     {
       var azimuthDirection = coordSystem.ZoneInfo.IsSouthAzimuth ? SOUTH_STR : NORTH_STR;
 
       var latAxis = coordSystem.ZoneInfo.IsSouthGrid ? SOUTH_STR : NORTH_STR;
       var lonAxis = coordSystem.ZoneInfo.IsWestGrid ? WEST_STR : EAST_STR;
-      
+
       return new CoordinateSystemSettings(
         // Coordinate System...
         coordSystem.SystemName,
@@ -103,7 +62,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         coordSystem.DatumInfo.EllipseInverseFlat,
         0.0, // ellipsoidFirstEccentricity
         0.0, // ellipsoidSecondEccentricity
-        // Datum...
+             // Datum...
         coordSystem.DatumInfo.DatumName,
         coordSystem.DatumInfo.DatumType,
         ConvertCoordinateSystemDatumMethodType(coordSystem.DatumInfo.DatumType),
@@ -120,7 +79,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         coordSystem.DatumInfo.RotationZ,
         coordSystem.DatumInfo.Scale,
         string.Empty, // datumParametersFileName
-        // Geoid...
+                      // Geoid...
         coordSystem.GeooidInfo?.GeoidName,
         string.Empty, // geoidMethod
         CoordinateSystemGeoidMethodType.Unknown, // datumMethodType, convert to CoordinateSystemGeoidMethodType
@@ -133,7 +92,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         0.0, // geoidRotationX
         0.0, // geoidRotationY
         0.0, // geoidScaleFactor
-        // Projection
+             // Projection
         coordSystem.ZoneInfo.ZoneType,
         GetProjectionParameters(coordSystem.ZoneInfo),
         $"{AZIMUTH_STR} {azimuthDirection}",
@@ -157,7 +116,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         new ProjectionParameter() { Name = ORIGIN_SCALE, Value = coordSystemZoneInfo.OriginScale}
       };
     }
-    
+
     private CoordinateSystemDatumMethodType ConvertCoordinateSystemDatumMethodType(string datumInfoDatumType)
     {
       switch (datumInfoDatumType)
@@ -170,5 +129,6 @@ namespace VSS.TRex.Gateway.Common.Executors
         default: return CoordinateSystemDatumMethodType.Unknown;
       }
     }
+
   }
 }
