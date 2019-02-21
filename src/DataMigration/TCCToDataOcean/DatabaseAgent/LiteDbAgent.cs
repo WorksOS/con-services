@@ -1,5 +1,5 @@
-﻿using LiteDB;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using LiteDB;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -12,19 +12,17 @@ namespace TCCToDataOcean.DatabaseAgent
     void DropTables(string[] tableNames);
     void WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, FileData file);
+    void WriteError(string errorMessage);
     void SetMigrationState(string tableName, Project project, LiteDbAgent.MigrationState migrationState);
     void SetMigrationState(string tableName, FileData file, LiteDbAgent.MigrationState migrationState);
   }
 
   public class LiteDbAgent : ILiteDbAgent
   {
-    private ILogger _log;
     private readonly string _databaseName;
 
-    public LiteDbAgent(ILoggerFactory loggerFactory, IConfigurationStore configurationStore)
+    public LiteDbAgent(IConfigurationStore configurationStore)
     {
-      _log = loggerFactory.CreateLogger(GetType());
-
       _databaseName = configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE");
     }
 
@@ -47,6 +45,14 @@ namespace TCCToDataOcean.DatabaseAgent
       }
     }
 
+    public void WriteError(string errorMessage)
+    {
+      using (var db = new LiteDatabase(_databaseName))
+      {
+        db.GetCollection<MigrationErrorMessage>(Table.Errors).Insert(new MigrationErrorMessage(errorMessage));
+      }
+    }
+
     public void SetMigrationState(string tableName, Project project, MigrationState migrationState)
     {
       using (var db = new LiteDatabase(_databaseName))
@@ -55,6 +61,7 @@ namespace TCCToDataOcean.DatabaseAgent
         var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
         dbObj.MigrationState = migrationState;
+        dbObj.DateTimeUpdated = DateTime.UtcNow;
 
         projects.Update(dbObj);
       }
@@ -76,15 +83,36 @@ namespace TCCToDataOcean.DatabaseAgent
         var dbObj = files.FindOne(x => x.Id == file.LegacyFileId);
 
         dbObj.MigrationState = migrationState;
+        dbObj.DateTimeUpdated = DateTime.UtcNow;
 
         files.Update(dbObj);
       }
     }
 
-
     public class MigrationObj
     {
       public int Id { get; set; }
+      public DateTime DateTimeCreated { get; set; }
+      public DateTime DateTimeUpdated { get; set; }
+
+      public MigrationObj()
+      {
+        DateTimeCreated = DateTime.UtcNow;
+        DateTimeUpdated = DateTimeCreated;
+      }
+    }
+
+    public class MigrationErrorMessage : MigrationObj
+    {
+      public string Error { get; set; }
+
+      public MigrationErrorMessage()
+      { }
+      
+      public MigrationErrorMessage(string errorMessage)
+      {
+        Error = errorMessage;
+      }
     }
 
     public class MigrationProject : MigrationObj
@@ -140,6 +168,7 @@ namespace TCCToDataOcean.DatabaseAgent
     {
       public static string Projects = "Projects";
       public static string Files = "Files";
+      public static string Errors = "Errors";
     }
   }
 

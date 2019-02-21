@@ -80,7 +80,12 @@ namespace TCCToDataOcean
     {
       // TODO (Aaron) Remove if part of recovery phase.
       Log.LogInformation("Cleaning database, dropping collections");
-      _migrationDb.DropTables(new[] { LiteDbAgent.Table.Projects, LiteDbAgent.Table.Files });
+      _migrationDb.DropTables(new[]
+      {
+          LiteDbAgent.Table.Projects,
+          LiteDbAgent.Table.Files,
+          LiteDbAgent.Table.Errors
+      });
 
       Log.LogInformation($"Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
@@ -213,7 +218,6 @@ namespace TCCToDataOcean
 
       string tempFileName;
 
-      // TODO why is the file not being returned. 
       using (var fileContents = await FileRepo.GetFile(FileSpaceId, $"{file.Path}/{file.Name}"))
       {
         _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.InProgress);
@@ -222,11 +226,12 @@ namespace TCCToDataOcean
         {
           Log.LogError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
           _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.Failed);
+          _migrationDb.WriteError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
 
           return (false, null);
         }
 
-        var tempPath = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp", file.ProjectUid, file.ImportedFileUid);
+        var tempPath = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp", file.CustomerUid, file.ProjectUid, file.ImportedFileUid);
         Directory.CreateDirectory(tempPath);
 
         tempFileName = Path.Combine(tempPath, file.Name);
