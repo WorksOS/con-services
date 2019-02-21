@@ -66,14 +66,9 @@ namespace VSS.TRex.Designs.Executors
                                                  (uint)(originY & ~SubGridTreeConsts.SubGridLocalKeyMask));
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
-                if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, cellSize, offset))
-                {
-                    CalcResult = DesignProfilerRequestResult.OK;
-                }
-                else
-                {
-                    CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
-                }
+                CalcResult = Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, cellSize, offset) 
+                  ? DesignProfilerRequestResult.OK 
+                  : DesignProfilerRequestResult.NoElevationsInRequestedPatch;
 
                 return Result;
             }
@@ -87,39 +82,26 @@ namespace VSS.TRex.Designs.Executors
         /// Performs execution business logic for this executor
         /// </summary>
         /// <returns></returns>
-        public IClientHeightLeafSubGrid Execute(Guid projectUID, Guid referenceDesignUID, double cellSize, uint originX, uint originY, double offset)
+        public IClientHeightLeafSubGrid Execute(Guid projectUID, Guid referenceDesignUID, double cellSize, uint originX, uint originY, double offset, out DesignProfilerRequestResult calcResult)
         {
+            calcResult = DesignProfilerRequestResult.UnknownError;
+
+            // Perform the design profile calculation
             try
             {
-                // Perform the design profile calculation
-                try
-                {
-                    /* Test code to force all sub grids to have 0 elevations from a design
-                    ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTreeConsts.DefaultIndexOriginOffset);
-                    test.SetToZeroHeight();
-                    return test;
-                    */
+                /* Test code to force all sub grids to have 0 elevations from a design
+                ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTreeConsts.DefaultIndexOriginOffset);
+                test.SetToZeroHeight();
+                return test;
+                */
 
-                    // Calculate the patch of elevations and return it
-                    IClientHeightLeafSubGrid result = Calc(projectUID, referenceDesignUID, cellSize, originX, originY, offset, out DesignProfilerRequestResult CalcResult);
-
-                    if (result == null)
-                    {
-                        // TODO: Handle failure to calculate a design elevation patch result
-                    }
-
-                    return result;
-                }
-                finally
-                {
-                    //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
-                    //Log.LogInformation($"#Out# {nameof(CalculateDesignElevationPatch)}.Execute #Result# {CaleResult}");
-                }
+                // Calculate the patch of elevations and return it
+                return Calc(projectUID, referenceDesignUID, cellSize, originX, originY, offset, out calcResult);
             }
-            catch (Exception E)
+            finally
             {
-                Log.LogError(E, "Execute: Exception: ");
-                return null;
+                //if Debug_PerformDPServiceRequestHighRateLogging then
+                //Log.LogInformation($"#Out# {nameof(CalculateDesignElevationPatch)}.Execute #Result# {calcResult}");
             }
         }
     }

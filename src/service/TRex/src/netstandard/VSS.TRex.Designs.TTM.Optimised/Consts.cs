@@ -2,12 +2,11 @@
 {
   public static class Consts
   {
-    public const int MaxSmallIntValue = 0x7FFF;
-    public const byte TTMMajorVersion = 1;
-    public const byte TTMMinorVersion = 0;
+    public const byte TTM_MAJOR_VERSION = 1;
+    public const byte TTM_MINOR_VERSION = 0;
 
-    public const string TTMFileIdentifier = "TNL TIN DTM FILE\0\0\0\0";
-    public const string kDesignSubgridIndexFileExt = ".$DesignSubgridIndex$";
-    public const string kDesignSpatialIndexFileExt = ".$DesignSpatialIndex$";
+    public const string TTM_FILE_IDENTIFIER = "TNL TIN DTM FILE\0\0\0\0";
+    public const string DESIGN_SUB_GRID_INDEX_FILE_EXTENSION = ".$DesignSubgridIndex$";
+    public const string DESIGN_SPATIAL_INDEX_FILE_EXTENSION = ".$DesignSpatialIndex$";
   }
 }

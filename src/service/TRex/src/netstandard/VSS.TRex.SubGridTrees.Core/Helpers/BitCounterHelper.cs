@@ -52,14 +52,13 @@
         /// <returns></returns>
         public static bool TestCountSetBits(out uint failedItem)
         {
-            return TestCountSetBitsRange(0, uint.MaxValue, out failedItem);
-/*
- *            return TestCountSetBitsRange(0, 1000000, out failedItem) &&
-                   TestCountSetBitsRange(1000000000, 1001000000, out failedItem) &&
-                   TestCountSetBitsRange(2000000000, 2001000000, out failedItem) &&
-                   TestCountSetBitsRange(3000000000, 3001000000, out failedItem) &&
-                   TestCountSetBitsRange(uint.MaxValue - 1000000, uint.MaxValue, out failedItem); */
-        }
+            //return TestCountSetBitsRange(0, uint.MaxValue, out failedItem);
 
+            return TestCountSetBitsRange(0, 100000, out failedItem) &&
+                   TestCountSetBitsRange(1000000000, 1000100000, out failedItem) &&
+                   TestCountSetBitsRange(2000000000, 2000100000, out failedItem) &&
+                   TestCountSetBitsRange(3000000000, 3000100000, out failedItem) &&
+                   TestCountSetBitsRange(uint.MaxValue - 100000, uint.MaxValue, out failedItem);
+        }
     }
 }
