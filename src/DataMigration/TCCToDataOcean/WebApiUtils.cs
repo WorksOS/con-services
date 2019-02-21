@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TCCToDataOcean.Interfaces;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -14,7 +15,7 @@ namespace TCCToDataOcean
   public class WebApiUtils : IWebApiUtils
   {
     private readonly IRestClient RestClient;
-    private readonly MigrationSettings MigrationSettings;
+    private readonly IConfigurationStore _configuration;
 
     private readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
     {
@@ -22,10 +23,10 @@ namespace TCCToDataOcean
       NullValueHandling = NullValueHandling.Ignore
     };
 
-    public WebApiUtils(IRestClient restClient, IMigrationSettings migrationSettings)
+    public WebApiUtils(IRestClient restClient, IConfigurationStore configurationStore)
     {
       RestClient = restClient;
-      MigrationSettings = (MigrationSettings)migrationSettings;
+      _configuration = configurationStore;
     }
 
     /// <summary>

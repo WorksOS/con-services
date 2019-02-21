@@ -28,10 +28,7 @@ namespace TCCToDataOcean
 
       var serviceProvider = serviceCollection.BuildServiceProvider();
       var migrator = serviceProvider.GetRequiredService<IMigrator>();
-
-      var migrationSettings = (MigrationSettings)serviceProvider.GetRequiredService<IMigrationSettings>();
-      migrationSettings.IsDebug = false;
-
+      
       var success = migrator.MigrateFilesForAllActiveProjects().Result;
 
       Console.WriteLine($"Outcome: {success}");
@@ -56,7 +53,6 @@ namespace TCCToDataOcean
       services.AddTransient<IImportFile, ImportFile>();
       services.AddTransient<IMigrator, Migrator>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
-      services.AddSingleton<IMigrationSettings, MigrationSettings>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
 
       Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4nettest.xml");

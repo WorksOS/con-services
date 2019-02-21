@@ -36,12 +36,12 @@ namespace TCCToDataOcean
     private readonly IImportFile ImportFile;
     private readonly ILogger Log;
     private readonly ILiteDbAgent _migrationDb;
-    private readonly MigrationSettings MigrationSettings;
     private readonly string FileSpaceId;
     private readonly string ProjectApiUrl;
     private readonly string UploadFileApiUrl;
     private readonly string ImportedFileApiUrl;
     private readonly string TemporaryFolder;
+    private readonly bool _isDebugMode;
 
     private const string ProjectWebApiKey = "PROJECT_API_URL";
     private const string ImportedFileWebApiKey = "IMPORTED_FILE_API_URL";
@@ -58,7 +58,7 @@ namespace TCCToDataOcean
     };
 
     public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore, ILiteDbAgent liteDbAgent,
-      IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IWebApiUtils webApiUtils, IImportFile importFile, IMigrationSettings migrationSettings)
+      IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IWebApiUtils webApiUtils, IImportFile importFile)
     {
       Log = logger.CreateLogger<Migrator>();
       ProjectRepo = projectRepository;
@@ -72,7 +72,7 @@ namespace TCCToDataOcean
       UploadFileApiUrl = GetEnvironmentVariable(UploadFileApiKey, 1);
       ImportedFileApiUrl = GetEnvironmentVariable(ImportedFileWebApiKey, 3);
       TemporaryFolder = GetEnvironmentVariable(TemporaryFolderKey, 2);
-      MigrationSettings = (MigrationSettings)migrationSettings;
+      _isDebugMode = ConfigStore.GetValueBool("MIGRATION_MODE_IS_DEBUG", defaultValue: true);
       _migrationDb = liteDbAgent;
     }
 
@@ -212,6 +212,10 @@ namespace TCCToDataOcean
       return coordSystemFileContent;
 
     }
+
+    /// <summary>
+    /// Downloads the file from TCC and if successful uploads it through the Project service.
+    /// </summary>
     private async Task<(bool success, FileDataSingleResult file)> MigrateFile(FileData file)
     {
       Log.LogInformation($"Migrating file: Name: {file.Name}, Uid: {file.ImportedFileUid}");
@@ -246,7 +250,7 @@ namespace TCCToDataOcean
 
       Log.LogInformation($"Uploading file {file.ImportedFileUid}");
 
-      var result = MigrationSettings.IsDebug
+      var result = _isDebugMode
         ? new FileDataSingleResult()
         : ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
