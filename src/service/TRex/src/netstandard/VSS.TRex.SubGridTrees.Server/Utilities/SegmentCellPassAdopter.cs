@@ -21,12 +21,12 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         {
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                int thePassCount = (int)sourceSegment.PassCount(i, j);
+                uint thePassCount = sourceSegment.PassCount(i, j);
 
                 if (thePassCount == 0)
                     return;
 
-                int countInCell = 0;
+                uint countInCell = 0;
 
                 for (uint PassIndex = 0; PassIndex < thePassCount; PassIndex++)
                 {
@@ -39,11 +39,11 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 // countInCell represents the number of cells that should remain in the source segment.
                 // The remainder are to be moved to this segment
 
-                int adoptedPassCount = thePassCount - countInCell;
+                uint adoptedPassCount = thePassCount - countInCell;
                 if (adoptedPassCount > 0)
                 {
                     // Copy the adopted passes from the 'from' cell to the 'to' cell
-                    for (int PassIndex = countInCell; PassIndex < thePassCount; PassIndex++)
+                    for (uint PassIndex = countInCell; PassIndex < thePassCount; PassIndex++)
                     {
                       if (sourceSegment.Pass(i, j, (uint)PassIndex).Time < atAndAfterTime)
                       {

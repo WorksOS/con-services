@@ -26,32 +26,22 @@
                 if (FieldDescriptor.Nullable)
                 {
                     if (FieldDescriptor.MinValue == ANativeNullValue || (TestValue != ANativeNullValue && TestValue < FieldDescriptor.MinValue))
-                    {
                         FieldDescriptor.MinValue = TestValue;
-                    }
 
                     if (FieldDescriptor.MaxValue == ANativeNullValue || (TestValue != ANativeNullValue && TestValue > FieldDescriptor.MaxValue))
-                    {
                         FieldDescriptor.MaxValue = TestValue;
-                    }
                 }
                 else
                 {
                     if (FirstValue || TestValue < FieldDescriptor.MinValue)
-                    {
                         FieldDescriptor.MinValue = TestValue;
-                    }
 
                     if (FirstValue || TestValue > FieldDescriptor.MaxValue)
-                    {
                         FieldDescriptor.MaxValue = TestValue;
-                    }
                 }
 
-                if (!ObservedANullValue && TestValue == ANativeNullValue)
-                {
+                if (!ObservedANullValue && ANullable && TestValue == ANativeNullValue)
                     ObservedANullValue = true;
-                }
 
                 FirstValue = false;
             }
@@ -60,11 +50,9 @@
             // nullable flag to false so we don't encode an extra token for a null value
             // that will never be written.
             if (!ObservedANullValue)
-            {
                 FieldDescriptor.Nullable = false;
-            }
 
-            if (FieldDescriptor.Nullable && (FieldDescriptor.MaxValue != FieldDescriptor.NativeNullValue))
+            if (FieldDescriptor.Nullable && FieldDescriptor.MaxValue != FieldDescriptor.NativeNullValue)
             {
                 FieldDescriptor.MaxValue++;
                 FieldDescriptor.EncodedNullValue = FieldDescriptor.MaxValue;

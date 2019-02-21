@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.SubGridTrees.Helpers
+﻿namespace VSS.TRex.SubGridTrees.Core.Helpers
 {
     public static class BitCounterHelper
     {
