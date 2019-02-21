@@ -219,11 +219,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             Cell_NonStatic integrateFrom = new Cell_NonStatic();
             integrateFrom.AddPass(pass2);
 
-            item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out int addedCount, out int modifiedCount);
+            item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out uint addedCount, out uint modifiedCount);
 
             Assert.Equal((uint)2, item.PassCount(1, 1));
-            Assert.Equal(1, addedCount);
-            Assert.Equal(0, modifiedCount);
+            Assert.Equal((uint)1, addedCount);
+            Assert.Equal((uint)0, modifiedCount);
         }
 
         [Fact()]

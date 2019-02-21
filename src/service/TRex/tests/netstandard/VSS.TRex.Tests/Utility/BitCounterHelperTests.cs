@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using VSS.TRex.SubGridTrees.Helpers;
+using VSS.TRex.SubGridTrees.Core.Helpers;
 using Xunit;
 
 namespace VSS.TRex.Tests.Utility
