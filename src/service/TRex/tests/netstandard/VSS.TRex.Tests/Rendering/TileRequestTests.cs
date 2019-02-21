@@ -1,11 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Arguments;
@@ -15,6 +23,7 @@ using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -27,13 +36,18 @@ namespace VSS.TRex.Tests.Rendering
     private ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, 1, false, Guid.NewGuid());
       return siteModel;
     }
 
-    private void AddApplicationGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting<TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
+    private void AddApplicationGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+      <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
-    private void AddClusterComputeGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+    private void AddClusterComputeGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting
+      <SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+
+    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+      <IComputeFunc<CalculateDesignElevationPatchArgument, byte[]>, CalculateDesignElevationPatchArgument, byte[]>();
 
     private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)
     {
@@ -50,15 +64,34 @@ namespace VSS.TRex.Tests.Rendering
       };
     }
 
-    [Fact]
-    public void Test_TileRenderRequest_Creation()
+    private Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName)
     {
-      var request = new TileRenderRequest();
+      var filePathAndName = Path.Combine(filePath, fileName);
 
-      request.Should().NotBeNull();
+      TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+      var designLoadResult = ttm.LoadFromFile(filePathAndName, false);
+      designLoadResult.Should().Be(DesignLoadResult.Success);
+
+      BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+      ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+      ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+
+      Guid designUid = Guid.NewGuid();
+      var existenceMaps = DIContext.Obtain<IExistenceMaps>();
+
+      // Create the design surface in the site model
+      var designSurface = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
+        new DesignDescriptor(designUid, filePath, fileName, 0), extents);
+      existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
+
+      // get the newly updated site model with the design reference included
+      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
+
+      return designUid;
     }
 
-    private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement)
+    private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
+      uint cellX = SubGridTreeConsts.DefaultIndexOriginOffset, uint cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
@@ -75,8 +108,7 @@ namespace VSS.TRex.Tests.Rendering
           PassType = PassType.Front
         }).ToArray();
 
-      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
-        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, cellX, cellY, cellPasses, 1, cellPasses.Length);
     }
 
     private void CheckSimpleRenderTileReponse(TileRenderResponse response)
@@ -93,6 +125,14 @@ namespace VSS.TRex.Tests.Rendering
       bmp.Width.Should().Be(256);
     }
 
+    [Fact]
+    public void Test_TileRenderRequest_Creation()
+    {
+      var request = new TileRenderRequest();
+
+      request.Should().NotBeNull();
+    }
+
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
@@ -102,7 +142,6 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
     [InlineData(DisplayMode.TemperatureSummary)]
-    //[InlineData(DisplayMode.CutFill)]
     public void Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -128,7 +167,6 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
     [InlineData(DisplayMode.TemperatureSummary)]
-    //[InlineData(DisplayMode.CutFill)]
     public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -151,7 +189,6 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
     [InlineData(DisplayMode.TemperatureSummary)]
-    //[InlineData(DisplayMode.CutFill)]
     public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -170,6 +207,46 @@ namespace VSS.TRex.Tests.Rendering
       CheckSimpleRenderTileReponse(response);
 
       //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+    }
+
+    [Fact]
+    public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_CutFill()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      // A location on the bug36372.ttm surface - X=247500.0, Y=193350.0
+      const double TTMLocationX = 247500.0;
+      const double TTMLocationY = 193350.0;
+
+      // Find the location of the cell in the site model for that location
+      SubGridTree.CalculateIndexOfCellContainingPosition
+        (TTMLocationX, TTMLocationY, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out uint cellX, out uint cellY);
+
+      // Create the site model containing a single cell and add the design to it for the cut/fill
+      BuildModelForSingleCellTileRender(out var siteModel, 0.5f, cellX, cellY);
+
+      var designUid = AddDesignToSiteModel(ref siteModel, Path.Combine("TestData", "Rendering"), "bug36372.ttm");
+
+      var request = new TileRenderRequest();
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill);
+
+      // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
+      // with an additional 1 meter border around the cell
+      arg.ReferenceDesignUID = designUid;
+      arg.Extents = siteModel.Grid.GetCellExtents(cellX, cellY);
+      arg.Extents.Expand(1.0, 1.0);
+
+      // Place the design into the project temp folder prior to executing the render so the design profiler
+      // will not attempt to access the file from S3
+      var tempPath = DesignHelper.EstablishLocalDesignFilepath(siteModel.ID);
+      File.Copy(Path.Combine("TestData", "Rendering", "bug36372.ttm"), Path.Combine(tempPath, "bug36372.ttm"));
+
+      var response = request.Execute(arg);
+      CheckSimpleRenderTileReponse(response);
+
+      // File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
   }
 }

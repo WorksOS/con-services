@@ -7,9 +7,9 @@ using Moq;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
-using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Machines.Interfaces;
@@ -26,6 +26,7 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Types;
+using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -82,6 +83,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
 
         .Complete();
     }
@@ -180,6 +182,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
       var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
+
+      // Save the site model metadata to preserve the site model extent information across a site model change notification event
+      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
     }
   }
 }

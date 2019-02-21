@@ -4,8 +4,8 @@ using Apache.Ignite.Core.Cache.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using VSS.TRex.DI;
+using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -19,7 +19,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
     /// </summary>
     public class ExistenceMapServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ExistenceMapServer>();
 
         /// <summary>
         /// Ignite instance to be used in the server
@@ -28,8 +28,8 @@ namespace VSS.TRex.ExistenceMaps.Servers
         private readonly IIgnite ignite;
 
         /// <summary>
-        /// A cache that holds the existence maps derived from designfiles (eg: TTM files)
-        /// Each existence map is stored in it's serialised byte stream from. It does not define the grid per se, but does
+        /// A cache that holds the existence maps derived from design files (eg: TTM files)
+        /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
         protected ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
@@ -55,22 +55,15 @@ namespace VSS.TRex.ExistenceMaps.Servers
             if (ignite == null)
             {
                 Log.LogInformation($"Failed to get Ignite reference in {this}");
-                throw new ArgumentException("No Ignite instance available");
+                throw new TRexException("No Ignite instance available");
             }
 
-            try
-            {
-                DesignTopologyExistenceMapsCache = ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName());
-            }
-            catch // Exception is thrown if the cache does not exist
-            {
-                DesignTopologyExistenceMapsCache = ignite.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
-            }
+            DesignTopologyExistenceMapsCache = ignite.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
 
             if (DesignTopologyExistenceMapsCache == null)
             {
                 Log.LogInformation($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
-                throw new ArgumentException("Ignite cache not available");
+                throw new TRexException("Ignite cache not available");
             }
         }
 
