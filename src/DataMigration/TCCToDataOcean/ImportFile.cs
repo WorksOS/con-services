@@ -6,8 +6,10 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Types;
 using VSS.MasterData.Models.Models;
@@ -21,6 +23,7 @@ namespace TCCToDataOcean
   {
     private readonly IRestClient RestClient;
     private readonly ILogger Log;
+    private readonly ILiteDbAgent _migrationDb;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
@@ -29,9 +32,10 @@ namespace TCCToDataOcean
     private const int CHUNK_SIZE = 1024 * 1024;
     private readonly string BearerToken;
 
-    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient)
+    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient, ILiteDbAgent liteDbAgent)
     {
       Log = loggerFactory.CreateLogger<ImportFile>();
+      _migrationDb = liteDbAgent;
 
       BearerToken = "Bearer " + authentication.GetApplicationBearerToken();
 

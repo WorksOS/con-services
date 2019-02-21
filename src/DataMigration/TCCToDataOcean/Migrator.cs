@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -34,6 +35,7 @@ namespace TCCToDataOcean
     private readonly IWebApiUtils WebApiUtils;
     private readonly IImportFile ImportFile;
     private readonly ILogger Log;
+    private readonly ILiteDbAgent _migrationDb;
     private readonly MigrationSettings MigrationSettings;
     private readonly string FileSpaceId;
     private readonly string ProjectApiUrl;
@@ -55,7 +57,7 @@ namespace TCCToDataOcean
       ImportedFileType.Alignment
     };
 
-    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore,
+    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore, ILiteDbAgent liteDbAgent,
       IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IWebApiUtils webApiUtils, IImportFile importFile, IMigrationSettings migrationSettings)
     {
       Log = logger.CreateLogger<Migrator>();
@@ -71,10 +73,15 @@ namespace TCCToDataOcean
       ImportedFileApiUrl = GetEnvironmentVariable(ImportedFileWebApiKey, 3);
       TemporaryFolder = GetEnvironmentVariable(TemporaryFolderKey, 2);
       MigrationSettings = (MigrationSettings)migrationSettings;
+      _migrationDb = liteDbAgent;
     }
 
     public async Task<bool> MigrateFilesForAllActiveProjects()
     {
+      // TODO (Aaron) Remove if part of recovery phase.
+      Log.LogInformation("Cleaning database, dropping collections");
+      _migrationDb.DropTables(new[] { LiteDbAgent.Table.Projects, LiteDbAgent.Table.Files });
+
       Log.LogInformation($"Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"Found {projects.Count} projects");
@@ -82,14 +89,18 @@ namespace TCCToDataOcean
       // TODO (Aaron) Convert to dictionary and store project UID.
       var projectTasks = new List<Task<bool>>(projects.Count);
 
-      foreach (var project in projects)
-      {
-    //    if (project.ProjectUID.ToLower() != "5183f7ec-ddb0-4305-a318-aba839a0bc30") continue;
-        
-       projectTasks.Add(MigrateProject(project));
-      }
+      var project = projects.First(p => p.ProjectUID == "67a52e4f-faa2-e511-80e5-0050568821e6");
+      _migrationDb.WriteRecord(LiteDbAgent.Table.Projects, project);
 
-      await Task.WhenAll(projectTasks);
+      await MigrateProject(project);
+
+
+      //foreach (var project in projects)
+      //{
+      //  projectTasks.Add(MigrateProject(project));
+      //}
+
+      //await Task.WhenAll(projectTasks);
 
       var result = projectTasks.All(t => t.Result);
       Log.LogInformation($"Overall migration result {result}");
@@ -102,18 +113,23 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<bool> MigrateProject(Project project)
     {
-      Log.LogInformation($"PUID: {project.ProjectUID} | Migrating project '{project.Name}'");
+      Log.LogInformation($"{nameof(MigrateProject)} [{project.ProjectUID}]: Migrating project '{project.Name}'");
+      _migrationDb.SetMigrationState(LiteDbAgent.Table.Projects, project, LiteDbAgent.MigrationState.InProgress);
 
       var coordinateSystemFileMigrationResult = false;
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
-        var updateProjectResult = WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
 
-        coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
+        if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
+        {
+          var updateProjectResult = WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
 
-        Log.LogInformation($"PUID: {project.ProjectUID} | Update result code: {updateProjectResult.Code}, {updateProjectResult.Message}");
+          coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
+
+          Log.LogInformation($"{nameof(MigrateProject)} [{project.ProjectUID}]: Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+        }
       }
 
       //Get list of imported files for project from project web api
@@ -126,16 +142,20 @@ namespace TCCToDataOcean
         var selectedFiles =
           filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
         Log.LogInformation($"PUID: {project.ProjectUID} | {selectedFiles.Count} out of {filesList.Count} files to migrate");
-        var fileTasks = new List<Task<FileDataSingleResult>>();
+        var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
 
         foreach (var file in selectedFiles)
         {
-          fileTasks.Add(MigrateFile(file));
+          _migrationDb.WriteRecord(LiteDbAgent.Table.Files, file);
+          var migrationResult = MigrateFile(file);
+
+          fileTasks.Add(migrationResult);
         }
 
         await Task.WhenAll(fileTasks);
 
-        importedFilesResult = fileTasks.All(t => t.Result.Code == (int)ExecutionResult.Success);
+        // Todo (Aaron) In time it might be better to not return a tuple, and simply a null file. Making the following simpler.
+        importedFilesResult = fileTasks.All(t => t.Result.Item2.Code == (int)ExecutionResult.Success);
       }
       else
       {
@@ -145,12 +165,14 @@ namespace TCCToDataOcean
       var result = coordinateSystemFileMigrationResult && importedFilesResult;
       Log.LogInformation($"PUID: {project.ProjectUID} | Migration result: {result}");
 
+      _migrationDb.SetMigrationState(LiteDbAgent.Table.Projects, project, result ? LiteDbAgent.MigrationState.Completed : LiteDbAgent.MigrationState.Failed);
+
       return result;
     }
 
     private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
     {
-      Log.LogInformation($"PUID: {project.ProjectUID} | Downloading coord system file '{project.CoordinateSystemFileName}'");
+      Log.LogInformation($"{nameof(DownloadCoordinateSystemFileFromTCC)} [{project.ProjectUID}]: Downloading coord system file '{project.CoordinateSystemFileName}'");
 
       Stream memStream = null;
       byte[] coordSystemFileContent = null;
@@ -185,19 +207,29 @@ namespace TCCToDataOcean
       return coordSystemFileContent;
 
     }
-    private async Task<FileDataSingleResult> MigrateFile(FileData file)
+    private async Task<(bool success, FileDataSingleResult file)> MigrateFile(FileData file)
     {
       Log.LogInformation($"Migrating file: Name: {file.Name}, Uid: {file.ImportedFileUid}");
 
       string tempFileName;
 
+      // TODO why is the file not being returned. 
       using (var fileContents = await FileRepo.GetFile(FileSpaceId, $"{file.Path}/{file.Name}"))
       {
+        _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.InProgress);
+
+        if (fileContents == null)
+        {
+          Log.LogError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
+          _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.Failed);
+
+          return (false, null);
+        }
+
         var tempPath = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp", file.ProjectUid, file.ImportedFileUid);
         Directory.CreateDirectory(tempPath);
-        
-        tempFileName = Path.Combine(tempPath, file.Name);
 
+        tempFileName = Path.Combine(tempPath, file.Name);
 
         Log.LogInformation($"Creating temporary file {tempFileName} for file {file.ImportedFileUid}");
 
@@ -214,8 +246,9 @@ namespace TCCToDataOcean
         : ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
       Log.LogInformation($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
+      _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.Completed);
 
-      return result;
+      return (true, result);
     }
 
     private string GetEnvironmentVariable(string key, int errorNumber)

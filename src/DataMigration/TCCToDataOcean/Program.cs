@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -30,6 +32,8 @@ namespace TCCToDataOcean
       migrationSettings.IsDebug = false;
 
       var success = migrator.MigrateFilesForAllActiveProjects().Result;
+
+      Console.WriteLine($"Outcome: {success}");
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -38,7 +42,7 @@ namespace TCCToDataOcean
       services.AddSingleton<ILoggerProvider, Log4NetProvider>();
       services.AddLogging(configure => configure.AddConsole()
                                                 .AddDebug())
-              .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug);
+              .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Trace);
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -51,6 +55,7 @@ namespace TCCToDataOcean
       services.AddTransient<IMigrator, Migrator>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<IMigrationSettings, MigrationSettings>();
+      services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
 
       Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4nettest.xml");
     }
