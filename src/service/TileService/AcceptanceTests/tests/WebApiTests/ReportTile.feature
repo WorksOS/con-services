@@ -96,19 +96,18 @@ Scenario Outline: Report cutfill and volume tiles - Explicit
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "<ProjectUID>"
 And an overlayType "<overlayType>"
-And a mapType "<mapType>"
 And a mode "<mode>"
-And a cutFillDesignUid "<cutFillDesignUid>"
 And a volumeCalcType "<volumeCalcType>" 
 And a volumeTopUid "<volumeTopUid>" 
 And a volumeBaseUid "<volumeBaseUid>"
+And a explicitFilter "<ExplicitFilters>"
 And a width "1024" and a height "1024"
 When I request a Report Tile and the result file "ReportTileResponse.json"	
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
 | ResultName             | ProjectUID                           | volumeCalcType | volumeTopUid                         | volumeBaseUid                        | overlayType    | mode | Difference | ExplicitFilters |
 | GroundToGroundExplicit | ff91dd40-1569-4765-a2bc-014321f76ace | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData | 8    | 1          | true            |
-| GroundToGroundImplicit | ff91dd40-1569-4765-a2bc-014321f76ace | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData | 8    | 1          | false           |          
+| GroundToGround         | ff91dd40-1569-4765-a2bc-014321f76ace | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData | 8    | 1          | false           |         
 
 
 
