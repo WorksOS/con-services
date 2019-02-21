@@ -13,6 +13,7 @@ using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.ComputeFuncs;
+using VSS.TRex.CoordinateSystems.GridFabric.Requests;
 using VSS.TRex.CoordinateSystems.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -61,18 +62,22 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var addCoordSystemComputor = new AddCoordinateSystemComputeFunc();
-
-      var csd = ConvertCoordinates.DCFileContentToCSD(request.csFileName, request.csFileContent);
+      var csd = ConvertCoordinates.DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to convert DC File {request.csFileName} content to Coordinate System definition data."));
+          $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));
 
-      var addCoordSystemResponse = addCoordSystemComputor.Invoke(new AddCoordinateSystemArgument() { ProjectID = siteModel.ID, CSIB = csd.CoordinateSystem.Id });
+      var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
+
+      var addCoordSystemResponse = addCoordinateSystemRequest.Execute(new AddCoordinateSystemArgument()
+      {
+        ProjectID = siteModel.ID,
+        CSIB = csd.CoordinateSystem.Id
+      });
 
       if (addCoordSystemResponse != null && addCoordSystemResponse.Succeeded)
-        return ConvertResult(request.csFileName, csd.CoordinateSystem);
+        return ConvertResult(request.CSFileName, csd.CoordinateSystem);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         $"Failed to post Coordinate System definition data. Project UID: {siteModel.ID}"));

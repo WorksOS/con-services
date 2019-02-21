@@ -105,7 +105,8 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor)
+        typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor),
+        typeof(VSS.TRex.CoordinateSystems.CoordinateSystemResponse)
       };
 
       foreach (var asmType in AssemblyDependencies)

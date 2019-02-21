@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Models.Interfaces;
@@ -17,7 +18,7 @@ namespace VSS.Productivity3D.Models.Models.Coords
     /// </summary>
     [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
     [Required]
-    public byte[] csFileContent { get; private set; }
+    public byte[] CSFileContent { get; private set; }
 
     /// <summary>
     /// The name of the CS definition file.
@@ -27,7 +28,7 @@ namespace VSS.Productivity3D.Models.Models.Coords
     [ValidFilename(MAX_FILE_NAME_LENGTH)]
     [MaxLength(MAX_FILE_NAME_LENGTH)]
     [Required]
-    public string csFileName { get; private set; }
+    public string CSFileName { get; private set; }
 
     /// <summary>
     /// Private constructor.
@@ -41,22 +42,30 @@ namespace VSS.Productivity3D.Models.Models.Coords
     /// <summary>
     /// Creates an instance of the CoordinateSystemFile class.
     /// </summary>
+    /// <param name="projectUid">The project's UID to process the file into.</param>
+    /// <param name="csFileContent">The content of the file.</param>
+    /// <param name="csFileName">The file's name.</param>
+    /// <returns>An instance of the CoordinateSystemFile class.</returns>
+    public CoordinateSystemFile(Guid projectUid, byte[] csFileContent, string csFileName)
+    {
+      ProjectUid = projectUid;
+      CSFileContent = csFileContent;
+      CSFileName = csFileName;
+    }
+
+    /// <summary>
+    /// Creates an instance of the CoordinateSystemFile class.
+    /// </summary>
     /// <param name="projectId">The project to process the file into.</param>
     /// <param name="csFileContent">The content of the file.</param>
     /// <param name="csFileName">The file's name.</param>
     /// <returns>An instance of the CoordinateSystemFile class.</returns>
-    public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
+    public CoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
     {
-      var tempCS = new CoordinateSystemFile
-      {
-        ProjectId = projectId,
-        csFileName = csFileName,
-        csFileContent = csFileContent
-      };
-
-      return tempCS;
+      ProjectId = projectId;
+      CSFileContent = csFileContent;
+      CSFileName = csFileName;
     }
-
 
     /// <summary>
     /// Validation method.

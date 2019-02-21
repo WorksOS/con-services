@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// 
     protected static CoordinateSystemSettings ConvertResult(TCoordinateSystemSettings settings)
     {
-      return CoordinateSystemSettings.CreateCoordinateSystemSettings(
+      return new CoordinateSystemSettings(
         // Coordinate System...
         settings.CSName,
         settings.CSFileName,
