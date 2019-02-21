@@ -9,6 +9,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Filters;
@@ -25,6 +26,7 @@ using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -66,6 +68,10 @@ namespace VSS.TRex.Server.Application
           return new PatchTask();
         case PipelineProcessorTaskStyle.SurfaceExport:
           return new SurfaceTask();
+        case PipelineProcessorTaskStyle.GriddedReport:
+          return new GriddedReportTask();
+        case PipelineProcessorTaskStyle.CSVExport:
+          return new CSVExportTask();
         default:
           return null;
       }

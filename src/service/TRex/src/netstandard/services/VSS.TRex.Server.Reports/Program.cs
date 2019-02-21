@@ -98,7 +98,7 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
-        .Add(x => x.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME")))
+        .Add(x => x.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")))
 
         .Complete();
     }

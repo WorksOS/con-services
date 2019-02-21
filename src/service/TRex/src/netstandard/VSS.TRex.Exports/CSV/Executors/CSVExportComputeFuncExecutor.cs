@@ -75,7 +75,7 @@ namespace VSS.TRex.Exports.CSV.Executors
         processor.Task.GridDataType = gridDataType;
 
         ((CSVExportTask) processor.Task).requestArgument = _CSVExportRequestArgument;
-        ((CSVExportTask) processor.Task).formatter = new Formatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, _CSVExportRequestArgument.RawDataAsDBase);
+        ((CSVExportTask) processor.Task).CsvExportFormatter = new CSVExportFormatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, _CSVExportRequestArgument.RawDataAsDBase);
 
         if (!processor.Build())
         {

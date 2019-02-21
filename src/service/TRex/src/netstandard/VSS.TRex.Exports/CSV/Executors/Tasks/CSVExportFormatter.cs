@@ -10,7 +10,7 @@ using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
 
 namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
-  public class Formatter
+  public class CSVExportFormatter
   {
     // these are public for unit tests
     public CSVExportUserPreferences userPreference;
@@ -32,7 +32,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private NumberFormatInfo nfiUser;
 
 
-    public Formatter(CSVExportUserPreferences userPreference, OutputTypes outputType, bool isRawDataAsDBaseRequired = false)
+    public CSVExportFormatter(CSVExportUserPreferences userPreference, OutputTypes outputType, bool isRawDataAsDBaseRequired = false)
     {
       this.userPreference = userPreference;
       this.outputType = outputType;
@@ -41,11 +41,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       SetupUserPreferences(userPreference);
 
-      nfiDefault = NumberFormatInfo.GetInstance(CultureInfo.InvariantCulture).Clone() as NumberFormatInfo;
       nfiUser = NumberFormatInfo.GetInstance(CultureInfo.InvariantCulture).Clone() as NumberFormatInfo;
       nfiUser.NumberDecimalSeparator = userPreference.DecimalSeparator;
       nfiUser.NumberGroupSeparator = userPreference.ThousandsSeparator;
       nfiUser.NumberDecimalDigits = defaultDecimalPlaces;
+      nfiDefault = nfiUser.Clone() as NumberFormatInfo; // the dp will be altered on this
     }
 
     /// <summary>
@@ -307,17 +307,17 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       return result;
     }
 
-    private string FormatDisplayDistanceUnitless(double value, bool isUserFormattingRequired, int dp = -1)
+    private string FormatDisplayDistanceUnitless(double value, bool isFormattingRequired, int dp = -1)
     {
       if (dp < 0)
         dp = defaultDecimalPlaces;
 
-      return DistanceDoubleToStrF(value, 20, isUserFormattingRequired, dp);
+      return DistanceDoubleToStrF(value, 20, isFormattingRequired, dp);
     }
 
-    private string FormatDisplayDistance(double value, bool isUserFormattingRequired, int dp = -1)
+    private string FormatDisplayDistance(double value, bool isFormattingRequired, int dp = -1)
     {
-      string result = FormatDisplayDistanceUnitless(value, isUserFormattingRequired, dp);
+      string result = FormatDisplayDistanceUnitless(value, isFormattingRequired, dp);
 
       if (!value.Equals(Consts.NullHeight))
         result += distanceUnitString;
@@ -325,17 +325,17 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     }
 
     // Converts a value(in meters) to a string in the current distance units 
-    private string DistanceDoubleToStrF(double value, int precision, bool isUserFormattingRequired, int dp )
+    private string DistanceDoubleToStrF(double value, int precision, bool isFormattingRequired, int dp )
     {
       if (value.Equals(Consts.NullHeight))
         return nullString;
 
-      return (DoubleToStrF(value / distanceConversionFactor, precision, isUserFormattingRequired, dp));
+      return (DoubleToStrF(value / distanceConversionFactor, precision, isFormattingRequired, dp));
     }
 
-    private string DoubleToStrF(double value, int precision, bool isUserFormattingRequired, int dp)
+    private string DoubleToStrF(double value, int precision, bool isFormattingRequired, int dp)
     {
-      if (isUserFormattingRequired)
+      if (isFormattingRequired)
       {
         nfiUser.NumberDecimalDigits = dp;
         return value.ToString("N", nfiUser);

@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var s3FullPath = csvExportFileWriter.PersistResult(dataRows);
 
       s3FullPath.Should().NotBeNull();
-      s3FullPath.Should().Be($"{requestArgument.ProjectID.ToString()}/Exports/{requestArgument.FileName}__{requestArgument.TRexNodeID}.zip");
+      s3FullPath.Should().Be($"project/{requestArgument.ProjectID.ToString()}/TRexExport/{requestArgument.FileName}__{requestArgument.TRexNodeID}.zip");
     }
   }
 }

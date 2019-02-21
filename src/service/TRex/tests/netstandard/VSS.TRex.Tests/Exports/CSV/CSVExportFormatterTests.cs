@@ -4,9 +4,9 @@ using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
-using Formatter = VSS.TRex.Exports.CSV.Executors.Tasks.Formatter;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
       OutputTypes outputType = OutputTypes.PassCountAllPasses;
 
-      var formatter = new Formatter(csvUserPreference, outputType, false);
+      var formatter = new CSVExportFormatter(csvUserPreference, outputType, false);
       formatter.userPreference.DateSeparator.Should().Be("/");
       formatter.userPreference.TimeSeparator.Should().Be(":");
       formatter.userPreference.DecimalSeparator.Should().Be(".");
@@ -38,16 +38,16 @@ namespace VSS.TRex.Tests.Exports.CSV
 
     [Theory]
     [InlineData("*", "$", "&", "@", UnitsTypeEnum.US, OutputTypes.VedaAllPasses, false,
-        "?", Formatter.USFeetToMeters, "mph", Formatter.USFeetToMeters * 5280, "FT",
+        "?", CSVExportFormatter.USFeetToMeters, "mph", CSVExportFormatter.USFeetToMeters * 5280, "FT",
         "yyyy-MMM-dd HH:mm:ss.fff")]
     [InlineData("-", ":", ".", ",", UnitsTypeEnum.US, OutputTypes.PassCountLastPass, true,
-      "", Formatter.USFeetToMeters, "mph", Formatter.USFeetToMeters * 5280, "FT",
+      "", CSVExportFormatter.USFeetToMeters, "mph", CSVExportFormatter.USFeetToMeters * 5280, "FT",
       "yyyy-MMM-dd HH:mm:ss.fff")]
     [InlineData("*", "$", "&", "@", UnitsTypeEnum.Metric, OutputTypes.PassCountLastPass, false,
       "?", 1.0, "km/h", 1000, "m",
       "yyyy*MMM*dd HH$mm$ss&fff")]
     [InlineData("-", ":", ".", ",", UnitsTypeEnum.Imperial, OutputTypes.PassCountLastPass, false,
-      "?", Formatter.ImperialFeetToMeters, "mph", Formatter.ImperialFeetToMeters * 5280, "ft",
+      "?", CSVExportFormatter.ImperialFeetToMeters, "mph", CSVExportFormatter.ImperialFeetToMeters * 5280, "ft",
       "yyyy-MMM-dd HH:mm:ss.fff")]
     public void FormatterInitialization
       (string dateSeparator, string timeSeparator, string decimalSeparator, string thousandsSeparator,
@@ -66,7 +66,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         };
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreference);
 
-      var formatter = new Formatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
+      var formatter = new CSVExportFormatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
       formatter.userPreference.DateSeparator.Should().Be(dateSeparator);
       formatter.userPreference.TimeSeparator.Should().Be(timeSeparator);
       formatter.userPreference.DecimalSeparator.Should().Be(decimalSeparator);
@@ -101,16 +101,16 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
 
-      var formatter = new Formatter(csvUserPreference, outputType, false);
+      var formatter = new CSVExportFormatter(csvUserPreference, outputType, false);
       var result = formatter.FormatCellPassTime(valueDateTime);
       result.Should().Be(expectedResult);
     }
 
     [Theory]
-    [InlineData("&", "@", UnitsTypeEnum.Metric, false, 24666.7123112f, "24666.713m")]
-    [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80927.374FT")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80927.536ft")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80927.536")]
+    [InlineData("&", "@", UnitsTypeEnum.Metric, false, 24666.7123112f, "24666&713m")]
+    [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80927&374FT")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80927&536ft")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80927&536")]
     [InlineData("&", "@", UnitsTypeEnum.Imperial, true, -3.4E38f, "")]
     [InlineData("&", "@", UnitsTypeEnum.Imperial, false, -3.4E38f, "?")]
     public void FormatElevationString
@@ -124,7 +124,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
 
       OutputTypes outputType = OutputTypes.PassCountLastPass;
-      var formatter = new Formatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
+      var formatter = new CSVExportFormatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
       var result = formatter.FormatElevation(value);
       result.Should().Be(expectedResult);
     }

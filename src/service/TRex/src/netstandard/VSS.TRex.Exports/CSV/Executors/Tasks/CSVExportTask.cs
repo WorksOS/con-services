@@ -18,7 +18,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportTask>();
 
     public CSVExportRequestArgument requestArgument;
-    public Formatter formatter;
+    public CSVExportFormatter CsvExportFormatter;
     public List<string> dataRows = new List<string>();
 
     public CSVExportTask()
@@ -48,7 +48,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       foreach (var subGrid in subGridResponses)
       {
-        var subGridExportProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, formatter);
+        var subGridExportProcessor = new CSVExportSubGridProcessor(siteModel, requestArgument, CsvExportFormatter);
         List<string> rows;
         if (subGrid is ClientCellProfileLeafSubgrid grid)
           rows = subGridExportProcessor.ProcessSubGrid(grid);

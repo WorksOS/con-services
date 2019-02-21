@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.DI;
 using VSS.TRex.Exceptions;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.GridFabric.Arguments;
@@ -59,6 +60,9 @@ namespace VSS.TRex.Tests.TestFixtures
           return new GriddedReportTask();
         case PipelineProcessorTaskStyle.PVMRendering:
           return new PVMRenderingTask();
+        case PipelineProcessorTaskStyle.CSVExport:
+          return new CSVExportTask();
+
         default:
           return null;
       }

@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using FileSystem = System.IO.File;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Exports.CSV.GridFabric
 {
@@ -18,10 +23,19 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     private const string CSV_extension = ".csv";
     private const string ZIP_extension = ".zip";
     private readonly CSVExportRequestArgument requestArgument;
+    private readonly string awsBucketNameKey = "AWS_BUCKET_NAME"; // vss-exports-stg/prod
+    private readonly string awsBucketName;
 
     public CSVExportFileWriter(CSVExportRequestArgument requestArgument)
     {
       this.requestArgument = requestArgument;
+      awsBucketName = DIContext.Obtain<IConfigurationStore>().GetValueString(awsBucketNameKey);
+      if (string.IsNullOrEmpty(awsBucketName))
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            $"Environment variable is missing: {awsBucketNameKey}"));
+      }
     }
 
 
@@ -41,8 +55,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
 
       // copy zip to S3
-      var s3FullPath = $"{requestArgument.ProjectID.ToString()}/Exports/{uniqueFileName}{ZIP_extension}";
-      var fileLoadedOk = S3FileTransfer.WriteFile(zipFullPath, s3FullPath);
+      var s3FullPath = $"project/{requestArgument.ProjectID.ToString()}/TRexExport/{uniqueFileName}{ZIP_extension}";
+      var fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
       if (FileSystem.Exists(zipFullPath))
         FileSystem.Delete(zipFullPath);
       if (Directory.Exists(localPath))
@@ -75,8 +89,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         int fileNumber = 1;
         int startRowNumberInBlock = 0;
         for (; startRowNumberInBlock <= dataRows.Count 
-               /* && fileNumber < 5 */
-          ; fileNumber++, startRowNumberInBlock += RestrictedOutputRowCount)
+            ; fileNumber++, startRowNumberInBlock += RestrictedOutputRowCount)
         {
           // Write the header and n rows to a file
           targetFile = Path.Combine(localPath, requestArgument.FileName + $"({fileNumber})") + CSV_extension;

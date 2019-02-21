@@ -81,6 +81,28 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
+    /// Writes a file to S3 to a specific bucket
+    ///  AWS Transfer Utility will create the 'directory' if not already there
+    /// </summary>
+    /// <param name="localFullPath"></param>
+    /// <param name="s3FullPath"></param>
+    /// <param name="awsBucketName"></param>
+    public static bool WriteFileToBucket(string localFullPath, string s3FullPath, string awsBucketName)
+    {
+      try
+      {
+        var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
+        DIContext.Obtain<ITransferProxy>().UploadToBucket(fileStream, s3FullPath, awsBucketName);
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, $"Exception writing file to s3. bucket: {awsBucketName} :");
+        return false;
+      }
+      return true;
+    }
+
+    /// <summary>
     /// Writes a file to S3
     ///  AWS Transfer Utility will create the 'directory' if not already there
     /// </summary>
