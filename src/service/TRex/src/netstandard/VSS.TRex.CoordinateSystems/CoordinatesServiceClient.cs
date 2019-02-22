@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -213,5 +214,33 @@ namespace VSS.TRex.CoordinateSystems
 
       return csd.CoordinateSystem.Id;
     }
+
+    /// <summary>
+    /// Extracts a coordinate system defintion response object from a CSIB string.
+    /// </summary>
+    public async Task<CoordinateSystemResponse> ImportCSDFromCSIBAsync(string csib)
+    {
+      try
+      {
+        using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
+        {
+          var response = serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get).Result;
+          if (!response.IsSuccessStatusCode)
+          {
+            throw new Exception(response.ToString());
+          }
+
+          var json = await response.Content.ReadAsStringAsync();
+          return JsonConvert.DeserializeObject<CoordinateSystemResponse>(json);
+        }
+      }
+      catch (Exception exception)
+      {
+        log.LogError(exception, "Failed to import coordinate system definition from CSIB");
+      }
+
+      return new CoordinateSystemResponse();
+    }
+
   }
 }

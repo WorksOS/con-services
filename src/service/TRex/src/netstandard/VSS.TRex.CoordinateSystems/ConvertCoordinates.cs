@@ -225,5 +225,12 @@ namespace VSS.TRex.CoordinateSystems
     /// it into a coordinate system definition response object.
     /// </summary>
     public static CoordinateSystemResponse DCFileContentToCSD(string filePath, byte[] fileContent) => serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent).Result;
+
+    /// <summary>
+    /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
+    /// it into a coordinate system definition response object.
+    /// </summary>
+    public static CoordinateSystemResponse CSIBContentToCSD(string csib) => serviceClient.ImportCSDFromCSIBAsync(csib).Result;
+
   }
 }

@@ -44,6 +44,9 @@ namespace VSS.TRex.CoordinateSystems.Executors
             return false;
         }
 
+        if (!storageProxy.Commit())
+          return false;
+
         // Notify the  grid listeners that attributes of this sitemodel have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, projectID, CsibChanged: true);

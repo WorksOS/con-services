@@ -121,7 +121,7 @@ namespace VSS.TRex.SiteModels
       if (csib != null)
         return csib;
 
-      if (!IsTransient)
+      if (IsTransient)
       {
         csib = string.Empty;
         return csib;

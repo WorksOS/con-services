@@ -1,18 +1,14 @@
-﻿using System.Net;
-using System.Text;
+﻿using System;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.Requests;
-using VSS.TRex.CoordinateSystems.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -40,19 +36,19 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       if (request == null)
         ThrowRequestTypeCastException<CoordinateSystemFile>();
 
-      var siteModel = GetSiteModel(request.ProjectUid);
-
       var csd = ConvertCoordinates.DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));
 
+      var projectUid = request.ProjectUid ?? Guid.Empty;
+
       var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
 
       var addCoordSystemResponse = addCoordinateSystemRequest.Execute(new AddCoordinateSystemArgument()
       {
-        ProjectID = siteModel.ID,
+        ProjectID = projectUid,
         CSIB = csd.CoordinateSystem.Id
       });
 
@@ -60,7 +56,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         return ConvertResult(request.CSFileName, csd.CoordinateSystem);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        $"Failed to post Coordinate System definition data. Project UID: {siteModel.ID}"));
+        $"Failed to post Coordinate System definition data. Project UID: {projectUid}"));
     }
   }
 }
