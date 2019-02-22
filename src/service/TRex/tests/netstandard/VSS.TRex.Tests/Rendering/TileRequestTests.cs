@@ -1,19 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.Utilities;
-using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Arguments;
-using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
-using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Arguments;
@@ -47,7 +42,7 @@ namespace VSS.TRex.Tests.Rendering
       <SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
 
     private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
-      <IComputeFunc<CalculateDesignElevationPatchArgument, byte[]>, CalculateDesignElevationPatchArgument, byte[]>();
+      <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)
     {
@@ -62,32 +57,6 @@ namespace VSS.TRex.Tests.Rendering
         PixelsX = 256,
         PixelsY = 256
       };
-    }
-
-    private Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName)
-    {
-      var filePathAndName = Path.Combine(filePath, fileName);
-
-      TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-      var designLoadResult = ttm.LoadFromFile(filePathAndName, false);
-      designLoadResult.Should().Be(DesignLoadResult.Success);
-
-      BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
-      ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
-      ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
-
-      Guid designUid = Guid.NewGuid();
-      var existenceMaps = DIContext.Obtain<IExistenceMaps>();
-
-      // Create the design surface in the site model
-      var designSurface = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
-        new DesignDescriptor(designUid, filePath, fileName, 0), extents);
-      existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
-
-      // get the newly updated site model with the design reference included
-      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
-
-      return designUid;
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
@@ -111,7 +80,7 @@ namespace VSS.TRex.Tests.Rendering
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, cellX, cellY, cellPasses, 1, cellPasses.Length);
     }
 
-    private void CheckSimpleRenderTileReponse(TileRenderResponse response)
+    private void CheckSimpleRenderTileResponse(TileRenderResponse response)
     {
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -119,7 +88,7 @@ namespace VSS.TRex.Tests.Rendering
       ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
 
       // Convert the response into a bitmap
-      var bmp = System.Drawing.Bitmap.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData));
+      var bmp = System.Drawing.Image.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData));
       bmp.Should().NotBeNull();
       bmp.Height.Should().Be(256);
       bmp.Width.Should().Be(256);
@@ -177,7 +146,7 @@ namespace VSS.TRex.Tests.Rendering
       var request = new TileRenderRequest();
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
 
-      CheckSimpleRenderTileReponse(response);
+      CheckSimpleRenderTileResponse(response);
     }
 
     [Theory]
@@ -194,17 +163,16 @@ namespace VSS.TRex.Tests.Rendering
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "Rendering");
       var tagFiles = new[]
       {
-        Path.Combine(corePath, "TestTAGFile.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var request = new TileRenderRequest();
       var response = request.Execute(SimpleTileRequestArgument(siteModel, displayMode));
 
-      CheckSimpleRenderTileReponse(response);
+      CheckSimpleRenderTileResponse(response);
 
       //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
@@ -227,8 +195,7 @@ namespace VSS.TRex.Tests.Rendering
       // Create the site model containing a single cell and add the design to it for the cut/fill
       BuildModelForSingleCellTileRender(out var siteModel, 0.5f, cellX, cellY);
 
-      var designUid = AddDesignToSiteModel(ref siteModel, Path.Combine("TestData", "Rendering"), "bug36372.ttm");
-
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill);
 
@@ -238,13 +205,8 @@ namespace VSS.TRex.Tests.Rendering
       arg.Extents = siteModel.Grid.GetCellExtents(cellX, cellY);
       arg.Extents.Expand(1.0, 1.0);
 
-      // Place the design into the project temp folder prior to executing the render so the design profiler
-      // will not attempt to access the file from S3
-      var tempPath = FilePathHelper.EstablishLocalDesignFilepath(siteModel.ID.ToString());
-      File.Copy(Path.Combine("TestData", "Rendering", "bug36372.ttm"), Path.Combine(tempPath, "bug36372.ttm"));
-
       var response = request.Execute(arg);
-      CheckSimpleRenderTileReponse(response);
+      CheckSimpleRenderTileResponse(response);
 
       // File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }

@@ -1,12 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace VSS.TRex.Common.Utilities
 {
   public class FilePathHelper
   {
-    public static string EstablishLocalDesignFilepath(string projectUid)
+    public static string EstablishLocalDesignFilepath(Guid projectUid)
     {
-      var localPath = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, projectUid });
+      var localPath = Path.Combine(new[] { Path.GetTempPath(), projectUid.ToString() });
       if (!Directory.Exists(localPath))
       {
         Directory.CreateDirectory(localPath);
@@ -23,9 +24,9 @@ namespace VSS.TRex.Common.Utilities
     /// <param name="projectUid"></param>
     /// <param name="filePath"></param>
     /// <returns></returns>
-    public static string EstablishEmptyLocalExportFilepath(string projectUid, string filePath)
+    public static string EstablishEmptyLocalExportFilepath(Guid projectUid, string filePath)
     {
-      var localExportPath = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, projectUid, "Exports" });
+      var localExportPath = Path.Combine(new[] { Path.GetTempPath(), projectUid.ToString(), "Exports" });
       var localPath = Path.Combine(new[] { localExportPath, filePath });
       if (Directory.Exists(localPath))
         Directory.Delete(localPath, true);

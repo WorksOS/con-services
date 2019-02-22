@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <summary>
         /// The total number of cell passes present in this segment
         /// </summary>
-        int SegmentPassCount { get; set; }
+        uint SegmentPassCount { get; set; }
 
         /// <summary>
         /// The number of cell passes present in the cell within this sub grid segment identified by X and Y in 
@@ -108,7 +108,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="EndIndex"></param>
         /// <param name="AddedCount"></param>
         /// <param name="ModifiedCount"></param>
-        void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount);
+        void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out uint AddedCount, out uint ModifiedCount);
 
         /// <summary>
         /// Returns a full cell pass with all attributes from the cell passes within this segment for the cell identified by X and Y
@@ -126,7 +126,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="Y"></param>
         /// <param name="passNumber"></param>
         /// <returns></returns>
-        CellPass ExtractCellPass(uint X, uint Y, int passNumber);
+        CellPass ExtractCellPass(uint X, uint Y, uint passNumber);
 
         /// <summary>
         /// Returns a full mutable version of the cell passes contained within this segment for the cell identified by X and Y

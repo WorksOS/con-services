@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Interfaces;
@@ -33,11 +32,11 @@ namespace VSS.TRex.Designs.Executors
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      IDesignBase Design = Designs.Lock(arg.DesignUid, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
+      IDesignBase Design = Designs.Lock(arg.ReferenceDesignUID, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
 
       if (Design == null)
       {
-        Log.LogWarning($"Failed to read file for design {arg.DesignUid}");
+        Log.LogWarning($"Failed to read file for design {arg.ReferenceDesignUID}");
         calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
         return null;
       }
@@ -51,7 +50,7 @@ namespace VSS.TRex.Designs.Executors
       }
       finally
       {
-        Designs.UnLock(arg.DesignUid, Design);
+        Designs.UnLock(arg.ReferenceDesignUID, Design);
       }
     }
 
@@ -59,26 +58,18 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public List<XYZS> Execute(CalculateDesignProfileArgument args)
+    public List<XYZS> Execute(CalculateDesignProfileArgument args, out DesignProfilerRequestResult calcResult)
     {
-      try
-      {
-        // Perform the design profile calculation
-        var result = Calc(args, out DesignProfilerRequestResult CalcResult);
+      // Perform the design profile calculation
+      var result = Calc(args, out calcResult);
 
-        if (result == null)
-        {
-          Log.LogInformation($"Unable to calculate a design profiler result for {args}");
-          result = new List<XYZS>();
-        }
-
-        return result;
-      }
-      catch (Exception E)
+      if (result == null)
       {
-        Log.LogError(E, "Execute: Exception:");
-        return null;
+        Log.LogInformation($"Unable to calculate a design profiler result for {args}");
+        result = new List<XYZS>();
       }
+
+      return result;
     }
   }
 }

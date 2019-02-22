@@ -170,8 +170,8 @@ namespace VSS.TRex.Cells
         public void Integrate(CellPass[] sourcePasses,
                               uint startIndex,
                               uint endIndex,
-                              out int addedCount,
-                              out int modifiedCount)
+                              out uint addedCount,
+                              out uint modifiedCount)
         {
             addedCount = 0;
             modifiedCount = 0;
@@ -186,8 +186,8 @@ namespace VSS.TRex.Cells
             uint SourceIndex = startIndex;
             int IntegratedIndex = 0;
 
-            int OriginalPassCount = (int)PassCount;
-            int IntegratedPassCount = (int)(OriginalPassCount + (endIndex - startIndex + 1));
+            uint OriginalPassCount = PassCount;
+            uint IntegratedPassCount = OriginalPassCount + (endIndex - startIndex + 1);
 
             // Set the length to be the combined. While this may be more than needed if
             // there are passes in source that have identical times to the passes in
@@ -195,7 +195,7 @@ namespace VSS.TRex.Cells
             // where the actual number of passes are less than the total that are initially set here
             // will be cleaned up when the sub grid next exits the cache, or is integrated with
             // another aggregated sub grid from TAG file processing
-            Array.Resize(ref IntegratedPasses, IntegratedPassCount);
+            Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
 
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
@@ -249,7 +249,7 @@ namespace VSS.TRex.Cells
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             if (IntegratedPasses.Length > IntegratedPassCount)
             {
-                Array.Resize(ref IntegratedPasses, IntegratedPassCount);
+                Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
             }
             else
             {

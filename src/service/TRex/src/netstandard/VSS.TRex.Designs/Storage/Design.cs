@@ -231,7 +231,7 @@ namespace VSS.TRex.Designs.Storage
       errorCode = DesignProfilerRequestResult.OK;
       designHeights = null;
 
-      designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
+      var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
         ReferenceDesignUID = DesignDescriptor.DesignID,
@@ -240,6 +240,9 @@ namespace VSS.TRex.Designs.Storage
         // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
         ProjectID = siteModelID
       });
+
+      designHeights = response.Heights;
+      errorCode = response.CalcResult;
     }
 
     /// <summary>

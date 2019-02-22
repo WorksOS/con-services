@@ -43,7 +43,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       // local path and zip fileName include a unique ID to avoid overwriting someone else file
       // write file/s to a local, unique, directory
       var uniqueFileName = requestArgument.FileName + "__" + requestArgument.TRexNodeID;
-      var localExportPath = FilePathHelper.EstablishEmptyLocalExportFilepath(requestArgument.ProjectID.ToString(), uniqueFileName);
+      var localExportPath = FilePathHelper.EstablishEmptyLocalExportFilepath(requestArgument.ProjectID, uniqueFileName);
       var localPath = Path.Combine(new[] { localExportPath, uniqueFileName });
       PersistLocally(dataRows, localPath);
 

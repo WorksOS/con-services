@@ -199,10 +199,10 @@ namespace VSS.TRex.Tests.Cells
             c2.AddPass(cp2);
 
             // Test integration of later cell pass to list with earlier cell pass resulting in 1 added and 0 modified
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out uint addedCount, out uint modifiedCount);
 
-            Assert.Equal(1, addedCount);
-            Assert.Equal(0, modifiedCount);
+            Assert.Equal((uint)1, addedCount);
+            Assert.Equal((uint)0, modifiedCount);
 
             Assert.True(c2.PassCount == 1 && c2.Passes[0].Equals(cp2), "Integration unexpectedly modified source cell");
             Assert.True(c1.PassCount == 2 && c1.Passes[0].Equals(cp1) && c1.Passes[1].Equals(cp2),
@@ -225,16 +225,16 @@ namespace VSS.TRex.Tests.Cells
             c2.AddPass(cp1);
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 0 modified (as identical cell passes are not a modification)
-            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out int addedCount, out int modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out uint addedCount, out uint modifiedCount);
 
-            Assert.Equal(0, addedCount);
-            Assert.Equal(0, modifiedCount);
+            Assert.Equal((uint)0, addedCount);
+            Assert.Equal((uint)0, modifiedCount);
 
             Assert.True(c2.PassCount == 1 && c2.Passes[0].Equals(cp1), "Integration unexpectedly modified source cell");
             Assert.True(c1.PassCount == 1 && c1.Passes[0].Equals(cp1),
                           "Result of integration two cells with the same single passes does not contain a single pass of the expected content");
 
-            // Modify the cell pass in cell 2 to have a different machime ID, but same remaining state to determing if the modification count is set
+            // Modify the cell pass in cell 2 to have a different machine ID, but same remaining state to determine if the modification count is set
 
             //c2.Passes[0].MachineID = 10000;
             c2.Passes[0].InternalSiteModelMachineIndex = 10000;
@@ -242,8 +242,8 @@ namespace VSS.TRex.Tests.Cells
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 1 modified (as identical cell passes are not a modification)
             c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
 
-            Assert.Equal(0, addedCount);
-            Assert.Equal(1, modifiedCount);
+            Assert.Equal((uint)0, addedCount);
+            Assert.Equal((uint)1, modifiedCount);
 
             Assert.Equal((uint)1, c1.PassCount);
         }

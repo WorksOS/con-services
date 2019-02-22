@@ -80,7 +80,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         // load core file from s3 to local
-        var localPath = FilePathHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
+        var localPath = FilePathHelper.EstablishLocalDesignFilepath(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName });
         TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
@@ -127,8 +127,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required
-        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
-        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
+        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
 
         log.LogInformation($"#Out# UpdateTTMDesignExecutor. Processed update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
