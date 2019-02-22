@@ -9,13 +9,13 @@ namespace VSS.TRex.Exports.CSV.GridFabric
   /// </summary>
   public class CSVExportUserPreferences : IFromToBinary
   {
-    public string DateSeparator { get; set; }
-    public string TimeSeparator { get; set; }
-    public string ThousandsSeparator { get; set; }
-    public string DecimalSeparator { get; set; }
-    public UnitsTypeEnum Units { get; set; }
-    public TemperatureUnitEnum TemperatureUnits { get; set; }
-    public double ProjectTimeZoneOffset { get; set; }
+    public string DateSeparator { get; private set; }
+    public string TimeSeparator { get; private set; }
+    public string ThousandsSeparator { get; private set; }
+    public string DecimalSeparator { get; private set; }
+    public UnitsTypeEnum Units { get; private set; }
+    public TemperatureUnitEnum TemperatureUnits { get; private set; }
+    public double ProjectTimeZoneOffset { get; private set; }
 
     public const string DefaultDateSeparator = "/";
     public const string DefaultTimeSeparator = ":";
@@ -24,7 +24,13 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public const UnitsTypeEnum DefaultUnits = UnitsTypeEnum.Metric;
     public const TemperatureUnitEnum DefaultTemperatureUnits = TemperatureUnitEnum.Celsius;
 
+
     public CSVExportUserPreferences()
+    {
+      Clear();
+    }
+
+    private void Clear()
     {
       DateSeparator = DefaultDateSeparator;
       TimeSeparator = DefaultTimeSeparator;
@@ -33,29 +39,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       Units = DefaultUnits;
       TemperatureUnits = DefaultTemperatureUnits;
       ProjectTimeZoneOffset = 0;
-    }
-
-
-    public CSVExportUserPreferences CreatePreferences(
-      string dateSeparator,
-      string timeSeparator,
-      string thousandsSeparator,
-      string decimalSeparator,
-      UnitsTypeEnum units,
-      TemperatureUnitEnum temperatureUnits,
-      double projectTimeZoneOffset
-    )
-    {
-      return new CSVExportUserPreferences()
-      {
-        DateSeparator = dateSeparator,
-        TimeSeparator = timeSeparator,
-        ThousandsSeparator = thousandsSeparator,
-        DecimalSeparator = decimalSeparator,
-        Units = units,
-        TemperatureUnits = temperatureUnits,
-        ProjectTimeZoneOffset = projectTimeZoneOffset
-      };
     }
 
     public void ToBinary(IBinaryRawWriter writer)
@@ -78,22 +61,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       Units = (UnitsTypeEnum)reader.ReadInt();
       TemperatureUnits = (TemperatureUnitEnum)reader.ReadInt();
       ProjectTimeZoneOffset = reader.ReadDouble();
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ DateSeparator.GetHashCode();
-        hashCode = (hashCode * 397) ^ TimeSeparator.GetHashCode();
-        hashCode = (hashCode * 397) ^ ThousandsSeparator.GetHashCode();
-        hashCode = (hashCode * 397) ^ DecimalSeparator.GetHashCode();
-        hashCode = (hashCode * 397) ^ Units.GetHashCode();
-        hashCode = (hashCode * 397) ^ TemperatureUnits.GetHashCode();
-        hashCode = (hashCode * 397) ^ ProjectTimeZoneOffset.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

@@ -16,7 +16,7 @@ namespace VSS.AWS.TransferProxy
   {
     private readonly string awsAccessKey;
     private readonly string awsSecretKey;
-    private string awsBucketName;
+    private readonly string awsBucketName;
     private readonly TimeSpan awsLinkExpiry;
 
     private const int MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL = 7;

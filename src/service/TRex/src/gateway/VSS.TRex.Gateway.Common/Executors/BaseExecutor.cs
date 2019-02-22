@@ -235,6 +235,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.ExportCoordConversionError);
       ContractExecutionStates.DynamicAddwithOffset("No Production data was found",
         (int)RequestErrorStatus.ExportNoDataFound);
+      ContractExecutionStates.DynamicAddwithOffset("Exceeded the row count limit for export",
+        (int)RequestErrorStatus.ExportExceededRowLimit);
       ContractExecutionStates.DynamicAddwithOffset("Unable to load zip file to s3",
         (int)RequestErrorStatus.ExportUnableToLoadFileToS3);
       ContractExecutionStates.DynamicAddwithOffset(

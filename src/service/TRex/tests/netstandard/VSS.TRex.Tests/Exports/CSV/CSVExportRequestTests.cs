@@ -93,7 +93,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       "Invalid project UID.")]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "somefilename",
       CoordType.LatLon, OutputTypes.VedaAllPasses, false, false,
-      "Invalid output type for passCount export")]
+      "Invalid output type for pass count export")]
     public void PassCountExportRequest_UnSuccessful(
       Guid projectUid, FilterResult filter, string fileName,
       CoordType coordType, OutputTypes outputType, bool restrictOutputSize, bool rawDataAsDBase,

@@ -46,7 +46,7 @@ namespace VSS.TRex.Common.CellPasses
 
     public static DateTime NullTime = DateTime.MinValue;
 
-    /// <summary>r
+    /// <summary>
     /// Null GPSMode value
     /// </summary>
     public const GPSMode NullGPSMode = GPSMode.NoGPS;

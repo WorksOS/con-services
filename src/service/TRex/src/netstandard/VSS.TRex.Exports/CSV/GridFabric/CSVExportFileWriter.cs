@@ -38,7 +38,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       }
     }
 
-
     public string PersistResult(List<string> dataRows)
     {
       // local path and zip fileName include a unique ID to avoid overwriting someone else file
@@ -55,7 +54,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
 
       // copy zip to S3
-      var s3FullPath = $"project/{requestArgument.ProjectID.ToString()}/TRexExport/{uniqueFileName}{ZIP_extension}";
+      var s3FullPath = $"project/{requestArgument.ProjectID}/TRexExport/{uniqueFileName}{ZIP_extension}";
       var fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
       if (FileSystem.Exists(zipFullPath))
         FileSystem.Delete(zipFullPath);

@@ -76,21 +76,5 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
       EndEasting = reader.ReadDouble();
       Azimuth = reader.ReadDouble();
     }
-   
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ GridInterval.GetHashCode();
-        hashCode = (hashCode * 397) ^ GridReportOption.GetHashCode();
-        hashCode = (hashCode * 397) ^ StartNorthing.GetHashCode();
-        hashCode = (hashCode * 397) ^ StartEasting.GetHashCode();
-        hashCode = (hashCode * 397) ^ EndNorthing.GetHashCode();
-        hashCode = (hashCode * 397) ^ EndEasting.GetHashCode();
-        hashCode = (hashCode * 397) ^ Azimuth.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

@@ -12,7 +12,7 @@ using VSS.TRex.DI;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
-  public class CSVExportFileWriterTests
+  public class CSVExportFileWriterTests : IDisposable
   {
     [Fact]
     public void Persist_Successful()
@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var projectUid = Guid.NewGuid();
 
       var csvExportUserPreference = new CSVExportUserPreferences();
-      var requestArgument = new CSVExportRequestArgument
+      var requestArgument = CSVExportRequestArgument.Create
       (
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         Productivity3D.Models.Enums.CoordType.Northeast, Productivity3D.Models.Enums.OutputTypes.PassCountLastPass,
@@ -42,7 +42,12 @@ namespace VSS.TRex.Tests.Exports.CSV
       var s3FullPath = csvExportFileWriter.PersistResult(dataRows);
 
       s3FullPath.Should().NotBeNull();
-      s3FullPath.Should().Be($"project/{requestArgument.ProjectID.ToString()}/TRexExport/{requestArgument.FileName}__{requestArgument.TRexNodeID}.zip");
+      s3FullPath.Should().Be($"project/{requestArgument.ProjectID}/TRexExport/{requestArgument.FileName}__{requestArgument.TRexNodeID}.zip");
+    }
+
+    public void Dispose()
+    {
+      DIBuilder.Eject();
     }
   }
 }

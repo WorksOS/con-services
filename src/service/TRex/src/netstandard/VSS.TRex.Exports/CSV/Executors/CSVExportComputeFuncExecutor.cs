@@ -9,6 +9,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.RequestStatistics;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.CSV.Executors
@@ -73,10 +74,11 @@ namespace VSS.TRex.Exports.CSV.Executors
         processor.Task.RequestDescriptor = requestDescriptor;
         processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
         processor.Task.GridDataType = gridDataType;
-
-        ((CSVExportTask) processor.Task).requestArgument = _CSVExportRequestArgument;
-        ((CSVExportTask) processor.Task).CsvExportFormatter = new CSVExportFormatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, _CSVExportRequestArgument.RawDataAsDBase);
-
+        
+        ((CSVExportTask) processor.Task).subGridExportProcessor = new CSVExportSubGridProcessor(
+          _CSVExportRequestArgument, 
+          new CSVExportFormatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, _CSVExportRequestArgument.RawDataAsDBase));
+     
         if (!processor.Build())
         {
           Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
@@ -98,7 +100,10 @@ namespace VSS.TRex.Exports.CSV.Executors
 
           if (!string.IsNullOrEmpty(s3FullPath))
           {
-            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
+            if (((CSVExportTask)processor.Task).subGridExportProcessor.RecordCountLimitReached())
+              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportExceededRowLimit;
+            else
+              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
             CSVExportRequestResponse.fileName = s3FullPath;
           }
           else

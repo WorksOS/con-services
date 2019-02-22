@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.MasterData.Models.Models;
 using VSS.TRex.Filters;
 using Xunit;
 using VSS.TRex.Tests.Analytics.Common;
@@ -16,7 +15,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
     [Fact]
     public void Test_CSVExportRequestArgument_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<CSVExportRequestArgument>("Empty CSVExportRequestArgument not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClass<CSVExportRequestArgument>("Empty CSVExportRequestArgument not same after round trip serialization");
     }
 
     [Fact]
@@ -24,13 +23,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
     {
       var request = new CSVExportRequestArgument() { };
 
-      SimpleBinarizableInstanceTester.TestClass(request, "Empty CSVExportRequestArgument not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClass(request, "Empty CSVExportRequestArgument not same after round trip serialization");
     }
 
     [Fact]
     public void Test_CSVExportRequestArgument_WithContent()
     {
-      var request = new CSVExportRequestArgument
+      var request = CSVExportRequestArgument.Create
       (
         Guid.NewGuid(),
         new FilterSet(new CombinedFilter()),
@@ -46,7 +45,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
         }, false, false
       );
 
-      SimpleBinarizableInstanceTester.TestClass(request, "Empty CSVExportRequestArgument not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClass(request, "Empty CSVExportRequestArgument not same after round trip serialization");
     }
   }
 }

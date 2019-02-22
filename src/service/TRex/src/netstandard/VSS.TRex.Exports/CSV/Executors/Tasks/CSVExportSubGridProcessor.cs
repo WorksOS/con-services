@@ -5,11 +5,13 @@ using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -25,9 +27,14 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   {
     private static ILogger log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
 
-    private readonly ISiteModel siteModel;
+    private readonly int maxExportRows;
+    private int totalRowCountSoFar;
+
+    public bool RecordCountLimitReached() { return totalRowCountSoFar >= maxExportRows;}
+
     private readonly CSVExportRequestArgument requestArgument;
     private readonly CSVExportFormatter CsvExportFormatter;
+    private readonly ISiteModel siteModel;
 
     private XYZ[] LLHCoords = null;
     private DateTime runningLastPassTime = DateTime.MinValue;
@@ -73,11 +80,12 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private ushort runningLastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
     private string lastPassValidTemperatureString;
 
-    public CSVExportSubGridProcessor(ISiteModel siteModel, CSVExportRequestArgument requestArgument, CSVExportFormatter csvExportFormatter)
+    public CSVExportSubGridProcessor(CSVExportRequestArgument requestArgument, CSVExportFormatter csvExportFormatter)
     {
-      this.siteModel = siteModel;
+      maxExportRows = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_EXPORT_ROWS", Consts.DEFAULT_MAX_EXPORT_ROWS);
       this.requestArgument = requestArgument;
-      this.CsvExportFormatter = csvExportFormatter;
+      CsvExportFormatter = csvExportFormatter;
+      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
       cellPassTimeString = coordString = heightString = lastDesignNameString = lastMachineNameString =
         machineSpeedString = gpsAccuracyToleranceString = targetPassCountString = lastPassValidCCVString = 
         lastTargetCCVString = lastPassValidMDPString = lastTargetMDPString = lastValidRMVString = 
@@ -88,6 +96,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public List<string> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
     {
       var rows = new List<string>();
+      if (RecordCountLimitReached())
+        return rows;
+
       int runningIndexLLHCoords = 0;
       if (requestArgument.CoordType == CoordType.LatLon)
         LLHCoords = SetupLLPositions(siteModel.CSIB(), lastPassSubGrid);
@@ -96,13 +107,16 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
+        if (RecordCountLimitReached())
+          return;
+
         var cell = lastPassSubGrid.Cells[x, y];
         if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
           return;
 
         rows.Add(FormatADataRow(cell, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
         runningIndexLLHCoords++;
-
+        totalRowCountSoFar++;
       });
 
       return rows;
@@ -111,6 +125,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public List<string> ProcessSubGrid(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
     {
       var rows = new List<string>();
+      if (RecordCountLimitReached())
+        return rows;
+
       int runningIndexLLHCoords = 0;
       int halfPassCount = 0;
       if (requestArgument.CoordType == CoordType.LatLon)
@@ -120,9 +137,15 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
+        if (RecordCountLimitReached())
+          return;
+
         var cell = allPassesSubGrid.Cells[x, y];
         foreach (var cellPass in cell.CellPasses)
         {
+          if (RecordCountLimitReached())
+            break;
+
           // we only include the 2nd part of a half pass
           if (cellPass.HalfPass)
           {
@@ -133,6 +156,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           }
 
           rows.Add(FormatADataRow(cellPass, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
+          totalRowCountSoFar++;
         }
         runningIndexLLHCoords++;
       });
@@ -167,7 +191,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       }
       resultString.Append($"{heightString},");
 
-      resultString.Append($"{cell.PassCount.ToString()},");
+      resultString.Append($"{cell.PassCount},");
 
       var lastPassValidRadioLatencyString = CsvExportFormatter.FormatRadioLatency(cell.LastPassValidRadioLatency);
       resultString.Append($"{lastPassValidRadioLatencyString},");
@@ -337,9 +361,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private string FormatCoordinate(double northing, double easting, int runningIndexLLHCoords)
     {
       if (requestArgument.CoordType == CoordType.Northeast)
-        return string.Format($"{CsvExportFormatter.FormatCellPos(northing)},{CsvExportFormatter.FormatCellPos(easting)}");
+        return $"{CsvExportFormatter.FormatCellPos(northing)},{CsvExportFormatter.FormatCellPos(easting)}";
 
-      return string.Format($"{CsvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{CsvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}");
+      return $"{CsvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{CsvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}";
     }
 
     private string FormatDesignNameID(int designNameId)
@@ -348,8 +372,8 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       {
         var design = siteModel.SiteModelMachineDesigns.Locate(designNameId);
         if (design != null)
-          return string.Format($"{design.Name}");
-        return string.Format($"{designNameId}");
+          return $"{design.Name}";
+        return $"{designNameId}";
       }
 
       return  CsvExportFormatter.nullString;
@@ -361,10 +385,10 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       {
         var machine = requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
         if (machine != null)
-          return string.Format($"\"{machine.Name}\"");
+          return $"\"{machine.Name}\"";
       }
 
-      return string.Format($"\"Unknown\"");
+      return $"\"Unknown\"";
     }
   }
 }

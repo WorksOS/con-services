@@ -13,23 +13,23 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   public class CSVExportFormatter
   {
     // these are public for unit tests
-    public CSVExportUserPreferences userPreference;
-    public OutputTypes outputType;
-    public readonly bool isRawDataAsDBaseRequired = false;
+    public readonly CSVExportUserPreferences userPreference;
+    public readonly OutputTypes outputType;
+    public readonly bool isRawDataAsDBaseRequired;
     public readonly string nullString;
 
     private const int defaultDecimalPlaces = 3;
     public const double USFeetToMeters = 0.304800609601;
     public const double ImperialFeetToMeters = 0.3048;
 
-    public double distanceConversionFactor { get; set; }
+    public double distanceConversionFactor { get; private set; }
     public string speedUnitString = "mph";
     public double speedConversionFactor;
     public string distanceUnitString = "FT";
     public string exportDateTimeFormatString;
 
-    private NumberFormatInfo nfiDefault;
-    private NumberFormatInfo nfiUser;
+    private readonly NumberFormatInfo nfiDefault;
+    private readonly NumberFormatInfo nfiUser;
 
 
     public CSVExportFormatter(CSVExportUserPreferences userPreference, OutputTypes outputType, bool isRawDataAsDBaseRequired = false)
@@ -85,15 +85,15 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       if (outputType == OutputTypes.VedaAllPasses || outputType == OutputTypes.VedaFinalPass)
       {
-        exportDateTimeFormatString = string.Format("yyyy-MMM-dd HH:mm:ss.fff");
+        exportDateTimeFormatString = "yyyy-MMM-dd HH:mm:ss.fff";
       }
       else if (!string.IsNullOrEmpty(userPreference.DateSeparator) && !string.IsNullOrEmpty(userPreference.TimeSeparator) && !string.IsNullOrEmpty(userPreference.DecimalSeparator))
       {
-        exportDateTimeFormatString = string.Format($"yyyy{userPreference.DateSeparator}MMM{userPreference.DateSeparator}dd HH{userPreference.TimeSeparator}mm{userPreference.TimeSeparator}ss{userPreference.DecimalSeparator}fff");
+        exportDateTimeFormatString = $"yyyy{userPreference.DateSeparator}MMM{userPreference.DateSeparator}dd HH{userPreference.TimeSeparator}mm{userPreference.TimeSeparator}ss{userPreference.DecimalSeparator}fff";
       }
       else
       {
-        exportDateTimeFormatString = string.Format("yyyy-MMM-dd HH:mm:ss.fff");
+        exportDateTimeFormatString = "yyyy-MMM-dd HH:mm:ss.fff";
       }
     }
 
@@ -176,14 +176,14 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       else
         toleranceString = FormatDisplayDistance(gpsTolerance / 1000.000, false);
 
-      return string.Format($"{FormatGPSAccuracyValue(gpsAccuracy)} ({toleranceString})");
+      return $"{FormatGPSAccuracyValue(gpsAccuracy)} ({toleranceString})";
     }
 
     public string FormatPassCount(int value)
     {
       if (value == CellPassConsts.NullPassCountValue)
         return nullString;
-      return string.Format($"{value.ToString()}");
+      return $"{value.ToString()}";
     }
 
     // As CCV/MDP/RMV are reported in 10th, no units...
@@ -191,7 +191,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     {
       if (value == CellPassConsts.NullCCV)
         return nullString;
-      return string.Format($"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1)}"); 
+      return $"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1)}"; 
     }
 
     public string FormatFrequency(ushort value)

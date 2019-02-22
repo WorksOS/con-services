@@ -24,7 +24,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     public CSVExportRequestResponse Invoke(CSVExportRequestArgument arg)
     {
-      Log.LogInformation("In CSVExportComputeFunc.Invoke()");
+      Log.LogInformation($"In {nameof(Invoke)}");
 
       try
       {

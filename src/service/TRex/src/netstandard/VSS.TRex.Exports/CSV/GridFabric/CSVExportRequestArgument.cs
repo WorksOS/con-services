@@ -47,19 +47,22 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       RawDataAsDBase = false;
     }
 
-    public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
+    public static CSVExportRequestArgument Create(Guid siteModelUid, IFilterSet filters,
       string fileName, CoordType coordType, OutputTypes outputType, CSVExportUserPreferences userPreferences,
       List<CSVExportMappedMachine> mappedMachines, bool restrictOutputSize, bool rawDataAsDBase)
     {
-      ProjectID = siteModelUid;
-      Filters = filters;
-      FileName = fileName;
-      CoordType = coordType; 
-      OutputType  = outputType;
-      UserPreferences = userPreferences;
-      MappedMachines = mappedMachines;
-      RestrictOutputSize = restrictOutputSize;
-      RawDataAsDBase = rawDataAsDBase;
+      return new CSVExportRequestArgument()
+      {
+        ProjectID = siteModelUid,
+        Filters = filters,
+        FileName = fileName,
+        CoordType = coordType,
+        OutputType = outputType,
+        UserPreferences = userPreferences,
+        MappedMachines = mappedMachines,
+        RestrictOutputSize = restrictOutputSize,
+        RawDataAsDBase = rawDataAsDBase
+      };
     }
 
     /// <summary>
@@ -110,22 +113,6 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       }
       RestrictOutputSize = reader.ReadBoolean();
       RawDataAsDBase = reader.ReadBoolean();
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ FileName.GetHashCode();
-        hashCode = (hashCode * 397) ^ CoordType.GetHashCode();
-        hashCode = (hashCode * 397) ^ OutputType.GetHashCode();
-        hashCode = (hashCode * 397) ^ UserPreferences.GetHashCode();
-        hashCode = (hashCode * 397) ^ MappedMachines.GetHashCode();
-        hashCode = (hashCode * 397) ^ RestrictOutputSize.GetHashCode();
-        hashCode = (hashCode * 397) ^ RawDataAsDBase.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

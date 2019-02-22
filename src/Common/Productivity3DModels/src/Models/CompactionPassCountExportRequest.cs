@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.Models.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Invalid output type for passCount export"));
+            "Invalid output type for pass count export"));
       }
 
     }

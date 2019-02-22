@@ -88,6 +88,7 @@
         ExportInvalidCSIB,
         ExportCoordConversionError,
         ExportNoDataFound,
+        ExportExceededRowLimit,
         ExportUnableToLoadFileToS3,
         InvalidArgument,
         FailedToConfigureInternalPipeline,
