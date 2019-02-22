@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void ToFromBinary_CombinedFilter_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<CombinedFilter>("Empty CombinedFilter not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClassEx<CombinedFilter>("Empty CombinedFilter not same after round trip serialisation");
     }
   }
 }

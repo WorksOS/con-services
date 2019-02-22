@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilterModel>();
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilterModel>();
     }
   }
 }

@@ -24,7 +24,7 @@ node ('jenkinsslave-pod') {
 				name: 'IMAGE_TAG'
 			),
 			string(
-				defaultValue: null,
+				defaultValue: "None",
 				description: 'target framework for build and unit tests',
 				name: 'TARGET'
 			),
@@ -99,6 +99,11 @@ node ('jenkinsslave-pod') {
 			currentBuild.result = 'ABORTED'
 			error("Build stopping, unknown service path")
 		}
+	}
+	
+	if ({$targetFramework} == "None") 
+	{ 
+	  $targetFramework = "" 
 	}
 	
     stage('Build Solution') {

@@ -3,7 +3,7 @@ using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Palettes
 {
-    // A basic palette class that defines a sdet of transitions covering a value range being rendered
+    // A basic palette class that defines a set of transitions covering a value range being rendered
     public class PaletteBase : IPlanViewPalette
     {
         public PaletteBase(Transition[] transitions)
@@ -11,7 +11,7 @@ namespace VSS.TRex.Rendering.Palettes
             PaletteTransitions = transitions;
         }
 
-        // The set of transition value/colour pairs defining a renderable value range
+        // The set of transition value/colour pairs defining a render-able value range
         public Transition[] PaletteTransitions { get; set;}
 
         /// <summary>

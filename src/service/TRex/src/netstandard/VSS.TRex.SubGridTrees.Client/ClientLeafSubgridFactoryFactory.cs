@@ -33,6 +33,9 @@ namespace VSS.TRex.SubGridTrees.Client
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CellPasses, () => new ClientCellProfileAllPassesLeafSubgrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CCA, () => new ClientCCALeafSubGrid());
 
+      // Cut fill client sub grids piggy back on the standard height leaf sub grid
+      clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CutFill, () => new ClientHeightLeafSubGrid());
+
       return clientSubGridFactory;
     }
   }

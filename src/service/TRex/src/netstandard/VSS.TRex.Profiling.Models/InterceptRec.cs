@@ -56,7 +56,7 @@ namespace VSS.TRex.Profiling.Models
       /// <returns></returns>
       public bool Equals(InterceptRec other)
       {
-        return  Equals(other.OriginX, other.OriginY, other.ProfileItemIndex);
+        return Equals(other.OriginX, other.OriginY, other.ProfileItemIndex);
       }
 
       /// <summary>
