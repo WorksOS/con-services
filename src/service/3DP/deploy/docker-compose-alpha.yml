@@ -5,6 +5,8 @@ services:
     restart: always
     deploy:
       replicas: 1
+    logging:
+      driver: json-file      
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=10.97.96.150
