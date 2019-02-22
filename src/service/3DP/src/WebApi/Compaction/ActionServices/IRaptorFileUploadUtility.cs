@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     /// Uploads a file to the Raptor host.
     /// </summary>
     (bool success, string message) UploadFile(FileDescriptor fileDescriptor, byte[] fileData);
-
+    
     /// <summary>
     /// Asynchrously and safely deletes a file.
     /// </summary>

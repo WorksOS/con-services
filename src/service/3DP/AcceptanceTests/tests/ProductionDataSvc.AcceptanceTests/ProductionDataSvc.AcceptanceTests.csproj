@@ -19,6 +19,22 @@
   <ItemGroup>
     <None Remove="Log.txt" />
     <None Remove="packages.config" />
+    <None Remove="TestData\LineworkFiles\0_boundaries.dxf" />
+    <None Remove="TestData\LineworkFiles\Dimensions_2012.dc" />
+    <None Remove="TestData\LineworkFiles\Dimensions_2012.dxf" />
+    <None Remove="TestData\LineworkFiles\Null.dc" />
+    <None Remove="TestData\LineworkFiles\Null.dxf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestData\LineworkFiles\0_boundaries.dxf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestData\LineworkFiles\Null.dc" />
+    <EmbeddedResource Include="TestData\LineworkFiles\Null.dxf" />
+    <EmbeddedResource Include="TestData\LineworkFiles\Dimensions_2012.dc" />
+    <EmbeddedResource Include="TestData\LineworkFiles\Dimensions_2012.dxf" />
   </ItemGroup>
 
   <ItemGroup>

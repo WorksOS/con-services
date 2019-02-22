@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client", "..\..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client", "..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj", "{47BE399F-7989-4DDA-8454-A2333A280B1A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{47AA7334-F5E3-41B9-9D2E-8BD3E53790FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +150,10 @@ Global
 		{47BE399F-7989-4DDA-8454-A2333A280B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47BE399F-7989-4DDA-8454-A2333A280B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47BE399F-7989-4DDA-8454-A2333A280B1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47AA7334-F5E3-41B9-9D2E-8BD3E53790FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47AA7334-F5E3-41B9-9D2E-8BD3E53790FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47AA7334-F5E3-41B9-9D2E-8BD3E53790FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47AA7334-F5E3-41B9-9D2E-8BD3E53790FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
