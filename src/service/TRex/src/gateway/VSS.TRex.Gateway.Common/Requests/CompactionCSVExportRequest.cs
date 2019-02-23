@@ -28,7 +28,7 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
     }
 
-    public static CompactionExportRequest CreateRequest(
+    public CompactionCSVExportRequest(
       Guid projectUid,
       FilterResult filter,
       string fileName,
@@ -40,18 +40,15 @@ namespace VSS.TRex.Gateway.Common.Requests
       bool rawDataAsDBase
     )
     {
-      return new CompactionCSVExportRequest
-      {
-        ProjectUid = projectUid,
-        Filter = filter,
-        FileName = fileName,
-        CoordType = coordType,
-        OutputType = coordinateOutputType,
-        MachineNames = machineNames,
-        UserPreferences = userPreferences,
-        RestrictOutputSize = restrictOutputSize,
-        RawDataAsDBase = rawDataAsDBase
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      FileName = fileName;
+      CoordType = coordType;
+      OutputType = coordinateOutputType;
+      MachineNames = machineNames;
+      UserPreferences = userPreferences;
+      RestrictOutputSize = restrictOutputSize;
+      RawDataAsDBase = rawDataAsDBase;
     }
   }
 }

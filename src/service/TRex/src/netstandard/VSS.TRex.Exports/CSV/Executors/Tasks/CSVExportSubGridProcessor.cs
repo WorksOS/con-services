@@ -33,7 +33,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public bool RecordCountLimitReached() { return totalRowCountSoFar >= maxExportRows;}
 
     private readonly CSVExportRequestArgument requestArgument;
-    private readonly CSVExportFormatter CsvExportFormatter;
+    private readonly CSVExportFormatter csvExportFormatter;
     private readonly ISiteModel siteModel;
 
     private XYZ[] LLHCoords = null;
@@ -80,11 +80,11 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private ushort runningLastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
     private string lastPassValidTemperatureString;
 
-    public CSVExportSubGridProcessor(CSVExportRequestArgument requestArgument, CSVExportFormatter csvExportFormatter)
+    public CSVExportSubGridProcessor(CSVExportRequestArgument requestArgument)
     {
       maxExportRows = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_EXPORT_ROWS", Consts.DEFAULT_MAX_EXPORT_ROWS);
       this.requestArgument = requestArgument;
-      CsvExportFormatter = csvExportFormatter;
+      csvExportFormatter = new CSVExportFormatter(requestArgument.UserPreferences, requestArgument.OutputType, requestArgument.RawDataAsDBase);
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
       cellPassTimeString = coordString = heightString = lastDesignNameString = lastMachineNameString =
         machineSpeedString = gpsAccuracyToleranceString = targetPassCountString = lastPassValidCCVString = 
@@ -169,7 +169,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var resultString = new StringBuilder();
       if (!cell.LastPassTime.Equals(runningLastPassTime))
       {
-        cellPassTimeString = CsvExportFormatter.FormatCellPassTime(cell.LastPassTime);
+        cellPassTimeString = csvExportFormatter.FormatCellPassTime(cell.LastPassTime);
         runningLastPassTime = cell.LastPassTime;
       }
       resultString.Append($"{cellPassTimeString},");
@@ -186,14 +186,14 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       if (!cell.Height.Equals(runningHeight))
       {
-        heightString = CsvExportFormatter.FormatElevation(cell.Height);
+        heightString = csvExportFormatter.FormatElevation(cell.Height);
         runningHeight = cell.Height;
       }
       resultString.Append($"{heightString},");
 
       resultString.Append($"{cell.PassCount},");
 
-      var lastPassValidRadioLatencyString = CsvExportFormatter.FormatRadioLatency(cell.LastPassValidRadioLatency);
+      var lastPassValidRadioLatencyString = csvExportFormatter.FormatRadioLatency(cell.LastPassValidRadioLatency);
       resultString.Append($"{lastPassValidRadioLatencyString},");
 
       if (!cell.EventDesignNameID.Equals(runningDesignNameID))
@@ -212,21 +212,21 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       if (!cell.MachineSpeed.Equals(runningMachineSpeed))
       {
-        machineSpeedString = CsvExportFormatter.FormatSpeed(cell.MachineSpeed);
+        machineSpeedString = csvExportFormatter.FormatSpeed(cell.MachineSpeed);
         runningMachineSpeed = cell.MachineSpeed;
       }
       resultString.Append($"{machineSpeedString},");
 
       if (!cell.LastPassValidGPSMode.Equals(runningGPSMode))
       {
-        gpsModeString = CsvExportFormatter.FormatGPSMode(cell.LastPassValidGPSMode);
+        gpsModeString = csvExportFormatter.FormatGPSMode(cell.LastPassValidGPSMode);
         runningGPSMode = cell.LastPassValidGPSMode;
       }
       resultString.Append($"{gpsModeString},");
 
       if (!(cell.GPSAccuracy.Equals(runningGPSAccuracy) && cell.GPSTolerance.Equals(runningGPSTolerance)))
       {
-        gpsAccuracyToleranceString = CsvExportFormatter.FormatGPSAccuracy(cell.GPSAccuracy, cell.GPSTolerance);
+        gpsAccuracyToleranceString = csvExportFormatter.FormatGPSAccuracy(cell.GPSAccuracy, cell.GPSTolerance);
         runningGPSAccuracy = cell.GPSAccuracy;
         runningGPSTolerance = cell.GPSTolerance;
       }
@@ -234,7 +234,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       if (!cell.TargetPassCount.Equals(runningTargetPassCount))
       {
-        targetPassCountString = CsvExportFormatter.FormatPassCount(cell.TargetPassCount);
+        targetPassCountString = csvExportFormatter.FormatPassCount(cell.TargetPassCount);
         runningTargetPassCount = cell.TargetPassCount;
       }
       resultString.Append($"{targetPassCountString},");
@@ -245,77 +245,77 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       if (!cell.LastPassValidCCV.Equals(runningLastPassValidCCV))
       {
-        lastPassValidCCVString = CsvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidCCV);
+        lastPassValidCCVString = csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidCCV);
         runningLastPassValidCCV = cell.LastPassValidCCV;
       }
       resultString.Append($"{lastPassValidCCVString},");
 
       if (!cell.TargetCCV.Equals(runningTargetCCV))
       {
-        lastTargetCCVString = CsvExportFormatter.FormatCompactionCCVTypes(cell.TargetCCV);
+        lastTargetCCVString = csvExportFormatter.FormatCompactionCCVTypes(cell.TargetCCV);
         runningTargetCCV = cell.TargetCCV;
       }
       resultString.Append($"{lastTargetCCVString},");
 
       if (!cell.LastPassValidMDP.Equals(runningLastPassValidMDP))
       {
-        lastPassValidMDPString = CsvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidMDP);
+        lastPassValidMDPString = csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidMDP);
         runningLastPassValidMDP = cell.LastPassValidMDP;
       }
       resultString.Append($"{lastPassValidMDPString},");
 
       if (!cell.TargetMDP.Equals(runningTargetMDP))
       {
-        lastTargetMDPString = CsvExportFormatter.FormatCompactionCCVTypes(cell.TargetMDP);
+        lastTargetMDPString = csvExportFormatter.FormatCompactionCCVTypes(cell.TargetMDP);
         runningTargetMDP = cell.TargetMDP;
       }
       resultString.Append($"{lastTargetMDPString},");
 
       if (!cell.LastPassValidRMV.Equals(runningValidRMV))
       {
-        lastValidRMVString = CsvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidRMV);
+        lastValidRMVString = csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidRMV);
         runningValidRMV = cell.LastPassValidRMV;
       }
       resultString.Append($"{lastValidRMVString},");
 
       if (!cell.LastPassValidFreq.Equals(runningValidFreq))
       {
-        lastValidFreqString = CsvExportFormatter.FormatFrequency(cell.LastPassValidFreq);
+        lastValidFreqString = csvExportFormatter.FormatFrequency(cell.LastPassValidFreq);
         runningValidFreq = cell.LastPassValidFreq;
       }
       resultString.Append($"{lastValidFreqString},");
 
       if (!cell.LastPassValidAmp.Equals(runningValidAmp))
       {
-        lastValidAmpString = CsvExportFormatter.FormatAmplitude(cell.LastPassValidAmp);
+        lastValidAmpString = csvExportFormatter.FormatAmplitude(cell.LastPassValidAmp);
         runningValidAmp = cell.LastPassValidAmp;
       }
       resultString.Append($"{lastValidAmpString},");
 
       if (!cell.TargetThickness.Equals(runningTargetThickness))
       {
-        lastTargetThicknessString = CsvExportFormatter.FormatTargetThickness(cell.TargetThickness);
+        lastTargetThicknessString = csvExportFormatter.FormatTargetThickness(cell.TargetThickness);
         runningTargetThickness = cell.TargetThickness;
       }
       resultString.Append($"{lastTargetThicknessString},");
 
       if (!cell.EventMachineGear.Equals(runningEventMachineGear))
       {
-        lastEventMachineGearString = CsvExportFormatter.FormatMachineGearValue(cell.EventMachineGear);
+        lastEventMachineGearString = csvExportFormatter.FormatMachineGearValue(cell.EventMachineGear);
         runningEventMachineGear = cell.EventMachineGear;
       }
       resultString.Append($"{lastEventMachineGearString},");
 
       if (!cell.EventVibrationState.Equals(runningEventVibrationState))
       {
-        lastEventVibrationStateString = CsvExportFormatter.FormatEventVibrationState(cell.EventVibrationState);
+        lastEventVibrationStateString = csvExportFormatter.FormatEventVibrationState(cell.EventVibrationState);
         runningEventVibrationState = cell.EventVibrationState;
       }
       resultString.Append($"{lastEventVibrationStateString},");
 
       if (!cell.LastPassValidTemperature.Equals(runningLastPassValidTemperature))
       {
-        lastPassValidTemperatureString = CsvExportFormatter.FormatLastPassValidTemperature(cell.LastPassValidTemperature);
+        lastPassValidTemperatureString = csvExportFormatter.FormatLastPassValidTemperature(cell.LastPassValidTemperature);
         runningLastPassValidTemperature = cell.LastPassValidTemperature;
       }
       resultString.Append($"{lastPassValidTemperatureString}"); // no training comma
@@ -361,9 +361,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private string FormatCoordinate(double northing, double easting, int runningIndexLLHCoords)
     {
       if (requestArgument.CoordType == CoordType.Northeast)
-        return $"{CsvExportFormatter.FormatCellPos(northing)},{CsvExportFormatter.FormatCellPos(easting)}";
+        return $"{csvExportFormatter.FormatCellPos(northing)},{csvExportFormatter.FormatCellPos(easting)}";
 
-      return $"{CsvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{CsvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}";
+      return $"{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}";
     }
 
     private string FormatDesignNameID(int designNameId)
@@ -376,7 +376,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         return $"{designNameId}";
       }
 
-      return  CsvExportFormatter.nullString;
+      return  csvExportFormatter.nullString;
     }
 
     private string FormatMachineName(int machineId)

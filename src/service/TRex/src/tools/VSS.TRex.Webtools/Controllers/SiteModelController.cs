@@ -61,7 +61,7 @@ namespace VSS.TRex.Webtools.Controllers
 
       var startEndDates = siteModel.GetDateRange();
 
-      return new JsonResult(new Tuple<DateTime, DateTime>(startEndDates.Item1, startEndDates.Item2));
+      return new JsonResult(new Tuple<DateTime, DateTime>(startEndDates.startUtc, startEndDates.endUtc));
     }
 
     /// <summary>

@@ -755,7 +755,7 @@ namespace VSS.TRex.SiteModels
     /// if no production data exists, then min = MaxValue and max and MinValue
     /// </summary>
     /// <returns></returns>
-    public Tuple<DateTime, DateTime> GetDateRange()
+    public (DateTime startUtc, DateTime endUtc) GetDateRange()
     {
       DateTime minDate = DateTime.MaxValue;
       DateTime maxDate = DateTime.MinValue;
@@ -780,7 +780,7 @@ namespace VSS.TRex.SiteModels
         }
       }
 
-      return new Tuple<DateTime, DateTime>(minDate, maxDate);
+      return (minDate, maxDate);
     }
 
     /// <summary>

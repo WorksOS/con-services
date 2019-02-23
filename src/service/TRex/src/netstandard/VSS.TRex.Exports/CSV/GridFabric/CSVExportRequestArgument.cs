@@ -47,22 +47,19 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       RawDataAsDBase = false;
     }
 
-    public static CSVExportRequestArgument Create(Guid siteModelUid, IFilterSet filters,
+    public CSVExportRequestArgument(Guid siteModelUid, IFilterSet filters,
       string fileName, CoordType coordType, OutputTypes outputType, CSVExportUserPreferences userPreferences,
       List<CSVExportMappedMachine> mappedMachines, bool restrictOutputSize, bool rawDataAsDBase)
     {
-      return new CSVExportRequestArgument()
-      {
-        ProjectID = siteModelUid,
-        Filters = filters,
-        FileName = fileName,
-        CoordType = coordType,
-        OutputType = outputType,
-        UserPreferences = userPreferences,
-        MappedMachines = mappedMachines,
-        RestrictOutputSize = restrictOutputSize,
-        RawDataAsDBase = rawDataAsDBase
-      };
+      ProjectID = siteModelUid;
+      Filters = filters;
+      FileName = fileName;
+      CoordType = coordType;
+      OutputType = outputType;
+      UserPreferences = userPreferences;
+      MappedMachines = mappedMachines;
+      RestrictOutputSize = restrictOutputSize;
+      RawDataAsDBase = rawDataAsDBase;
     }
 
     /// <summary>

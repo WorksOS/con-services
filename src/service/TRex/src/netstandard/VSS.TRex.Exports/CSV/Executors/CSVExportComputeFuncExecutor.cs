@@ -74,11 +74,9 @@ namespace VSS.TRex.Exports.CSV.Executors
         processor.Task.RequestDescriptor = requestDescriptor;
         processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
         processor.Task.GridDataType = gridDataType;
-        
-        ((CSVExportTask) processor.Task).subGridExportProcessor = new CSVExportSubGridProcessor(
-          _CSVExportRequestArgument, 
-          new CSVExportFormatter(_CSVExportRequestArgument.UserPreferences, _CSVExportRequestArgument.OutputType, _CSVExportRequestArgument.RawDataAsDBase));
-     
+
+        ((CSVExportTask) processor.Task).subGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
+
         if (!processor.Build())
         {
           Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
@@ -98,19 +96,17 @@ namespace VSS.TRex.Exports.CSV.Executors
           var csvExportFileWriter = new CSVExportFileWriter(_CSVExportRequestArgument);
           var s3FullPath = csvExportFileWriter.PersistResult(((CSVExportTask) processor.Task).dataRows);
 
-          if (!string.IsNullOrEmpty(s3FullPath))
-          {
-            if (((CSVExportTask)processor.Task).subGridExportProcessor.RecordCountLimitReached())
-              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportExceededRowLimit;
-            else
-              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
-            CSVExportRequestResponse.fileName = s3FullPath;
-          }
-          else
+          if (string.IsNullOrEmpty(s3FullPath))
           {
             Log.LogError($"CSV export failed to write to S3. project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}.");
             return false;
           }
+
+          if (((CSVExportTask) processor.Task).subGridExportProcessor.RecordCountLimitReached())
+            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportExceededRowLimit;
+          else
+            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
+          CSVExportRequestResponse.fileName = s3FullPath;
         }
         else
         {

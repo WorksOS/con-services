@@ -7,7 +7,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
-using FileSystem = System.IO.File;
 
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -46,14 +45,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetVetaExport)}: {Request.QueryString}");
 
       compactionVetaExportRequest.Validate();
-      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(compactionVetaExportRequest);
-
-      var result = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(compactionCSVExportRequest) as CompactionExportResult);
-
-      return result;
+      return Execute(compactionVetaExportRequest);
     }
 
     /// <summary>
@@ -69,14 +61,18 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetPassCountExport)}: {Request.QueryString}");
 
       compactionPassCountExportRequest.Validate();
-      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(compactionPassCountExportRequest);
+      return Execute(compactionPassCountExportRequest);
+    }
 
-      var result = WithServiceExceptionTryExecute(() =>
+    private CompactionExportResult Execute<T>(T request)
+    {
+      var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+
+      return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<CSVExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(compactionCSVExportRequest) as CompactionExportResult);
 
-      return result;
     }
   }
 }

@@ -9,18 +9,18 @@ namespace VSS.TRex.Gateway.Common.Helpers
 {
   public class CSVExportHelper
   {
-    public static Tuple<DateTime, DateTime> GetDateRange(ISiteModel siteModel, FilterResult filter)
+    public static (DateTime startUtc, DateTime endUtc) GetDateRange(ISiteModel siteModel, FilterResult filter)
     {
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
         var startEndDate = siteModel.GetDateRange();
 
-        var startUtc = filter?.StartUtc ?? startEndDate.Item1;
-        var endUtc = filter?.EndUtc ?? startEndDate.Item2;
-        return new Tuple<DateTime, DateTime>(startUtc, endUtc);
+        var startUtc = filter?.StartUtc ?? startEndDate.startUtc;
+        var endUtc = filter?.EndUtc ?? startEndDate.endUtc;
+        return (startUtc, endUtc);
       }
 
-      return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
+      return (filter.StartUtc.Value, filter.EndUtc.Value);
     }
     
     public static List<CSVExportMappedMachine> MapRequestedMachines(ISiteModel siteModel, string[] machineNames)

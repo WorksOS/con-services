@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         { DateSeparator = dateSeparator, TimeSeparator = timeSeparator,
           DecimalSeparator = decimalSeparator, ThousandsSeparator = thousandsSeparator, Units = (int)units };
      
-      var request = CompactionVetaExportRequest.CreateRequest(
+      var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreference, machineNames);
       request.Validate();
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         Units = (int)units
       };
 
-      var request = CompactionPassCountExportRequest.CreateRequest(
+      var request = new CompactionPassCountExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreference, restrictOutputSize, rawDataAsDBase);
       request.Validate();
@@ -149,7 +149,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         Units = (int)units
       };
 
-      var request = CompactionCSVExportRequest.CreateRequest(
+      var request = new CompactionCSVExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreference, machineNames, restrictOutputSize, rawDataAsDBase);
       request.Validate();
@@ -179,7 +179,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       string[] machineNames = new string[] {"first machineName"};
       var userPreferences = new UserPreferences();
 
-      var request = CompactionVetaExportRequest.CreateRequest(
+      var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreferences, machineNames);
       request.Validate();
@@ -206,8 +206,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       siteModel.MachinesTargetValues[0].StartEndRecordedDataEvents.PutValueAtDate(endTime, ProductionEventType.EndEvent);
 
       var startEndDate = CSVExportHelper.GetDateRange(siteModel, null);
-      startEndDate.Item1.Should().Be(startTime);
-      startEndDate.Item2.Should().Be(endTime);
+      startEndDate.startUtc.Should().Be(startTime);
+      startEndDate.endUtc.Should().Be(endTime);
     }
 
     [Fact]
@@ -229,8 +229,8 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var startEndDate = CSVExportHelper.GetDateRange(siteModel, filterResult);
       filter.StartUtc.Should().NotBeNull();
-      startEndDate.Item1.Should().Be(filter.StartUtc.Value);
-      startEndDate.Item2.Should().Be(endTime);
+      startEndDate.startUtc.Should().Be(filter.StartUtc.Value);
+      startEndDate.endUtc.Should().Be(endTime);
     }
 
     [Fact]
@@ -257,8 +257,8 @@ namespace VSS.TRex.Tests.Exports.CSV
 
 
       var startEndDate = CSVExportHelper.GetDateRange(siteModel, null);
-      startEndDate.Item1.Should().Be(startTime2);
-      startEndDate.Item2.Should().Be(endTime1);
+      startEndDate.startUtc.Should().Be(startTime2);
+      startEndDate.endUtc.Should().Be(endTime1);
     }
 
     [Fact]
@@ -268,8 +268,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       IMachine machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, 1, false, Guid.NewGuid());
       
       var startEndDate = CSVExportHelper.GetDateRange(siteModel, null);
-      startEndDate.Item1.Should().Be(DateTime.MaxValue);
-      startEndDate.Item2.Should().Be(DateTime.MinValue);
+      startEndDate.startUtc.Should().Be(DateTime.MaxValue);
+      startEndDate.endUtc.Should().Be(DateTime.MinValue);
     }
 
     [Fact]

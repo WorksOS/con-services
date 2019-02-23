@@ -259,7 +259,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Place the design into the project temp folder prior to executing the render so the design profiler
       // will not attempt to access the file from S3
-      var tempPath = FilePathHelper.EstablishLocalDesignFilepath(siteModel.ID);
+      var tempPath = FilePathHelper.GetTempFolderForProject(siteModel.ID);
       var srcFileName = Path.Combine(filePath, fileName);
       var destFileName = Path.Combine(tempPath, fileName);
 

@@ -12,9 +12,6 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class CompactionVetaExportRequest : CompactionExportRequest
   {
-
-    private const int MACHINENAME_LENGTH_MINIMUM = 5;
-
     /// <summary>
     /// Type of Coordinates required in result e.g. NE
     /// </summary>
@@ -46,7 +43,7 @@ namespace VSS.Productivity3D.Models.Models
     {
     }
 
-    public static CompactionVetaExportRequest CreateRequest(
+    public CompactionVetaExportRequest(
       Guid projectUid,
       FilterResult filter,
       string fileName,
@@ -56,16 +53,13 @@ namespace VSS.Productivity3D.Models.Models
       string[] machineNames
     )
     {
-      return new CompactionVetaExportRequest
-      {
-        ProjectUid = projectUid,
-        Filter = filter,
-        FileName = fileName,
-        CoordType = coordType,
-        OutputType = coordinateOutputType,
-        UserPreferences = userPreferences,
-        MachineNames = machineNames,
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      FileName = fileName;
+      CoordType = coordType;
+      OutputType = coordinateOutputType;
+      UserPreferences = userPreferences;
+      MachineNames = machineNames;
     }
 
     /// <summary>
@@ -94,7 +88,7 @@ namespace VSS.Productivity3D.Models.Models
       {
         foreach (var machineName in MachineNames)
         {
-          if (string.IsNullOrEmpty(machineName) || machineName.Length < MACHINENAME_LENGTH_MINIMUM)
+          if (string.IsNullOrEmpty(machineName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

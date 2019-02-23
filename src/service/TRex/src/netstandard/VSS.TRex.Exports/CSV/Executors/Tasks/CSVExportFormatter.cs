@@ -170,7 +170,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (gpsTolerance == CellPassConsts.NullGPSTolerance)
         return nullString;
 
-      var toleranceString = nullString;
+      string toleranceString;
       if (isRawDataAsDBaseRequired)
         toleranceString = FormatDisplayDistanceUnitless(gpsTolerance / 1000.000, false);
       else
@@ -179,12 +179,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       return $"{FormatGPSAccuracyValue(gpsAccuracy)} ({toleranceString})";
     }
 
-    public string FormatPassCount(int value)
-    {
-      if (value == CellPassConsts.NullPassCountValue)
-        return nullString;
-      return $"{value.ToString()}";
-    }
+    public string FormatPassCount(int value) => value == CellPassConsts.NullPassCountValue ? nullString : $"{value.ToString()}";
 
     // As CCV/MDP/RMV are reported in 10th, no units...
     public string FormatCompactionCCVTypes(short value)

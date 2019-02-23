@@ -114,7 +114,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// if no production data exists, then min = MaxValue and max and MinValue
     /// </summary>
     /// <returns></returns>
-    Tuple<DateTime, DateTime> GetDateRange();
+    (DateTime startUtc, DateTime endUtc) GetDateRange();
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }

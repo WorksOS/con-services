@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Models.Models
     {
     }
 
-    public static CompactionPassCountExportRequest CreateRequest(
+    public CompactionPassCountExportRequest(
       Guid projectUid,
       FilterResult filter,
       string fileName,
@@ -58,17 +58,14 @@ namespace VSS.Productivity3D.Models.Models
       bool rawDataAsDBase
     )
     {
-      return new CompactionPassCountExportRequest
-      {
-        ProjectUid = projectUid,
-        Filter = filter,
-        FileName = fileName,
-        CoordType = coordType,
-        OutputType = outputType,
-        UserPreferences = userPreferences,
-        RestrictOutputSize = restrictOutputSize,
-        RawDataAsDBase = rawDataAsDBase
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      FileName = fileName;
+      CoordType = coordType;
+      OutputType = outputType;
+      UserPreferences = userPreferences;
+      RestrictOutputSize = restrictOutputSize;
+      RawDataAsDBase = rawDataAsDBase;
     }
 
 

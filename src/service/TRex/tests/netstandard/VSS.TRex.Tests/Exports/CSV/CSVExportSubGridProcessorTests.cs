@@ -26,9 +26,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void PassCountLastPassNotDbase()
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
@@ -39,9 +39,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void PassCountLastPassNotDbaseWithLatLong()
     {
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.PassCountLastPass, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       string row0 = @"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
@@ -52,9 +52,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void PassCountLastPassDBase()
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, true,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       string row0 = @"2019/Jan/23 00:22:10.033,808525.440,376730.880,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
@@ -65,9 +65,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void VetaFinalPass()
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
@@ -79,9 +79,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void PassCountAllPassesNotDBase()
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       rows.Count.Should().Be(384);
       string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
@@ -97,7 +97,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void RowCountLimit_AllPasses(int maxExportRows)
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
       // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DIBuilder.Continue()
         .Add(x => x.AddSingleton(moqConfiguration.Object))
         .Complete();
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       if (maxExportRows <= 384) // 384 is the number of rows we could potentially get from this set
@@ -129,7 +129,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void RowCountLimit_AllPassesMultiSubGrids(int maxExportRows)
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
       //the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
@@ -139,7 +139,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DIBuilder.Continue()
         .Add(x => x.AddSingleton(moqConfiguration.Object))
         .Complete();
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = new List<string>();
       for (int index = 0; index < requestedSubGrids.Count; index++)
@@ -167,7 +167,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void RowCountLimit_FinalPass(int maxExportRows)
     {
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
-        out CSVExportRequestArgument requestArgument, out CSVExportFormatter formatter);
+        out CSVExportRequestArgument requestArgument);
 
       // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
@@ -177,7 +177,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DIBuilder.Continue()
         .Add(x => x.AddSingleton(moqConfiguration.Object))
         .Complete();
-      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument, formatter);
+      var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       if (maxExportRows <= 226) // 226 is the number of rows we could potentially get from this set
@@ -192,18 +192,16 @@ namespace VSS.TRex.Tests.Exports.CSV
 
 
     private List<IClientLeafSubGrid> GetSubGrids(CoordType coordType, OutputTypes outputType, bool isRawDataAsDBaseRequired, 
-      out CSVExportRequestArgument requestArgument, out CSVExportFormatter csvExportFormatter)
+      out CSVExportRequestArgument requestArgument)
     {
       var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive"), "*.tag").ToArray();
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var _);
       var csvExportUserPreference = new CSVExportUserPreferences();
-      requestArgument = CSVExportRequestArgument.Create
+      requestArgument = new CSVExportRequestArgument
       (
         siteModel.ID, new FilterSet(new CombinedFilter()), "the filename",
-        coordType, outputType, csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
+        coordType, outputType, csvExportUserPreference, new List<CSVExportMappedMachine>(), false, isRawDataAsDBaseRequired
       );
-
-      csvExportFormatter = new CSVExportFormatter(csvExportUserPreference, outputType, isRawDataAsDBaseRequired);
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var gridDataType = outputType == OutputTypes.PassCountLastPass || outputType == OutputTypes.VedaFinalPass

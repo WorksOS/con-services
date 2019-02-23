@@ -5,7 +5,7 @@ namespace VSS.TRex.Common.Utilities
 {
   public class FilePathHelper
   {
-    public static string EstablishLocalDesignFilepath(Guid projectUid)
+    public static string GetTempFolderForProject(Guid projectUid)
     {
       var localPath = Path.Combine(new[] { Path.GetTempPath(), projectUid.ToString() });
       if (!Directory.Exists(localPath))
@@ -24,7 +24,7 @@ namespace VSS.TRex.Common.Utilities
     /// <param name="projectUid"></param>
     /// <param name="filePath"></param>
     /// <returns></returns>
-    public static string EstablishEmptyLocalExportFilepath(Guid projectUid, string filePath)
+    public static string GetTempFolderForExport(Guid projectUid, string filePath)
     {
       var localExportPath = Path.Combine(new[] { Path.GetTempPath(), projectUid.ToString(), "Exports" });
       var localPath = Path.Combine(new[] { localExportPath, filePath });

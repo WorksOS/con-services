@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CoordType coordType, OutputTypes outputType, string[] machineNames)
     {
       var userPreferences = new UserPreferences();
-      var request = CompactionVetaExportRequest.CreateRequest(
+      var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreferences, machineNames);
       request.Validate();
@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CoordType coordType, OutputTypes outputType, string[] machineNames)
     {
       var userPreferences = new UserPreferences();
-      var request = CompactionVetaExportRequest.CreateRequest(
+      var request = new  CompactionVetaExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreferences, machineNames);
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       CoordType.LatLon, OutputTypes.PassCountAllPasses, null,
       "Invalid output type for veta export")]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "somefilename",
-      CoordType.LatLon, OutputTypes.VedaAllPasses, new string[] { "shrt" },
+      CoordType.LatLon, OutputTypes.VedaAllPasses, new string[] { "" },
       "Invalid machineNames")]
     public void VetaExportRequest_UnSuccessful(
       Guid projectUid, FilterResult filter, string fileName,
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       string errorMessage)
     {
       var userPreferences = new UserPreferences();
-      var request = CompactionVetaExportRequest.CreateRequest(
+      var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreferences, machineNames);
 
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.Exports.CSV
      CoordType coordType, OutputTypes outputType, bool restrictOutputSize, bool rawDataAsDBase)
     {
       var userPreferences = new UserPreferences();
-      var request = CompactionPassCountExportRequest.CreateRequest(
+      var request = new CompactionPassCountExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
       request.Validate();
@@ -100,7 +100,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       string errorMessage)
     {
       var userPreferences = new UserPreferences();
-      var request = CompactionPassCountExportRequest.CreateRequest(
+      var request = new CompactionPassCountExportRequest(
         projectUid, filter, fileName,
         coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
 

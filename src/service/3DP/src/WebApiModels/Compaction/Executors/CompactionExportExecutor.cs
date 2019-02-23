@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           request?.ExportType == ExportTypes.VedaExport)
         {
           var compactionVetaExportRequest =
-            CompactionVetaExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.MachineNames);
+            new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.MachineNames);
 
           return trexCompactionDataProxy.SendVetaExportRequest(compactionVetaExportRequest, customHeaders).Result;
         }
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request?.ExportType == ExportTypes.PassCountExport)
           {
             var compactionPassCountExportRequest =
-              CompactionPassCountExportRequest.CreateRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
+              new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
 
             return trexCompactionDataProxy.SendPassCountExportRequest(compactionPassCountExportRequest, customHeaders).Result;
 #if !RAPTOR

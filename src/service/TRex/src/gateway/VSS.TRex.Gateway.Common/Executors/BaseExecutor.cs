@@ -19,7 +19,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   public abstract class BaseExecutor : RequestExecutorContainer
   {
     private const string ERROR_MESSAGE_PRODUCTION_DATA = "Failed to get/update data requested by {0}";
-    private const string ERROR_MESSAGE = "Failed to complete TRex webAPI request: {0}";
+    private const string ERROR_MESSAGE = "Failed to complete TRex request: {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
 
     protected BaseExecutor()

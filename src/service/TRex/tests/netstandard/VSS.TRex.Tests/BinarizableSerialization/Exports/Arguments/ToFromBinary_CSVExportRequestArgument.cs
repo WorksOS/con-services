@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
     [Fact]
     public void Test_CSVExportRequestArgument_WithContent()
     {
-      var request = CSVExportRequestArgument.Create
+      var request = new CSVExportRequestArgument
       (
         Guid.NewGuid(),
         new FilterSet(new CombinedFilter()),

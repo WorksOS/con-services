@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var projectUid = Guid.NewGuid();
 
       var csvExportUserPreference = new CSVExportUserPreferences();
-      var requestArgument = CSVExportRequestArgument.Create
+      var requestArgument = new CSVExportRequestArgument
       (
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         Productivity3D.Models.Enums.CoordType.Northeast, Productivity3D.Models.Enums.OutputTypes.PassCountLastPass,
