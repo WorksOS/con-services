@@ -1,24 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+#if RAPTOR
 using SVOICOptionsDecls;
 using SVOICProfileCell;
 using SVOICSummaryVolumesProfileCell;
 using SVOICVolumeCalculationsDecls;
+using VSS.Velociraptor.PDSInterface;
+#endif
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Velociraptor.PDSInterface;
 using SummaryVolumeProfileCell = VSS.Productivity3D.Models.ResultHandling.Profiling.SummaryVolumesProfileCell;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -60,7 +67,117 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// </summary>
     /// <param name="request">Profile request</param>
     /// <returns>Profile for each production data type except summary volumes</returns>
-    private CompactionProfileResult<CompactionProfileDataResult> ProcessProductionData(
+    private CompactionProfileResult<CompactionProfileDataResult> ProcessProductionData(CompactionProfileProductionDataRequest request)
+    {
+      CompactionProfileResult<CompactionProfileDataResult> totalResult;
+
+      var productionDataProfileResult =
+#if RAPTOR
+          UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
+#endif
+        ProcessProductionDataWithTRexGateway(request)
+#if RAPTOR
+            : ProcessProductionDataWithRaptor(request)
+#endif
+        ;
+
+      if (productionDataProfileResult != null)
+        totalResult = profileResultHelper.RearrangeProfileResult(productionDataProfileResult);
+      else
+      {
+        //For convenience return empty list rather than null for easier manipulation
+        totalResult = new CompactionProfileResult<CompactionProfileDataResult>
+        {
+          results = new List<CompactionProfileDataResult>()
+        };
+      }
+      return totalResult;
+    }
+
+#if RAPTOR
+    /// <summary>
+    /// Convert Raptor data to the data to return from the Web API
+    /// </summary>
+    /// <param name="ms">Memory stream of data from Raptor</param>
+    /// <param name="liftBuildSettings">Lift build settings from project settings used in the Raptor profile calculations</param>
+    /// <returns>The profile data</returns>
+    private CompactionProfileResult<CompactionProfileCell> ConvertProfileResult(MemoryStream ms, LiftBuildSettings liftBuildSettings)
+    {
+      log.LogDebug("Converting profile result");
+      
+      var pdsiProfile = new PDSProfile();
+      var packager = new TICProfileCellListPackager();
+      packager.CellList = new TICProfileCellList();
+
+      packager.ReadFromStream(ms);
+
+      ms.Close();
+
+      pdsiProfile.Assign(packager.CellList);
+
+      pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
+
+      var profileCells = pdsiProfile.cells.Select(c => new ProfileCellData(
+        c.station,
+        c.interceptLength,
+        c.firstPassHeight,
+        c.lastPassHeight,
+        c.lowestPassHeight,
+        c.highestPassHeight,
+        c.compositeFirstPassHeight,
+        c.compositeLastPassHeight,
+        c.compositeLowestPassHeight,
+        c.compositeHighestPassHeight,
+        c.designHeight,
+        c.CCV,
+        c.TargetCCV,
+        c.CCVElev,
+        c.PrevCCV,
+        c.PrevTargetCCV,
+        c.MDP,
+        c.TargetMDP,
+        c.MDPElev,
+        c.materialTemperature,
+        c.materialTemperatureWarnMin,
+        c.materialTemperatureWarnMax,
+        c.materialTemperatureElev,
+        c.topLayerThickness,
+        c.topLayerPassCount,
+        c.topLayerPassCountTargetRange.Min,
+        c.topLayerPassCountTargetRange.Max,
+        c.cellMinSpeed,
+        c.cellMaxSpeed
+      )).ToList();
+
+      return ProcessProductionDataProfileCells(profileCells, pdsiProfile.GridDistanceBetweenProfilePoints, liftBuildSettings);
+    }
+#endif
+
+    private CompactionProfileResult<CompactionProfileCell> ProcessProductionDataWithTRexGateway(CompactionProfileProductionDataRequest request)
+    {
+      if (request.IsAlignmentDesign)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+
+      var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
+        request.ProjectUid ?? Guid.Empty,
+        request.baseFilter,
+        request.volumeDesignDescriptor?.FileUid,
+        request.gridPoints != null,
+        request.gridPoints?.x1 ?? (request.wgs84Points?.lon1 ?? 0.0),
+        request.gridPoints?.x2 ?? (request.wgs84Points?.lon2 ?? 0.0),
+        request.gridPoints?.y1 ?? (request.wgs84Points?.lat1 ?? 0.0),
+        request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0),
+        request.returnAllPassesAndLayers
+      );
+
+      var trexResult = trexCompactionDataProxy.SendProductionDataProfileDataRequest(productionDataProfileDataRequest, customHeaders).Result;
+
+      return trexResult != null ? ConvertTRexProductioDataProfileResult(trexResult, request.liftBuildSettings) : null;
+    }
+
+#if RAPTOR
+    private CompactionProfileResult<CompactionProfileCell> ProcessProductionDataWithRaptor(
       CompactionProfileProductionDataRequest request)
     {
       MemoryStream memoryStream;
@@ -107,77 +224,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         memoryStream = raptorClient.GetProfile(args);
       }
 
-      if (memoryStream != null)
-      {
-        var profileResult = ConvertProfileResult(memoryStream, request.liftBuildSettings);
-        totalResult = profileResultHelper.RearrangeProfileResult(profileResult);
-      }
-      else
-      {
-        //For convenience return empty list rather than null for easier manipulation
-        totalResult = new CompactionProfileResult<CompactionProfileDataResult>
-        {
-          results = new List<CompactionProfileDataResult>()
-        };
-      }
-      return totalResult;
+      return memoryStream != null ? ConvertProfileResult(memoryStream, request.liftBuildSettings) : null;
     }
+#endif
 
     /// <summary>
-    /// Convert Raptor data to the data to return from the Web API
+    /// Convert TRex data to the data to return from the Web API
     /// </summary>
-    /// <param name="ms">Memory stream of data from Raptor</param>
-    /// <param name="liftBuildSettings">Lift build settings from project settings used in the Raptor profile calculations</param>
+    /// <param name="trexResult">Result data from TRex.</param>
+    /// <param name="calcType"></param>
     /// <returns>The profile data</returns>
-    private CompactionProfileResult<CompactionProfileCell> ConvertProfileResult(MemoryStream ms,
-      LiftBuildSettings liftBuildSettings)
+    private CompactionProfileResult<CompactionProfileCell> ConvertTRexProductioDataProfileResult(ProfileDataResult<ProfileCellData> trexResult, LiftBuildSettings liftBuildSettings)
     {
-      log.LogDebug("Converting profile result");
+      log.LogDebug("Converting production data profile TRex result");
 
+      return ProcessProductionDataProfileCells(trexResult.ProfileCells, trexResult.GridDistanceBetweenProfilePoints, liftBuildSettings);
+    }
+
+    private CompactionProfileResult<CompactionProfileCell> ProcessProductionDataProfileCells(List<ProfileCellData> profileCells, double gridDistanceBetweenProfilePoints, LiftBuildSettings liftBuildSettings)
+    {
       var profile = new CompactionProfileResult<CompactionProfileCell>();
-
-      var pdsiProfile = new PDSProfile();
-      var packager = new TICProfileCellListPackager();
-      packager.CellList = new TICProfileCellList();
-      packager.ReadFromStream(ms);
-      pdsiProfile.Assign(packager.CellList);
-
-      pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
-
       profile.results = new List<CompactionProfileCell>();
       ProfileCellData prevCell = null;
-
-      var profileCells = pdsiProfile.cells.Select(c => new ProfileCellData(
-        c.station,
-        c.interceptLength,
-        c.firstPassHeight,
-        c.lastPassHeight,
-        c.lowestPassHeight,
-        c.highestPassHeight,
-        c.compositeFirstPassHeight,
-        c.compositeLastPassHeight,
-        c.compositeLowestPassHeight,
-        c.compositeHighestPassHeight,
-        c.designHeight,
-        c.CCV,
-        c.TargetCCV,
-        c.CCVElev,
-        c.PrevCCV,
-        c.PrevTargetCCV,
-        c.MDP,
-        c.TargetMDP,
-        c.MDPElev,
-        c.materialTemperature,
-        c.materialTemperatureWarnMin,
-        c.materialTemperatureWarnMax,
-        c.materialTemperatureElev,
-        c.topLayerThickness,
-        c.topLayerPassCount,
-        c.topLayerPassCountTargetRange.Min,
-        c.topLayerPassCountTargetRange.Max,
-        c.cellMinSpeed,
-        c.cellMaxSpeed
-      )).ToList();
 
       foreach (var currCell in profileCells)
       {
@@ -213,16 +281,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         //Either have none or both speed values
         var noSpeedValue = currCell.CellMaxSpeed == VelociraptorConstants.NO_SPEED;
-        var speedMin = noSpeedValue ? float.NaN : (float) (currCell.CellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
-        var speedMax = noSpeedValue ? float.NaN : (float) (currCell.CellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var speedMin = noSpeedValue ? float.NaN : (float)(currCell.CellMinSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
+        var speedMax = noSpeedValue ? float.NaN : (float)(currCell.CellMaxSpeed / ConversionConstants.KM_HR_TO_CM_SEC);
 
         var cmvPercent = noCCVValue
           ? float.NaN
-          : (float) currCell.CCV / (float) currCell.TargetCCV * 100.0F;
+          : (float)currCell.CCV / (float)currCell.TargetCCV * 100.0F;
 
         var mdpPercent = noMDPValue
           ? float.NaN
-          : (float) currCell.MDP / (float) currCell.TargetMDP * 100.0F;
+          : (float)currCell.MDP / (float)currCell.TargetMDP * 100.0F;
 
         var firstPassHeight = currCell.FirstPassHeight == VelociraptorConstants.NULL_SINGLE
         ? float.NaN
@@ -253,7 +321,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ? float.NaN
           : (currCell.PrevCCV == VelociraptorConstants.NO_CCV
             ? 100.0f
-            : (float) (currCell.CCV - currCell.PrevCCV) / (float) currCell.PrevCCV * 100.0f);
+            : (float)(currCell.CCV - currCell.PrevCCV) / (float)currCell.PrevCCV * 100.0f);
 
         var passCountIndex = noPassCountValue || float.IsNaN(lastPassHeight)
           ? ValueTargetType.NoData
@@ -345,12 +413,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         profile.results.Add(lastCell);
       }
-      profile.results[profile.results.Count-1].cellType = ProfileCellType.MidPoint;
 
-
-      ms.Close();
-
-      profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
+      if (profile.results.Count > 0)
+        profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
+      
+      profile.gridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
 
       var sb = new StringBuilder();
       sb.Append($"After profile conversion: {profile.results.Count}");
@@ -361,7 +428,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       log.LogDebug(sb.ToString());
       return profile;
+
     }
+
 
     /// <summary>
     /// Representation of a profile cell edge at the start of a gap (no data)
@@ -404,6 +473,68 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <returns>Summary volumes profile</returns>
     private CompactionProfileDataResult ProcessSummaryVolumes(CompactionProfileProductionDataRequest request, CompactionProfileResult<CompactionProfileDataResult> totalResult)
     {
+      var volumesResult =
+#if RAPTOR
+      UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
+#endif
+          ProcessSummaryVolumesWithTRexGateway(request)
+#if RAPTOR          
+          : ProcessSummaryVolumesWithRaptor(request)
+#endif
+        ;
+
+      //If we have no other profile results apart from summary volumes, set the total grid distance
+      if (totalResult.results.Count == 0 && volumesResult != null)
+        totalResult.gridDistanceBetweenProfilePoints = volumesResult.gridDistanceBetweenProfilePoints;
+
+      //If we have other profile types but no summary volumes, add summary volumes with just slicer end points
+      if (volumesResult == null && totalResult.results.Count > 0)
+      {
+        var startSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
+        var endSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
+        endSlicer.station = totalResult.gridDistanceBetweenProfilePoints;
+        volumesResult =         
+            new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
+            {
+              gridDistanceBetweenProfilePoints = totalResult.gridDistanceBetweenProfilePoints,
+              results = new List<CompactionSummaryVolumesProfileCell>
+              {
+                startSlicer,
+                endSlicer
+              }
+            };
+      }
+      return profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType); 
+    }
+
+    private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithTRexGateway(CompactionProfileProductionDataRequest request)
+    {
+      if (request.IsAlignmentDesign)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+
+      var volumeCalcType = request.volumeCalcType ?? VolumeCalcType.None;
+
+      var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(
+        request.ProjectUid ?? Guid.Empty,
+        request.baseFilter,
+        request.topFilter,
+        request.volumeDesignDescriptor?.FileUid,
+        ConvertVolumeCalcType(volumeCalcType),
+        request.gridPoints != null,
+        request.gridPoints?.x1 ?? (request.wgs84Points?.lon1 ?? 0.0),
+        request.gridPoints?.x2 ?? (request.wgs84Points?.lon2 ?? 0.0),
+        request.gridPoints?.y1 ?? (request.wgs84Points?.lat1 ?? 0.0),
+        request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0)
+      );
+
+      var trexResult = trexCompactionDataProxy.SendSummaryVolumesProfileDataRequest(summaryVolumesProfileDataRequest, customHeaders).Result;
+
+      return trexResult != null ? ConvertTRexSummaryVolumesProfileResult(trexResult, volumeCalcType) : null;
+    }
+#if RAPTOR
+    private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithRaptor(CompactionProfileProductionDataRequest request)
+    {
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
@@ -413,10 +544,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out var startPt, out var endPt,
         out var positionsAreGrid);
 
-      CompactionProfileResult<CompactionSummaryVolumesProfileCell> volumesResult = null;
       if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
       {
-        var volCalcType = (TComputeICVolumesType) request.volumeCalcType.Value;
+        var volCalcType = (TComputeICVolumesType)request.volumeCalcType.Value;
         if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
@@ -457,57 +587,48 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               volumeDesignDescriptor);
           memoryStream = raptorClient.GetSummaryVolumesProfile(args);
         }
-        if (memoryStream != null)
-        {
-          volumesResult = ConvertSummaryVolumesProfileResult(memoryStream, request.volumeCalcType.Value);
-          //If we have no other profile results apart from summary volumes, set the total grid distance
-          if (totalResult.results.Count == 0 && volumesResult != null)
-          {
-            totalResult.gridDistanceBetweenProfilePoints = volumesResult.gridDistanceBetweenProfilePoints;
-          }
-        }
-      }
-      //If we have other profile types but no summary volumes, add summary volumes with just slicer end points
-      if (volumesResult == null && totalResult.results.Count > 0)
-      {
-        var startSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
-        var endSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
-        endSlicer.station = totalResult.gridDistanceBetweenProfilePoints;
-        volumesResult =         
-            new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
-            {
-              gridDistanceBetweenProfilePoints = totalResult.gridDistanceBetweenProfilePoints,
-              results = new List<CompactionSummaryVolumesProfileCell>
-              {
-                startSlicer,
-                endSlicer
-              }
-            };
-      }
-      return profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType); 
-    }
 
+        return memoryStream != null ? ConvertSummaryVolumesProfileResult(memoryStream, request.volumeCalcType.Value) : null;
+      }
+
+      return null;
+    }
+#endif
+
+    /// <summary>
+    /// Convert TRex data to the data to return from the Web API
+    /// </summary>
+    /// <param name="trexResult">Result data from TRex.</param>
+    /// <param name="calcType"></param>
+    /// <returns>The profile data</returns>
+    private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ConvertTRexSummaryVolumesProfileResult(ProfileDataResult<SummaryVolumeProfileCell> trexResult, VolumeCalcType calcType)
+    {
+      log.LogDebug("Converting summary volumes profile TRex result");
+
+      return ProcessSummaryVolumesProfileCells(trexResult.ProfileCells, trexResult.GridDistanceBetweenProfilePoints, calcType); ;
+    }
+#if RAPTOR
     /// <summary>
     /// Convert Raptor data to the data to return from the Web API
     /// </summary>
     /// <param name="ms">Memory stream of data from Raptor</param>
+    /// <param name="calcType">Volume calculation type.</param>
     /// <returns>The profile data</returns>
     private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ConvertSummaryVolumesProfileResult(MemoryStream ms, VolumeCalcType calcType)
     {
-      log.LogDebug("Converting summary volumes profile result");
-
-      var profile = new CompactionProfileResult<CompactionSummaryVolumesProfileCell>();
+      log.LogDebug("Converting summary volumes profile Raptor result");
 
       var pdsiProfile = new PDSSummaryVolumesProfile();
       var packager = new TICSummaryVolumesProfileCellListPackager();
       packager.CellList = new TICSummaryVolumesProfileCellList();
+
       packager.ReadFromStream(ms);
+
+      ms.Close();
+
       pdsiProfile.Assign(packager.CellList);
 
       pdsiProfile.GridDistanceBetweenProfilePoints = packager.GridDistanceBetweenProfilePoints;
-
-      profile.results = new List<CompactionSummaryVolumesProfileCell>();
-      SummaryVolumeProfileCell prevCell = null;
 
       var profileCells = pdsiProfile.Cells.Select(c => new SummaryVolumeProfileCell(
         c.station,
@@ -518,6 +639,42 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         c.lastCellPassElevation1,
         c.lastCellPassElevation2
       )).ToList();
+
+      return ProcessSummaryVolumesProfileCells(profileCells, pdsiProfile.GridDistanceBetweenProfilePoints, calcType);
+    }
+#endif
+
+    /// <summary>
+    /// Representation of a profile cell edge at the start of a gap (no data) for summary volumes
+    /// </summary>
+    private readonly CompactionSummaryVolumesProfileCell SumVolGapCell = new CompactionSummaryVolumesProfileCell
+    {
+      cellType = ProfileCellType.Gap,
+      station = 0, //Will be set for individual gap vertices
+      designHeight = float.NaN,
+      lastPassHeight1 = float.NaN,
+      lastPassHeight2 = float.NaN,
+      cutFill = float.NaN
+    };
+
+    private VolumesType ConvertVolumeCalcType(VolumeCalcType volumesType)
+    {
+      switch (volumesType)
+      {
+        case VolumeCalcType.None: return VolumesType.None;
+        case VolumeCalcType.GroundToGround: return VolumesType.Between2Filters;
+        case VolumeCalcType.GroundToDesign: return VolumesType.BetweenFilterAndDesign;
+        case VolumeCalcType.DesignToGround: return VolumesType.BetweenDesignAndFilter;
+        default: throw new Exception($"Unknown VolumeCalcType {Convert.ToInt16(volumesType)}");
+      }
+    }
+
+    private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesProfileCells(List<SummaryVolumeProfileCell> profileCells, double gridDistanceBetweenProfilePoints, VolumeCalcType calcType)
+    {
+      var profile = new CompactionProfileResult<CompactionSummaryVolumesProfileCell>();
+
+      profile.results = new List<CompactionSummaryVolumesProfileCell>();
+      SummaryVolumeProfileCell prevCell = null;
 
       foreach (var currCell in profileCells)
       {
@@ -545,7 +702,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         float cutFill = float.NaN;
         switch (calcType)
         {
-           case VolumeCalcType.GroundToGround:
+          case VolumeCalcType.GroundToGround:
             cutFill = float.IsNaN(lastPassHeight1) || float.IsNaN(lastPassHeight2)
               ? float.NaN
               : lastPassHeight2 - lastPassHeight1;
@@ -587,11 +744,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         profile.results.Add(lastCell);
       }
-      profile.results[profile.results.Count-1].cellType = ProfileCellType.MidPoint;
 
-      ms.Close();
+      if (profile.results.Count > 0)
+        profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
 
-      profile.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
+      profile.gridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
 
       var sb = new StringBuilder();
       sb.Append($"After summary volumes profile conversion: {profile.results.Count}");
@@ -603,20 +760,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       log.LogDebug(sb.ToString());
       return profile;
     }
-
-    /// <summary>
-    /// Representation of a profile cell edge at the start of a gap (no data) for summary volumes
-    /// </summary>
-    private readonly CompactionSummaryVolumesProfileCell SumVolGapCell = new CompactionSummaryVolumesProfileCell
-    {
-      cellType = ProfileCellType.Gap,
-      station = 0, //Will be set for individual gap vertices
-      designHeight = float.NaN,
-      lastPassHeight1 = float.NaN,
-      lastPassHeight2 = float.NaN,
-      cutFill = float.NaN
-    };
-
     #endregion
   }
 }

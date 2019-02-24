@@ -10,8 +10,10 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 
 namespace VSS.MasterData.Proxies
 {
@@ -217,6 +219,36 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {request}");
 
       return SendRequestPost<SummaryVolumesResult>(request, customHeaders, "/volumes/summary");
+    }
+
+    /// <summary>
+    /// Sends a request to get Production Data profiling data from the TRex database.
+    /// </summary>
+    /// <param name="productionDataProfileDataRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<ProfileDataResult<ProfileCellData>> SendProductionDataProfileDataRequest(ProductionDataProfileDataRequest productionDataProfileDataRequest, IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(productionDataProfileDataRequest);
+
+      log.LogDebug($"{nameof(SendProductionDataProfileDataRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<ProfileDataResult<ProfileCellData>>(request, customHeaders, "/productiondata/profile");
+    }
+
+    /// <summary>
+    /// Sends a request to get Summary Volumes profiling data from the TRex database.
+    /// </summary>
+    /// <param name="summaryVolumesProfileDataRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<ProfileDataResult<SummaryVolumesProfileCell>> SendSummaryVolumesProfileDataRequest(SummaryVolumesProfileDataRequest summaryVolumesProfileDataRequest, IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(summaryVolumesProfileDataRequest);
+
+      log.LogDebug($"{nameof(SendSummaryVolumesProfileDataRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<ProfileDataResult<SummaryVolumesProfileCell>>(request, customHeaders, "/volumes/summary/profile");
     }
 
     /// <summary>
