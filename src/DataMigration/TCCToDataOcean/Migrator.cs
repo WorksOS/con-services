@@ -87,28 +87,34 @@ namespace TCCToDataOcean
           LiteDbAgent.Table.Errors
       });
 
+      var workingTmpDir = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp");
+      if (Directory.Exists(workingTmpDir))
+      {
+        Directory.Delete(workingTmpDir, recursive: true);
+      }
+      // TODO (Aaron) Tidy up complete.
+
       Log.LogInformation($"Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"Found {projects.Count} projects");
 
-      // TODO (Aaron) Convert to dictionary and store project UID.
       var projectTasks = new List<Task<bool>>(projects.Count);
 
-      var project = projects.First(p => p.ProjectUID == "67a52e4f-faa2-e511-80e5-0050568821e6");
-      _migrationDb.WriteRecord(LiteDbAgent.Table.Projects, project);
+      //var project = projects.First(p => p.ProjectUID == "67a52e4f-faa2-e511-80e5-0050568821e6");
+      //_migrationDb.WriteRecord(LiteDbAgent.Table.Projects, project);
+      //await MigrateProject(project);
 
-      await MigrateProject(project);
+      foreach (var project in projects)
+      {
+        _migrationDb.WriteRecord(LiteDbAgent.Table.Projects, project);
 
+        projectTasks.Add(MigrateProject(project));
+      }
 
-      //foreach (var project in projects)
-      //{
-      //  projectTasks.Add(MigrateProject(project));
-      //}
-
-      //await Task.WhenAll(projectTasks);
+      await Task.WhenAll(projectTasks);
 
       var result = projectTasks.All(t => t.Result);
-      Log.LogInformation($"Overall migration result {result}");
+      Log.LogInformation($"Migration result: {result}");
 
       return result;
     }
@@ -144,9 +150,10 @@ namespace TCCToDataOcean
       var filesList = filesResult.ImportedFileDescriptors;
       if (filesList?.Count > 0)
       {
-        var selectedFiles =
-          filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
+        var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
+
         Log.LogInformation($"PUID: {project.ProjectUID} | {selectedFiles.Count} out of {filesList.Count} files to migrate");
+
         var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
 
         foreach (var file in selectedFiles)
@@ -160,7 +167,7 @@ namespace TCCToDataOcean
         await Task.WhenAll(fileTasks);
 
         // Todo (Aaron) In time it might be better to not return a tuple, and simply a null file. Making the following simpler.
-        importedFilesResult = fileTasks.All(t => t.Result.Item2.Code == (int)ExecutionResult.Success);
+        importedFilesResult = fileTasks.All(t => t.Result.Item1);
       }
       else
       {
@@ -175,13 +182,16 @@ namespace TCCToDataOcean
       return result;
     }
 
+    /// <summary>
+    /// Downloads the coordinate system file for a given project.
+    /// </summary>
     private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
     {
       Log.LogInformation($"{nameof(DownloadCoordinateSystemFileFromTCC)} [{project.ProjectUID}]: Downloading coord system file '{project.CoordinateSystemFileName}'");
 
       Stream memStream = null;
-      byte[] coordSystemFileContent = null;
-      var numBytesRead = 0;
+      byte[] coordSystemFileContent;
+      int numBytesRead;
 
       try
       {
@@ -194,13 +204,10 @@ namespace TCCToDataOcean
         }
         else
         {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-            80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+          _migrationDb.WriteError(project.ProjectUID, $"Failed to fetch coordinate system file '{project.CustomerUID}/{project.ProjectUID}/{project.CoordinateSystemFileName}'. isAbleToRead: {memStream != null && memStream.CanRead}, bytesReturned: {memStream?.Length ?? 0}");
+
+          return null;
         }
-      }
-      catch (Exception e)
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
       }
       finally
       {
@@ -230,7 +237,7 @@ namespace TCCToDataOcean
         {
           Log.LogError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
           _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.Failed);
-          _migrationDb.WriteError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
+          _migrationDb.WriteError(file.ProjectUid, $"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
 
           return (false, null);
         }
