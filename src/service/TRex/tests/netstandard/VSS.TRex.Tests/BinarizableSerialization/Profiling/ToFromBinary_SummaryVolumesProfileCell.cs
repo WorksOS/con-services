@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
     [Fact]
     public void Test_SummaryVolumesProfileCell_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<SummaryVolumeProfileCell>("Empty SummaryVolumes ProfileCell not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClassEx<SummaryVolumeProfileCell>("Empty SummaryVolumes ProfileCell not same after round trip serialisation");
     }
 
     [Fact]
@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         LastCellPassElevation1 = (float)1.0,
         LastCellPassElevation2 = (float)2.0
       }; 
-      var result = SimpleBinarizableInstanceTester.TestClass(pc,"SummaryVolumes ProfileCell not same after round trip serialisation");
+      var result = SimpleBinarizableInstanceTester.TestClassEx(pc,"SummaryVolumes ProfileCell not same after round trip serialisation");
       result.member.LastCellPassElevation1.Should().Be((float)1.0);
       result.member.LastCellPassElevation2.Should().Be((float)2.0);
     }

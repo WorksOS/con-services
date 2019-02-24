@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
     [Fact]
     public void Test_ProfileCell_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<ProfileCellBase>("Empty ProfileCellBase not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClassEx<ProfileCellBase>("Empty ProfileCellBase not same after round trip serialisation");
     }
   }
 }

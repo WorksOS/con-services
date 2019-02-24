@@ -12,5 +12,9 @@
     public const float NULL_SINGLE = 3.4E38F; // The value must be the same as defined in the DTXModelDecls.pas od the Raprtor's source code instead of the float.MaxValue.
     public const ushort NO_SPEED = ushort.MaxValue;
     public const double VOLUME_CHANGE_TOLERANCE = 0.0;
+
+    // DXF linework processing
+    public const int MAX_BOUNDARIES_TO_PROCESS = 500;
+    public const int MAX_VERTICES_PER_BOUNDARY = 50;
   }
 }

@@ -60,13 +60,13 @@ namespace VSS.TRex.Compression
 
         public void CalculateRequiredBitFieldSize()
         {
-            AllValuesAreNull = Nullable && ((MinValue == NativeNullValue) || (MaxValue == NativeNullValue));
-
-            if (AllValuesAreNull || MinValue == MaxValue) // no storage required, 0 bits to encode this attribute
+            if (MinValue == MaxValue) // no storage required, 0 bits to encode this attribute
             {
                 RequiredBits = 0;
                 return;
             }
+
+            AllValuesAreNull = RequiredBits == 0 && Nullable && MinValue == NativeNullValue;
 
             int ValueRange = MaxValue - MinValue; // Represented by 0-based indices so no need to add 1. See Bug 24559.
 

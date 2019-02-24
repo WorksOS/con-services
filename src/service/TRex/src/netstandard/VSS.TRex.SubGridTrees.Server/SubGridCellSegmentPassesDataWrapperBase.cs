@@ -11,7 +11,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// The count of cell passes residing in this sub grid segment
         /// </summary>
-        public int SegmentPassCount { get; set; }
+        public uint SegmentPassCount { get; set; }
 
         /// <summary>
         /// Default no-arg constructor

@@ -72,7 +72,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
             if (MsgGroup != null)
             {
-              MsgGroup.LocalListen(this, MessageTopicName);
+                MsgGroup.LocalListen(this, MessageTopicName);
             }
             else
             {

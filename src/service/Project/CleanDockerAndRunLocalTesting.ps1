@@ -1,15 +1,16 @@
-Write-Host "Updating environment IP address"
-& .\UpdateEnvFileIpAddress.ps1
+# Usage, e.g: .\CleanDockerAndRunLocalTesting.ps1 --detach --no-log
 
-Write-Host "Stopping Docker containers" -ForegroundColor DarkGray
-docker stop $(docker ps -aq)
+[console]::ResetColor()
 
-# This is not ideal; but too often the Kafka container throws the following error, fails to start and breaks the dependency chain;
-# java.lang.RuntimeException: A broker is already registered on the path /brokers/ids/1001
-Write-Host "Removing old application containers" -ForegroundColor DarkGray
-docker rm $(docker ps -aq --filter "name=project_kafka")
-docker rm $(docker ps -aq --filter "name=project_webapi")
-docker rm $(docker ps -aq --filter "name=project_accepttest")
+# If regularly re running the script on the same service it's faster to opt out of setting the environment vars each time.
+IF (-not($args -contains "--no-vars")) { & .\set-environment-variables.ps1 }
+
+Write-Host "Stopping Docker containers"
+docker ps -q | ForEach-Object { docker stop $_ }
+
+# This is not ideal; but too often the containers fail to start due to drive or volume errors on the existing containers.
+Write-Host "Removing old application containers"
+docker ps -aq --filter "name=project_" | ForEach-Object { docker rm $_ }
 
 Write-Host "Connecting to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)

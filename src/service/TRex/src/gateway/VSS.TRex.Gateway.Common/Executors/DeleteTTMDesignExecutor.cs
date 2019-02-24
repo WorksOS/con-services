@@ -78,8 +78,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           try
           {
             File.Delete(localPathAndFileName);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
+            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
           }
           catch (Exception)
           {

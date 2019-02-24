@@ -22,6 +22,14 @@ PARAM (
 
 [console]::ResetColor()
 
+function SetEnvironmentVariable {
+    PARAM ([string] $key, [string] $value)
+
+    Write-Host "  " $key ": " -ForegroundColor Gray -NoNewline
+    Write-Host $value -ForegroundColor DarkGray
+    [Environment]::SetEnvironmentVariable($key, $value, "Machine")
+}
+
 function ProcessConfigFile {
     PARAM ([string] $filename)
 
@@ -48,14 +56,21 @@ function ProcessConfigFile {
         $key = $key.Trim()
         $value = $value.Trim().Trim('"')
 
-        Write-Host "  " $key ": " -ForegroundColor Gray -NoNewline
-        Write-Host $value -ForegroundColor DarkGray
-        [Environment]::SetEnvironmentVariable($key, $value, "Machine")
+        SetEnvironmentVariable $key $value
     }
 }
 
+# Set configuration values
 ProcessConfigFile $globalConfigFile.Trim()
 
 IF ($useLocalOverride -eq $true) { ProcessConfigFile $localConfigFile.Trim() }
 
-Write-Host "`nFinished loaing configuration settings" -ForegroundColor Green
+# Machine variable values
+Write-Host "`nSetting environment variables specific to the caller"
+
+# Get the IP address from the network adaptor and set KAFKA_ADVERTISED_HOST_NAME. Doing so allows any containerized Kafka instance to correctly find the host.
+$ipV4 = ( Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null -and  $_.NetAdapter.Status -ne "Disconnected"}).IPv4Address.IPAddress
+(Get-Content docker-compose-local.env) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content docker-compose-local.env
+SetEnvironmentVariable "KAFKA_ADVERTISED_HOST_NAME" $ipV4
+
+Write-Host "`nFinished loading configuration settings" -ForegroundColor Green
