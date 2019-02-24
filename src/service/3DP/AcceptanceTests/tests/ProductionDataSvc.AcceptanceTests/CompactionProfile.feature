@@ -59,5 +59,6 @@ Scenario: Compaction Get Slicer Summary Volumes Profile - Implicit
   And with parameter "volumeCalcType" with value "GroundToGround"
   And with parameter "volumeTopUid" with value "ba24a225-12f3-4525-940b-ec8720e7a4f4"
   And with parameter "volumeBaseUid" with value "8d9c19f6-298f-4ec2-8688-cc72242aaceb"
+  And with parameter "explicitFilters" with value "false"
   When I send the GET request I expect response code 200
   Then the response should match "G2GvolumesImplicit" from the repository
