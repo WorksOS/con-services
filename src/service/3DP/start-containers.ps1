@@ -7,7 +7,7 @@ Set-Location $PSScriptRoot
 Write-Host "Logging in to image host" -ForegroundColor DarkGray
 Invoke-Expression -Command (aws ecr get-login --no-include-email --profile vss-grant --region us-west-2)
 
-docker-compose pull
+docker-compose --file docker-compose-local.yml pull
 
 Write-Host "Branch is $branch " 
 if ($branch.ToLower()  -eq "release" -or $branch.ToLower()  -eq "master") {
@@ -15,5 +15,5 @@ if ($branch.ToLower()  -eq "release" -or $branch.ToLower()  -eq "master") {
   docker-compose --file docker-compose-alpha.yml up --build --detach
 } else {
   Write-Host "Building containers for testing against dev raptor"
-  docker-compose up --build --detach
+  docker-compose --file docker-compose-local.yml up --build --detach
 }
