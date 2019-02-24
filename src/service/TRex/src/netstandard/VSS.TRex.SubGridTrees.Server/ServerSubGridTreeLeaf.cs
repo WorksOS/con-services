@@ -419,7 +419,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     TemporallyPrecedingSegment.LatestPasses.PassDataExistenceMap.BitSet(I, J))
                 {
                     // Seed the latest data for this segment with the latest data from the previous segment
-                    Segment.LatestPasses[(int)I, (int)J] = TemporallyPrecedingSegment.LatestPasses[(int)I, (int)J];
+                    Segment.LatestPasses[I, J] = TemporallyPrecedingSegment.LatestPasses[I, J];
 
                     UpdatedCell = true;
                 }
@@ -817,7 +817,7 @@ namespace VSS.TRex.SubGridTrees.Server
                             EndIndex++;
                         }
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out int AddedCount, out int ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out uint AddedCount, out uint ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                         {

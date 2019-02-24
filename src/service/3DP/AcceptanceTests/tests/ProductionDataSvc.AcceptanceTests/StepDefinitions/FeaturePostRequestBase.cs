@@ -21,15 +21,21 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
     [Given(@"the service route ""(.*)"" and request repo ""(.*)""")]
-    public void GivenTheServiceRouteAndRequestRepo(string route, string requestFile)
+    public void GivenTheServiceRouteAndRequestRepo(string route, string filename)
     {
-      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.Productivity3DServiceBaseUrl + route, requestFile);
+      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.Productivity3DServiceBaseUrl + route, requestFile: filename);
     }
 
     [Given(@"the service route ""(.*)"" request repo ""(.*)"" and result repo ""(.*)""")]
     public void GivenTheServiceRouteRequestRepoAndResultRepo(string route, string requestFile, string resultFile)
     {
       PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.Productivity3DServiceBaseUrl + route, requestFile, resultFile);
+    }
+
+    [Given(@"the service route ""(.*)"" and result repo ""(.*)""")]
+    public void GivenTheServiceRouteAndResponseRepo(string route, string filename)
+    {
+      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.Productivity3DServiceBaseUrl + route, responseFile: filename);
     }
 
     [And(@"request body property ""(.*)"" with value ""(.*)""")]
@@ -48,12 +54,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void WhenIPostWithParameterIExpectResponseCode(string parameterValue, int httpCode)
     {
       PostRequestHandler.DoRequest(parameterValue, expectedHttpCode: httpCode);
-    }
-
-    [When(@"I POST Content-Type ""(.*)"" with parameter ""(.*)"" I expect response code (\d+)")]
-    public void WhenIPostWithParameterAndContentTypeIExpectResponseCode(string contentType, string parameterValue, int httpCode)
-    {
-      PostRequestHandler.DoRequest(parameterValue, contentType, httpCode);
     }
 
     [Then(@"the response should match ""(.*)"" from the repository")]
@@ -100,7 +100,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
     }
-    
+
     /// <summary>
     /// Adds and sets a new property on the JObject receiver.
     /// </summary>

@@ -123,10 +123,9 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "SummaryVolumes");
       var tagFiles = new[]
       {
-        Path.Combine(corePath, "TestTAGFile.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
@@ -143,10 +142,9 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var corePath = Path.Combine("TestData", "SummaryVolumes");
       var tagFiles = new[]
       {
-        Path.Combine(corePath, "TestTAGFile.tag"),
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);

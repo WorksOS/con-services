@@ -47,34 +47,27 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       bool proofingRunsModified = false,
       bool alignmentsChanged = false)
     {
-      try
+      var gridFactory = DIContext.Obtain<ITRexGridFactory>();
+      var evt = new SiteModelAttributesChangedEvent
       {
-        var gridFactory = DIContext.Obtain<ITRexGridFactory>();
-        var evt = new SiteModelAttributesChangedEvent
-        {
-          SiteModelID = siteModelID,
-          ExistenceMapModified = existenceMapChanged,
-          ExistenceMapChangeMask = existenceMapChangeMask?.ToBytes(),
-          CsibModified = csibChanged,
-          DesignsModified = designsChanged,
-          SurveyedSurfacesModified = surveyedSurfacesChanged,
-          MachinesModified = machinesChanged,
-          MachineTargetValuesModified = machineTargetValuesChanged,
-          MachineDesignsModified = machineDesignsModified,
-          ProofingRunsModified = proofingRunsModified,
-          AlignmentsModified = alignmentsChanged,
-        };
+        SiteModelID = siteModelID,
+        ExistenceMapModified = existenceMapChanged,
+        ExistenceMapChangeMask = existenceMapChangeMask?.ToBytes(),
+        CsibModified = csibChanged,
+        DesignsModified = designsChanged,
+        SurveyedSurfacesModified = surveyedSurfacesChanged,
+        MachinesModified = machinesChanged,
+        MachineTargetValuesModified = machineTargetValuesChanged,
+        MachineDesignsModified = machineDesignsModified,
+        ProofingRunsModified = proofingRunsModified,
+        AlignmentsModified = alignmentsChanged,
+      };
 
-        if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)
-          gridFactory.Grid(StorageMutability.Immutable).GetMessaging().SendOrdered(evt, MessageTopicName);
+      if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)
+        gridFactory.Grid(StorageMutability.Immutable).GetMessaging().SendOrdered(evt, MessageTopicName);
 
-        if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyMutable) != 0)
-          gridFactory.Grid(StorageMutability.Mutable).GetMessaging().SendOrdered(evt, MessageTopicName);
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception occurred sending model attributes changed notification:");
-      }
+      if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyMutable) != 0)
+        gridFactory.Grid(StorageMutability.Mutable).GetMessaging().SendOrdered(evt, MessageTopicName);
     }
   }
 }

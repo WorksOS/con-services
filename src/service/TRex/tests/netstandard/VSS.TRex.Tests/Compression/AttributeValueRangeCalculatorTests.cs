@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.Compression
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new int[] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
 
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(1, descriptor.MaxValue);
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.Compression
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new int[] { 0, 1 }, 0xffffffff, 5, true, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 1 }, 0xffffffff, 5, true, ref descriptor);
 
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(1, descriptor.MaxValue);
@@ -49,13 +49,37 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(5, descriptor.NativeNullValue);
             Assert.Equal(1, descriptor.RequiredBits);
 
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new int[] { 0, 1, 5 }, 0xffffffff, 5, true, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 1, 5 }, 0xffffffff, 5, true, ref descriptor);
 
             Assert.Equal(0, descriptor.MinValue);
             Assert.Equal(2, descriptor.MaxValue);
             Assert.True(descriptor.Nullable);
             Assert.Equal(5, descriptor.NativeNullValue);
             Assert.Equal(2, descriptor.RequiredBits);
+        }
+
+        [Fact]
+        public void Test_AttributeValueRangeCalculator_ZeroBitRange_NonNullable()
+        {
+            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
+        
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 0 }, 0xffffffff, 0, false, ref descriptor);
+        
+            Assert.Equal(0, descriptor.MinValue);
+            Assert.Equal(0, descriptor.MaxValue);
+            Assert.Equal(0, descriptor.RequiredBits);
+        }
+
+        [Fact]
+        public void Test_AttributeValueRangeCalculator_ZeroBitRange_Nullable()
+        {
+            EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
+          
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 0 }, 0xffffffff, 0, true, ref descriptor);
+          
+            Assert.Equal(0, descriptor.MinValue);
+            Assert.Equal(0, descriptor.MaxValue);
+            Assert.Equal(0, descriptor.RequiredBits);
         }
     }
 }

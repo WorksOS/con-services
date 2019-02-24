@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.TRex.SubGridTrees.Helpers
+namespace VSS.TRex.SubGridTrees.Core.Helpers
 {
     /// <summary>
     /// A helper class that contains definitions of Clear and Filled Bits sub grid bitmask bit arrays as well as

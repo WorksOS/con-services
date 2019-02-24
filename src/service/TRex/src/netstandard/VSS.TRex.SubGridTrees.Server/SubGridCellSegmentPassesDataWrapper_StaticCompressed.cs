@@ -104,7 +104,7 @@ namespace VSS.TRex.SubGridTrees.Server
             /// Calculate the chained offsets and numbers of required bits for each attribute being stored
             /// </summary>
             /// <param name="NumBitsPerCellPass"></param>
-            public void CalculateTotalOffsetBits(out int NumBitsPerCellPass)
+            public void CalculateTotalOffsetBits(out uint NumBitsPerCellPass)
             {
                 MachineIDIndex.OffsetBits = 0;
                 Time.OffsetBits = (ushort)(MachineIDIndex.OffsetBits + MachineIDIndex.RequiredBits);
@@ -121,7 +121,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 CCA.OffsetBits = (ushort)(Amplitude.OffsetBits + Amplitude.RequiredBits);
 
                 // Calculate the total number of bits required and pass back
-                NumBitsPerCellPass = CCA.OffsetBits + CCA.RequiredBits;
+                NumBitsPerCellPass = unchecked((uint)(CCA.OffsetBits + CCA.RequiredBits));
             }
         }
 
@@ -184,7 +184,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// The number of bits required to store all the fields from a cell pass within the bit field array
         /// representation of that record.
         /// </summary>
-        private int NumBitsPerCellPass;
+        private uint NumBitsPerCellPass;
 
         /// <summary>
         /// Default no-arg constructor that does not instantiate any state
@@ -233,29 +233,29 @@ namespace VSS.TRex.SubGridTrees.Server
             // Read the per column first cell pass index, then read the first cell pass offset for the cell itself.
             // Adding the two gives us the first cell pass index for this cell. Then, calculate the pass count by reading the
             // cell pass index for the next cell. This may be in the next column, in which case the relevant first cell pass index for
-            // that cell is the  per column first cell pass index for the next column in the subgrid. I the cell is the last cell in the last
+            // that cell is the per column first cell pass index for the next column in the sub grid. I the cell is the last cell in the last
             // column then the pass count is the difference between the segment pass count and per cell first cell pass count.
 
             SubGridCellPassCountRecord Result = new SubGridCellPassCountRecord();
 
             // Remember, the counts are written in column order first in the bit field array.
-            int PerColBitFieldLocation = (int)Col * EncodedColPassCountsBits;
-            int PerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
+            uint PerColBitFieldLocation = Col * EncodedColPassCountsBits;
+            long PerColFirstCellPassIndex = BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
 
-            int PerCellBitFieldLocation = (int)(FirstPerCellPassIndexOffset + ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * PassCountEncodedFieldDescriptor.RequiredBits);
-            int PerCellFirstCellPassIndexOffset = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits);
+            uint PerCellBitFieldLocation = unchecked((uint)(FirstPerCellPassIndexOffset + ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * PassCountEncodedFieldDescriptor.RequiredBits));
+            uint PerCellFirstCellPassIndexOffset = unchecked((uint)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits));
 
-            Result.FirstCellPass = PerColFirstCellPassIndex + PerCellFirstCellPassIndexOffset;
+            Result.FirstCellPass = unchecked((uint)(PerColFirstCellPassIndex + PerCellFirstCellPassIndexOffset));
 
             if (Row < SubGridTreeConsts.SubGridTreeDimensionMinus1)
             {
-                Result.PassCount = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits) - PerCellFirstCellPassIndexOffset;
+                Result.PassCount = unchecked((uint)(BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits) - PerCellFirstCellPassIndexOffset));
             }
             else
             {
                 if (Col < SubGridTreeConsts.SubGridTreeDimensionMinus1)
                 {
-                    int NextPerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
+                    uint NextPerColFirstCellPassIndex = unchecked((uint)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits));
                     Result.PassCount = NextPerColFirstCellPassIndex - Result.FirstCellPass;
                 }
                 else
@@ -278,7 +278,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SubGridCellPassCountRecord Index = GetPassCountAndFirstCellPassIndex(CellX, CellY);
             CellPass[] cellPasses = new CellPass[Index.PassCount];
 
-            for (int i = 0; i < Index.PassCount; i++)
+            for (uint i = 0; i < Index.PassCount; i++)
             {
                 cellPasses[i] = ExtractCellPass(Index.FirstCellPass + i);
             }
@@ -293,9 +293,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Y"></param>
         /// <param name="passNumber"></param>
         /// <returns></returns>
-        public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
+        public CellPass ExtractCellPass(uint X, uint Y, uint passNumber)
         {
-            // X & Y indicate the cell location in the subgrid, and passNumber represents the index of the pass in the cell that is required
+            // X & Y indicate the cell location in the sub grid, and passNumber represents the index of the pass in the cell that is required
 
             // First determine the starting cell pass index for that location in the segment
             SubGridCellPassCountRecord Index = GetPassCountAndFirstCellPassIndex(X, Y);
@@ -310,13 +310,13 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         /// <param name="Index"></param>
         /// <returns></returns>
-        public CellPass ExtractCellPass(int Index)
+        public CellPass ExtractCellPass(uint Index)
         {
             // IMPORTANT: The fields read in this method must be read in the  same order as they were written during encoding
 
             CellPass Result = new CellPass();
 
-            int CellPassBitLocation = Index * NumBitsPerCellPass;
+            uint CellPassBitLocation = Index * NumBitsPerCellPass;
 
             Result.InternalSiteModelMachineIndex = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineIDIndex);
 
@@ -341,7 +341,7 @@ namespace VSS.TRex.SubGridTrees.Server
             return Result;
         }
 
-        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
+        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out uint AddedCount, out uint ModifiedCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
@@ -363,7 +363,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public CellPass Pass(uint X, uint Y, uint passIndex)
         {
-            return ExtractCellPass(X, Y, (int)passIndex);
+            return ExtractCellPass(X, Y, passIndex);
         }
 
         public uint PassCount(uint X, uint Y)
@@ -373,7 +373,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public float PassHeight(uint passIndex)
         {
-            int BitLocation = (int)(passIndex * NumBitsPerCellPass) + EncodedFieldDescriptors.Height.OffsetBits;
+            uint BitLocation = passIndex * NumBitsPerCellPass + EncodedFieldDescriptors.Height.OffsetBits;
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Height);
 
@@ -388,7 +388,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public DateTime PassTime(uint passIndex)
         {
-            int BitLocation = (int)(passIndex * NumBitsPerCellPass + EncodedFieldDescriptors.Time.OffsetBits);
+            uint BitLocation = passIndex * NumBitsPerCellPass + EncodedFieldDescriptors.Time.OffsetBits;
             return FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time));
         }
 
@@ -402,7 +402,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {            
             FirstRealCellPassTime = DateTime.FromBinary(reader.ReadInt64());
 
-            SegmentPassCount = reader.ReadInt32();
+            SegmentPassCount = reader.ReadUInt32();
 
             BF_CellPasses.Read(reader);
             BF_PassCounts.Read(reader);
@@ -418,7 +418,7 @@ namespace VSS.TRex.SubGridTrees.Server
             for (int i = 0; i < Count; i++)
                 MachineIDs[i] = reader.ReadInt16();
 
-            NumBitsPerCellPass = reader.ReadInt32();
+            NumBitsPerCellPass = reader.ReadUInt32();
 
             PassCountEncodedFieldDescriptor.Read(reader);
 
@@ -510,7 +510,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 if (passes != null)
                 {
-                    SegmentPassCount += passes.Length;
+                    SegmentPassCount += unchecked((uint)passes.Length);
                 }
             }
 
