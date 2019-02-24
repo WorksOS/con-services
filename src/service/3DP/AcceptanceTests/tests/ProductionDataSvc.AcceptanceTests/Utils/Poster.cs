@@ -17,7 +17,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     public Dictionary<string, TResponse> ResponseRepo { get; }
     public string Uri { get; set; }
     public TRequest CurrentRequest { get; set; }
-    public TResponse CurrentResponse { get; private set; }
+    public TResponse CurrentResponse { get; set; }
     public HttpResponseMessage HttpResponseMessage { get; set; }
     public byte[] ByteContent { get; private set; }
 
@@ -69,8 +69,6 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// <summary>
     /// Do an HTTP POST request
     /// </summary>
-    /// <param name="requestName">Request name as appears in the request JSON file. If not supplied, use CurrentRequest.</param>
-    /// <param name="expectedHttpCode">Expected response HttpStatusCode - default to 200 OK.</param>
     public TResponse DoRequest(string requestName = null, string contentType = MediaTypes.JSON, int expectedHttpCode = (int)HttpStatusCode.OK)
     {
       return SendRequest(requestName, contentType, (HttpStatusCode)expectedHttpCode);
@@ -101,7 +99,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       {
         requestBodyString = JsonConvert.SerializeObject(CurrentRequest);
       }
-      else if (requestName.Length > 0)
+      else if (RequestRepo != null && requestName.Length > 0)
       {
         requestBodyString = JsonConvert.SerializeObject(RequestRepo[requestName]);
       }

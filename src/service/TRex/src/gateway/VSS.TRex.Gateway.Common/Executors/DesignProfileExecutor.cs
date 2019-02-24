@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       CalculateDesignProfileResponse designProfileResponse = designProfileRequest.Execute(new CalculateDesignProfileArgument
       {
         ProjectID = siteModel.ID,
-        DesignUid = request.DesignUid ?? Guid.Empty, // DesignDescriptor = new Designs.Models.DesignDescriptor { DesignID = request.DesignUid ?? Guid.Empty },
+        ReferenceDesignUID = request.DesignUid ?? Guid.Empty, 
         CellSize = siteModel.Grid.CellSize,
         ProfilePath = new XYZ[] {new XYZ(request.StartX.Value, request.StartY.Value), new XYZ (request.EndX.Value, request.EndY.Value)}
       });

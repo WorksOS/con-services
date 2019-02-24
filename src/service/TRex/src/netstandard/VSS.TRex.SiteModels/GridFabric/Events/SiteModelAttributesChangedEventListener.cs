@@ -1,5 +1,4 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Messaging;
+﻿using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
@@ -73,7 +72,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
             if (MsgGroup != null)
             {
-              MsgGroup.LocalListen(this, MessageTopicName);
+                MsgGroup.LocalListen(this, MessageTopicName);
             }
             else
             {

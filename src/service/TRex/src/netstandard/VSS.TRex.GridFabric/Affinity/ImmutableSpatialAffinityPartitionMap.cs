@@ -1,8 +1,8 @@
-﻿using Apache.Ignite.Core;
-using VSS.TRex.DI;
+﻿using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
@@ -20,7 +20,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// Default no-args constructor that prepares a spatial affinity partition map for the immutable spatial caches
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
-            base(Ignition.GetIgnite(TRexGrids.ImmutableGridName())
+            base(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)
                 .GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()))
         {
         }

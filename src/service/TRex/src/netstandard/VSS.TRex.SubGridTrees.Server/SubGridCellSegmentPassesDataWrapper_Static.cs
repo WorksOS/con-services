@@ -127,7 +127,7 @@ namespace VSS.TRex.SubGridTrees.Server
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
+        public CellPass ExtractCellPass(uint X, uint Y, uint passNumber)
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passNumber];
         }
@@ -152,7 +152,7 @@ namespace VSS.TRex.SubGridTrees.Server
             int TotalPasses = reader.ReadInt32();
             int MaxPassCount = reader.ReadInt32();
 
-            int[,] PassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+            uint[,] PassCounts = new uint[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 
@@ -161,8 +161,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 switch (PassCounts_Size)
                 {
                     case 1: PassCounts[i, j] = reader.ReadByte(); break;
-                    case 2: PassCounts[i, j] = reader.ReadInt16(); break;
-                    case 3: PassCounts[i, j] = reader.ReadInt32(); break;
+                    case 2: PassCounts[i, j] = reader.ReadUInt16(); break;
+                    case 3: PassCounts[i, j] = reader.ReadUInt32(); break;
                     default:
                         throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
                 }
@@ -171,7 +171,7 @@ namespace VSS.TRex.SubGridTrees.Server
       // Read all the cells from the stream
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                int PassCount_ = PassCounts[i, j];
+                uint PassCount_ = PassCounts[i, j];
 
                 if (PassCounts[i, j] > 0)
                 {
@@ -310,7 +310,7 @@ namespace VSS.TRex.SubGridTrees.Server
             return CellPasses[PassData[X, Y].CellPassOffset + passNumber].Time;
         }
 
-        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
+        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out uint AddedCount, out uint ModifiedCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }

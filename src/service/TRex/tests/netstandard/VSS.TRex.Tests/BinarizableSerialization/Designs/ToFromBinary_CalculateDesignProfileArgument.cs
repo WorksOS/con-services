@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
       var argument = new CalculateDesignProfileArgument()
       {
         ProjectID = Guid.NewGuid(),
-        DesignUid = Guid.Empty, 
+        ReferenceDesignUID = Guid.Empty, 
         CellSize = 1.0,
         ProfilePath = new [] {new XYZ(0, 0), new XYZ(100, 100)}
       };

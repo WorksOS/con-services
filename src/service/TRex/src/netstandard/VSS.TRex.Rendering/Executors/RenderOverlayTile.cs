@@ -4,7 +4,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -56,8 +55,7 @@ namespace VSS.TRex.Rendering.Executors
     private double TileRotation;
     private double WorldTileWidth, WorldTileHeight;
 
-    private ICombinedFilter Filter1;
-    private ICombinedFilter Filter2;
+    private IFilterSet Filters;
 
     /// <summary>
     /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
@@ -79,8 +77,7 @@ namespace VSS.TRex.Rendering.Executors
     /// <param name="ACoordsAreGrid"></param>
     /// <param name="ANPixelsX"></param>
     /// <param name="ANPixelsY"></param>
-    /// <param name="AFilter1"></param>
-    /// <param name="AFilter2"></param>
+    /// <param name="filters"></param>
     /// <param name="ACutFillDesignID"></param>
     /// <param name="ARepresentColor"></param>
     /// <param name="requestingTRexNodeId"></param>
@@ -92,8 +89,7 @@ namespace VSS.TRex.Rendering.Executors
       bool ACoordsAreGrid,
       ushort ANPixelsX,
       ushort ANPixelsY,
-      ICombinedFilter AFilter1,
-      ICombinedFilter AFilter2,
+      IFilterSet filters,
       Guid ACutFillDesignID, //DesignDescriptor ACutFillDesign,
                              //AReferenceVolumeType : TComputeICVolumesType;
                              //AColourPalettes: TColourPalettes;
@@ -110,8 +106,7 @@ namespace VSS.TRex.Rendering.Executors
       CoordsAreGrid = ACoordsAreGrid;
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
-      Filter1 = AFilter1;
-      Filter2 = AFilter2;
+      Filters = filters;
       CutFillDesignID = ACutFillDesignID; // CutFillDesign = ACutFillDesign;
       //ReferenceVolumeType = AReferenceVolumeType;
       //ColourPalettes = AColourPalettes;
@@ -493,7 +488,7 @@ namespace VSS.TRex.Rendering.Executors
           return Renderer.Displayer?.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
         }
 
-        // Compute the override cell boundary to be used when processing cells in the subgrids
+        // Compute the override cell boundary to be used when processing cells in the sub grids
         // selected as a part of this pipeline
         // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
 
@@ -506,11 +501,6 @@ namespace VSS.TRex.Rendering.Executors
 
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);
         CellExtents.Expand(1);
-
-        // Create the filter set for the request execution. Only include the second filter if the mode supports it
-        bool ModeRequiresTwoFilters = Mode == DisplayMode.VolumeCoverage;
-
-        IFilterSet Filters = ModeRequiresTwoFilters ? new FilterSet(Filter1, Filter2) : new FilterSet(Filter1);
 
         // Construct PipelineProcessor
         IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(

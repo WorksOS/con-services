@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Exceptions;
 
 // This unit implements support for storing attribute values as variable bit field arrays and records 
 
@@ -17,25 +19,30 @@ namespace VSS.TRex.Compression
         /// <summary>
         /// Read this many bytes at a time from the BitFieldArray storage when reading values into elements in the internal storage array
         /// </summary>
-        private const int kNBytesReadAtATime = 8; // was 1
+        private const int N_BYTES_TO_READ_AT_A_TIME = 8; // was 1
 
         /// <summary>
         /// Read this many bits at a time from the BitFieldArray storage when reading values
         /// </summary>
-        private const int kNBitsReadAtATime = kNBytesReadAtATime * 8;
+        private const int N_BITS_TO_READ_AT_A_TIME = N_BYTES_TO_READ_AT_A_TIME * 8;
 
         /// <summary>
         /// The number of bits necessary to shift the offset address for a field in a bit field array to 
         /// convert the the bit address into logical blocks (ie: the block size at which bits are read from memory
         /// when reading or writing values)
         /// </summary>
-        private const int kBitLocationToBlockShift = 6; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5, 8 bytes : 6
+        private const int BIT_LOCATION_TO_BLOCK_SHIFT = 6; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5, 8 bytes : 6
 
         /// <summary>
         /// The number of bits required to express the power of 2 sized block of bits, eg: a block of 8 bits needs
         /// 3 bits to express the number range 0..7m so the mask if 0x7 (0b111), etc
         /// </summary>
-        private const int kBitsRemainingInStorageBlockMask = 0x3f; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f, 8 bytes : $3f
+        private const uint BITS_REMAINING_IN_STORAGE_BLOCK_MASK = 0x3f; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f, 8 bytes : $3f
+
+        /// <summary>
+        /// The maximum number of bytes a bit field array is permitted to allocate to store its contents
+        /// </summary>
+        public const uint MAXIMUM_BIT_FIELD_ARRAY_MEMORY_SIZE_BYTES = 256 * 1024 * 1024;
 
         /// <summary>
         /// Storage is the memory allocated to storing the bit field array.
@@ -47,31 +54,23 @@ namespace VSS.TRex.Compression
         /// </summary>
         private uint StreamWriteBitPos;
 
-        // FNumBits indicates the total number of bits stored in the bit field array
-
         /// <summary>
         /// Allocates a block of memory large enough to store the number of bits required (See FNumBits * MemorySize())
         /// </summary>
         private void AllocateBuffer()
         {
-            if (MemorySize() == 0)
-            {
+            var memorySize = MemorySize();
+            if (memorySize == 0)
                 return; // No storage required (yes, this can happen, eg: PassCounts for a segment with only a single cell pass)
-            }
 
-            if (MemorySize() > (256 * 1024 * 1024))
-            {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray.AllocateBuffer limited to 256Mb in size (%d bytes requested)', [MemorySize]), slmcError);
-                throw new Exception($"BitFieldArray.AllocateBuffer limited to 256Mb in size ({MemorySize() / (1024 * 1024)}Mb requested)");
-            }
+            if (memorySize > MAXIMUM_BIT_FIELD_ARRAY_MEMORY_SIZE_BYTES)
+              
+                throw new TRexPersistencyException($"BitFieldArray.AllocateBuffer limited to {MAXIMUM_BIT_FIELD_ARRAY_MEMORY_SIZE_BYTES / (1024 * 1024)}Mb in size ({MemorySize() / (1024 * 1024)}Mb requested)");
 
             Storage = NewStorage();
 
             if (Storage == null)
-            {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray.AllocateBuffer failed to allocate a buffer of %d bytes', [MemorySize]), slmcError);
-                throw new Exception($"BitFieldArray.AllocateBuffer failed to allocate a buffer of {MemorySize()} bytes");
-            }
+                throw new TRexPersistencyException($"BitFieldArray.AllocateBuffer failed to allocate a buffer of {MemorySize()} bytes");
         }
 
         /// <summary>
@@ -89,7 +88,7 @@ namespace VSS.TRex.Compression
         /// Determines the number of elements required in the storage array depending on the 'read/write block size'
         /// </summary>
         /// <returns></returns>
-        public uint NumStorageElements() => MemorySize() % kNBytesReadAtATime == 0 ? MemorySize() / kNBytesReadAtATime : (MemorySize() / kNBytesReadAtATime) + 1; // FNumBits % kNBitsReadAtATime == 0 ? FNumBits / kNBitsReadAtATime : FNumBits / kNBitsReadAtATime + 1;
+        public uint NumStorageElements() => MemorySize() % N_BYTES_TO_READ_AT_A_TIME == 0 ? MemorySize() / N_BYTES_TO_READ_AT_A_TIME : (MemorySize() / N_BYTES_TO_READ_AT_A_TIME) + 1; // FNumBits % N_BITS_TO_READ_AT_A_TIME == 0 ? FNumBits / N_BITS_TO_READ_AT_A_TIME : FNumBits / N_BITS_TO_READ_AT_A_TIME + 1;
 
         /// <summary>
         /// Allocates the storage array for storing the block that comprise the bit field array
@@ -112,15 +111,18 @@ namespace VSS.TRex.Compression
         /// <summary>
         /// Initialise the BitFieldArray using a descriptor that details the number of records and the size in bits of each of the records
         /// </summary>
-        /// <param name="RecordsArray"></param>
-        public void Initialise(BitFieldArrayRecordsDescriptor[] RecordsArray)
+        /// <param name="recordsArray"></param>
+        public void Initialise(BitFieldArrayRecordsDescriptor[] recordsArray)
         {
-            NumBits = 0;
+            long _numBits = 0;
 
-            foreach (BitFieldArrayRecordsDescriptor descriptor in RecordsArray)
-            {
-                NumBits += (uint)((long)(descriptor.NumRecords) * descriptor.BitsPerRecord);
-            }
+            foreach (BitFieldArrayRecordsDescriptor descriptor in recordsArray)
+                _numBits += (long)descriptor.NumRecords * descriptor.BitsPerRecord;
+
+            if (_numBits > uint.MaxValue)
+               throw new TRexPersistencyException($"Attempt to create bit field array with {_numBits} which is more than the {uint.MaxValue} limit");
+
+            NumBits = checked((uint) _numBits);
 
             AllocateBuffer();
         }
@@ -134,20 +136,11 @@ namespace VSS.TRex.Compression
             writer.Write(NumBits);
 
             if (NumBits == 0)
-            {
                 return;
-            }
 
             byte[] buffer = new byte[Storage.Length * sizeof(ulong)];
             Buffer.BlockCopy(Storage, 0, buffer, 0, Storage.Length * sizeof(ulong));
             writer.Write(buffer);
-
-            /*
-            foreach (ulong item in Storage)
-            {
-                writer.Write(item);
-            }
-            */
         }
 
         /// <summary>
@@ -167,17 +160,12 @@ namespace VSS.TRex.Compression
             byte[] buffer = new byte[Storage.Length * sizeof(ulong)];
             reader.Read(buffer, 0, buffer.Length);
             Buffer.BlockCopy(buffer, 0, Storage, 0, buffer.Length);
-
-            /*
-            for (int i = 0; i < NumStorageElements(); i++)
-               Storage[i] = reader.ReadUInt64();
-            */
         }
 
-    /// <summary>
-    /// StreamWriteStart initialise the bit field array for streamed writing from the start of the allocated memory
-    /// </summary>
-    public void StreamWriteStart()
+        /// <summary>
+        /// StreamWriteStart initialise the bit field array for streamed writing from the start of the allocated memory
+        /// </summary>
+        public void StreamWriteStart()
         {
             StreamWriteBitPos = 0;
         }
@@ -192,60 +180,58 @@ namespace VSS.TRex.Compression
         /// The variant that take an exact number of value bits is a raw version of the write method that
         /// just writes the given value in the given bits.
         /// </summary>
-        /// <param name="AValue"></param>
-        /// <param name="ADescriptor"></param>
-        public void StreamWrite(long AValue, EncodedBitFieldDescriptor ADescriptor)
+        /// <param name="value"></param>
+        /// <param name="descriptor"></param>
+        public void StreamWrite(long value, EncodedBitFieldDescriptor descriptor)
         {
             // Writing occurs in three stages:
             // 1: Fill the remaining unwritten bits in the element referenced by FStreamWritePos
-            // 2: If there are still more than kNBitsReadAtATime remaining bits to be written, then write
-            //    individual elements from AValue into Storage until the reminining number of bits
-            //    to be written is less than kNBitsReadAtATime
-            // 3: If there are still (less than kNBitsReadAtATime) bits to be written, then write the remainder
+            // 2: If there are still more than N_BITS_TO_READ_AT_A_TIME remaining bits to be written, then write
+            //    individual elements from value into Storage until the remaining number of bits
+            //    to be written is less than N_BITS_TO_READ_AT_A_TIME
+            // 3: If there are still (less than N_BITS_TO_READ_AT_A_TIME) bits to be written, then write the remainder
             //    of the bits into the most significant bits of the next empty element in Storage
 
-            int ValueBits = ADescriptor.RequiredBits;
+            int ValueBits = descriptor.RequiredBits;
 
             if (ValueBits == 0) // There's nothing to do!
-            {
                 return;
-            }
 
-            AValue = AValue == ADescriptor.NativeNullValue ? ADescriptor.EncodedNullValue - ADescriptor.MinValue : AValue - ADescriptor.MinValue;
+            value = descriptor.Nullable && value == descriptor.NativeNullValue 
+              ? descriptor.EncodedNullValue - descriptor.MinValue 
+              : value - descriptor.MinValue;
 
-            // Be paranoid! Ensure there are no bits set in the high order bits above the least significant AValueBits in Value
-            AValue = AValue & ((1 << ValueBits) - 1);
+            // Be paranoid! Ensure there are no bits set in the high order bits above the least significant valueBits in Value
+            value = value & ((1 << ValueBits) - 1);
 
-            int StoragePointer = (int)(StreamWriteBitPos >> kBitLocationToBlockShift);
-            int AvailBitsInCurrentStorageElement = kNBitsReadAtATime - (byte)(StreamWriteBitPos & kBitsRemainingInStorageBlockMask);
+            int StoragePointer = unchecked((int)(StreamWriteBitPos >> BIT_LOCATION_TO_BLOCK_SHIFT));
+            int AvailBitsInCurrentStorageElement = N_BITS_TO_READ_AT_A_TIME - unchecked((byte)(StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK));
 
             // Write initial bits into storage element
             if (AvailBitsInCurrentStorageElement >= ValueBits)
             {
-                Storage[StoragePointer] = Storage[StoragePointer] | ((ulong)AValue << (AvailBitsInCurrentStorageElement - ValueBits));
-                StreamWriteBitPos += (uint)ValueBits;   // Advance the current bit position pointer;
+                Storage[StoragePointer] = Storage[StoragePointer] | (unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - ValueBits));
+                StreamWriteBitPos += unchecked((uint)ValueBits);   // Advance the current bit position pointer;
                 return;
             }
 
             // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
             int RemainingBitsToWrite = ValueBits - AvailBitsInCurrentStorageElement;
-            Storage[StoragePointer] = (Storage[StoragePointer] | ((ulong)AValue >> RemainingBitsToWrite));
+            Storage[StoragePointer] = (Storage[StoragePointer] | (unchecked((ulong)value) >> RemainingBitsToWrite));
 
             /* When using long elements, there can never be a value stored that is larger that the storage element
             // Step 2: Write whole elements
-            while (RemainingBitsToWrite > kNBitsReadAtATime)
+            while (RemainingBitsToWrite > N_BITS_TO_READ_AT_A_TIME)
             {
-                RemainingBitsToWrite -= kNBitsReadAtATime;
-                Storage[++StoragePointer] = (byte)(AValue >> RemainingBitsToWrite); // Peel of the next element and place it into storage
+                RemainingBitsToWrite -= N_BITS_TO_READ_AT_A_TIME;
+                Storage[++StoragePointer] = (byte)(value >> RemainingBitsToWrite); // Peel of the next element and place it into storage
             }
             */
 
             // Step 3: Write remaining bits into next element in Storage
-            if (RemainingBitsToWrite > 0)
-            {
-                Storage[StoragePointer + 1] = ((ulong)AValue & (((ulong)1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite); // Mask out the bits we want...
-            }
+            if (RemainingBitsToWrite > 0) // Mask out the bits we want...
+                Storage[StoragePointer + 1] = (unchecked((ulong)value) & (((ulong)1 << RemainingBitsToWrite) - 1)) << (N_BITS_TO_READ_AT_A_TIME - RemainingBitsToWrite); 
 
             StreamWriteBitPos += (uint)ValueBits;   // Advance the current bit position pointer;
         }
@@ -260,59 +246,55 @@ namespace VSS.TRex.Compression
         /// The variant that take an exact number of value bits is a raw version of the write method that
         /// just writes the given value in the given bits.
         /// </summary>
-        /// <param name="AValue"></param>
-        /// <param name="AValueBits"></param>
-        public void StreamWrite(long AValue, int AValueBits)
+        /// <param name="value"></param>
+        /// <param name="valueBits"></param>
+        public void StreamWrite(long value, int valueBits)
         {
             // Writing occurs in three stages:
             // 1: Fill the remaining unwritten bits in the element referenced by FStreamWritePos
-            // 2: If there are still more than kNBitsReadAtATime remaining bits to be written, then write
-            //    individual elements from AValue into Storage until the reminining number of bits
-            //    to be written is less than kNBitsReadAtATime
-            // 3: If there are still (less than kNBitsReadAtATime) bits to be written, then write the remainder
+            // 2: If there are still more than N_BITS_TO_READ_AT_A_TIME remaining bits to be written, then write
+            //    individual elements from value into Storage until the remaining number of bits
+            //    to be written is less than N_BITS_TO_READ_AT_A_TIME
+            // 3: If there are still (less than N_BITS_TO_READ_AT_A_TIME) bits to be written, then write the remainder
             //    of the bits into the most significant bits of the next empty element in Storage
 
-            if (AValueBits == 0) // There's nothing to do!
-            {
+            if (valueBits == 0) // There's nothing to do!
                 return;
-            }
 
             // Be paranoid! Ensure there are no bits set in the high order bits above the
-            // least significant AValueBits in Value
-            AValue = AValue & ((1 << AValueBits) - 1);
+            // least significant valueBits in Value
+            value = value & ((1 << valueBits) - 1);
 
-            uint StoragePointer = StreamWriteBitPos >> kBitLocationToBlockShift;
-            int AvailBitsInCurrentStorageElement = (int)(kNBitsReadAtATime - (StreamWriteBitPos & kBitsRemainingInStorageBlockMask));
+            uint StoragePointer = StreamWriteBitPos >> BIT_LOCATION_TO_BLOCK_SHIFT;
+            int AvailBitsInCurrentStorageElement = unchecked((int)(N_BITS_TO_READ_AT_A_TIME - (StreamWriteBitPos & BITS_REMAINING_IN_STORAGE_BLOCK_MASK)));
 
             // Write initial bits into storage element
-            if (AvailBitsInCurrentStorageElement >= AValueBits)
+            if (AvailBitsInCurrentStorageElement >= valueBits)
             {
-                Storage[StoragePointer] = (Storage[StoragePointer] | ((ulong)AValue << (AvailBitsInCurrentStorageElement - AValueBits)));
-                StreamWriteBitPos += (uint)AValueBits;   // Advance the current bit position pointer;
+                Storage[StoragePointer] = (Storage[StoragePointer] | (unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - valueBits)));
+                StreamWriteBitPos += unchecked((uint)valueBits);   // Advance the current bit position pointer;
                 return;
             }
 
             // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
-            int RemainingBitsToWrite = AValueBits - AvailBitsInCurrentStorageElement;
-            Storage[StoragePointer] = (Storage[StoragePointer] | ((ulong)AValue >> RemainingBitsToWrite));
+            int RemainingBitsToWrite = valueBits - AvailBitsInCurrentStorageElement;
+            Storage[StoragePointer] = Storage[StoragePointer] | (unchecked((ulong)value) >> RemainingBitsToWrite);
 
             /* When using long elements, there can never be a value stored that is larger that the storage element
             // Step 2: Write whole elements
-            while (RemainingBitsToWrite > kNBitsReadAtATime)
+            while (RemainingBitsToWrite > N_BITS_TO_READ_AT_A_TIME)
             {
-                RemainingBitsToWrite -= kNBitsReadAtATime;
-                Storage[++StoragePointer] = (byte)(AValue >> RemainingBitsToWrite); // Peel of the next element and place it into storage
+                RemainingBitsToWrite -= N_BITS_TO_READ_AT_A_TIME;
+                Storage[++StoragePointer] = (byte)(value >> RemainingBitsToWrite); // Peel of the next element and place it into storage
             }
             */
 
             // Step 3: Write remaining bits into next element in Storage
-            if (RemainingBitsToWrite > 0)
-            {
-                Storage[StoragePointer + 1] = (((ulong)AValue & (((ulong)1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite)); // Mask out the bits we want...
-            }
+            if (RemainingBitsToWrite > 0) // Mask out the bits we want...
+                Storage[StoragePointer + 1] = ((unchecked((ulong)value) & (((ulong)1 << RemainingBitsToWrite) - 1)) << (N_BITS_TO_READ_AT_A_TIME - RemainingBitsToWrite)); 
 
-            StreamWriteBitPos += (uint)AValueBits;   // Advance the current bit position pointer;
+            StreamWriteBitPos += unchecked((uint)valueBits);   // Advance the current bit position pointer;
         }
 
         public void StreamWriteEnd()
@@ -323,7 +305,7 @@ namespace VSS.TRex.Compression
         /// <summary>
         /// ReadBitField reads a single bit-field from the bitfield array. The bitfield is
         /// identified by the bit location and number of bits in the value to be read.
-        /// Once the value has been read the value of ABitLocation is set to the next bit after
+        /// Once the value has been read the value of bitLocation is set to the next bit after
         /// the end of the value just read.
         /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
         /// encoded to native null value conversion and deal with adding the minvalue
@@ -331,76 +313,74 @@ namespace VSS.TRex.Compression
         /// The variant that take an exact number of value bits is a raw version of the read method that
         /// just reads the value from the given bits.
         /// </summary>
-        /// <param name="ABitLocation"></param>
-        /// <param name="ADescriptor"></param>
+        /// <param name="bitLocation"></param>
+        /// <param name="descriptor"></param>
         /// <returns></returns>
-        public long ReadBitField(ref int ABitLocation, EncodedBitFieldDescriptor ADescriptor)
+        public long ReadBitField(ref uint bitLocation, EncodedBitFieldDescriptor descriptor)
         {
             // Reading occurs in three stages:
-            // 1: Read the remaining bits in the element referenced by ABitLocation
-            // 2: If there are still more than kNBitsReadAtATime remaining bits to be read, then read
+            // 1: Read the remaining bits in the element referenced by bitLocation
+            // 2: If there are still more than N_BITS_TO_READ_AT_A_TIME remaining bits to be read, then read
             //    individual elements from Storage into Result until the remaining number of bits
-            //    to be read is less than kNBitsReadAtATime
-            // 3: If there are still (less than kNBitsReadAtATime) bits to be read, then read the remainder
+            //    to be read is less than N_BITS_TO_READ_AT_A_TIME
+            // 3: If there are still (less than N_BITS_TO_READ_AT_A_TIME) bits to be read, then read the remainder
             //    of the bits from the most significant bits of the next element in Storage
 
-            int ValueBits = ADescriptor.RequiredBits;
+            int valueBits = descriptor.RequiredBits;
 
-            if (ValueBits == 0) // There's nothing to do!
-            {
-                return ADescriptor.AllValuesAreNull ? ADescriptor.NativeNullValue : ADescriptor.MinValue;
-            }
+            if (valueBits == 0) // There's nothing to do!
+                return descriptor.AllValuesAreNull ? descriptor.NativeNullValue : descriptor.MinValue;
 
 #if DEBUG
             if (Storage == null)
             {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [ABitLocation, ValueBits]), slmcAssert);
+                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [bitLocation, ValueBits]), slmcAssert);
                 return 0;
             }
 
-            if (ABitLocation + ValueBits > NumBits)
+            if (bitLocation + valueBits > NumBits)
             {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, ValueBits, FNumBits]), slmcAssert);
+                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [bitLocation, ValueBits, FNumBits]), slmcAssert);
                 return 0;
             }
 #endif
 
-            int BlockPointer = ABitLocation >> kBitLocationToBlockShift;
-            int RemainingBitsInCurrentStorageBlock = kNBitsReadAtATime - (ABitLocation & kBitsRemainingInStorageBlockMask);
+            uint BlockPointer = bitLocation >> BIT_LOCATION_TO_BLOCK_SHIFT;
+            int RemainingBitsInCurrentStorageBlock = unchecked((int)(N_BITS_TO_READ_AT_A_TIME - (bitLocation & BITS_REMAINING_IN_STORAGE_BLOCK_MASK)));
             long Result;
 
             // Read initial bits from storage element
-            if (RemainingBitsInCurrentStorageBlock >= ValueBits)
+            if (RemainingBitsInCurrentStorageBlock >= valueBits)
             {
-                Result = (long)((Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits)) & (((ulong)1 << ValueBits) - 1));
+                Result = unchecked((long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - valueBits)) & (((long)1 << valueBits) - 1));
             }
             else
             {
                 // There are more bits than can fit in RemainingBitsInCurrentStorageElement
                 // Step 1: Fill remaining bits
-                Result = (long)Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1);
-                int BitsToRead = ValueBits - RemainingBitsInCurrentStorageBlock;
+                Result = unchecked((long)Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1));
+                int BitsToRead = valueBits - RemainingBitsInCurrentStorageBlock;
 
                 /* When using long elements, there can never be a value stored that is larger that the storage element
                 // Step 2: Read whole elements
-                while (BitsToRead > BitFieldArray.kNBitsReadAtATime)
+                while (BitsToRead > BitFieldArray.N_BITS_TO_READ_AT_A_TIME)
                 {
-                    BitsToRead -= BitFieldArray.kNBitsReadAtATime;
-                    Result = (Result << BitFieldArray.kNBitsReadAtATime) | Storage[++BlockPointer]; // Add the next element from storage and put it in result
+                    BitsToRead -= BitFieldArray.N_BITS_TO_READ_AT_A_TIME;
+                    Result = (Result << BitFieldArray.N_BITS_TO_READ_AT_A_TIME) | Storage[++BlockPointer]; // Add the next element from storage and put it in result
                 }
                 */
 
                 // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
                 {
-                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (kNBitsReadAtATime - BitsToRead)));
+                    Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
                 }
             }
 
             // Compute the true result of the read by taking nullability and the offset of MinValue into account
-            Result = ADescriptor.Nullable && Result == ADescriptor.EncodedNullValue - ADescriptor.MinValue ? ADescriptor.NativeNullValue : Result + ADescriptor.MinValue;
+            Result = descriptor.Nullable && Result == descriptor.EncodedNullValue - descriptor.MinValue ? descriptor.NativeNullValue : Result + descriptor.MinValue;
 
-            ABitLocation += ValueBits; // Advance the current bit position pointer;
+            bitLocation += unchecked((uint)valueBits); // Advance the current bit position pointer;
 
             return Result;
         }
@@ -408,7 +388,7 @@ namespace VSS.TRex.Compression
         /// <summary>
         /// ReadBitField reads a single bit-field from the bitfield array. The bitfield is
         /// identified by the bit location and number of bits in the value to be read.
-        /// Once the value has been read the value of ABitLocation is set to the next bit after
+        /// Once the value has been read the value of bitLocation is set to the next bit after
         /// the end of the value just read.
         /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
         /// encoded to native null value conversion and deal with adding the minvalue
@@ -416,71 +396,67 @@ namespace VSS.TRex.Compression
         /// The variant that take an exact number of value bits is a raw version of the read method that
         /// just reads the value from the given bits.
         /// </summary>
-        /// <param name="ABitLocation"></param>
-        /// <param name="AValueBits"></param>
+        /// <param name="bitLocation"></param>
+        /// <param name="valueBits"></param>
         /// <returns></returns>
-        public long ReadBitField(ref int ABitLocation, int AValueBits)
+        public long ReadBitField(ref uint bitLocation, int valueBits)
         {
             // Reading occurs in three stages:
-            // 1: Read the remaining bits in the element referenced by ABitLocation
-            // 2: If there are still more than kNBitsReadAtATime remaining bits to be read, then read
+            // 1: Read the remaining bits in the element referenced by bitLocation
+            // 2: If there are still more than N_BITS_TO_READ_AT_A_TIME remaining bits to be read, then read
             //    individual elements from Storage into Result until the remaining number of bits
-            //    to be read is less than kNBitsReadAtATime
-            // 3: If there are still (less than kNBitsReadAtATime) bits to be read, then read the remainder
+            //    to be read is less than N_BITS_TO_READ_AT_A_TIME
+            // 3: If there are still (less than N_BITS_TO_READ_AT_A_TIME) bits to be read, then read the remainder
             //    of the bits from the most significant bits of the next element in Storage
 
-            if (AValueBits == 0) // There's nothing to do!
-            {
+            if (valueBits == 0) // There's nothing to do!
                 return 0;
-            }
 
 #if DEBUG
             if (Storage == null)
             {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [ABitLocation, AValueBits]), slmcAssert);
+                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [bitLocation, valueBits]), slmcAssert);
                 return 0;
             }
 
-            if ((ABitLocation + AValueBits) > NumBits)
+            if ((bitLocation + valueBits) > NumBits)
             {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, AValueBits, FNumBits]), slmcAssert);
+                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [bitLocation, valueBits, FNumBits]), slmcAssert);
                 return 0;
             }
 #endif
 
             long Result;
-            int BlockPointer = ABitLocation >> kBitLocationToBlockShift;
-            int RemainingBitsInCurrentStorageBlock = kNBitsReadAtATime - (ABitLocation & kBitsRemainingInStorageBlockMask);
+            uint BlockPointer = bitLocation >> BIT_LOCATION_TO_BLOCK_SHIFT;
+            int RemainingBitsInCurrentStorageBlock = unchecked((int)(N_BITS_TO_READ_AT_A_TIME - (bitLocation & BITS_REMAINING_IN_STORAGE_BLOCK_MASK)));
 
             // Read initial bits from storage block
-            if (RemainingBitsInCurrentStorageBlock >= AValueBits)
+            if (RemainingBitsInCurrentStorageBlock >= valueBits)
             {
-                Result = (long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - AValueBits)) & ((1 << AValueBits) - 1);
+                Result = unchecked((long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - valueBits)) & ((1 << valueBits) - 1));
             }
             else
             {
                 // There are more bits than can fit in RemainingBitsInCurrentStorageElement
                 // Step 1: Fill remaining bits
-                Result = (long)Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1);
-                int BitsToRead = AValueBits - RemainingBitsInCurrentStorageBlock;
+                Result = unchecked((long)Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1));
+                int BitsToRead = valueBits - RemainingBitsInCurrentStorageBlock;
 
                 /* When using long elements, there can never be a value stored that is larger that the storage element
                 // Step 2: Read whole elements
-                while (BitsToRead > BitFieldArray.kNBitsReadAtATime)
+                while (BitsToRead > BitFieldArray.N_BITS_TO_READ_AT_A_TIME)
                 {
-                    BitsToRead -= BitFieldArray.kNBitsReadAtATime;
-                    Result = (Result << BitFieldArray.kNBitsReadAtATime) | Storage[++BlockPointer]; // Add the next element from storage and put it in result
+                    BitsToRead -= BitFieldArray.N_BITS_TO_READ_AT_A_TIME;
+                    Result = (Result << BitFieldArray.N_BITS_TO_READ_AT_A_TIME) | Storage[++BlockPointer]; // Add the next element from storage and put it in result
                 }
                 */
 
                 // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
-                {
-                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (kNBitsReadAtATime - BitsToRead)));
-                }
+                    Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
             }
 
-            ABitLocation += AValueBits; // Advance the current bit position pointer;
+            bitLocation += unchecked((uint)valueBits); // Advance the current bit position pointer;
 
             return Result;
         }

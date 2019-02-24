@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     static readonly int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 14;
+    private const int kGridDataTypeCount_Expected = 15;
     private const int kGridDataTypeCount = 29;
 
     /// <summary>
@@ -37,7 +37,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.PassCount ||
              gridDataType == GridDataType.CellProfile ||
              gridDataType == GridDataType.CellPasses ||
-             gridDataType == GridDataType.CCA;
+             gridDataType == GridDataType.CCA ||
+             gridDataType == GridDataType.CutFill;
     }
 
     /// <summary>

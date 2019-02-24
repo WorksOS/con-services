@@ -1,42 +1,32 @@
-function WriteMsg
-{
-    Param([string]$message, [string]$color = "darkgray", [bool]$noNewLine = $False)
+[console]::ResetColor()
 
-    if ($noNewLine) {
-        Write-Host $message -ForegroundColor $color -NoNewline
-    }
-    else
-    {
-        Write-Host $message -ForegroundColor $color
-    }
+# If regularly re running the script on the same service it's faster to opt out of setting the environment vars each time.
+IF (-not($args -contains "--no-vars")) { & .\set-environment-variables.ps1 }
 
-    [Console]::ResetColor()
-}
+Write-Host "Stopping Docker containers"
+docker ps -q | ForEach-Object { docker stop $_ }
 
-WriteMsg "Updating environment IP address"
-& .\UpdateEnvFileIpAddress.ps1
+# This is not ideal; but too often the containers fail to start due to drive or volume errors on the existing containers.
+Write-Host "Removing old application containers"
+docker ps -aq --filter "name=fileaccess_" | ForEach-Object { docker rm $_ }
 
-WriteMsg "Stopping Docker containers"
-docker stop $(docker ps -a -q)
-WriteMsg "Removing Docker containers"
-docker rm $(docker ps -a -q)
-
-WriteMsg "Logging in to image host"
+Write-Host "Logging in to image host"
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
-$Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
-
-WriteMsg "Building solution"
+Write-Host "Building solution"
 Invoke-Expression "& .\build.ps1"
 Set-Location AcceptanceTests\scripts
 Invoke-Expression ".\deploy_win.bat"
 
-WriteMsg "Composing containers"
+Write-Host "Composing containers"
 Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose rm -f"
 Invoke-Expression "docker-compose -f docker-compose-local.yml pull"
 Invoke-Expression "docker-compose -f docker-compose-local.yml up --build | Tee-Object -FilePath c:\temp\Productivity3D.FileAccess.WebApi.log"
 
-if (-not $?) {
-    WriteMsg "Error: Environment failed to start" "red"
+IF (-not $?) {
+    Write-Host "Error: Environment failed to start" -ForegroundColor Red
+    Exit 1
 }
+
+Write-Host "Finished" -ForegroundColor Green

@@ -9,6 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
@@ -52,18 +53,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var customDescriptor = new TVLPDDesignDescriptor();
-        customDescriptor.Init(0, string.Empty, string.Empty, request.FileDescriptor.Path, request.FileDescriptor.FileName, 0);
+        customDescriptor.Init(0, string.Empty, string.Empty, request.DxfFileDescriptor.Path, request.DxfFileDescriptor.FileName, 0);
 
         log.LogDebug($"{nameof(LineworkFileExecutor)}::{nameof(ProcessForRaptor)}() : {nameof(TVLPDDesignDescriptor)} = {JsonConvert.SerializeObject(customDescriptor)}");
 
         var args = new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
         {
-          DataModelID = request.ProjectId ?? -1,
+          DataModelID = request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           LineworkDescriptor = customDescriptor,
           MaxVerticesPerBoundary = request.NumberOfVerticesPerBoundary,
           MaxBoundariesToProcess = request.NumberOfBoundariesToProcess,
-          CoordSystemFileName = request.CoordSystemFileName,
-          LineworkUnits = request.LineworkUnits
+          CoordSystemFileName = request.CoordinateSystemFileDescriptor.FileName,
+          LineworkUnits = (TVLPDDistanceUnits)request.LineworkUnits
         };
 
         returnResult = raptorClient.GetBoundariesFromLinework(args, out var lineworksBoundary);

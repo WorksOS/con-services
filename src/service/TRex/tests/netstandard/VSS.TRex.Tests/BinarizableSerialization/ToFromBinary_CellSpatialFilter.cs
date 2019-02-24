@@ -10,13 +10,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>();
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>();
     }
 
     [Fact]
     public void Test_CellSpatialFilter_CoordsAreGrid()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
       {
         CoordsAreGrid = true
       },
@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_IsSquare()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
         {
           IsSquare = true,
           Fence = new Fence(0, 0, 10, 10)
@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_IsAlignmentFence()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
         {
           IsAlignmentMask = true,
           StartStation = 0.0,
@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_IsPositional()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
         {
           PositionX = 10,
           PositionY = 11,
@@ -66,7 +66,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_IsDesignMask()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
         {
           IsDesignMask = true,
           SurfaceDesignMaskDesignUid = Guid.NewGuid()
@@ -77,7 +77,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_OverrideSpatialCellRestriction()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
         {
            OverrideSpatialCellRestriction = new BoundingIntegerExtent2D(1, 2, 3, 4)
         },
@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellSpatialFilter_IsSpatial()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellSpatialFilter>(new CellSpatialFilter
+      SimpleBinarizableInstanceTester.TestClassEx<CellSpatialFilter>(new CellSpatialFilter
         {
           IsSpatial = true,
           Fence = new Fence(0, 0, 10, 10)

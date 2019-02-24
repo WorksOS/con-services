@@ -3,7 +3,7 @@
 namespace VSS.TRex.Rendering.Palettes.Interfaces
 {
     /// <summary>
-    /// IPlanViewPalette defines the responsibilty of deriving a colour value from a datum supplied to it
+    /// IPlanViewPalette defines the responsibility of deriving a colour value from a datum supplied to it
     /// </summary>
     public interface IPlanViewPalette
     {

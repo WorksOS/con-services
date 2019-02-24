@@ -53,16 +53,16 @@ namespace VSS.TRex.Designs.TTM.Optimised
         Header.Read(reader);
 
         var identifier = System.Text.Encoding.ASCII.GetString(Header.FileSignature);
-        if (identifier != Consts.TTMFileIdentifier)
+        if (identifier != Consts.TTM_FILE_IDENTIFIER)
         {
           throw new TTMFileReadException("File is not a Trimble TIN Model.");
         }
 
         // Check file version
-        if (Header.FileMajorVersion != Consts.TTMMajorVersion
-            || Header.FileMinorVersion != Consts.TTMMinorVersion)
+        if (Header.FileMajorVersion != Consts.TTM_MAJOR_VERSION
+            || Header.FileMinorVersion != Consts.TTM_MINOR_VERSION)
         {
-          throw new TTMFileReadException($"TTM_Optimized.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
+          throw new TTMFileReadException($"TTM_Optimized.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTM_MAJOR_VERSION}: {Consts.TTM_MINOR_VERSION}");
         }
 
         // ModelName = (String)(InternalNameToANSIString(Header.DTMModelInternalName));

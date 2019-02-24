@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
-    /// Iterates through cells in subgrids in a cell pass by cell pass manner.
+    /// Iterates through cells in sub grids in a cell pass by cell pass manner.
     /// This version only operates on non-static cell passes
     /// </summary>
     public class SubGridSegmentCellPassIterator_NonStatic : SubGridSegmentCellPassIterator_Base
@@ -49,12 +49,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         }
 
         /// <summary>
-        /// Provides non-static cell pass extract semantics for the currnet cell pass in the iteration
+        /// Provides non-static cell pass extract semantics for the current cell pass in the iteration
         /// </summary>
         /// <returns></returns>
         protected override CellPass ExtractCellPass()
         {
-            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(cellX, cellY, cellInSegmentIndex);
+            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(cellX, cellY, unchecked((uint)cellInSegmentIndex));
         }
     }
 }

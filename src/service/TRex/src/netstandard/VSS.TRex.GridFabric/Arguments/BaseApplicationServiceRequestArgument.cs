@@ -27,12 +27,12 @@ namespace VSS.TRex.GridFabric.Arguments
     public Guid ProjectID { get; set; }
 
     /// <summary>
-    /// The set of filters to be applied to the requested subgrids
+    /// The set of filters to be applied to the requested sub grids
     /// </summary>
     public IFilterSet Filters { get; set; }
 
     /// <summary>
-    /// The design to be used in cases of cut/fill or DesignHeights subgrid requests
+    /// The design to be used in cases of cut/fill or DesignHeights sub grid requests
     /// </summary>
     public Guid ReferenceDesignUID { get; set; } = Guid.Empty;
 

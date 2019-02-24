@@ -1,8 +1,8 @@
 ﻿using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
-using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.Designs.Servers.Client
 {
@@ -17,7 +17,7 @@ namespace VSS.TRex.Designs.Servers.Client
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public ClientHeightLeafSubGrid ComputeDesignElevations(CalculateDesignElevationPatchArgument argument)
+        public CalculateDesignElevationPatchResponse ComputeDesignElevations(CalculateDesignElevationPatchArgument argument)
         {
             DesignElevationPatchRequest request = new DesignElevationPatchRequest();
 
