@@ -82,9 +82,9 @@ namespace TCCToDataOcean
       Log.LogInformation("Cleaning database, dropping collections");
       _migrationDb.DropTables(new[]
       {
-          LiteDbAgent.Table.Projects,
-          LiteDbAgent.Table.Files,
-          LiteDbAgent.Table.Errors
+          Table.Projects,
+          Table.Files,
+          Table.Errors
       });
 
       var workingTmpDir = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp");
@@ -101,12 +101,12 @@ namespace TCCToDataOcean
       var projectTasks = new List<Task<bool>>(projects.Count);
 
       //var project = projects.First(p => p.ProjectUID == "67a52e4f-faa2-e511-80e5-0050568821e6");
-      //_migrationDb.WriteRecord(LiteDbAgent.Table.Projects, project);
+      //_migrationDb.WriteRecord(Table.Projects, project);
       //await MigrateProject(project);
 
       foreach (var project in projects)
       {
-        _migrationDb.WriteRecord(LiteDbAgent.Table.Projects, project);
+        _migrationDb.WriteRecord(Table.Projects, project);
 
         projectTasks.Add(MigrateProject(project));
       }
@@ -125,7 +125,7 @@ namespace TCCToDataOcean
     private async Task<bool> MigrateProject(Project project)
     {
       Log.LogInformation($"{nameof(MigrateProject)} [{project.ProjectUID}]: Migrating project '{project.Name}'");
-      _migrationDb.SetMigrationState(LiteDbAgent.Table.Projects, project, LiteDbAgent.MigrationState.InProgress);
+      _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress);
 
       var coordinateSystemFileMigrationResult = false;
 
@@ -158,7 +158,7 @@ namespace TCCToDataOcean
 
         foreach (var file in selectedFiles)
         {
-          _migrationDb.WriteRecord(LiteDbAgent.Table.Files, file);
+          _migrationDb.WriteRecord(Table.Files, file);
           var migrationResult = MigrateFile(file);
 
           fileTasks.Add(migrationResult);
@@ -177,7 +177,7 @@ namespace TCCToDataOcean
       var result = coordinateSystemFileMigrationResult && importedFilesResult;
       Log.LogInformation($"PUID: {project.ProjectUID} | Migration result: {result}");
 
-      _migrationDb.SetMigrationState(LiteDbAgent.Table.Projects, project, result ? LiteDbAgent.MigrationState.Completed : LiteDbAgent.MigrationState.Failed);
+      _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed);
 
       return result;
     }
@@ -231,12 +231,12 @@ namespace TCCToDataOcean
 
       using (var fileContents = await FileRepo.GetFile(FileSpaceId, $"{file.Path}/{file.Name}"))
       {
-        _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.InProgress);
+        _migrationDb.SetMigrationState(Table.Files, file, MigrationState.InProgress);
 
         if (fileContents == null)
         {
           Log.LogError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
-          _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.Failed);
+          _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Failed);
           _migrationDb.WriteError(file.ProjectUid, $"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
 
           return (false, null);
@@ -262,7 +262,7 @@ namespace TCCToDataOcean
         : ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
       Log.LogInformation($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
-      _migrationDb.SetMigrationState(LiteDbAgent.Table.Files, file, LiteDbAgent.MigrationState.Completed);
+      _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
 
       return (true, result);
     }
