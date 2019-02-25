@@ -46,7 +46,7 @@ namespace VSS.MasterData.Repositories
         asset.Model = assetEvent.Model;
         asset.ModelYear = assetEvent.ModelYear;
         asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue && assetEvent.OwningCustomerUID != Guid.Empty
+        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue && assetEvent.OwningCustomerUID.Value != Guid.Empty
           ? assetEvent.OwningCustomerUID.ToString()
           : null;
         asset.IsDeleted = false;
@@ -63,7 +63,7 @@ namespace VSS.MasterData.Repositories
         asset.ModelYear = assetEvent.ModelYear;
         asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
         asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue
+        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue && assetEvent.OwningCustomerUID.Value != Guid.Empty
           ? assetEvent.OwningCustomerUID.ToString()
           : null;
         asset.EquipmentVIN = assetEvent.EquipmentVIN;
