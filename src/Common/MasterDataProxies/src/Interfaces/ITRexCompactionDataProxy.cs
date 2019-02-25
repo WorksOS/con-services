@@ -163,10 +163,28 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <summary>
     /// Sends a request to get a TIN surface data from the TRex database.
     /// </summary>
-    /// <param name="compactionExportRequest"></param>
+    /// <param name="compactionSurfaceExportRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<CompactionExportResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
+    Task<CompactionExportResult> SendSurfaceExportRequest(CompactionSurfaceExportRequest compactionSurfaceExportRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get Veta format .csv output from TRex.
+    /// </summary>
+    /// <param name="compactionVetaExportRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<CompactionExportResult> SendVetaExportRequest(CompactionVetaExportRequest compactionVetaExportRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get PassCount .csv output from TRex.
+    /// </summary>
+    /// <param name="compactionPassCountExportRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<CompactionExportResult> SendPassCountExportRequest(CompactionPassCountExportRequest compactionPassCountExportRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>

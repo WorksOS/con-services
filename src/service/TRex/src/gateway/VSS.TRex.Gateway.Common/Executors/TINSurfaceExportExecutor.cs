@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as CompactionExportRequest;
+      var request = item as CompactionSurfaceExportRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<CompactionExportRequest>();

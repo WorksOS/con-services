@@ -7,6 +7,8 @@
     SurfaceExport,
     PatchExport,
     PVMRendering,
-    GriddedReport
+    GriddedReport,
+    CSVExport,
+    PassCountExport
   }
 }

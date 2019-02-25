@@ -248,10 +248,8 @@ namespace VSS.TRex.SubGrids.Executors
         Log.LogError($"Design profiler sub grid elevation request for {address} failed with error {ProfilerRequestResult}");
         return ServerRequestResult.FailedToComputeDesignElevationPatch;
       }
-
+      
       // Reach into the sub grid request layer and retrieve an appropriate sub grid
-      requester.CellOverrideMask.Fill();
-
       ServerRequestResult result = requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, out clientGrid);
 
       if (result != ServerRequestResult.NoError)

@@ -65,19 +65,5 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
       EndStation = reader.ReadDouble();
       Offsets = reader.ReadDoubleArray();
     }
-    
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ AlignmentDesignUid.GetHashCode();
-        hashCode = (hashCode * 397) ^ CrossSectionInterval.GetHashCode();
-        hashCode = (hashCode * 397) ^ StartStation.GetHashCode();
-        hashCode = (hashCode * 397) ^ EndStation.GetHashCode();
-        hashCode = (hashCode * 397) ^ Offsets.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

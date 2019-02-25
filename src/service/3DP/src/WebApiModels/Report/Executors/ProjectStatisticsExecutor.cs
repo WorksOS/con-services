@@ -1,5 +1,7 @@
-﻿using BoundingExtents;
+﻿using System.Net;
+using BoundingExtents;
 using SVOICStatistics;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -35,6 +37,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+#if !RAPTOR
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+#else
       var request = CastRequestObjectTo<ProjectStatisticsRequest>(item);
 
       bool success = raptorClient.GetDataModelStatistics(
@@ -46,6 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         return ConvertProjectStatistics(statistics);
 
       throw CreateServiceException<ProjectStatisticsExecutor>();
+#endif
     }
   }
 }

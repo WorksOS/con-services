@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -10,12 +9,12 @@ using VSS.TRex.Storage.Models;
 namespace VSS.TRex.Reports.Gridded.GridFabric
 {
   /// <summary>
-  /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 
+  /// The grid compute function responsible for coordinating sub grids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
   public class GriddedReportRequestComputeFunc : BaseComputeFunc, IComputeFunc<GriddedReportRequestArgument, GriddedReportRequestResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GriddedReportRequestComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection

@@ -162,5 +162,11 @@
     /// to either expire or to re-validate the cache.
     /// </summary>
     public const int SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS = 600; // override with SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS
+
+    /// <summary>
+    /// The maximum number of passCount or Veta records to be exported
+    /// </summary>
+    public const int DEFAULT_MAX_EXPORT_ROWS = 10000000; // override with MAX_EXPORT_RECORDS 
+
   }
 }

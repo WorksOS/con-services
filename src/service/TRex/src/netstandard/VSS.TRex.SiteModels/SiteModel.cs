@@ -751,6 +751,39 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
+    /// GetDateRange returns the chronological extents of production data in the site model.
+    /// if no production data exists, then min = MaxValue and max and MinValue
+    /// </summary>
+    /// <returns></returns>
+    public (DateTime startUtc, DateTime endUtc) GetDateRange()
+    {
+      DateTime minDate = DateTime.MaxValue;
+      DateTime maxDate = DateTime.MinValue;
+
+      foreach (var machine in Machines)
+      {
+        var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+        if (events.Count() > 0)
+        {
+          events.GetStateAtIndex(0, out DateTime eventDateFirst, out _);
+          if (minDate > eventDateFirst)
+            minDate = eventDateFirst;
+          if (maxDate < eventDateFirst)
+            maxDate = eventDateFirst;
+
+          if (events.Count() > 1)
+          {
+            var eventDateLast = events.LastStateDate();
+            if (maxDate < eventDateLast)
+              maxDate = eventDateLast;
+          }
+        }
+      }
+
+      return (minDate, maxDate);
+    }
+
+    /// <summary>
     /// Returns simple metadata about the site model
     /// </summary>
     /// <returns></returns>

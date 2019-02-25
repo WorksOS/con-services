@@ -93,7 +93,7 @@ end;
 
         IDesign designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID).Designs.Locate(designUid);
 
-        string designFilePathAndName = Path.Combine(DesignHelper.EstablishLocalDesignFilepath(DataModelID),
+        string designFilePathAndName = Path.Combine(FilePathHelper.GetTempFolderForProject(DataModelID),
           designRef.Get_DesignDescriptor().FileName);
 
         if (!File.Exists(designFilePathAndName))

@@ -51,30 +51,30 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/surface/ttm")]
-    public CompactionExportResult PostTINSurface([FromBody] CompactionExportRequest compactionExportRequest)
+    public CompactionExportResult PostTINSurface([FromBody] CompactionSurfaceExportRequest compactionSurfaceExportRequest)
     {
       Log.LogInformation($"{nameof(PostTINSurface)}: {Request.QueryString}");
 
       Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
 
-      compactionExportRequest.Validate();
+      compactionSurfaceExportRequest.Validate();
 
       var tinResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(compactionExportRequest) as TINSurfaceExportResult);
+          .Process(compactionSurfaceExportRequest) as TINSurfaceExportResult);
 
       const string TTM_EXTENSION = ".ttm";
       const string ZIP_EXTENSION = ".zip";
 
-      var fullFileName = BuildTINFilePath(compactionExportRequest.FileName, ZIP_EXTENSION);
+      var fullFileName = BuildTINFilePath(compactionSurfaceExportRequest.FileName, ZIP_EXTENSION);
 
       if (FileSystem.Exists(fullFileName))
         FileSystem.Delete(fullFileName);
 
       using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
       {
-        var entry = zipFile.CreateEntry(compactionExportRequest.FileName + TTM_EXTENSION);
+        var entry = zipFile.CreateEntry(compactionSurfaceExportRequest.FileName + TTM_EXTENSION);
         using (var stream = entry.Open())
           new MemoryStream(tinResult?.TINData).CopyTo(stream);
       }

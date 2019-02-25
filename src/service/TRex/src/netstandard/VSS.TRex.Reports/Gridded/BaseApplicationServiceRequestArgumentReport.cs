@@ -80,22 +80,6 @@ namespace VSS.TRex.Reports.Gridded
       ReportPassCount = reader.ReadBoolean();
       ReportTemperature = reader.ReadBoolean();
     }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportElevation.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportCutFill.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportCmv.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportMdp.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportPassCount.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportTemperature.GetHashCode();
-        return hashCode;
-      }
-    }
-
   }
 }
 

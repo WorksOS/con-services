@@ -18,6 +18,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exceptions;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
@@ -75,6 +76,9 @@ namespace VSS.TRex.Tests.TestFixtures
           return new GriddedReportTask();
         case PipelineProcessorTaskStyle.PVMRendering:
           return new PVMRenderingTask();
+        case PipelineProcessorTaskStyle.CSVExport:
+          return new CSVExportTask();
+
         default:
           return null;
       }
@@ -255,7 +259,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Place the design into the project temp folder prior to executing the render so the design profiler
       // will not attempt to access the file from S3
-      var tempPath = DesignHelper.EstablishLocalDesignFilepath(siteModel.ID);
+      var tempPath = FilePathHelper.GetTempFolderForProject(siteModel.ID);
       var srcFileName = Path.Combine(filePath, fileName);
       var destFileName = Path.Combine(tempPath, fileName);
 

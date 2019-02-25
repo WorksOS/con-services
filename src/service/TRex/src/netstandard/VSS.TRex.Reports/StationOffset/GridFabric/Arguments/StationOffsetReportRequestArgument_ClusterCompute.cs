@@ -46,14 +46,5 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
         Points.Add(point);
       }
     }
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Points != null ? Points.GetHashCode() : 0);
-        return hashCode;
-      }
-    }
   }
 }
