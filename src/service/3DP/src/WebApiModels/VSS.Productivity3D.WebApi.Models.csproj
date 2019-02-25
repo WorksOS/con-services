@@ -88,6 +88,10 @@
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Coord\ResultHandling\" />
+  </ItemGroup>
+
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

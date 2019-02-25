@@ -16,8 +16,6 @@ using VSS.Productivity3D.WebApi.Models.Coord.Contracts;
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 #endif
 using VSS.Productivity3D.WebApi.Models.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {

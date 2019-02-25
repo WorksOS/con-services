@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
       if (csib ==  string.Empty)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to get Coordinate System definition data. Project UID: {siteModel.ID}"));
+          $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
       var csd = ConvertCoordinates.CSIBContentToCSD(csib);
 

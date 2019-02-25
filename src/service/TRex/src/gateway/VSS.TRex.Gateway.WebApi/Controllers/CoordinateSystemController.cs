@@ -4,8 +4,12 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Executors.Coords;
 
@@ -54,7 +58,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetCoordinateSystem)}: {Request.QueryString}");
 
-      var request = new ProjectID(null, new Guid("ff91dd40-1569-4765-a2bc-014321f76ace")/*projectUid*/);
+      var request = new ProjectID(null, projectUid);
 
       request.Validate();
 
@@ -64,5 +68,21 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(request) as CoordinateSystemSettings);
     }
 
+    /// <summary>
+    /// Posts a list of coordinates to a TRex's site model/project for conversion.
+    /// </summary>
+    [Route("api/v1/coordinateconversion")]
+    [HttpPost]
+    public CoordinateConversionResult PostCoordinateConversion([FromBody] CoordinateConversionRequest request)
+    {
+      Log.LogInformation($"{nameof(PostCoordinateConversion)}: {Request.QueryString}");
+
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CoordinateConversionExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request) as CoordinateConversionResult);
+    }
   }
 }

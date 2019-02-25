@@ -5,8 +5,9 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {
@@ -48,13 +49,13 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         {
           var request = CastRequestObjectTo<CoordinateConversionRequest>(item);
 
-          var latLongs = new TWGS84FenceContainer { FencePoints = request.conversionCoordinates.Select(cc => TWGS84Point.Point(cc.x, cc.y)).ToArray() };
+          var latLongs = new TWGS84FenceContainer { FencePoints = request.ConversionCoordinates.Select(cc => TWGS84Point.Point(cc.X, cc.Y)).ToArray() };
 
           var code = raptorClient.GetGridCoordinates
             (
               request.ProjectId ?? -1, 
               latLongs, 
-              request.conversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH, 
+              request.ConversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH, 
               out var pointList
             );
 
@@ -79,9 +80,9 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// </summary>
     private ContractExecutionResult ExecutionResult(TCoordPoint[] pointList)
     {
-      TwoDConversionCoordinate[] convertedPoints = pointList?.Select(cp => TwoDConversionCoordinate.CreateTwoDConversionCoordinate(cp.X, cp.Y)).ToArray();
+      TwoDConversionCoordinate[] convertedPoints = pointList?.Select(cp => new TwoDConversionCoordinate(cp.X, cp.Y)).ToArray();
 
-      return CoordinateConversionResult.CreateCoordinateConversionResult(convertedPoints);
+      return new CoordinateConversionResult(convertedPoints);
     }
   }
 }
