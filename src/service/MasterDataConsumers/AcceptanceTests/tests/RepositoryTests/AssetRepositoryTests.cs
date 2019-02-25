@@ -600,8 +600,10 @@ namespace RepositoryTests
     }
 
     /// <summary>
-    /// ActionUTC is set already to an earlier date
-    /// this could have been from a Create or Update - does it matter?
+    /// This is from a reported bub with the AssetService which
+    ///    incorrectly creates an empty OwnerCustomerUID (bug 71612).
+    ///    this bug was supposedly fixed but has resurfaced.
+    /// Our consumers will now ignore
     /// </summary>
     [TestMethod]
     public void UpdateAsset_IgnoreEmptyCustomerUID()
@@ -610,15 +612,15 @@ namespace RepositoryTests
       var assetEventCreate = new CreateAssetEvent()
       {
         AssetUID = Guid.NewGuid(),
-        AssetName = "AnAssetName",
+        AssetName = null,
         LegacyAssetId = 33334444,
         SerialNumber = "S6T00561",
         MakeCode = "J82",
         Model = "D6RXL",
         AssetType = "TRACK TYPE TRACTORS",
-        IconKey = 23,
-        EquipmentVIN = null,
-        ModelYear = null,
+        IconKey = 0,
+        EquipmentVIN = "origVin",
+        ModelYear = 1998,
         OwningCustomerUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUTC
       };
@@ -628,8 +630,13 @@ namespace RepositoryTests
         AssetUID = assetEventCreate.AssetUID,
         AssetName = "AnAssetName changed",
         LegacyAssetId = 33334444,
+        // following 2 are not avail in our vss-interfaces version,
+        //   but are in vss-messaging later versions.
+        //   however, neither should be changeable
+        // SerialNumber = "S6T00561",
+        // MakeCode = null,
         Model = "D6RXL changed",
-        AssetType = "TRACK TYPE TRACTORS",
+        AssetType = "TRACK TYPE TRACTORS changed",
         IconKey = 11,
         EquipmentVIN = null,
         ModelYear = null,
@@ -645,10 +652,12 @@ namespace RepositoryTests
         SerialNumber = assetEventCreate.SerialNumber,
         MakeCode = assetEventCreate.MakeCode,
         Model = assetEventUpdate.Model,
-        IconKey = assetEventUpdate.IconKey,
         AssetType = assetEventUpdate.AssetType,
-        IsDeleted = false,
+        IconKey = assetEventUpdate.IconKey,
+        EquipmentVIN = assetEventCreate.EquipmentVIN,
+        ModelYear = assetEventCreate.ModelYear,
         OwningCustomerUID = assetEventCreate.OwningCustomerUID.ToString(),
+        IsDeleted = false,
         LastActionedUtc = assetEventUpdate.ActionUTC
       };
 

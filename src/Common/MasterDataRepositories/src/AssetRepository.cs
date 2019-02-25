@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,7 @@ namespace VSS.MasterData.Repositories
         asset.Model = assetEvent.Model;
         asset.ModelYear = assetEvent.ModelYear;
         asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue
+        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue && assetEvent.OwningCustomerUID != Guid.Empty
           ? assetEvent.OwningCustomerUID.ToString()
           : null;
         asset.IsDeleted = false;
