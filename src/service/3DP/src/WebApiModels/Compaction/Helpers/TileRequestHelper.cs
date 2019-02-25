@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     /// <returns>An instance of the TileRequest class.</returns>
     public TileRequest CreateTileRequest(DisplayMode mode, ushort width, ushort height,
-      BoundingBox2DLatLon bbox, ElevationStatisticsResult elevExtents)
+      BoundingBox2DLatLon bbox, ElevationStatisticsResult elevExtents, bool explicitFilters=false)
     {
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       Filter?.Validate();//Why is this here? Should be done where filter set up???
@@ -92,10 +92,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         ProjectId, ProjectUid, null, mode, palette, liftSettings, (VolumesType)computeVolType,
         0, design, filter1, 0, filter2, 0,
         Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,
-        bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, CMV_PERCENT_CHANGE_NUMBER_OF_COLORS, false);
+        bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, CMV_PERCENT_CHANGE_NUMBER_OF_COLORS, false, explicitFilters);
 
       return tileRequest;
     }
+
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 9;

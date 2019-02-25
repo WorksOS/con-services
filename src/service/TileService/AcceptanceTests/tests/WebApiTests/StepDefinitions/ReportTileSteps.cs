@@ -24,6 +24,7 @@ namespace WebApiTests.StepDefinitions
     private string volumeTopUid;
     private string cutFillDesignUid;
     private string language;
+    private bool explicitFilters;
     private Getter<byte[]> tileRequesterGood;
     private Getter<RequestResult> tileRequesterBad;
 
@@ -99,6 +100,12 @@ namespace WebApiTests.StepDefinitions
     public void GivenAVolumeBaseUid(string volumeBaseUid)
     {
       this.volumeBaseUid = volumeBaseUid;
+    }
+
+    [And(@"a explicitFilter ""(.*)""")]
+    public void GivenAExplicitFilterFlag(string explicitFilters)
+    {
+      this.explicitFilters = bool.Parse(explicitFilters);
     }
 
     [When(@"I request a Report Tile and the result file ""(.*)""")]
@@ -180,6 +187,10 @@ namespace WebApiTests.StepDefinitions
       if (!string.IsNullOrEmpty(language))
       {
         sb.Append($"&language={language}");
+      }
+      if (!string.IsNullOrEmpty(explicitFilters.ToString()))
+      {
+        sb.Append($"&explicitFilters={explicitFilters}");
       }
       return sb.ToString();
     }

@@ -51,6 +51,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     [JsonIgnore]
     public bool FiltersAreMatchingGroundToGround { get; set; }
 
+    [JsonIgnore]
+    public bool ExplicitFilters { get; set; }
+
     /// <summary>
     /// Prevents a default instance of the <see cref="SummaryVolumesRequest"/> class from being created.
     /// </summary>
@@ -61,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Creates a <see cref="SummaryVolumesRequest"/> object for use with the v2 API.
     /// </summary>
     /// <returns>New instance of <see cref="SummaryVolumesRequest"/>.</returns>
-    public static SummaryVolumesRequest CreateAndValidate(long projectId, Guid? projectUid, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType)
+    public static SummaryVolumesRequest CreateAndValidate(long projectId, Guid? projectUid, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType, bool explicitFilters=false)
     {
       var request = new SummaryVolumesRequest
       {
@@ -73,7 +76,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         TopDesignDescriptor = topDesignDescriptor,
         VolumeCalcType = volumeCalcType,
         BaseFilterId = -1,
-        TopFilterId = -1
+        TopFilterId = -1,
+        ExplicitFilters = explicitFilters
       };
 
       request.Validate();

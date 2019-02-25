@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     private CompactionProfileResult<CompactionProfileCell> ConvertProfileResult(MemoryStream ms, LiftBuildSettings liftBuildSettings)
     {
       log.LogDebug("Converting profile result");
-      
+
       var pdsiProfile = new PDSProfile();
       var packager = new TICProfileCellListPackager();
       packager.CellList = new TICProfileCellList();
@@ -416,7 +416,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (profile.results.Count > 0)
         profile.results[profile.results.Count - 1].cellType = ProfileCellType.MidPoint;
-      
+
       profile.gridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
 
       var sb = new StringBuilder();
@@ -478,7 +478,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
 #endif
           ProcessSummaryVolumesWithTRexGateway(request)
-#if RAPTOR          
+#if RAPTOR
           : ProcessSummaryVolumesWithRaptor(request)
 #endif
         ;
@@ -493,7 +493,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var startSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
         var endSlicer = new CompactionSummaryVolumesProfileCell(SumVolGapCell);
         endSlicer.station = totalResult.gridDistanceBetweenProfilePoints;
-        volumesResult =         
+        volumesResult =
             new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
             {
               gridDistanceBetweenProfilePoints = totalResult.gridDistanceBetweenProfilePoints,
@@ -504,7 +504,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               }
             };
       }
-      return profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType); 
+      return profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType);
     }
 
     private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithTRexGateway(CompactionProfileProductionDataRequest request)
@@ -546,8 +546,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
       {
-        var volCalcType = (TComputeICVolumesType)request.volumeCalcType.Value;
-        if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        var volCalcType = (TComputeICVolumesType) request.volumeCalcType.Value;
+        if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters && !request.ExplicitFilters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
         }

@@ -77,7 +77,7 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width,
       ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
-      IDictionary<string, string> customHeaders = null);
+      IDictionary<string, string> customHeaders = null, bool explicitFilters = false);
 
     Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid,
       Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null);

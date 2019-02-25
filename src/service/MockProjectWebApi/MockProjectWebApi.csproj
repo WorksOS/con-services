@@ -80,6 +80,8 @@
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilter.json" />
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeFirst.json" />
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeLast.json" />
+    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
+    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesBaseFilter20170305.json" />
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesTopFilter20170621.json" />
     <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
@@ -92,6 +94,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
+    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
     <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />

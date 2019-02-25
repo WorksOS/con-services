@@ -23,17 +23,17 @@ namespace MockProjectWebApi.Services
       var filter = filters
         .filterDescriptors
         .SingleOrDefault(s => string.Equals(s.FilterUid, filterUid, StringComparison.CurrentCultureIgnoreCase));
-  
-        if (filter == null)
+
+      if (filter == null)
+      {
+        return new FilterData
         {
-          return new FilterData
-          {
-            Code = 36,
-            Message =
-              "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
-          };
-        }
-        return new FilterData {filterDescriptor = filter};  
+          Code = 36,
+          Message =
+            "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
+        };
+      }
+      return new FilterData { filterDescriptor = filter };
     }
 
     public FilterListData GetFilters(string projectUid)
@@ -42,7 +42,7 @@ namespace MockProjectWebApi.Services
       {
         return FilterData[projectUid];
       }
-      return new FilterListData{ filterDescriptors = new List<FilterDescriptor>() };
+      return new FilterListData { filterDescriptors = new List<FilterDescriptor>() };
     }
 
     private void CreateTestData()
@@ -104,7 +104,9 @@ namespace MockProjectWebApi.Services
           FilterDescriptors.Dimensions.DimensionsTemperatureRangeFilter,
           FilterDescriptors.Dimensions.DimensionsTempRangeBoundaryFilter,
           FilterDescriptors.Dimensions.DimensionsPassCountRangeFilter,
-          FilterDescriptors.Dimensions.DimensionsAutomaticsFilter
+          FilterDescriptors.Dimensions.DimensionsAutomaticsFilter,
+          FilterDescriptors.Dimensions.VolumesWithExplicitFilter1Nov,
+          FilterDescriptors.Dimensions.VolumesWithExplicitFilter1NovFirstPass
         }
       };
 

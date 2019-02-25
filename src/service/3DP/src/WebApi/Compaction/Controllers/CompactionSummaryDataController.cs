@@ -343,6 +343,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project uid.</param>
     /// <param name="baseUid">The uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The uid for the top surface, either a filter or design.</param>
+    /// <param name="explicitFilters">If true this turns off any implicit filter transformations for summary volumes</param>
     [ProjectVerifier]
     [Route("api/v2/volumes/summary")]
     [HttpGet]
@@ -350,7 +351,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] ISummaryDataHelper summaryDataHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid baseUid,
-      [FromQuery] Guid topUid)
+      [FromQuery] Guid topUid,
+      [FromQuery] bool explicitFilters = false)
     {
       Log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
 
@@ -397,7 +399,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
       }
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType, explicitFilters);
 
       CompactionVolumesSummaryResult volumesSummaryResult;
 
