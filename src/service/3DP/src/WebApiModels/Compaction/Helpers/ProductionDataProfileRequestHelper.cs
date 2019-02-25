@@ -79,6 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       // this would result in the acceptance tests failing to see the callID == in its equality test
       return CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(
         ProjectId,
+        ProjectUid,
         Guid.Empty,
         ProductionDataType.Height,
         Filter,

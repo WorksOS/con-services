@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICOptionsDecls;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -83,11 +84,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
 
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object);
+      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
       ContractExecutionResult result = executor.Process(request);
 
@@ -125,11 +127,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
 
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object);
+      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }

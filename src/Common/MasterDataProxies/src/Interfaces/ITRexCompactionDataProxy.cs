@@ -3,8 +3,10 @@ using System.IO;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.MasterData.Proxies.Interfaces
@@ -129,6 +131,24 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     Task<SummaryVolumesResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get Summary Volumes profiling data from the TRex database.
+    /// </summary>
+    /// <param name="summaryVolumesProfileDataRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ProfileDataResult<SummaryVolumesProfileCell>> SendSummaryVolumesProfileDataRequest(SummaryVolumesProfileDataRequest summaryVolumesProfileDataRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get Production Data profiling data from the TRex database.
+    /// </summary>
+    /// <param name="productionDataProfileDataRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ProfileDataResult<ProfileCellData>> SendProductionDataProfileDataRequest(ProductionDataProfileDataRequest productionDataProfileDataRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>

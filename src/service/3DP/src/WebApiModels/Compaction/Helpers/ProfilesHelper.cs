@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public const int PROFILE_TYPE_NOT_REQUIRED = -1;
     public const int PROFILE_TYPE_HEIGHT = 2;
     public const double ONE_MM = 0.001;
-#if RAPTOR
+
     public static bool CellGapExists(ProfileCellData prevCell, ProfileCellData currCell, out double prevStationIntercept)
     {
       return CellGapExists(prevCell?.Station, prevCell?.InterceptLength, currCell.Station, out prevStationIntercept);
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
      
       return hasPrev && Math.Abs(currStation - prevStationIntercept) > ONE_MM;
     }
-
+#if RAPTOR
     public static void ConvertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,
                                                  out TWGS84Point startPt, out TWGS84Point endPt,
                                                  out bool positionsAreGrid)

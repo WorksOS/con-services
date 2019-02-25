@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
     { 
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
-
+      
       summaryVolumesProfileRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>

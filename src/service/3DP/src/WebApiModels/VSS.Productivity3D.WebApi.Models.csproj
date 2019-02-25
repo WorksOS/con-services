@@ -38,7 +38,7 @@
     <Compile Remove=".\Compaction\Executors\CompactionCellDatumExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\CompactionDesignProfileExecutor.cs" />    
     <Compile Remove=".\Compaction\Executors\CompactionPatchExecutor.cs" />
-    <Compile Remove=".\Compaction\Executors\CompactionProfileExecutor.cs" />    
+    <!--<Compile Remove=".\Compaction\Executors\CompactionProfileExecutor.cs" />-->    
     <Compile Remove=".\Compaction\Executors\DxfTileExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\LineworkFileExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
@@ -69,7 +69,7 @@
     <Compile Remove=".\ProductionData\Executors\GetMachineIdsExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetLayerIdsExecutor.cs" />    
     <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\ProfileProductionDataExecutor.cs" />    
+    <!--<Compile Remove=".\ProductionData\Executors\ProfileProductionDataExecutor.cs" />-->    
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />

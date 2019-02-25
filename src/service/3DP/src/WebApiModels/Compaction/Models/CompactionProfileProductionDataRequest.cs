@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// <summary>
     /// The base filter to use for a summary volumes profile. 
     /// </summary>
-    [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
+    [JsonProperty(PropertyName = "baseFilter", Required = Required.Default)]
     public FilterResult baseFilter { get; private set; }
 
     /// <summary>
@@ -53,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 
     public static CompactionProfileProductionDataRequest CreateCompactionProfileProductionDataRequest(
       long? projectID,
+      Guid? projectUid,
       Guid? callId,
       ProductionDataType profileType,
       FilterResult filter,
@@ -75,6 +76,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       return new CompactionProfileProductionDataRequest
       {
         ProjectId = projectID,
+        ProjectUid = projectUid,
         callId = callId,
         profileType = profileType,
         Filter = filter,
