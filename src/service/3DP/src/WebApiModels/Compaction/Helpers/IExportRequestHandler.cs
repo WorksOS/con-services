@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       bool restrictSize,
       bool rawData,
       OutputTypes outputType,
-      string machineNameString,
+      string machineNames,
       double tolerance = 0.0);
   }
 }

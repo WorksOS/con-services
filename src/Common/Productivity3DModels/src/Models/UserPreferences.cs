@@ -7,19 +7,19 @@
   {
     public string TimeZone { get; set; }
     public string DateSeparator { get; set; }
-    public string TimeSeparator {get; set; }
-    public string ThousandsSeparator {get; set; }
-    public string DecimalSeparator {get; set; }
-    public double TimeZoneOffset {get; set; }
-    public int Language {get; set; }
-    public int Units {get; set; }
-    public int DateTimeFormat {get; set; }
-    public int NumberFormat {get; set; }
-    public int TemperatureUnits {get; set; }
-    public int AssetLabelTypeID {get; set; }
+    public string TimeSeparator { get; set; }
+    public string ThousandsSeparator { get; set; }
+    public string DecimalSeparator { get; set; }
+    public double TimeZoneOffset { get; set; }
+    public int Language { get; set; }
+    public int Units { get; set; }
+    public int DateTimeFormat { get; set; }
+    public int NumberFormat { get; set; }
+    public int TemperatureUnits { get; set; }
+    public int AssetLabelTypeID { get; set; }
 
     /// <summary>
-    /// Constructor with arguments.
+    /// Constractor with arguments.
     /// </summary>
     /// <param name="timeZone"></param>
     /// <param name="dateSeparator"></param>
@@ -34,7 +34,7 @@
     /// <param name="temperatureUnits"></param>
     /// <param name="assetLabelTypeID"></param>
     public UserPreferences(
-      string timeZone, 
+      string timeZone,
       string dateSeparator,
       string timeSeparator,
       string thousandsSeparator,

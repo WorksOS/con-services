@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 #if RAPTOR
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using VLPDDecls;
 #endif
-#if !RAPTOR
-using System.Net;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-#endif
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -86,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       bool restrictSize,
       bool rawData,
       OutputTypes outputType,
-      string machineNameString,
+      string machineNames,
       double tolerance = 0.0)
     {
 #if !RAPTOR
@@ -97,31 +95,27 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
+      machineNameList = new string[0];
 
       if (exportType == ExportTypes.SurfaceExport)
       {
         raptorClient.GetDataModelExtents(ProjectId,
           RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.SurveyedSurfaceExclusionList), out projectExtents);
       }
-      else if (exportType == ExportTypes.VedaExport)
+      else
       {
-        if (!string.IsNullOrEmpty(machineNameString) && machineNameString != "All")
-        {
-          machineNameList = machineNameString.Split(',');
-        }
-#if RAPTOR
         TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
 
         if (machineDetails != null)
         {
-          if (!string.IsNullOrEmpty(machineNameString) && machineNameString != "All")
+          if (!string.IsNullOrEmpty(machineNames) && machineNames != "All")
           {
+            machineNameList = machineNames.Split(',');
             machineDetails = machineDetails.Where(machineDetail => machineNameList.Contains(machineDetail.Name)).ToArray();
           }
 
           machineList = machineDetails.Select(m => new TMachine { AssetID = m.ID, MachineName = m.Name, SerialNo = "" }).ToArray();
         }
-#endif
       }
 
       if (!string.IsNullOrEmpty(fileName))
@@ -152,8 +146,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
-        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone)
-        );
+        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));
 #endif
     }
 
@@ -187,7 +180,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
 
       var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
-      
+
       if (languageIndex == -1)
       {
         languageIndex = (int)LanguageEnum.enUS;

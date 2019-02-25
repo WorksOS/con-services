@@ -61,7 +61,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           // can't change ExportReport as it's used by ProcessWithRaptor().
           var requestHelper = item as ExportRequestHelper;
-          requestHelper.GetMachineNameList();
 
           var compactionVetaExportRequest =
             new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
