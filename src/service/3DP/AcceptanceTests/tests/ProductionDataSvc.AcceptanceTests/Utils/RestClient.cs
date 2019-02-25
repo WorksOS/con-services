@@ -21,7 +21,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
 
-      Productivity3DServiceBaseUrl = $"http://{Environment.GetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST")}{Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI")}";
+      Productivity3DServiceBaseUrl = $"http://{Environment.GetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST")}:{Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI").TrimStart(':')}";
     }
 
     public static Task<HttpResponseMessage> SendHttpClientRequest(string baseAddress, string route, HttpMethod method, string acceptHeader, string contentType, string payloadData = null)

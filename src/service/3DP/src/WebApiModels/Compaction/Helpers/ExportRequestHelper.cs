@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 #if RAPTOR
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using VLPDDecls;
 #endif
-using Microsoft.Extensions.Logging;
+#if !RAPTOR
+using System.Net;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+#endif
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -33,6 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #endif
     private UserPreferenceData userPreferences;
     private ProjectData projectDescriptor;
+    private string[] machineNameList = null;
 
     /// <summary>
     /// Parameter-less constructor is required to support factory create function in <see cref="WebApi"/> project.
@@ -60,15 +63,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return this;
     }
 
-    public UserPreferenceData GetUserPreferences()
-    {
-      return userPreferences;
-    }
-
     public ExportRequestHelper SetProjectDescriptor(ProjectData projectDescriptor)
     {
       this.projectDescriptor = projectDescriptor;
       return this;
+    }
+
+    public string[] GetMachineNameList()
+    {
+      return machineNameList ?? new string[0];
     }
 
     /// <summary>
@@ -94,7 +97,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
-      string[] machineNames = null;
 
       if (exportType == ExportTypes.SurfaceExport)
       {
@@ -105,16 +107,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       {
         if (!string.IsNullOrEmpty(machineNameString) && machineNameString != "All")
         {
-          machineNames = machineNameString.Split(',');
+          machineNameList = machineNameString.Split(',');
         }
 #if RAPTOR
-          TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
 
         if (machineDetails != null)
         {
           if (!string.IsNullOrEmpty(machineNameString) && machineNameString != "All")
           {
-            machineDetails = machineDetails.Where(machineDetail => machineNames.Contains(machineDetail.Name)).ToArray();
+            machineDetails = machineDetails.Where(machineDetail => machineNameList.Contains(machineDetail.Name)).ToArray();
           }
 
           machineList = machineDetails.Select(m => new TMachine { AssetID = m.ID, MachineName = m.Name, SerialNo = "" }).ToArray();
@@ -150,8 +152,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
-        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone),
-        machineNames);
+        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone)
+        );
 #endif
     }
 

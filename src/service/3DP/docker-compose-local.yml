@@ -5,13 +5,13 @@ services:
     ports:
       - "80:80"
     env_file:
-      - docker-compose.env
+      - docker-compose-local.env
     depends_on:
       - mockprojectwebapi
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
     env_file:
-      - docker-compose.env
+      - docker-compose-local.env
     ports:
       - "5001:5001"
 networks:

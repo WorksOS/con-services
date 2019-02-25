@@ -24,7 +24,7 @@ node ('jenkinsslave-pod') {
 				name: 'IMAGE_TAG'
 			),
 			string(
-				defaultValue: "None",
+				defaultValue: " ",
 				description: 'target framework for build and unit tests',
 				name: 'TARGET'
 			),
@@ -101,11 +101,7 @@ node ('jenkinsslave-pod') {
 		}
 	}
 	
-	if ({$targetFramework} == "None") 
-	{ 
-	  $targetFramework = "" 
-	}
-	
+
     stage('Build Solution') {
         
 		//checkout([$class: 'GitSCM', 

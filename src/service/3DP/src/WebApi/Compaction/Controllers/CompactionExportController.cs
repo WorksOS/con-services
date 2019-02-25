@@ -294,7 +294,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string fileName,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetExportReportMachinePasses)}: {Request.QueryString}");
 
       var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);

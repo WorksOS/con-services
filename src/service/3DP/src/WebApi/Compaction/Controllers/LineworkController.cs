@@ -34,30 +34,33 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public LineworkController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
       base(configStore, fileListProxy, settingsManager)
     { }
-    
+
     /// <summary>
     /// Get all boundaries from provided linework (DXF) file.
     /// </summary>
     [HttpPost("api/v2/linework/boundaries")]
-    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromBody] DxfFileRequest requestDto)
+    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromForm] DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
 #if RAPTOR
       var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
       var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
-      requestDto.Filename = Guid.NewGuid().ToString();
-     
       var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
-      var uploadResult = fileUploadUtility.UploadFile(executorRequestObj.FileDescriptor, executorRequestObj.FileData);
-
+      var uploadResult = fileUploadUtility.UploadFile(executorRequestObj.DxfFileDescriptor, executorRequestObj.DxfFileData);
       if (!uploadResult.success) return StatusCode((int)HttpStatusCode.BadRequest, uploadResult.message);
+
+      uploadResult = fileUploadUtility.UploadFile(executorRequestObj.CoordinateSystemFileDescriptor, executorRequestObj.CoordinateSystemFileData);
+      if (!uploadResult.success) return StatusCode((int)HttpStatusCode.BadRequest, uploadResult.message);
+
+      executorRequestObj.ClearFileData();
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)
                          .ProcessAsync(executorRequestObj);
 
-      fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.FileDescriptor.Path, executorRequestObj.FileDescriptor.FileName));
+      fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.DxfFileDescriptor.Path, executorRequestObj.DxfFileDescriptor.FileName));
+      fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.CoordinateSystemFileDescriptor.Path, executorRequestObj.CoordinateSystemFileDescriptor.FileName));
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())
@@ -67,7 +70,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
-
 
     /// <summary>
     /// Gets a DXF linework representation of an alignment.
@@ -113,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         using (var stream = dxfZipEntry.Open())
         {
           result.DxfData?.CopyTo(stream);
-        }        
+        }
       }
 
       // Don't forget to seek back, or else the content length will be 0
@@ -124,6 +126,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
-
   }
 }
