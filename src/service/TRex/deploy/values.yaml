@@ -60,7 +60,7 @@ mutableData:
   storageSize: 10Gi
   environment:
     tfaProjectV2ApiUrl: "http://tagfileauth.dev.eks.vspengg.com/api/v2/project"
-    enableTfa: true
+    enableTfa: false
     enableTagFileArchiving: false
     enableTagFileArchivingMetadata: false
     minTagFileLength: 99

@@ -17,5 +17,5 @@ $trexComponents = (
 
 Foreach ($component in $trexComponents) {
     Write-Host "Building $component"
-    docker build -t trex:app.$component -f ./build/Dockerfile.runtime --build-arg BUILD_CONTAINER=trex:buildimage --build-arg COMPONENT=$component  ./build
+    docker build -t trex:app.$component -f ./src/service/TRex/build/Dockerfile.runtime --build-arg BUILD_CONTAINER=trex:buildimage --build-arg COMPONENT=$component  ./build
 }
