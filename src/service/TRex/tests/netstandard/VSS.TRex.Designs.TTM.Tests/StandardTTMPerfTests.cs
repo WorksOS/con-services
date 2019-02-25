@@ -5,7 +5,7 @@ namespace VSS.TRex.Designs.TTM.Tests
 {
     public class StandardTTMPerfTests
     {
-      [Fact(Skip = "File too big to add to source control")]
+      [Fact(Skip = "File too big to add to source control - shift to a benchmarked context")]
       public void Test_TINLoad()
       {
         VSS.TRex.Designs.TTM.TrimbleTINModel tin = new VSS.TRex.Designs.TTM.TrimbleTINModel();

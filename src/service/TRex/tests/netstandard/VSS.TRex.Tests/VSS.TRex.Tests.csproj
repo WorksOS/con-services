@@ -112,6 +112,12 @@
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\Common\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Common\Bug36372.ttm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0187J008YU--TNZ 323F GS520--190123002153.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

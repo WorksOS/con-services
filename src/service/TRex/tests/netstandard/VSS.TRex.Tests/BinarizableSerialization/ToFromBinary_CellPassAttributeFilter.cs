@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_CellPassAttributeFilter_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<CellPassAttributeFilter>();
+      SimpleBinarizableInstanceTester.TestClassEx<CellPassAttributeFilter>();
     }
   }
 }

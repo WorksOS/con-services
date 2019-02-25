@@ -13,20 +13,20 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void ToFromBinary_FilterSet_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<FilterSet>("Empty FilterSet not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClassEx<FilterSet>("Empty FilterSet not same after round trip serialisation");
     }
 
     [Fact]
     public void ToFromBinary_FilterSet_OneFilter()
     {
-      SimpleBinarizableInstanceTester.TestClass<FilterSet>(new FilterSet(new CombinedFilter()),
+      SimpleBinarizableInstanceTester.TestClassEx<FilterSet>(new FilterSet(new CombinedFilter()),
         "FilterSet with one empty filter not same after round trip serialisation");
     }
 
     [Fact]
     public void ToFromBinary_FilterSet_TwoFilters()
     {
-      SimpleBinarizableInstanceTester.TestClass<FilterSet>(new FilterSet(new CombinedFilter(), new CombinedFilter()),
+      SimpleBinarizableInstanceTester.TestClassEx<FilterSet>(new FilterSet(new CombinedFilter(), new CombinedFilter()),
         "FilterSet with one empty filter not same after round trip serialisation");
     }
 
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         )
       );
 
-      var result = SimpleBinarizableInstanceTester.TestClass(filterSet,
+      var result = SimpleBinarizableInstanceTester.TestClassEx(filterSet,
         "FilterSet with one empty filter not same after round trip serialisation");
       filterSet.Filters.Length.Should().Be(1, "spatialFenceFilter count is wrong");
       filterSet.Filters[0].SpatialFilter.Fence.Points.Count
@@ -92,7 +92,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
 
       filterSet.Filters[0] = cf;
 
-      var result = SimpleBinarizableInstanceTester.TestClass(filterSet,
+      var result = SimpleBinarizableInstanceTester.TestClassEx(filterSet,
         "FilterSet with one empty filter not same after round trip serialisation");
       filterSet.Filters.Length.Should().Be(1, "spatialFenceFilter count is wrong");
       filterSet.Filters[0].SpatialFilter.Fence.Points.Count

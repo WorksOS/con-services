@@ -27,10 +27,23 @@ namespace VSS.Productivity.Push.Models.Notifications
     }
 
     /// <summary>
+    /// Constructor to create a notification with arbitrary parameters
+    /// </summary>
+    /// <param name="key">Notification Key to identify the type of notification</param>
+    /// <param name="parameters">Some data that is specific to the notification</param>
+    /// <param name="type">Type of Uid Provided (e.g Customer or Project)</param>
+    public Notification(string key, object parameters, NotificationUidType type)
+    {
+      Key = key;
+      Parameters = parameters;
+      Type = type;
+    }
+
+    /// <summary>
     /// Uid for the Type provided
     /// </summary>
     [JsonProperty]
-    public Guid Uid { get; private set; }
+    public Guid? Uid { get; private set; }
 
     /// <summary>
     /// Uid Type
@@ -49,5 +62,11 @@ namespace VSS.Productivity.Push.Models.Notifications
     /// </summary>
     [JsonProperty]
     public string Key { get; private set; }
+
+    /// <summary>
+    /// Notification parameters
+    /// </summary>
+    [JsonProperty]
+    public object Parameters { get; private set; }
   }
 }

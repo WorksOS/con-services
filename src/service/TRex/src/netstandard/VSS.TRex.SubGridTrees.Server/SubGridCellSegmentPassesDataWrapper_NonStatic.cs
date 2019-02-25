@@ -63,7 +63,7 @@ namespace VSS.TRex.SubGridTrees.Server
            throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
-        public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
+        public CellPass ExtractCellPass(uint X, uint Y, uint passNumber)
         {
             return PassData[X, Y].Passes[passNumber];
         }
@@ -88,7 +88,7 @@ namespace VSS.TRex.SubGridTrees.Server
             int TotalPasses = reader.ReadInt32();
             int MaxPassCount = reader.ReadInt32();
 
-            int[,] PassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+            uint[,] PassCounts = new uint[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 
@@ -97,8 +97,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 switch (PassCounts_Size)
                 {
                     case 1: PassCounts[i, j] = reader.ReadByte(); break;
-                    case 2: PassCounts[i, j] = reader.ReadInt16(); break;
-                    case 3: PassCounts[i, j] = reader.ReadInt32(); break;
+                    case 2: PassCounts[i, j] = reader.ReadUInt16(); break;
+                    case 3: PassCounts[i, j] = reader.ReadUInt32(); break;
                     default:
                         throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
                 }
@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Server
           // Read all the cells from the stream
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                int PassCount_ = PassCounts[i, j];
+                uint PassCount_ = PassCounts[i, j];
 
                 if (PassCount_ > 0)
                 {
@@ -257,7 +257,7 @@ namespace VSS.TRex.SubGridTrees.Server
             return PassData[X, Y].Passes[passNumber].Time;
         }
 
-        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
+        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out uint AddedCount, out uint ModifiedCount)
         {
             PassData[X, Y].Integrate(sourcePasses, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
         }

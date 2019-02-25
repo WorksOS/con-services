@@ -4,9 +4,11 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -39,7 +41,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             Log.LogInformation("Establishing Ignite and TAG file buffer queue cache contexts");
 
             // Get the ignite grid and cache references
-            ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+            ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
             var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
             var handler = new TAGFileBufferQueueItemHandler();
             var TAGFileFilter = new RemoteTAGFileFilter(handler);  

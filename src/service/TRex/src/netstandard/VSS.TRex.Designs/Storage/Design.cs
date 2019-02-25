@@ -214,7 +214,7 @@ namespace VSS.TRex.Designs.Storage
     }
 
     /// <summary>
-    /// Calculates an elevation subgrid for a designated subgrid on this design
+    /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>
@@ -231,7 +231,7 @@ namespace VSS.TRex.Designs.Storage
       errorCode = DesignProfilerRequestResult.OK;
       designHeights = null;
 
-      designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
+      var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
         ReferenceDesignUID = DesignDescriptor.DesignID,
@@ -240,10 +240,13 @@ namespace VSS.TRex.Designs.Storage
         // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
         ProjectID = siteModelID
       });
+
+      designHeights = response.Heights;
+      errorCode = response.CalcResult;
     }
 
     /// <summary>
-    /// Calculates a filter mask for a designated subgrid on this design
+    /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>

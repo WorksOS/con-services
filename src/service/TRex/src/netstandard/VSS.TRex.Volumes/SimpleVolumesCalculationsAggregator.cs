@@ -160,17 +160,19 @@ namespace VSS.TRex.Volumes
             // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;
 
-            // Query the patch of elevations from the surface model for this sub grid
-            ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(),
-            CellSize, out DesignHeights, out ProfilerRequestResult);
-            
-            if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
-                ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+              // Query the patch of elevations from the surface model for this sub grid
+            if (ActiveDesign != null)
             {
-                Log.LogError($"Design profiler sub grid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
-                return;
+                ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult);
+             
+                if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
+                    ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                {
+                    Log.LogError($"Design profiler sub grid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
+                    return;
+                }
             }
-
+         
             SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             //const bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)
@@ -386,19 +388,15 @@ namespace VSS.TRex.Volumes
                     // By convention BaseSubGrid is always the first sub grid in the array,
                     // regardless of whether it really forms the 'top' or 'bottom' of the interval.
 
-                    IClientLeafSubGrid TopSubGrid;
                     IClientLeafSubGrid BaseSubGrid = subGridResult[0];
 
                     if (BaseSubGrid == null)
                     {
-                        Log.LogWarning("#W# .SummariseSubgridResult BaseSubGrid is null");
+                        Log.LogWarning("#W# SummariseSubGridResult BaseSubGrid is null");
                         return;
                     }
 
-                    if (subGrids.Length > 1)
-                        TopSubGrid = subGridResult[1]; 
-                    else
-                        TopSubGrid = NullHeightSubgrid;
+                    IClientLeafSubGrid TopSubGrid = subGridResult.Length > 1 ? subGridResult[1] : NullHeightSubgrid;
 
                     ProcessVolumeInformationForSubgrid(BaseSubGrid as ClientHeightLeafSubGrid, TopSubGrid as ClientHeightLeafSubGrid);
                 }

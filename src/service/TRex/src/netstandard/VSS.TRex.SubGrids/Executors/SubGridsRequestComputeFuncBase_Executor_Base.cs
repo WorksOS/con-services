@@ -459,7 +459,9 @@ namespace VSS.TRex.SubGrids.Executors
       if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
         return new TSubGridRequestsResponse {ResponseCode = contextEstablishmentResponse};
 
-      RequestorIntermediaries = DIContext.Obtain<IRequestorUtilities>().ConstructRequestorIntermediaries(siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, localArg.GridDataType);
+      RequestorIntermediaries = DIContext.Obtain<IRequestorUtilities>().ConstructRequestorIntermediaries
+        (siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, 
+        localArg.GridDataType);
 
       TSubGridRequestsResponse result = PerformSubGridRequests();
       result.NumSubgridsExamined = NumSubGridsToBeExamined;

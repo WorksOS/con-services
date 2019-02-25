@@ -100,7 +100,7 @@ namespace VSS.TRex.Tests
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         double mutableValue = mutableCells.PassData[x, y].Height;
-        double immutableValue = immutableCells.ReadHeight((int) x, (int) y);
+        double immutableValue = immutableCells.ReadHeight(x, y);
 
         double diff = immutableValue - mutableValue;
 
@@ -174,7 +174,7 @@ namespace VSS.TRex.Tests
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         double mutableValue = mutableLatest.PassData[x, y].Height;
-        double immutableValue = immutableLatest.ReadHeight((int) x, (int) y);
+        double immutableValue = immutableLatest.ReadHeight(x, y);
 
         double diff = immutableValue - mutableValue;
 
@@ -213,7 +213,7 @@ namespace VSS.TRex.Tests
       // Check that the cell passes in the cell pass stacks for the segment match to tolerance given the compressed lossiness
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        for (int i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
+        for (uint i = 0; i < immutableSegment.PassesData.PassCount(x, y); i++)
         {
           CellPass cellPass = immutableSegment.PassesData.ExtractCellPass(x, y, i);
 

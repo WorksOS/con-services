@@ -245,7 +245,7 @@ namespace VSS.TRex.SubGrids
     /// <param name="cellPass"></param>
     /// <param name="x"></param>
     /// <param name="y"></param>
-    private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, int x, int y)
+    private void AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref CellPass cellPass, uint x, uint y)
     {
       switch (_gridDataType)
       {
@@ -253,6 +253,7 @@ namespace VSS.TRex.SubGrids
           cellPass.Height = _globalLatestCells.ReadHeight(x, y);
           break;
         case GridDataType.HeightAndTime:
+        case GridDataType.CutFill:
           cellPass.Height = _globalLatestCells.ReadHeight(x, y);
           cellPass.Time = _globalLatestCells.ReadTime(x, y);
           break;
@@ -321,7 +322,7 @@ namespace VSS.TRex.SubGrids
     /// If the grid data type is not represented in the latest cell pass information this method returns false.
     /// </summary>
     /// <returns></returns>
-    private bool LatestCellPassAttributeIsNull(int StripeIndex, int J)
+    private bool LatestCellPassAttributeIsNull(uint StripeIndex, uint J)
     {
       switch (_gridDataType)
       {
@@ -375,18 +376,17 @@ namespace VSS.TRex.SubGrids
           if ((_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
               && !(_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.LatestElevation))
           {
-            var internalMachineIndex = _globalLatestCells[StripeIndex, J].InternalSiteModelMachineIndex;
-            var machine = _siteModel.Machines[internalMachineIndex];
+            var internalMachineIndex = _globalLatestCells.ReadInternalMachineIndex(StripeIndex, J);
+            var machine = _siteModel.Machines[internalMachineIndex]; 
 
             bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
             var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.LastStateValue();
-            //var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_globalLatestCells[StripeIndex, J].Time, out _);
 
             bool minimumElevationMappingModeAtLatestCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
 
             if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
             {
-              // It is not possible to use the latest cell pass to answer the query - force the query engine  into the cell pass examination work flow
+              // It is not possible to use the latest cell pass to answer the query - force the query engine into the cell pass examination work flow
               _useLastPassGrid = false;
               _canUseGlobalLatestCells = false;
             }
@@ -591,8 +591,10 @@ namespace VSS.TRex.SubGrids
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
-      if (clientGrid.GridDataType != _gridDataType)
-        throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] does not match grid data type of retriever [{_gridDataType}]");
+      if (!Utilities.DerivedGridDataTypesAreCompatible(_gridDataType, clientGrid.GridDataType))
+      {
+        throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] is not compatible with the grid data type of retriever [{_gridDataType}]");
+      }
 
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 

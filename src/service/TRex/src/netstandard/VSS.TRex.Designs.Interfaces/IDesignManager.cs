@@ -7,7 +7,7 @@ namespace VSS.TRex.Designs.Interfaces
   public interface IDesignManager
   {
     /// <summary>
-    /// Add a new design to a sitemodel
+    /// Add a new design to a site model
     /// </summary>
     /// <param name="SiteModelID"></param>
     /// <param name="designDescriptor"></param>

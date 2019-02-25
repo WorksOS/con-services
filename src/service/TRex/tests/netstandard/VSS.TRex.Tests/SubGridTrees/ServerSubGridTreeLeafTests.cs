@@ -99,7 +99,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             leaf.AddPass(0, 0, pass);
 
             // Check the cell passes in the segment records the cell pass
-            Assert.Equal(1, leaf.Directory.SegmentDirectory.First().Segment.PassesData.SegmentPassCount);
+            Assert.Equal((uint)1, leaf.Directory.SegmentDirectory.First().Segment.PassesData.SegmentPassCount);
             Assert.Equal((uint)1, leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassCount(0, 0));
             Assert.Equal(leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassTime(0, 0, 0), new DateTime(2000, 1, 1, 1, 1, 1));
 
@@ -145,8 +145,8 @@ namespace VSS.TRex.Tests.SubGridTrees
                 leaf.LeafEndTime == DateTime.MinValue &&
                 leaf.LeafStartTime == DateTime.MaxValue &&
                 leaf.Level == SubGridTreeConsts.SubGridTreeLevels &&
-                leaf.IsLeafSubGrid() == true,
-                "Leaf not initialised as expected after AllocateFullPassStacks");
+                leaf.IsLeafSubGrid(),
+                "Leaf not initialized as expected after AllocateFullPassStacks");
         }
 
         [Fact()]
@@ -233,10 +233,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             CellPass pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
 
-            pass.Time.AddMinutes(1);
+            pass.Time = pass.Time.AddMinutes(1);
             leaf.AddPass(0, 0, pass);
 
-            pass.Time.AddMinutes(1);
+            pass.Time = pass.Time.AddMinutes(1);
             leaf.AddPass(0, 0, pass);
 
             leaf.ComputeLatestPassInformation(true, StorageProxy.Instance(StorageMutability.Mutable));

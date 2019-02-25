@@ -29,7 +29,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITagFileFixture : DILoggingFixture, IDisposable
+  public class DITagFileFixture : DILoggingFixture
   {
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
@@ -95,7 +95,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build();
     }
 
-    public DITagFileFixture()
+    public new void SetupFixture()
     {
       var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
@@ -128,11 +128,9 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public virtual void Dispose()
+    public DITagFileFixture()
     {
-      base.Dispose();
-
-      DIBuilder.Eject();
+      SetupFixture();
     }
   }
 }

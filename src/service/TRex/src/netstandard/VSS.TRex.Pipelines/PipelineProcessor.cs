@@ -328,6 +328,7 @@ namespace VSS.TRex.Pipelines
     protected void ConfigurePipeline()
     {
       Pipeline.GridDataType = GridDataType;
+      Pipeline.PipelineTask.GridDataType = GridDataType;
 
       Pipeline.RequestDescriptor = RequestDescriptor;
 
@@ -336,6 +337,7 @@ namespace VSS.TRex.Pipelines
       // PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
 
       Pipeline.DataModelID = DataModelID;
+      Pipeline.ReferenceDesignID = CutFillDesignID;
 
       //TODO Re-add when lift build settings are supported
       // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);

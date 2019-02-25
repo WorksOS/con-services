@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
@@ -8,6 +9,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 using Xunit;
 
@@ -22,12 +24,12 @@ namespace TAGFiles.Tests
         {
             try
             {
-                ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+              ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
             }
             catch (Exception)
             {
                 TAGClientServer = TAGClientServer ?? new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-                ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+              ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
             }
         }
 

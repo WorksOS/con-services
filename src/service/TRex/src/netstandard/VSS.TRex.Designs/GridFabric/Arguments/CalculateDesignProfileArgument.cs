@@ -24,7 +24,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// The guid identifying the design to compute the profile over
     /// </summary>
-    public Guid DesignUid { get; set; }
+    //public Guid DesignUid { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -48,7 +48,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       ProjectID = projectUid;
       CellSize = cellSize;
-      DesignUid = designUid;
+      ReferenceDesignUID = designUid;
       ProfilePath = profilePath;
     }
 
@@ -58,7 +58,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{DesignUid}, {ProfilePath.Length} vertices";
+      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesignUID}, {ProfilePath.Length} vertices";
     }
 
     /// <summary>
@@ -72,8 +72,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteDouble(CellSize);
-
-      writer.WriteGuid(DesignUid);
 
       writer.WriteInt(ProfilePath.Length);
       foreach (var pt in ProfilePath)
@@ -96,7 +94,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
         throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       CellSize = reader.ReadDouble();
-      DesignUid = reader.ReadGuid() ?? Guid.Empty;
 
       var count = reader.ReadInt();
 
