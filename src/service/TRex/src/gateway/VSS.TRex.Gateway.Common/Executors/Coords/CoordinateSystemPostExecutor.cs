@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         CSIB = csd.CoordinateSystem.Id
       });
 
-      if (addCoordSystemResponse != null && addCoordSystemResponse.Succeeded)
+      if (addCoordSystemResponse?.Succeeded ?? false)
         return ConvertResult(request.CSFileName, csd.CoordinateSystem);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

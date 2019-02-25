@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Models.Models.Coords
   /// <summary>
   /// Coordinate conversion domain object. Model represents a coordinate conversion request.
   /// </summary>
-  public class CoordinateConversionRequest : ProjectID//, IValidatable
+  public class CoordinateConversionRequest : ProjectID
   {
 
     /// <summary>
