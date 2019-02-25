@@ -24,7 +24,7 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.ComputeFuncs
     {
       var executor = new AddCoordinateSystemExecutor();
 
-      return new AddCoordinateSystemResponse {Succeeded = executor.Execute(arg.ProjectID, arg.CSIB)};
+      return new AddCoordinateSystemResponse { Succeeded = executor.Execute(arg.ProjectID, arg.CSIB)};
     }
   }
 }

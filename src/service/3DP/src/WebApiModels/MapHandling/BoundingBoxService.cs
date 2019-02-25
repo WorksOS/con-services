@@ -16,12 +16,13 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+  using VSS.Productivity3D.Models.Enums;
+  using VSS.Productivity3D.Models.Models;
+  using VSS.Productivity3D.Models.Models.Coords;
+  using VSS.Productivity3D.Models.ResultHandling.Coords;
+  using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -200,14 +201,14 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             if (productionDataExtents != null)
             {
               log.LogDebug(
-                $"GetBoundingBox: Production data extents {productionDataExtents.conversionCoordinates[0].y},{productionDataExtents.conversionCoordinates[0].x},{productionDataExtents.conversionCoordinates[1].y},{productionDataExtents.conversionCoordinates[1].x}");
+                $"GetBoundingBox: Production data extents {productionDataExtents.ConversionCoordinates[0].Y},{productionDataExtents.ConversionCoordinates[0].X},{productionDataExtents.ConversionCoordinates[1].Y},{productionDataExtents.ConversionCoordinates[1].X}");
 
               bbox = new MapBoundingBox
               {
-                minLat = productionDataExtents.conversionCoordinates[0].y,
-                minLng = productionDataExtents.conversionCoordinates[0].x,
-                maxLat = productionDataExtents.conversionCoordinates[1].y,
-                maxLng = productionDataExtents.conversionCoordinates[1].x
+                minLat = productionDataExtents.ConversionCoordinates[0].Y,
+                minLng = productionDataExtents.ConversionCoordinates[0].X,
+                maxLat = productionDataExtents.ConversionCoordinates[1].Y,
+                maxLng = productionDataExtents.ConversionCoordinates[1].X
               };
             }
           }
@@ -289,11 +290,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       var coordList = new List<TwoDConversionCoordinate>
       {
-        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.MinX, statsResult.extents.MinY),
-        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.MaxX, statsResult.extents.MaxY)
+        new TwoDConversionCoordinate(statsResult.extents.MinX, statsResult.extents.MinY),
+        new TwoDConversionCoordinate(statsResult.extents.MaxX, statsResult.extents.MaxY)
       };
 
-      var coordRequest = CoordinateConversionRequest.CreateCoordinateConversionRequest(projectId,
+      var coordRequest = new CoordinateConversionRequest(projectId,
         TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
       var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient)
         .Process(coordRequest) as CoordinateConversionResult;

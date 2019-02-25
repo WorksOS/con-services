@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.WebApiModels.Coord.Models
+﻿namespace VSS.Productivity3D.Models.Enums
 {
   /// <summary>
   /// The defined types of 2D coordinate conversions.

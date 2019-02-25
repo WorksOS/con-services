@@ -224,10 +224,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
         var returnResult = new ProjectExtentsResult
         {
-          minLat = result.conversionCoordinates[0].y,
-          minLng = result.conversionCoordinates[0].x,
-          maxLat = result.conversionCoordinates[1].y,
-          maxLng = result.conversionCoordinates[1].x
+          minLat = result.ConversionCoordinates[0].Y,
+          minLng = result.ConversionCoordinates[0].X,
+          maxLat = result.ConversionCoordinates[1].Y,
+          maxLng = result.ConversionCoordinates[1].X
         };
 
         //In case we have rogue tag files distorting the extents, restrict to project boundary

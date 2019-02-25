@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     /// <param name="projectId">The Raptor datamodel & legacy project identifier.</param>
     /// <param name="projectUid">The project UID.</param>
-    public ProjectID(long projectId, Guid? projectUid = null)
+    public ProjectID(long? projectId, Guid? projectUid = null)
     {
       ProjectId = projectId;
       ProjectUid = projectUid;

@@ -11,6 +11,12 @@
     <Platforms>x64</Platforms>
     <PackageTags>vss-productivity3d-service</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Coord\ResultHandling\**" />
+    <EmbeddedResource Remove="Coord\ResultHandling\**" />
+    <None Remove="Coord\ResultHandling\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.4" />

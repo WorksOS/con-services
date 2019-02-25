@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Contracts
 {

@@ -4,7 +4,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// 
     protected static CoordinateSystemSettings ConvertResult(TCoordinateSystemSettings settings)
     {
-      return CoordinateSystemSettings.CreateCoordinateSystemSettings(
+      return new CoordinateSystemSettings(
         // Coordinate System...
         settings.CSName,
         settings.CSFileName,
