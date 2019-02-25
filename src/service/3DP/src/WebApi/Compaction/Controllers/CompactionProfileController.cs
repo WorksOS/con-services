@@ -39,6 +39,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionProfileController(
@@ -46,13 +51,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IASNodeClient raptorClient, 
 #endif
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory) :
+      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
 #endif
       this.requestFactory = requestFactory;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -119,6 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Get production data profile
       var slicerProductionDataProfileRequest = requestFactory.Create<ProductionDataProfileRequestHelper>(r => r
           .ProjectId(projectId)
+          .ProjectUid(projectUid)
           .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .Filter(filter)
@@ -130,10 +137,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .CreateProductionDataProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerProductionDataProfileRequest.Validate();
-#if RAPTOR
+
       var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(LoggerFactory, raptorClient, profileResultHelper: profileResultHelper)
+          .Build<CompactionProfileExecutor>(LoggerFactory,
+#if RAPTOR
+            raptorClient,
+#endif
+            configStore: ConfigStore, profileResultHelper: profileResultHelper, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
       );
 
@@ -149,10 +160,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>
