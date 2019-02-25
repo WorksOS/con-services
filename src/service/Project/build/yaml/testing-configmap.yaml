@@ -35,6 +35,8 @@ data:
   RAPTOR_3DPM_API_URL: http://localhost:5001/api/v2/mock
   TREX_IMPORTFILE_WRITE_API_URL: http://localhost:5001/api/v1/design
   FILTER_API_URL: http://localhost:5001/api/v1/mock
+  IMPORTED_FILE_API_URL: http://localhost:5000/api/v4/importedfiles
+  IMPORTED_FILE_API_URL2: http://localhost:5000/api/v4/importedfile
   TCCBASEURL: http://localhost:5001
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
   TCCORG: vldev

@@ -22,6 +22,8 @@ PARAM (
 
 [console]::ResetColor()
 
+$environmentVars = @{}
+
 function SetEnvironmentVariable {
     PARAM ([string] $key, [string] $value)
 
@@ -33,7 +35,7 @@ function SetEnvironmentVariable {
 function ProcessConfigFile {
     PARAM ([string] $filename)
 
-    Write-Host "`nSetting environment variables from: $filename"
+    Write-Host "Reading: $filename"
 
     IF (-NOT $(TRY { Test-Path $filename } CATCH { $false }) ) {
         Write-Host "Error reading file '$filename': File not found." -ForegroundColor Red
@@ -56,7 +58,9 @@ function ProcessConfigFile {
         $key = $key.Trim()
         $value = $value.Trim().Trim('"')
 
-        SetEnvironmentVariable $key $value
+        if ($environmentVars.ContainsKey($key)) { $environmentVars.Remove($key) }
+
+        $environmentVars.Add($key, $value)
     }
 }
 
@@ -64,6 +68,12 @@ function ProcessConfigFile {
 ProcessConfigFile $globalConfigFile.Trim()
 
 IF ($useLocalOverride -eq $true) { ProcessConfigFile $localConfigFile.Trim() }
+
+Write-Host "`nSetting environment variables..."
+
+FOREACH ($config in $environmentVars.GetEnumerator() | Sort-Object -Property Name) {
+    SetEnvironmentVariable $config.Name $config.Value
+}
 
 # Machine variable values
 Write-Host "`nSetting environment variables specific to the caller"
