@@ -668,7 +668,19 @@ namespace RepositoryTests
 
         var g = await assetContext.GetAsset(assetFinal.AssetUID);
         Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
+        Assert.AreEqual(assetFinal.AssetUID, g.AssetUID, $"Asset AssetUID incorrect. Expected: {assetFinal.AssetUID} got: {g.AssetUID}");
+        Assert.AreEqual(assetFinal.Name, g.Name, $"Asset name incorrect. Expected: {assetFinal.Name} got: {g.Name}");
+        Assert.AreEqual(assetFinal.LegacyAssetID, g.LegacyAssetID, $"Asset LegacyAssetID incorrect. Expected: {assetFinal.LegacyAssetID} got: {g.LegacyAssetID}");
+        Assert.AreEqual(assetFinal.SerialNumber, g.SerialNumber, $"Asset SerialNumber incorrect. Expected: {assetFinal.SerialNumber} got: {g.SerialNumber}");
+        Assert.AreEqual(assetFinal.MakeCode, g.MakeCode, $"Asset MakeCode incorrect. Expected: {assetFinal.MakeCode} got: {g.MakeCode}");
+        Assert.AreEqual(assetFinal.Model, g.Model, $"Asset Model incorrect. Expected: {assetFinal.Model} got: {g.Model}");
+        Assert.AreEqual(assetFinal.AssetType, g.AssetType, $"Asset AssetType incorrect. Expected: {assetFinal.AssetType} got: {g.AssetType}");
+        Assert.AreEqual(assetFinal.IconKey, g.IconKey, $"Asset IconKey incorrect. Expected: {assetFinal.IconKey} got: {g.IconKey}");
+        Assert.AreEqual(assetFinal.EquipmentVIN, g.EquipmentVIN, $"Asset EquipmentVIN incorrect. Expected: {assetFinal.EquipmentVIN} got: {g.EquipmentVIN}");
+        Assert.AreEqual(assetFinal.ModelYear, g.ModelYear, $"Asset ModelYear incorrect. Expected: {assetFinal.ModelYear} got: {g.ModelYear}");
+        Assert.AreEqual(assetFinal.OwningCustomerUID, g.OwningCustomerUID, $"Asset OwningCustomerUID incorrect. Expected: {assetFinal.OwningCustomerUID} got: {g.OwningCustomerUID}");
+        Assert.AreEqual(assetFinal.IsDeleted, g.IsDeleted, $"Asset IsDeleted incorrect. Expected: {assetFinal.IsDeleted} got: {g.IsDeleted}");
+        Assert.AreEqual(assetFinal.LastActionedUtc, g.LastActionedUtc, $"Asset LastActionedUtc incorrect. Expected: {assetFinal.LastActionedUtc} got: {g.LastActionedUtc}");
         return null;
       }).Wait();
     }
