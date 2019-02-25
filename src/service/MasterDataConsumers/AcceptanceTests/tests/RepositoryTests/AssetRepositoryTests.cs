@@ -599,6 +599,71 @@ namespace RepositoryTests
       }).Wait();
     }
 
+    /// <summary>
+    /// ActionUTC is set already to an earlier date
+    /// this could have been from a Create or Update - does it matter?
+    /// </summary>
+    [TestMethod]
+    public void UpdateAsset_IgnoreEmptyCustomerUID()
+    {
+      DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
+      var assetEventCreate = new CreateAssetEvent()
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = "AnAssetName",
+        LegacyAssetId = 33334444,
+        SerialNumber = "S6T00561",
+        MakeCode = "J82",
+        Model = "D6RXL",
+        AssetType = "TRACK TYPE TRACTORS",
+        IconKey = 23,
+        EquipmentVIN = null,
+        ModelYear = null,
+        OwningCustomerUID = Guid.NewGuid(),
+        ActionUTC = firstCreatedUTC
+      };
+
+      var assetEventUpdate = new UpdateAssetEvent()
+      {
+        AssetUID = assetEventCreate.AssetUID,
+        AssetName = "AnAssetName changed",
+        LegacyAssetId = 33334444,
+        Model = "D6RXL changed",
+        AssetType = "TRACK TYPE TRACTORS",
+        IconKey = 11,
+        EquipmentVIN = null,
+        ModelYear = null,
+        OwningCustomerUID = Guid.Empty,
+        ActionUTC = firstCreatedUTC.AddMinutes(10)
+      };
+
+      var assetFinal = new Asset
+      {
+        AssetUID = assetEventCreate.AssetUID.ToString(),
+        Name = assetEventUpdate.AssetName,
+        LegacyAssetID = assetEventUpdate.LegacyAssetId.Value,
+        SerialNumber = assetEventCreate.SerialNumber,
+        MakeCode = assetEventCreate.MakeCode,
+        Model = assetEventUpdate.Model,
+        IconKey = assetEventUpdate.IconKey,
+        AssetType = assetEventUpdate.AssetType,
+        IsDeleted = false,
+        OwningCustomerUID = assetEventCreate.OwningCustomerUID.ToString(),
+        LastActionedUtc = assetEventUpdate.ActionUTC
+      };
+
+      assetContext.InRollbackTransactionAsync<object>(async o =>
+      {
+        var s = await assetContext.StoreEvent(assetEventCreate);
+        s = await assetContext.StoreEvent(assetEventUpdate);
+
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
+        return null;
+      }).Wait();
+    }
+
 
     /// <summary>
     /// Asset exists, with a later ActionUTC
