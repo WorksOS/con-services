@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Log4NetExtensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -142,7 +143,8 @@ namespace VSS.Productivity3D.WebApi
       try
       {
         ServiceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
-        Log.LogTrace("Received config {0}", config);
+        if (Log.IsTraceEnabled())
+          Log.LogTrace("Received config {0}", config);
 
         if (config.Contains("Error retrieving Raptor config")) { throw new Exception(config); }
       }

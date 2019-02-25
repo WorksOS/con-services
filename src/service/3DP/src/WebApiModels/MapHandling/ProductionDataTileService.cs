@@ -4,6 +4,7 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -86,7 +87,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       catch (ServiceException se)
       {
         getTile = mode != DisplayMode.Height;
-        log.LogTrace(
+        if (log.IsTraceEnabled())
+          log.LogTrace(
             $"Failed to get elevation extents for height request with error: {se.GetResult.Code}:{se.GetResult.Message} a transparent tile will be generated");
       }
 

@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
@@ -143,7 +144,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         result = action.Invoke();
-        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+        if (Log.IsTraceEnabled())
+          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException)
       {
@@ -171,7 +173,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         result = await action.Invoke();
-        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+        if (Log.IsTraceEnabled())
+          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
 
       }
       catch (ServiceException)

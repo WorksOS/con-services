@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -431,7 +432,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         Log.LogInformation("GetSummaryVolumes returned: " + Response.StatusCode);
       }
 
-      Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(volumesSummaryResult));
+      if (Log.IsTraceEnabled())
+        Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(volumesSummaryResult));
 
       return Ok(volumesSummaryResult);
     }

@@ -12,6 +12,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -168,7 +169,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         result = await action.Invoke().ConfigureAwait(false);
-        log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
+        if (log.IsTraceEnabled())
+          log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException se)
       {

@@ -9,6 +9,7 @@ using Nito.AsyncEx.Synchronous;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Repositories;
 
 namespace VSS.KafkaConsumer
@@ -91,13 +92,15 @@ namespace VSS.KafkaConsumer
     /// </summary>
     public void StartProcessingSync()
     {
-      log.LogTrace("Processing synchronous poll");
+      if (log.IsTraceEnabled())
+        log.LogTrace("Processing synchronous poll");
       int i= ProcessMessage().Result;
     }
 
     private async Task<int> ProcessMessage()
     {
-      log.LogTrace($"Polling with {requestTime} timeout");
+      if (log.IsTraceEnabled())
+        log.LogTrace($"Polling with {requestTime} timeout");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
 
       if (messages.message == Error.NO_ERROR)
