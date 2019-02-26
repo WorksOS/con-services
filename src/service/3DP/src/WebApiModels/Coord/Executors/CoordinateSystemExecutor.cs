@@ -1,5 +1,7 @@
-﻿using ASNodeDecls;
+﻿#if RAPTOR
+using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -27,9 +29,12 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
 
+#if RAPTOR
     /// <summary>
     /// Converts Production Data Server (PDS) client CS data set to Coordinate Service one.
     /// </summary>
@@ -100,7 +105,20 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// </summary>
     /// 
     protected TCoordinateSystemSettings coordSystemSettings;
+#endif
 
+    /// <summary>
+    /// Sends a request to TRex Gateway client.
+    /// </summary>
+    /// <param name="item">A domain object.</param>
+    /// <returns>Result of the processed request from TRex Gateway.</returns>
+    /// 
+    protected virtual CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
+    {
+      return null;
+    }
+
+#if RAPTOR      
     /// <summary>
     /// Sends a request to Production Data Server (PDS) client.
     /// </summary>
@@ -111,6 +129,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     {
       return TASNodeErrorStatus.asneUnknown;
     }
+#endif
 
     /// <summary>
     /// Coordinate system definition file executor (Post/Get).
@@ -123,12 +142,18 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     {
       try
       {
+#if RAPTOR
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_CS"))
+#endif
+          return SendRequestToTRexGatewayClient(item);
+#if RAPTOR
         var code = SendRequestToPDSClient(item);
             
         if (code == TASNodeErrorStatus.asneOK)
             return ConvertResult(coordSystemSettings);
 
         throw CreateServiceException<CoordinateSystemExecutor>((int)code);
+#endif
       }
       finally
       {

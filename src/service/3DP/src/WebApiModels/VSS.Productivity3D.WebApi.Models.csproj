@@ -57,10 +57,10 @@
     
     <Compile Remove=".\Compaction\ResultHandling\DxfLineworkFileResult.cs" />
 
-    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutor.cs" />
+    <!--<Compile Remove=".\Coord\Executors\CoordinateSystemExecutor.cs" />
     <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorGet.cs" />
     <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorPost.cs" />
-    <Compile Remove=".\Coord\Executors\CoordinateConversionExecutor.cs" />
+    <Compile Remove=".\Coord\Executors\CoordinateConversionExecutor.cs" />-->
     
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />

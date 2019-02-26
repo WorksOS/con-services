@@ -1,9 +1,11 @@
 ﻿using System.IO;
+#if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.Productivity3D.Models.Interfaces;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.Productivity3D.WebApi.Models.Coord.Models;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
@@ -13,6 +15,22 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
   /// </summary>
   public class CoordinateSystemExecutorPost : CoordinateSystemExecutor
   {
+    protected override CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
+    {
+      if (!(item is IIsProjectIDApplicable file))
+        return null;
+
+      if (file.HasProjectID())
+      {
+        var request = file as CoordinateSystemFile;
+        return trexCompactionDataProxy.SendPostCSDataRequest(request, customHeaders).Result;
+      }
+
+      var validationRequest = file as CoordinateSystemFileValidationRequest;
+      return trexCompactionDataProxy.SendCSDataValidationRequest(validationRequest, customHeaders).Result;
+    }
+
+#if RAPTOR
     protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
     {
       var code = TASNodeErrorStatus.asneUnknown;
@@ -29,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         else
         {
           var request = file as CoordinateSystemFileValidationRequest;
-          code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.csFileContent), request.csFileName, -1, out tempCoordSystemSettings);
+          code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.CSFileContent), request.CSFileName, -1, out tempCoordSystemSettings);
         }
       }
 
@@ -38,5 +56,6 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 
       return code;
     }
+#endif
   }
 }

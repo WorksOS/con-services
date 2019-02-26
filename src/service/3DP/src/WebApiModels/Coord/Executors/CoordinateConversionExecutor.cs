@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Net;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -31,7 +33,9 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddCoordinateResultErrorMessages(ContractExecutionStates);
+#endif
     }
 
     /// <summary>
@@ -48,6 +52,13 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         try
         {
           var request = CastRequestObjectTo<CoordinateConversionRequest>(item);
+#if RAPTOR
+          if (UseTRexGateway("ENABLE_TREX_GATEWAY_CS"))
+          {
+#endif
+          return trexCompactionDataProxy.SendCoordinateConversionRequest(request, customHeaders).Result;
+#if RAPTOR
+          }
 
           var latLongs = new TWGS84FenceContainer { FencePoints = request.ConversionCoordinates.Select(cc => TWGS84Point.Point(cc.X, cc.Y)).ToArray() };
 
@@ -63,6 +74,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
             return ExecutionResult(pointList.Points.Coords);
 
           throw CreateServiceException<CoordinateConversionExecutor>((int)code);
+#endif
         }
         finally
         {
@@ -75,6 +87,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
           "No  coordinate conversion request sent."));
     }
 
+#if RAPTOR
     /// <summary>
     /// Returns an instance of the ContractExecutionResult class as POST method execution result.
     /// </summary>
@@ -84,5 +97,6 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 
       return new CoordinateConversionResult(convertedPoints);
     }
+#endif
   }
 }

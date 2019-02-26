@@ -11,7 +11,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
-using VSS.Productivity3D.WebApi.Models.Coord.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 {
@@ -99,7 +98,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     {
       byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-      CoordinateSystemFileValidationRequest request = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
+      CoordinateSystemFileValidationRequest request = new CoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
@@ -110,8 +109,8 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       TCoordinateSystemSettings csSettings;
 
       mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
-        new MemoryStream(request.csFileContent),
-        request.csFileName,
+        new MemoryStream(request.CSFileContent),
+        request.CSFileName,
         -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
@@ -133,7 +132,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     {
       byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-      CoordinateSystemFileValidationRequest request = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
+      CoordinateSystemFileValidationRequest request = new CoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
 
       // Create the mock PDSClient with unsuccessful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
@@ -144,7 +143,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
          It.IsAny<MemoryStream>(),
-        request.csFileName,
+        request.CSFileName,
         -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...

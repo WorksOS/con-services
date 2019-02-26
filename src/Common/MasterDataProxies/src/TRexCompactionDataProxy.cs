@@ -10,9 +10,11 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 
 namespace VSS.MasterData.Proxies
@@ -357,6 +359,64 @@ namespace VSS.MasterData.Proxies
       return SendRequestPostAsStreamContent(request, customHeaders, "/report/grid");
     }
 
+    /// <summary>
+    /// Sends a request to post Coordinate System Definition data to the TRex database.
+    /// </summary>
+    /// <param name="csdRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<CoordinateSystemSettings> SendPostCSDataRequest(Productivity3D.Models.Models.Coords.CoordinateSystemFile csdRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(csdRequest);
+      log.LogDebug($"{nameof(SendPostCSDataRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<CoordinateSystemSettings>(request, customHeaders, "/coordsystem");
+    }
+
+    /// <summary>
+    /// Sends a request to validate Coordinate System Definition data to the TRex database.
+    /// </summary>
+    /// <param name="csdValidationRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<CoordinateSystemSettings> SendCSDataValidationRequest(Productivity3D.Models.Models.Coords.CoordinateSystemFileValidationRequest csdValidationRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(csdValidationRequest);
+      log.LogDebug($"{nameof(SendCSDataValidationRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<CoordinateSystemSettings>(request, customHeaders, "/coordsystem/validation");
+    }
+
+    /// <summary>
+    /// Sends a request to get Coordinate System Definition data from the TRex database.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<CoordinateSystemSettings> SendGetCSDataRequest(ProjectID request,
+      IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendGetCSDataRequest)}: Sending the get Coordinate System Definition data request for site model ID: {request.ProjectUid}");
+
+      return SendRequestGet<CoordinateSystemSettings>(customHeaders, $"/projects/{request.ProjectUid}/coordsystem");
+    }
+
+    /// <summary>
+    /// Sends a request to the TRex to convert a list of coordinates.
+    /// </summary>
+    /// <param name="conversionRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<CoordinateConversionResult> SendCoordinateConversionRequest(CoordinateConversionRequest conversionRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(conversionRequest);
+      log.LogDebug($"{nameof(SendPostCSDataRequest)}: Sending the request: {request}");
+
+      return SendRequestPost<CoordinateConversionResult>(request, customHeaders, "/coordinateconversion");
+    }
 
     /// <summary>
     /// Executes a POST request against the TRex Gateway service.

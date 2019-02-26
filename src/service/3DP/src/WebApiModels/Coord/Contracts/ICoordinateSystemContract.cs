@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.Productivity3D.WebApi.Models.Coord.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Contracts
 {
