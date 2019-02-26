@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -40,26 +41,35 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     public string PersistResult(List<string> dataRows)
     {
-      // local path and zip fileName include a unique ID to avoid overwriting someone else file
-      // write file/s to a local, unique, directory
-      var uniqueFileName = requestArgument.FileName + "__" + requestArgument.TRexNodeID;
-      var localExportPath = FilePathHelper.GetTempFolderForExport(requestArgument.ProjectID, uniqueFileName);
-      var localPath = Path.Combine(localExportPath, uniqueFileName);
-      PersistLocally(dataRows, localPath);
+      bool fileLoadedOk = false;
+      string s3FullPath = null;
 
-      // zip the directory
-      var zipFullPath = Path.Combine(localExportPath, uniqueFileName) + ZIP_extension;
-      if (FileSystem.Exists(zipFullPath))
-        FileSystem.Delete(zipFullPath);
-      ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
+      try
+      {
+        // local path and zip fileName include a unique ID to avoid overwriting someone else file
+        // write file/s to a local, unique, directory
+        var uniqueFileName = requestArgument.FileName + "__" + requestArgument.TRexNodeID;
+        var localExportPath = FilePathHelper.GetTempFolderForExport(requestArgument.ProjectID, uniqueFileName);
+        var localPath = Path.Combine(localExportPath, uniqueFileName);
+        PersistLocally(dataRows, localPath);
 
-      // copy zip to S3
-      var s3FullPath = $"project/{requestArgument.ProjectID}/TRexExport/{uniqueFileName}{ZIP_extension}";
-      var fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
-      if (FileSystem.Exists(zipFullPath))
-        FileSystem.Delete(zipFullPath);
-      if (Directory.Exists(localPath))
-        Directory.Delete(localPath, true);
+        // zip the directory
+        var zipFullPath = Path.Combine(localExportPath, uniqueFileName) + ZIP_extension;
+        if (FileSystem.Exists(zipFullPath))
+          FileSystem.Delete(zipFullPath);
+        ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
+
+        // copy zip to S3
+        s3FullPath = $"project/{requestArgument.ProjectID}/TRexExport/{uniqueFileName}{ZIP_extension}";
+        fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
+        if (Directory.Exists(localPath))
+          Directory.Delete(localPath, true);
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Error persisting export data");
+        throw;
+      }
 
       return fileLoadedOk ? s3FullPath : string.Empty;
     }
