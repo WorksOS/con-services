@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
-    private IConfigurationStore configStore;
+    private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
     protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
