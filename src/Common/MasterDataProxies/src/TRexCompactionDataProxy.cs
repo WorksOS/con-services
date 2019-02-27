@@ -24,6 +24,9 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class TRexCompactionDataProxy : BaseProxy, ITRexCompactionDataProxy
   {
+    private const string TREX_GATEWAY_IMMUTABLE_BASE_URL = "TREX_GATEWAY_API_URL";
+    private const string TREX_GATEWAY_MUTABLE_BASE_URL = "TREX_MUTABLE_GATEWAY_API_URL";
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -371,7 +374,7 @@ namespace VSS.MasterData.Proxies
       var request = JsonConvert.SerializeObject(csdRequest);
       log.LogDebug($"{nameof(SendPostCSDataRequest)}: Sending the request: {request}");
 
-      return SendRequestPost<CoordinateSystemSettings>(request, customHeaders, "/coordsystem");
+      return SendRequestPost<CoordinateSystemSettings>(request, customHeaders, "/coordsystem", TREX_GATEWAY_MUTABLE_BASE_URL);
     }
 
     /// <summary>
@@ -424,10 +427,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload"></param>
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
+    /// <param name="baseUrl"></param>
     /// <returns></returns>
-    private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
+    private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route, string baseUrl = TREX_GATEWAY_IMMUTABLE_BASE_URL) where T : ContractExecutionResult
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = await SendRequest<T>(baseUrl, payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -440,10 +444,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload"></param>
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
+    /// <param name="baseUrl"></param>
     /// <returns></returns>
-    private async Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ActionResult
+    private async Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route, string baseUrl = TREX_GATEWAY_IMMUTABLE_BASE_URL) where T : ActionResult
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = await SendRequest<T>(baseUrl, payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPostEx)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
