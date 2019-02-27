@@ -252,121 +252,62 @@ namespace VSS.ConfigurationStore
 
     public string GetValueString(string key)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration[key]}");
-      return configuration[key];
+      return GetValueString(key, null);
     }
 
     public string GetValueString(string key, string defaultValue)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public int GetValueInt(string key)
     {
-      // zero is valid. Returns int.MinValue on error
-      if (!int.TryParse(configuration[key], out var valueInt))
-      {
-        valueInt = int.MinValue;
-      }
-
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{valueInt}");
-
-      return valueInt;
+      return GetValueInt(key, int.MinValue);
     }
 
     public int GetValueInt(string key, int defaultValue)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public long GetValueLong(string key)
     {
-      // zero is valid. Returns long.MinValue on error
-      if (!long.TryParse(configuration[key], out var valueLong))
-      {
-        valueLong = long.MinValue;
-      }
-
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{valueLong}");
-
-      return valueLong;
+      return GetValueLong(key, long.MinValue);
     }
 
     public long GetValueLong(string key, long defaultValue)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public double GetValueDouble(string key)
     {
-      // zero is valid. Returns double.MinValue on error
-      if (!double.TryParse(configuration[key], out var valueDouble))
-      {
-        valueDouble = double.MinValue;
-      }
-
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{valueDouble}");
-
-      return valueDouble;
+      return GetValueDouble(key, double.MinValue);
     }
 
     public double GetValueDouble(string key, double defaultValue)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public bool? GetValueBool(string key)
     {
-      bool? theBoolToReturn = null;
-      if (bool.TryParse(configuration[key], out var theBool))
-      {
-        theBoolToReturn = theBool;
-      }
-
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{theBoolToReturn}");
-
-      return theBoolToReturn;
+      return GetValue< bool?> (key, (bool?)null);
     }
 
     public bool GetValueBool(string key, bool defaultValue)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public TimeSpan? GetValueTimeSpan(string key)
     {
-      TimeSpan? theTimeSpanToReturn = null;
-      if (TimeSpan.TryParse(configuration[key], out var theTimeSpan))
-      {
-        theTimeSpanToReturn = theTimeSpan;
-      }
-
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{theTimeSpanToReturn}");
-
-      return theTimeSpanToReturn;
+      return GetValue<TimeSpan?>(key, (TimeSpan?)null);
     }
 
     public TimeSpan GetValueTimeSpan(string key, TimeSpan defaultValue)
     {
-      if (log.IsTraceEnabled())
-        log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public IConfigurationSection GetSection(string key)
@@ -377,6 +318,30 @@ namespace VSS.ConfigurationStore
     public IConfigurationSection GetLoggingConfig()
     {
       return GetSection("Logging");
+    }
+
+    private T GetValue<T>(string key, T defaultValue)
+    {
+      T value = defaultValue;
+
+      if (configuration[key] == null)
+      {
+        log.LogWarning($"Missing configuration key {key}");
+      }
+      else
+      {
+        try
+        {
+          value = configuration.GetValue(key, defaultValue);
+        }
+        catch (Exception e)
+        {
+          log.LogError($"Invalid configuration for key {key}: {e.Message}");
+        }
+      }   
+      if (log.IsTraceEnabled())
+        log.LogTrace($"Served configuration value {key}:{value}");
+      return value;
     }
   }
 }
