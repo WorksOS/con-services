@@ -10,9 +10,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
@@ -44,15 +46,19 @@ namespace TCCToDataOcean
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    public FileDataResult GetImportedFilesFromWebApi(string uri, string customerUid)
+    public FileDataResult GetImportedFilesFromWebApi(string uri, Project project)
     {
-      var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, customerUid)).Result;
+      Log.LogInformation($"## In ## {nameof(GetImportedFilesFromWebApi)} | Get imported files for {project.ProjectUID}, customer {project.CustomerUID}");
+
+      var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, project.CustomerUID)).Result;
 
       // TODO (Aaron) handle non 200 result codes.
 
       var receiveStream = response.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader(receiveStream, Encoding.UTF8);
       var responseBody = readStream.ReadToEnd();
+
+      Log.LogInformation($"## Out ## {nameof(GetImportedFilesFromWebApi)} | Status code: {response.StatusCode}, {responseBody}");
 
       return JsonConvert.DeserializeObject<FileDataResult>(responseBody, new JsonSerializerSettings
       {

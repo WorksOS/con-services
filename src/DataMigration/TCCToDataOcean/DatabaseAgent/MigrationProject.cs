@@ -6,7 +6,12 @@ namespace TCCToDataOcean.DatabaseAgent
   {
     public string ProjectUid { get; set; }
     public long ProjectId { get; set; }
+    public string ProjectName { get; set; }
     public MigrationState MigrationState { get; set; }
+    public bool HasValidDcFile { get; set; }
+    public string DcFilename { get; set; }
+    public int TotalFileCoutn { get;set; }
+    public int EligibleFileCount { get; set; }
 
     public MigrationProject()
     { }
@@ -16,6 +21,8 @@ namespace TCCToDataOcean.DatabaseAgent
       Id = project.LegacyProjectID;
       ProjectId = project.LegacyProjectID;
       ProjectUid = project.ProjectUID;
+      ProjectName = project.Name;
+      DcFilename = project.CoordinateSystemFileName;
     }
   }
 }

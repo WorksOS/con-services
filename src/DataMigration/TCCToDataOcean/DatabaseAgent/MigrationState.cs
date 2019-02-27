@@ -6,6 +6,7 @@
     Pending,
     InProgress,
     Completed,
-    Failed
+    Failed,
+    FileNotFound
   }
 }

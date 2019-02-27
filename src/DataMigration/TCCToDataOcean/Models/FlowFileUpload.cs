@@ -1,4 +1,4 @@
-﻿namespace TCCToDataOcean
+﻿namespace TCCToDataOcean.Models
 {
   public class FlowFileUpload
   {

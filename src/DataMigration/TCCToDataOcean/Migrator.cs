@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Models;
+using TCCToDataOcean.Types;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -19,13 +20,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean
 {
-  enum ExecutionResult
-  {
-    Unknown = -1,
-    Success = 0,
-    Failed = 1
-  }
-
   public class Migrator : IMigrator
   {
     private readonly IProjectRepository ProjectRepo;
@@ -41,13 +35,12 @@ namespace TCCToDataOcean
     private readonly string UploadFileApiUrl;
     private readonly string ImportedFileApiUrl;
     private readonly string TemporaryFolder;
-    private readonly bool _isDebugMode;
 
-    private const string ProjectWebApiKey = "PROJECT_API_URL";
-    private const string ImportedFileWebApiKey = "IMPORTED_FILE_API_URL";
-    private const string UploadFileApiKey = "IMPORTED_FILE_API_URL2";
-    private const string TccFilespaceKey = "TCCFILESPACEID";
-    private const string TemporaryFolderKey = "TEMPORARY_FOLDER";
+    private readonly bool _resumeModeEnabled;
+
+    // Diagnostic settings
+    private readonly bool _isDebugMode;
+    private readonly bool _updateProjectCoordinateSystemFile;
 
     private readonly List<ImportedFileType> MigrationFileTypes = new List<ImportedFileType>
     {
@@ -67,19 +60,26 @@ namespace TCCToDataOcean
       ServiceExceptionHandler = serviceExceptionHandler;
       WebApiUtils = webApiUtils;
       ImportFile = importFile;
-      FileSpaceId = GetEnvironmentVariable(TccFilespaceKey, 48);
-      ProjectApiUrl = GetEnvironmentVariable(ProjectWebApiKey, 1);
-      UploadFileApiUrl = GetEnvironmentVariable(UploadFileApiKey, 1);
-      ImportedFileApiUrl = GetEnvironmentVariable(ImportedFileWebApiKey, 3);
-      TemporaryFolder = GetEnvironmentVariable(TemporaryFolderKey, 2);
-      _isDebugMode = ConfigStore.GetValueBool("MIGRATION_MODE_IS_DEBUG", defaultValue: true);
       _migrationDb = liteDbAgent;
+
+      FileSpaceId = GetEnvironmentVariable("TCCFILESPACEID", 48);
+      ProjectApiUrl = GetEnvironmentVariable("PROJECT_API_URL", 1);
+      UploadFileApiUrl = GetEnvironmentVariable("IMPORTED_FILE_API_URL2", 1);
+      ImportedFileApiUrl = GetEnvironmentVariable("IMPORTED_FILE_API_URL", 3);
+      TemporaryFolder = GetEnvironmentVariable("TEMPORARY_FOLDER", 2);
+
+      _resumeModeEnabled = ConfigStore.GetValueBool("RESUME_MODE_ENABLED", defaultValue: false);
+      // Diagnostic settings
+      _isDebugMode = ConfigStore.GetValueBool("MIGRATION_MODE_IS_DEBUG", defaultValue: true);
+      _updateProjectCoordinateSystemFile = ConfigStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
     }
 
     public async Task<bool> MigrateFilesForAllActiveProjects()
     {
+      Log.LogInformation($"## In ## {nameof(MigrateFilesForAllActiveProjects)}");
+
       // TODO (Aaron) Remove if part of recovery phase.
-      Log.LogInformation("Cleaning database, dropping collections");
+      Log.LogInformation($"{nameof(MigrateFilesForAllActiveProjects)} | Cleaning database, dropping collections");
       _migrationDb.DropTables(new[]
       {
           Table.Projects,
@@ -94,15 +94,11 @@ namespace TCCToDataOcean
       }
       // TODO (Aaron) Tidy up complete.
 
-      Log.LogInformation($"Fetching projects from: '{ProjectApiUrl}'");
+      Log.LogInformation($"{nameof(MigrateFilesForAllActiveProjects)} | Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
-      Log.LogInformation($"Found {projects.Count} projects");
+      Log.LogInformation($"{nameof(MigrateFilesForAllActiveProjects)} | Found {projects.Count} projects");
 
       var projectTasks = new List<Task<bool>>(projects.Count);
-
-      //var project = projects.First(p => p.ProjectUID == "67a52e4f-faa2-e511-80e5-0050568821e6");
-      //_migrationDb.WriteRecord(Table.Projects, project);
-      //await MigrateProject(project);
 
       foreach (var project in projects)
       {
@@ -114,7 +110,8 @@ namespace TCCToDataOcean
       await Task.WhenAll(projectTasks);
 
       var result = projectTasks.All(t => t.Result);
-      Log.LogInformation($"Migration result: {result}");
+
+      Log.LogInformation($"## Out ## {nameof(MigrateFilesForAllActiveProjects)} | Migration {(result ? "succeeded" : "failed")}");
 
       return result;
     }
@@ -124,7 +121,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<bool> MigrateProject(Project project)
     {
-      Log.LogInformation($"{nameof(MigrateProject)} [{project.ProjectUID}]: Migrating project '{project.Name}'");
+      Log.LogInformation($"## In ## {nameof(MigrateProject)} | Migrating project {project.ProjectUID}, Name: '{project.Name}'");
       _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress);
 
       var coordinateSystemFileMigrationResult = false;
@@ -135,24 +132,34 @@ namespace TCCToDataOcean
 
         if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
         {
-          var updateProjectResult = WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+          if (_updateProjectCoordinateSystemFile)
+          {
+            var updateProjectResult = WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
 
-          coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
+            coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
 
-          Log.LogInformation($"{nameof(MigrateProject)} [{project.ProjectUID}]: Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+            Log.LogInformation($"{nameof(MigrateProject)} | Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+          }
+          else
+          {
+            Log.LogDebug($"## DEBUG MODE ## {nameof(MigrateProject)} | Skipping updating project coordinate system file step");
+          }
+        }
+        else
+        {
+          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
         }
       }
 
-      //Get list of imported files for project from project web api
-      Log.LogInformation($"PUID: {project.ProjectUID} | Getting files");
       var importedFilesResult = false;
-      var filesResult = ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project.CustomerUID);
-      var filesList = filesResult.ImportedFileDescriptors;
-      if (filesList?.Count > 0)
+      var filesResult = ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
+
+      if (filesResult.ImportedFileDescriptors?.Count > 0)
       {
         var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
-
-        Log.LogInformation($"PUID: {project.ProjectUID} | {selectedFiles.Count} out of {filesList.Count} files to migrate");
+        _migrationDb.SetProjectFilesDetails(Table.Projects, project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
+        
+        Log.LogInformation($"{nameof(MigrateProject)} | Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
 
         var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
 
@@ -166,18 +173,18 @@ namespace TCCToDataOcean
 
         await Task.WhenAll(fileTasks);
 
-        // Todo (Aaron) In time it might be better to not return a tuple, and simply a null file. Making the following simpler.
         importedFilesResult = fileTasks.All(t => t.Result.Item1);
       }
       else
       {
-        Log.LogInformation($"PUID: {project.ProjectUID} | No files found");
+        Log.LogInformation($"{nameof(MigrateProject)} | No files found for {project.ProjectUID}");
       }
 
-      var result = coordinateSystemFileMigrationResult && importedFilesResult;
-      Log.LogInformation($"PUID: {project.ProjectUID} | Migration result: {result}");
+      var result = (coordinateSystemFileMigrationResult && importedFilesResult) || filesResult.ImportedFileDescriptors?.Count == 0;
 
       _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed);
+
+      Log.LogInformation($"## Out ## {nameof(MigrateProject)} | Migration {(result ? "succeeded" : "failed")}");
 
       return result;
     }
@@ -187,7 +194,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
     {
-      Log.LogInformation($"{nameof(DownloadCoordinateSystemFileFromTCC)} [{project.ProjectUID}]: Downloading coord system file '{project.CoordinateSystemFileName}'");
+      Log.LogInformation($"## In ## {nameof(DownloadCoordinateSystemFileFromTCC)} | Downloading coord system file '{project.CoordinateSystemFileName}'");
 
       Stream memStream = null;
       byte[] coordSystemFileContent;
@@ -216,8 +223,10 @@ namespace TCCToDataOcean
 
       Log.LogInformation(
         $"Coord system file for project {project.ProjectUID}: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
-      return coordSystemFileContent;
 
+      Log.LogInformation($"## Out ## {nameof(DownloadCoordinateSystemFileFromTCC)}");
+
+      return coordSystemFileContent;
     }
 
     /// <summary>
@@ -225,7 +234,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<(bool success, FileDataSingleResult file)> MigrateFile(FileData file)
     {
-      Log.LogInformation($"Migrating file: Name: {file.Name}, Uid: {file.ImportedFileUid}");
+      Log.LogInformation($"## In ## {nameof(MigrateFile)} | Migrating file '{file.Name}', Uid: {file.ImportedFileUid}");
 
       string tempFileName;
 
@@ -235,9 +244,11 @@ namespace TCCToDataOcean
 
         if (fileContents == null)
         {
-          Log.LogError($"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
-          _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Failed);
-          _migrationDb.WriteError(file.ProjectUid, $"Failed to fetch file '{file.Name}' ({file.LegacyFileId})");
+          string errorMessage = $"Failed to fetch file '{file.Name}' ({file.LegacyFileId}), not found";
+          _migrationDb.SetMigrationState(Table.Files, file, MigrationState.FileNotFound);
+          _migrationDb.WriteError(file.ProjectUid, errorMessage);
+
+          Log.LogError($"## Out ## {nameof(MigrateFile)} | {errorMessage}");
 
           return (false, null);
         }
@@ -247,7 +258,7 @@ namespace TCCToDataOcean
 
         tempFileName = Path.Combine(tempPath, file.Name);
 
-        Log.LogInformation($"Creating temporary file {tempFileName} for file {file.ImportedFileUid}");
+        Log.LogInformation($"{nameof(MigrateFile)} | Creating temporary file '{tempFileName}' for file {file.ImportedFileUid}");
 
         using (var tempFile = new FileStream(tempFileName, FileMode.Create))
         {
@@ -255,14 +266,21 @@ namespace TCCToDataOcean
         }
       }
 
-      Log.LogInformation($"Uploading file {file.ImportedFileUid}");
+      var result = new FileDataSingleResult();
 
-      var result = _isDebugMode
-        ? new FileDataSingleResult()
-        : ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
+      if (!_isDebugMode)
+      {
+        Log.LogInformation($"{nameof(MigrateFile)} | Uploading file {file.ImportedFileUid}");
+        result = ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
-      Log.LogInformation($"File {file.ImportedFileUid} update result {result.Code} {result.Message}");
-      _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
+        _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
+      }
+      else
+      {
+        Log.LogDebug($"## DEBUG MODE ## {nameof(MigrateFile)} | Skipped uploading file '{tempFileName}' to project service");
+      }
+
+      Log.LogInformation($"## Out ## {nameof(MigrateFile)} | File {file.ImportedFileUid} update result {result.Code} {result.Message}");
 
       return (true, result);
     }

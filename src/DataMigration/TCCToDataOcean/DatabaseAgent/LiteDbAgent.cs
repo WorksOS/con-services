@@ -59,5 +59,29 @@ namespace TCCToDataOcean.DatabaseAgent
 
       files.Update(dbObj);
     }
+
+    public void SetProjectCoordinateSystemDetails(string tableName, Project project, bool isValid)
+    {
+      var projects = db.GetCollection<MigrationProject>(tableName);
+      var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
+
+      dbObj.DcFilename = project.CoordinateSystemFileName;
+      dbObj.HasValidDcFile = isValid;
+      dbObj.DateTimeUpdated = DateTime.UtcNow;
+
+      projects.Update(dbObj);
+    }
+
+    public void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount)
+    {
+      var projects = db.GetCollection<MigrationProject>(tableName);
+      var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
+
+      dbObj.TotalFileCoutn = totalFileCount;
+      dbObj.EligibleFileCount = eligibleFileCount;
+      dbObj.DateTimeUpdated = DateTime.UtcNow;
+
+      projects.Update(dbObj);
+    }
   }
 }

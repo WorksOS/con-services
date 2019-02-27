@@ -1,6 +1,6 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Types
 {
   public class MigrationErrorCodesProvider : ContractExecutionStatesEnum
   {
