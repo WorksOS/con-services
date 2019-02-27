@@ -70,10 +70,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
         // Works out the percentage each colour on the map represents
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientPassCountLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientPassCountLeafSubGrid SubGrid)
           {
             var currentPassTargetRange = new PassCountRangeRecord(CellPassConsts.NullPassCountValue, CellPassConsts.NullPassCountValue);
 

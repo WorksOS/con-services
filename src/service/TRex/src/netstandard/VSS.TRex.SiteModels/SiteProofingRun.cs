@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteProofingRun : IEquatable<string>, ISiteProofingRun
   {
-    private const int READER_WRITER_VERSION_PROOFING_RUN = 1;
+    private const int VERSION_NUMBER = 1;
 
     public short MachineID { get; set; }
 
@@ -61,9 +61,9 @@ namespace VSS.TRex.SiteModels
 
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION_PROOFING_RUN)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION_PROOFING_RUN, version);
+      byte version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       Name = reader.ReadString();
       MachineID = reader.ReadInt16();
@@ -84,7 +84,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION_PROOFING_RUN);
+      writer.Write(VERSION_NUMBER);
 
       writer.Write(Name);
       writer.Write(MachineID);

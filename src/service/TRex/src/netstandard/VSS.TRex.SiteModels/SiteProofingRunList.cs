@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteProofingRunList : List<ISiteProofingRun>, ISiteProofingRunList
   {
-    private const int READER_WRITER_VERSION_PROOFING_RUN_LIST = 1;
+    private const int VERSION_NUMBER = 1;
     private const string PROOFING_RUN_LIST_STREAM_NAME = "ProofingRuns";
 
     /// <summary>
@@ -84,9 +84,9 @@ namespace VSS.TRex.SiteModels
 
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION_PROOFING_RUN_LIST)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION_PROOFING_RUN_LIST, version);
+      byte version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -101,7 +101,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION_PROOFING_RUN_LIST);
+      writer.Write(VERSION_NUMBER);
 
       writer.Write((int)Count);
 

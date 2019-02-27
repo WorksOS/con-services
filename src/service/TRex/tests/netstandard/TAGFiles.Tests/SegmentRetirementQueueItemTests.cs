@@ -21,7 +21,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_SegmentRetirementQueueItem_SerializationVersionFail()
     {
-      var expectedVersions = new int[] {SegmentRetirementQueueItem.VERSION_NUMBER};
+      var expectedVersions = new uint[] {SegmentRetirementQueueItem.VERSION_NUMBER};
       var writer = new TestBinaryWriter();
       writer.WriteByte(SegmentRetirementQueueItem.VERSION_NUMBER + 1);
       var reader = new TestBinaryReader(writer._stream.BaseStream as MemoryStream);

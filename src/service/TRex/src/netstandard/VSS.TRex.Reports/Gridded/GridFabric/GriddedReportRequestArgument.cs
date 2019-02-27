@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Reports.Gridded.GridFabric
 {
@@ -8,6 +9,8 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
   /// </summary>
   public class GriddedReportRequestArgument : BaseApplicationServiceRequestArgumentReport
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
     /// </summary>
@@ -52,6 +55,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteDouble(GridInterval);
       writer.WriteInt((int) GridReportOption);
       writer.WriteDouble(StartNorthing);
@@ -68,6 +74,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       GridInterval = reader.ReadDouble();
       GridReportOption = (GridReportOption) reader.ReadInt();
       StartNorthing = reader.ReadDouble();

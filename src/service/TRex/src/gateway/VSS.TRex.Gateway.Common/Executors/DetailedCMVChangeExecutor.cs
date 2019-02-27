@@ -46,7 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        CMVChangeDetailsDatalValues = request?.CMVChangeDetailsValues
+        CMVChangeDetailsDataValues = request?.CMVChangeDetailsValues
       });
 
       if (cmvChangeDetailsResult != null)

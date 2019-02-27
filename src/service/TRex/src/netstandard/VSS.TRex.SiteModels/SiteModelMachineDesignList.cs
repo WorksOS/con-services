@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
-    private const int READER_WRITER_VERSION_MACHINE_DESIGN_LIST = 1;
+    private const byte VERSION_NUMBER = 1;
     private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>
@@ -58,7 +58,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION_MACHINE_DESIGN_LIST); 
+      writer.Write(VERSION_NUMBER); 
 
       writer.Write((int) Count);
       for (int i = 0; i < Count; i++)
@@ -73,9 +73,9 @@ namespace VSS.TRex.SiteModels
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION_MACHINE_DESIGN_LIST)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_DESIGN_LIST, version);
+      byte version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       int count = reader.ReadInt32();
       Capacity = count;

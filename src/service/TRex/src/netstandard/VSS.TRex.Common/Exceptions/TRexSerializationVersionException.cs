@@ -1,17 +1,23 @@
-﻿namespace VSS.TRex.Common.Exceptions
+﻿using System.Linq;
+
+namespace VSS.TRex.Common.Exceptions
 {
   public class TRexSerializationVersionException : TRexException
   {
-    public static string ErrorMessage(int [] expectedVersions, int encounteredVersion)
+    public static string ErrorMessage(uint [] expectedVersions, uint encounteredVersion)
     {
       return $"Invalid version read during deserialization: {encounteredVersion}, expected version {expectedVersions}";
     }
 
-    public TRexSerializationVersionException(int expectedVersion, int encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(new []{expectedVersion}, encounteredVersion))
+    public TRexSerializationVersionException(uint expectedVersion, uint encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(new []{expectedVersion}, encounteredVersion))
     {
     }
 
-    public TRexSerializationVersionException(int [] expectedVersions, int encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(expectedVersions, encounteredVersion))
+    public TRexSerializationVersionException(uint [] expectedVersions, uint encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(expectedVersions, encounteredVersion))
+    {
+    }
+
+    public TRexSerializationVersionException(byte[] expectedVersions, uint encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(expectedVersions.Cast<uint>().ToArray(), encounteredVersion))
     {
     }
   }

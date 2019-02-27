@@ -1,10 +1,13 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
   public class CalculateDesignElevationPatchArgument : DesignSubGridRequestArgumentBase
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The X origin location for the patch of elevations, or spot elevation, to be computed from
     /// </summary>
@@ -70,6 +73,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt((int)OriginX);
       writer.WriteInt((int)OriginY);
       writer.WriteDouble(CellSize);
@@ -82,6 +87,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       OriginX = (uint)reader.ReadInt();
       OriginY = (uint)reader.ReadInt();

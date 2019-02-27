@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
@@ -9,6 +10,8 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// </summary>    
   public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The flag is to indicate whether or not the machine MDP target to be user overrides.
     /// </summary>
@@ -37,6 +40,8 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteBoolean(OverrideMachineMDP);
       writer.WriteShort(OverridingMachineMDP);
 
@@ -52,6 +57,8 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       OverrideMachineMDP = reader.ReadBoolean();
       OverridingMachineMDP = reader.ReadShort();

@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Reports.Gridded;
 
 namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
@@ -9,6 +10,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
   /// </summary>
   public class StationOffsetReportRequestArgument_ApplicationService : BaseApplicationServiceRequestArgumentReport
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// This design contains the center line which will be sampled along
     /// </summary>
@@ -45,6 +48,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(AlignmentDesignUid);
       writer.WriteDouble(CrossSectionInterval);
       writer.WriteDouble(StartStation);
@@ -59,6 +65,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       AlignmentDesignUid = reader.ReadGuid() ?? Guid.Empty;
       CrossSectionInterval = reader.ReadDouble();
       StartStation = reader.ReadDouble();

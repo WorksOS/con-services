@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
@@ -11,6 +12,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
   /// </summary>
   public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// Cut volume, expressed in cubic meters
     /// </summary>
@@ -61,6 +64,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteBoolean(Cut.HasValue);
       if (Cut.HasValue)
         writer.WriteDouble(Cut.Value);
@@ -92,6 +97,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       if (reader.ReadBoolean())
         Cut = reader.ReadDouble();

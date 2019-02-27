@@ -75,10 +75,7 @@ namespace VSS.TRex.Analytics.CCAStatistics
         // Loop through CCA array. Note processing is accumulative so values may already hold values.
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientCCALeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientCCALeafSubGrid SubGrid)
           {
             var currentTargetCCA = CellPassConsts.NullCCA;
 

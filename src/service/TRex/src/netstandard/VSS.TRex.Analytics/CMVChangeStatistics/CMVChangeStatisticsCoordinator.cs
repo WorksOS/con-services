@@ -22,8 +22,8 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.Grid.CellSize,
-      CMVChangeDetailsDataValues = argument.CMVChangeDetailsDatalValues,
-      Counts = argument.CMVChangeDetailsDatalValues != null ? new long[argument.CMVChangeDetailsDatalValues.Length] : null
+      CMVChangeDetailsDataValues = argument.CMVChangeDetailsDataValues,
+      Counts = argument.CMVChangeDetailsDataValues != null ? new long[argument.CMVChangeDetailsDataValues.Length] : null
     };
 
     public override AnalyticsComputor ConstructComputor(CMVChangeStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
