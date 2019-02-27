@@ -18,10 +18,10 @@
             private long value;
 
             // ReSharper disable once ConvertToAutoPropertyWhenPossible
-            public long Value { get => value; }
+            public long Value => value;
 
             /// <summary>
-            /// Thread safe incrementor for the satistics element
+            /// Thread safe incrementer for the statistics element
             /// </summary>
             public void Increment() => System.Threading.Interlocked.Increment(ref value);
         }

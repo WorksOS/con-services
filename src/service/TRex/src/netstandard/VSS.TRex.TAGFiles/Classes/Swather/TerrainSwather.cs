@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
@@ -163,7 +164,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                             {
                                 // Prepare a processed pass record to include in the cell
                                 //ProcessedCellPass.MachineID = MachineID;
-                                ProcessedCellPass.InternalSiteModelMachineIndex = InternalSiteModelMachineIndex;
+                                ProcessedCellPass.InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex;
                                 ProcessedCellPass.Time = _TheTime;
                                 ProcessedCellPass.Height = _TheHeight;
 

@@ -318,7 +318,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             };
 
             // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
-            // ... first reliable the passes with the machine ID
+            // ... first relable the passes with the machine ID as it is set to null in the swathing engine
             Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
             {
               ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;

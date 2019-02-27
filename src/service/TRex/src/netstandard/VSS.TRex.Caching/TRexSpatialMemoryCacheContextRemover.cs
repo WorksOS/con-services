@@ -18,12 +18,13 @@ namespace VSS.TRex.Caching
     private readonly Thread _removalThread;
     private readonly int _sleepTimeMS;
     private readonly int _removalWaitTimeSeconds;
+    private bool _cancelled;
 
     private readonly EventWaitHandle _waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 
     private void PerformRemovalOperation()
     {
-      while (_removalThread.ThreadState == ThreadState.Running)
+      while (!_cancelled)
       {
         try
         {
@@ -47,7 +48,7 @@ namespace VSS.TRex.Caching
 
     public void StopRemovalOperations()
     {
-      _removalThread.Abort();
+      _cancelled = true;
       _waitHandle.Set();
     }
 
