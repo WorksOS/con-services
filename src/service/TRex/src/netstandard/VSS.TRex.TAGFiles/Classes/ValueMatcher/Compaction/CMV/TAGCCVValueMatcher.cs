@@ -29,28 +29,24 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
+            bool result = false;
+
             if (!state.HaveSeenAnAbsoluteCCV)
-            {
                 return false;
-            }
 
             switch (valueType.Type)
             {
                 case TAGDataType.t4bitInt:
                 case TAGDataType.t8bitInt:
                     if (((short)(valueSink.ICCCVValues.GetLatest()) + value) < 0)
-                    {
                         return false;
-                    }
 
                     valueSink.SetICCCVValue((short)((short)(valueSink.ICCCVValues.GetLatest()) + value));
+                    result = true;   
                     break;
-
-                default:
-                    return false;
             }
 
-            return true;
+            return result;
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)

@@ -114,12 +114,11 @@ namespace VSS.TRex.TAGFiles.Classes
 {
     public class TAGFile
     {
-      private static ILogger Log = Logging.Logger.CreateLogger<TAGFile>();
-
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFile>();
 
         private TAGHeader Header = new TAGHeader();
 
-        private TAGDictionary Dictionary { get; set; } = new TAGDictionary();
+        private TAGDictionary Dictionary { get; } = new TAGDictionary();
 
         /// <summary>
         /// Default no-arg constructor
@@ -139,9 +138,7 @@ namespace VSS.TRex.TAGFiles.Classes
             try
             {
                 if (reader.GetSize() == 0)
-                {
                     return TAGReadResult.ZeroLengthFile;
-                }
 
                 try
                 {
@@ -185,33 +182,23 @@ namespace VSS.TRex.TAGFiles.Classes
 
                 // Now read in the data from the file
                 if (!sink.Starting())
-                {
                     return TAGReadResult.SinkStartingFailure;
-                }
 
-                while (!sink.Aborting() && !sink.ProcessingTerminated && (reader.NybblePosition < DataEndPos))
+                while (!sink.Aborting() && reader.NybblePosition < DataEndPos)
                 {
                     if (!reader.ReadVarInt(out short ValueTypeID))
                     {
                         if (reader.NybblePosition >= DataEndPos)
-                        {
                             break; // We have finished
-                        }
-                        else
-                        {
-                            return TAGReadResult.InvalidValueTypeID; // This is an invalid tag file
-                        }
+
+                        return TAGReadResult.InvalidValueTypeID; // This is an invalid tag file
                     }
 
                     if (Dictionary.Entries.Keys.Count == 0)
-                    {
                         return TAGReadResult.InvalidDictionary;
-                    }
 
                     if (!Dictionary.Entries.TryGetValue(ValueTypeID, out TAGDictionaryItem DictionaryEntry))
-                    {
                         return TAGReadResult.InvalidValueTypeID;
-                    }
 
                     try
                     {
@@ -261,28 +248,13 @@ namespace VSS.TRex.TAGFiles.Classes
                     }
                 }
 
-                if (!sink.ProcessingTerminated)
-                {
-                    if (!sink.Finishing())
-                    {
-                        return TAGReadResult.SinkFinishingFailure;
-                    }
-
-                    if (sink.ProcessingTerminated)
-                    {
-                        return TAGReadResult.ProcessingTerminated;
-                    }
-                }
+                if (!sink.Finishing())
+                    return TAGReadResult.SinkFinishingFailure;
             }
-            catch (Exception E)
+            catch (IOException E)
             {
-                if (E is IOException)
-                {
-                    Log.LogDebug($"Exception in TagFile.ReadFile:", E);
-                    return TAGReadResult.CouldNotOpenFile;
-                }
-
-                throw;
+                Log.LogDebug(E, "Exception in TagFile.ReadFile:");
+                return TAGReadResult.CouldNotOpenFile;
             }
 
             return TAGReadResult.NoError;

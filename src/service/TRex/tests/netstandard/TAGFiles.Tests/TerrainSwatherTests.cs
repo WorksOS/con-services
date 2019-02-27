@@ -33,8 +33,7 @@ namespace TAGFiles.Tests
 
             TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
 
-            Assert.True(swather != null && swather.InternalSiteModelMachineIndex == machine.InternalSiteModelMachineIndex, 
-                "TerrainSwather not created as expected");
+            Assert.True(swather != null, "TerrainSwather not created as expected");
         }
 
         [Fact]

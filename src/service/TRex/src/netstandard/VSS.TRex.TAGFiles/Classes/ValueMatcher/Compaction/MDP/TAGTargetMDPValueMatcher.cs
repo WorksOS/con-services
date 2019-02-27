@@ -18,14 +18,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             // Value is the absolute MDP value
             if (valueType.Type == TAGDataType.t12bitUInt)
             {
                 valueSink.ICMDPTargetValue = (short) value;
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

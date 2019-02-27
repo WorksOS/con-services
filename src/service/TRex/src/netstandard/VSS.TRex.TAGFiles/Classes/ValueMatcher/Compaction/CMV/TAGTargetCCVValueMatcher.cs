@@ -18,13 +18,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             // Value is the absolute CCV value
             if (valueType.Type == TAGDataType.t12bitUInt)
             {
                 valueSink.ICCCVTargetValue = (short)value;
-                return true;
+                result = true;
             }
-            return false;            
+
+            return result;            
         }
     }
 }

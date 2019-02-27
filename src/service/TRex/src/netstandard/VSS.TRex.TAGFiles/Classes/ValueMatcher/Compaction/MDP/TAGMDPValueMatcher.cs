@@ -27,18 +27,14 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
             if (!state.HaveSeenAnAbsoluteMDP)
-            {
                 return false;
-            }
 
             switch (valueType.Type)
             {
                 case TAGDataType.t4bitInt:
                 case TAGDataType.t8bitInt:
                     if (((short)(valueSink.ICMDPValues.GetLatest()) + value) < 0)
-                    {
                         return false;
-                    }
 
                     valueSink.SetICMDPValue((short)((short)(valueSink.ICMDPValues.GetLatest()) + value));
                     break;
@@ -51,20 +47,18 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
-        {
-            state.HaveSeenAnAbsoluteMDP = true;
-
-            switch (valueType.Type)
+        {       
+            bool result = false;
+         
+            if (valueType.Type == TAGDataType.t12bitUInt)
             {
-                case TAGDataType.t12bitUInt:
-                    valueSink.SetICMDPValue((short)value);
-                    break;
+                state.HaveSeenAnAbsoluteMDP = true;
 
-                default:
-                    return false;
+                valueSink.SetICMDPValue((short) value);
+                result = true;
             }
-
-            return true;
+         
+            return result;
         }
     }
 }
