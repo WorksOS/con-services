@@ -1,4 +1,5 @@
-﻿using VSS.TRex.TAGFiles.Classes.States;
+﻿using Amazon.S3.Model.Internal.MarshallTransformations;
+using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Common.Time;
 
@@ -19,15 +20,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             if (valueType.Name == TAGValueNames.kTagFileTimeTag)
             {
                 // Every time record marks the end of the collected data for an epoch
                 // Thus, we instruct the value sink to process its context whenever we receive
                 // a time value.
                 if (state.HaveSeenATimeValue)
-                {
                     valueSink.ProcessEpochContext();
-                }
 
                 switch (valueType.Type)
                 {
@@ -38,37 +39,32 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
                         // {$ENDIF}
 
                         valueSink.GPSWeekTime = value;                    // Time value is GPS milliseconds since start of week
+                        state.HaveSeenATimeValue = true;
+                        result = true;
                         break;
 
                     case TAGDataType.t4bitUInt:
-                        valueSink.GPSWeekTime = valueSink.GPSWeekTime + (100 * value); // Time value is tenths of seconds delta from previous time
+                        valueSink.GPSWeekTime = valueSink.GPSWeekTime + 100 * value; // Time value is tenths of seconds delta from previous time
+                        state.HaveSeenATimeValue = true;
+                        result = true;
                         break;
-
-                    default:
-                        return false;
                 }
-
-                state.HaveSeenATimeValue = true;
             }
             else if (valueType.Name == TAGValueNames.kTagFileWeekTag)
             {
-                if (valueType.Type != TAGDataType.t16bitUInt)
+                if (valueType.Type == TAGDataType.t16bitUInt)
                 {
-                    return false;
+                    valueSink.GPSWeekNumber = (short) value;
+                    state.HaveSeenAWeekValue = true;
                 }
-
-                valueSink.GPSWeekNumber = (short)value;
-                state.HaveSeenAWeekValue = true;
             }
 
             // if we have seen both a GPS week and time then we can compute the DataTime
             // value for the value sink
             if (state.HaveSeenATimeValue && state.HaveSeenAWeekValue)
-            {
                 valueSink.DataTime = GPS.GPSOriginTimeToDateTime(valueSink.GPSWeekNumber, valueSink.GPSWeekTime);
-            }
 
-            return true;
+            return result;
         }
     }
 }

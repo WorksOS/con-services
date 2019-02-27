@@ -33,10 +33,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
             {
                 case TAGDataType.t4bitInt:
                 case TAGDataType.t8bitInt:
-                    if (((short)(valueSink.ICMDPValues.GetLatest()) + value) < 0)
-                        return false;
-
-                    valueSink.SetICMDPValue((short)((short)(valueSink.ICMDPValues.GetLatest()) + value));
+                    if (((short)(valueSink.ICMDPValues.GetLatest()) + value) >= 0)
+                        valueSink.SetICMDPValue((short)((short)(valueSink.ICMDPValues.GetLatest()) + value));
                     break;
 
                 default:

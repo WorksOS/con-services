@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
   public class AggregatedDataIntegratorWorker
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger< AggregatedDataIntegratorWorker>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<AggregatedDataIntegratorWorker>();
 
     /// <summary>
     /// A queue of the tasks this worker will process into the TRex data stores
@@ -46,9 +46,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
 
-    private AggregatedDataIntegratorWorker()
-    {
-    }
+    private AggregatedDataIntegratorWorker() { }
 
     /// <summary>
     /// Worker constructor accepting the list of tasks for it to process.
@@ -99,343 +97,308 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Set capacity to maximum expected size to prevent List resizing while assembling tasks
       ProcessedTasks.Capacity = MaxMappedTagFilesToProcessPerAggregationEpoch;
 
+      AggregatedDataIntegratorTask Task = null;
       try
       {
-        AggregatedDataIntegratorTask Task = null;
-        try
+        if (!TasksToProcess.TryDequeue(out Task) || Task == null)
+          return true; // There is nothing in the queue to work on so just return true
+
+        storageProxy_Mutable.Clear();
+
+        // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
+        // and also explicitly provides the transactional storage proxy being used for processing the
+        // data from TAG files into the model
+        ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.PersistedTargetSiteModelID, true);
+
+        if (SiteModelFromDM == null)
         {
-          if (!TasksToProcess.TryDequeue(out Task))
-          {
-            return true;
-          }
+          Log.LogError($"Unable to lock SiteModel {Task.PersistedTargetSiteModelID} from the data model file");
+          return false;
+        }
 
-          if (Task == null)
-          {
-            // There is nothing in the queue to work on so just return true
-            return true;
-          }
+        Task.StartProcessingTime = DateTime.Now;
 
-          storageProxy_Mutable.Clear();
+        ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
 
-          // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
-          // and also explicitly provides the transactional storage proxy being used for processing the
-          // data from TAG files into the model
-          ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.PersistedTargetSiteModelID, true);
+        // First check to see if this task has been catered to by previous task processing
+        bool AnyMachineEvents = Task.AggregatedMachineEvents != null;
+        bool AnyCellPasses = Task.AggregatedCellPasses != null;
 
-          if (SiteModelFromDM == null)
-          {
-            Log.LogError($"Unable to lock SiteModel {Task.PersistedTargetSiteModelID} from the data model file");
-            return false;
-          }
+        if (!(AnyMachineEvents || AnyCellPasses))
+        {
+          Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {Task.PersistedTargetSiteModelID}");
+          return true;
+        }
 
-          Task.StartProcessingTime = DateTime.Now;
+        Log.LogInformation("Aggregation Task Process --> Filter tasks to aggregate");
 
-          ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
+        // ====== STAGE 1: ASSEMBLE LIST OF TAG FILES TO AGGREGATE IN ONE OPERATION
 
-          // First check to see if this task has been catered to by previous task processing
-          bool AnyMachineEvents = Task.AggregatedMachineEvents != null;
-          bool AnyCellPasses = Task.AggregatedCellPasses != null;
+        // Populate the tasks to process list with the aggregations that will be
+        // processed at this time. These tasks are also removed from the main task
+        // list to allow the TAG file processors to prepare additional TAG files
+        // while this set is being integrated into the model.                    
 
-          if (!(AnyMachineEvents || AnyCellPasses))
-          {
-            Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {Task.PersistedTargetSiteModelID}");
+        while (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
+               TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
+        {
+          ProcessedTasks.Add(task);
+        }
 
-            return true;
-          }
-
-          Log.LogInformation("Aggregation Task Process --> Filter tasks to aggregate");
-
-          // ====== STAGE 1: ASSEMBLE LIST OF TAG FILES TO AGGREGATE IN ONE OPERATION
-
-          // Populate the tasks to process list with the aggregations that will be
-          // processed at this time. These tasks are also removed from the main task
-          // list to allow the TAG file processors to prepare additional TAG files
-          // while this set is being integrated into the model.                    
-
-          while (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
-                 TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
-          {
-             ProcessedTasks.Add(task);
-          }
-
-      /*    if (TasksToProcess.Count > 0)
-          {
-            for (int I = 0; I < TasksToProcess.Count; I++)
+        /*    if (TasksToProcess.Count > 0)
             {
-              if (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch)
+              for (int I = 0; I < TasksToProcess.Count; I++)
               {
-                if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
-                  ProcessedTasks.Add(task);
-              }
-              else
-              {
-                break;
-              }
-            }
-          }*/
-
-          Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.PersistedTargetMachineID} in project {Task.PersistedTargetSiteModelID}");
-
-          // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
-
-          for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
-          {
-            AggregatedDataIntegratorTask processedTask = ProcessedTasks[I];
-
-            // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
-            Task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
-
-            // Integrate the machine events
-            eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
-
-            //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
-
-            // Integrate the cell passes from all cell pass aggregators 
-            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
-            subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubGridHasChanged);
-
-            //Update current DateTime with the latest one
-            if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
-            {
-              Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp = processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
-              Task.IntermediaryTargetMachine.LastKnownX = processedTask.IntermediaryTargetMachine.LastKnownX;
-              Task.IntermediaryTargetMachine.LastKnownY = processedTask.IntermediaryTargetMachine.LastKnownY;
-            }
-
-            if (Task.IntermediaryTargetMachine.MachineHardwareID == "")
-              Task.IntermediaryTargetMachine.MachineHardwareID = processedTask.IntermediaryTargetMachine.MachineHardwareID;
-
-            if (Task.IntermediaryTargetMachine.MachineType == 0)
-              Task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
-
-            processedTask.AggregatedCellPasses = null;
-          }
-
-          // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
-          // read from the datamodel file itself, then synchronously write it to the DataModel
-
-          IMachine MachineFromDM;
-          IProductionEventLists SiteModelMachineTargetValues;
-          lock (SiteModelFromDM)
-          {
-            // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
-            SiteModelFromDM.Include(Task.IntermediaryTargetSiteModel);
-
-            // Need to locate or create a matching machine in the site model.
-            MachineFromDM = SiteModelFromDM.Machines.Locate(Task.PersistedTargetMachineID, Task.IntermediaryTargetMachine.IsJohnDoeMachine);
-
-            if (MachineFromDM == null)
-            {
-              MachineFromDM = SiteModelFromDM.Machines.CreateNew(Task.IntermediaryTargetMachine.Name,
-                Task.IntermediaryTargetMachine.MachineHardwareID,
-                Task.IntermediaryTargetMachine.MachineType,
-                Task.IntermediaryTargetMachine.DeviceType,
-                Task.IntermediaryTargetMachine.IsJohnDoeMachine,
-                Task.PersistedTargetMachineID);
-              MachineFromDM.Assign(Task.IntermediaryTargetMachine);
-            }
-
-            // Update the internal name of the machine with the machine name from the TAG file
-            if (Task.IntermediaryTargetMachine.Name != "" && MachineFromDM.Name != Task.IntermediaryTargetMachine.Name)
-            {
-              MachineFromDM.Name = Task.IntermediaryTargetMachine.Name;
-            }
-
-            // Update the internal type of the machine with the machine type from the TAG file
-            // if the existing internal machine type is zero then
-            if (Task.IntermediaryTargetMachine.MachineType != 0 && MachineFromDM.MachineType == 0)
-            {
-              MachineFromDM.MachineType = Task.IntermediaryTargetMachine.MachineType;
-            }
-
-            // If the machine target values can't be found then create them
-            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
-
-            if (SiteModelMachineTargetValues == null)
-            {
-              SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists(SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex));
-            }
-
-            // Check to see the machine target values were created correctly
-            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
-          }
-
-          // ====== STAGE 3: INTEGRATE THE AGGREGATED EVENTS INTO THE PRIMARY LIVE DATABASE
-
-          // Perform machine event integration outside of the SiteModel write access interlock as the
-          // individual event lists have independent exclusive locks event integration uses.
-          eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.IntermediaryTargetSiteModel, SiteModelFromDM);
-
-          // Integrate the machine events into the main site model. This requires the
-          // site model interlock as aspects of the site model state (machine) are being changed.
-          lock (SiteModelFromDM)
-          {
-            if (SiteModelMachineTargetValues != null)
-            {
-              //Update machine last known value (events) from integrated model before saving
-              int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp);
-              if (Comparison == -1)
-              {
-                MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
-
-                if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
+                if (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch)
                 {
-                  MachineFromDM.LastKnownLayerId = SiteModelMachineTargetValues.LayerIDStateEvents.LastStateValue();
+                  if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
+                    ProcessedTasks.Add(task);
                 }
                 else
                 {
-                  MachineFromDM.LastKnownLayerId = 0;
+                  break;
                 }
-
-                MachineFromDM.LastKnownPositionTimeStamp = Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
-                MachineFromDM.LastKnownX = Task.IntermediaryTargetMachine.LastKnownX;
-                MachineFromDM.LastKnownY = Task.IntermediaryTargetMachine.LastKnownY;
               }
-            }
-            else
-            {
-              Log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
-              return false;
-            }
+            }*/
+
+        Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.PersistedTargetMachineID} in project {Task.PersistedTargetSiteModelID}");
+
+        // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
+
+        for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
+        {
+          AggregatedDataIntegratorTask processedTask = ProcessedTasks[I];
+
+          // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
+          Task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
+
+          // Integrate the machine events
+          eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
+
+          //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
+
+          // Integrate the cell passes from all cell pass aggregators 
+          SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
+          subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubGridHasChanged);
+
+          //Update current DateTime with the latest one
+          if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
+          {
+            Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp = processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
+            Task.IntermediaryTargetMachine.LastKnownX = processedTask.IntermediaryTargetMachine.LastKnownX;
+            Task.IntermediaryTargetMachine.LastKnownY = processedTask.IntermediaryTargetMachine.LastKnownY;
           }
 
-          // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
-          SiteModelMachineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
+          if (Task.IntermediaryTargetMachine.MachineHardwareID == "")
+            Task.IntermediaryTargetMachine.MachineHardwareID = processedTask.IntermediaryTargetMachine.MachineHardwareID;
 
-          // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
-          try
+          if (Task.IntermediaryTargetMachine.MachineType == 0)
+            Task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
+
+          processedTask.AggregatedCellPasses = null;
+        }
+
+        // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
+        // read from the datamodel file itself, then synchronously write it to the DataModel
+
+        IMachine MachineFromDM;
+        IProductionEventLists SiteModelMachineTargetValues;
+        lock (SiteModelFromDM)
+        {
+          // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
+          SiteModelFromDM.Include(Task.IntermediaryTargetSiteModel);
+
+          // Need to locate or create a matching machine in the site model.
+          MachineFromDM = SiteModelFromDM.Machines.Locate(Task.PersistedTargetMachineID, Task.IntermediaryTargetMachine.IsJohnDoeMachine);
+
+          if (MachineFromDM == null)
           {
-            // This is a dirty map for the leaf sub grids and is stored as a bitmap grid
-            // with one level fewer that the sub grid tree it is representing, and
-            // with cells the size of the leaf sub grids themselves. As the cell coordinates
-            // we have been given are with respect to the sub grid, we must transform them
-            // into coordinates relevant to the dirty bitmap sub grid tree.
+            MachineFromDM = SiteModelFromDM.Machines.CreateNew(Task.IntermediaryTargetMachine.Name,
+              Task.IntermediaryTargetMachine.MachineHardwareID,
+              Task.IntermediaryTargetMachine.MachineType,
+              Task.IntermediaryTargetMachine.DeviceType,
+              Task.IntermediaryTargetMachine.IsJohnDoeMachine,
+              Task.PersistedTargetMachineID);
+            MachineFromDM.Assign(Task.IntermediaryTargetMachine);
+          }
 
-            WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
+          // Update the internal name of the machine with the machine name from the TAG file
+          if (Task.IntermediaryTargetMachine.Name != "" && MachineFromDM.Name != Task.IntermediaryTargetMachine.Name)
+            MachineFromDM.Name = Task.IntermediaryTargetMachine.Name;
+
+          // Update the internal type of the machine with the machine type from the TAG file
+          // if the existing internal machine type is zero then
+          if (Task.IntermediaryTargetMachine.MachineType != 0 && MachineFromDM.MachineType == 0)
+            MachineFromDM.MachineType = Task.IntermediaryTargetMachine.MachineType;
+
+          // If the machine target values can't be found then create them
+          SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
+
+          if (SiteModelMachineTargetValues == null)
+            SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists(SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex));
+
+          // Check to see the machine target values were created correctly
+          SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
+        }
+
+        // ====== STAGE 3: INTEGRATE THE AGGREGATED EVENTS INTO THE PRIMARY LIVE DATABASE
+
+        // Perform machine event integration outside of the SiteModel write access interlock as the
+        // individual event lists have independent exclusive locks event integration uses.
+        eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.IntermediaryTargetSiteModel, SiteModelFromDM);
+
+        // Integrate the machine events into the main site model. This requires the
+        // site model interlock as aspects of the site model state (machine) are being changed.
+        lock (SiteModelFromDM)
+        {
+          if (SiteModelMachineTargetValues != null)
+          {
+            //Update machine last known value (events) from integrated model before saving
+            int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp);
+            if (Comparison == -1)
             {
-              CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
-              ID = SiteModelFromDM.ID
-            };
+              MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
+              MachineFromDM.LastKnownLayerId = SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? SiteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort) 0;
+              MachineFromDM.LastKnownPositionTimeStamp = Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
+              MachineFromDM.LastKnownX = Task.IntermediaryTargetMachine.LastKnownX;
+              MachineFromDM.LastKnownY = Task.IntermediaryTargetMachine.LastKnownY;
+            }
+          }
+          else
+          {
+            Log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
+            return false;
+          }
+        }
 
-            // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
-            // ... first relable the passes with the machine ID as it is set to null in the swathing engine
-            Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
+        // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
+        SiteModelMachineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
+
+        // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
+        try
+        {
+          // This is a dirty map for the leaf sub grids and is stored as a bitmap grid
+          // with one level fewer that the sub grid tree it is representing, and
+          // with cells the size of the leaf sub grids themselves. As the cell coordinates
+          // we have been given are with respect to the sub grid, we must transform them
+          // into coordinates relevant to the dirty bitmap sub grid tree.
+
+          WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
+          {
+            CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
+            ID = SiteModelFromDM.ID
+          };
+
+          // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
+          // ... first relable the passes with the machine ID as it is set to null in the swathing engine
+          Task.AggregatedCellPasses?.ScanAllSubGrids(leaf =>
+          {
+            ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
+
+            foreach (var segment in serverLeaf.Cells.PassesData.Items)
             {
-              ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
-
-              foreach (var segment in serverLeaf.Cells.PassesData.Items)
+              SubGridUtilities.SubGridDimensionalIterator((x, y) =>
               {
-                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                uint passCount = segment.PassesData.PassCount(x, y);
+                for (int i = 0; i < passCount; i++)
+                  segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+              });
+            }
+
+            return true;
+          });
+
+          // ... then integrate them
+          SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
+          if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
+            return false;
+
+          // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
+          SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
+
+          // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
+          // All operations within the transaction to integrate the changes into the live model have completed successfully.
+          // Now commit those changes as a block.
+
+          var startTime = DateTime.Now;
+          Log.LogInformation("Starting storage proxy Commit()");
+          storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+          Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
+
+          // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
+
+          if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
+          {
+            // Stamp all the invalidated spatial streams with the project ID
+            foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
+              key.ProjectUID = SiteModelFromDM.ID;
+
+            try
+            {
+              ISegmentRetirementQueue retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
+
+              if (retirementQueue == null)
+              {
+                Log.LogCritical("No registered segment retirement queue in DI context");
+                Debug.Assert(false, "No registered segment retirement queue in DI context");
+              }
+
+              DateTime insertUTC = DateTime.UtcNow;
+
+              retirementQueue.Add(new SegmentRetirementQueueKey
                 {
-                  uint passCount = segment.PassesData.PassCount(x, y);
-                  for (int i = 0; i < passCount; i++)
-                    segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+                  ProjectUID = SiteModelFromDM.ID,
+                  InsertUTCAsLong = insertUTC.Ticks
+                },
+                new SegmentRetirementQueueItem
+                {
+                  InsertUTCAsLong = insertUTC.Ticks,
+                  ProjectUID = SiteModelFromDM.ID,
+                  SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
                 });
-              }
-
-              return true;
-            });
-
-            // ... then integrate them
-            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
-            if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
-            {
-              return false;
             }
-
-            // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-            SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
-
-            // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
-            // All operations within the transaction to integrate the changes into the live model have completed successfully.
-            // Now commit those changes as a block.
-
-            var startTime = DateTime.Now;
-            Log.LogInformation("Starting storage proxy Commit()");
-            storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
-            Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
-
-            // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
-
-            if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
+            catch (Exception e)
             {
-              // Stamp all the invalidated spatial streams with the project ID
-              foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
-                key.ProjectUID = SiteModelFromDM.ID;
-
-              try
-              {
-                ISegmentRetirementQueue retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
-
-                if (retirementQueue == null)
-                {
-                  Log.LogCritical("No registered segment retirement queue in DI context");
-                  Debug.Assert(false, "No registered segment retirement queue in DI context");
-                }
-
-                DateTime insertUTC = DateTime.UtcNow;
-
-                retirementQueue.Add(new SegmentRetirementQueueKey
-                  {
-                    ProjectUID = SiteModelFromDM.ID,
-                    InsertUTCAsLong = insertUTC.Ticks
-                  },
-                  new SegmentRetirementQueueItem
-                  {
-                    InsertUTCAsLong = insertUTC.Ticks,
-                    ProjectUID = SiteModelFromDM.ID,
-                    SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
-                  });
-              }
-              catch (Exception e)
-              {
-                Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
-                Log.LogCritical("The following segments will NOT be retired as a result:");
-                foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
-                  Log.LogCritical($"{invalidatedItem}");
-              }
+              Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
+              Log.LogCritical("The following segments will NOT be retired as a result:");
+              foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
+                Log.LogCritical($"{invalidatedItem}");
             }
-
-            if (_adviseOtherServicesOfDataModelChanges)
-            {
-              // Notify the site model in all contents in the grid that it's attributes have changed
-              Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
-
-              // Notify the immutable grid listeners that attributes of this site model have changed.
-              var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-              sender.ModelAttributesChanged
-              (targetGrid: SiteModelNotificationEventGridMutability.NotifyImmutable,
-                siteModelID: SiteModelFromDM.ID,
-                existenceMapChanged: true,
-                existenceMapChangeMask: WorkingModelUpdateMap,
-                machinesChanged: true,
-                machineTargetValuesChanged: true,
-                machineDesignsModified: true,
-                proofingRunsModified: true);
-            }
-
-            // Update the metadata for the site model
-            Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
-            DIContext.Obtain<ISiteModelMetadataManager>().Update
-            (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: SiteModelFromDM.SiteModelExtent,
-              machineCount: SiteModelFromDM.Machines.Count);
-
           }
-          finally
+
+          if (_adviseOtherServicesOfDataModelChanges)
           {
-            Task.AggregatedCellPasses = null;
-            WorkingModelUpdateMap = null;
+            // Notify the site model in all contents in the grid that it's attributes have changed
+            Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
+
+            // Notify the immutable grid listeners that attributes of this site model have changed.
+            var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+            sender.ModelAttributesChanged
+            (targetGrid: SiteModelNotificationEventGridMutability.NotifyImmutable,
+              siteModelID: SiteModelFromDM.ID,
+              existenceMapChanged: true,
+              existenceMapChangeMask: WorkingModelUpdateMap,
+              machinesChanged: true,
+              machineTargetValuesChanged: true,
+              machineDesignsModified: true,
+              proofingRunsModified: true);
           }
+
+          // Update the metadata for the site model
+          Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
+          DIContext.Obtain<ISiteModelMetadataManager>().Update
+          (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: SiteModelFromDM.SiteModelExtent,
+            machineCount: SiteModelFromDM.Machines.Count);
         }
         finally
         {
-          Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.PersistedTargetMachineID} in project {Task?.PersistedTargetSiteModelID}");
+          Task.AggregatedCellPasses = null;
+          WorkingModelUpdateMap = null;
         }
       }
-      catch (Exception E)
+      finally
       {
-        Log.LogError(E, "Exception in ProcessTask:");
-        return false;
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.PersistedTargetMachineID} in project {Task?.PersistedTargetSiteModelID}");
       }
 
       return true;

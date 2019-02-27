@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -38,12 +37,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
             {
                 case TAGDataType.t4bitInt:
                 case TAGDataType.t8bitInt:
-                    if (((short)(valueSink.ICCCVValues.GetLatest()) + value) < 0)
-                        return false;
+                  if (((short) (valueSink.ICCCVValues.GetLatest()) + value) >= 0)
+                  {
+                    valueSink.SetICCCVValue((short) ((short) (valueSink.ICCCVValues.GetLatest()) + value));
+                    result = true;
+                  }
 
-                    valueSink.SetICCCVValue((short)((short)(valueSink.ICCCVValues.GetLatest()) + value));
-                    result = true;   
-                    break;
+                  break;
             }
 
             return result;
