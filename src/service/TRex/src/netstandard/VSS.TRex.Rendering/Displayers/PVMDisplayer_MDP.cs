@@ -12,7 +12,7 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_MDP : PVMDisplayerBase
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
+    /// The flag is to indicate whether or not the machine MDP target to be user overrides.
     /// </summary>
     private const bool UseMachineTargetMDP = false;
 

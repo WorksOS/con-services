@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -68,12 +69,10 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                 // We assume that we have a pair of epochs to compute IC information between
                 // Determine the rectangle of cells that overlap the interval between the two epochs
-                if (!Grid.CalculateRegionGridCoverage(swathBounds, out BoundingIntegerExtent2D CellExtent))
-                {
-                    return true;
-                }
+                Grid.CalculateRegionGridCoverage(swathBounds, out BoundingIntegerExtent2D CellExtent);
 
-                Debug.Assert(swathBounds.IsValidPlanExtent, "Invalid rectangle for processing cell passes over");
+                if (!swathBounds.IsValidPlanExtent)
+                  throw new TRexTAGFileProcessingException("Invalid bounds for processing cell passes over");
 
                 // Check that the swathing of this epoch will not create an inordinate number of cell passes
                 // If so, prevent swathing of this epoch interval

@@ -2,7 +2,6 @@
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
-
   public static class HeaderConsts
   {
     public const int kDTMInternalModelNameSize = 32;

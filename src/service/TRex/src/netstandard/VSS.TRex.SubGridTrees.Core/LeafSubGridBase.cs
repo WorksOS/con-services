@@ -9,14 +9,6 @@ namespace VSS.TRex.SubGridTrees
     {
         public LeafSubGridBase(ISubGridTree owner,
                                ISubGrid parent,
-                               byte level,
-                               double cellSize,
-                               int indexOriginOffset) : this(owner, parent, level)
-        {
-        }
-
-        public LeafSubGridBase(ISubGridTree owner,
-                               ISubGrid parent,
                                byte level) : base(owner, parent, level)
         {
         }

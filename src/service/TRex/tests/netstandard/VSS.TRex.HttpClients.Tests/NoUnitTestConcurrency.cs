@@ -1,7 +1,7 @@
 ﻿using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
-namespace TAGFiles.Tests
+namespace VSS.TRex.HttpClients.Tests
 {
   public class NoConcurrency
   {

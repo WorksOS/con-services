@@ -9,7 +9,7 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
     /// </summary>
     public class TileRenderResponse : SubGridsPipelinedResponseBase, ITileRenderResponse, IAggregateWith<ITileRenderResponse>
     {
-//        public Bitmap Bitmap { get; set; }
+        //  public Bitmap Bitmap { get; set; }
 
         public virtual ITileRenderResponse AggregateWith(ITileRenderResponse other)
         {

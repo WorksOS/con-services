@@ -10,7 +10,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
+    /// The flag is to indicate whether or not the machine CMV target to be user overrides.
     /// </summary>
     public bool OverrideMachineCMV { get; set; }
 

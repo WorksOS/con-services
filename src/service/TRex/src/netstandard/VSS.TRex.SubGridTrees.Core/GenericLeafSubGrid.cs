@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
@@ -8,15 +7,18 @@ namespace VSS.TRex.SubGridTrees
     /// GenericLeafSubGrid in T implements a leaf sub grid where all the cells in the leaf are generic type T.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GenericLeafSubGrid<T> : SubGrid, IGenericLeafSubGrid<T>, ILeafSubGrid
+    public class GenericLeafSubGrid<T> : LeafSubGridBase, IGenericLeafSubGrid<T>
     {
-        public T[,] Items { get; set; } = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-
+        public T[,] Items { get; set; }
+    
+        private void AllocateItems() => Items = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+        
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public GenericLeafSubGrid()
         {
+          AllocateItems();
         }
     
         /// <summary>
@@ -35,6 +37,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public GenericLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base(owner, parent, level)
         {
+          AllocateItems();
         }
 
         /// <summary>
@@ -57,30 +60,17 @@ namespace VSS.TRex.SubGridTrees
             return true;
         }
 
-        public override void Clear()
-        {
-        }
+        /// <summary>
+        /// By default the cells in a generic leaf sub grid are said to contain values
+        /// </summary>
+        /// <param name="cellX"></param>
+        /// <param name="cellY"></param>
+        /// <returns></returns>
+        public override bool CellHasValue(byte cellX, byte cellY) => true;
 
         /// <summary>
-        /// Write the contents of the Items array using the supplied writer
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
+        /// Clear the generic items by setting all cell values to the default generic value
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public override void Write(BinaryWriter writer, byte [] buffer)
-        {
-        }
-
-        /// <summary>
-        /// Fill the items array by reading the binary representation using the provided reader. 
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="buffer"></param>
-        public override void Read(BinaryReader reader, byte[] buffer)
-        {
-        }
-  }
+        public override void Clear() => ForEach((x, y) => Items[x, y] = default(T));
+    }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
@@ -234,6 +237,23 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact]
+        public void Test_SubGridTree_ConstructPathToCell_InvalidPathConstructionType()
+        {
+            const SubGridPathConstructionType invalidType = (SubGridPathConstructionType) 123;
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+         
+            // Add a node subgrid with ConstructPathToCell with CreatePathToLeaf creation path type (in the bottom left corner 
+            // of the cell address space and verify a new node subgrid came back)
+         
+            Action act = () =>
+            {
+              var _ = tree.ConstructPathToCell(0, 0, invalidType);
+            };
+         
+            act.Should().Throw<TRexSubGridTreeException>().WithMessage($"Unknown SubGridPathConstructionType: {invalidType}");
+        }
+
+        [Fact]
         public void Test_SubGridTree_CountLeafSubgridsInMemory()
         {
             ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
@@ -251,21 +271,54 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            uint CellX, CellY;
 
             // Find the location of the cell that contains the world position of (0.1, 0.1)
-            Assert.True(tree.CalculateIndexOfCellContainingPosition(0.01, 0.01, out CellX, out CellY),
+            Assert.True(tree.CalculateIndexOfCellContainingPosition(0.01, 0.01, out uint CellX, out uint CellY),
                 "CalculateIndexOfCellContainingPosition failed to return a cell position for (0.01, 0.01)");
-
+          
             // This location should be the cell exactly at the cell location of (IndexOriginOffset, IndexOriginOffset)
             // as this maps the center of the positive north east quadrant addressable cells onto the origin of the 
             // positive and negative world coordinate system
-
+          
             Assert.True(CellX == tree.IndexOriginOffset && CellY == tree.IndexOriginOffset,
-                          "Cell location not at the origin [IndexOriginOffset, IndexOriginOffset] as expected");
+                                "Cell location not at the origin [IndexOriginOffset, IndexOriginOffset] as expected");
         }
 
         [Fact]
+        public void Test_SubGridTree_CalculateIndexOfCellContainingPosition_ExtremeOrdinateRange()
+        {
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          Assert.True(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate, tree.MaxOrdinate, out uint CellX, out uint CellY));
+          Assert.True(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate, -tree.MaxOrdinate, out CellX, out CellY));
+          Assert.True(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate, -tree.MaxOrdinate, out CellX, out CellY));
+          Assert.True(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate, tree.MaxOrdinate, out CellX, out CellY));
+        }
+
+        [Fact]
+        public void Test_SubGridTree_CalculateIndexOfCellContainingPosition_FailOutsideOfOrdinateRange()
+        {
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          Assert.False(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate + 1, tree.MaxOrdinate + 1, out uint CellX, out uint CellY));
+          CellX.Should().Be(uint.MaxValue);
+          CellY.Should().Be(uint.MaxValue);
+
+          Assert.False(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate - 1, -tree.MaxOrdinate - 1, out CellX, out CellY));
+          CellX.Should().Be(uint.MaxValue);
+          CellY.Should().Be(uint.MaxValue);
+
+          Assert.False(tree.CalculateIndexOfCellContainingPosition(tree.MaxOrdinate + 1, -tree.MaxOrdinate - 1, out CellX, out CellY));
+          CellX.Should().Be(uint.MaxValue);
+          CellY.Should().Be(uint.MaxValue);
+
+          Assert.False(tree.CalculateIndexOfCellContainingPosition(-tree.MaxOrdinate - 1, tree.MaxOrdinate + 1, out CellX, out CellY));
+          CellX.Should().Be(uint.MaxValue);
+          CellY.Should().Be(uint.MaxValue);
+
+        }
+
+    [Fact]
         public void Test_SubGridTree_LocateSubGridContaining_SpecificLevel_EmptyTree()
         {
           ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
@@ -362,6 +415,79 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.NotNull(leaf);
             Assert.True(leaf.Level == tree.NumLevels && leaf.Owner == tree,
                 "Leaf not configured correctly");
+        }
+
+        [Fact]
+        public void Test_SubGridTree_SerialiseEmptySubGridTree_ToStreamWithStream()
+        {
+          const int EXPECTED_SIZE = 37;
+
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var MS = new MemoryStream();
+          tree.ToStream(MS);
+
+          MS.Length.Should().Be(EXPECTED_SIZE);
+        }
+
+        [Fact]
+        public void Test_SubGridTree_SerialiseEmptySubGridTree_ToStreamWithOutStream()
+        {
+          const int EXPECTED_SIZE = 37;
+
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var MS = tree.ToStream();
+
+          MS.Length.Should().Be(EXPECTED_SIZE);
+        }
+
+        [Fact]
+        public void Test_SubGridTree_SerialiseEmptySubGridTree_FromStream()
+        {
+          const int EXPECTED_SIZE = 37;
+
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var MS1 = tree.ToStream();
+          MS1.Length.Should().Be(EXPECTED_SIZE);
+
+          ISubGridTree tree2 = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          tree2.FromStream(MS1);
+          var MS2 = tree2.ToStream();
+          MS2.Length.Should().Be(EXPECTED_SIZE);
+
+          MS1.ToArray().SequenceEqual(MS2.ToArray()).Should().BeTrue();
+        }
+
+        [Fact]
+        public void Test_SubGridTree_SerialiseEmptySubGridTree_ToBytes()
+        {
+          const int EXPECTED_SIZE = 37;
+
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          tree.ToBytes().Length.Should().Be(EXPECTED_SIZE);
+        }
+
+        [Fact]
+        public void Test_SubGridTree_SerialiseEmptySubGridTree_FromBytes()
+        {
+          const int EXPECTED_SIZE = 37;
+
+          ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var bytes1 = tree.ToBytes();
+          bytes1.Length.Should().Be(EXPECTED_SIZE);
+
+          ISubGridTree tree2 = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+          tree2.FromBytes(bytes1);
+
+          var bytes2 = tree.ToBytes();
+          bytes2.Length.Should().Be(EXPECTED_SIZE);
+
+          bytes1.SequenceEqual(bytes2).Should().BeTrue();
         }
     }
 }

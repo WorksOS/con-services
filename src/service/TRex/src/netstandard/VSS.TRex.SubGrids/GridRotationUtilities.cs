@@ -108,7 +108,7 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <param name="subGridWorldOriginY"></param>
-    /// <param name="subGridMoniker"></param>
+    /// <param name="subGridMoniker"></param
     /// <param name="areaControlSet"></param>
     /// <param name="siteModelCellSize"></param>
     /// <param name="assignmentContext"></param>

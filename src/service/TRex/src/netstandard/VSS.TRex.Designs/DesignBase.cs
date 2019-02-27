@@ -46,10 +46,10 @@ namespace VSS.TRex.Designs
       double Offset);
 
     // ComputeFilterPatch computes a bit set representing which cells in the
-    // subgrid will be selected within the filter (i.e. the design forms a mask
+    // sub grid will be selected within the filter (i.e. the design forms a mask
     // over the production data where the cells 'under' the design are considered
     // to be in the filtered set. The Mask parameter allows the caller to restrict
-    // the set of cells in the subgrid to be filtered, allowing additional spatial
+    // the set of cells in the sub grid to be filtered, allowing additional spatial
     // filtering operations to be applied prior to this filtering step.
     public abstract bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
       SubGridTreeBitmapSubGridBits Mask,
@@ -68,11 +68,11 @@ namespace VSS.TRex.Designs
 
     public abstract bool HasElevationDataForSubGridPatch(double X, double Y);
 
-    public abstract bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubgridY);
+    public abstract bool HasElevationDataForSubGridPatch(uint SubGridX, uint SubGridY);
 
     public abstract bool HasFiltrationDataForSubGridPatch(double X, double Y);
 
-    public abstract bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY);
+    public abstract bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubGridY);
 
     public virtual ISubGridTreeBitMask SubGridOverlayIndex() => null;
 

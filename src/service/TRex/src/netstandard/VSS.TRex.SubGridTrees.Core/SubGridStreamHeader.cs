@@ -1,5 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -77,20 +81,13 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool IdentifierMatches(byte[] identifier)
         {
-            if (Identifier.Length != identifier.Length)
-            {
-                return false;
-            }
+            bool result = Identifier.Length == identifier.Length;
 
-            for (int I = 0; I < Identifier.Length; I++)
-            {
-                if (Identifier[I] != identifier[I])
-                {
-                    return false;
-                }
-            }
+            if (result)
+              for (int I = 0; I < Identifier.Length; I++)
+                result &= Identifier[I] == identifier[I];
 
-            return true;
+            return result;
         }
     }
 }

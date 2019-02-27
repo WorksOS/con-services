@@ -30,7 +30,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     /// <param name="value"></param>
     private void IncrementCountOfCutFillTransition(double value)
     {
-      // Works out what percentage of cutfill map colours are used
+      // Works out what percentage of cut/fill map colours are used
       // always 7 elements in array and assumes grade is set at zero
       // eg: 0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5
       if (value == 0) // on grade
@@ -76,15 +76,15 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     }
 
     /// <summary>
-    /// Processes an elevation subgrid into a cut fill isopach and calculate the counts of cells where the cut fill
+    /// Processes an elevation sub grid into a cut fill isopach and calculate the counts of cells where the cut fill
     /// height fits into the requested bands
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
 

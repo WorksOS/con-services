@@ -54,8 +54,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     {
       DIBuilder.New(services)
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
-        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
 
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))

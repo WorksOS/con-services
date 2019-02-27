@@ -1,105 +1,53 @@
-﻿using System.Diagnostics;
+﻿using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /*
-    This unit implements an iterator for subgrid trees.It's purpose is to allow iteration
-    over the sub grids in the same was as the scansubgrid() methods on the TSubGridTree
+    This unit implements an iterator for sub grid trees.It's purpose is to allow iteration
+    over the sub grids in the same was as the ScanSubGrid() methods on the TSubGridTree
     descendants, except that mediation of the scanning is not performed by the SubGridTree
     class, but by the iterator.
 
-    This iterator allows a separate thread to perform a scan over a subgrid tree without
-    causing significant thread interoperation issues as the scanning state is separate
+    This iterator allows a separate thread to perform a scan over a sub grid tree without
+    causing significant thread inter-operation issues as the scanning state is separate
     */
-
-    // SubGridTreeIteratorStateIndex records iteration progress across a subgrid
-    public struct SubGridTreeIteratorStateIndex
-    {
-        private ISubGrid subGrid;
-
-        private void SetSubGrid(ISubGrid Value)
-        {
-            subGrid = Value;
-
-            XIdx = -1;
-            YIdx = -1;
-        }
-
-        // The current X/Y index of the cell at this point in the iteration
-        public int XIdx;
-        public int YIdx;
-
-        // The subgrid (at any level) being iterated across
-        public ISubGrid SubGrid { get { return subGrid; } set { SetSubGrid(value); } }
-
-        public void Initialise()
-        {
-            SubGrid = null;
-            XIdx = -1;
-            YIdx = -1;
-        }
-
-        public bool NextCell()
-        {
-            if (YIdx == -1)
-            {
-                YIdx = 0;
-            }
-
-            XIdx++;
-            if (XIdx == SubGridTreeConsts.SubGridTreeDimension)
-            {
-                YIdx++;
-                XIdx = 0;
-            }
-
-            return YIdx < SubGridTreeConsts.SubGridTreeDimension;
-        }
-
-        public bool AtLastCell() => (XIdx >= SubGridTreeConsts.SubGridTreeDimensionMinus1) && (YIdx >= SubGridTreeConsts.SubGridTreeDimensionMinus1);
-    }
-
-    public class SubGridEnumerator
-    {
-        public SubGridTreeIterator Iterator { get; set; }
-    }
 
     public class SubGridTreeIterator
     {
-        // FGrid is the grid that the iterator will return subgrids from. If a scanner is set then
+        // Grid is the grid that the iterator will return sub grids from. If a scanner is set then
         // the grid will be taken from the supplied scanner
         public ISubGridTree Grid { get; set; }
 
-        // FScanner is the scanning delegate through which additional control may be excecised
+        // Scanner is the scanning delegate through which additional control may be exercised
         // over pruning of the nodes and leaves that will be scanned
         public SubGridTreeScannerBase Scanner { get; set; } = null;
 
-        // FCurrent is a reference to the current subgrid that the iterator is currently
-        // up to in the sub grid tree scan. By definition, this subgrid is locked for
+        // CurrentSubGrid is a reference to the current sub grid that the iterator is currently
+        // up to in the sub grid tree scan. By definition, this sub grid is locked for
         // the period that FCurrent references it.
         public ISubGrid CurrentSubGrid { get; set; }
 
         // IterationState records the progress of the iteration by recording the path through
-        // the subgrid tree which marks the progress of the iteration
-        SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTreeConsts.SubGridTreeLevels];
+        // the sub grid tree which marks the progress of the iteration
+        private readonly SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTreeConsts.SubGridTreeLevels];
 
-        private IStorageProxy StorageProxy; //IStorageProxy[] SpatialStorageProxy = null;
+        private readonly IStorageProxy StorageProxy; //IStorageProxy[] SpatialStorageProxy = null;
 
-        // FStorageClasses controls the storage classes that will be retrieved from the database
-        // for each subgrid in the iteration
+        // StorageClasses controls the storage classes that will be retrieved from the database
+        // for each sub grid in the iteration
         //   FStorageClasses : TICSubGridCellStorageClasses;
 
-        // SubGridsInServerDiskStore indicates that the subgrid tree we are iterating
+        // SubGridsInServerDiskStore indicates that the sub grid tree we are iterating
         // over is persistently stored on disk. In this case we must use the server
-        // interface for accessing these subgrids. If this property is false then the
-        // subgrid tree is completely self-contained
-        private bool SubGridsInServerDiskStore;
+        // interface for accessing these sub grids. If this property is false then the
+        // sub grid tree is completely self-contained
+        private readonly bool SubGridsInServerDiskStore;
 
         // ReturnCachedItemsOnly allows the caller of the iterator to restrict the
         // iteration to the items that are currently in the cache.
-        private bool returnCachedItemsOnly = false;
+        private readonly bool returnCachedItemsOnly = false;
 
         // ReturnedFirstItemInIteration keeps track of whether the first item in the iteration
         // has been returned to the caller.
@@ -110,25 +58,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         protected void InitialiseIterator()
         {
             for (int I = 1; I < SubGridTreeConsts.SubGridTreeLevels; I++)
-            {
                 iterationState[I].Initialise();
-            }
 
             if (Scanner != null)
-            {
                 iterationState[1].SubGrid = Scanner.Grid.Root;
-            }
             else
-            {
-                if (Grid != null)
-                {
-                    iterationState[1].SubGrid = Grid.Root;
-                }
-                else
-                {
-                    Debug.Assert(false, "Subgrid iterators require either a scanner or a grid to work from");
-                }
-            }
+                iterationState[1].SubGrid = Grid?.Root ?? throw new TRexSubGridProcessingException("Sub grid iterators require either a scanner or a grid to work from");
         }
 
 //        protected virtual ISubGrid GetCurrentSubGrid() => CurrentSubGrid;
@@ -151,25 +86,24 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return new SubGridEnumerator { Iterator = this };
         }
 
-        protected ISubGrid LocateNextSubgridInIteration()
+        protected ISubGrid LocateNextSubGridInIteration()
         {
             int LevelIdx = 1;
             SubGridTreeBitmapSubGridBits DummyExistenceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            Debug.Assert(iterationState[1].SubGrid != null, "No root subgrid node assigned to iteration state");
+            if (iterationState[1].SubGrid == null)
+                throw new TRexSubGridProcessingException("No root sub grid node assigned to iteration state");
 
             // Scan the levels in the iteration state until we find the lowest one we are up to
-            // (This is identified by a null subgrid reference.
+            // (This is identified by a null sub grid reference.
 
             while (LevelIdx < SubGridTreeConsts.SubGridTreeLevels && iterationState[LevelIdx].SubGrid != null)
-            {
                 LevelIdx++;
-            }
 
-            // Pop up to the previous level as that is the level from which we can choose a subgrid to desend into
+            // Pop up to the previous level as that is the level from which we can choose a sub grid to descend into
             LevelIdx--;
 
-            // Locate the next subgrid node...
+            // Locate the next sub grid node...
             do
             {
                 while (iterationState[LevelIdx].NextCell()) // do
@@ -177,7 +111,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                   ISubGrid SubGrid;
                   if (LevelIdx == SubGridTreeConsts.SubGridTreeLevels - 1)
                     {
-                        // It's a leaf subgrid we are looking for - check the existence map
+                        // It's a leaf sub grid we are looking for - check the existence map
                         if (SubGridsInServerDiskStore)
                         {
                             if (returnCachedItemsOnly)
@@ -210,12 +144,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
                     if (SubGrid != null)
                     {
-                        bool AllowedToUseSubgrid = false;
+                        bool allowedToUseSubGrid = false;
 
                         // Are we allowed to do anything with it?
                         if (SubGrid.IsLeafSubGrid())
                         {
-                            AllowedToUseSubgrid = Scanner == null || Scanner.OnProcessLeafSubgrid(SubGrid);
+                            allowedToUseSubGrid = Scanner == null || Scanner.OnProcessLeafSubgrid(SubGrid);
                         }
                         else
                         {
@@ -224,7 +158,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                                 switch (Scanner.OnProcessNodeSubgrid(SubGrid, DummyExistenceMap))
                                 {
                                     case Types.SubGridProcessNodeSubGridResult.OK:
-                                        AllowedToUseSubgrid = true;
+                                        allowedToUseSubGrid = true;
                                         break;
 
                                     case Types.SubGridProcessNodeSubGridResult.DontDescendFurther:
@@ -237,22 +171,22 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             }
                             else
                             {
-                                AllowedToUseSubgrid = true;
+                                allowedToUseSubGrid = true;
                             }
                         }
 
-                        if (!AllowedToUseSubgrid)
+                        if (!allowedToUseSubGrid)
                         {
                             continue;
                         }
 
                         if (SubGrid.IsLeafSubGrid())
                         {
-                            // It's a leaf subgrid - so use it
+                            // It's a leaf sub grid - so use it
                             return SubGrid;
                         }
 
-                        // It's a node subgrid that contains other node subgrids or leaf subgrids - descend into it
+                        // It's a node sub grid that contains other node sub grids or leaf sub grids - descend into it
                         LevelIdx++;
                         iterationState[LevelIdx].SubGrid = SubGrid;
 
@@ -265,7 +199,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return null;
         } 
 
-       // MoveToFirstSubGrid moves to the first subgrid in the tree that satisfies the scanner
+       // MoveToFirstSubGrid moves to the first sub grid in the tree that satisfies the scanner
         private bool MoveToFirstSubGrid()
         {
             InitialiseIterator();
@@ -275,7 +209,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return MoveToNextSubGrid();
         }
 
-        // MoveToNextSubGrid moves to the next subgrid in the tree that satisfies the scanner
+        // MoveToNextSubGrid moves to the next sub grid in the tree that satisfies the scanner
         public bool MoveToNextSubGrid()
         {
             ISubGrid SubGrid;
@@ -289,7 +223,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             do
             {
-                SubGrid = LocateNextSubgridInIteration();
+                SubGrid = LocateNextSubGridInIteration();
 
                 if (SubGrid == null) // We are at the end of the iteration
                 {

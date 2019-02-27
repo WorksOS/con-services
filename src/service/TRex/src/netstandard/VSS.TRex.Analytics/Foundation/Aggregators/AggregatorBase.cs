@@ -33,7 +33,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     /// Performs base aggregator handling of subgrid results
     /// </summary>
     /// <param name="subGrids"></param>
-    public virtual void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public virtual void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       // Processes the given set of subgrids into this aggregator
       // ... no base implementation yet

@@ -18,7 +18,6 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
@@ -97,7 +96,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.CacheConfiguration = new List<CacheConfiguration>
       {
-
       };
 
       Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
@@ -238,28 +236,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
     }
 
-    public static bool SetGridActive(string gridName)
-    {
-      // Get an ignite reference to the named grid
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(gridName);
-
-      // If the grid exists, and it is not active, then set it to active
-      if (ignite != null && !ignite.GetCluster().IsActive())
-      {
-        ignite.GetCluster().SetActive(true);
-
-        Log.LogInformation($"Set grid '{gridName}' to active.");
-
-        return true;
-      }
-      else
-      {
-        Log.LogInformation($"Grid '{gridName}' is not available or is already active.");
-
-        return ignite != null && ignite.GetCluster().IsActive();
-      }
-    }
-
     public void StartTRexGridCacheNode()
     {
       IgniteConfiguration cfg = new IgniteConfiguration();
@@ -269,7 +245,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       try
       {
-        mutableTRexGrid = Ignition.Start(cfg);
+        mutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.MutableGridName(), cfg); 
       }
       catch (Exception e)
       {
@@ -282,7 +258,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       }
 
       // Wait until the grid is active
-      ActivatePersistentGridServer.Instance().WaitUntilGridActive(TRexGrids.MutableGridName());
+      DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
 
       // Add the mutable Spatial & NonSpatial caches
 

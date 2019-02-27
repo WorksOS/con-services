@@ -1,22 +1,20 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Executors;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
   public class SurfaceElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<ISurfaceElevationPatchArgument, byte[]>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchComputeFunc>();
 
     /// <summary>
-    /// Local reference to the client subgrid factory
+    /// Local reference to the client sub grid factory
     /// </summary>
     private static IClientLeafSubGridFactory clientLeafSubGridFactory;
 

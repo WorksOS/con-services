@@ -77,8 +77,8 @@ namespace VSS.TRex.Tests.Utility
             Assert.Equal(value, Range.EnsureRange(value, uint.MinValue, uint.MaxValue));
 
             // Test out of range
-            Assert.Equal((uint)10, Range.EnsureRange(value, uint.MinValue, lowerConstraint));
-            Assert.Equal((uint)200, Range.EnsureRange(value, upperConstraint, uint.MaxValue));
+            Assert.Equal(10U, Range.EnsureRange(value, uint.MinValue, lowerConstraint));
+            Assert.Equal(200U, Range.EnsureRange(value, upperConstraint, uint.MaxValue));
         }
 
         [Fact]

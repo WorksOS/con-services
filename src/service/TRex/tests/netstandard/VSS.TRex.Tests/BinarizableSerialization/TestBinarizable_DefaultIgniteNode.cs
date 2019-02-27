@@ -1,5 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core;
+using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
@@ -21,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         if (_ignite != null)
           return _ignite;
 
-        _ignite = Ignition.TryGetIgnite() ?? Ignition.Start();
+        _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName(), new IgniteConfiguration());
         return _ignite;
       }
     }

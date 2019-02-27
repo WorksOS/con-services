@@ -34,33 +34,26 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
       Items = new XYZ[header.NumberOfVertices];
 
-      try
+      int loopLimit = header.NumberOfVertices;
+      for (int i = 0; i < loopLimit; i++)
       {
-        int loopLimit = header.NumberOfVertices;
-        for (int i = 0; i < loopLimit; i++)
+        long RecPos = reader.BaseStream.Position;
+
+        if (readCoordinateFloats)
         {
-          long RecPos = reader.BaseStream.Position;
-
-          if (readCoordinateFloats)
-          {
-            Items[i].Y = reader.ReadSingle() + header.NorthingOffsetValue;
-            Items[i].X = reader.ReadSingle() + header.EastingOffsetValue;
-          }
-          else
-          {
-            Items[i].Y = reader.ReadDouble() + header.NorthingOffsetValue;
-            Items[i].X = reader.ReadDouble() + header.EastingOffsetValue;
-          }
-
-          Items[i].Z = readVertexValueFloats ? reader.ReadSingle() : reader.ReadDouble();
-
-          //ReadVertex(ref Items[i]);
-          reader.BaseStream.Position = RecPos + header.VertexRecordSize;
+          Items[i].Y = reader.ReadSingle() + header.NorthingOffsetValue;
+          Items[i].X = reader.ReadSingle() + header.EastingOffsetValue;
         }
-      }
-      catch (Exception E)
-      {
-        throw new TTMFileReadException("Failed to read vertices", E);
+        else
+        {
+          Items[i].Y = reader.ReadDouble() + header.NorthingOffsetValue;
+          Items[i].X = reader.ReadDouble() + header.EastingOffsetValue;
+        }
+
+        Items[i].Z = readVertexValueFloats ? reader.ReadSingle() : reader.ReadDouble();
+
+        //ReadVertex(ref Items[i]);
+        reader.BaseStream.Position = RecPos + header.VertexRecordSize;
       }
     }
 

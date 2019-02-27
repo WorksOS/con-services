@@ -19,6 +19,8 @@ namespace VSS.TRex.Caching
     private readonly int _sleepTimeMS;
     private readonly int _removalWaitTimeSeconds;
 
+    private readonly EventWaitHandle _waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
     private void PerformRemovalOperation()
     {
       while (_removalThread.ThreadState == ThreadState.Running)
@@ -29,13 +31,24 @@ namespace VSS.TRex.Caching
           // Wait a time period minutes to remove items marked for removal
           _cache.RemoveContextsMarkedForRemoval(_removalWaitTimeSeconds);
         }
+        catch (ThreadAbortException)
+        {
+          // Time to leave...
+          return;
+        }
         catch (Exception e)
         {
           log.LogError(e, "Exception thrown during RemoveContextsMarkedForRemoval()");
         }
 
-        Thread.Sleep(_sleepTimeMS);
+        _waitHandle.WaitOne(_sleepTimeMS);
       }
+    }
+
+    public void StopRemovalOperations()
+    {
+      _removalThread.Abort();
+      _waitHandle.Set();
     }
 
     public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, int sleepTimeSeconds, int removalWaitTimeSeconds)

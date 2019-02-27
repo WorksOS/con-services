@@ -13,9 +13,6 @@ namespace VSS.TRex.Volumes
         private double? _FillVolume;
         public double FillVolume => _FillVolume ?? 0;
 
-        /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
         public CutFillVolume()
         {
         }
@@ -31,15 +28,11 @@ namespace VSS.TRex.Volumes
             double Result = 0;
 
             if (HasCutVolume)
-            {
                 Result += CutVolume;
-            }
-
+ 
             if (HasFillVolume)
-            {
                 Result += FillVolume;
-            }
-
+     
             return Result;
         }
 

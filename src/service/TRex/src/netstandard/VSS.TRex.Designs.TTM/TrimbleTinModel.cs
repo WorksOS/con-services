@@ -45,7 +45,7 @@ namespace VSS.TRex.Designs.TTM
       triangles = new TTMTriangles();
     }
 
-    protected override void SnapToOutputResolution()
+    protected void SnapToOutputResolution()
     {
       SetUpSizes();
       (Vertices as TTMVertices).SnapToOutputResolution(Header);
@@ -128,11 +128,15 @@ namespace VSS.TRex.Designs.TTM
           reader.BaseStream.Position = Header.StartOffsetOfStartPoints;
           StartPoints.Read(reader, Header, Triangles);
         }
+        catch (TTMFileReadException)
+        {
+          Clear();
+          throw; // pass it on
+        }
         catch (Exception E)
         {
           Clear();
-
-          throw new Exception(LoadErrMsg + ": " + E.Message);
+          throw new TTMFileReadException($"Exception at TTM loading phase {LoadErrMsg}", E);
         }
       }
       finally
@@ -302,9 +306,7 @@ namespace VSS.TRex.Designs.TTM
       StartPoints.Clear();
 
       if (Triangles.Count == 0)
-      {
         return;
-      }
 
       // How many start points do we want?
       int NumStartPoints = Math.Min(Math.Max((int) Math.Round(Math.Sqrt(Triangles.Count) / 2), 1), Consts.MaxStartPoints);

@@ -130,9 +130,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       //}
 
       if (ModelName.Length == 0)
-      {
         ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
-      }
     }
   }
 }

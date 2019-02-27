@@ -270,6 +270,16 @@ namespace VSS.ConfigurationStore
       return GetValue(key, defaultValue);
     }
 
+    public uint GetValueUint(string key)
+    {
+      return GetValueUint(key, uint.MinValue);
+    }
+
+    public uint GetValueUint(string key, uint defaultValue)
+    {
+      return GetValue(key, defaultValue);
+    }
+
     public long GetValueLong(string key)
     {
       return GetValueLong(key, long.MinValue);

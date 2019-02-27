@@ -25,10 +25,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         {
             subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
             subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
-
-            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTreeConsts.SubGridTreeDimension) &
-            //         (SubGridY >=0) && (SubGridY < SubGridTreeConsts.SubGridTreeDimension),
-            //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this sub grid");
         }
 
       /// <summary>

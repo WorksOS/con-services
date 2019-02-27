@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -31,6 +32,21 @@ namespace VSS.TRex.Tests.SubGridTrees
       subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
 
       Assert.NotNull(subgrid);
+    }
+
+    [Fact]
+    public void Test_NodeSubGrid_CellHsValue()
+    {
+      SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      INodeSubGrid subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+      INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
+
+      Assert.True(subgrid.IsEmpty(), "Node subgrid not empty after creation");
+      Assert.True(parentSubgrid.IsEmpty(), "Parent node subgrid not empty after creation");
+
+      parentSubgrid.SetSubGrid(0, 0, subgrid);
+      Assert.True(parentSubgrid.CellHasValue(0, 0), "Cell at 0, 0 does not indicate it has a value");
+      Assert.False(parentSubgrid.CellHasValue(0, 1), "Cell at 0, 1 does indicate it has a value");
     }
 
     [Fact]
@@ -110,12 +126,25 @@ namespace VSS.TRex.Tests.SubGridTrees
     }
 
     [Fact]
+    public void Test_NodeSubGrid_SetSubGrid_Sparcity_SetNullSubGridWithSingleExistingChild()
+    {
+      var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      var parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
+      var subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+
+      parentSubgrid.SetSubGrid(0, 0, subgrid);
+      parentSubgrid.GetSubGrid(0, 0).Should().NotBeNull();
+
+      // Test setting an existing null entry to null when there are non-zero entries in sparcity list
+      parentSubgrid.SetSubGrid(1, 1, null);
+    }
+
+    [Fact]
     public void Test_NodeSubGrid_SetSubgrid()
     {
       SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
       INodeSubGrid subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
-
 
       // Fill the entirety of the parent subgrid with new child subgrids using SetSubGrid
       for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
@@ -209,6 +238,32 @@ namespace VSS.TRex.Tests.SubGridTrees
     }
 
     [Fact]
+    public void Test_NodeSubGrid_ForEachSubgrid_NodeFunctor_InvalidCellRange()
+    {
+      SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      INodeSubGrid subGrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+
+      Action act = () => subGrid.ForEachSubGrid(x => SubGridProcessNodeSubGridResult.TerminateProcessing, SubGridTreeConsts.SubGridTreeDimension, 0, 2 * SubGridTreeConsts.SubGridTreeDimension, 2 * SubGridTreeConsts.SubGridTreeDimension);
+      act.Should().Throw<ArgumentException>().WithMessage("Minimum sub grid cell X/Y bounds are out of range");
+
+      act = () => subGrid.ForEachSubGrid(x => SubGridProcessNodeSubGridResult.TerminateProcessing, 0, SubGridTreeConsts.SubGridTreeDimension, 2 * SubGridTreeConsts.SubGridTreeDimension, 2 * SubGridTreeConsts.SubGridTreeDimension);
+      act.Should().Throw<ArgumentException>().WithMessage("Minimum sub grid cell X/Y bounds are out of range");
+    }
+
+    [Fact]
+    public void Test_NodeSubGrid_ForEachSubgrid_NodeFunctorWithIndices_InvalidCellRange()
+    {
+      SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      INodeSubGrid subGrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+
+      Action act = () => subGrid.ForEachSubGrid((x, y, s) => SubGridProcessNodeSubGridResult.TerminateProcessing, SubGridTreeConsts.SubGridTreeDimension, 0, 2 * SubGridTreeConsts.SubGridTreeDimension, 2 * SubGridTreeConsts.SubGridTreeDimension);
+      act.Should().Throw<ArgumentException>().WithMessage("Minimum sub grid cell X/Y bounds are out of range");
+
+      act = () => subGrid.ForEachSubGrid((x, y, s) => SubGridProcessNodeSubGridResult.TerminateProcessing, 0, SubGridTreeConsts.SubGridTreeDimension, 2 * SubGridTreeConsts.SubGridTreeDimension, 2 * SubGridTreeConsts.SubGridTreeDimension);
+      act.Should().Throw<ArgumentException>().WithMessage("Minimum sub grid cell X/Y bounds are out of range");
+    }
+
+    [Fact]
     public void Test_NodeSubGrid_ScanSubGrids()
     {
       SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
@@ -253,8 +308,23 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       // Note, count is 1025 as the parent node counts as a node subgrid that was visited
       Assert.Equal(nodeCount, (1 + 1024));
+    }
 
-      // Test retrieval using invalid bounds
+    [Fact]
+    public void Test_NodeSubGrid_ScanSubGrids_InvalidBounds()
+    {
+      SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
+
+      // Fill all of the parent subgrid with new child subgrids using SetSubGrid
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
+      {
+        parentSubgrid.SetSubGrid((byte)(i / SubGridTreeConsts.SubGridTreeDimension), (byte)(i % SubGridTreeConsts.SubGridTreeDimension),
+          new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
+      }
+
+      int leafCount;
+
       leafCount = 0;
       parentSubgrid.ScanSubGrids(tree.FullCellExtent(),
         leafSubgrid =>
@@ -264,6 +334,37 @@ namespace VSS.TRex.Tests.SubGridTrees
         },
         null);
       Assert.Equal(0, leafCount);
+    }
+
+    [Fact]
+    public void Test_NodeSubGrid_ScanSubGrids_TerminateProcessing()
+    {
+      SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
+
+      // Fill all of the parent subgrid with new child subgrids using SetSubGrid
+      for (int i = 0; i < SubGridTreeConsts.CellsPerSubGrid; i++)
+      {
+        parentSubgrid.SetSubGrid((byte)(i / SubGridTreeConsts.SubGridTreeDimension), (byte)(i % SubGridTreeConsts.SubGridTreeDimension),
+          new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1));
+      }
+
+      int leafCount = 0, nodeCount = 0;
+
+      parentSubgrid.ScanSubGrids(tree.FullCellExtent(),
+        leafSubgrid =>
+        {
+          leafCount++;
+          return true;
+        },
+        nodeSubgrid =>
+        {
+          nodeCount++;
+          return SubGridProcessNodeSubGridResult.TerminateProcessing;
+        });
+
+      Assert.Equal(0, leafCount);
+      Assert.Equal(1, nodeCount);
     }
 
     [Fact]
@@ -280,6 +381,73 @@ namespace VSS.TRex.Tests.SubGridTrees
       parentSubgrid.SetSubGrid(0, 0, subgrid);
 
       Assert.Equal(1, parentSubgrid.CountChildren());
+    }
+
+    [Fact]
+    public void Test_NodeSubGrid_WithinSparcityLimit()
+    {
+      var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      var parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
+      var sparcityLimit = NodeSubGrid.SubGridTreeNodeCellSparcityLimit;
+
+      // Add sparcity limit - 1 child node sub grids to the parent
+      for (int i = 0; i < sparcityLimit - 1; i++)
+      {
+        var subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+        parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, subgrid);
+      }
+
+      parentSubgrid.CountNonNullCells().Should().Be((int) sparcityLimit - 1);
+
+      // Read through the sub grids added, plus another one to cover access failure
+      for (int i = 0; i < sparcityLimit - 1; i++)
+      {
+        var subGrid2 = parentSubgrid.GetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension);
+        subGrid2.Should().NotBeNull();
+      }
+
+      var subGrid = parentSubgrid.GetSubGrid((int)sparcityLimit % SubGridTreeConsts.SubGridTreeDimension,(int)sparcityLimit / SubGridTreeConsts.SubGridTreeDimension);
+      subGrid.Should().BeNull();
+
+      // Drain the subgrids back out of the node
+      for (int i = 0; i < sparcityLimit - 1; i++)
+        parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, null);
+
+      parentSubgrid.CountNonNullCells().Should().Be(0);
+    }
+
+    [Fact]
+    public void Test_NodeSubGrid_ExceedSparcityLimit()
+    {
+      var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+      var parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
+      var sparcityLimit = NodeSubGrid.SubGridTreeNodeCellSparcityLimit;
+
+      // Add sparcity limit + 1 child node subgrids to the parent
+      for (int i = 0; i < sparcityLimit + 1; i++)
+      {
+        var subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+        parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, subgrid);
+      }
+
+      parentSubgrid.CountNonNullCells().Should().Be((int)sparcityLimit + 1);
+
+      // Read through the subgrids added, plus another one rto cover access failure
+      for (int i = 0; i < sparcityLimit + 2; i++)
+      {
+        var subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+
+        subgrid.Should().NotBeNull();
+      }
+
+      var subGrid = parentSubgrid.GetSubGrid((int)(sparcityLimit + 2) % SubGridTreeConsts.SubGridTreeDimension, (int)(sparcityLimit + 2) / SubGridTreeConsts.SubGridTreeDimension);
+      subGrid.Should().BeNull();
+
+      // Drain the subgrids back out of the node
+      for (int i = 0; i < sparcityLimit + 1; i++)
+        parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, null);
+
+      parentSubgrid.CountNonNullCells().Should().Be(0);
     }
   }
 }

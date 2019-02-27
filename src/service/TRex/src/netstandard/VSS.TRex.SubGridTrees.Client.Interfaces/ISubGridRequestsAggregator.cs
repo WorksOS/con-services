@@ -11,7 +11,7 @@ namespace VSS.TRex.Interfaces
         /// Process the result of querying a subgrid against one or more filters. The argument is a generic list of client subgrids
         /// </summary>
         /// <param name="subGrids"></param>
-        void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids);
+        void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids);
 
         /// <summary>
         /// Perform any finalisation logic required once all subgrids have been processed into the aggregator

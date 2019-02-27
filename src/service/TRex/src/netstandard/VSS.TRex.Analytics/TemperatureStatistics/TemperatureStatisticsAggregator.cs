@@ -13,7 +13,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
   public class TemperatureStatisticsAggregator : DataStatisticsAggregator
 	{
 		/// <summary>
-		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
+		/// The flag is to indicate whether or not the temperature warning levels to be user overrides.
 		/// </summary>
 		public bool OverrideTemperatureWarningLevels { get; set; }
 
@@ -72,11 +72,11 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 	  /// fits into the requested bands, i.e. less than min level, between min and max levels, greater than max level
 	  /// </summary>
 	  /// <param name="subGrids"></param>
-	  public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+	  public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
 	  {
 	    lock (this)
 	    {
-	      base.ProcessSubgridResult(subGrids);
+	      base.ProcessSubGridResult(subGrids);
 
 	      // Works out the percentage each colour on the map represents
 

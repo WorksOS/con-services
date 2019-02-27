@@ -15,7 +15,7 @@ namespace VSS.TRex.Caching
   /// <summary>
   /// The top level class that implements spatial data caching in TRex where that spatial data is represented by SubGrids and SubGridTrees
   /// </summary>
-  public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache
+  public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache, IDisposable
   {
     private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
 
@@ -229,8 +229,8 @@ namespace VSS.TRex.Caching
     /// Attempts to read an element from a cache context given the spatial location of the element
     /// </summary>
     /// <param name="context">The request, filter and other data specific context for spatial data</param>
-    /// <param name="originX">The origin (bottom left) cell of the spatial data subgrid</param>
-    /// <param name="originY">The origin (bottom left) cell of the spatial data subgrid</param>
+    /// <param name="originX">The origin (bottom left) cell of the spatial data sub grid</param>
+    /// <param name="originY">The origin (bottom left) cell of the spatial data sub grid</param>
     /// <returns></returns>
     public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY)
     {
@@ -238,7 +238,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Invalidates subgrids held within all cache contexts for a project that are sensitive to
+    /// Invalidates sub grids held within all cache contexts for a project that are sensitive to
     /// ingest of production data (eg: from TAG files)
     /// </summary>
     /// <param name="projectUid"></param>
@@ -338,6 +338,11 @@ namespace VSS.TRex.Caching
       }
 
       log.LogInformation($"{numRemoved} contexts removed in {DateTime.Now - startTime}");
+    }
+
+    public void Dispose()
+    {
+      ContextRemover.StopRemovalOperations();
     }
   }
 }

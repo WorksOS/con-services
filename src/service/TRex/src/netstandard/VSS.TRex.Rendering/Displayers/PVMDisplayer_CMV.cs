@@ -17,7 +17,7 @@ namespace VSS.TRex.Rendering.Displayers
     private Draw.Color DefaultDecoupledCMVColour = Draw.Color.Black;
 
     /// <summary>
-    /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
+    /// The flag is to indicate whether or not the machine CMV target to be user overrides.
     /// </summary>
     private const bool UseMachineTargetCMV = false;
 

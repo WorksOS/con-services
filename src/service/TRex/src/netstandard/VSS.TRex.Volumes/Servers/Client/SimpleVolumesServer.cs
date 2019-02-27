@@ -1,7 +1,5 @@
-﻿using VSS.TRex.GridFabric.Servers.Client;
-using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Volumes.GridFabric.Requests;
-using VSS.TRex.Volumes.GridFabric.Responses;
+﻿using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Servers.Client;
 
 namespace VSS.TRex.Volumes.Servers.Client
 {
@@ -13,26 +11,18 @@ namespace VSS.TRex.Volumes.Servers.Client
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SimpleVolumesServer()
-        {
-        }
-
-        /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
         public SimpleVolumesServer(string [] roles) : base(roles)
         {
         }
 
         /// <summary>
-        /// Creates a new instance of a simple volumes server. 
+        /// Default no-arg constructor that creates a server with the default Application Service role and the specialize volumes calculation role.
         /// </summary>
-        /// <returns></returns>
-        public static SimpleVolumesServer NewInstance(string [] roles)
+        public SimpleVolumesServer() : this(new[] { ServerRoles.TILE_RENDERING_NODE })
         {
-            return new SimpleVolumesServer(roles);
         }
 
+        /*
         /// <summary>
         /// Compute a simple volume according to the parameters in the argument.
         /// This request is sent to an application service node for coordinates of the compute requirements
@@ -40,11 +30,12 @@ namespace VSS.TRex.Volumes.Servers.Client
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public SimpleVolumesResponse ComputeSimpleVolumes(SimpleVolumesRequestArgument argument)
+        public static SimpleVolumesResponse ComputeSimpleVolumes(SimpleVolumesRequestArgument argument)
         {
             SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
 
             return request.Execute(argument);
         }
+        */
     }
 }

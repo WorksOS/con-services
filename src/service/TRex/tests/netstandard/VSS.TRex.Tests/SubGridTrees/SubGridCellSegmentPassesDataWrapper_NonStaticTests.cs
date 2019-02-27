@@ -57,10 +57,10 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
-            Assert.Equal((uint)0, item.PassCount(1, 1));
+            Assert.Equal(0U, item.PassCount(1, 1));
 
             item.AddPass(1, 1, new CellPass());
-            Assert.Equal((uint)1, item.PassCount(1, 1));
+            Assert.Equal(1U, item.PassCount(1, 1));
         }
 
         [Fact()]
@@ -70,7 +70,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             item.AllocatePasses(1, 1, 10);
 
-            Assert.Equal((uint)10, item.PassCount(1, 1));
+            Assert.Equal(10U, item.PassCount(1, 1));
         }
 
         [Fact()]
@@ -79,7 +79,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
             item.AddPass(1, 1, TestCellPass());
-            Assert.Equal((uint)1, item.PassCount(1, 1));
+            Assert.Equal(1U, item.PassCount(1, 1));
 
             Assert.True(item.ExtractCellPass(1, 1, 0).Equals(TestCellPass()), "Cell added is not as expected when retrieved");
         }
@@ -92,7 +92,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             CellPass pass = TestCellPass();
 
             item.AddPass(1, 1, pass);
-            Assert.Equal((uint)1, item.PassCount(1, 1));
+            Assert.Equal(1U, item.PassCount(1, 1));
             Assert.True(item.ExtractCellPass(1, 1, 0).Equals(pass), "Cell added is not as expected when retrieved");
 
             pass.CCV = 1000; // Change the cell pass a little
@@ -130,7 +130,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             item.AddPass(1, 1, pass2);
             item.AddPass(1, 1, pass3);
 
-            Assert.Equal((uint)3, item.PassCount(1, 1));
+            Assert.Equal(3U, item.PassCount(1, 1));
 
             bool exactMatch = item.LocateTime(1, 1, new DateTime(1999, 12, 31, 0, 0, 0), out int index);
             Assert.False(exactMatch, "Exact match found!!!");
@@ -221,9 +221,9 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out uint addedCount, out uint modifiedCount);
 
-            Assert.Equal((uint)2, item.PassCount(1, 1));
-            Assert.Equal((uint)1, addedCount);
-            Assert.Equal((uint)0, modifiedCount);
+            Assert.Equal(2U, item.PassCount(1, 1));
+            Assert.Equal(1U, addedCount);
+            Assert.Equal(0U, modifiedCount);
         }
 
         [Fact()]
@@ -245,7 +245,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             item.AddPass(1, 1, pass2);
             item.AddPass(1, 1, pass3);
 
-            Assert.Equal((uint)3, item.PassCount(1, 1));
+            Assert.Equal(3U, item.PassCount(1, 1));
 
             Cell_NonStatic cell = new Cell_NonStatic() { Passes = item.ExtractCellPasses(1, 1) };
 

@@ -119,7 +119,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
           try
           {
-            immutableTRexGrid = Ignition.Start(cfg);
+            immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName(), cfg);
           }
           catch (Exception e)
           {

@@ -163,8 +163,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
     {
       DIBuilder.New()
         .AddLogging()
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Build()
         .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))
         .Complete();

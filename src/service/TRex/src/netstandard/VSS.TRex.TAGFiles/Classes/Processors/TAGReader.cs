@@ -38,10 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <summary>
     /// Default no-arg constructor. Do not use, this will throw an exception, use TagFileReader(Stream stream)
     /// </summary>
-    public TAGReader()
-    {
-      throw new ArgumentException("Default TAGFileReader constructor is not permitted. Use TAGFileReader(Stream stream)");
-    }
+    private TAGReader() { }
 
     /// <summary>
     /// TAG file reader constructor. Accepts a stream to read TAG data from.

@@ -8,7 +8,7 @@ namespace VSS.TRex.SubGridTrees
   /// <summary>
     ///  A sub grid variant that contains a bit mask construct to represent a one-bit-per-pixel map
     /// </summary>
-    public class SubGridTreeLeafBitmapSubGrid : SubGrid, ILeafSubGrid, ISubGridTreeLeafBitmapSubGrid
+    public class SubGridTreeLeafBitmapSubGrid : LeafSubGridBase, ILeafSubGrid, ISubGridTreeLeafBitmapSubGrid
     {
         public SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 

@@ -9,16 +9,16 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Reports.Gridded.Executors.Tasks
 {
   /// <summary>
-  /// The task responsible for receiving subgrids to be aggregated into a grid response
+  /// The task responsible for receiving sub grids to be aggregated into a grid response
   /// </summary>
   public class GriddedReportTask : PipelinedSubGridTask
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// The action (via a delegate) this task will perform on each of the subgrids transferred to it
+    /// The action (via a delegate) this task will perform on each of the sub grids transferred to it
     /// </summary>
-    public Action<ClientCellProfileLeafSubgrid> ProcessorDelegate { get; set; } = null;
+    public Action<ClientCellProfileLeafSubgrid> ProcessorDelegate { get; set; }
   
     public GriddedReportTask()
     {
@@ -35,21 +35,18 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     }
 
     /// <summary>
-    /// Accept a subgrid response from the processing engine and incorporate into the result for the request.
+    /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
     /// <param name="response"></param>
     /// <returns></returns>
     public override bool TransferResponse(object response)
     {
       if (!base.TransferResponse(response))
-      {
-        Log.LogWarning("Base TransferResponse returned false");
         return false;
-      }
 
       if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
       {
-        Log.LogWarning("No subgrid responses returned");
+        Log.LogWarning("No sub grid responses returned");
         return false;
       }
 

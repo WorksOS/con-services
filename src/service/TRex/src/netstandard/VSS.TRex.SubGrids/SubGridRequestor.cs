@@ -53,7 +53,6 @@ namespace VSS.TRex.SubGrids
         private SubGridTreeBitmapSubGridBits ProcessingMap;
 
         private ISurveyedSurfaces FilteredSurveyedSurfaces;
-        private Guid[] FilteredSurveyedSurfacesAsArray;
 
         private bool ReturnEarliestFilteredCellPass;
 
@@ -86,7 +85,6 @@ namespace VSS.TRex.SubGrids
                                ITRexSpatialMemoryCache subGridCache,
                                ITRexSpatialMemoryCacheContext subGridCacheContext,                                
                                ISurveyedSurfaces filteredSurveyedSurfaces,
-                               Guid[] filteredSurveyedSurfacesAsArray,
                                ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
                                ISurfaceElevationPatchArgument surfaceElevationPatchArgument)
         {
@@ -121,8 +119,7 @@ namespace VSS.TRex.SubGrids
             SubGridCacheContext = subGridCacheContext;
         
             FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
-            FilteredSurveyedSurfacesAsArray = filteredSurveyedSurfacesAsArray;
-        
+            
             if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
               ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignUID);
 
@@ -257,8 +254,8 @@ namespace VSS.TRex.SubGrids
         /// </summary>
         private ServerRequestResult PerformHeightAnnotation()
         {
-            if ((FilteredSurveyedSurfacesAsArray?.Length ?? 0) == 0)
-                return ServerRequestResult.NoError;
+            if ((FilteredSurveyedSurfaces?.Count ?? 0) == 0)
+              return ServerRequestResult.NoError;
 
             ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
             ClientHeightAndTimeLeafSubGrid SurfaceElevations;
@@ -331,8 +328,7 @@ namespace VSS.TRex.SubGrids
             try
             {
                 // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-                SurfaceElevationPatchArg.OTGCellBottomLeftX = ClientGrid.OriginX;
-                SurfaceElevationPatchArg.OTGCellBottomLeftY = ClientGrid.OriginY;
+                SurfaceElevationPatchArg.SetOTGBottomLeFtLocation(ClientGrid.OriginX, ClientGrid.OriginY);
 
                 SurfaceElevations = surfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg) as ClientHeightAndTimeLeafSubGrid;
 

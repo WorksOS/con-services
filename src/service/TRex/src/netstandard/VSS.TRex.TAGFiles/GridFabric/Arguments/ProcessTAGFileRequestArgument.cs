@@ -39,22 +39,25 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       writer.WriteGuid(ProjectID);
       writer.WriteGuid(AssetUID);
 
-      writer.WriteInt(TAGFiles.Count);
-      foreach (var tagFile in TAGFiles)
-        tagFile.ToBinary(writer);
+      writer.WriteInt(TAGFiles?.Count ?? 0);
+      if (TAGFiles != null)
+      {
+        foreach (var tagFile in TAGFiles)
+          tagFile.ToBinary(writer);
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
       byte readVersionNumber = reader.ReadByte();
+      ProjectID = reader.ReadGuid() ?? Guid.Empty;
+      AssetUID = reader.ReadGuid() ?? Guid.Empty;
 
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       for (int i = 0; i < reader.ReadInt(); i++)
-      {
         TAGFiles.Add(new ProcessTAGFileRequestFileItem(reader));
-      }
     }
   }
 }

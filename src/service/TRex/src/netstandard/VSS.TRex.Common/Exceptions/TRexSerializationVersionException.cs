@@ -1,10 +1,17 @@
-﻿using VSS.TRex.Exceptions;
-
-namespace VSS.TRex.Common.Exceptions
+﻿namespace VSS.TRex.Common.Exceptions
 {
   public class TRexSerializationVersionException : TRexException
   {
-    public TRexSerializationVersionException(int expectedVersion, int encounteredVersion) : base($"Invalid version read during deserialization: {encounteredVersion}, expected version {expectedVersion}")
+    public static string ErrorMessage(int [] expectedVersions, int encounteredVersion)
+    {
+      return $"Invalid version read during deserialization: {encounteredVersion}, expected version {expectedVersions}";
+    }
+
+    public TRexSerializationVersionException(int expectedVersion, int encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(new []{expectedVersion}, encounteredVersion))
+    {
+    }
+
+    public TRexSerializationVersionException(int [] expectedVersions, int encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(expectedVersions, encounteredVersion))
     {
     }
   }

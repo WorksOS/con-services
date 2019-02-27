@@ -10,7 +10,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// </summary>
     /// <param name="gridName"></param>
     /// <returns></returns>
-    IIgnite Grid(string gridName);
+    IIgnite Grid(string gridName, IgniteConfiguration cfg = null);
 
     /// <summary>
     /// Creates an appropriate new Ignite grid reference depending on the TRex Grid passed in.
@@ -18,7 +18,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// </summary>
     /// <param name="mutability"></param>
     /// <returns></returns>
-    IIgnite Grid(StorageMutability mutability);
+    IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null);
 
     void ClearCache();
   }

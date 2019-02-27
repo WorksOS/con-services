@@ -52,7 +52,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       Assert.True(aggregator.SummaryCellsScanned == dLength, "Invalid value for SummaryCellsScanned.");
       Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
@@ -79,7 +79,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       // Other aggregator...
       var otherAggregator = new TemperatureStatisticsAggregator();
@@ -89,7 +89,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
       otherAggregator.OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord((ushort)(length - 1), (ushort)(length - 1));
 
 
-      otherAggregator.ProcessSubgridResult(subGrids);
+      otherAggregator.ProcessSubGridResult(subGrids);
 
       aggregator.AggregateWith(otherAggregator);
 

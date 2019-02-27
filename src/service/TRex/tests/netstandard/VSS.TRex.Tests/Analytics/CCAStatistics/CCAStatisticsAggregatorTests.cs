@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       Assert.True(aggregator.SummaryCellsScanned == dLength, "Invalid value for SummaryCellsScanned.");
       Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       // Other aggregator...
       var otherAggregator = new CCAStatisticsAggregator();
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
       otherAggregator.CellSize = CELL_SIZE;
 
 
-      otherAggregator.ProcessSubgridResult(subGrids);
+      otherAggregator.ProcessSubGridResult(subGrids);
 
       aggregator.AggregateWith(otherAggregator);
 

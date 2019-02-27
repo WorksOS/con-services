@@ -60,13 +60,7 @@ namespace VSS.TRex.Geometry
     /// Display human readable version of the XYZ fields
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
-      if (Z == Consts.NullDouble)
-        return $"X:{X:F3}, Y:{Y:F3}, Z:Null";
-
-      return $"X:{X:F3}, Y:{Y:F3}, Z:{Z:F3}";
-    }
+    public override string ToString() => Z == Consts.NullDouble ? $"X:{X:F3}, Y:{Y:F3}, Z:Null" : $"X:{X:F3}, Y:{Y:F3}, Z:{Z:F3}";
 
     /// <summary>
     /// XYZ constructor taking X,Y and Z dimensions
@@ -286,9 +280,7 @@ namespace VSS.TRex.Geometry
       const double max_epsylon = 1.000000001; // Allow a nanometer tolerance on triangle edges...
 
       if (Math.Abs(_X1 - _X2) < 0.0000000001) // Consider them the same
-      {
         return Consts.NullDouble;
-      }
 
       double Fraction = (_X - _X1) / (_X2 - _X1);
 

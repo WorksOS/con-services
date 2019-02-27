@@ -10,7 +10,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
+    /// The flag is to indicate whether or not the machine MDP target to be user overrides.
     /// </summary>
     public bool OverrideMachineMDP { get; set; }
 

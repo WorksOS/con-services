@@ -13,8 +13,8 @@ namespace VSS.TRex.Tests.Compression
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            Assert.Equal((uint)0, bfa.NumBits);
-            Assert.Equal((uint)0, bfa.MemorySize());
+            Assert.Equal(0U, bfa.NumBits);
+            Assert.Equal(0U, bfa.MemorySize());
         }
 
         [Fact]
@@ -24,8 +24,8 @@ namespace VSS.TRex.Tests.Compression
 
             // Initialise with just a count of bits and records
             bfa.Initialise(10, 100);
-            Assert.Equal((uint)1000, bfa.NumBits);
-            Assert.Equal((uint)125, bfa.MemorySize()); // 125 bytes to store 1000 bits
+            Assert.Equal(1000U, bfa.NumBits);
+            Assert.Equal(125U, bfa.MemorySize()); // 125 bytes to store 1000 bits
         }
 
         [Fact]
@@ -43,8 +43,8 @@ namespace VSS.TRex.Tests.Compression
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)13500, bfa.NumBits);
-            Assert.Equal((uint)1688, bfa.MemorySize()); // 1688 bytes to store 13500 bits
+            Assert.Equal(13500U, bfa.NumBits);
+            Assert.Equal(1688U, bfa.MemorySize()); // 1688 bytes to store 13500 bits
         }
 
         [Fact]
@@ -87,9 +87,9 @@ namespace VSS.TRex.Tests.Compression
         
             bfa.Initialise(fieldsArray);
         
-            Assert.Equal((uint)1, bfa.NumBits);
-            Assert.Equal((uint)1, bfa.NumStorageElements());
-            Assert.Equal((uint)1, bfa.MemorySize());
+            Assert.Equal(1U, bfa.NumBits);
+            Assert.Equal(1U, bfa.NumStorageElements());
+            Assert.Equal(1U, bfa.MemorySize());
         
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
             AttributeValueRangeCalculator.CalculateAttributeValueRange(new[] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
@@ -111,7 +111,7 @@ namespace VSS.TRex.Tests.Compression
             long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
         
             Assert.Equal(1, readValue);
-            Assert.Equal((uint)1, bitAddress);
+            Assert.Equal(1U, bitAddress);
         }
 
         private const bool NULLABLE = true;
@@ -119,31 +119,31 @@ namespace VSS.TRex.Tests.Compression
 
         [Theory]
         // Zero bits expected on number range of (0, 1), writing a value of 0 using 0 storage elements, 0 bytes of memory with 0 as the native null
-        [InlineData(0, 1, 0, 0, 0x00000001, 0, 0, 0, 0, NULLABLE)]
-        [InlineData(0, 1, 0, 0, 0x00000001, 0, 0, 0, 0, NOT_NULLABLE)]
+        [InlineData(0, 1, 0, 0, 0x00000001, 0, 0, 0, 0, NULLABLE, 1)]
+        [InlineData(0, 1, 0, 0, 0x00000001, 0, 0, 0, 0, NOT_NULLABLE, 1)]
 
         // One bits expected on number range of (0, 1), writing a value of 0 using 1 storage elements, 1 bytes of memory with 0 as the native null
-        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 0, NULLABLE)]
-        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 0, NOT_NULLABLE)]
+        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 0, NULLABLE, 2)]
+        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 0, NOT_NULLABLE, 2)]
 
         // One bits expected on number range of (0, 1), writing a value of 0 using 1 storage elements, 1 bytes of memory with 1 as the native null
-        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 1, NULLABLE)]
-        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 1, NOT_NULLABLE)]
+        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 1, NULLABLE, 2)]
+        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 1, NOT_NULLABLE, 2)]
         
         // One bits expected on number range of (0, 1), writing a value of 0 using 1 storage elements, 1 bytes of memory with 2 as the native null
-        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 2, NULLABLE)]
-        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 2, NOT_NULLABLE)]
+        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 2, NULLABLE, 2)]
+        [InlineData(1, 1, 0, 1, 0x00000001, 0, 1, 1, 2, NOT_NULLABLE, 2)]
         
         // One bits expected on number range of (1, 2), writing a value of 1 using 1 storage elements, 1 bytes of memory with 1 as the native null
-        [InlineData(1, 1, 1, 2, 0x00000003, 1, 1, 1, 1, NULLABLE)]
-        [InlineData(1, 1, 1, 2, 0x00000003, 1, 1, 1, 1, NOT_NULLABLE)]
+        [InlineData(1, 1, 1, 2, 0x00000003, 1, 1, 1, 1, NULLABLE, 2)]
+        [InlineData(1, 1, 1, 2, 0x00000003, 1, 1, 1, 1, NOT_NULLABLE, 2)]
         
         // One/Three bits expected on number range of (5, 10), writing a value of 10 using 1 storage elements, 1 bytes of memory with 10 as the native null
-        [InlineData(1, 1, 5, 10, 0x0000000f, 10, 1, 1, 10, NULLABLE)]
-        [InlineData(3, 1, 5, 10, 0x0000000f, 10, 1, 1, 10, NOT_NULLABLE)]
+        [InlineData(1, 1, 5, 10, 0x0000000f, 10, 1, 1, 10, NULLABLE, 2)]
+        [InlineData(3, 1, 5, 10, 0x0000000f, 10, 1, 1, 10, NOT_NULLABLE, 6)]
         public void Test_BitFieldArray_SingleRecordSingleVariableSizeField_WithDescriptor
           (uint bitsPerRecord, uint numRecords, int minValue, int maxValue, uint mask, long valueToWrite, 
-           uint numStorageElements, int memorySize, int nativeNullValue, bool fieldIsNullable)
+           uint numStorageElements, int memorySize, int nativeNullValue, bool fieldIsNullable, int expectedNumValues)
          {
              BitFieldArray bfa = new BitFieldArray();
 
@@ -162,6 +162,7 @@ namespace VSS.TRex.Tests.Compression
             AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { minValue, maxValue }, mask, nativeNullValue, fieldIsNullable, ref descriptor);
 
             descriptor.RequiredBits.Should().Be((byte)bitsPerRecord);
+            descriptor.NumValues.Should().Be(expectedNumValues);
 
             // Write a value to the bfa
             bfa.StreamWriteStart();
@@ -183,21 +184,69 @@ namespace VSS.TRex.Tests.Compression
             bitsPerRecord.Should().Be(bitAddress);
         }
 
+        [Theory]
+        // Zero bits expected, writing a value of 0 using 0 storage elements, 0 bytes of memory
+        [InlineData(0, 1, 0, 0, 0)]
+      
+        // One bits expected, writing a value of 0 using 1 storage elements, 1 bytes of memory
+        [InlineData(1, 1, 0, 1, 1)]
+                 
+        // One bits expected, writing a value of 1 using 1 storage elements, 1 bytes of memory
+        [InlineData(1, 1, 1, 1, 1)]
+
+        // Four bits, writing a value of 10 using 1 storage elements, 1 bytes of memory
+        [InlineData(4, 1, 10, 1, 1)]
+        public void Test_BitFieldArray_SingleRecordSingleVariableSizeField_WithoutDescriptor
+        (uint bitsPerRecord, uint numRecords, long valueToWrite, uint numStorageElements, int memorySize)
+        {
+          BitFieldArray bfa = new BitFieldArray();
+      
+          BitFieldArrayRecordsDescriptor[] fieldsArray = new[]
+          {
+              new BitFieldArrayRecordsDescriptor { BitsPerRecord = bitsPerRecord, NumRecords = numRecords },
+          };
+      
+          bfa.Initialise(fieldsArray);
+      
+          bitsPerRecord.Should().Be(bfa.NumBits);
+          numStorageElements.Should().Be(bfa.NumStorageElements());
+          Assert.Equal((uint)memorySize, bfa.MemorySize());
+      
+          // Write a value to the bfa
+          bfa.StreamWriteStart();
+          try
+          {
+            bfa.StreamWrite(valueToWrite, (int)bitsPerRecord);
+          }
+          finally
+          {
+            bfa.StreamWriteEnd();
+          }
+      
+          // Read the value back again
+      
+          uint bitAddress = 0;
+          long readValue = bfa.ReadBitField(ref bitAddress, (int)bitsPerRecord);
+      
+          valueToWrite.Should().Be(readValue);
+          bitsPerRecord.Should().Be(bitAddress);
+        }
+      
         [Fact]
         public void Test_BitFieldArray_ManyRecordsSingleBitField_WithDescriptor()
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
             {
                 new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 1, NumRecords = 1000 },
             };
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)1000, bfa.NumBits);
-            Assert.Equal((uint)16, bfa.NumStorageElements());
-            Assert.Equal((uint)125, bfa.MemorySize());
+            Assert.Equal(1000U, bfa.NumBits);
+            Assert.Equal(16U, bfa.NumStorageElements());
+            Assert.Equal(125U, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
             AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
@@ -240,9 +289,9 @@ namespace VSS.TRex.Tests.Compression
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)11, bfa.NumBits);
-            Assert.Equal((uint)1, bfa.NumStorageElements());
-            Assert.Equal((uint)2, bfa.MemorySize());
+            Assert.Equal(11U, bfa.NumBits);
+            Assert.Equal(1U, bfa.NumStorageElements());
+            Assert.Equal(2U, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
             AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
@@ -264,7 +313,7 @@ namespace VSS.TRex.Tests.Compression
             long readValue = bfa.ReadBitField(ref bitAddress, descriptor);
 
             Assert.Equal(1234, readValue);
-            Assert.Equal((uint)11, bitAddress);
+            Assert.Equal(11U, bitAddress);
         }
 
         [Fact]
@@ -272,16 +321,16 @@ namespace VSS.TRex.Tests.Compression
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
             {
                 new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1000 },
             };
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)11000, bfa.NumBits);
-            Assert.Equal((uint)172, bfa.NumStorageElements());
-            Assert.Equal((uint)1375, bfa.MemorySize());
+            Assert.Equal(11000U, bfa.NumBits);
+            Assert.Equal(172U, bfa.NumStorageElements());
+            Assert.Equal(1375U, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
             AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
@@ -317,16 +366,16 @@ namespace VSS.TRex.Tests.Compression
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
             {
                 new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 1, NumRecords = 1 },
             };
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)1, bfa.NumBits);
-            Assert.Equal((uint)1, bfa.NumStorageElements());
-            Assert.Equal((uint)1, bfa.MemorySize());
+            Assert.Equal(1U, bfa.NumBits);
+            Assert.Equal(1U, bfa.NumStorageElements());
+            Assert.Equal(1U, bfa.MemorySize());
 
             // Write a '1' to the bfa
             bfa.StreamWriteStart();
@@ -345,7 +394,7 @@ namespace VSS.TRex.Tests.Compression
             long readValue = bfa.ReadBitField(ref bitAddress, 1);
 
             Assert.Equal(1, readValue);
-            Assert.Equal((uint)1, bitAddress);
+            Assert.Equal(1U, bitAddress);
         }
 
         [Fact]
@@ -353,16 +402,16 @@ namespace VSS.TRex.Tests.Compression
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
             {
                 new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 1, NumRecords = 1000 },
             };
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)1000, bfa.NumBits);
-            Assert.Equal((uint)16, bfa.NumStorageElements());
-            Assert.Equal((uint)125, bfa.MemorySize());
+            Assert.Equal(1000U, bfa.NumBits);
+            Assert.Equal(16U, bfa.NumStorageElements());
+            Assert.Equal(125U, bfa.MemorySize());
 
             // Write a '1' to the bfa
             bfa.StreamWriteStart();
@@ -395,16 +444,16 @@ namespace VSS.TRex.Tests.Compression
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
             {
                 new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1 },
             };
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)11, bfa.NumBits);
-            Assert.Equal((uint)1, bfa.NumStorageElements());
-            Assert.Equal((uint)2, bfa.MemorySize());
+            Assert.Equal(11U, bfa.NumBits);
+            Assert.Equal(1U, bfa.NumStorageElements());
+            Assert.Equal(2U, bfa.MemorySize());
 
             // Write a '1234' to the bfa
             bfa.StreamWriteStart();
@@ -423,7 +472,7 @@ namespace VSS.TRex.Tests.Compression
             long readValue = bfa.ReadBitField(ref bitAddress, 11);
 
             Assert.Equal(1234, readValue);
-            Assert.Equal((uint)11, bitAddress);
+            Assert.Equal(11U, bitAddress);
         }
 
         [Fact]
@@ -431,16 +480,16 @@ namespace VSS.TRex.Tests.Compression
         {
             BitFieldArray bfa = new BitFieldArray();
 
-            BitFieldArrayRecordsDescriptor[] fieldsArray = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] fieldsArray = new []
             {
                 new BitFieldArrayRecordsDescriptor() { BitsPerRecord = 11, NumRecords = 1000 },
             };
 
             bfa.Initialise(fieldsArray);
 
-            Assert.Equal((uint)11000, bfa.NumBits);
-            Assert.Equal((uint)172, bfa.NumStorageElements());
-            Assert.Equal((uint)1375, bfa.MemorySize());
+            Assert.Equal(11000U, bfa.NumBits);
+            Assert.Equal(172U, bfa.NumStorageElements());
+            Assert.Equal(1375U, bfa.MemorySize());
 
             // Write a '1234' to the bfa
             bfa.StreamWriteStart();

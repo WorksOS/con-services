@@ -132,7 +132,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
           try
           {
             base.ConfigureTRexGrid(cfg);
-            mutableTRexGrid = Ignition.Start(cfg);
+            mutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.MutableGridName(), cfg);
           }
           catch (Exception e)
           {

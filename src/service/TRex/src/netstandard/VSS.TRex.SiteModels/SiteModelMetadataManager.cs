@@ -6,7 +6,7 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Query;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;

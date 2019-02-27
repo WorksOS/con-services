@@ -2,10 +2,9 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -22,17 +21,11 @@ namespace VSS.TRex.ExistenceMaps.Servers
         private static readonly ILogger Log = Logging.Logger.CreateLogger<ExistenceMapServer>();
 
         /// <summary>
-        /// Ignite instance to be used in the server
-        /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
-        /// </summary>
-        private readonly IIgnite ignite;
-
-        /// <summary>
         /// A cache that holds the existence maps derived from design files (eg: TTM files)
         /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
+        private readonly ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
 
         /// <summary>
         /// Internal static instance variable for the server
@@ -48,9 +41,9 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <summary>
         /// Default no-arg constructor that creates the Ignite cache within the server
         /// </summary>
-        public ExistenceMapServer()
+        private ExistenceMapServer()
         {
-            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+            IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
             
             if (ignite == null)
             {
@@ -70,7 +63,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <summary>
         /// Configure the parameters of the existence map cache
         /// </summary>
-        public CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
+        private CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
         {
             return new CacheConfiguration()
             {

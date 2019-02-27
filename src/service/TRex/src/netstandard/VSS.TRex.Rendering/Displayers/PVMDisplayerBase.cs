@@ -5,7 +5,7 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public abstract class PVMDisplayerBase : ProductionPVMDisplayerBase
   {
-    protected DisplayMode DisplayMode = DisplayMode.Height;
+    public DisplayMode DisplayMode { get; set; } = DisplayMode.Height;
 
     public IPlanViewPalette Palette { get; set; }
 
@@ -13,19 +13,8 @@ namespace VSS.TRex.Rendering.Displayers
     //        public DisplayPaletteBase Palette { get { return palette; } set { SetPalette(value); } }
     //        private virtual void SetPalette(DisplayPaletteBase value) => Palette = value;
 
-    protected PVMDisplayerBase()
+    public PVMDisplayerBase()
     {
-    }
-
-    protected PVMDisplayerBase(DisplayMode displayMode)
-    {
-      DisplayMode = displayMode;
-    }
-
-    protected PVMDisplayerBase(DisplayMode displayMode, IPlanViewPalette palette)
-    {
-      DisplayMode = displayMode;
-      Palette = palette;
     }
   }
 }

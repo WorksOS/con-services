@@ -66,11 +66,11 @@ namespace VSS.TRex.Analytics.CCAStatistics
     /// Processes a CCA subgrid into a CCA isopach and calculate the counts of cells where the CCA value matches the requested target.
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Loop through CCA array. Note processing is accumulative so values may already hold values.
         foreach (IClientLeafSubGrid[] subGrid in subGrids)

@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       Assert.True(aggregator.Counts.Length == aggregator.CMVChangeDetailsDataValues.Length, "Invalid value for CMVChangeDetailsDataValues.");
 
@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       // Other aggregator...
       var otherAggregator = new CMVChangeStatisticsAggregator();
@@ -78,7 +78,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
       otherAggregator.CMVChangeDetailsDataValues = new[] { -100.0, 0.0, 100.0 };
       otherAggregator.Counts = new long[aggregator.CMVChangeDetailsDataValues.Length];
 
-      otherAggregator.ProcessSubgridResult(subGrids);
+      otherAggregator.ProcessSubGridResult(subGrids);
 
       aggregator.AggregateWith(otherAggregator);
 

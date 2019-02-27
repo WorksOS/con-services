@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace VSS.TRex.Analytics.Foundation.Aggregators
 {
@@ -10,7 +9,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
   public class DataStatisticsAggregator : AggregatorBase
   {
     /// <summary>
-    /// Aggregator state is now single threaded in the context of processing subgrid
+    /// Aggregator state is now single threaded in the context of processing sub grid
     /// information into it as the processing threads access independent sub-state aggregators which
     /// are aggregated together to form the final aggregation result. However, in contexts that do support
     /// threaded access to this structure the FRequiresSerialisation flag should be set

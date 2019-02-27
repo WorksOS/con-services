@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Helpers;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -33,12 +34,12 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Represents the individual bit in the bits representing left most cell in a row for the TSubGridBitMap leaf cell.
         /// </summary>
-        private const uint SubGridBitMapHighBitMask = (uint)1 << (SubGridTreeConsts.SubGridTreeDimensionMinus1);
+        private const uint SubGridBitMapHighBitMask = 1U << (SubGridTreeConsts.SubGridTreeDimensionMinus1);
 
         /// <summary>
         /// The number obtained when summed values of bit rows when all bits in each bit row are set
         /// </summary>
-        public const long SumBitRowsFullCount = (((long)1 << SubGridTreeConsts.SubGridTreeDimension) - 1) * SubGridTreeConsts.SubGridTreeDimension;
+        public const long SumBitRowsFullCount = ((1L << SubGridTreeConsts.SubGridTreeDimension) - 1) * SubGridTreeConsts.SubGridTreeDimension;
 
         /// <summary>
         /// The number of byte occupied by the Bits array
@@ -48,7 +49,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
         /// </summary>
-        public uint[] Bits;
+        public readonly uint[] Bits;
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -84,7 +85,7 @@ namespace VSS.TRex.SubGridTrees
                 return;
             }
 
-          Debug.Assert(false, "Unknown SubGridTreeBitmapSubGridBits creation option");
+            throw new TRexSubGridTreeException("Unknown SubGridTreeBitmapSubGridBits creation option");
         }
 
         /// <summary>
@@ -475,7 +476,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public void Read(BinaryReader reader, byte[] buffer)
         {
-            switch (reader.ReadByte())
+            byte controlByte = reader.ReadByte();
+            switch (controlByte)
             {
                 case Serialisation_NoBitsSet:
                     Clear();
@@ -494,8 +496,7 @@ namespace VSS.TRex.SubGridTrees
                     */
                     break;
                 default:
-                    Debug.Assert(false, "Unknown TSubGridTreeLeafBitmapSubGridBits control byte in read stream");
-                    break;
+                    throw new TRexSubGridTreeException($"Unknown SubGridTreeLeafBitmapSubGridBits control byte [{controlByte}] in read stream");
             }
         }
 
@@ -647,9 +648,9 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool Equals(SubGridTreeBitmapSubGridBits other)
         {
-            if (other.Bits == null)
+            if (other == null)
                 return false;
-         
+
             for (int i = 0; i < Bits.Length; i++)
                 if (Bits[i] != other.Bits[i])
                     return false;

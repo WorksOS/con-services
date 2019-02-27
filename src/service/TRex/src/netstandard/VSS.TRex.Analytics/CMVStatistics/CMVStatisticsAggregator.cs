@@ -14,7 +14,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
   public class CMVStatisticsAggregator : DataStatisticsAggregator
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
+    /// The flag is to indicate whether or not the machine CMV target to be user overrides.
     /// </summary>
     public bool OverrideMachineCMV { get; set; }
 
@@ -70,11 +70,11 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// Processes a CMV subgrid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
 

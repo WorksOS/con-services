@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection;
+//using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
@@ -23,13 +22,13 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesCalculationsAggregator>();
 
         /// <summary>
         /// Defines a sub grid full of null values to run through the volumes engine in cases when 
         /// one of the two sub grids is not available to allow for correctly tracking of statistics
         /// </summary>
-        private static readonly ClientHeightLeafSubGrid NullHeightSubgrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
+        private static readonly ClientHeightLeafSubGrid NullHeightSubGrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
 
         // CoverageMap maps the area of cells that we have considered and successfully
         // computed volume information from
@@ -341,23 +340,16 @@ namespace VSS.TRex.Volumes
       }
       */
 
-      // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
-      // of bits from the leaf level and setting it in one operation under an exclusive lock
-      if (!Bits.IsEmpty())
+            // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
+            // of bits from the leaf level and setting it in one operation under an exclusive lock
+            if (!Bits.IsEmpty())
             {
                 if (RequiresSerialisation)
                     Monitor.Enter(CoverageMap);
                 try
                 {
                     ISubGrid CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
-
-                    if (CoverageMapSubgrid != null)
-                    {
-                        Debug.Assert(CoverageMapSubgrid is SubGridTreeLeafBitmapSubGrid, "CoverageMapSubgrid in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid is not a TSubGridTreeLeafBitmapSubGrid");
-                        ((SubGridTreeLeafBitmapSubGrid)CoverageMapSubgrid).Bits = Bits;
-                    }
-                    else
-                        Debug.Assert(false, "Failed to request CoverageMapSubgrid from FCoverageMap in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid");
+                    ((SubGridTreeLeafBitmapSubGrid)CoverageMapSubgrid).Bits = Bits;
                 }
                 finally
                 {
@@ -380,25 +372,26 @@ namespace VSS.TRex.Volumes
             {
                 foreach (IClientLeafSubGrid[] subGridResult in subGrids)
                 {
-                    if (subGridResult == null)
-                      continue;
-
-                    // We have a sub grid from the Production Database. If we are processing volumes
-                    // between two filters, then there will be a second sub grid in the sub grids array.
-                    // By convention BaseSubGrid is always the first sub grid in the array,
-                    // regardless of whether it really forms the 'top' or 'bottom' of the interval.
-
-                    IClientLeafSubGrid BaseSubGrid = subGridResult[0];
-
-                    if (BaseSubGrid == null)
-                    {
-                        Log.LogWarning("#W# SummariseSubGridResult BaseSubGrid is null");
-                        return;
+                    if (subGridResult != null)
+                    {                
+                        // We have a sub grid from the Production Database. If we are processing volumes
+                        // between two filters, then there will be a second sub grid in the sub grids array.
+                        // By convention BaseSubGrid is always the first sub grid in the array,
+                        // regardless of whether it really forms the 'top' or 'bottom' of the interval.
+                    
+                        IClientLeafSubGrid BaseSubGrid = subGridResult[0];
+                    
+                        if (BaseSubGrid == null)
+                        {
+                          Log.LogWarning("#W# SummariseSubGridResult BaseSubGrid is null");
+                        }
+                        else
+                        {               
+                          IClientLeafSubGrid TopSubGrid = subGridResult.Length > 1 ? subGridResult[1] : NullHeightSubGrid;
+               
+                          ProcessVolumeInformationForSubgrid(BaseSubGrid as ClientHeightLeafSubGrid, TopSubGrid as ClientHeightLeafSubGrid);
+                        }
                     }
-
-                    IClientLeafSubGrid TopSubGrid = subGridResult.Length > 1 ? subGridResult[1] : NullHeightSubgrid;
-
-                    ProcessVolumeInformationForSubgrid(BaseSubGrid as ClientHeightLeafSubGrid, TopSubGrid as ClientHeightLeafSubGrid);
                 }
             }
             finally
@@ -464,7 +457,7 @@ namespace VSS.TRex.Volumes
         /// Implement the sub grids request aggregator method to process sub grid results...
         /// </summary>
         /// <param name="subGrids"></param>
-        public void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+        public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
         {
             SummariseSubgridResult(subGrids);
         }
