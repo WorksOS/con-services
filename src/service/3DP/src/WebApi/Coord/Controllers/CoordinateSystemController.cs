@@ -94,15 +94,19 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] long projectId)
     {
+#if !RAPTOR
       var projectUid = ((RaptorPrincipal)User).GetProjectUid(projectId).Result;
       var request = new ProjectID(projectId, projectUid);
+#else
+      var request = new ProjectID(projectId);
+#endif
 
       request.Validate();
 
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
 #if RAPTOR
         raptorClient,
-#endif 
+#endif
         configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
     }
 
