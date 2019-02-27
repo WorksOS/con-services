@@ -1527,7 +1527,7 @@ namespace TAGFiles.Tests
     }
 
     [Fact()]
-    public void Test_TAGValueMatcher_AgeOfCOrrections()
+    public void Test_TAGValueMatcher_AgeOfCorrections()
     {
 
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);

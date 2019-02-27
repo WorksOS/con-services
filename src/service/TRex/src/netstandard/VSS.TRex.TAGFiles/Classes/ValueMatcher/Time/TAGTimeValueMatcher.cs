@@ -56,6 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
                 {
                     valueSink.GPSWeekNumber = (short) value;
                     state.HaveSeenAWeekValue = true;
+                    result = true;
                 }
             }
 
