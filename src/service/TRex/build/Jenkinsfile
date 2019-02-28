@@ -41,6 +41,7 @@ node ('jenkinsslave-pod') {
 		"PSNode",
 		"TileRendering",
 		"TINSurfaceExport",
+		"Reports",
 		"Gateway",
 		"MutableGateway",
 		"Webtools",

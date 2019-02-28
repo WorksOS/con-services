@@ -32,12 +32,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionElevationController : BaseController<CompactionElevationController>
   {
-#if RAPTOR
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-#endif
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
     /// </summary>
@@ -52,16 +46,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionElevationController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
       IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
       ICompactionSettingsManager settingsManager, IProductionDataRequestFactory productionDataRequestFactory) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.elevProxy = elevProxy;
       requestFactory = productionDataRequestFactory;
     }
@@ -165,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
 #if RAPTOR
         var returnResult =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
             .Process(request) as ProjectStatisticsResult;
         Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;

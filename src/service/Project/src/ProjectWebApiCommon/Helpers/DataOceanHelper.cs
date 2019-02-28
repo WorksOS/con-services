@@ -104,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return null;
     }
 
-    private static IDictionary<string, string> CustomHeaders(ITPaaSApplicationAuthentication authn)
+    public static IDictionary<string, string> CustomHeaders(ITPaaSApplicationAuthentication authn)
     {
       return new Dictionary<string, string>
       {

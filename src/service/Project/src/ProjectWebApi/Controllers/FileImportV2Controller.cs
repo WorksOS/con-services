@@ -17,10 +17,12 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -40,21 +42,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="persistantTransferProxy"></param>
-    /// <param name="filterServiceProxy"></param>
-    /// <param name="tRexImportFileProxy"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="store"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="requestFactory"></param>
-    /// <param name="dataOceanClient"></param>
-    /// <param name="tileServiceProxy"></param>
-    /// <param name="authn"></param>
     public FileImportV2Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
@@ -84,15 +71,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///            {"id":6964} 
     ///   This US only handles happy path. ServiceExceptions will be mapped in a future US.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="importedFileTbc"></param>
     /// <remarks>Updates and Imported design file for a project</remarks>
     /// <response code="200">Ok</response>
     [Route("api/v2/projects/{projectId}/importedfiles")]
     [HttpPut]
     public async Task<ReturnLongV2Result> UpsertImportedFileV2(
       [FromRoute] long projectId,
-      [FromBody] ImportedFileTbc importedFileTbc)
+      [FromBody] ImportedFileTbc importedFileTbc,
+      [FromServices] ISchedulerProxy schedulerProxy)
     {
       // MobileLinework .kml/.kmz files are sent along with linework files
       //     we need to suppress any error and return as if all ok.
@@ -168,7 +154,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -197,7 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, null, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
       }

@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Common.Executors
         if (useTrexGateway)
         {
 #endif
-          var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
+          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders).Result;
 
           using (var ms = new MemoryStream())
           {

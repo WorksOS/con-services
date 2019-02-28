@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
 #endif
           var responseData = trexCompactionDataProxy
-            .SendStationOffsetReportRequest(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), customHeaders).Result;
+            .SendDataPostRequestWithStreamResponse(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), "/report/stationoffset", customHeaders).Result;
 
           return responseData.Length > 0
             ? ConvertTRexStationOffsetResult(request, responseData)

@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
     <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.csproj" />
   </ItemGroup>
 

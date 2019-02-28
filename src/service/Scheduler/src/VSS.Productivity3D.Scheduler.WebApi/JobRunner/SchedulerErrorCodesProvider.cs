@@ -17,10 +17,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     /// <summary>
     /// Utility method for creating an error result
     /// </summary>
-    public ContractExecutionResult CreateErrorResult(SchedulerErrorCodes errorNumber, string errorMessage1 = null, string errorMessage2 = null)
+    public ContractExecutionResult CreateErrorResult(string environment, SchedulerErrorCodes errorNumber, string errorMessage1 = null, string errorMessage2 = null)
     {
       return new ContractExecutionResult(GetErrorNumberwithOffset((int)errorNumber),
-        string.Format(FirstNameWithOffset((int)errorNumber), errorMessage1 ?? "null", errorMessage2 ?? "null"));
+        $"{environment}: {string.Format(FirstNameWithOffset((int)errorNumber), errorMessage1 ?? "null", errorMessage2 ?? "null")}");
     }    
   }
 

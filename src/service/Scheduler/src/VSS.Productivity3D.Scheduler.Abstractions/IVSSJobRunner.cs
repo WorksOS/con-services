@@ -7,7 +7,6 @@ namespace VSS.Productivity3D.Scheduler.Abstractions
 {
   public interface IVSSJobRunner
   {
-    void RegisterJob(Guid uid, Type type);
     Task<ContractExecutionResult> RunJob(JobRequest request);
   }
 }

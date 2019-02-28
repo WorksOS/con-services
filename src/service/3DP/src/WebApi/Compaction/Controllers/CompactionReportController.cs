@@ -27,12 +27,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
   public class CompactionReportController : BaseController<CompactionReportController>
   {
-#if RAPTOR
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-#endif
     /// <summary>
     /// The request factory
     /// </summary>
@@ -52,18 +46,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionReportController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
       IConfigurationStore configStore,
       IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITRexCompactionDataProxy tRexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
@@ -145,7 +133,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionReportGridExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient, 
+            RaptorClient, 
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy)
@@ -235,7 +223,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionReportStationOffsetExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient, 
+            RaptorClient, 
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy)

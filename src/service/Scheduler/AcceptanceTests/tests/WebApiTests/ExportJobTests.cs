@@ -8,6 +8,7 @@ using TestUtility;
 using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.Scheduler.Models;
 
 namespace WebApiTests
 {

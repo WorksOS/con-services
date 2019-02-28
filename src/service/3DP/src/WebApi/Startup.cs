@@ -129,6 +129,13 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SURFACE") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VETA") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROFILING") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_GRIDREPORT") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_STATIONOFFSET") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_LINEWORKFILE") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CCA") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CS") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PATCHES") != "true")
         ConfigureRaptor();
     }

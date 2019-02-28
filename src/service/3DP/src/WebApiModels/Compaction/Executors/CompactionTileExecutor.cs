@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
 #endif
-          var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
+          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders).Result;
 
           using (var ms = new MemoryStream())
           {

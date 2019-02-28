@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         request.returnAllPassesAndLayers
       );
 
-      var trexResult = trexCompactionDataProxy.SendProductionDataProfileDataRequest(productionDataProfileDataRequest, customHeaders).Result;
+      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
 
       return trexResult != null ? ConvertTRexProfileResult(trexResult) : null;
     }

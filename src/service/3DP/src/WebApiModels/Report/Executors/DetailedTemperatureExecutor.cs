@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.Filter,
           temperatureTargets);
 
-        var temperatureDetailsResult = trexCompactionDataProxy.SendTemperatureDetailsRequest(temperatureDetailsRequest, customHeaders).Result as TemperatureDetailResult;
+        var temperatureDetailsResult = trexCompactionDataProxy.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailRequest>(temperatureDetailsRequest, "/temperature/details", customHeaders).Result as TemperatureDetailResult;
 
         return new CompactionTemperatureDetailResult(temperatureDetailsResult);
 #if RAPTOR

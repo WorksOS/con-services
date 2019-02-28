@@ -19,6 +19,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -35,9 +36,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ProjectVerifier]
   public class CompactionExportController : BaseController<CompactionExportController>
   {
-#if RAPTOR
-    private readonly IASNodeClient raptorClient;
-#endif
     private readonly IPreferenceProxy prefProxy;
     private readonly IProductionDataRequestFactory requestFactory;
     private const int FIVE_MIN_SCHEDULER_TIMEOUT = 300000;
@@ -54,18 +52,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionExportController(
-#if RAPTOR
-      IASNodeClient raptorClient,
-#endif
       IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITRexCompactionDataProxy trexCompactionDataProxy,
       ITransferProxy transferProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
       TRexCompactionDataProxy = trexCompactionDataProxy;
@@ -234,7 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(projectSettings.Result)
           .Filter(filter))
 #if RAPTOR
-        .SetRaptorClient(raptorClient)
+        .SetRaptorClient(RaptorClient)
 #endif
         .SetUserPreferences(userPreferences.Result)
         .SetProjectDescriptor(project)
@@ -255,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
@@ -314,7 +306,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Filter(filter))
         .SetUserPreferences(userPreferences.Result)
 #if RAPTOR
-        .SetRaptorClient(raptorClient)
+        .SetRaptorClient(RaptorClient)
 #endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
@@ -334,7 +326,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
@@ -393,7 +385,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Filter(filter))
         .SetUserPreferences(userPreferences)
 #if RAPTOR
-        .SetRaptorClient(raptorClient)
+        .SetRaptorClient(RaptorClient)
 #endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
@@ -414,7 +406,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
@@ -458,7 +450,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         request.Validate();
 #if RAPTOR
         var result =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
             .Process(request) as ProjectStatisticsResult;
 
         var startUtc = filter?.StartUtc ?? result.startTime;

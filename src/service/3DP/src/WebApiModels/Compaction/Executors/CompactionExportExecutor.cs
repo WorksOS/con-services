@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
 
           log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendSurfaceExportRequest(compactionSurfaceExportRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
         }
         else if (
 #if RAPTOR
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                              requestHelper.GetMachineNameList() );
 
           log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendVetaExportRequest(compactionVetaExportRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
         }
         else if (
 #if RAPTOR
@@ -79,14 +79,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
 
             log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
-            return trexCompactionDataProxy.SendPassCountExportRequest(compactionPassCountExportRequest, customHeaders).Result;
+            return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
 #if !RAPTOR
         }
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-
         }
 #else
         }

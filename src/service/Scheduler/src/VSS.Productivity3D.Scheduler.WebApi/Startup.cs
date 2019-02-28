@@ -17,16 +17,22 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Pegasus.Client;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.WebApi.Common;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
-using VSS.Productivity3D.Scheduler.WebAPI.Middleware; 
+using VSS.Productivity3D.Scheduler.WebAPI.Middleware;
+using VSS.Productivity3D.Push.WebAPI;
+using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -87,8 +93,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       // under k8s it needs 45s 
       // note the delays before running acceptanceTests in .sh files
       //      also another delay below
-      var serviceProvider = services.BuildServiceProvider();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceProvider = services.BuildServiceProvider();
+      var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
       var configStore = new GenericConfiguration(logger);
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_WEBAPI_STARTUP_WAIT_MS"), out var startupWaitMs))
         startupWaitMs = 0;
@@ -111,10 +117,20 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddSingleton<IVSSJobRunner, VSSHangfireJobRunner>();
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();      
+      services.AddScoped<IDataOceanClient, DataOceanClient>();
+      services.AddScoped<IPegasusClient, PegasusClient>();
+      services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+      services.AddTransient<ITPaasProxy, TPaasProxy>();
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddSingleton<IVSSJobFactory, VSSJobFactory>();
+      services.AddSingleton<VSSHangfireJobRunner>();
+      services.AddSingleton<IVSSHangfireJobRunner>(s => s.GetRequiredService<VSSHangfireJobRunner>());
+      services.AddSingleton<IVSSJobRunner>(s => s.GetRequiredService<VSSHangfireJobRunner>());
+      services.AddTransient<IDevOpsNotification, SlackNotification>();
 
       services.AddOpenTracing(builder =>
       {
@@ -189,8 +205,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       // hangfire has to be started up in ConfigureServices(),
       //    i.e. before DI can be setup in Configure()
       //    therefore create temp configStore to read environment variables (unfortunately this requires log stuff)
-      var serviceProvider = services.BuildServiceProvider();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceProvider = services.BuildServiceProvider();
+      var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
       var configStore = new GenericConfiguration(logger);
 
       var hangfireConnectionString = configStore.GetConnectionString("VSPDB");
@@ -224,6 +240,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         throw;
       }
       //GlobalJobFilters.Filters.Add(new ExportFailureFilter());
+      GlobalJobFilters.Filters.Add(new JobFailureFilter());
     }
 
     /// <summary>

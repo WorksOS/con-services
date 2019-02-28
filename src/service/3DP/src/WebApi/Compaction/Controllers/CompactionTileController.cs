@@ -34,12 +34,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ProjectVerifier]
   public class CompactionTileController : BaseTileController<CompactionTileController>
   {
-#if RAPTOR
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-#endif
     /// <summary>
     /// The tile generator
     /// </summary>
@@ -59,16 +53,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionTileController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
       IConfigurationStore configStore,
       IFileRepository fileRepo, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.fileRepo = fileRepo;
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;
@@ -258,7 +246,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 #if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return result;
@@ -313,7 +301,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 #if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");

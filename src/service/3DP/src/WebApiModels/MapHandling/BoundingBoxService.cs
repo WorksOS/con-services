@@ -11,9 +11,11 @@ using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
+  using VSS.ConfigurationStore;
+  using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Interfaces;
+  using VSS.MasterData.Proxies.Interfaces;
+  using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
   using VSS.Productivity3D.Models.Enums;
@@ -36,11 +38,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
     private readonly IASNodeClient raptorClient;
 #endif
+    private readonly IConfigurationStore configStore;
+    private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
-    public BoundingBoxService(ILoggerFactory logger
+    public BoundingBoxService(ILoggerFactory logger,
 #if RAPTOR
-      , IASNodeClient raptor
+        IASNodeClient raptor,
 #endif
+        IConfigurationStore configStore,
+        ITRexCompactionDataProxy trexCompactionDataProxy
       )
     {
       log = logger.CreateLogger<BoundingBoxService>();
@@ -48,6 +54,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
       raptorClient = raptor;
 #endif
+      this.configStore = configStore;
+      this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -296,9 +304,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       var coordRequest = new CoordinateConversionRequest(projectId,
         TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
-      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient)
+      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy)
         .Process(coordRequest) as CoordinateConversionResult;
-      return coordResult;   
+      return coordResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

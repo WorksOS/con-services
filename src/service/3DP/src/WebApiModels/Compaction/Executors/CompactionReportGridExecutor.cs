@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
 #endif
           var responseData = trexCompactionDataProxy
-            .SendGridReportRequest(AutoMapperUtility.Automapper.Map<CompactionReportGridTRexRequest>(request), customHeaders).Result;
+            .SendDataPostRequestWithStreamResponse(AutoMapperUtility.Automapper.Map<CompactionReportGridTRexRequest>(request), "/report/grid", customHeaders).Result;
           return responseData.Length > 0
             ? ConvertTRexGridResult(request, responseData)
             : CreateNullGridReturnedResult();

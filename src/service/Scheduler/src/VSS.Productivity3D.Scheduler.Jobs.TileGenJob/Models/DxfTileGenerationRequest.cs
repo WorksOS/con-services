@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models
   {
     public Guid CustomerUid { get; set; }
     public Guid ProjectUid { get; set; }
-    public Guid ImportedFiletUid { get; set; }//Id of DXF file required for notification
+    public Guid ImportedFileUid { get; set; }//Id of DXF file required for notification
     public string DataOceanRootFolder { get; set; }
     public string DxfFileName { get; set; }
     public string DcFileName { get; set; }
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project uid"));
       }
-      if (ImportedFiletUid == Guid.Empty)
+      if (ImportedFileUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing imported file uid"));
