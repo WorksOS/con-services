@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests.Affinity
         {
             IgniteConfiguration cfg = new IgniteConfiguration();
             ConfigureGrid(cfg);
-            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(cfg.IgniteInstanceName, cfg);
+            ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(cfg.IgniteInstanceName, cfg);
         }
 
         [Fact(Skip = "Requires live Ignite node")]

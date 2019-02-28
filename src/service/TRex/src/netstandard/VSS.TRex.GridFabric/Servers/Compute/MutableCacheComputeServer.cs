@@ -245,16 +245,11 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       try
       {
-        mutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.MutableGridName(), cfg); 
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception during creation of new Ignite node:");
-        throw;
+        mutableTRexGrid = DIContext.Obtain<ITRexGridFactory>()?.Grid(TRexGrids.MutableGridName(), cfg); 
       }
       finally
       {
-        Log.LogInformation("Completed creation of new Ignite node");
+        Log.LogInformation($"Completed creation of new Ignite node: Exists = {mutableTRexGrid != null}, Factory available = {DIContext.Obtain<ITRexGridFactory>() != null}");
       }
 
       // Wait until the grid is active

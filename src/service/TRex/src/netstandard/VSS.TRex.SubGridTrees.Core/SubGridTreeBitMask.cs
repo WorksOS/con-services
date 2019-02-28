@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
@@ -188,6 +187,27 @@ namespace VSS.TRex.SubGridTrees
                 
                 return true; // Keep the scan going
             });
+        }
+
+        /// <summary>
+        /// Takes a source SubGridBitMask instance and performs a bitwise XOR of the contents of source against the
+        /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
+        /// </summary>
+        /// <param name="Source"></param>
+        public void SetOp_XOR(ISubGridTreeBitMask Source)
+        {
+          SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
+
+          Source.ScanAllSubGrids(x =>
+          {
+            bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
+
+            // In this instance, x is a sub grid from the tree we are OR-ing with this
+            // one, and BitMapSubGrid is a grid retrieved from this tree
+            bitMapSubGrid.Bits.XorWith(((SubGridTreeLeafBitmapSubGrid)x).Bits);
+
+            return true; // Keep the scan going
+          });
         }
 
         /// <summary>

@@ -210,17 +210,11 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       try
       {
         Console.WriteLine($"Creating new Ignite node for {cfg.IgniteInstanceName}");
-        immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName(), cfg); 
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine($"Exception during creation of new Ignite node:\n {e}");
-        Log.LogError(e, "Exception during creation of new Ignite node:");
-        throw e;
+        immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>()?.Grid(TRexGrids.ImmutableGridName(), cfg); 
       }
       finally
       {
-        Log.LogInformation("Completed creation of new Ignite node");
+        Log.LogInformation($"Completed creation of new Ignite node: Exists = {immutableTRexGrid != null}, Factory available = {DIContext.Obtain<ITRexGridFactory>() != null}");
       }
 
       // Wait until the grid is active

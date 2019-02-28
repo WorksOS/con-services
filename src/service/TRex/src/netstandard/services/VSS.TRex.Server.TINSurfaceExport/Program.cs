@@ -69,7 +69,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Build()
       .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
       .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-      .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+      .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
       .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))

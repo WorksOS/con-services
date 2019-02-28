@@ -30,7 +30,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public CacheConfiguration ConfigureCache()
     {
-      return new CacheConfiguration()
+      return new CacheConfiguration
       {
         Name = TRexCaches.SiteModelMetadataCacheName(),
 
@@ -54,9 +54,12 @@ namespace VSS.TRex.SiteModels
     public SiteModelMetadataManager()
     {
       // Obtain the ignite reference for the primary grid orientation of SiteModels
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(DIContext.Obtain<ISiteModels>().StorageProxy.Mutability);
+      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(DIContext.Obtain<ISiteModels>().StorageProxy.Mutability);
 
-      metaDataCache = ignite.GetOrCreateCache<Guid, ISiteModelMetadata>(ConfigureCache());
+      metaDataCache = ignite?.GetOrCreateCache<Guid, ISiteModelMetadata>(ConfigureCache());
+
+      if (metaDataCache == null)
+        throw new TRexException($"Failed to get or create Ignite cache {TRexCaches.SiteModelMetadataCacheName()}, ignite reference is {ignite}");
     }
 
     /// <summary>

@@ -33,7 +33,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
         /// <returns></returns>
         public override ProcessTAGFileResponse Execute(ProcessTAGFileRequestArgument arg)
         {
-            Task<ProcessTAGFileResponse> taskResult = _Compute.ApplyAsync(func, arg);
+            Task<ProcessTAGFileResponse> taskResult = Compute.ApplyAsync(func, arg);
 
             // Send the appropriate response to the caller
             return taskResult.Result;

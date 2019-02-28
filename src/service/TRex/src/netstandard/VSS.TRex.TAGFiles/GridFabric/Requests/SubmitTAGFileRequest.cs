@@ -29,6 +29,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public override SubmitTAGFileResponse Execute(SubmitTAGFileRequestArgument arg) => _Compute.Apply(func, arg);
+        public override SubmitTAGFileResponse Execute(SubmitTAGFileRequestArgument arg) => Compute.Apply(func, arg);
     }
 }
