@@ -5,13 +5,13 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TriangleMesh
   {
-    private TriVertices vertices;
-    private Triangles triangles;
+    private readonly TriVertices vertices;
+    private readonly Triangles triangles;
 
-    protected virtual void CreateLists(out TriVertices vertices, out Triangles triangles)
+    protected virtual void CreateLists(out TriVertices _vertices, out Triangles _triangles)
     {
-      vertices = new TriVertices();
-      triangles = new Triangles();
+      _vertices = new TriVertices();
+      _triangles = new Triangles();
     }
 
     public TriangleMesh()
@@ -87,11 +87,7 @@ namespace VSS.TRex.Designs.TTM
           if (Nbr != null)
           {
             int NbrSide = Nbr.GetSideIndex(FromVertex, ToVertex);
-
-            if (Nbr.Neighbours[NbrSide] == null)
-              Nbr.Neighbours[NbrSide] = Triangles[i];
-            else
-              Triangles[i].Neighbours[Side] = null;
+            Nbr.Neighbours[NbrSide] = Triangles[i];
           }
         }
       }
@@ -99,20 +95,22 @@ namespace VSS.TRex.Designs.TTM
 
     public Triangle GetTriangleAtPoint(double X, double Y, out double Z)
     {
+      Triangle result = null;
       Z = Common.Consts.NullReal;
 
       for (int i = 0; i < Triangles.Count; i++)
       {
-        Triangle Result = Triangles[i];
+        Triangle tri = Triangles[i];
 
-        if (Result.PointInTriangle(X, Y))
+        if (tri.PointInTriangle(X, Y))
         {
-          Z = Result.GetHeight(X, Y);
-          return Result;
+          Z = tri.GetHeight(X, Y);
+          result = tri;
+          break;
         }
       }
 
-      return null;
+      return result;
     }
 
     public virtual void Clear()
@@ -120,8 +118,5 @@ namespace VSS.TRex.Designs.TTM
       triangles.Clear();
       vertices.Clear();
     }
-
-    //    procedure FixCrossingTriangles(MaxShortestSide: Double );
-
   }
 }

@@ -18,29 +18,18 @@ namespace VSS.TRex.Designs.TTM
 
     public void Read(BinaryReader reader, TTMHeader header)
     {
-      int vertnum = 0;
       Capacity = header.NumberOfVertices;
 
       for (int i = 0; i < header.NumberOfVertices; i++)
       {
-        vertnum = i;
         long RecPos = reader.BaseStream.Position;
-        TTMVertex Vert = new TTMVertex(0, 0, 0);
-        Add(Vert);
-        Vert.Read(reader, header);
+        TTMVertex Vertex = new TTMVertex(0, 0, 0);
+        Add(Vertex);
+        Vertex.Read(reader, header);
         reader.BaseStream.Position = RecPos + header.VertexRecordSize;
       }
 
       NumberVertices();
-    }
-
-    public void SnapToOutputResolution(TTMHeader header)
-    {
-      if (header.VertexCoordinateSize != sizeof(double) || header.VertexValueSize != sizeof(double))
-      {
-        foreach (TTMVertex vertex in this)
-          vertex.SnapToOutputResolution(header);
-      }
     }
   }
 }
