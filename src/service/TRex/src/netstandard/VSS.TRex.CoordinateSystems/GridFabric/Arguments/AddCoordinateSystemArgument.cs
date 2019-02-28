@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.CoordinateSystems.GridFabric.Arguments
@@ -8,6 +9,8 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Arguments
   /// </summary>
   public class AddCoordinateSystemArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The CSIB encoded as a string
     /// </summary>
@@ -21,6 +24,8 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteString(CSIB);
     }
 
@@ -31,6 +36,8 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       CSIB = reader.ReadString();
     }

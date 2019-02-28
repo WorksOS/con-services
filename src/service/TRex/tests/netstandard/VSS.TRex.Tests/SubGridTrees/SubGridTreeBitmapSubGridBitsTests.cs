@@ -307,6 +307,21 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact]
+        public void Test_SubGridTreeBitmapSubGridBitsTests_BitSet_Uint()
+        {
+          // Test testing a bit is on or off, at two corners to test boundary conditions
+          SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+          Assert.False(bits.BitSet(0U, 0U));
+          Assert.False(bits.BitSet(31U, 31U));
+
+          bits.Fill();
+
+          Assert.True(bits.BitSet(0U, 0U));
+          Assert.True(bits.BitSet(31U, 31U));
+        }
+
+    [Fact]
         public void Test_SubGridTreeBitmapSubGridBitsTests_ComputeCellsExtents()
         {
             // Test extents for empty, full and arbitrary masks

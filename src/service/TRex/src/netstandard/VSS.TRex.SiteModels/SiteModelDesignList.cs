@@ -16,7 +16,7 @@ namespace VSS.TRex.SiteModels
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelDesignList>();
 
-    private const int READER_WRITER_VERSION = 1;
+    private const int VERSION_NUMBER = 1;
     private const string LIST_STREAM_NAME = "SiteModelDesigns";
 
     /// <summary>
@@ -84,9 +84,9 @@ namespace VSS.TRex.SiteModels
 
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION, version);
+      byte version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -103,7 +103,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION);
+      writer.Write(VERSION_NUMBER);
 
       writer.Write((int)Count);
 

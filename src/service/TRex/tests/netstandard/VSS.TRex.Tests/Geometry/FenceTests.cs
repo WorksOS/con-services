@@ -154,6 +154,14 @@ namespace VSS.TRex.Tests.Geometry
         }
 
         [Fact()]
+        public void Test_FenceTests_Area_NoPointsInFence()
+        {
+          Fence fence = new Fence();
+
+          Assert.Equal(0, fence.Area());
+        }
+
+        [Fact()]
         public void Test_FenceTests_Area()
         {
             Fence fence = makeSimpleRectangleFence();

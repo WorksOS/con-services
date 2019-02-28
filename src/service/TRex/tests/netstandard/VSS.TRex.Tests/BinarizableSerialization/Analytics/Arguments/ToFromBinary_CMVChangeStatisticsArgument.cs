@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesignUID = Guid.NewGuid(),
-        CMVChangeDetailsDatalValues = new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }
+        CMVChangeDetailsDataValues = new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom CMVChangeStatisticsArgument not same after round trip serialisation");

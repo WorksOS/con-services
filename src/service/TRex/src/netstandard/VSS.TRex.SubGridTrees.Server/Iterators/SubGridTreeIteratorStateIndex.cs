@@ -7,17 +7,17 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
   {
     private ISubGrid subGrid;
 
-    private void SetSubGrid(ISubGrid Value)
+    private void SetSubGrid(ISubGrid value)
     {
-      subGrid = Value;
+      subGrid = value;
 
       XIdx = -1;
       YIdx = -1;
     }
 
     // The current X/Y index of the cell at this point in the iteration
-    public int XIdx;
-    public int YIdx;
+    public int XIdx { get; set; }
+    public int YIdx { get; set; }
 
     // The sub grid (at any level) being iterated across
     public ISubGrid SubGrid { get => subGrid; set => SetSubGrid(value); }
@@ -32,9 +32,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     public bool NextCell()
     {
       if (YIdx == -1)
-      {
         YIdx = 0;
-      }
 
       XIdx++;
       if (XIdx == SubGridTreeConsts.SubGridTreeDimension)
@@ -45,7 +43,5 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
       return YIdx < SubGridTreeConsts.SubGridTreeDimension;
     }
-
-    public bool AtLastCell() => XIdx >= SubGridTreeConsts.SubGridTreeDimensionMinus1 && YIdx >= SubGridTreeConsts.SubGridTreeDimensionMinus1;
   }
 }

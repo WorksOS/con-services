@@ -5,7 +5,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Common;
 
-
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {
   /// <summary>
@@ -13,7 +12,7 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
   /// </summary>
   public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument
   {
-    //ExternalDescriptor : TASNodeRequestDescriptor;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The volume computation method to use when calculating volume information
@@ -70,6 +69,8 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(ProjectID);
       writer.WriteInt((int)VolumeType);
 
@@ -96,6 +97,8 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       VolumeType = (VolumeComputationType)reader.ReadInt();

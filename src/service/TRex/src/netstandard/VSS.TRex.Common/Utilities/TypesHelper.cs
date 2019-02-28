@@ -15,7 +15,7 @@ namespace VSS.TRex.Common.Utilities
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static List<Type> FindAllDerivedTypesInAllLoadedAssemblies<T>(string prefix)
+    public static List<Type> FindAllDerivedTypesInAllLoadedAssemblies<T>(string prefix = "")
     {
       var types = AppDomain.CurrentDomain
           .GetAssemblies()

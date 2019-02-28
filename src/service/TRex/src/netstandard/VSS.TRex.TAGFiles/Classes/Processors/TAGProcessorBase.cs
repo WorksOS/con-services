@@ -36,15 +36,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// interval, are not processed.
         /// </summary>
         private const int kPausedLoggingIntervalSeconds = 5; 
-
 //        private const int kPausedLoggingIntervalInDays = kPausedLoggingInterval* OneSecond;
 
-        /// <summary>
-        ///  Destroy any state that the .Net garbage collector wont look after for us.
-        /// </summary>
-        private void DestroyInterpolationState()
-        {
-        }
 
         private void UpdateInterpolationStateForNextEpoch()
         {
@@ -168,15 +161,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         }
 
         /// <summary>
-        /// Prepares the processor for the next interpolation interval between measurement epochs
-        /// </summary>
-        private void ClearInterpolationState()
-        {
-            DestroyInterpolationState();
-            ConstructInterpolationState();
-        }
-
-        /// <summary>
         /// Set up the interpolation state for processing of an epoch interval between two measurement epochs
         /// </summary>
         /// <param name="ClearInterpolators"></param>
@@ -284,10 +268,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// Ignore invalid positions encountered in the TAG value data.
         /// </summary>
         /// <returns></returns>
-        protected virtual bool IgnoreInvalidPositions()
-        {
-            return false;
-        }
+        protected virtual bool IgnoreInvalidPositions() => false;
 
         public Fence FrontLeftInterpolationFence { get; set; }
         public Fence FrontRightInterpolationFence { get; set; }
@@ -348,13 +329,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         {
             ConstructInterpolationState();
         }
-
-        /// <summary>
-        /// Processes the TAG values in given file 
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public virtual bool ProcessFile(string filename) => false; // Not implemented
         
         /// <summary>
         /// Performs any required processing of the state acquired for the current time epoch in teh TAG values
@@ -562,8 +536,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                         Math.Pow(InterpolationFences[J][I][1].Y - InterpolationFences[J][I][2].Y, 2) <= MaxEpochIntervalSquared)
                     {
                       // Process the quadrilateral formed by the two epochs
-                      if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
-                        return false;
+                      DoProcessEpochContext(InterpolationFences[J][I], (MachineSide) J);
                     }
                   }
                 }
@@ -644,15 +617,14 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             return true;
         }
 
-    /// <summary>
-    /// DoProcessEpochContext is the method that does the actual processing
-    /// of the epoch intervals into the appropriate data structures. Descendant
-    /// classes must override this function.
-    /// </summary>
-    /// <param name="InterpolationFence"></param>
-    /// <param name="machineSide"></param>
-    /// <returns></returns>
-    public abstract bool DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide);
+        /// <summary>
+        /// DoProcessEpochContext is the method that does the actual processing
+        /// of the epoch intervals into the appropriate data structures. Descendant
+        /// classes must override this function.
+        /// </summary>
+        /// <param name="InterpolationFence"></param>
+        /// <param name="machineSide"></param>
+        public abstract void DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide);
 
         /// <summary>
         /// DoPostProcessFileAction is called immediately after the file has been

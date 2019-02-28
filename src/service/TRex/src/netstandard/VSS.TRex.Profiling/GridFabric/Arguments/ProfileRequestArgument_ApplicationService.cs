@@ -13,6 +13,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// </summary>
   public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     public GridDataType ProfileTypeRequired { get; set; }
     public ProfileStyle ProfileStyle { get; set; }
     public WGS84Point StartPoint { get; set; } = new WGS84Point();
@@ -68,6 +70,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt((int)ProfileTypeRequired);
 
       writer.WriteInt((int)ProfileStyle);
@@ -95,6 +99,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 

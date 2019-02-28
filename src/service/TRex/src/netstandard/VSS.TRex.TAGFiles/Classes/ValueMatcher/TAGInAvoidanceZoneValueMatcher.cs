@@ -18,14 +18,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!(valueType.Type == TAGDataType.t4bitUInt && value <= 3)) // Check only the two least significant bits are set
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t4bitUInt && value <= 3) // Check only the two least significant bits are set
             {
-                return false;
+              valueSink.SetInAvoidZoneState((byte) value);
+              result = true;
             }
 
-            valueSink.SetInAvoidZoneState((byte)value);
-
-            return true;
+            return result;
         }
     }
 }

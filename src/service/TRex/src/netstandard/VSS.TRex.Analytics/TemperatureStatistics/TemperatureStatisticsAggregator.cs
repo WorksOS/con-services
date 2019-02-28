@@ -82,10 +82,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 
 	      foreach (IClientLeafSubGrid[] subGrid in subGrids)
 	      {
-	        if ((subGrid?.Length ?? 0) == 0)
-	          continue;
-
-	        if (subGrid[0] is ClientTemperatureLeafSubGrid SubGrid)
+	        if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientTemperatureLeafSubGrid SubGrid)
 	        {
 	          var currentTempRangeMax = CellPassConsts.NullMaterialTemperatureValue;
 	          var currentTempRangeMin = CellPassConsts.NullMaterialTemperatureValue;

@@ -67,7 +67,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
     }
 
     /// <summary>
-    /// Processes a CMV subgrid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
+    /// Processes a CMV sub grid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
     /// </summary>
     /// <param name="subGrids"></param>
     public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
@@ -80,10 +80,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
 
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientCMVLeafSubGrid SubGrid)
           {
             var currentTargetCMV = CellPassConsts.NullCCV;
 

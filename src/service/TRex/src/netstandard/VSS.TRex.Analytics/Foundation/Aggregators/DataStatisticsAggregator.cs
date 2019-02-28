@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.Aggregators
 {
@@ -141,6 +142,18 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     {
       // No implementation in base class
       return 0;
+    }
+
+    public override void Initialise(AggregatorBase state)
+    {
+    }
+
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
+    {
+    }
+
+    public override void Finalise()
+    {
     }
   }
 }

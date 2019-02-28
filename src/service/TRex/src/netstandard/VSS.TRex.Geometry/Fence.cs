@@ -439,9 +439,7 @@ namespace VSS.TRex.Geometry
     public double Area()
     {
       if (Points.Count == 0)
-      {
         return 0;
-      }
 
       // Calc the area by summing the trapeziums to a base line
       double BaseY = Points.Last().Y;

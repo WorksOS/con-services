@@ -40,10 +40,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
           {
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {

@@ -31,13 +31,13 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
       {
         ISubGridTreeBitMask Mask = GetSingleExistenceMapRequest.Execute(key);
 
-        if (Mask == null)
-          continue;
-
-        if (combinedMask == null)
-          combinedMask = Mask;
-        else
-          combinedMask.SetOp_OR(Mask);
+        if (Mask != null)
+        {
+          if (combinedMask == null)
+            combinedMask = Mask;
+          else
+            combinedMask.SetOp_OR(Mask);
+        }
       }
 
       return combinedMask;
