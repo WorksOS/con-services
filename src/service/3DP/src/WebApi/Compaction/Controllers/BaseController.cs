@@ -38,6 +38,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
+    
 #if RAPTOR
     private IASNodeClient raptorClient;
 #endif
@@ -45,6 +46,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private ILoggerFactory loggerFactory;
     private IFilterServiceProxy filterServiceProxy;
     private IProjectSettingsProxy projectSettingsProxy;
+    private ITRexCompactionDataProxy tRexCompactionDataProxy;
     private IServiceExceptionHandler serviceExceptionHandler;
 
     /// <summary>
@@ -56,6 +58,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the project settings proxy interface.
     /// </summary>
     private IProjectSettingsProxy ProjectSettingsProxy => projectSettingsProxy ?? (projectSettingsProxy = HttpContext.RequestServices.GetService<IProjectSettingsProxy>());
+
+    /// <summary>
+    /// Gets the tRex CompactionData proxy interface.
+    /// </summary>
+    protected ITRexCompactionDataProxy TRexCompactionDataProxy => tRexCompactionDataProxy ?? (tRexCompactionDataProxy = HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>());
+
 
     /// <summary>
     /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
@@ -103,6 +111,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       SlidingExpiration = TimeSpan.FromDays(3)
     };
+    protected bool UseTRexGateway(string key) => bool.TryParse(ConfigStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
+
 
     /// <summary>
     /// Default constructor.
@@ -210,6 +220,28 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var results = fileList
         .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
         .Select(f => f.LegacyFileId).ToList();
+
+      return results;
+    }
+
+
+    /// <summary>
+    /// Gets the Uids of the surveyed surfaces to exclude from TRex calculations. 
+    /// This is the deactivated ones.
+    /// </summary>
+    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
+    /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
+    protected async Task<List<Guid>> GetExcludedSurveyedSurfaceUids(Guid projectUid)
+    {
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+      if (fileList == null || fileList.Count == 0)
+      {
+        return null;
+      }
+
+      var results = fileList
+        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
+        .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
 
       return results;
     }

@@ -239,8 +239,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetUserPreferences(userPreferences.Result)
         .SetProjectDescriptor(project)
         .CreateExportRequest(
-          startEndDate.Item1,
-          startEndDate.Item2,
+          startEndDate.startUtc,
+          startEndDate.endUtc,
           coordType,
           ExportTypes.VedaExport,
           fileName,
@@ -318,8 +318,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
-          startEndDate.Item1,
-          startEndDate.Item2,
+          startEndDate.startUtc,
+          startEndDate.endUtc,
           (CoordType) coordType,
           ExportTypes.PassCountExport,
           fileName,
@@ -447,30 +447,31 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the date range for the export.
     /// </summary>
-    private Tuple<DateTime, DateTime> GetDateRange(long projectId, FilterResult filter)
+    private (DateTime startUtc, DateTime endUtc) GetDateRange(long projectId, FilterResult filter)
     {
+#if RAPTOR
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor performance.
         //But need to set here for export.
         var excludedIds = filter?.SurveyedSurfaceExclusionList?.ToArray() ?? new long[0];
-        ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
+        var request = new ProjectStatisticsRequest(projectId, excludedIds);
         request.Validate();
-#if RAPTOR
+
         var result =
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
             .Process(request) as ProjectStatisticsResult;
 
         var startUtc = filter?.StartUtc ?? result.startTime;
         var endUtc = filter?.EndUtc ?? result.endTime;
-        return new Tuple<DateTime, DateTime>(startUtc, endUtc);
-#else
-        // TRex determines this date range within the export API call
-        return new Tuple<DateTime, DateTime>(DateTime.MinValue, DateTime.MinValue);
-#endif
+        return (startUtc, endUtc);
       }
 
-      return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
+      return (filter.StartUtc.Value, filter.EndUtc.Value);
+#else
+        // TRex determines this date range within the export API call
+        return (DateTime.MinValue, DateTime.MinValue);
+#endif
     }
   }
 }

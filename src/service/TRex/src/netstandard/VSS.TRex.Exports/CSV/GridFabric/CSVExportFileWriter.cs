@@ -57,13 +57,16 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         var zipFullPath = Path.Combine(localExportPath, uniqueFileName) + ZIP_extension;
         if (FileSystem.Exists(zipFullPath))
           FileSystem.Delete(zipFullPath);
-        ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
 
+        ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false);
         // copy zip to S3
         s3FullPath = $"project/{requestArgument.ProjectID}/TRexExport/{uniqueFileName}{ZIP_extension}";
         fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
-        if (Directory.Exists(localPath))
-          Directory.Delete(localPath, true);
+
+        // delete the export folder
+        localExportPath = FilePathHelper.GetTempFolderForExport(requestArgument.ProjectID, "");
+        if (Directory.Exists(localExportPath))
+          Directory.Delete(localExportPath, true);
       }
       catch (Exception e)
       {

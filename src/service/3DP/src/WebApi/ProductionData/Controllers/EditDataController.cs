@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -66,6 +67,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
+    ///    NOTE: Obsolete
+    ///        Elspeth believes this is a BusinessCenter endpoint.
+    ///        It is not expected that this endpoint will have a v2, which would use Uids and Trex.
     /// </summary>
     [PostRequestVerifier]
     [Route("api/v1/productiondata/edit")]
@@ -87,6 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
 #else
+      // see NOTE above
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
@@ -127,7 +132,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private void ValidateDates(long projectId, ProductionDataEdit dataEdit)
     {
-      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, new long[0]);
+      var request = new ProjectStatisticsRequest(projectId, new long[0]);
       request.Validate();
 #if RAPTOR
       dynamic stats = RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, tagProcessor).Process(request) as ProjectStatisticsResult;

@@ -16,6 +16,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -87,13 +89,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         await Task.WhenAll(projectSettingsTask, filterTask, projectIdTask);
 
-        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
-
-        if (result == null)
-        {
-          //Ideally want to return an error code and message only here
-          result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
-        }
+        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders) ??
+                     ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
 
         Log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
@@ -154,25 +151,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid)
     {
       Log.LogInformation("GetProjectStatistics: " + Request.QueryString);
-      var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
-      var projectIdTask = GetLegacyProjectId(projectUid);
 
-      await Task.WhenAll(excludedIdsTask, projectIdTask);
-
-      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectIdTask.Result, excludedIdsTask.Result?.ToArray());
-      request.Validate();
       try
       {
-#if RAPTOR
-        var returnResult =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
-            .Process(request) as ProjectStatisticsResult;
+        var returnResult = await GetProjectStatisticsFromService(projectUid);
+
         Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
-#else
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
       }
       catch (ServiceException se)
       {
@@ -184,6 +169,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         Log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
       }
+    }
+
+    private async Task<ProjectStatisticsResult> GetProjectStatisticsFromService(Guid projectUid)
+    {
+#if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS"))
+      {
+#endif
+        var excludedUids = await GetExcludedSurveyedSurfaceUids(projectUid);
+        var request = new ProjectStatisticsTRexRequest(projectUid, excludedUids.ToArray());
+        request.Validate();
+
+        return
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory,
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as ProjectStatisticsResult;
+#if RAPTOR
+      }
+      else
+      {
+        var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
+        var projectIdTask = GetLegacyProjectId(projectUid);
+        await Task.WhenAll(excludedIdsTask, projectIdTask);
+
+        var request = new ProjectStatisticsRequest(projectIdTask.Result, excludedIdsTask.Result?.ToArray());
+        request.Validate();
+
+        return
+          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
+            .Process(request) as ProjectStatisticsResult;
+      }
+#endif
     }
 
     /// <summary>

@@ -1,17 +1,43 @@
-﻿using System.Net;
-using BoundingExtents;
-using SVOICStatistics;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
+﻿using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
+#if RAPTOR
+using BoundingExtents;
+using SVOICStatistics;
+#endif
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class ProjectStatisticsExecutor : RequestExecutorContainer
   {
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      var tRexRequest = item as ProjectStatisticsTRexRequest;
+      if (tRexRequest != null)
+      {
+        return trexCompactionDataProxy.SendProjectStatisticsRequest(tRexRequest).Result;
+      }
+
+#if RAPTOR
+      var request = CastRequestObjectTo<ProjectStatisticsRequest>(item);
+
+      bool success = raptorClient.GetDataModelStatistics(
+        request.ProjectId ?? -1,
+        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds),
+        out var statistics);
+
+      if (success)
+        return ConvertProjectStatistics(statistics);
+#endif
+      throw CreateServiceException<ProjectStatisticsExecutor>();
+    }
+
+
+#if RAPTOR
     private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
@@ -34,25 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         extents = ConvertExtents(statistics.Extents)
       };
     }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-#if !RAPTOR
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#else
-      var request = CastRequestObjectTo<ProjectStatisticsRequest>(item);
-
-      bool success = raptorClient.GetDataModelStatistics(
-        request.ProjectId ?? -1,
-        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds),
-        out var statistics);
-
-      if (success)
-        return ConvertProjectStatistics(statistics);
-
-      throw CreateServiceException<ProjectStatisticsExecutor>();
 #endif
-    }
+
   }
 }

@@ -265,6 +265,21 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Sends a request to get project statistics for a site model from the TRex database.
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<ProjectStatisticsResult> SendProjectStatisticsRequest(ProjectStatisticsTRexRequest projectStatisticsTRexRequest, IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(projectStatisticsTRexRequest);
+      log.LogDebug($"{nameof(SendProjectStatisticsRequest)}: Sending the get project statistics request: {request}");
+
+      return SendRequestPost<ProjectStatisticsResult>(request, customHeaders, $"/sitemodels/statistics");
+
+    }
+
+    /// <summary>
     /// Sends a request to get a TIN surface data from the TRex database.
     /// </summary>
     /// <param name="compactionSurfaceExportRequest"></param>

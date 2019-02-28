@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies

@@ -253,6 +253,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
     /// <summary>
     /// Gets project statistics from Raptor.
+    /// NOTE:  Obsolete: We now use CompactionElevationController "api/v2/projectstatistics"
     /// </summary>
     /// <param name="request">The request for statistics request to Raptor</param>
     /// <returns></returns>
@@ -271,6 +272,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient).Process(request)
           as ProjectStatisticsResult;
 #else
+      // see NOTE above
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif

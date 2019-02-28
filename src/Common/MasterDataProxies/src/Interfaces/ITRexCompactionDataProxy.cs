@@ -7,7 +7,6 @@ using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
@@ -158,6 +157,15 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get project statistics for a site model from the TRex database.
+    /// </summary>
+    /// <param name="projectStatisticsTRexRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ProjectStatisticsResult> SendProjectStatisticsRequest(ProjectStatisticsTRexRequest projectStatisticsTRexRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>

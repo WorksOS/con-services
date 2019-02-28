@@ -1,14 +1,17 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+#if !RAPTOR
+using System.Net;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+#endif
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
@@ -107,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Tests if there is overlapping data in Raptor 
     /// </summary>
-    protected async Task<(bool isValidFilterForProjextExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
+    protected async Task<(bool isValidFilterForProjectExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
     {
       if (!filterUid.HasValue) return (true, null);
 
@@ -121,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await projectIdTask;
       var excludedIds = await excludedIdsTask;
 
-      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+      var request = new ProjectStatisticsRequest(projectId, excludedIds?.ToArray());
       request.Validate();
 
       try
