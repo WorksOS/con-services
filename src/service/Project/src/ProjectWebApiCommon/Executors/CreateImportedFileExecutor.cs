@@ -9,7 +9,10 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Scheduler.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
+using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -90,10 +93,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
           log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
 
+        var dxfFileName = createimportedfile.FileName;
         if (createimportedfile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
-          await ImportedFileRequestHelper.CreateGeneratedDxfFile(
+          dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
             customerUid, createimportedfile.ProjectUid, createImportedFileEvent.ImportedFileUID, raptorProxy, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, createimportedfile.FileName, createimportedfile.DataOceanRootFolder);
         }
@@ -101,13 +105,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db  (this will not be needed when DXF tile generation done externally/separately)
-        _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
-            JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
-            createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,
-            createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
-            log, serviceExceptionHandler, projectRepo)
-          .ConfigureAwait(false);
+        if (createimportedfile.ImportedFileType == ImportedFileType.Alignment ||
+            createimportedfile.ImportedFileType == ImportedFileType.Linework)
+        {
+          //Generate DXF tiles
+          var jobRequest = new JobRequest
+          {
+            JobUid = DxfTileGenerationJob.VSSJobUid,
+            RunParameters = new DxfTileGenerationRequest
+            {
+              CustomerUid = Guid.Parse(customerUid),
+              ProjectUid = createimportedfile.ProjectUid,
+              ImportedFileUid = Guid.Parse(existing.ImportedFileUid),
+              DataOceanRootFolder = createimportedfile.DataOceanRootFolder,
+              DxfFileName = dxfFileName,
+              DcFileName = project.CoordinateSystemFileName,
+              DxfUnitsType = createimportedfile.DxfUnitsType
+            }
+          };
+          await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
+        }
       }
 
       var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});

@@ -19,6 +19,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
@@ -292,11 +293,13 @@ namespace VSS.MasterData.ProjectTests
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
+      var pegasusClient = new Mock<IPegasusClient>();
+
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object, 
-          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
+          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 

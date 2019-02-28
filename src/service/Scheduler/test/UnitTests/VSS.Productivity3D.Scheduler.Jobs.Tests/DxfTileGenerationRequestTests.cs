@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     public void ValidateDxfTileGenerationRequestMissingImportedFileUid()
     {
       var request = CreateDxfTileGenerationRequest();
-      request.ImportedFiletUid = Guid.Empty;
+      request.ImportedFileUid = Guid.Empty;
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       {
         CustomerUid = Guid.NewGuid(),
         ProjectUid = Guid.NewGuid(),
-        ImportedFiletUid = Guid.NewGuid(),
+        ImportedFileUid = Guid.NewGuid(),
         DataOceanRootFolder = "some folder",
         DxfFileName = "some dxf file",
         DcFileName = "some coord system file",

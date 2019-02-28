@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Scheduler.Models;
 
-namespace VSS.Productivity3D.Scheduler.Tests
+namespace VSS.Productivity3D.Scheduler.Models.Tests
 {
   [TestClass]
   public class JobRequestTests

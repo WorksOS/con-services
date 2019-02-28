@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
+using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
+using VSS.Productivity3D.Scheduler.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -68,13 +71,40 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             serviceExceptionHandler, raptorProxy,
             projectRepo)
           .ConfigureAwait(false);
+
+        var dxfFileName = updateImportedFile.FileDescriptor.FileName;
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
-          await ImportedFileRequestHelper.CreateGeneratedDxfFile(
+          dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
             customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.FileDescriptor.FileName, updateImportedFile.DataOceanRootFolder);
-        }          
+        }
+
+        if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
+            updateImportedFile.ImportedFileType == ImportedFileType.Linework)
+        {
+          //Generate DXF tiles
+          var project =
+            await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log,
+              serviceExceptionHandler, projectRepo);
+
+          var jobRequest = new JobRequest
+          {
+            JobUid = DxfTileGenerationJob.VSSJobUid,
+            RunParameters = new DxfTileGenerationRequest
+            {
+              CustomerUid = Guid.Parse(customerUid),
+              ProjectUid = updateImportedFile.ProjectUid,
+              ImportedFileUid = Guid.Parse(existing.ImportedFileUid),
+              DataOceanRootFolder = updateImportedFile.DataOceanRootFolder,
+              DxfFileName = dxfFileName,
+              DcFileName = project.CoordinateSystemFileName,
+              DxfUnitsType = updateImportedFile.DxfUnitsTypeId
+            }
+          };
+          await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
+        }
       }
 
       // if all succeeds, update Db and  put update to kafka que

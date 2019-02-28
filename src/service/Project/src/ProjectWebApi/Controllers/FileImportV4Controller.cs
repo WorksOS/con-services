@@ -29,9 +29,12 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Scheduler.Abstractions;
+using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -101,6 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
     public async Task<ImportedFileDescriptorSingleResult> SyncUpload(
+      [FromServices] ISchedulerProxy schedulerProxy,
       FlowFile file,
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
@@ -129,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       using (var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read))
       {
         importedFileResult = await UpsertFileInternal(file.flowFilename, fileStream, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
       }
 
       log.LogInformation(
@@ -212,10 +216,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileCreatedUtc"></param>
     /// <param name="surveyedUtc"></param>
     /// <param name="transferProxyFunc"></param>
+    /// <param name="schedulerProxy"></param>
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
     [Route("internal/v4/importedfile")]
     [HttpGet]
     public async Task<ImportedFileDescriptorSingleResult> InternalImportedFileV4(
+      
       [FromQuery] string filename,
       [FromQuery] string awsFilePath,
       [FromQuery] Guid projectUid, 
@@ -224,7 +230,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
-      [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
+      [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc,
+      [FromServices] ISchedulerProxy schedulerProxy)
     {
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
@@ -249,7 +256,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         fileResult.FileStream.CopyTo(ms);
 
         var importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
 
         log.LogInformation(
           $"InternalImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
@@ -273,14 +280,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       "svl", "dxf", "ttm"
     }, Size = 1_000_000_000)]
 
-    public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
+    public Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
+      [FromServices] ISchedulerProxy schedulerProxy,
       FlowFile file,
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
-      [FromQuery] DateTime? surveyedUtc = null)
+      [FromQuery] DateTime? surveyedUtc = null
+      )
     {
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -288,7 +297,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation(
         $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
-      return await UpsertFile(file.path, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+      return UpsertFile(file.path, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
     }
 
     /// <summary>
@@ -303,6 +312,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [DisableFormValueModelBinding]
     [RequestSizeLimit(1_000_000_000)]
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileDirectV4(
+      [FromServices] ISchedulerProxy schedulerProxy,
       Guid projectUid,
       string filename,
       ImportedFileType importedFileType,
@@ -327,7 +337,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var targetFilePath = await HttpContext.Request.StreamFile(filename, log);
 
-      var result = await UpsertFile(targetFilePath, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+      var result = await UpsertFile(targetFilePath, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
 
       return result;
     }
@@ -340,8 +350,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Deletes existing imported file</remarks>
     [Route("api/v4/importedfile")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromQuery] Guid projectUid,
-      [FromQuery] Guid importedFileUid)
+    public async Task<ContractExecutionResult> DeleteImportedFileV4(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid importedFileUid,
+      [FromServices] IPegasusClient pegasusClient)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 
@@ -368,7 +380,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<DeleteImportedFileExecutor>(
             logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-            projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
+            projectRepo, null, fileRepo, null, null, dataOceanClient, authn, null, pegasusClient)
           .ProcessAsync(deleteImportedFile)
       );
 
@@ -387,7 +399,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DxfUnitsType dxfUnitsType,
       DateTime fileCreatedUtc,
       DateTime fileUpdatedUtc,
-      DateTime? surveyedUtc = null)
+      DateTime? surveyedUtc,
+      ISchedulerProxy schedulerProxy)
     {
       if (!System.IO.File.Exists(filePath))
       {
@@ -399,7 +412,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       using (var fileStream = new FileStream(filePath, FileMode.Open))
       {
         return await UpsertFileInternal(fileName, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType, fileCreatedUtc,
-          fileUpdatedUtc, surveyedUtc);
+          fileUpdatedUtc, surveyedUtc, schedulerProxy);
       }
     }
 
@@ -414,7 +427,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DxfUnitsType dxfUnitsType,
       DateTime fileCreatedUtc,
       DateTime fileUpdatedUtc,
-      DateTime? surveyedUtc = null)
+      DateTime? surveyedUtc,
+      ISchedulerProxy schedulerProxy)
     {
       var existing = await ImportedFileRequestDatabaseHelper
         .GetImportedFileForProject
@@ -466,7 +480,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<CreateImportedFileExecutor>(
               logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -493,7 +507,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpdateImportedFileExecutor>(
               logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName, raptorProxy, null, null, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo, null, null, dataOceanClient, authn)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, authn, schedulerProxy)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
 
