@@ -76,8 +76,7 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite);
-      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
+      TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
       DIContext.Inject(services.BuildServiceProvider());

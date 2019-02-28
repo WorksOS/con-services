@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Enumeration;
 using VSS.TRex.Designs;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;

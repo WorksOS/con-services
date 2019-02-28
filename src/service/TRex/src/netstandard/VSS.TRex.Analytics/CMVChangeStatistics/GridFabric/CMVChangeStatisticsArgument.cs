@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
@@ -10,10 +11,12 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
   /// </summary>    
   public class CMVChangeStatisticsArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// CMV change details values.
     /// </summary>
-    public double[] CMVChangeDetailsDatalValues { get; set; }
+    public double[] CMVChangeDetailsDataValues { get; set; }
 
     /// <summary>
     /// Serialises content to the writer
@@ -23,7 +26,9 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
     {
       base.ToBinary(writer);
 
-      writer.WriteDoubleArray(CMVChangeDetailsDatalValues);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteDoubleArray(CMVChangeDetailsDataValues);
     }
 
     /// <summary>
@@ -34,7 +39,9 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
     {
       base.FromBinary(reader);
 
-      CMVChangeDetailsDatalValues = reader.ReadDoubleArray();
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      CMVChangeDetailsDataValues = reader.ReadDoubleArray();
     }
   }
 }

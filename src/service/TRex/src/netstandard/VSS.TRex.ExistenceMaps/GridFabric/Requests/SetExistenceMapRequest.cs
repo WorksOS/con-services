@@ -11,13 +11,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     public class SetExistenceMapRequest : BaseExistenceMapRequest
     {
         /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
-        public SetExistenceMapRequest()
-        {
-        }
-
-        /// <summary>
         /// Executes the request to store an existence map given it's key
         /// </summary>
         /// <param name="key"></param>

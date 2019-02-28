@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
-using VSS.TRex.Analytics.Foundation;
+﻿using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
@@ -9,12 +7,12 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.PassCountStatistics
 {
   /// <summary>
-  /// Computes Pass Clount summary. Executes in the 'application service' layer and acts as the coordinator
+  /// Computes Pass Count summary. Executes in the 'application service' layer and acts as the coordinator
   /// for the request onto the cluster compute layer.
   /// </summary>
   public class PassCountStatisticsCoordinator : BaseAnalyticsCoordinator<PassCountStatisticsArgument, PassCountStatisticsResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+    //private static readonly ILogger Log = Logging.Logger.CreateLogger<PassCountStatisticsCoordinator>();
 
     /// <summary>
     /// Constructs the aggregator from the supplied argument to be used for the Pass Count summary analytics request

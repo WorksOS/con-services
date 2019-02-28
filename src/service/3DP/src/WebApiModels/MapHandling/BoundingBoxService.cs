@@ -19,6 +19,7 @@ using VSS.Productivity3D.Common.Proxies;
   using VSS.Productivity3D.Models.Enums;
   using VSS.Productivity3D.Models.Models;
   using VSS.Productivity3D.Models.Models.Coords;
+  using VSS.Productivity3D.Models.ResultHandling;
   using VSS.Productivity3D.Models.ResultHandling.Coords;
   using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -272,8 +273,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       ProjectStatisticsResult statsResult = null;
       try
       {
-        ProjectStatisticsRequest statsRequest =
-          ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
+        ProjectStatisticsRequest statsRequest = new ProjectStatisticsRequest(projectId, excludedIds?.ToArray());
 
         statsResult =
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)

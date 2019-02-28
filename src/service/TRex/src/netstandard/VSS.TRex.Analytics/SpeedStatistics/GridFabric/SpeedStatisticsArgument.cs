@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
@@ -9,10 +10,12 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	/// </summary>    
   public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument
   {
-	  /// <summary>
-	  /// Machine speed target record. It contains min/max machine speed target value.
-	  /// </summary>
-	  public MachineSpeedExtendedRecord TargetMachineSpeed;
+    private const byte VERSION_NUMBER = 1;
+	
+    /// <summary>
+    /// Machine speed target record. It contains min/max machine speed target value.
+    /// </summary>
+    public MachineSpeedExtendedRecord TargetMachineSpeed;
 
 	  /// <summary>
 	  /// Serialises content to the writer
@@ -22,7 +25,9 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	  {
 	    base.ToBinary(writer);
 
-	    TargetMachineSpeed.ToBinary(writer);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      TargetMachineSpeed.ToBinary(writer);
 	  }
 
 	  /// <summary>
@@ -33,7 +38,9 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	  {
 	    base.FromBinary(reader);
 
-	    TargetMachineSpeed.FromBinary(reader);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      TargetMachineSpeed.FromBinary(reader);
 	  }
   }
 }

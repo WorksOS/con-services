@@ -13,17 +13,17 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <summary>
     /// The action to take when a pass is added
     /// </summary>
-    public Action<uint, uint, Cell_NonStatic, CellPass, int> AddPassAction { get; set; } = null;
+    public Action<uint, uint, Cell_NonStatic, CellPass, int> AddPassAction { get; set; }
 
     /// <summary>
     /// The action to take when a pass is replaced
     /// </summary>
-    public Action<uint, uint, Cell_NonStatic, int, CellPass> ReplacePassAction { get; set; } = null;
+    public Action<uint, uint, Cell_NonStatic, int, CellPass> ReplacePassAction { get; set; }
 
     /// <summary>
     /// The action to take when a pass is deleted
     /// </summary>
-    public Action<uint, uint, int> RemovePassAction { get; set; } = null;
+    public Action<uint, uint, int> RemovePassAction { get; set; }
 
     /// <summary>
     /// Emits an arbitrary note to the mutation hook

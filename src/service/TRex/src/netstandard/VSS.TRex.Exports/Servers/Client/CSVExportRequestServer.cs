@@ -11,21 +11,12 @@ namespace VSS.TRex.Exports.Servers.Client
     /// <summary>
     /// Default no-arg constructor that creates a server with the specialised grid role only, as it has it's own service.
     /// </summary>
-    public CSVExportRequestServer() : base(new[] {ServerRoles.REPORTING_ROLE})
+    public CSVExportRequestServer() : this(new[] {ServerRoles.REPORTING_ROLE})
     {
     }
 
     public CSVExportRequestServer(string[] roles) : base(roles)
     {
-    }
-
-    /// <summary>
-    /// Creates a new instance of a csv export request server
-    /// </summary>
-    /// <returns></returns>
-    public static CSVExportRequestServer NewInstance(string[] roles)
-    {
-      return new CSVExportRequestServer(roles);
     }
   }
 }

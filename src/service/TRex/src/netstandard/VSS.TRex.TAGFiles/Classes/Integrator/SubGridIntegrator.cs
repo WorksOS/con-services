@@ -46,10 +46,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         public readonly List<ISubGridSpatialAffinityKey> InvalidatedSpatialStreams = new List<ISubGridSpatialAffinityKey>(100);
 
-      private SubGridIntegrator()
-        {
-        }
-
         /// <summary>
         /// Constructor the initializes state ready for integration
         /// </summary>
@@ -57,7 +53,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <param name="siteModel">The site model representing the target sub grid tree</param>
         /// <param name="target">The sub grid tree into which the data from the source sub grid tree is integrated</param>
         /// <param name="storageProxy">The storage proxy providing storage semantics for persisting integration results</param>
-        public SubGridIntegrator(IServerSubGridTree source, ISiteModel siteModel, IServerSubGridTree target, IStorageProxy storageProxy) : this()
+        public SubGridIntegrator(IServerSubGridTree source, ISiteModel siteModel, IServerSubGridTree target, IStorageProxy storageProxy)
         {
             Source = source;
             SiteModel = siteModel;
@@ -70,13 +66,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
                                                        SourceSubGrid.OriginY,
                                                        SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
-
-            if (TargetSubGrid == null)
-            {
-                Log.LogCritical($"Failed to create target sub grid in intermediary grid at {SourceSubGrid.OriginX}:{SourceSubGrid.OriginY}");
-                return;
-            }
-
             TargetSubGrid.AllocateLeafFullPassStacks();
 
             // If the node is brand new (ie: it does not have any cell passes committed to it yet)
@@ -118,6 +107,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             // Save the integrated state of the sub grid segments to allow Ignite to store & socialize the update
             // within the cluster. 
 
+            // Failure to save a piece of data aborts the entire integration
+            bool result = false;
             if (Target.SaveLeafSubGrid(TargetSubGrid, SegmentIterator.StorageProxy, InvalidatedSpatialStreams))
             {
               // Successfully saving the sub grid directory information is the point at which this sub grid may be recognized to exist
@@ -126,18 +117,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               SiteModel.ExistenceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
                                              TargetSubGrid.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
                                              true);
+              result = true;
             }
-            else
-            {
-              // Failure to save a piece of data aborts the entire integration
-              return false;
-            }        
         
             // Finally, mark the source sub grid as not being dirty. We need to do this to allow
             // the sub grid to permit its destruction as all changes have been merged into the target.
-            SourceSubGrid.AllChangesMigrated();
+            if (result)
+              SourceSubGrid.AllChangesMigrated();
         
-            return true;
+            return result;
         }
 
         private void IntegrateIntoLiveGrid(SubGridSegmentIterator SegmentIterator)

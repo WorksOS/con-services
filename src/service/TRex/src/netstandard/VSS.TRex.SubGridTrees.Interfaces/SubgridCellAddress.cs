@@ -32,8 +32,8 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public bool ProdDataRequested
     {
-      get { return BitFlagHelper.IsBitOn(DataRequestFlags, 0); }
-      set { BitFlagHelper.SetBit(ref DataRequestFlags, 0, value); }
+      get => BitFlagHelper.IsBitOn(DataRequestFlags, 0); 
+      set => BitFlagHelper.SetBit(ref DataRequestFlags, 0, value);
     }
 
     /// <summary>
@@ -41,8 +41,8 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public bool SurveyedSurfaceDataRequested
     {
-      get { return BitFlagHelper.IsBitOn(DataRequestFlags, 1); }
-      set { BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); }
+      get => BitFlagHelper.IsBitOn(DataRequestFlags, 1); 
+      set => BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); 
     }
 
     private static readonly uint NumPartitionsPerDataCache = (uint) DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.NUMPARTITIONS_PERDATACACHE);
@@ -92,23 +92,6 @@ namespace VSS.TRex.SubGridTrees
     /// X and Y components of the cell address.
     /// </summary>
     public uint ToSkipInterleavedDescriptor => (X & 0xAAAAAAAA) | (Y & 0x55555555);
-
-    /// <summary>
-    /// Constructs a spatial division descriptor from a cell address that skips and interleaves alternate bits from each of the 
-    /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
-    /// origin descriptor.
-    /// </summary>
-    public static uint ToSpatialDivisionDescriptor(uint X, uint Y, uint numSpatialDivisions) =>
-      (((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x55555555)) % numSpatialDivisions;
-
-    /// <summary>
-    /// Constructs a spatial division descriptor from a cell address that skips and interleaves alternate bits from each of the 
-    /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
-    /// origin descriptor.
-    /// </summary>
-    public uint ToSpatialDivisionDescriptor(uint numSpatialDivisions) => (((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x55555555)) % numSpatialDivisions;
 
     /// <summary>
     /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 

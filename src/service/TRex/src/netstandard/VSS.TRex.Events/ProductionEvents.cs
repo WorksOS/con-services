@@ -99,13 +99,6 @@ namespace VSS.TRex.Events
     // The list containing all the time ordered instances of this event type
     public List<Event> Events = new List<Event>();
 
-    /// <summary>
-    /// Default no-args constructor
-    /// </summary>
-    public ProductionEvents()
-    {
-    }
-
     public ProductionEvents(long machineID, Guid siteModelID,
       ProductionEventType eventListType,
       Action<BinaryWriter, T> serialiseStateOut,

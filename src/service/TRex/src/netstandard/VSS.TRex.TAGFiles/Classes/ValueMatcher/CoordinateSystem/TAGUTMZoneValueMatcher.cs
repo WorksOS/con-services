@@ -18,6 +18,8 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             if (valueType.Type == TAGDataType.t8bitUInt)
             {
                 valueSink.UTMZone = (byte)value;
@@ -29,10 +31,10 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
                     state.HaveSeenAUTMZone = true;
                 }
 
-                return true;
+                result = true;
             }
 
-            return false;            
+            return result;            
         }
     }
 }

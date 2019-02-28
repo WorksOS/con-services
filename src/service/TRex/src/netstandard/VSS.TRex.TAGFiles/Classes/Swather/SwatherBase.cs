@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     /// server database.This class implements much of the infrastructure relevant to
     ///swathing, but does not define the semantics of how the swathing is to be performed    
     /// </summary>
-    public class SwatherBase
+    public abstract class SwatherBase
     {
         // SiteModel is the site model that the read data is being contributed to
         protected ISiteModel SiteModel { get; set; }
@@ -26,10 +26,6 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
         // Grid is the grid into which the cell passes are to be aggregated into prior
         // to final insertion into the site model proper
         protected IServerSubGridTree Grid { get; set; }
-
-        // InternalSiteModelMachineIndex is a reference to the compaction machine that has collected the data being processed.
-        //public long MachineID { get; set; }
-        public short InternalSiteModelMachineIndex { get; set; }
 
         //MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the file
@@ -87,16 +83,14 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             Processor.ProcessedCellPassesCount++;
         }
 
-        public virtual bool PerformSwathing(SimpleTriangle HeightInterpolator1,
-                                            SimpleTriangle HeightInterpolator2,
-                                            SimpleTriangle TimeInterpolator1,
-                                            SimpleTriangle TimeInterpolator2,
-                                            bool HalfPas,
-                                            PassType passType,
-                                            MachineSide machineSide)
-        {
-            return true;
-        }
+        public abstract bool PerformSwathing(SimpleTriangle HeightInterpolator1,
+          SimpleTriangle HeightInterpolator2,
+          SimpleTriangle TimeInterpolator1,
+          SimpleTriangle TimeInterpolator2,
+          bool HalfPas,
+          PassType passType,
+          MachineSide machineSide);
+
 
         public bool BaseProductionDataSupportedByMachine => true; // Need to wire this into subscriptions
         public bool CompactionDataSupportedByMachine => true; // Need to wire this into subscriptions

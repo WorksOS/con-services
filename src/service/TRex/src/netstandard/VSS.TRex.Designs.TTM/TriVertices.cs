@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs.TTM
 {
@@ -25,16 +26,7 @@ namespace VSS.TRex.Designs.TTM
 
       int result = (int) Math.Round((HashValue - MinHashOrdinate) / (MaxHashOrdinate - MinHashOrdinate) * HashArray.Count());
 
-      if (result < 0)
-      {
-        result = 0;
-      }
-      else if (result >= HashArray.Length)
-      {
-        result = HashArray.Length - 1;
-      }
-
-      return result;
+      return Range.EnsureRange(result, 0, HashArray.Length - 1);
     }
 
     /// <summary>

@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.Designs.TTM.Optimised.Exceptions;
+﻿using System.IO;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -24,19 +22,12 @@ namespace VSS.TRex.Designs.TTM.Optimised
     {
       Items = new int[header.NumberOfEdgeRecords];
 
-      try
+      int loopLimit = header.NumberOfEdgeRecords;
+      for (int i = 0; i < loopLimit; i++)
       {
-        int loopLimit = header.NumberOfEdgeRecords;
-        for (int i = 0; i < loopLimit; i++)
-        {
-          long RecPos = reader.BaseStream.Position;
-          Items[i] = Utilities.ReadInteger(reader, header.TriangleNumberSize) - 1;
-          reader.BaseStream.Position = RecPos + header.EdgeRecordSize;
-        }
-      }
-      catch (Exception E)
-      {
-        throw new TTMFileReadException("Failed to read edges", E);
+        long RecPos = reader.BaseStream.Position;
+        Items[i] = Utilities.ReadInteger(reader, header.TriangleNumberSize) - 1;
+        reader.BaseStream.Position = RecPos + header.EdgeRecordSize;
       }
     }
   }

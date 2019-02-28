@@ -6,6 +6,8 @@ using Apache.Ignite.Core.Cache.Affinity;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using Xunit;
 
 namespace VSS.TRex.Tests.Affinity
@@ -63,7 +65,7 @@ namespace VSS.TRex.Tests.Affinity
         {
             IgniteConfiguration cfg = new IgniteConfiguration();
             ConfigureGrid(cfg);
-            ignite = Ignition.Start(cfg);
+            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(cfg.IgniteInstanceName, cfg);
         }
 
         [Fact(Skip = "Requires live Ignite node")]

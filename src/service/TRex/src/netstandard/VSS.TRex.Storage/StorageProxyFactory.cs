@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 

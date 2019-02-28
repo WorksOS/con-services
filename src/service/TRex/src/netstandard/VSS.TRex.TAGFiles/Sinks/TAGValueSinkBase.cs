@@ -6,11 +6,6 @@
     public abstract class TAGValueSinkBase
     {
         /// <summary>
-        /// Internal flag to controll termination of processing
-        /// </summary>
-        private bool processingTerminated;
-
-        /// <summary>
         /// Accepts an integer value from the TAG file data
         /// </summary>
         /// <param name="valueType"></param>
@@ -77,15 +72,5 @@
         /// </summary>
         /// <returns></returns>
         public virtual bool Aborting() => false;
-
-        /// <summary>
-        /// ProcessingTerminated is used to preemptively stop processing due to some error condition etc.
-        /// </summary>
-        public virtual bool ProcessingTerminated => processingTerminated;
-
-        /// <summary>
-        /// Preemptively teminate processing of TAG values being sent to the sink
-        /// </summary>
-        public void TerminateProcessing() => processingTerminated = true;
     }
 }

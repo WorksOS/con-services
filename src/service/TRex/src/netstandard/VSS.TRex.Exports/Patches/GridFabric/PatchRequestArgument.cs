@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Exports.Patches.GridFabric
@@ -9,6 +10,8 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   /// </summary>
   public class PatchRequestArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The type of data requested for the patch. Single attribute only, expressed as the
     /// user-space display mode of the data
@@ -37,6 +40,8 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt((int)Mode);
       writer.WriteInt(DataPatchNumber);
       writer.WriteInt(DataPatchSize);
@@ -49,6 +54,8 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Mode = (DisplayMode)reader.ReadInt();
       DataPatchNumber = reader.ReadInt();

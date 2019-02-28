@@ -268,7 +268,7 @@ namespace VSS.TRex.Rendering.Executors
    */
 
     /// <summary>
-    /// Renders all subgrids in a representational style that indicates where there is data, but nothing else. This is used for large scale displays
+    /// Renders all sub grids in a representational style that indicates where there is data, but nothing else. This is used for large scale displays
     /// (zoomed out a lot) where meaningful detail cannot be drawn on the tile
     /// </summary>
     /// <returns></returns>

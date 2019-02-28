@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using VSS.TRex.Analytics.Foundation.Aggregators;
+﻿using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -14,7 +13,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
   public class PassCountStatisticsAggregator : DataStatisticsAggregator
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.
+    /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.
     /// </summary>
     public bool OverrideTargetPassCount { get; set; }
 
@@ -37,47 +36,41 @@ namespace VSS.TRex.Analytics.PassCountStatistics
       LastPassCountTargetRange.Clear();
     }
 
-    protected override int GetMaximumValue()
-    {
-      return CellPassConsts.MaxPassCountValue;
-    }
+    protected override int GetMaximumValue() => CellPassConsts.MaxPassCountValue;
 
     protected override void DataCheck(DataStatisticsAggregator other)
     {
       var aggregator = (PassCountStatisticsAggregator) other;
 
       if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // If we need to check for a difference...
-      { 
+      {
         // Compare grouped results to determine if target varies...
         if (aggregator.LastPassCountTargetRange.Min != CellPassConsts.NullPassCountValue && aggregator.LastPassCountTargetRange.Max != CellPassConsts.NullPassCountValue &&
             LastPassCountTargetRange.Min != CellPassConsts.NullPassCountValue && LastPassCountTargetRange.Max != CellPassConsts.NullPassCountValue) // If data valid...
         {
           if (LastPassCountTargetRange.Min != aggregator.LastPassCountTargetRange.Min && LastPassCountTargetRange.Max != aggregator.LastPassCountTargetRange.Max) // Compare...
-          IsTargetValueConstant = false;
+            IsTargetValueConstant = false;
         }
       }
 
-      if (aggregator.LastPassCountTargetRange.Min != CellPassConsts.NullPassCountValue && aggregator.LastPassCountTargetRange.Max != CellPassConsts.NullPassCountValue)  // If data valid...
-        LastPassCountTargetRange = aggregator.LastPassCountTargetRange;  // Set value...
+      if (aggregator.LastPassCountTargetRange.Min != CellPassConsts.NullPassCountValue && aggregator.LastPassCountTargetRange.Max != CellPassConsts.NullPassCountValue) // If data valid...
+        LastPassCountTargetRange = aggregator.LastPassCountTargetRange; // Set value...
     }
 
     /// <summary>
-    /// Processes a Pass Count subgrid into a Pass Count isopach and calculate the counts of cells where the Pass Count value matches the requested target range.
+    /// Processes a Pass Count sub grid into a Pass Count isopach and calculate the counts of cells where the Pass Count value matches the requested target range.
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientPassCountLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientPassCountLeafSubGrid SubGrid)
           {
             var currentPassTargetRange = new PassCountRangeRecord(CellPassConsts.NullPassCountValue, CellPassConsts.NullPassCountValue);
 
@@ -126,7 +119,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
                 else // We have data but no target data to do a summary of cell...
                   MissingTargetValue = true; // Flag to issue a warning to user...
 
-                IncrementCountOfTransition(passCountValue.MeasuredPassCount); // Passcount Detail is counted here...
+                IncrementCountOfTransition(passCountValue.MeasuredPassCount); // Pass count detail is counted here...
               }
             });
           }

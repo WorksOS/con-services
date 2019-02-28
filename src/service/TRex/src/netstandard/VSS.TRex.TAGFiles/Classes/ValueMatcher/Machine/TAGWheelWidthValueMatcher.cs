@@ -17,13 +17,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
         {
             // Value is absolute wheel width expressed in
 
+            bool result = false;
+
             if (valueType.Type == TAGDataType.tIEEEDouble)
             {
                 valueSink.MachineWheelWidth = value;
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

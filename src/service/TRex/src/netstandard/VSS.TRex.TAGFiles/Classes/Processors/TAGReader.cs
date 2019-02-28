@@ -36,14 +36,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     }
 
     /// <summary>
-    /// Default no-arg constructor. Do not use, this will throw an exception, use TagFileReader(Stream stream)
-    /// </summary>
-    public TAGReader()
-    {
-      throw new ArgumentException("Default TAGFileReader constructor is not permitted. Use TAGFileReader(Stream stream)");
-    }
-
-    /// <summary>
     /// TAG file reader constructor. Accepts a stream to read TAG data from.
     /// </summary>
     /// <param name="stream"></param>
@@ -65,37 +57,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <returns></returns>
     private byte ReadNybble()
     {
-      byte result;
-
-      if ((nybblePosition < 0) || (nybblePosition / 2 > GetSize()))
-      {
+      if (nybblePosition < 0 || nybblePosition / 2 > GetSize())
         throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {GetSize()})");
-      }
 
-      if (nybblePosition % 2 == 0)
-      {
+      var nybbleIndex = nybblePosition++ % 2;
+
+      if (nybbleIndex == 0)
         nybble = (byte)stream.ReadByte();
-      }
 
-      switch (nybblePosition % 2)
-      {
-        case 0:
-          result = (byte)((nybble >> BITS_PER_NYBBLE) & 0xf);
-          break;
-        case 1:
-          result = (byte)(nybble & 0xf);
-          break;
-
-        default:
-          result = 0;
-          break;
-      }
-
-      nybblePosition++;
-
-      return result;
+      return (byte) (nybbleIndex == 0 ? (nybble >> BITS_PER_NYBBLE) & 0xf : nybble & 0xf);
     }
-
 
     /// <summary>
     /// Read an ANSI char from the stream. The result is returned as a byte as
@@ -118,9 +89,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       {
         result[count++] = b;
         if (count == result.Length)
-        {
           Array.Resize(ref result, result.Length + 100);
-        }
       }
 
       Array.Resize(ref result, count);
@@ -141,9 +110,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       byte[] buffer = new byte[count / 2];
 
       for (int I = 0; I < (count / 2); I++)
-      {
         buffer[I] = (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble());
-      }
 
       return buffer;
     }
@@ -176,12 +143,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       // structure of the value when it was written in to the file.
 
       int result = -1;
-      result = ((firstNybble & 0x08) != 0) ? (int)(result & 0xfffffff0) | firstNybble : firstNybble;
+      result = (firstNybble & 0x08) != 0 ? (int)(result & 0xfffffff0) | firstNybble : firstNybble;
 
       for (int i = 1; i < nNybbles; i++)
-      {
         result = (result << BITS_PER_NYBBLE) | ReadNybble();
-      }
 
       return result;
     }
@@ -279,9 +244,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       stream.Position = value / 2;
 
       if (value % 2 == 1)
-      {
         ReadNybble();
-      }
     }
   }
 }

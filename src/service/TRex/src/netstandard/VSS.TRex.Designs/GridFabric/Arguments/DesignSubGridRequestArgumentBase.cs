@@ -1,11 +1,14 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
   public class DesignSubGridRequestArgumentBase : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The offset to be applied to computed elevations
     /// </summary>
@@ -49,6 +52,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(ReferenceDesignUID);
       writer.WriteDouble(Offset);
     }
@@ -60,6 +65,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ReferenceDesignUID = reader.ReadGuid() ?? Guid.Empty;
       Offset = reader.ReadDouble();

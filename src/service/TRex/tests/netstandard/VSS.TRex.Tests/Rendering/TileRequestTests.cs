@@ -105,12 +105,16 @@ namespace VSS.TRex.Tests.Rendering
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    //[InlineData(DisplayMode.CCVSummary)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
+    //[InlineData(DisplayMode.MDPSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
+    //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -130,12 +134,16 @@ namespace VSS.TRex.Tests.Rendering
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    //[InlineData(DisplayMode.CCVSummary)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
+    //[InlineData(DisplayMode.MDPSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
+    //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -152,12 +160,16 @@ namespace VSS.TRex.Tests.Rendering
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    //[InlineData(DisplayMode.CCVSummary)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
+    //[InlineData(DisplayMode.MDPSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    //[InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();

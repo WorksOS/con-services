@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{10F3917C-6C6C-4607-851C-8AEBE91023CF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Models", "..\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj", "{2E636D59-8E1B-4940-88F4-F77ECE4E7A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{10F3917C-6C6C-4607-851C-8AEBE91023CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10F3917C-6C6C-4607-851C-8AEBE91023CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10F3917C-6C6C-4607-851C-8AEBE91023CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E636D59-8E1B-4940-88F4-F77ECE4E7A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E636D59-8E1B-4940-88F4-F77ECE4E7A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E636D59-8E1B-4940-88F4-F77ECE4E7A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E636D59-8E1B-4940-88F4-F77ECE4E7A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

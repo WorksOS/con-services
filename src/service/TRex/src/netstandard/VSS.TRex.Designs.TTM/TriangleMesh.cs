@@ -5,8 +5,8 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TriangleMesh
   {
-    private TriVertices FVertices;
-    private Triangles FTriangles;
+    private TriVertices vertices;
+    private Triangles triangles;
 
     protected virtual void CreateLists(out TriVertices vertices, out Triangles triangles)
     {
@@ -14,25 +14,14 @@ namespace VSS.TRex.Designs.TTM
       triangles = new Triangles();
     }
 
-    protected virtual void SnapToOutputResolution()
-    {
-      // Descendents should do something here if required
-    }
-
     public TriangleMesh()
     {
-      CreateLists(out FVertices, out FTriangles);
+      CreateLists(out vertices, out triangles);
     }
 
-    public TriVertices Vertices
-    {
-      get { return FVertices; }
-    }
+    public TriVertices Vertices => vertices; 
 
-    public Triangles Triangles
-    {
-      get { return FTriangles; }
-    }
+    public Triangles Triangles => triangles;
 
     private Triangle FindNeighbour(List<List<Triangle>> Trianglelists, Triangle triangle, TriVertex fromVertex, TriVertex toVertex)
     {
@@ -98,19 +87,15 @@ namespace VSS.TRex.Designs.TTM
           if (Nbr != null)
           {
             int NbrSide = Nbr.GetSideIndex(FromVertex, ToVertex);
+
             if (Nbr.Neighbours[NbrSide] == null)
-            {
               Nbr.Neighbours[NbrSide] = Triangles[i];
-            }
             else
-            {
               Triangles[i].Neighbours[Side] = null;
-            }
           }
         }
       }
     }
-
 
     public Triangle GetTriangleAtPoint(double X, double Y, out double Z)
     {
@@ -132,8 +117,8 @@ namespace VSS.TRex.Designs.TTM
 
     public virtual void Clear()
     {
-      FTriangles.Clear();
-      FVertices.Clear();
+      triangles.Clear();
+      vertices.Clear();
     }
 
     //    procedure FixCrossingTriangles(MaxShortestSide: Double );

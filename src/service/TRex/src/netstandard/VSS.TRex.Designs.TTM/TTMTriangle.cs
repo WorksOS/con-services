@@ -17,9 +17,7 @@ namespace VSS.TRex.Designs.TTM
     public void Write(BinaryWriter writer, TTMHeader header)
     {
       for (int i = 0; i < 3; i++)
-      {
         Utilities.WriteInteger(writer, Vertices[i].Tag, header.VertexNumberSize);
-      }
 
       for (int i = 0; i < 3; i++)
       {

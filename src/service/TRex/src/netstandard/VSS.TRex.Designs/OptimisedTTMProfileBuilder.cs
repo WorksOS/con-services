@@ -26,7 +26,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// The combined set of grid boundary intercepts representing the path taken by the profile line
     /// across the subgrids in the project.
     /// </summary>
-    public InterceptList VtHzIntercepts { get; private set; } = new InterceptList();
+    public InterceptList VtHzIntercepts { get; } = new InterceptList();
 
     private readonly bool SlicerToolUsed;
 
@@ -165,14 +165,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           ? MathUtilities.Hypot(EndX - StartX, EndY - StartY) // station is not passed so compute
           : EndStation - StartStation; // use precise station passed
 
-        if (Distance == 0) // if we have two points the same
-          continue;
+        if (Distance != 0) // if we have two points that are different
+        {
+          // Get all intercepts between profile line and cell boundaries for this segment
+          CalculateHorizontalIntercepts(CurrentStationPos); // pass the distance down alignment this segment starts
+          CalculateVerticalIntercepts(CurrentStationPos);
 
-        // Get all intercepts between profile line and cell boundaries for this segment
-        CalculateHorizontalIntercepts(CurrentStationPos); // pass the distance down alignment this segment starts
-        CalculateVerticalIntercepts(CurrentStationPos);
-
-        CurrentStationPos += Distance; // add distance to current station
+          CurrentStationPos += Distance; // add distance to current station
+        }
       }
 
       // Merge vertical and horizontal cell boundary/profile line intercepts

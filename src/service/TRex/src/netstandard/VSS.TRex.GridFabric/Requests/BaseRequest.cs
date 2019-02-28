@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Requests

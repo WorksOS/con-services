@@ -104,6 +104,28 @@ namespace VSS.TRex.Tests.Geometry
         }
 
         [Fact()]
+        public void Test_XYZTests_Operator_Equality()
+        {
+          XYZ a = new XYZ(1, 2, 3);
+          XYZ b = new XYZ(1, 2, 3);
+          XYZ c = new XYZ(2, 3, 4);
+
+          Assert.True(a == b, "Equality failure");
+          Assert.False(a == c, "Equality failure");
+        }
+
+        [Fact()]
+        public void Test_XYZTests_Operator_InEquality()
+        {
+          XYZ a = new XYZ(1, 2, 3);
+          XYZ b = new XYZ(1, 2, 3);
+          XYZ c = new XYZ(2, 3, 4);
+
+          Assert.True(a != c, "Equality failure");
+          Assert.False(a != b, "Equality failure");
+        }
+
+        [Fact()]
         public void Test_XYZTests_Get2DLength()
         {
             XYZ a = new XYZ(1, 0, 0);

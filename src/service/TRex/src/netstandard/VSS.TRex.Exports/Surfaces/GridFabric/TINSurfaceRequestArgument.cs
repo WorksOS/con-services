@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
@@ -8,6 +9,8 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// </summary>
   public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The tolerance to use (in meters) when decimating the elevation surface into a TIN
     /// </summary>
@@ -21,6 +24,8 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteDouble(Tolerance);
     }
 
@@ -31,6 +36,8 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Tolerance = reader.ReadDouble();
     }

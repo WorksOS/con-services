@@ -25,10 +25,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         {
             subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
             subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
-
-            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTreeConsts.SubGridTreeDimension) &
-            //         (SubGridY >=0) && (SubGridY < SubGridTreeConsts.SubGridTreeDimension),
-            //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this sub grid");
         }
 
       /// <summary>
@@ -93,9 +89,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 }
 
                 if (subGrid.IsLeafSubGrid())
-                {
                     leafSubGrid = subGrid as IServerLeafSubGrid;
-                }
 
                 if (leafSubGrid == null)  // Something bad happened
                 {
@@ -108,9 +102,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     if (lookInCacheOnly)
                     {
                         if (subGrid.Level == level)
-                        {
                             return subGrid;
-                        }
 
                         // If the returned sub grid is a leaf sub grid then it was already present in the
                         // cache. If the level of the returned sub grid matches the request level parameter
@@ -182,16 +174,12 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 if (result == null)
                 {
                     if (leafSubGrid.HasSubGridDirectoryDetails && leafSubGrid.Dirty && leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData())
-                    {
                         result = leafSubGrid;
-                    }
                 }
 
                 // IGNITE: Last gasp - if the sub grid is in memory and has directory details then just return it
                 if (result == null && leafSubGrid.HasSubGridDirectoryDetails)
-                {
                     result = leafSubGrid;
-                }
             }
             finally
             {

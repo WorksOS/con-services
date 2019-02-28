@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.Designs.TTM.Optimised.Exceptions;
+﻿using System.IO;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -31,19 +29,12 @@ namespace VSS.TRex.Designs.TTM.Optimised
         startPoint.Triangle = Utilities.ReadInteger(reader, header.TriangleNumberSize) - 1;
       }
 
-      try
+      int loopLimit = header.NumberOfStartPoints;
+      for (int i = 0; i < loopLimit; i++)
       {
-        int loopLimit = header.NumberOfStartPoints;
-        for (int i = 0; i < loopLimit; i++)
-        {
-          long RecPos = reader.BaseStream.Position;
-          ReadStartPoint(ref Items[i]);
-          reader.BaseStream.Position = RecPos + header.StartPointRecordSize;
-        }
-      }
-      catch (Exception E)
-      {
-        throw new TTMFileReadException("Failed to read start points", E);
+        long RecPos = reader.BaseStream.Position;
+        ReadStartPoint(ref Items[i]);
+        reader.BaseStream.Position = RecPos + header.StartPointRecordSize;
       }
     }
   }

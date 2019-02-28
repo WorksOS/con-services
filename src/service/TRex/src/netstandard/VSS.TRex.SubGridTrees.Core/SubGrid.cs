@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -145,10 +146,6 @@ namespace VSS.TRex.SubGridTrees
             int SHRValue = (Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
             SubGridX = (byte)((CellX >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
             SubGridY = (byte)((CellY >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
-
-            Debug.Assert(SubGridX < SubGridTreeConsts.SubGridTreeDimension &&
-                         SubGridY < SubGridTreeConsts.SubGridTreeDimension,
-                         "GetSubGridCellIndex given cell address out of bounds for this sub grid");
         }
 
         /// <summary>
@@ -166,10 +163,6 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridX = (byte)(CellX & SubGridTreeConsts.SubGridLocalKeyMask);
             SubGridY = (byte)(CellY & SubGridTreeConsts.SubGridLocalKeyMask);
-
-            Debug.Assert(SubGridX < SubGridTreeConsts.SubGridTreeDimension &&
-                         SubGridY < SubGridTreeConsts.SubGridTreeDimension,
-                         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this sub grid");
         }
 
         /// <summary>
@@ -190,10 +183,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        public virtual ISubGrid GetSubGrid(int X, int Y)
-        {
-            throw new Exception("SubGrid.GetSubGrid() should never be called");
-        }
+        public virtual ISubGrid GetSubGrid(int X, int Y) => null; // Base class does not have child sub grids
 
         /// <summary>
         /// A virtual method representing an access mechanism to request a child sub grid at the X/Y location in this sub grid
@@ -206,7 +196,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public virtual void SetSubGrid(int X, int Y, ISubGrid value)
         {
-            throw new Exception("SubGrid.SetSubGrid() should never be called");
+          // No location to set sub grid to in base class
         }
 
         /// <summary>
@@ -226,6 +216,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public virtual void Clear()
         {
+           // Nothing to clear in base class
         }
 
         /// <summary>
@@ -256,6 +247,8 @@ namespace VSS.TRex.SubGridTrees
 
             Parent.GetSubGridCellIndex(OriginX, OriginY, out byte SubGridX, out byte SubGridY);
             Parent.SetSubGrid(SubGridX, SubGridY, null);
+
+            Parent = null;
         }
 
         /// <summary>
@@ -281,10 +274,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
-        public virtual bool CellHasValue(byte CellX, byte CellY)
-        {
-            throw new Exception("SubGrid.CellHasValue() should never be called");
-        }
+        public virtual bool CellHasValue(byte CellX, byte CellY) => false;
 
         /// <summary>
         /// Counts the number of cells that are non null in the sub grid using the base CellHasValue() interface
@@ -315,7 +305,7 @@ namespace VSS.TRex.SubGridTrees
         {
             if (Parent != null)
             {
-                throw new Exception("Nodes referencing parent nodes may not have their level modified");
+                throw new TRexSubGridTreeException("Nodes referencing parent nodes may not have their level modified");
             }
 
             Level = level;
@@ -351,7 +341,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
 
-        public byte[] ToBytes() => FromToBytes.ToBytes(Write, new byte[10000]);
+        public byte[] ToBytes() => ToBytes(new byte[10000]);
 
         public byte[] ToBytes(byte[] helperBuffer) => FromToBytes.ToBytes(Write, helperBuffer ?? new byte[10000]);
 
