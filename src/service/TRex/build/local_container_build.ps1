@@ -9,6 +9,7 @@ $trexComponents = (
     "PSNode",
     "TileRendering",
     "TINSurfaceExport",
+    "Reports",
     "Gateway",
     "MutableGateway",
     "Webtools",
