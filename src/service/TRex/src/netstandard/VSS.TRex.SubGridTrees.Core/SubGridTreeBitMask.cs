@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
@@ -36,18 +35,6 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Constructor accepting number of levels, cell size and sub grid factory aspects.
-        /// </summary>
-        /// <param name="numLevels"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="subGridFactory"></param>
-        public SubGridTreeBitMask(byte numLevels,
-                                  double cellSize,
-                                  ISubGridFactory subGridFactory) : base(numLevels, cellSize, subGridFactory)
-        {
-        }
-
-        /// <summary>
         /// Performs the fundamental GetCell operation that returns a boolean value noting the state of the 
         /// bit in the tree at the [CellX, CellY] location
         /// </summary>
@@ -78,11 +65,6 @@ namespace VSS.TRex.SubGridTrees
         public void SetCell(uint CellX, uint CellY, bool Value)
         {
             ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
-
-            if (SubGrid == null)
-            {
-                throw new TRexSubGridTreeException("Unable to create cell sub grid for bitmask");
-            }
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
             ((SubGridTreeLeafBitmapSubGrid)SubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
@@ -197,23 +179,35 @@ namespace VSS.TRex.SubGridTrees
 
             Source.ScanAllSubGrids(x =>
             {
-                if (x != null)
-                {
-                    bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
-                    if (bitMapSubGrid != null)
-                    {
-                        // In this instance, x is a sub grid from the tree we are OR-ing with this
-                        // one, and BitMapSubGrid is a grid retrieved from this tree
-                        bitMapSubGrid.Bits.OrWith(((SubGridTreeLeafBitmapSubGrid)x).Bits);
-                    }
-                    else
-                    {
-                        throw new TRexSubGridTreeException("Failed to create bit map sub grid in SetOp_OR");
-                    }
-                }
+                bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
 
+                // In this instance, x is a sub grid from the tree we are OR-ing with this
+                // one, and BitMapSubGrid is a grid retrieved from this tree
+                bitMapSubGrid.Bits.OrWith(((SubGridTreeLeafBitmapSubGrid)x).Bits);
+                
                 return true; // Keep the scan going
             });
+        }
+
+        /// <summary>
+        /// Takes a source SubGridBitMask instance and performs a bitwise XOR of the contents of source against the
+        /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
+        /// </summary>
+        /// <param name="Source"></param>
+        public void SetOp_XOR(ISubGridTreeBitMask Source)
+        {
+          SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
+
+          Source.ScanAllSubGrids(x =>
+          {
+            bitMapSubGrid = (SubGridTreeLeafBitmapSubGrid)ConstructPathToCell(x.OriginX, x.OriginY, SubGridPathConstructionType.CreateLeaf);
+
+            // In this instance, x is a sub grid from the tree we are OR-ing with this
+            // one, and BitMapSubGrid is a grid retrieved from this tree
+            bitMapSubGrid.Bits.XorWith(((SubGridTreeLeafBitmapSubGrid)x).Bits);
+
+            return true; // Keep the scan going
+          });
         }
 
         /// <summary>

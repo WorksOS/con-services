@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
@@ -7,9 +8,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// Represents an internal TAG file item to be processed into a site model. It defines the underlying filename for 
     /// the TAG file, and the content of the file as a byte array
     /// </summary>
-    public class ProcessTAGFileRequestFileItem
+    public class ProcessTAGFileRequestFileItem : IFromToBinary 
     {
-      private const byte VERSION_NUMBER = 1;
+        private const byte VERSION_NUMBER = 1;
 
         public string FileName { get; set; }
 

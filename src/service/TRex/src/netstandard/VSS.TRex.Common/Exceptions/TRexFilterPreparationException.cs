@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Exceptions;
 
 namespace VSS.TRex.Common.Exceptions
 {

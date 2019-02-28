@@ -76,8 +76,7 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite);
-      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
+      TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
       DIContext.Inject(services.BuildServiceProvider());
@@ -107,6 +106,9 @@ namespace VSS.TRex.Webtools
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
+
+      ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI(services);
+
       services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       
       DIContext.Inject(services.BuildServiceProvider());

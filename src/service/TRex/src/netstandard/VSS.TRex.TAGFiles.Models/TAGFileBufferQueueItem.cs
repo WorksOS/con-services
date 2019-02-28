@@ -10,9 +10,9 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary
   { 
-    private const byte VERSION_NUMBER = 1;
+    public const byte VERSION_NUMBER = 1;
 
-    /// <summary>
+    /// <sumoary>
     /// The date at which the TAG file was inserted into the buffer queue. This field is indexed to permit
     /// processing TAG files in the order they arrived
     /// </summary>

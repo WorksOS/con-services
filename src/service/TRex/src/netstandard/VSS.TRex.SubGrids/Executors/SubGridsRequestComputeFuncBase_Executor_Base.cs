@@ -381,8 +381,8 @@ namespace VSS.TRex.SubGrids.Executors
     private (GridDataType GridDataType,
       ICombinedFilter Filter, 
       ISurveyedSurfaces FilteredSurveyedSurfaces, 
-      Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       ITRexSpatialMemoryCacheContext CacheContext)[] RequestorIntermediaries;
 
     /// <summary>

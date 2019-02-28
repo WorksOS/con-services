@@ -4,7 +4,7 @@ using VSS.TRex.Events.Interfaces;
 namespace VSS.TRex.Events
 {
   /// <summary>
-  /// Tracks events and dates through the scan of a series of cell passes to minimise the number of lookups that are mede into the event list
+  /// Tracks events and dates through the scan of a series of cell passes to minimise the number of lookups that are made into the event list
   /// </summary>
   public struct SiteModelMachineTargetValueTrackingState<T>
   {
@@ -33,7 +33,7 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Determines if the current event period held in the tracking state brackets a cell pass time supplid in _Time
+    /// Determines if the current event period held in the tracking state brackets a cell pass time supplied in _Time
     /// </summary>
     /// <param name="_Time"></param>
     /// <returns></returns>

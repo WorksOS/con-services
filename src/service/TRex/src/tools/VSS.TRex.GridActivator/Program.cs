@@ -1,10 +1,7 @@
-﻿using System;
-using Apache.Ignite.Core;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Servers.Client;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
 
 namespace VSS.TRex.GridActivator
@@ -17,8 +14,7 @@ namespace VSS.TRex.GridActivator
     {
       DIBuilder.New()
         .AddLogging()
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Complete();
     }
 
@@ -30,10 +26,10 @@ namespace VSS.TRex.GridActivator
       Log.LogInformation("Activating Grids");
 
       Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
-      bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
+      bool result2 = DIContext.Obtain<IActivatePersistentGridServer>().SetGridActive(TRexGrids.MutableGridName());
 
       Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
-      bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.ImmutableGridName());
+      bool result1 = DIContext.Obtain<IActivatePersistentGridServer>().SetGridActive(TRexGrids.ImmutableGridName());
 
       Log.LogInformation($"Immutable Grid Active: {result1}");
       if (!result1)

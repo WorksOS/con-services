@@ -76,5 +76,37 @@ namespace VSS.TRex.Tests.Analytics.Foundation
       for (int i = 0; i < aggregator2.Counts.Length; i++)
         Assert.True(aggregator2.Counts[i] == 0, $"Invalid aggregated value for aggregator2.Counts[{i}].");
     }
+
+    [Fact]
+    public void Test_DataStatisticsAggregator_Finalise()
+    {
+      DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
+
+      aggregator.Finalise();
+
+      Assert.True(AggregatorStateIsDefault(aggregator), "Unexpected finalisation state");
+    }
+
+    [Fact]
+    public void Test_DataStatisticsAggregator_Initialise()
+    {
+      DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
+
+      aggregator.Initialise(new DataStatisticsAggregator());
+
+      Assert.True(AggregatorStateIsDefault(aggregator), "Unexpected initialisation state");
+    }
+
+    [Fact]
+    public void Test_DataStatisticsAggregator_ProcessNullSubGridResult()
+    {
+      DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
+
+      aggregator.ProcessSubGridResult(null);
+
+      aggregator.Finalise();
+
+      Assert.True(AggregatorStateIsDefault(aggregator), "Unexpected finalisation state");
+    }
   }
 }

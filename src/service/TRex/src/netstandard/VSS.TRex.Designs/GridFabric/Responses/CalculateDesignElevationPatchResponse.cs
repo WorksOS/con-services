@@ -19,14 +19,18 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     {
       // Transient message so no versioning...
       CalcResult = (DesignProfilerRequestResult) reader.ReadByte();
-      Heights.FromBytes(reader.ReadByteArray());
+
+      if (reader.ReadBoolean())
+        Heights.FromBytes(reader.ReadByteArray());
     }
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
       // Transient message so no versioning...
       writer.WriteByte((byte)CalcResult);
-      writer.WriteByteArray(Heights.ToBytes());
+      writer.WriteBoolean(Heights != null);
+      if (Heights != null)
+        writer.WriteByteArray(Heights.ToBytes());
     }
   }
 }

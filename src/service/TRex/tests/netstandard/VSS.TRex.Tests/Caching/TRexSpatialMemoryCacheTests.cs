@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using FluentAssertions;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -520,6 +522,17 @@ namespace VSS.TRex.Tests.Caching
       }
 
       Assert.True(context.TokenCount == 0, "Token count incorrect after invalidation");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_Disposable()
+    {
+      using (var cache = new TRexSpatialMemoryCache(10, 1000000, 0.5))
+      {
+        var _ = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
+
+        cache.ContextCount.Should().Be(1);
+      }
     }
   }
 }

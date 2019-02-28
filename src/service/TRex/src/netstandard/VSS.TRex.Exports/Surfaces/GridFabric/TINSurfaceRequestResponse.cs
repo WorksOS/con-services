@@ -1,7 +1,7 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs.TTM;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
@@ -10,7 +10,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// The response returned from the TIN surface export request executor that contains the response code and the
   /// surface generated from the operation
   /// </summary>
-  public class TINSurfaceRequestResponse : SubGridsPipelinedResponseBase
+  public class TINSurfaceRequestResponse : SubGridsPipelinedResponseBase, INonBinarizable
   {
     /// <summary>
     /// The TIN generated from the selected elevations matching the query

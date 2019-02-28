@@ -36,6 +36,16 @@ namespace VSS.AWS.TransferProxy.UnitTests
       return defaultValue;
     }
 
+    public uint GetValueUint(string v)
+    {
+      throw new NotImplementedException();
+    }
+
+    public uint GetValueUint(string v, uint defaultValue)
+    {
+      return defaultValue;
+    }
+
     public long GetValueLong(string v)
     {
       throw new NotImplementedException();

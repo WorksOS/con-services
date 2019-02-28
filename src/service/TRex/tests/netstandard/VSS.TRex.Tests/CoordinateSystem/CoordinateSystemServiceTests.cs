@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using FluentAssertions;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Geometry;
@@ -25,6 +26,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
           Height = 550.96678869192408
         });
 
+      NEECoords.Should().NotBeNull();
+
       Assert.True(Math.Abs(NEECoords.North - 1204) < 0.001, $"Expected {1204}, but found {NEECoords.North}");
       Assert.True(Math.Abs(NEECoords.East - 2313) < 0.001, $"Expected {2313}, but found {NEECoords.East}");
       Assert.True(Math.Abs(NEECoords.Elevation - 609) < 0.001, $"Expected {609}, but found {NEECoords.Elevation}");
@@ -40,6 +43,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
           new LLH { Latitude = 36.22, Longitude = -115.02, Height = 11 },
           new LLH { Latitude = 36.23, Longitude = -115.03, Height = 12 }
         }).NEECoordinates.ToList();
+
+      NEECoords.Should().NotBeNull();
 
       Assert.True(Math.Abs(NEECoords[0].North - 3656.9996220201547) < 0.001, $"Expected {3656.9996220201547}, but found {NEECoords[0].North}");
       Assert.True(Math.Abs(NEECoords[0].East - 1502.0980247307239) < 0.001, $"Expected {1502.0980247307239}, but found {NEECoords[0].East}");
@@ -59,6 +64,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
     {
       var LLHCoords = ConvertCoordinates.NEEToLLH(DIMENSIONS_2012_DC_CSIB, new NEE { East = 2313, North = 1204, Elevation = 609 });
 
+      LLHCoords.Should().NotBeNull();
+
       Assert.True(Math.Abs(LLHCoords.Longitude - -115.024944388223) < 0.0001, $"Expected {-115.024944388223}, but found {LLHCoords.Longitude}");
       Assert.True(Math.Abs(LLHCoords.Latitude - 36.2073144965672) < 0.0001, $"Expected {36.2073144965672}, but found {LLHCoords.Latitude}");
       Assert.True(Math.Abs(LLHCoords.Height - 550.96678869192408) < 0.0001, $"Expected {550.96678869192408}, but found {LLHCoords.Height}");
@@ -74,6 +81,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
       var LLHCoords = ConvertCoordinates.NEEToLLH(DIMENSIONS_2012_DC_CSIB, requestArray).LLHCoordinates;
 
+      LLHCoords.Should().NotBeNull();
+
       Assert.True(Math.Abs(LLHCoords[0].Longitude - -115.03727717865179) < 0.0001, $"Expected {-115.03727717865179}, but found {LLHCoords[0].Longitude}");
       Assert.True(Math.Abs(LLHCoords[0].Latitude - 36.21730699569774) < 0.0001, $"Expected {36.21730699569774}, but found {LLHCoords[0].Latitude}");
       Assert.True(Math.Abs(LLHCoords[0].Height - 550.87194700441933) < 0.0001, $"Expected {550.87194700441933}, but found {LLHCoords[0].Height}");
@@ -88,6 +97,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
     {
       // XYZ coordinate holding LLH data.
       var NEECoords = ConvertCoordinates.LLHToNEE(DIMENSIONS_2012_DC_CSIB, new XYZ(-115.01, 36.21, 10));
+
+      NEECoords.Should().NotBeNull();
 
       Assert.True(Math.Abs(NEECoords.X - 3656.9996220201547) < 0.001, $"Expected {3656.9996220201547}, but found {NEECoords.X}");
       Assert.True(Math.Abs(NEECoords.Y - 1502.0980247307239) < 0.001, $"Expected {1502.0980247307239}, but found {NEECoords.Y}");
@@ -106,6 +117,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
       };
 
       var NEECoords = ConvertCoordinates.LLHToNEE(DIMENSIONS_2012_DC_CSIB, coords).NEECoordinates;
+
+      NEECoords.Should().NotBeNull();
 
       Assert.True(Math.Abs(NEECoords[0].Y - 3656.9996220201547) < 0.001, $"Expected {3656.9996220201547}, but found {NEECoords[0].Y}");
       Assert.True(Math.Abs(NEECoords[0].X - 1502.0980247307239) < 0.001, $"Expected {1502.0980247307239}, but found {NEECoords[0].X}");
@@ -126,6 +139,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
       // XYZ coordinate holding NEE data.
       var LLHCoords = ConvertCoordinates.NEEToLLH(DIMENSIONS_2012_DC_CSIB, new XYZ(2313, 1204, 609));
 
+      LLHCoords.Should().NotBeNull();
+
       Assert.True(Math.Abs(LLHCoords.X - -115.024944388223) < 0.001, $"Expected {-115.024944388223}, but found {LLHCoords.X}");
       Assert.True(Math.Abs(LLHCoords.Y - 36.2073144965672) < 0.001, $"Expected {36.2073144965672}, but found {LLHCoords.Y}");
       Assert.True(Math.Abs(LLHCoords.Z - 550.96678869192408) < 0.001, $"Expected {550.96678869192408}, but found {LLHCoords.Z}");
@@ -142,6 +157,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
       var LLHCoords = ConvertCoordinates.NEEToLLH(DIMENSIONS_2012_DC_CSIB, requestArray).LLHCoordinates;
 
+      LLHCoords.Should().NotBeNull();
+
       Assert.True(Math.Abs(LLHCoords[0].X - -115.03727717865179) < 0.0001, $"Expected {-115.03727717865179}, but found {LLHCoords[0].X}");
       Assert.True(Math.Abs(LLHCoords[0].Y - 36.21730699569774) < 0.0001, $"Expected {36.21730699569774}, but found {LLHCoords[0].Y}");
       Assert.True(Math.Abs(LLHCoords[0].Z - 550.87194700441933) < 0.0001, $"Expected {550.87194700441933}, but found {LLHCoords[0].Z}");
@@ -155,6 +172,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
     public void CoordinateService_SimpleWGS84PointToXYZNEE()
     {
       var NEECoords = ConvertCoordinates.WGS84ToCalibration(DIMENSIONS_2012_DC_CSIB, new WGS84Point(-115.01, 36.21, 10));
+
+      NEECoords.Should().NotBeNull();
 
       Assert.True(Math.Abs(NEECoords.Y - 3656.9996220201547) < 0.001, $"Expected {3656.9996220201547}, but found {NEECoords.Y}");
       Assert.True(Math.Abs(NEECoords.X - 1502.0980247307239) < 0.001, $"Expected {1502.0980247307239}, but found {NEECoords.X}");
@@ -170,6 +189,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
       };
 
       var NEECoords = ConvertCoordinates.WGS84ToCalibration(DIMENSIONS_2012_DC_CSIB, points);
+
+      NEECoords.Should().NotBeNull();
 
       Assert.True(Math.Abs(NEECoords[0].Y - 3656.9996220201547) < 0.001, $"Expected {3656.9996220201547}, but found {NEECoords[0].Y}");
       Assert.True(Math.Abs(NEECoords[0].X - 1502.0980247307239) < 0.001, $"Expected {1502.0980247307239}, but found {NEECoords[0].X}");

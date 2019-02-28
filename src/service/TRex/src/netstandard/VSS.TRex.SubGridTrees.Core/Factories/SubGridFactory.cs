@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Factories
     /// <typeparam name="Node"></typeparam>
     /// <typeparam name="Leaf"></typeparam>
     public class SubGridFactory<Node, Leaf> : ISubGridFactory 
-        where Node : INodeSubGrid, new() 
+        where Node : INodeSubGrid, new()
         where Leaf : ILeafSubGrid, new()
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Factories
         /// <param name="tree"></param>
         /// <param name="treeLevel"></param>
         /// <returns>An ISubGrid interface representing the newly created node or leaf sub grid</returns>
-        public ISubGrid GetSubGrid(ISubGridTree tree, byte treeLevel)
+        public virtual ISubGrid GetSubGrid(ISubGridTree tree, byte treeLevel)
         {
             // Ensure the requested tree level is valid for the given tree
             if (treeLevel < 1 || treeLevel > tree.NumLevels)

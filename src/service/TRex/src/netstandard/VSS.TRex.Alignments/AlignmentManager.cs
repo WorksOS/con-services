@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -37,7 +37,7 @@ namespace VSS.TRex.Alignments
     }
 
     /// <summary>
-    /// Loads the set of Alignments for a sitemodel. If none exist and empty list is returned.
+    /// Loads the set of Alignments for a site model. If none exist and empty list is returned.
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <returns></returns>
@@ -83,7 +83,7 @@ namespace VSS.TRex.Alignments
         _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, alignments.ToStream(), this);
         _writeStorageProxy.Commit();
 
-        // Notify the  grid listeners that attributes of this sitemodel have changed.
+        // Notify the  grid listeners that attributes of this site model have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, alignmentsChanged: true);
       }
@@ -94,7 +94,7 @@ namespace VSS.TRex.Alignments
     }
 
     /// <summary>
-    /// Add a new Alignment to a sitemodel
+    /// Add a new Alignment to a site model
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>

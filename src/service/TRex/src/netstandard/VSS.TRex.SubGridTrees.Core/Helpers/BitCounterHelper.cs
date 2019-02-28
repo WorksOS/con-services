@@ -19,11 +19,10 @@
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="failedItem"></param>
         /// <returns></returns>
-        private static bool TestCountSetBitsRange(uint start, uint end, out uint failedItem)
+        private static bool TestCountSetBitsRange(uint start, uint end)
         {
-            failedItem = 0;
+            bool returnResult = true;
 
             for (uint i = start; i < end; i++)
             {
@@ -35,30 +34,26 @@
                     if ((i & (1 << j)) != 0)
                         count++;
 
-                if (result != count)
-                {
-                    failedItem = i;
-                    return false;
-                }
+                returnResult &= result == count;
+
             }
 
-            return true;
+            return returnResult;
         }
 
         /// <summary>
         /// Self test rig for ensuring the fancy bit-twiddling gets the right answers
         /// </summary>
-        /// <param name="failedItem"></param>
         /// <returns></returns>
-        public static bool TestCountSetBits(out uint failedItem)
+        public static bool TestCountSetBits()
         {
             //return TestCountSetBitsRange(0, uint.MaxValue, out failedItem);
 
-            return TestCountSetBitsRange(0, 100000, out failedItem) &&
-                   TestCountSetBitsRange(1000000000, 1000100000, out failedItem) &&
-                   TestCountSetBitsRange(2000000000, 2000100000, out failedItem) &&
-                   TestCountSetBitsRange(3000000000, 3000100000, out failedItem) &&
-                   TestCountSetBitsRange(uint.MaxValue - 100000, uint.MaxValue, out failedItem);
+            return TestCountSetBitsRange(0, 100000) &&
+                   TestCountSetBitsRange(1000000000, 1000100000) &&
+                   TestCountSetBitsRange(2000000000, 2000100000) &&
+                   TestCountSetBitsRange(3000000000, 3000100000) &&
+                   TestCountSetBitsRange(uint.MaxValue - 100000, uint.MaxValue);
         }
     }
 }

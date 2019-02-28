@@ -10,17 +10,7 @@ namespace VSS.TRex.Geometry
     /// Calculates the area in square meters of the X/Y plan extent. If the extent is too large to represent
     /// as a 64 bit number of square meters, -1 is returned
     /// </summary>
-    public long Area()
-    {
-      try
-      {
-        return (long) (MaxX - MinX) * (long) (MaxY - MinY);
-      }
-      catch
-      {
-        return -1;
-      }
-    }
+    public long Area() => (MaxX - MinX) * (long) (MaxY - MinY);
 
     /// <summary>
     /// Assign the context of another 3D bounding extent to this one

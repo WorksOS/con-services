@@ -19,20 +19,11 @@ namespace VSS.TRex.Designs.TTM
       FTriangle = aTriangle;
     }
 
-    public double X
-    {
-      get { return FX; }
-    }
+    public double X => FX;
 
-    public double Y
-    {
-      get { return FY; }
-    }
+    public double Y => FY;
 
-    public Triangle Triangle
-    {
-      get { return FTriangle; }
-    }
+    public Triangle Triangle => FTriangle;    
 
     public void Write(BinaryWriter writer, TTMHeader header)
     {

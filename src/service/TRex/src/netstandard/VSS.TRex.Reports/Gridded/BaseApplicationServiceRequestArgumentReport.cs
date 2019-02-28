@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Reports.Gridded
@@ -9,6 +10,8 @@ namespace VSS.TRex.Reports.Gridded
   /// </summary>
   public class BaseApplicationServiceRequestArgumentReport : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     public bool ReportElevation { get; set; }
     public bool ReportCutFill { get; set; }
     public bool ReportCmv { get; set; }
@@ -38,6 +41,9 @@ namespace VSS.TRex.Reports.Gridded
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteBoolean(ReportElevation);
       writer.WriteBoolean(ReportCmv);
       writer.WriteBoolean(ReportMdp);
@@ -53,6 +59,9 @@ namespace VSS.TRex.Reports.Gridded
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       ReportElevation = reader.ReadBoolean();
       ReportCmv = reader.ReadBoolean();
       ReportMdp = reader.ReadBoolean();

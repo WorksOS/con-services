@@ -160,7 +160,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _Ignite.GetCache<INonSpatialAffinityKey, byte[]>(CacheName);
+            mutableNonSpatialCache = Ignite.GetCache<INonSpatialAffinityKey, byte[]>(CacheName);
         }
 
         /// <summary>

@@ -17,18 +17,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type != TAGDataType.t4bitUInt)
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t4bitUInt &&
+                Enum.IsDefined(typeof(MachineGear), (byte)value))
             {
-                return false;
+              valueSink.ICGear = (MachineGear)value;
+              result = true;
             }
 
-            if (!Enum.IsDefined(typeof(MachineGear), (byte)value))
-            {
-                return false;
-            }
-
-            valueSink.ICGear = (MachineGear)value;
-            return true;
+            return result;
         }
     }
 }

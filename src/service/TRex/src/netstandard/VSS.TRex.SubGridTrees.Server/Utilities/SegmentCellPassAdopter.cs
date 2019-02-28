@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     public static class SegmentCellPassAdopter
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger("SegmentCellPassAdopter");
+        //private static readonly ILogger Log = Logging.Logger.CreateLogger("SegmentCellPassAdopter");
 
         /// <summary>
         /// Causes segment to adopt all cell passes from sourceSegment where those cell passes were 
@@ -45,19 +45,16 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     // Copy the adopted passes from the 'from' cell to the 'to' cell
                     for (uint PassIndex = countInCell; PassIndex < thePassCount; PassIndex++)
                     {
-                      if (sourceSegment.Pass(i, j, (uint)PassIndex).Time < atAndAfterTime)
-                      {
-                        string msg = $"Pass with inappropriate time being added to segment: {sourceSegment.Pass(i, j, (uint)PassIndex).Time} < {atAndAfterTime}";
-                        Log.LogInformation(msg);
-                        //Debug.Assert(false, "Pass with inappropriate time being added to segment");
-                      }
-                      segment.AddPass(i, j, sourceSegment.Pass(i, j, (uint)PassIndex));
+                      if (sourceSegment.Pass(i, j, PassIndex).Time < atAndAfterTime)
+                        throw new TRexTAGFileProcessingException($"Pass with inappropriate time being added to segment: {sourceSegment.Pass(i, j, PassIndex).Time} < {atAndAfterTime}");
+
+                      segment.AddPass(i, j, sourceSegment.Pass(i, j, PassIndex));
                     }
 
                   // Set the new number of passes and reset the length of the cell passes
                   // in the cell the passes were adopted from
                   sourceSegment.SegmentPassCount -= adoptedPassCount;
-                  sourceSegment.AllocatePasses(i, j, (uint)countInCell);
+                  sourceSegment.AllocatePasses(i, j, countInCell);
                 }
             });
         }

@@ -16,25 +16,27 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type != TAGDataType.t4bitUInt)
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t4bitUInt)
             {
-                return false;
+                switch (value)
+                {
+                    case 0:
+                      valueSink.SetOnGround(OnGroundState.No);
+                      break;
+                    case 1:
+                      valueSink.SetOnGround(OnGroundState.YesLegacy);
+                      break;
+                    default:
+                      valueSink.SetOnGround(OnGroundState.Unknown);
+                      break;
+                }
+
+              result = true;
             }
 
-            switch (value)
-            {
-                case 0:
-                    valueSink.SetOnGround(OnGroundState.No);
-                    break;
-                case 1:
-                    valueSink.SetOnGround(OnGroundState.YesLegacy);
-                    break;
-                default:
-                    valueSink.SetOnGround(OnGroundState.Unknown);
-                    break;
-            }
-
-            return true;
+            return result;
         }
     }
 }

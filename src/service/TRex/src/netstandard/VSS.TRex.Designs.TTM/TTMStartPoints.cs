@@ -6,13 +6,10 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TTMStartPoints : List<TTMStartPoint>
   {
-
     public void Write(BinaryWriter writer, TTMHeader header)
     {
       for (int i = 0; i < Count; i++)
-      {
         this[i].Write(writer, header);
-      }
     }
 
     public void Read(BinaryReader reader, TTMHeader header, Triangles triangles)
@@ -21,18 +18,11 @@ namespace VSS.TRex.Designs.TTM
 
       for (int i = 0; i < header.NumberOfStartPoints; i++)
       {
-        try
-        {
-          long RecPos = reader.BaseStream.Position;
-          TTMStartPoint Pt = new TTMStartPoint(0, 0, null);
-          Add(Pt);
-          Pt.Read(reader, header, triangles);
-          reader.BaseStream.Position = RecPos + header.StartPointRecordSize;
-        }
-        catch (Exception E)
-        {
-          throw new Exception($"Failed to read start point {i + 1}", E);
-        }
+        long RecPos = reader.BaseStream.Position;
+        TTMStartPoint Pt = new TTMStartPoint(0, 0, null);
+        Add(Pt);
+        Pt.Read(reader, header, triangles);
+        reader.BaseStream.Position = RecPos + header.StartPointRecordSize;
       }
     }
   }

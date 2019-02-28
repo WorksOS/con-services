@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ignite-web-console
+
+---
+
+# creating deployment for the backend; specify a Docker Image 
+# in the 'image' field.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend
+  namespace: ignite-web-console
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - env:
+        - name: mail_auth_pass
+        - name: mail_auth_user
+        - name: mail_from
+        - name: mail_greeting
+        - name: mail_service
+        - name: mail_sign
+        - name: mongodb_url
+          value: mongodb://mongodb.mongodb.svc.cluster.local/console
+        - name: server_host
+          value: "0.0.0.0"
+        - name: server_port
+          value: "3000"
+        - name: server_sessionSecret
+          value: CHANGE_ME
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-backend
+        name: backend
+        resources: {}
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: backend
+  namespace: ignite-web-console
+  labels:
+    app: backend
+spec:
+  ports:
+  - name: "backend"
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: backend
+
+---
+# creating deployment for the frontend; specify a Docker Image 
+# in the 'image' field.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: ignite-web-console
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - image: apacheignite/web-console-frontend:2.7.0
+        name: frontend
+        ports:
+        - containerPort: 80
+        resources: {}
+      restartPolicy: Always 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: ignite-web-console
+  labels:
+    app: frontend
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    app: frontend
+  type: ClusterIP
+
+
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ignite-console
+  namespace: ignite-web-console
+  labels:
+    app: frontend
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
+spec:
+  rules:
+    - host: trex.mutable-console.dev.eks.vspengg.com
+      http:
+        paths:
+          - backend:
+              serviceName: frontend
+              servicePort: 80
+

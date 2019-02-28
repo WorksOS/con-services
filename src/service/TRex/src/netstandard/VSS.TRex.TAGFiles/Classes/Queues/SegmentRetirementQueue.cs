@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public SegmentRetirementQueue()
     {
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
 
       QueueCache = ignite.GetOrCreateCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(
         new CacheConfiguration

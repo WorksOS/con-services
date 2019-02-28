@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 
@@ -92,12 +94,17 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
+      const int MAX_REASONABLE_NUMBER_OF_FILTERS = 100;
       byte readVersionNumber = reader.ReadByte();
 
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
-      Filters = new ICombinedFilter[reader.ReadInt()];
+      var filterCount = reader.ReadInt();
+      if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
+        throw new TRexException($"Invalid number of filters {filterCount} in deserialisation");
+
+      Filters = new ICombinedFilter[filterCount];
       for(int i = 0; i < Filters.Length; i++)
         Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
     }

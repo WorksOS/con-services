@@ -56,7 +56,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      int version = reader.ReadByte();
+      byte version = reader.ReadByte();
 
       if (version != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, version);

@@ -265,12 +265,12 @@ namespace VSS.TRex.Volumes.Executors
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
-                        Log.LogInformation("Summary volume invalid PlanExtents. Possibly no data found");
-
                         if (Aggregator.CoverageArea == 0 && Aggregator.CutFillVolume.CutVolume == 0 && Aggregator.CutFillVolume.FillVolume == 0)
                             ResultStatus = RequestErrorStatus.NoProductionDataFound;
                         else
                             ResultStatus = RequestErrorStatus.InvalidPlanExtents;
+
+                        Log.LogInformation($"Summary volume invalid PlanExtents or no data found: {ResultStatus}");
 
                         return VolumesResult;
                     }

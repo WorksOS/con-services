@@ -21,6 +21,17 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact()]
+        public void Test_SubGridTreePersistor_Write_Empty_NoHeader()
+        {
+          // Create an empty subgrid bit mask tree and persist it into a stream
+          SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
+          MemoryStream MS = new MemoryStream();
+
+          Assert.True(SubGridTreePersistor.Write(masktree, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
+          Assert.Equal(37, MS.Length);
+        }
+
+        [Fact()]
         public void Test_SubGridTreePersistor_Write_NotEmpty()
         {
             // Create an empty subgrid bit mask tree and persist it into a stream
@@ -55,6 +66,21 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact()]
+        public void Test_SubGridTreePersistor_Read_Empty_NoHeader()
+        {
+          // Create an empty subgrid bit mask tree and persist it into a stream, then read it back again
+          SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
+          MemoryStream MS = new MemoryStream();
+
+          Assert.True(SubGridTreePersistor.Write(masktree, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
+
+          SubGridTreeSubGridExistenceBitMask newtree = new SubGridTreeSubGridExistenceBitMask();
+
+          MS.Position = 0;
+          Assert.True(SubGridTreePersistor.Read(newtree, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
+        }
+
+    [Fact()]
         public void Test_SubGridTreePersistor_Read_NotEmpty()
         {
             // Create an empty subgrid bit mask tree and persist it into a stream

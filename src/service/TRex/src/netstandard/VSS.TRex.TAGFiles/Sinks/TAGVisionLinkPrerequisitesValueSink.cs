@@ -4,7 +4,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
 {
     /// <summary>
     /// Specialised TAG value sink that determines if the prerequisites for processing this information into 
-    /// visionlink have been met
+    /// VisionLink have been met
     /// </summary>
     public class TAGVisionLinkPrerequisitesValueSink : TAGValueSink
     {
@@ -14,13 +14,6 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         /// <param name="processor"></param>
         public TAGVisionLinkPrerequisitesValueSink(TAGProcessorStateBase processor) : base(processor)
         {
-        }
-
-        public override bool Aborting()
-        {
-            // Allow reading of entire contents of TAG file, until the
-            // aborting test succeeds or the end of the file is reached.
-            return false;
         }
 
         public override bool Finishing()

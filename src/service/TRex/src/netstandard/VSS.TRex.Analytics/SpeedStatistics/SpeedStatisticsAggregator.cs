@@ -30,20 +30,17 @@ namespace VSS.TRex.Analytics.SpeedStatistics
     /// fits into the requested bands, i.e. less than min target, between min and max targets, greater than max target
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
 
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientMachineTargetSpeedLeafSubGrid SubGrid)
           {
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {

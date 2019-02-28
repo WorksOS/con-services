@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events
@@ -14,9 +15,6 @@ namespace VSS.TRex.Events
     public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IStartEndProductionEvents
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
-        public StartEndProductionEvents()
-        {}
 
         public StartEndProductionEvents(long machineID, Guid siteModelID,
             ProductionEventType eventListType,
@@ -131,7 +129,7 @@ namespace VSS.TRex.Events
                 else if (Events[I].State == ProductionEventType.EndEvent)
                         DecNestingLevel = true;
                     else
-                        Debug.Assert(false, "Unknown event type in list");
+                        throw new TRexException($"Unknown event type in list {Events[I].State}");
 
                 if (NestingLevel > 1)
                 {

@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         /// <returns></returns>
         public override bool Aborting()
         {
-            return ValueMatcherState.HaveSeenATimeValue && ValueMatcherState.HaveSeenAWeekValue;
+            return base.Aborting() || ValueMatcherState.HaveSeenATimeValue && ValueMatcherState.HaveSeenAWeekValue;
         }
 
         /// <summary>

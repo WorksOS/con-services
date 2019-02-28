@@ -42,10 +42,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
             if (!base.TransferResponse(response))
-            {
-                Log.LogWarning("Base TransferResponse returned false");
                 return false;
-            }
 
             if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
               {

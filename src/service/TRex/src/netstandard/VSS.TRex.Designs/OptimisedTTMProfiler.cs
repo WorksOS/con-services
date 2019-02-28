@@ -44,16 +44,16 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
       var subGrid = Index.LocateSubGridContaining(cellX, cellY);
 
-      if (subGrid == null) // No triangles in this 'node' subgrid
+      if (subGrid == null) // No triangles in this 'node' sub grid
         return;
 
       if (!(subGrid is TriangleArrayReferenceSubGrid referenceSubGrid))
       {
-        Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid.GetType()}");
+        Log.LogCritical($"Sub grid is not a TriangleArrayReferenceSubGrid, is is a {subGrid.GetType()}");
         return;
       }
 
-      // Get the cell representing a leaf subgrid and determine if there is a triangle at the point location
+      // Get the cell representing a leaf sub grid and determine if there is a triangle at the point location
       subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
 
       TriangleArrayReference referenceList = referenceSubGrid.Items[subGridX, subGridY];
@@ -84,7 +84,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// <returns></returns>
     private List<XYZS> Compute(XYZ startPoint, XYZ endPoint, double startStation)
     {
-      // 1. Determine the set of subgrids the profile line cross using the same logic used to
+      // 1. Determine the set of sub grids the profile line cross using the same logic used to
       // compute cell cross by production data profiling
 
       // ...
@@ -92,14 +92,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       if (!cellProfileBuilder.Build(new [] {startPoint, endPoint}, startStation))
         return null;
 
-      // 2. Iterate across each subgrid in turn locating all triangles in that subgrid
+      // 2. Iterate across each sub grid in turn locating all triangles in that sub grid
       // that intersect the line and sorting them according to the distance of the closest
       // intercept from the start of the line
 
       // Get the resulting vertical and horizontal intercept list
       var VtHzIntercepts = cellProfileBuilder.VtHzIntercepts;
 
-      // Iterate through the intercepts looking for ones that hit a subgrid in the TTM
+      // Iterate through the intercepts looking for ones that hit a sub grid in the TTM
       // spatial index that contains triangles
 
       var intercepts = new List<XYZS>();
@@ -120,10 +120,10 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           continue;
         }
 
-        // Make sure we are not repeating a subgrid (can happen as a result of how the initial HZ/Vt intersects are constructed
+        // Make sure we are not repeating a sub grid (can happen as a result of how the initial HZ/Vt intersects are constructed
         if (prevCellX == cellX && preCellY == cellY)
         {
-          // This subgrid has just been processed...
+          // This sub grid has just been processed...
           continue;
         }
 
@@ -134,14 +134,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
         if (subGrid == null)
         {
-          // No triangles are present in this 'node' subgrid. Move to the next subgrid, the implicit gap will be 
+          // No triangles are present in this 'node' sub grid. Move to the next sub grid, the implicit gap will be 
           // picked up when triangle intercepts are aggregated together to form the final profile line
           continue;
         }
 
         if (!(subGrid is TriangleArrayReferenceSubGrid referenceSubGrid))
         {
-          Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid.GetType()}");
+          Log.LogCritical($"Sub grid is not a TriangleArrayReferenceSubGrid, is is a {subGrid.GetType()}");
           continue;
         }
 
@@ -151,11 +151,11 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
         if (referenceList.Count == 0)
         {
-          // There are no triangles in this 'leaf' subgrid
+          // There are no triangles in this 'leaf' sub grid
           continue;
         }
 
-        // Locate all triangles in this subgrid that intersect the profile line
+        // Locate all triangles in this sub grid that intersect the profile line
         var endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
         for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
         {

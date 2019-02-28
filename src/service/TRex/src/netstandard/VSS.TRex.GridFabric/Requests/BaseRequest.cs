@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Requests
@@ -9,13 +9,6 @@ namespace VSS.TRex.GridFabric.Requests
   /// </summary>
   public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>
   {
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public BaseRequest()
-    {
-    }
-
     /// <summary>
     /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
     /// </summary>

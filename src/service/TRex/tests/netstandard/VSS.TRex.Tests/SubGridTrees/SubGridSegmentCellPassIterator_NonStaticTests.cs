@@ -58,18 +58,6 @@ namespace VSS.TRex.Tests.SubGridTrees
       iterator.Initialise();
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_SubGridSegmentCellPassIterator_NonStaticTests_GetNextCellPass()
-    {
-      Assert.True(false);
-    }
-
-    [Fact(Skip = "Not Implemented")]
-    public void Test_SubGridSegmentCellPassIterator_NonStaticTests_MayHaveMoreFilterableCellPasses()
-    {
-      Assert.True(false);
-    }
-
     [Fact()]
     public void Test_SubGridSegmentCellPassIterator_NonStaticTests_SetTimeRangeTest()
     {

@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -29,28 +28,25 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
+            bool result = false;
+
             if (!state.HaveSeenAnAbsoluteCCV)
-            {
                 return false;
-            }
 
             switch (valueType.Type)
             {
                 case TAGDataType.t4bitInt:
                 case TAGDataType.t8bitInt:
-                    if (((short)(valueSink.ICCCVValues.GetLatest()) + value) < 0)
-                    {
-                        return false;
-                    }
+                  if (((short) (valueSink.ICCCVValues.GetLatest()) + value) >= 0)
+                  {
+                    valueSink.SetICCCVValue((short) ((short) (valueSink.ICCCVValues.GetLatest()) + value));
+                    result = true;
+                  }
 
-                    valueSink.SetICCCVValue((short)((short)(valueSink.ICCCVValues.GetLatest()) + value));
-                    break;
-
-                default:
-                    return false;
+                  break;
             }
 
-            return true;
+            return result;
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)

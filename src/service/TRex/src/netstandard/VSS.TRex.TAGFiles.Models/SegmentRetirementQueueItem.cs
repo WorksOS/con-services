@@ -13,7 +13,8 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class SegmentRetirementQueueItem : IBinarizable, IFromToBinary
   {
-    private const byte VERSION_NUMBER = 1;
+    public const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The project this segment retirement queue item refers to
     /// </summary>

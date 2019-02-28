@@ -17,10 +17,7 @@ namespace VSS.TRex.Designs.TTM
     /// Gets the X, Y, Z location of the vertex as a XYZ instance
     /// </summary>
     /// <returns></returns>
-    private XYZ GetXYZ()
-    {
-      return new XYZ(X, Y, Z);
-    }
+    private XYZ GetXYZ() => new XYZ(X, Y, Z);
 
     /// <summary>
     /// Sets the location of the vertex from a XYZ instance
@@ -116,34 +113,24 @@ namespace VSS.TRex.Designs.TTM
     /// <returns></returns>
     public bool IsEqual(TriVertex Other, double Tolerance)
     {
-      return (Other == this) || IsEqual(Other.X, Other.Y, Other.Z, Tolerance);
+      return Other == this || IsEqual(Other.X, Other.Y, Other.Z, Tolerance);
     }
 
     /// <summary>
     /// Property representing the X, Y, Z location of this vertex as a XYZ instance
     /// </summary>
-    public XYZ XYZ
-    {
-      get { return GetXYZ(); }
-      set { SetXYZ(value); }
-    }
+    public XYZ XYZ { get => GetXYZ(); set => SetXYZ(value); }
 
     /// <summary>
     /// Converts the location of the vertex to a string
     /// </summary>
     /// <returns></returns>
-    public string AsText()
-    {
-      return $"Tag:{Tag}, X={X:F3}, Y={Y:F3}, Z={Z:F3}";
-    }
+    public string AsText() => $"Tag:{Tag}, X={X:F3}, Y={Y:F3}, Z={Z:F3}";
 
     /// <summary>
     /// Overridden ToString()
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
-      return AsText();
-    }
+    public override string ToString() => AsText();
   }
 }

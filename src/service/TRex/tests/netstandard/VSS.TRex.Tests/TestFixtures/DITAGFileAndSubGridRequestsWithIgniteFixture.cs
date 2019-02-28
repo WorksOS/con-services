@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
@@ -11,13 +12,14 @@ using Apache.Ignite.Core.Messaging;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.TRex.Common.Serialisation;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -27,6 +29,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -39,6 +42,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.BinarizableSerialization;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -149,14 +153,22 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCluster.Setup(x => x.ForAttribute(It.IsAny<string>(), It.IsAny<string>())).Returns(mockClusterGroup.Object);
       mockCluster.Setup(x => x.GetLocalNode()).Returns(mockClusterNode.Object);
       mockCluster.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
+      mockCluster.Setup(x => x.IsActive()).Returns(true);
 
       var mockIgnite = new Mock<IIgnite>();
       mockIgnite.Setup(x => x.GetCluster()).Returns(mockCluster.Object);
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
+      mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
+
+      //      var mockActivatePersistentGridServer = new Mock<IActivatePersistentGridServer>();
+      //      mockActivatePersistentGridServer.Setup(x => x.WaitUntilGridActive(It.IsAny<string>())).Callback(() => { });
+      //      mockActivatePersistentGridServer.Setup(x => x.SetGridActive(It.IsAny<string>())).Returns(true);
+      //      mockActivatePersistentGridServer.Setup(x => x.SetGridInActive(It.IsAny<string>())).Returns(true);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => gridName => mockIgnite.Object))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
+        .Add(x => x.AddSingleton<IActivatePersistentGridServer>(new ActivatePersistentGridServer())) // mockActivatePersistentGridServer.Object))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
@@ -173,7 +185,9 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton(mockIgnite))
         .Complete();
 
+      // Start the 'mocked' listener
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+
       ResetDynamicMockedIgniteContent();
     }
 
@@ -210,14 +224,64 @@ namespace VSS.TRex.Tests.TestFixtures
       });
     }
 
+    public static void TestIBinarizableSerializationForItem(object item)
+    {
+      if (item is IBinarizable)
+      {
+        var serializer = new BinarizableSerializer();
+
+        var writer = new TestBinaryWriter();
+        serializer.WriteBinary(item, writer);
+
+        var newInstance = Activator.CreateInstance(item.GetType());
+
+        serializer.ReadBinary(newInstance, new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
+      }
+
+      // exercise serialize/deserialize of func and argument before invoking function
+      /*
+      if (item is IBinarizable binarizable)
+      {
+        var writer = new TestBinaryWriter();
+        binarizable.WriteBinary(writer);
+
+        var newInstance = Activator.CreateInstance(item.GetType());
+        (newInstance as IBinarizable).ReadBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
+      }
+      */
+    }
+
     public static void AddApplicationGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
     {
       var mockCompute = DIContext.Obtain<Mock<ICompute>>();
-      mockCompute.Setup(x => x.Apply(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => func.Invoke(argument));
+
+      mockCompute.Setup(x => x.Apply(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
+      {
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(argument);
+        var response = func.Invoke(argument);
+
+        // exercise serialie/deserialise of response returning it
+        TestIBinarizableSerializationForItem(response);
+        return response;
+      });
+
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
-        var task = new Task<TResponse>(() => func.Invoke(argument));
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(argument);
+
+        var task = new Task<TResponse>(() =>
+        {
+          var response = func.Invoke(argument);
+          TestIBinarizableSerializationForItem(response);
+
+          return response;
+        });
         task.Start();
+
         return task;
       });
     }
@@ -225,10 +289,34 @@ namespace VSS.TRex.Tests.TestFixtures
     public static void AddClusterComputeGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
     {
       var mockCompute = DIContext.Obtain<Mock<ICompute>>();
-      mockCompute.Setup(x => x.Broadcast(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => new List<TResponse> { func.Invoke(argument) });
+      mockCompute.Setup(x => x.Broadcast(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) => 
+      {
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(argument);
+
+        var response = new List<TResponse> {func.Invoke(argument)};
+
+        if (response.Count == 1 && response[0] != null)
+          TestIBinarizableSerializationForItem(response[0]);
+
+        return response;
+      });
+
       mockCompute.Setup(x => x.BroadcastAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
-        var task = new Task<ICollection<TResponse>>(() => new List<TResponse>{ func.Invoke(argument) });
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(argument);
+
+        var task = new Task<ICollection<TResponse>>(() =>
+        {
+            var response = func.Invoke(argument);
+            TestIBinarizableSerializationForItem(response);
+
+            return new List<TResponse>{response};
+        });
+
         task.Start();
         return task; 
       });

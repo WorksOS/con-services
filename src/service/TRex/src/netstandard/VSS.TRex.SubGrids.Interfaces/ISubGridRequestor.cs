@@ -50,7 +50,6 @@ namespace VSS.TRex.SubGrids.Interfaces
       ITRexSpatialMemoryCache subGridCache,
       ITRexSpatialMemoryCacheContext subGridCacheContext,
       ISurveyedSurfaces filteredSurveyedSurfaces,
-      Guid[] filteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument);
   }

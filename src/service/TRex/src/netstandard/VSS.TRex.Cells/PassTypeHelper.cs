@@ -22,33 +22,27 @@ namespace VSS.TRex.Cells
       switch (passType)
       {
         case PassType.Front: // val 0
-          {
-            result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit6);
-            result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit7);
-            break;
-          }
+          result = BitFlagHelper.BitOff(result, (int) GPSFlagBits.GPSSBit6);
+          result = BitFlagHelper.BitOff(result, (int) GPSFlagBits.GPSSBit7);
+          break;
+
         case PassType.Rear: // val 1
-          {
-            result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit6);
-            result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit7);
-            break;
-          }
+          result = BitFlagHelper.BitOn(result, (int) GPSFlagBits.GPSSBit6);
+          result = BitFlagHelper.BitOff(result, (int) GPSFlagBits.GPSSBit7);
+          break;
+
         case PassType.Track: // val 2
-          {
-            result = BitFlagHelper.BitOff(result, (int)GPSFlagBits.GPSSBit6);
-            result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit7);
-            break;
-          }
+          result = BitFlagHelper.BitOff(result, (int) GPSFlagBits.GPSSBit6);
+          result = BitFlagHelper.BitOn(result, (int) GPSFlagBits.GPSSBit7);
+          break;
+
         case PassType.Wheel: // val 3
-          {
-            result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit6);
-            result = BitFlagHelper.BitOn(result, (int)GPSFlagBits.GPSSBit7);
-            break;
-          }
+          result = BitFlagHelper.BitOn(result, (int) GPSFlagBits.GPSSBit6);
+          result = BitFlagHelper.BitOn(result, (int) GPSFlagBits.GPSSBit7);
+          break;
+
         default:
-          {
-            throw new ArgumentException($"Unknown pass type supplied to SetPassType {passType}", nameof(passType));
-          }
+          throw new ArgumentException($"Unknown pass type supplied to SetPassType {passType}", nameof(passType));
       }
 
       return result;
@@ -63,16 +57,13 @@ namespace VSS.TRex.Cells
     {
       byte testByte = 0;
 
-      if ((value & (1 << (int)GPSFlagBits.GPSSBit6)) != 0)
-      {
+      if ((value & (1 << (int) GPSFlagBits.GPSSBit6)) != 0)
         testByte = 1;
-      }
-      if ((value & (1 << (int)GPSFlagBits.GPSSBit7)) != 0)
-      {
-        testByte += 2;
-      }
 
-      return (PassType)testByte;
+      if ((value & (1 << (int) GPSFlagBits.GPSSBit7)) != 0)
+        testByte += 2;
+
+      return (PassType) testByte;
     }
 
     /// <summary>
@@ -84,7 +75,7 @@ namespace VSS.TRex.Cells
     /// <returns></returns>
     public static bool PassTypeSetContains(PassTypeSet PassTypeSet, PassType PassType)
     {
-      return ((int)PassTypeSet & (1 << (int)PassType)) != 0;
+      return ((int) PassTypeSet & (1 << (int) PassType)) != 0;
     }
   }
 }

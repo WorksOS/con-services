@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -34,7 +33,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
     /// </summary>
-    public GriddedReportRequestResponse GriddedReportRequestResponse { get; set; } = new GriddedReportRequestResponse();
+    public GriddedReportRequestResponse GriddedReportRequestResponse { get; } = new GriddedReportRequestResponse();
 
     private readonly GriddedReportRequestArgument _griddedReportRequestArgument;
 
@@ -84,7 +83,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
         ((GriddedReportTask)processor.Task).ProcessorDelegate = 
           subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
-            .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, (ClientCellProfileLeafSubgrid)subGrid));
+            .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
 
 
         // report options 0=direction,1=endpoint,2=automatic
@@ -164,7 +163,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         }
       }
 
-      subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
+      subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         var cell = subGrid.Cells[x, y];
@@ -174,17 +173,17 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
         result.Add(new GriddedReportDataRow
         {
-          Easting = cell.CellXOffset + subgridWorldOriginX,
-          Northing = cell.CellYOffset + subgridWorldOriginY,
+          Easting = cell.CellXOffset + subGridWorldOriginX,
+          Northing = cell.CellYOffset + subGridWorldOriginY,
           Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
-          CutFill = (griddedReportRequestArgument.ReportCutFill && (designHeights != null) &&
+          CutFill = (griddedReportRequestArgument.ReportCutFill && designHeights != null &&
                      designHeights.Cells[x, y] != Consts.NullHeight)
             ? cell.Height - designHeights.Cells[x, y]
             : Consts.NullHeight,
 
           // CCV is equiv to CMV in this instance
-          Cmv = (short) (griddedReportRequestArgument.ReportCmv ? cell.LastPassValidCCV : CellPassConsts.NullCCV),
-          Mdp = (short) (griddedReportRequestArgument.ReportMdp ? cell.LastPassValidMDP : CellPassConsts.NullMDP),
+          Cmv = griddedReportRequestArgument.ReportCmv ? cell.LastPassValidCCV : CellPassConsts.NullCCV,
+          Mdp = griddedReportRequestArgument.ReportMdp ? cell.LastPassValidMDP : CellPassConsts.NullMDP,
           PassCount = (short) (griddedReportRequestArgument.ReportPassCount ? cell.PassCount : CellPassConsts.NullPassCountValue),
           Temperature = (short) (griddedReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : CellPassConsts.NullMaterialTemperatureValue)
         });

@@ -66,7 +66,6 @@ namespace VSS.TRex.SubGrids
             subGrid1.Cells[I, J] = Consts.NullHeight;
         }
       });
-    }
-   
+    } 
   }
 }

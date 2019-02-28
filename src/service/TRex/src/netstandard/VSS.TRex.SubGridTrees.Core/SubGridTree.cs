@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -66,9 +63,9 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Base class for implementation of sub grid trees that defines various parameters and constants related to them
     /// </summary>
-    public class SubGridTree : ISubGridTree, IEnumerator<ISubGrid>
+    public class SubGridTree : ISubGridTree
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
+        // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
 
         /****************************** Internal members **************************/
 
@@ -80,7 +77,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The maximum (positive and negative) real world value for both X and Y axes that may be encompassed by the grid
         /// </summary>
-        private double MaxOrdinate;
+        public double MaxOrdinate { get; private set; }
 
         /// <summary>
         /// The first (top) sub grid in the tree. All other sub grids in the tree descend via this root node.
@@ -250,38 +247,23 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="worldExtent"></param>
         /// <param name="cellExtent"></param>
         /// <returns></returns>
-        public bool CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent)
+        public void CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent)
         {
-            try
-            {
-                // First calculate the leaf data cell indexes for the given real world extent
-                // If the world coordinates lie outside of the extent covered by the grid, then
-                // clamp them to the boundaries of the grid.
-                if (CalculateIndexOfCellContainingPosition(
-                        Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
-                        Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
-                        out uint minX,
-                        out uint minY) &&
-                    CalculateIndexOfCellContainingPosition(
-                        Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
-                        Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
-                        out uint maxX,
-                        out uint maxY))
-                {
-                    cellExtent = new BoundingIntegerExtent2D((int) minX, (int) minY, (int) maxX, (int) maxY);
-                    return true;
-                }
+            // First calculate the leaf data cell indexes for the given real world extent
+            // If the world coordinates lie outside of the extent covered by the grid, then
+            // clamp them to the boundaries of the grid.
+            // Note: The clamping of the supplied world extent range means this method can never fail, always
+            // returning a clamped cell extent to the underlying sub grid tree cell coordinate range
+            CalculateIndexOfCellContainingPosition(
+              Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
+              Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
+              out uint minX, out uint minY);
+            CalculateIndexOfCellContainingPosition(
+              Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
+              Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
+              out uint maxX, out uint maxY);
 
-                cellExtent = new BoundingIntegerExtent2D();
-                return false;
-            }
-            catch (Exception e)
-            {
-              // Something bad happened...
-              Log.LogDebug("Exception in SubGridTree.CalculateRegionGridCoverage:", e);
-              cellExtent = BoundingIntegerExtent2D.Inverted();
-              return false;
-            }
+            cellExtent = new BoundingIntegerExtent2D((int) minX, (int) minY, (int) maxX, (int) maxY);
         }
 
         /// <summary>
@@ -321,15 +303,9 @@ namespace VSS.TRex.SubGridTrees
                                  Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
         {
             // First calculate the leaf data cell indexes for the given real world extent
-            if (!CalculateRegionGridCoverage(extent, out BoundingIntegerExtent2D cellExtent))
-            {
-                // The extents requested lie at least partially outside the tree. Ignore this request.
-                Log.LogWarning($"{nameof(ScanSubGrids)} could not convert {extent} in a cell extent");
-                return false;
-            }
+            CalculateRegionGridCoverage(extent, out BoundingIntegerExtent2D cellExtent);
 
             // Given the on-the-ground cell extents we can now ask the sub grids to recursively scan themselves.
-
             return Root.ScanSubGrids(cellExtent, leafFunctor, nodeFunctor);
         }
 
@@ -384,10 +360,12 @@ namespace VSS.TRex.SubGridTrees
             // First descend through the node levels of the tree
             for (byte I = 1; I < NumLevels - 1; I++) // Yes, -1 because we choose a sub grid cell from the next level down...
             {
-                if (subGrid.GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
+                var testSubGrid = subGrid.GetSubGridContainingCell(cellX, cellY);
+
+                if (testSubGrid != null)
                 {
                     // Walk into this cell in the sub grid as the next level down in this path exists
-                    subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY) as INodeSubGrid;
+                    subGrid = testSubGrid as INodeSubGrid;
                 }
                 else
                 {
@@ -402,11 +380,13 @@ namespace VSS.TRex.SubGridTrees
                     lock (lockSubGrid)
                     {
                         // Check to see if another thread was able to create the sub grid before the
-                        // lock was obtained. Is so just return it
-                        if (subGrid.GetSubGridContainingCell(cellX, cellY, out subGridCellX, out subGridCellY))
+                        // lock was obtained. If so just return it
+                        testSubGrid = subGrid.GetSubGridContainingCell(cellX, cellY);
+
+                        if (testSubGrid != null)
                         {
                             // Walk into this cell in the sub grid as the next level down in this path exists
-                            subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY) as INodeSubGrid;
+                            subGrid = testSubGrid as INodeSubGrid;
                         }
                         else
                         {
@@ -415,6 +395,7 @@ namespace VSS.TRex.SubGridTrees
 
                             // ... and add it into this sub grid as the sub grid cell coordinates
                             // returned by GetSubGridContainingCell ...
+                             subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridCellX, out byte subGridCellY);
                              subGrid.SetSubGrid(subGridCellX, subGridCellY, newSubGrid);
 
                             // ... then carry on descending into it
@@ -471,8 +452,7 @@ namespace VSS.TRex.SubGridTrees
                         break;
 
                     default:
-                        Debug.Assert(false);
-                        break;
+                      throw new TRexSubGridTreeException($"Unknown SubGridPathConstructionType: {pathType}");
                 }
             }
 
@@ -506,10 +486,7 @@ namespace VSS.TRex.SubGridTrees
             // Walk down the tree looking for the sub grid that contains the cell with the given X, Y location
             while (subGrid != null && subGrid.Level < level)
             {
-                if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
-                    subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY);
-                else
-                    return null;
+                subGrid = ((INodeSubGrid) subGrid).GetSubGridContainingCell(cellX, cellY);
             }
             return subGrid;
         }
@@ -543,8 +520,9 @@ namespace VSS.TRex.SubGridTrees
 
             while (subGrid.Level < level)
             {
-                if (((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY, out byte subGridCellX, out byte subGridCellY))
-                    subGrid = subGrid.GetSubGrid(subGridCellX, subGridCellY);
+                var testSubGrid = ((INodeSubGrid)subGrid).GetSubGridContainingCell(cellX, cellY);
+                if (testSubGrid != null)
+                    subGrid = testSubGrid;
                 else
                     return subGrid;
             }
@@ -628,30 +606,6 @@ namespace VSS.TRex.SubGridTrees
       /// </summary>
       /// <returns></returns>
       public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubGrid(NumLevels) as ILeafSubGrid;
-
-      public IEnumerator<ISubGrid> GetEnumerator()
-      {
-        return null;
-      }
-
-      public bool MoveNext()
-      {
-        throw new NotImplementedException();
-      }
-
-      public void Reset()
-      {
-        throw new NotImplementedException();
-      }
-
-      public ISubGrid Current { get; }
-
-      object IEnumerator.Current => Current;
-
-      public void Dispose()
-      {
-        throw new NotImplementedException();
-      }
 
       /// <summary>
       /// The header string to be written into a serialized sub grid tree

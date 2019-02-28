@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
@@ -9,6 +10,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   /// </summary>    
   public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.
     /// </summary>
@@ -32,6 +35,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteBoolean(OverrideTargetPassCount);
 
       OverridingTargetPassCountRange.ToBinary(writer);
@@ -46,6 +51,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       OverrideTargetPassCount = reader.ReadBoolean();
 

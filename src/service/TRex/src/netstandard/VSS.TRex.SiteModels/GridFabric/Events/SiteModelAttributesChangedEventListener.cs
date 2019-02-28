@@ -22,9 +22,9 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         /// </summary>
         private IMessaging MsgGroup;
 
-        private string MessageTopicName = "SiteModelAttributesChangedEvents";
+        private readonly string MessageTopicName = "SiteModelAttributesChangedEvents";
 
-        private string GridName;
+        private readonly string GridName;
 
         public bool Invoke(Guid nodeId, ISiteModelAttributesChangedEvent message)
         {
@@ -68,16 +68,12 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
-            MsgGroup = DIContext.Obtain<ITRexGridFactory>().Grid(GridName)?.GetCluster().GetMessaging();
+            MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
 
             if (MsgGroup != null)
-            {
                 MsgGroup.LocalListen(this, MessageTopicName);
-            }
             else
-            {
                 Log.LogError("Unable to get messaging projection to add site model attribute changed event to");
-            }
         }
 
         public void StopListening()
@@ -96,9 +92,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
             if (!disposedValue)
             {
                 if (disposing)
-                {
                     StopListening();
-                }
 
                 disposedValue = true;
             }

@@ -9,7 +9,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteModelMachineDesign : ISiteModelMachineDesign
   {
-    private const int READER_WRITER_VERSION_MACHINE_DESIGN = 1;
+    private const int VERSION_NUMBER = 1;
 
     public int Id { get; set; }
     public string Name { get; set; }
@@ -30,7 +30,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION_MACHINE_DESIGN); 
+      writer.Write(VERSION_NUMBER); 
 
       writer.Write(Id);
       writer.Write(Name);
@@ -44,9 +44,9 @@ namespace VSS.TRex.SiteModels
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION_MACHINE_DESIGN)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_DESIGN, version);
+      byte version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       Id = reader.ReadInt32();
       Name = reader.ReadString();

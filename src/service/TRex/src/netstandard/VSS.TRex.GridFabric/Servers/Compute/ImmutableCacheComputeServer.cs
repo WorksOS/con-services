@@ -18,7 +18,6 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Logging;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
@@ -199,28 +198,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
-    public static bool SetGridActive(string gridName)
-    {
-      // Get an ignite reference to the named grid
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(gridName);
-
-      // If the grid exists, and it is not active, then set it to active
-      if (ignite != null && !ignite.GetCluster().IsActive())
-      {
-        ignite.GetCluster().SetActive(true);
-
-        Log.LogInformation($"Set grid '{gridName}' to active.");
-
-        return true;
-      }
-      else
-      {
-        Log.LogInformation($"Grid '{gridName}' is not available or is already active.");
-
-        return ignite != null && ignite.GetCluster().IsActive();
-      }
-    }
-
     public void StartTRexGridCacheNode()
     {
       Log.LogInformation("Creating new Ignite node");
@@ -233,21 +210,15 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       try
       {
         Console.WriteLine($"Creating new Ignite node for {cfg.IgniteInstanceName}");
-        immutableTRexGrid = Ignition.Start(cfg);
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine($"Exception during creation of new Ignite node:\n {e}");
-        Log.LogError(e, "Exception during creation of new Ignite node:");
-        throw e;
+        immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>()?.Grid(TRexGrids.ImmutableGridName(), cfg); 
       }
       finally
       {
-        Log.LogInformation("Completed creation of new Ignite node");
+        Log.LogInformation($"Completed creation of new Ignite node: Exists = {immutableTRexGrid != null}, Factory available = {DIContext.Obtain<ITRexGridFactory>() != null}");
       }
 
       // Wait until the grid is active
-      ActivatePersistentGridServer.Instance().WaitUntilGridActive(TRexGrids.ImmutableGridName());
+      DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.ImmutableGridName());
 
       // Add the immutable Spatial & NonSpatial caches
 

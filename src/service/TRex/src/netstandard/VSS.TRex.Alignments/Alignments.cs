@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Alignments.Interfaces;
 

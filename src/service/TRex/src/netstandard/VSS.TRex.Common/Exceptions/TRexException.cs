@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.Exceptions
+namespace VSS.TRex.Common.Exceptions
 {
   /// <summary>
   /// The base class for TRex custom exceptions. Rarrr!

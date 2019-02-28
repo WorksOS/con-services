@@ -9,38 +9,38 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// The ID of the SiteModel to execute the request against
     /// </summary>
-    Guid SiteModelID { get; set; }
+    Guid SiteModelID { get; }
 
     /// <summary>
     /// The bottom left on-the-ground cell origin X location for the patch of elevations to be computed from
     /// </summary>
-    uint OTGCellBottomLeftX { get; set; }
+    uint OTGCellBottomLeftX { get; }
 
     /// <summary>
     /// The bottom left on-the-ground cell origin Y location for the patch of elevations to be computed from
     /// </summary>
-    uint OTGCellBottomLeftY { get; set; }
+    uint OTGCellBottomLeftY { get; }
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
     /// </summary>
-    double CellSize { get; set; }
+    double CellSize { get; }
 
     /// <summary>
     /// Determines which surface information should be extracted: Earliest, Latest or Composite
     /// </summary>
-    SurveyedSurfacePatchType SurveyedSurfacePatchType { get; set; }
+    SurveyedSurfacePatchType SurveyedSurfacePatchType { get; }
 
     /// <summary>
     /// A map of the cells within the sub grid patch to be computed
     /// </summary>
-    SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
+    SubGridTreeBitmapSubGridBits ProcessingMap { get; }
 
     /// <summary>
     /// The list of surveyed surfaces to be included in the calculation
     /// [Note: This is fairly inefficient, the receiver of the request should be able to access surveyed surfaces locally...]
     /// </summary>
-    Guid[] IncludedSurveyedSurfaces { get; set; }
+    Guid[] IncludedSurveyedSurfaces { get; }
 
     /// <summary>
     /// Overloaded ToString to add argument properties
@@ -56,5 +56,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// </summary>
     /// <returns></returns>
     string CacheFingerprint();
+
+    void SetOTGBottomLeFtLocation(uint oTGCellBottomLeftX, uint oTGCellBottomLeftY);
   }
 }

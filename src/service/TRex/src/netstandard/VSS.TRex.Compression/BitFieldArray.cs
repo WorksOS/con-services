@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Exceptions;
 
 // This unit implements support for storing attribute values as variable bit field arrays and records 
 
@@ -63,14 +62,10 @@ namespace VSS.TRex.Compression
             if (memorySize == 0)
                 return; // No storage required (yes, this can happen, eg: PassCounts for a segment with only a single cell pass)
 
-            if (memorySize > MAXIMUM_BIT_FIELD_ARRAY_MEMORY_SIZE_BYTES)
-              
+            if (memorySize > MAXIMUM_BIT_FIELD_ARRAY_MEMORY_SIZE_BYTES)            
                 throw new TRexPersistencyException($"BitFieldArray.AllocateBuffer limited to {MAXIMUM_BIT_FIELD_ARRAY_MEMORY_SIZE_BYTES / (1024 * 1024)}Mb in size ({MemorySize() / (1024 * 1024)}Mb requested)");
 
             Storage = NewStorage();
-
-            if (Storage == null)
-                throw new TRexPersistencyException($"BitFieldArray.AllocateBuffer failed to allocate a buffer of {MemorySize()} bytes");
         }
 
         /// <summary>
@@ -210,7 +205,7 @@ namespace VSS.TRex.Compression
             // Write initial bits into storage element
             if (AvailBitsInCurrentStorageElement >= ValueBits)
             {
-                Storage[StoragePointer] = Storage[StoragePointer] | (unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - ValueBits));
+                Storage[StoragePointer] |=  unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - ValueBits);
                 StreamWriteBitPos += unchecked((uint)ValueBits);   // Advance the current bit position pointer;
                 return;
             }
@@ -218,7 +213,7 @@ namespace VSS.TRex.Compression
             // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
             int RemainingBitsToWrite = ValueBits - AvailBitsInCurrentStorageElement;
-            Storage[StoragePointer] = (Storage[StoragePointer] | (unchecked((ulong)value) >> RemainingBitsToWrite));
+            Storage[StoragePointer] |= unchecked((ulong)value) >> RemainingBitsToWrite;
 
             /* When using long elements, there can never be a value stored that is larger that the storage element
             // Step 2: Write whole elements
@@ -271,7 +266,7 @@ namespace VSS.TRex.Compression
             // Write initial bits into storage element
             if (AvailBitsInCurrentStorageElement >= valueBits)
             {
-                Storage[StoragePointer] = (Storage[StoragePointer] | (unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - valueBits)));
+                Storage[StoragePointer] |= (unchecked((ulong)value) << (AvailBitsInCurrentStorageElement - valueBits));
                 StreamWriteBitPos += unchecked((uint)valueBits);   // Advance the current bit position pointer;
                 return;
             }
@@ -279,7 +274,7 @@ namespace VSS.TRex.Compression
             // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
             int RemainingBitsToWrite = valueBits - AvailBitsInCurrentStorageElement;
-            Storage[StoragePointer] = Storage[StoragePointer] | (unchecked((ulong)value) >> RemainingBitsToWrite);
+            Storage[StoragePointer] |= (unchecked((ulong)value) >> RemainingBitsToWrite);
 
             /* When using long elements, there can never be a value stored that is larger that the storage element
             // Step 2: Write whole elements
@@ -331,20 +326,6 @@ namespace VSS.TRex.Compression
             if (valueBits == 0) // There's nothing to do!
                 return descriptor.AllValuesAreNull ? descriptor.NativeNullValue : descriptor.MinValue;
 
-#if DEBUG
-            if (Storage == null)
-            {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [bitLocation, ValueBits]), slmcAssert);
-                return 0;
-            }
-
-            if (bitLocation + valueBits > NumBits)
-            {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [bitLocation, ValueBits, FNumBits]), slmcAssert);
-                return 0;
-            }
-#endif
-
             uint BlockPointer = bitLocation >> BIT_LOCATION_TO_BLOCK_SHIFT;
             int RemainingBitsInCurrentStorageBlock = unchecked((int)(N_BITS_TO_READ_AT_A_TIME - (bitLocation & BITS_REMAINING_IN_STORAGE_BLOCK_MASK)));
             long Result;
@@ -352,7 +333,7 @@ namespace VSS.TRex.Compression
             // Read initial bits from storage element
             if (RemainingBitsInCurrentStorageBlock >= valueBits)
             {
-                Result = unchecked((long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - valueBits)) & (((long)1 << valueBits) - 1));
+                Result = unchecked((long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - valueBits)) & ((1L << valueBits) - 1));
             }
             else
             {
@@ -372,9 +353,7 @@ namespace VSS.TRex.Compression
 
                 // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
-                {
                     Result = unchecked((long)((unchecked((ulong)Result) << BitsToRead) | (Storage[BlockPointer + 1] >> (N_BITS_TO_READ_AT_A_TIME - BitsToRead))));
-                }
             }
 
             // Compute the true result of the read by taking nullability and the offset of MinValue into account
@@ -411,20 +390,6 @@ namespace VSS.TRex.Compression
 
             if (valueBits == 0) // There's nothing to do!
                 return 0;
-
-#if DEBUG
-            if (Storage == null)
-            {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [bitLocation, valueBits]), slmcAssert);
-                return 0;
-            }
-
-            if ((bitLocation + valueBits) > NumBits)
-            {
-                // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [bitLocation, valueBits, FNumBits]), slmcAssert);
-                return 0;
-            }
-#endif
 
             long Result;
             uint BlockPointer = bitLocation >> BIT_LOCATION_TO_BLOCK_SHIFT;

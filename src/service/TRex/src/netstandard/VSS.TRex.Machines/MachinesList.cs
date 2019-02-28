@@ -17,7 +17,7 @@ namespace VSS.TRex.Machines
   /// </summary>
   public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
   {
-    private const int READER_WRITER_VERSION_MACHINE_LIST = 1;
+    private const byte VERSION_NUMBER = 1;
     private const string MACHINES_LIST_STREAM_NAME = "Machines";
 
     /// <summary>
@@ -123,7 +123,7 @@ namespace VSS.TRex.Machines
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION_MACHINE_LIST);
+      writer.Write(VERSION_NUMBER);
 
       writer.Write(Count);
       for (int i = 0; i < Count; i++)
@@ -138,9 +138,9 @@ namespace VSS.TRex.Machines
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION_MACHINE_LIST)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_LIST, version);
+      byte version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       int count = reader.ReadInt32();
       Capacity = count;

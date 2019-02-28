@@ -10,6 +10,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Machines.Interfaces;
@@ -83,7 +84,10 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
-        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+
+        .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
+
+        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Complete();
     }

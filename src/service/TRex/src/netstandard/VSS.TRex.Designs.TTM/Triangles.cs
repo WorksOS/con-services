@@ -30,10 +30,8 @@ namespace VSS.TRex.Designs.TTM
 
     public Triangle AddTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3)
     {
-      if ((Vertex1 == Vertex2) || (Vertex1 == Vertex3) || (Vertex2 == Vertex3))
-      {
+      if (Vertex1 == Vertex2 || Vertex1 == Vertex3 || Vertex2 == Vertex3)
         return null;
-      }
 
       Triangle Result = CreateTriangle(Vertex1, Vertex2, Vertex3);
       Add(Result);

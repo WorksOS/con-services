@@ -48,10 +48,7 @@ namespace VSS.TRex.Profiling.Models
     /// <param name="ind"></param>
     public void AddPoint(double x, double y, double ind)
     {
-      if (Count > 0 && Items[Count - 1].Equals(x, y, ind))
-        return;
-
-      if (Count >= MaxIntercepts)
+      if (Count > 0 && Items[Count - 1].Equals(x, y, ind) || Count >= MaxIntercepts)
         return;
 
       if (Count >= Items.Length)
