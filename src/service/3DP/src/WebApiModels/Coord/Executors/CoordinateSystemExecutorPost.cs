@@ -23,11 +23,11 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
       if (file.HasProjectID())
       {
         var request = file as CoordinateSystemFile;
-        return trexCompactionDataProxy.SendPostCSDataRequest(request, customHeaders).Result;
+        return trexCompactionDataProxy.SendDataPostRequest<CoordinateSystemSettings, CoordinateSystemFile>(request, "/coordsystem", customHeaders, true).Result;
       }
 
       var validationRequest = file as CoordinateSystemFileValidationRequest;
-      return trexCompactionDataProxy.SendCSDataValidationRequest(validationRequest, customHeaders).Result;
+      return trexCompactionDataProxy.SendDataPostRequest<CoordinateSystemSettings, CoordinateSystemFileValidationRequest>(validationRequest, "/coordsystem/validation", customHeaders).Result;
     }
 
 #if RAPTOR

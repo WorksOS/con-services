@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void CutFillExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
-      var request = new CutFillDetailsRequest(0, null, null, null, null, null);
+      var request = new CutFillDetailsRequest(0, projectUid, null, null, null, null);
 
       var configStore = new Mock<IConfigurationStore>();
 #if RAPTOR
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"Cut/Fill statistics have not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendCutFillDetailsRequest(request, It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, CutFillDetailsRequest>(request, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

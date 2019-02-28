@@ -13,8 +13,11 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
   {
     protected override CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
     {
-      var request = item as ProjectID;
-      return trexCompactionDataProxy.SendGetCSDataRequest(request, customHeaders).Result;
+      var request = CastRequestObjectTo<ProjectID>(item);
+
+      var siteModelId = request.ProjectUid.ToString();
+
+      return trexCompactionDataProxy.SendDataGetRequest<CoordinateSystemSettings>(siteModelId, $"/projects/{siteModelId}/coordsystem", customHeaders).Result;
     }
 
 #if RAPTOR

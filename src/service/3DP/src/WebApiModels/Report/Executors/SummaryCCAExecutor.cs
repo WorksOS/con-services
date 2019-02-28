@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #endif
           var ccaSummaryRequest = new CCASummaryRequest(request.ProjectUid, request.Filter);
 
-          return trexCompactionDataProxy.SendCCASummaryRequest(ccaSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CCASummaryResult, CCASummaryRequest>(ccaSummaryRequest, "/cca/summary", customHeaders).Result;
 #if RAPTOR
         }
 

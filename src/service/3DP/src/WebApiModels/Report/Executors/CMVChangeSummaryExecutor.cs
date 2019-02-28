@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
-            return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;
+            return trexCompactionDataProxy.SendDataPostRequest<CMVChangeSummaryResult, CMVChangeDetailsRequest>(cmvChangeDetailsRequest, "/cmv/percentchange", customHeaders).Result;
 #if RAPTOR
         }
         new TASNodeCMVChangeResult();

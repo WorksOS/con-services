@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var exception = new ServiceException(HttpStatusCode.InternalServerError, 
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"StationOffset report failed somehow. ProjectUid: { projectUid }"));
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendStationOffsetReportRequest(It.IsAny<CompactionReportStationOffsetTRexRequest>(), It.IsAny<IDictionary<string, string>>())).Throws(exception);
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportStationOffsetTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).Throws(exception);
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(_logger, configStore: mockConfigStore.Object, trexCompactionDataProxy: tRexProxy.Object);
       var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));

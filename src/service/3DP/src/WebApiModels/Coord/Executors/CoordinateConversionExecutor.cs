@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
           if (UseTRexGateway("ENABLE_TREX_GATEWAY_CS"))
           {
 #endif
-          return trexCompactionDataProxy.SendCoordinateConversionRequest(request, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", customHeaders).Result;
 #if RAPTOR
           }
 
