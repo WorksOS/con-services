@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request.PatchNumber, 
             request.PatchSize); 
 
-          var fileResult = trexCompactionDataProxy.SendProductionDataPatchRequest(patchDataRequest, customHeaders).Result;
+          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders).Result;
 
           return fileResult.Length > 0
               ? ConvertPatchResult(fileResult, true)

@@ -171,7 +171,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.returnAllPassesAndLayers
       );
 
-      var trexResult = trexCompactionDataProxy.SendProductionDataProfileDataRequest(productionDataProfileDataRequest, customHeaders).Result;
+      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
 
       return trexResult != null ? ConvertTRexProductioDataProfileResult(trexResult, request.liftBuildSettings) : null;
     }
@@ -528,7 +528,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0)
       );
 
-      var trexResult = trexCompactionDataProxy.SendSummaryVolumesProfileDataRequest(summaryVolumesProfileDataRequest, customHeaders).Result;
+      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest> (summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders).Result;
 
       return trexResult != null ? ConvertTRexSummaryVolumesProfileResult(trexResult, volumeCalcType) : null;
     }

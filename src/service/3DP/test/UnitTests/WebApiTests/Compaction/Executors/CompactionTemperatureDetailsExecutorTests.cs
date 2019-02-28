@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
@@ -18,6 +19,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -59,30 +61,30 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void TemperatureDetailsExecutor_TRex_NoResult()
     {
       var projectUid = Guid.NewGuid();
-      var request = new TemperatureDetailsRequest(0, null, new double[0], null, null);
+      var request = new TemperatureDetailsRequest(0, projectUid, new double[0], null, null);
 
       var logger = new Mock<ILoggerFactory>();
 
       var mockConfigStore = new Mock<IConfigurationStore>();
+#if RAPTOR
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE")).Returns("true");
-      
-      var exception = new ServiceException(HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"Temperature Details statistics have not been implemented in TRex yet. ProjectUid: {projectUid}"));
+#endif
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendTemperatureDetailsRequest(It.IsAny<TemperatureDetailRequest>(), It.IsAny<IDictionary<string, string>>()))
-        .Throws(exception);
+      trexCompactionDataProxy.Setup(x => x.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailsRequest>(request, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+        .Returns((Task<TemperatureDetailResult>)null);
+
 
       var executor = RequestExecutorContainerFactory
         .Build<DetailedTemperatureExecutor>(logger.Object, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: trexCompactionDataProxy.Object);
 
-      var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      var result = executor.Process(request);
 
-      Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
-      Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
-      Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
+      Assert.AreEqual(0, result.Code);
+      Assert.AreEqual(result.Message, "success");
+      Assert.AreEqual(((CompactionTemperatureDetailResult)result).Percents, null);
+      Assert.AreEqual(((CompactionTemperatureDetailResult)result).TemperatureTarget, null);
     }
 #if RAPTOR
     [TestMethod]

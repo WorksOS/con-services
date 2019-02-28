@@ -70,8 +70,10 @@ namespace VSS.MasterData.Proxies
           {
             if (payload != null)
             {
-              streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-              result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
+              using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+              {
+                result = await request.ExecuteRequest<T>(url, ms, customHeaders, method, timeout, retries);
+              }
             }
           }
         }

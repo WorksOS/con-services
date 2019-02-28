@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.CmvSettings.MaxCMVPercent,
             request.CmvSettings.MinCMVPercent);
 
-          return trexCompactionDataProxy.SendCMVSummaryRequest(cmvSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CMVSummaryResult, CMVSummaryRequest>(cmvSummaryRequest, "/cmv/summary", customHeaders).Result;
 #if RAPTOR
         }
 

@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.Filter,
             request.LiftBuildSettings.MachineSpeedTarget);
 
-          return trexCompactionDataProxy.SendSpeedSummaryRequest(speedSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<SpeedSummaryResult, SpeedSummaryRequest>(speedSummaryRequest, "/speed/summary", customHeaders).Result;
 #if RAPTOR
         }
 

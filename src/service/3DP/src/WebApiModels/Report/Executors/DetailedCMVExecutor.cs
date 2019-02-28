@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #endif
           var settings = (CMVSettingsEx) request.CmvSettings;
           var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
-          return trexCompactionDataProxy.SendCMVDetailsRequest(cmvDetailsRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CMVDetailedResult, CMVDetailsRequest>(cmvDetailsRequest, "/cmv/details", customHeaders).Result;
 #if RAPTOR
         }
 

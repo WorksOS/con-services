@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"Grid report failed somehow. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendGridReportRequest(It.IsAny<CompactionReportGridTRexRequest>(), It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportGridTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

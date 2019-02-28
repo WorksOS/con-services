@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.Filter,
             request.liftBuildSettings.OverridingTargetPassCountRange);
 
-          return trexCompactionDataProxy.SendPassCountSummaryRequest(pcSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<PassCountSummaryResult, PassCountSummaryRequest>(pcSummaryRequest, "/passcounts/summary", customHeaders).Result;
 #if RAPTOR
         }
 

@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CUTFILL"))
         {
 #endif
-          return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionCutFillDetailedResult, CutFillDetailsRequest>(request, "/cutfill/details", customHeaders).Result;
 #if RAPTOR
       }
 
