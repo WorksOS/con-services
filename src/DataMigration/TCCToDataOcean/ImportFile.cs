@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -6,12 +8,11 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
+using TCCToDataOcean.Utils;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories.DBModels;
@@ -48,17 +49,28 @@ namespace TCCToDataOcean
     /// </summary>
     public FileDataResult GetImportedFilesFromWebApi(string uri, Project project)
     {
-      Log.LogInformation($"## In ## {nameof(GetImportedFilesFromWebApi)} | Get imported files for {project.ProjectUID}, customer {project.CustomerUID}");
+      Log.LogInformation($"{Method.In} | Get imported files for {project.ProjectUID}, customer {project.CustomerUID}");
 
       var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, project.CustomerUID)).Result;
-
-      // TODO (Aaron) handle non 200 result codes.
 
       var receiveStream = response.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader(receiveStream, Encoding.UTF8);
       var responseBody = readStream.ReadToEnd();
 
-      Log.LogInformation($"## Out ## {nameof(GetImportedFilesFromWebApi)} | Status code: {response.StatusCode}, {responseBody}");
+      Log.LogInformation($"{Method.Info()} | Status code: {response.StatusCode}, {responseBody}");
+
+      switch (response.StatusCode)
+      {
+        case HttpStatusCode.Unauthorized:
+          {
+            Log.LogError($"{Method.Out} | Check TPAAS authentication credentials.");
+
+            Environment.Exit(1);
+            break;
+          }
+      }
+
+      Log.LogInformation(Method.Out);
 
       return JsonConvert.DeserializeObject<FileDataResult>(responseBody, new JsonSerializerSettings
       {
@@ -71,6 +83,8 @@ namespace TCCToDataOcean
     /// </summary>
     public FileDataSingleResult SendRequestToFileImportV4(string uriRoot, FileData fileDescr, string fullFileName, ImportOptions importOptions = new ImportOptions())
     {
+      Log.LogInformation(Method.In);
+
       var createdDt = fileDescr.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = fileDescr.FileUpdatedUtc.ToUniversalTime().ToString("o");
 
@@ -110,6 +124,8 @@ namespace TCCToDataOcean
         Log.LogError(exception.Message);
       }
 
+      Log.LogInformation(Method.Out);
+
       return null;
     }
 
@@ -119,7 +135,7 @@ namespace TCCToDataOcean
     /// <returns>Repsonse from web api as string</returns>
     private string UploadFileToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
-      Log.LogInformation($"{nameof(UploadFileToWebApi)}: Filename: {fullFileName}, CustomerUid: {customerUid}");
+      Log.LogInformation($"{Method.In} | Filename: {fullFileName}, CustomerUid: {customerUid}");
 
       try
       {
@@ -151,12 +167,17 @@ namespace TCCToDataOcean
             result = DoHttpRequest(uri, httpMethod, content.ToArray(), customerUid, contentType);
           }
         }
+
         //The last chunk should have the result
         return result;
       }
       catch (Exception ex)
       {
         return ex.Message;
+      }
+      finally
+      {
+        Log.LogInformation(Method.Out);
       }
     }
 
@@ -165,7 +186,7 @@ namespace TCCToDataOcean
     /// </summary>
     private string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType)
     {
-      Log.LogInformation($"{nameof(DoHttpRequest)}: {httpMethod.Method}, Uri: {resourceUri}");
+      Log.LogInformation($"{Method.In} | {httpMethod.Method}, Uri: {resourceUri}");
 
       if (!(WebRequest.Create(resourceUri) is HttpWebRequest request)) { return string.Empty; }
 
@@ -203,9 +224,13 @@ namespace TCCToDataOcean
 
           if (response == null) { continue; }
 
+          Log.LogInformation(Method.Out);
+
           return GetStringFromResponseStream(response);
         }
       }
+
+      Log.LogInformation(Method.Out);
 
       return responseString;
     }
@@ -226,6 +251,7 @@ namespace TCCToDataOcean
         flowRelativePath = name,
         flowTotalChunks = totalChunks
       };
+
       return flowFileUpload;
     }
 

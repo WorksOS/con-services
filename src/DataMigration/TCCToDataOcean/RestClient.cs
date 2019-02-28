@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Utils;
 using VSS.WebApi.Common;
 
 namespace TCCToDataOcean
@@ -20,28 +21,26 @@ namespace TCCToDataOcean
     private readonly HttpClient httpClient;
     private readonly ILogger Log;
 
-    private HttpRequestMessage GetRequestMessage(HttpMethod method, string uri)
-    {
-      var request = new HttpRequestMessage(method, new Uri(uri));
-      Log.LogInformation($"[{method}] {request.RequestUri.AbsoluteUri}");
-
-      return request;
-    }
+    private static HttpRequestMessage GetRequestMessage(HttpMethod method, string uri) => new HttpRequestMessage(method, new Uri(uri));
 
     public RestClient(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication)
     {
       Log = loggerFactory.CreateLogger<HttpClient>();
+      Log.LogInformation(Method.In);
 
       var bearerToken = authentication.GetApplicationBearerToken();
 
       httpClient = new HttpClient();
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
-
       httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {bearerToken}");
+
+      Log.LogInformation(Method.Out);
     }
 
     public Task<HttpResponseMessage> SendHttpClientRequest(string uri, HttpMethod method, string payloadData, string acceptHeader, string contentType, string customerUid)
     {
+      Log.LogInformation(Method.In);
+
       var request = GetRequestMessage(method, uri);
 
       request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
@@ -66,20 +65,7 @@ namespace TCCToDataOcean
         }
       }
 
-      return httpClient.SendAsync(request);
-    }
-
-    public Task<HttpResponseMessage> SendHttpClientRequest(string uri, HttpMethod method, byte[] payloadData, string acceptHeader, string contentType, string customerUid)
-    {
-      var request = GetRequestMessage(method, uri);
-
-      request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
-      request.Headers.Add("X-VisionLink-CustomerUid", customerUid);
-
-      if (payloadData != null)
-      {
-        request.Content = new ByteArrayContent(payloadData);
-      }
+      Log.LogInformation(Method.Out);
 
       return httpClient.SendAsync(request);
     }

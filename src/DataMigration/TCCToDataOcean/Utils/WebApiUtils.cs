@@ -10,7 +10,7 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Utils
 {
   public class WebApiUtils : IWebApiUtils
   {
