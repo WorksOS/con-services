@@ -50,7 +50,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
       {
         // Attempt to attach to an already existing Ignite instance
         Log.LogInformation("Getting Immmutable grid");
-        immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+        immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
         Log.LogInformation($"Got {immutableTRexGrid?.Name}");
 
         // If there was no connection obtained, attempt to create a new instance
@@ -119,7 +119,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
           try
           {
-            immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName(), cfg);
+            immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>()?.Grid(TRexGrids.ImmutableGridName(), cfg);
           }
           catch (Exception e)
           {

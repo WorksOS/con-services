@@ -1,4 +1,6 @@
 ﻿using System;
+using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.ExistenceMaps.Servers;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -11,12 +13,13 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     /// </summary>
     public class GetSingleExistenceMapRequest : BaseExistenceMapRequest
     {
+        private readonly IExistenceMapServer server = DIContext.Obtain<IExistenceMapServer>();
+
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public GetSingleExistenceMapRequest()
         {
-
         }
 
         /// <summary>
@@ -25,9 +28,9 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static ISubGridTreeBitMask Execute(INonSpatialAffinityKey key)
+        public ISubGridTreeBitMask Execute(INonSpatialAffinityKey key)
         {
-            byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
+            byte[] bytes = server.GetExistenceMap(key);
 
             if (bytes == null)
             {
@@ -48,7 +51,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="descriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static ISubGridTreeBitMask Execute(Guid siteModeID, long descriptor, Guid ID) => Execute(CacheKey(siteModeID, descriptor, ID));
+        public ISubGridTreeBitMask Execute(Guid siteModeID, long descriptor, Guid ID) => Execute(CacheKey(siteModeID, descriptor, ID));
         
     }
 }

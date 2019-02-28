@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       // Construct the function to be used
       var func = new AlignmentDesignFilterBoundaryComputeFunc();
 
-      return _Compute.Apply(func, arg);
+      return Compute.Apply(func, arg);
     }
 
     public static AlignmentDesignFilterBoundaryResponse Execute(Guid referenceDesignUID, double startStation, double endStation, double leftOffset, double rightOffset)

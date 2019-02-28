@@ -76,6 +76,14 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     void SetOp_AND(ISubGridTreeBitMask Source);
 
     /// <summary>
+    /// Takes a source SubGridBitMask instance and performs a bitwise XOR of the contents of source against the
+    /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
+    /// </summary>
+    /// <param name="Source"></param>
+
+    void SetOp_XOR(ISubGridTreeBitMask Source);
+
+    /// <summary>
     ///  ClearCellIfSet will set the value of a cell to false if the current
     /// value of cell is True. The function returns true if the cell was set
     /// and has been cleared

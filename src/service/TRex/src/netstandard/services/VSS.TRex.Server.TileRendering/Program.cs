@@ -80,7 +80,8 @@ namespace VSS.TRex.Server.TileRendering
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
-        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
+
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))

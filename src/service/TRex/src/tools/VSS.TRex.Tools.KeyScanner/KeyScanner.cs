@@ -124,7 +124,7 @@ namespace VSS.TRex.Tools.KeyScanner
     {
       try
       {
-        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
 
         if (ignite == null)
         {

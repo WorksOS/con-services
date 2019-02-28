@@ -10,13 +10,6 @@ namespace VSS.TRex.GridFabric.Requests
   public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>
   {
     /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public BaseRequest()
-    {
-    }
-
-    /// <summary>
     /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
     /// </summary>
     /// <param name="gridName"></param>
