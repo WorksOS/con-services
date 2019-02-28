@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +24,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -225,7 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
-      var startEndDate = GetDateRange(project.LegacyProjectId, filter);
+      var startEndDate = await GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
@@ -304,7 +305,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
-      var startEndDate = GetDateRange(project.LegacyProjectId, filter);
+      var startEndDate = await GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
@@ -447,20 +448,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the date range for the export.
     /// </summary>
-    private (DateTime startUtc, DateTime endUtc) GetDateRange(long projectId, FilterResult filter)
+    private async Task<(DateTime startUtc, DateTime endUtc)> GetDateRange(long projectId, FilterResult filter)
     {
 #if RAPTOR
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor performance.
         //But need to set here for export.
-        var excludedIds = filter?.SurveyedSurfaceExclusionList?.ToArray() ?? new long[0];
-        var request = new ProjectStatisticsRequest(projectId, excludedIds);
-        request.Validate();
-
-        var result =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
-            .Process(request) as ProjectStatisticsResult;
+        var projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, ConfigStore,
+          FileListProxy, TRexCompactionDataProxy
+          , raptorClient
+        );
+        var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
+        var result = projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
+          filter?.SurveyedSurfaceExclusionList?.ToList() ?? new List<long>(0), GetUserId(), CustomHeaders).Result;
 
         var startUtc = filter?.StartUtc ?? result.startTime;
         var endUtc = filter?.EndUtc ?? result.endTime;

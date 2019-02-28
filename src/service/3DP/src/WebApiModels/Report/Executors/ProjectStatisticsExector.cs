@@ -1,4 +1,7 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using System.Linq;
+using System.Net;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -16,26 +19,29 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var tRexRequest = item as ProjectStatisticsTRexRequest;
-      if (tRexRequest != null)
-      {
-        return trexCompactionDataProxy.SendProjectStatisticsRequest(tRexRequest).Result;
-      }
+      var request = item as ProjectStatisticsMultiRequest;
 
 #if RAPTOR
-      var request = CastRequestObjectTo<ProjectStatisticsRequest>(item);
-
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS"))
+#endif
+      {
+        var tRexRequest =
+          new ProjectStatisticsTRexRequest(request.ProjectUid, request.ExcludedSurveyedSurfaceUids?.ToArray());
+        return trexCompactionDataProxy.SendProjectStatisticsRequest(tRexRequest).Result;
+      }
+#if RAPTOR
       bool success = raptorClient.GetDataModelStatistics(
-        request.ProjectId ?? -1,
-        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds),
+        request.ProjectId,
+        RaptorConverters.convertSurveyedSurfaceExlusionList(request.ExcludedSurveyedSurfaceIds?.ToArray()),
         out var statistics);
 
       if (success)
         return ConvertProjectStatistics(statistics);
 #endif
-      throw CreateServiceException<ProjectStatisticsExecutor>();
-    }
 
+      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+        "ProjectStatisticsExecutor: Unsupported path"));
+    }
 
 #if RAPTOR
     private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
@@ -64,3 +70,4 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
   }
 }
+

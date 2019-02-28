@@ -16,10 +16,10 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Contracts;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -251,6 +251,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .Process(request) as CMVDetailedResult;
     }
 
+#if RAPTOR
     /// <summary>
     /// Gets project statistics from Raptor.
     /// NOTE:  Obsolete: We now use CompactionElevationController "api/v2/projectstatistics"
@@ -277,6 +278,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
+#endif
 
     /// <summary>
     /// Gets volumes summary from Raptor.

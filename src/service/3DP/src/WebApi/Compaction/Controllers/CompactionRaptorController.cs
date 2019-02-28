@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
       var result = boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
-        sumVolParameters.Item2, designDescriptor);
+        sumVolParameters.Item2, designDescriptor, GetUserId(), CustomHeaders);
       var bbox = $"{result.minLatDegrees},{result.minLngDegrees},{result.maxLatDegrees},{result.maxLngDegrees}";
       Log.LogInformation($"GetBoundingBox: returning {bbox}");
       return bbox;

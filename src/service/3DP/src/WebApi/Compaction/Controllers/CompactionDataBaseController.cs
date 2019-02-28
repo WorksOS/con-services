@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
@@ -113,26 +114,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<(bool isValidFilterForProjectExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
     {
       if (!filterUid.HasValue) return (true, null);
-
-      var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
-      var projectIdTask = GetLegacyProjectId(projectUid);
-      var filterTask = GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
-
-      await Task.WhenAll(filterTask, excludedIdsTask, projectIdTask);
-
-      var filter = await filterTask;
-      var projectId = await projectIdTask;
-      var excludedIds = await excludedIdsTask;
-
-      var request = new ProjectStatisticsRequest(projectId, excludedIds?.ToArray());
-      request.Validate();
+      var filter = await GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
 
       try
       {
-#if RAPTOR
-        var projectExtents = RequestExecutorContainerFactory
-                             .Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
-                             .Process(request) as ProjectStatisticsResult;
+        var projectId = await GetLegacyProjectId(projectUid);
+        var projectExtents = await _projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
 
         //No data in Raptor - stop
         if (projectExtents == null) return (false, null);
@@ -148,10 +135,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         //All other cases - proceed further
         return (true, filter);
-#else
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
       }
       catch
       {

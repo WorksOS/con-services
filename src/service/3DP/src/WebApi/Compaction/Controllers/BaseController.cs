@@ -27,8 +27,11 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Common;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
+using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -113,6 +116,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     };
     protected bool UseTRexGateway(string key) => bool.TryParse(ConfigStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
 
+    /// <summary>
+    /// helper methods for getting project statistics from Raptor/TRex
+    /// </summary>
+    protected readonly ProjectStatisticsHelper _projectStatisticsHelper;
 
     /// <summary>
     /// Default constructor.
@@ -122,6 +129,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ConfigStore = configStore;
       FileListProxy = fileListProxy;
       SettingsManager = settingsManager;
+
+      _projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, configStore,
+        fileListProxy, TRexCompactionDataProxy
+#if RAPTOR
+        , raptorClient
+#endif
+      );
     }
 
     /// <summary>
@@ -130,6 +144,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected Task<long> GetLegacyProjectId(Guid projectUid)
     {
       return ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+    }
+
+    /// <summary>
+    /// Returns the ProjectUid (Guid) for a given ProjectId (long).
+    /// </summary>
+    protected Task<Guid> GetProjectUid(long projectId)
+    {
+      return ((RaptorPrincipal)User).GetProjectUid(projectId);
     }
 
     /// <summary>
@@ -203,48 +225,103 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return result;
     }
 
-    /// <summary>
-    /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
-    /// This is the deactivated ones.
-    /// </summary>
-    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
-    protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
-    {
-      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
-      if (fileList == null || fileList.Count == 0)
-      {
-        return null;
-      }
+//    /// <summary>
+//    /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
+//    /// This is the deactivated ones.
+//    /// </summary>
+//    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
+//    /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
+//    protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
+//    {
+//      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+//      if (fileList == null || fileList.Count == 0)
+//      {
+//        return null;
+//      }
 
-      var results = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => f.LegacyFileId).ToList();
+//      var results = fileList
+//        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
+//        .Select(f => f.LegacyFileId).ToList();
 
-      return results;
-    }
+//      return results;
+//    }
+
+//    /// <summary>
+//    /// Gets the Uid and Id lists of the surveyed surfaces to exclude from TRex/Raptor calculations. 
+//    /// This is the deactivated ones.
+//    /// </summary>
+//    private async Task<(List<Guid> Uids, List<long> Ids)> GetExcludedSurveyedSurfaces(Guid projectUid)
+//    {
+//      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+//      if (fileList == null || fileList.Count == 0)
+//        return (null, null);
+
+//      var uidList = fileList
+//        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
+//        .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
+
+//      var idList = fileList
+//        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
+//        .Select(f => f.LegacyFileId).ToList();
+//      return (uidList, idList);
+//    }
+
+//    /// <summary>
+//    /// Gets the Uid and Id lists of the surveyed surfaces to exclude from TRex/Raptor calculations. 
+//    /// This is the deactivated ones.
+//    /// </summary>
+//    private async Task<List<Guid>> GetExcludedSurveyedSurfacesMatches(Guid projectUid, List<long> Ids)
+//    {
+//      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+//      if (fileList == null || fileList.Count == 0)
+//        return null;
+
+//      var uidList = fileList
+//        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface 
+//                    && Ids.Contains(f.LegacyFileId))
+//        .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
+//      return uidList;
+//    }
+
+//    protected async Task<ProjectStatisticsResult> GetProjectStatisticsWithProjectSSExclusions(Guid projectUid)
+//    {
+//      var excludedSSs = await GetExcludedSurveyedSurfaces(projectUid);
+//      var projectId = await GetLegacyProjectId(projectUid);
 
 
-    /// <summary>
-    /// Gets the Uids of the surveyed surfaces to exclude from TRex calculations. 
-    /// This is the deactivated ones.
-    /// </summary>
-    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
-    protected async Task<List<Guid>> GetExcludedSurveyedSurfaceUids(Guid projectUid)
-    {
-      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
-      if (fileList == null || fileList.Count == 0)
-      {
-        return null;
-      }
+//      var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
+//        excludedSSs.Uids?.ToArray(), excludedSSs.Ids?.ToArray());
 
-      var results = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
+//      return
+//        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory,
+//#if RAPTOR
+//            raptorClient,
+//#endif
+//            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+//          .Process(request) as ProjectStatisticsResult;
+//    }
 
-      return results;
-    }
+//    protected async Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSSExclusions(long projectId, long[] filterSSExclusionList)
+//    {
+//      var projectUid = await GetProjectUid(projectId);
+//      List<Guid> excludedSSUids = null;
+//      if (filterSSExclusionList != null && filterSSExclusionList.Length > 0)
+//      {
+//        excludedSSUids = await GetExcludedSurveyedSurfacesMatches(projectUid, filterSSExclusionList.ToList());
+//      }
+
+//      var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
+//        excludedSSUids?.ToArray(), filterSSExclusionList?.ToArray());
+
+//      return
+//        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory,
+//#if RAPTOR
+//            raptorClient,
+//#endif
+//            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+//          .Process(request) as ProjectStatisticsResult;
+//    }
+
 
     /// <summary>
     /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
@@ -387,7 +464,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return cachedFilter;
       }
 
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
+      var excludedIds = await _projectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
       DesignDescriptor designDescriptor = null;
       DesignDescriptor alignmentDescriptor = null;

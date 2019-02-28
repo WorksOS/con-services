@@ -65,6 +65,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
     }
 
+#if RAPTOR
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
     ///    NOTE: Obsolete
@@ -151,5 +152,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
+#endif
   }
 }

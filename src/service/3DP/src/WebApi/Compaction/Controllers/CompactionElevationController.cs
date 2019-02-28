@@ -13,16 +13,14 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -49,6 +47,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The request factory
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
+
 
     /// <summary>
     /// Default constructor.
@@ -154,10 +153,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var returnResult = await GetProjectStatisticsFromService(projectUid);
+        var projectId = await GetLegacyProjectId(projectUid);
+        var result = await _projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
 
-        Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
-        return returnResult;
+        Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(result));
+        return result;
       }
       catch (ServiceException se)
       {
@@ -171,37 +171,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
-    private async Task<ProjectStatisticsResult> GetProjectStatisticsFromService(Guid projectUid)
-    {
-#if RAPTOR
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS"))
-      {
-#endif
-        var excludedUids = await GetExcludedSurveyedSurfaceUids(projectUid);
-        var request = new ProjectStatisticsTRexRequest(projectUid, excludedUids.ToArray());
-        request.Validate();
-
-        return
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory,
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(request) as ProjectStatisticsResult;
-#if RAPTOR
-      }
-      else
-      {
-        var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
-        var projectIdTask = GetLegacyProjectId(projectUid);
-        await Task.WhenAll(excludedIdsTask, projectIdTask);
-
-        var request = new ProjectStatisticsRequest(projectIdTask.Result, excludedIdsTask.Result?.ToArray());
-        request.Validate();
-
-        return
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
-            .Process(request) as ProjectStatisticsResult;
-      }
-#endif
-    }
 
     /// <summary>
     /// Gets production data extents from Raptor in lat/lng degrees.
@@ -216,7 +185,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProjectExtents V2: " + Request.QueryString);
       var projectId = await GetLegacyProjectId(projectUid);
-      return await GetProjectExtentsV1(projectId, boundingBoxService);
+      var excludedIds = await _projectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
+
+      try
+      {
+        var result = boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
+        return await FormatProjectExtentsResult(projectUid, result);
+      }
+      catch (ServiceException se)
+      {
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+      }
+      finally
+      {
+        Log.LogInformation("GetProjectExtents returned: " + Response.StatusCode);
+      }
     }
 
     /// <summary>
@@ -232,51 +217,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal) User).GetProject(projectId);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(Guid.Parse(project.ProjectUid));
+      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
+      var excludedIds = await _projectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
 
       try
       {
-#if RAPTOR
-        var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
-        var returnResult = new ProjectExtentsResult
-        {
-          minLat = result.ConversionCoordinates[0].Y,
-          minLng = result.ConversionCoordinates[0].X,
-          maxLat = result.ConversionCoordinates[1].Y,
-          maxLng = result.ConversionCoordinates[1].X
-        };
-
-        //In case we have rogue tag files distorting the extents, restrict to project boundary
-        var projectPoints = CommonConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
-        var projMinLat = projectPoints.Min(p => p.Lat);
-        var projMinLng = projectPoints.Min(p => p.Lon);
-        var projMaxLat = projectPoints.Max(p => p.Lat);
-        var projMaxLng = projectPoints.Max(p => p.Lon);
-
-        if (returnResult.minLat < projMinLat || returnResult.minLat > projMaxLat ||
-            returnResult.maxLat < projMinLat || returnResult.maxLat > projMaxLat ||
-            returnResult.minLng < projMinLng || returnResult.minLng > projMaxLng ||
-            returnResult.maxLng < projMinLng || returnResult.maxLng > projMaxLng)
-        {
-          returnResult.minLat = projMinLat;
-          returnResult.minLng = projMinLng;
-          returnResult.maxLat = projMaxLat;
-          returnResult.maxLng = projMaxLng;
-        }
-
-        //Convert to degrees to return
-        returnResult.minLat = returnResult.minLat.LatRadiansToDegrees();
-        returnResult.minLng = returnResult.minLng.LonRadiansToDegrees();
-        returnResult.maxLat = returnResult.maxLat.LatRadiansToDegrees();
-        returnResult.maxLng = returnResult.maxLng.LonRadiansToDegrees();
-
-        Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
-        return returnResult;
-#else
-        throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+        var result = boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
+        return await FormatProjectExtentsResult(projectUid, result); 
       }
       catch (ServiceException se)
       {
@@ -289,5 +236,48 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         Log.LogInformation("GetProjectExtents returned: " + Response.StatusCode);
       }
     }
+
+    private async Task<ProjectExtentsResult> FormatProjectExtentsResult(
+      Guid projectUid, CoordinateConversionResult coordinateConversionResult)
+    {
+      Log.LogInformation($"{nameof(FormatProjectExtentsResult)}: {coordinateConversionResult}");
+      var project = await((RaptorPrincipal)User).GetProject(projectUid);
+
+      var returnResult = new ProjectExtentsResult
+      {
+        minLat = coordinateConversionResult.ConversionCoordinates[0].Y,
+        minLng = coordinateConversionResult.ConversionCoordinates[0].X,
+        maxLat = coordinateConversionResult.ConversionCoordinates[1].Y,
+        maxLng = coordinateConversionResult.ConversionCoordinates[1].X
+      };
+
+      //In case we have rogue tag files distorting the extents, restrict to project boundary
+      var projectPoints = CommonConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
+      var projMinLat = projectPoints.Min(p => p.Lat);
+      var projMinLng = projectPoints.Min(p => p.Lon);
+      var projMaxLat = projectPoints.Max(p => p.Lat);
+      var projMaxLng = projectPoints.Max(p => p.Lon);
+
+      if (returnResult.minLat < projMinLat || returnResult.minLat > projMaxLat ||
+          returnResult.maxLat < projMinLat || returnResult.maxLat > projMaxLat ||
+          returnResult.minLng < projMinLng || returnResult.minLng > projMaxLng ||
+          returnResult.maxLng < projMinLng || returnResult.maxLng > projMaxLng)
+      {
+        returnResult.minLat = projMinLat;
+        returnResult.minLng = projMinLng;
+        returnResult.maxLat = projMaxLat;
+        returnResult.maxLng = projMaxLng;
+      }
+
+      //Convert to degrees to return
+      returnResult.minLat = returnResult.minLat.LatRadiansToDegrees();
+      returnResult.minLng = returnResult.minLng.LonRadiansToDegrees();
+      returnResult.maxLat = returnResult.maxLat.LatRadiansToDegrees();
+      returnResult.maxLng = returnResult.maxLng.LonRadiansToDegrees();
+
+      Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
+      return returnResult;
+    }
+
   }
 }
