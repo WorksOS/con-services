@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
@@ -265,13 +266,15 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
-      log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
-
-      request.Validate();
 #if RAPTOR
-      return
-        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient).Process(request)
-          as ProjectStatisticsResult;
+      log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
+      request.Validate();
+
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
+        fileListProxy: null, tRexCompactionDataProxy: null
+        , raptorClient: raptorClient
+      );
+      return projectStatisticsHelper.GetProjectStatisticsWithExclusions(request.ProjectId.Value, request.ExcludedSurveyedSurfaceIds).Result;
 #else
       // see NOTE above
       throw new ServiceException(HttpStatusCode.BadRequest,

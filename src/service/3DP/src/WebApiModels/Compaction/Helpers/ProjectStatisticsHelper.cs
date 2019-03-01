@@ -117,6 +117,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           .Process(request) as ProjectStatisticsResult;
     }
 
+    // special case for obsolete controllers
+    // supported only on Raptor
+    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithExclusions(long projectId, long[] excludedSsIds)
+    {
+      var request = new ProjectStatisticsMultiRequest(Guid.Empty, projectId,
+        new Guid[0], excludedSsIds);
+
+      return
+        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
+#if RAPTOR
+            _raptorClient,
+#endif
+            configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
+          .Process(request) as ProjectStatisticsResult;
+    }
+
     public async Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, List<long> filterSSExclusionList, string userId, IDictionary<string, string> customHeaders)
     {
       List<Guid> excludedSSUids = null;

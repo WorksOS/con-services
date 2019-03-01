@@ -1,14 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -29,6 +36,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
+    private readonly IConfigurationStore configStore;
 
     /// <summary>
     /// Constructor with dependency injection
@@ -38,13 +46,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       IASNodeClient raptorClient, 
       ITagProcessor tagProcessor, 
 #endif
-      ILoggerFactory logger)
+      ILoggerFactory logger,
+      IConfigurationStore configStore)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
 #endif
       this.logger = logger;
+      this.configStore = configStore;
     }
 
     /// <summary>
@@ -133,10 +143,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private void ValidateDates(long projectId, ProductionDataEdit dataEdit)
     {
-      var request = new ProjectStatisticsRequest(projectId, new long[0]);
-      request.Validate();
 #if RAPTOR
-      dynamic stats = RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, tagProcessor).Process(request) as ProjectStatisticsResult;
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
+        fileListProxy: null, tRexCompactionDataProxy: null
+#if RAPTOR
+        , raptorClient: raptorClient
+#endif
+      );
+      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]).Result;
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
