@@ -31,15 +31,13 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         public ISubGridTreeBitMask Execute(INonSpatialAffinityKey key)
         {
             byte[] bytes = server.GetExistenceMap(key);
+            ISubGridTreeBitMask mask = null;
 
-            if (bytes == null)
+            if (bytes != null)
             {
-                // There is no mask available for the key.
-                return null;
+                mask = new SubGridTreeSubGridExistenceBitMask();
+                mask.FromBytes(bytes);
             }
-
-            ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
-            mask.FromBytes(bytes);
 
             return mask;
         }

@@ -122,15 +122,9 @@ namespace VSS.TRex.Designs.TTM
     public XYZ XYZ { get => GetXYZ(); set => SetXYZ(value); }
 
     /// <summary>
-    /// Converts the location of the vertex to a string
-    /// </summary>
-    /// <returns></returns>
-    public string AsText() => $"Tag:{Tag}, X={X:F3}, Y={Y:F3}, Z={Z:F3}";
-
-    /// <summary>
     /// Overridden ToString()
     /// </summary>
     /// <returns></returns>
-    public override string ToString() => AsText();
+    public override string ToString() => $"Tag:{Tag}, X={X:F3}, Y={Y:F3}, Z={Z:F3}";
   }
 }

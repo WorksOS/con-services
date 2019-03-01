@@ -57,7 +57,6 @@ namespace VSS.TRex.Tests.ExistenceMaps
     /// <param name="two"></param>
     private void TestBitMasksAreTheSame(ISubGridTreeBitMask one, ISubGridTreeBitMask two)
     {
-
       // Ensure bit counts are the same
       one.CountBits().Should().Be(two.CountBits());
 
