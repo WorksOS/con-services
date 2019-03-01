@@ -43,7 +43,7 @@ namespace VSS.TRex.Designs.TTM.Tests
         }
 
         private void Test_TTMWriteAndReadBack(TrimbleTINModel TTM)
-    {
+        {
           using (var bw = new BinaryWriter(new MemoryStream()))
           {
             TTM.Write(bw);
@@ -292,7 +292,7 @@ namespace VSS.TRex.Designs.TTM.Tests
                                     TTM.Vertices.AddPoint(0, northSize, elevation));
 
            var fileName = Path.GetTempFileName() + ".ttm";
-           TTM.SaveToFile(fileName);
+           TTM.SaveToFile(fileName, 0.001, 0.001);
 
            TrimbleTINModel TTM2 = new TrimbleTINModel();
            TTM2.LoadFromFile(fileName);
