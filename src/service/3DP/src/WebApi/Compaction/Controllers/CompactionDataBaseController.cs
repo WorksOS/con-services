@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-#if !RAPTOR
-using System.Net;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-#endif
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -30,18 +21,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected readonly IProductionDataRequestFactory RequestFactory;
 
     /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
       : base(configStore, fileListProxy, settingsManager)
     {
       RequestFactory = requestFactory;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -119,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var projectId = await GetLegacyProjectId(projectUid);
-        var projectExtents = await _projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
+        var projectExtents = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
 
         //No data in Raptor - stop
         if (projectExtents == null) return (false, null);

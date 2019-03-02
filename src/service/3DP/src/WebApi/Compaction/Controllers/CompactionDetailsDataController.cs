@@ -172,7 +172,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient, 
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy:TRexCompactionDataProxy, customHeaders:CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders:CustomHeaders)
           .Process(request) as CMVDetailedResult;
 
         if (result1 != null && result1.ConstantTargetCmv == -1)

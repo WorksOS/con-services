@@ -154,7 +154,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var projectId = await GetLegacyProjectId(projectUid);
-        var result = await _projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
+        var result = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
 
         Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(result));
         return result;
@@ -185,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProjectExtents V2: " + Request.QueryString);
       var projectId = await GetLegacyProjectId(projectUid);
-      var excludedIds = await _projectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
+      var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
 
       try
       {
@@ -218,7 +218,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
 
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var excludedIds = await _projectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
+      var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
 
       try
       {

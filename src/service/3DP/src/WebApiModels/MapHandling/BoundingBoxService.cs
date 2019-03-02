@@ -1,4 +1,4 @@
-﻿  using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,23 +11,20 @@ using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-  using VSS.ConfigurationStore;
-  using VSS.MasterData.Models.Models;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-  using VSS.MasterData.Proxies;
-  using VSS.MasterData.Proxies.Interfaces;
-  using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-  using VSS.Productivity3D.Models.Enums;
-  using VSS.Productivity3D.Models.Models;
-  using VSS.Productivity3D.Models.Models.Coords;
-  using VSS.Productivity3D.Models.ResultHandling;
-  using VSS.Productivity3D.Models.ResultHandling.Coords;
-  using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-  using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -45,6 +42,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
     private readonly IFileListProxy fileListProxy;
 
+    /// <summary>
+    /// helper methods for getting project statistics from Raptor/TRex
+    /// </summary>
+    private ProjectStatisticsHelper _projectStatisticsHelper = null;
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileListProxy, tRexCompactionDataProxy
+#if RAPTOR
+                                                                   , raptorClient
+#endif
+                                                                 ));
 
     public BoundingBoxService(ILoggerFactory logger, IConfigurationStore configStore
 #if RAPTOR
@@ -293,13 +299,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       ProjectStatisticsResult statsResult = null;
       try
       {
-        var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
-          fileListProxy, tRexCompactionDataProxy
-#if RAPTOR
-          , raptorClient
-#endif
-        );
-        statsResult = projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, userId, customHeaders).Result;
+        statsResult = ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, userId, customHeaders).Result;
       }
       catch (ServiceException se)
       {

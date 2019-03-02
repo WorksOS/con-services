@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using System.Net;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -22,11 +20,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       var request = item as ProjectStatisticsMultiRequest;
 
 #if RAPTOR
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS"))
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") && request.ProjectUid != null)
 #endif
       {
         var tRexRequest =
-          new ProjectStatisticsTRexRequest(request.ProjectUid, request.ExcludedSurveyedSurfaceUids?.ToArray());
+          new ProjectStatisticsTRexRequest(request.ProjectUid.Value, request.ExcludedSurveyedSurfaceUids?.ToArray());
         return trexCompactionDataProxy.SendProjectStatisticsRequest(tRexRequest).Result;
       }
 #if RAPTOR
@@ -39,8 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         return ConvertProjectStatistics(statistics);
 #endif
 
-      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "ProjectStatisticsExecutor: Unsupported path"));
+      throw CreateServiceException<ProjectStatisticsExecutor>();
     }
 
 #if RAPTOR

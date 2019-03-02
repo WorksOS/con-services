@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,9 +16,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
-using VSS.Productivity3D.WebApi.Models.Report.Models;
 #if RAPTOR
 using BoundingExtents;
 using SVOICStatistics;

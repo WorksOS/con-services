@@ -44,11 +44,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IPreferenceProxy prefProxy;
 
     /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionReportController(
@@ -66,7 +61,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
-      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -148,7 +142,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             raptorClient, 
 #endif
             configStore: ConfigStore,
-            trexCompactionDataProxy: tRexCompactionDataProxy)
+            trexCompactionDataProxy: TRexCompactionDataProxy)
           .Process(reportGridRequest) as CompactionReportResult
       );
     }
@@ -238,7 +232,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             raptorClient, 
 #endif
             configStore: ConfigStore,
-            trexCompactionDataProxy: tRexCompactionDataProxy)
+            trexCompactionDataProxy: TRexCompactionDataProxy)
           .Process(reportRequest) as CompactionReportResult
       );
     }

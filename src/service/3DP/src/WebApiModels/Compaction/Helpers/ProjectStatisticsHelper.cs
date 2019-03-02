@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     // supported only on Raptor
     public async Task<ProjectStatisticsResult> GetProjectStatisticsWithExclusions(long projectId, long[] excludedSsIds)
     {
-      var request = new ProjectStatisticsMultiRequest(Guid.Empty, projectId,
+      var request = new ProjectStatisticsMultiRequest(null, projectId,
         new Guid[0], excludedSsIds);
 
       return

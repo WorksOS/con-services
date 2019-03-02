@@ -16,7 +16,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -43,11 +42,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataRequestFactory requestFactory;
     private const int FIVE_MIN_SCHEDULER_TIMEOUT = 300000;
 
-    /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
     private readonly ITransferProxy transferProxy;
 
     /// <summary>
@@ -60,7 +54,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
       IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
-      ITRexCompactionDataProxy trexCompactionDataProxy,
       ITransferProxy transferProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
@@ -69,7 +62,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
       this.transferProxy = transferProxy;
     }
 
@@ -296,7 +288,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       Log.LogInformation($"{nameof(GetExportReportMachinePasses)}: {Request.QueryString}");
-
+      
       var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
@@ -427,7 +419,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return new FileStreamResult(fileStream, "application/zip");
     }
 
-    #endregion
+#endregion
 
     /// <summary>
     /// Get user preferences
@@ -455,12 +447,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor performance.
         //But need to set here for export.
-        var projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, ConfigStore,
-          FileListProxy, TRexCompactionDataProxy
-          , raptorClient
-        );
         var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
-        var result = projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
+        var result = ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
           filter?.SurveyedSurfaceExclusionList?.ToList() ?? new List<long>(0), GetUserId(), CustomHeaders).Result;
 
         var startUtc = filter?.StartUtc ?? result.startTime;

@@ -11,13 +11,13 @@ namespace VSS.Productivity3D.Common.Models
   {
     public long ProjectId { get; set; }
 
-    public Guid ProjectUid { get; set; }
+    public Guid? ProjectUid { get; set; }
 
     public long[] ExcludedSurveyedSurfaceIds { get; private set; }
     public Guid[] ExcludedSurveyedSurfaceUids { get; private set; }
 
 
-    public ProjectStatisticsMultiRequest(Guid projectUid, long projectId, 
+    public ProjectStatisticsMultiRequest(Guid? projectUid, long projectId, 
       Guid[] excludedSurveyedSurfaceUids, long[] excludedSurveyedSurfaceIds)
     {
       ProjectUid = projectUid;
