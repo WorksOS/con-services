@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 
 namespace MockProjectWebApi.Controllers
@@ -204,13 +205,18 @@ namespace MockProjectWebApi.Controllers
 
     [Route("/fake_download_signed_url/tiles/xyz/{zoomLevel}/{yTile}/{xTile}.png")]
     [HttpGet]
-    public Stream DownloadTilesLineworkFile([FromRoute] int zoomLevel, [FromRoute] int yTile, [FromRoute] int xTile)
+    public ActionResult DownloadTilesLineworkFile([FromRoute] int zoomLevel, [FromRoute] int yTile, [FromRoute] int xTile)
     {
       Console.WriteLine($"{nameof(DownloadTilesLineworkFile)}");
 
       string fileName = $"Resources/Z{zoomLevel}-Y{yTile}-X{xTile}.png";
 
-      return new FileStream(fileName, FileMode.Open);
+      if (!System.IO.File.Exists(fileName))
+      {
+        //This is what DataOcean returns for a tile that doesn't exist
+        return StatusCode((int)HttpStatusCode.Forbidden, "access denied");
+      }
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open), "image/png");
     }
 
     //We need a copy of this model class from DataOcean as we can't use dynamic due to the hypenated property names

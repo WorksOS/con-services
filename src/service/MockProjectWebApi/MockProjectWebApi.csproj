@@ -192,7 +192,7 @@
     <None Update="Resources\Z15-Y12844-X5914.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Z16-Y25688-X11829.png">
+    <None Update="Resources\Z18-Y102753-X47317.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
