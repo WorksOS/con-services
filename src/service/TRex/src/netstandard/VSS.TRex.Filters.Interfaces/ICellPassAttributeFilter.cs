@@ -27,12 +27,14 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearFilter();
     void ClearVibeState();
 
+    /* Possibly obsolete behaviour 
     /// <summary>
     /// Compare one filter with another for the purpose of ordering them in caching lists
     /// </summary>
     /// <param name="AFilter"></param>
     /// <returns></returns>
     int CompareTo(ICellPassAttributeFilter AFilter);
+    */
 
     void ClearDesigns();
     void ClearElevationRange();

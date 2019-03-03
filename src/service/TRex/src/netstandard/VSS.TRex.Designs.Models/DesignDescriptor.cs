@@ -11,17 +11,13 @@ namespace VSS.TRex.Designs.Models
   {
     private const byte VERSION_NUMBER = 1;
 
-    public Guid DesignID;
-    public string Folder;
-    public string FileName;
-    public double Offset;
+    public Guid DesignID { get; private set; }
+    public string Folder { get; private set; } = string.Empty;
+    public string FileName { get; private set; } = string.Empty;
+    public double Offset { get; private set; }
 
     public DesignDescriptor()
     {
-      DesignID = Guid.Empty;
-      Folder = string.Empty;
-      FileName = string.Empty;
-      Offset = 0.0;
     }
 
     public DesignDescriptor(Guid designID,
@@ -58,10 +54,10 @@ namespace VSS.TRex.Designs.Models
 
     public bool Equals(DesignDescriptor other)
     {
-      return (DesignID == other.DesignID) &&
-             (Folder == other.Folder) &&
-             (FileName == other.FileName) &&
-             (Offset == other.Offset);
+      return DesignID == other.DesignID &&
+             Folder == other.Folder &&
+             FileName == other.FileName &&
+             Offset == other.Offset;
     }
 
     public void Clear() => Init(Guid.Empty, "", "", 0.0);

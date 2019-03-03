@@ -113,6 +113,7 @@ namespace VSS.TRex.Tests.Filters
                                                             x => !x.HasVibeStateFilter && x.VibeState == VibrationState.Invalid);
         }
 
+        /* Possible obsolete functionality...
         private void Test_CellPassAttributeFilter_CompareTo_Aspect(string name, Action<CellPassAttributeFilter> SetState)
         {
             CellPassAttributeFilter filter1 = new CellPassAttributeFilter();
@@ -266,7 +267,7 @@ namespace VSS.TRex.Tests.Filters
                                                                          x.PassCountRangeMax = 4;
                                                                        });
         }
-
+        */
 
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearDesigns()
@@ -397,10 +398,13 @@ namespace VSS.TRex.Tests.Filters
           filter1.MaterialTemperatureMax = 30;
           filter1.HasTemperatureRangeFilter = true;
           filter1.FilterTemperatureByLastPass = true;
-          Assert.Equal(-1, filter1.CompareTo(filter2));
+
+          //Assert.Equal(-1, filter1.CompareTo(filter2));
           filter2.Assign(filter1);
-          Assert.Equal(0, filter1.CompareTo(filter2));
-    }
+          //Assert.Equal(0, filter1.CompareTo(filter2));
+
+          filter1.Should().BeEquivalentTo(filter2);
+        }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearCompactionMachineOnlyRestriction()
@@ -588,5 +592,25 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(false);
 
         }
+
+        /* Possible obsolete functioality
+        [Fact]
+        public void Test_CellPassAttributeFilter_MachineIDListsComparison()
+        {
+          short[] list1 = null;
+          short[] list2 = {1, 2};
+          short[] list3 = {2, 3};
+          short[] list4 = {2, 3};
+
+          CellPassAttributeFilter.MachineIDListsComparison(list1, list1).Should().Be(0);
+          CellPassAttributeFilter.MachineIDListsComparison(list1, list2).Should().Be(0);
+          CellPassAttributeFilter.MachineIDListsComparison(list2, list1).Should().Be(0);
+
+          CellPassAttributeFilter.MachineIDListsComparison(list2, list3).Should().Be(-1);
+          CellPassAttributeFilter.MachineIDListsComparison(list3, list2).Should().Be(1);
+          CellPassAttributeFilter.MachineIDListsComparison(list3, list4).Should().Be(1);
+        }
+        */
     }
 }
+

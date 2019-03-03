@@ -196,7 +196,7 @@ namespace VSS.TRex.Filters
     /// <param name="list1"></param>
     /// <param name="list2"></param>
     /// <returns></returns>
-    private static int MachineIDListsComparison(short[] list1, short[] list2)
+    public static int MachineIDListsComparison_Obsolete(short[] list1, short[] list2)
     {
       if (list1 == null || list2 == null)
         return 0;
@@ -222,12 +222,13 @@ namespace VSS.TRex.Filters
       return result;
     }
 
+    /* Possibly obsolete functionality due to filter fingerprinting for cache support
     /// <summary>
     /// Compare one filter with another for the purpose of ordering them in caching lists
     /// </summary>
     /// <param name="AFilter"></param>
     /// <returns></returns>
-    public int CompareTo(ICellPassAttributeFilter AFilter)
+    public int CompareTo_Obsolete(ICellPassAttributeFilter AFilter)
     {
       // Time
       int Result = FlagCheck(HasTimeFilter, AFilter.HasTimeFilter);
@@ -263,7 +264,7 @@ namespace VSS.TRex.Filters
         return Result;
 
       if (HasMachineFilter) // Check the contents of the machine filter
-        Result = MachineIDListsComparison(MachineIDs, AFilter.MachineIDs);
+        Result = MachineIDListsComparison_Obsolete(MachineIDs, AFilter.MachineIDs);
 
       if (Result != 0)
         return Result;
@@ -466,6 +467,7 @@ namespace VSS.TRex.Filters
 
       return Result;
     }
+    */
 
     public void ClearDesigns()
     {
