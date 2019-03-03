@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var excludedSurveyedSurfaceUids = new Guid[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
       var excludedSurveyedSurfaceIds = new long[] { 444, 777, 888 };
       var request = new ProjectStatisticsMultiRequest(Guid.NewGuid(), 123, excludedSurveyedSurfaceUids, excludedSurveyedSurfaceIds);
-      
+
       var expectedResult = new ProjectStatisticsResult(ContractExecutionStatesEnum.ExecutedSuccessfully)
       {
         startTime = DateTime.UtcNow.AddDays(-5),
@@ -105,12 +105,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         extents = BoundingBox3DGrid.CreatBoundingBox3DGrid(10, 500, 0, 20, 510, 0)
       };
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendProjectStatisticsRequest(It.IsAny<ProjectStatisticsTRexRequest>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(expectedResult);
+      tRexProxy.Setup(x => x.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(It.IsAny<ProjectStatisticsTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+        .ReturnsAsync((expectedResult));
+
 
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS")).Returns("true");
-      
+
       var executor = RequestExecutorContainerFactory
         .Build<ProjectStatisticsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);

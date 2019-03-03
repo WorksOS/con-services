@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
@@ -109,9 +110,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
-      
+
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendProjectExtentsRequest(projectUid.ToString(), It.IsAny<IDictionary<string, string>>()))
+      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

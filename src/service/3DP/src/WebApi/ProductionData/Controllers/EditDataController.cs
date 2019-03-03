@@ -142,7 +142,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         , raptorClient: raptorClient
 #endif
       );
-      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]).Result;
+      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]);
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

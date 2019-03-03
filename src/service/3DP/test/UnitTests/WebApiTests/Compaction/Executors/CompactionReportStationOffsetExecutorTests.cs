@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestMethod]
     public void CompactionReportStationOffsetExecutor_Raptor_NoResult()
     {
-      var userPreferences = new UserPreferenceData{ Language = "en-US" };
+      var userPreferences = new UserPreferenceData { Language = "en-US" };
       var request = CompactionReportStationOffsetRequest.CreateRequest(
         0, null, null, 0, null, true, true, true, true, true, true, null, null, 0, 0, 0, null, userPreferences, "New Zealand Standard Time");
       var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
@@ -113,9 +113,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var alignmentDesignUid = Guid.NewGuid();
       var userPreferences = new UserPreferenceData { Language = "en-US" };
       var request = CompactionReportStationOffsetRequest.CreateRequest(
-        0, projectUid, null, 0, null, false, true, true, true, true, false, 
-        null, new DesignDescriptor(-1, 
-          FileDescriptor.CreateFileDescriptor(string.Empty, string.Empty, projectUid.ToString(), 
+        0, projectUid, null, 0, null, false, true, true, true, true, false,
+        null, new DesignDescriptor(-1,
+          FileDescriptor.CreateFileDescriptor(string.Empty, string.Empty, projectUid.ToString(),
             "theFilename.svl"), -1, alignmentDesignUid), 0, 0, 0, null, userPreferences, "New Zealand Standard Time");
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -123,10 +123,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET")).Returns("true");
 #endif
 
-      var exception = new ServiceException(HttpStatusCode.InternalServerError, 
+      var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"StationOffset report failed somehow. ProjectUid: { projectUid }"));
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendStationOffsetReportRequest(It.IsAny<CompactionReportStationOffsetTRexRequest>(), It.IsAny<IDictionary<string, string>>())).Throws(exception);
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportStationOffsetTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).Throws(exception);
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(_logger, configStore: mockConfigStore.Object, trexCompactionDataProxy: tRexProxy.Object);
       var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
