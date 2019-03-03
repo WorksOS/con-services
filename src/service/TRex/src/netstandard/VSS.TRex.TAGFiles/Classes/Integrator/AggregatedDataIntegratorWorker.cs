@@ -285,7 +285,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
           {
-            CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
+            CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModelFromDM.CellSize,
             ID = SiteModelFromDM.ID
           };
 

@@ -20,19 +20,15 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public LeafSubgridRequestType RequestType { get; set; } = LeafSubgridRequestType.FullFromServer;
 
-        public bool ScanActive { get { return scanActive; } }
-        public int FirstScanLevel { get { return firstScanLevel; } }
+        public bool ScanActive => scanActive;
+        public int FirstScanLevel => firstScanLevel; 
 
-        public bool ProceedWithScannedData { get { return GetProceedWithScannedData(); } }
+        public bool ProceedWithScannedData => GetProceedWithScannedData();
 
         public virtual SubGridProcessNodeSubGridResult OnProcessNodeSubgrid(ISubGrid subGrid, SubGridTreeBitmapSubGridBits existenceMap) => SubGridProcessNodeSubGridResult.OK;
 
-        public virtual bool OnProcessLeafSubgrid(ISubGrid subGrid) => true;
-        public virtual bool OnProcessLeafSubgridAddress(SubGridCellAddress cellAddress)
-        {
-            Debug.Assert(false, "TICSubGridTreeScannerBase.OnProcessLeafSubgridAddress should be overridden in descendant classes");
-            return false;
-        }
+        public abstract bool OnProcessLeafSubgrid(ISubGrid subGrid);
+        public abstract bool OnProcessLeafSubgridAddress(SubGridCellAddress cellAddress);
 
         public SubGridTreeScannerBase()
         {

@@ -21,7 +21,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       CMVChangeDetailsDataValues = argument.CMVChangeDetailsDataValues,
       Counts = argument.CMVChangeDetailsDataValues != null ? new long[argument.CMVChangeDetailsDataValues.Length] : null
     };

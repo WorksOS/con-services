@@ -46,7 +46,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (design == null)
         return new JsonResult($"Unable to locate design {designID} in project {siteModelID}");
 
-      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.Grid.CellSize, out DesignProfilerRequestResult errCode);
+      var result = design.ComputeProfile(siteModelUid, new[] {new XYZ(startX, startY, 0), new XYZ(endX, endY, 0)}, siteModel.CellSize, out DesignProfilerRequestResult errCode);
 
       return new JsonResult(result);
     }

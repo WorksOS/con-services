@@ -10,7 +10,7 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TrimbleTINModel : TriangleMesh
   {
-    public string ModelName { get; set; }
+    public string ModelName { get; set; } = "Un-named Model";
 
     public TTMStartPoints StartPoints { get; private set; }
 
@@ -150,7 +150,7 @@ namespace VSS.TRex.Designs.TTM
       // Write a blank header now, and go back later and fix it up
       long HeaderPos = writer.BaseStream.Position;
 
-      Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName ?? "Un-named Model\0");
+      Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName);
       if (Header.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
       {
         Array.Resize(ref Header.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);

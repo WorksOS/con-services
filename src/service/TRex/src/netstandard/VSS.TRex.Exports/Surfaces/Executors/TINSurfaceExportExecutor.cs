@@ -162,7 +162,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         }
 
         // Create the TIN decimator and populate it with the retrieve subgrids
-        GenericSubGridTree_Float datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.Grid.CellSize);
+        GenericSubGridTree_Float datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.CellSize);
         foreach (var subgrid in ((SurfaceTask)processor.Task).SurfaceSubgrids)
         {
           INodeSubGrid newGridNode = datastore.ConstructPathToCell(subgrid.OriginX, subgrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;

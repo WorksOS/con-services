@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -36,18 +35,12 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellSpatialFilter : CellSpatialFilterModel, ICellSpatialFilter
   {
- 
         /// <summary>
         ///  Spatial cell filter constructor
         /// </summary>
         public CellSpatialFilter()
         {
           Clear();
-        }
-
-        public CellSpatialFilter(IBinaryRawReader reader)
-        {
-            FromBinary(reader);
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [MemberData(nameof(GetTypes))]
     public void Test_BlanketBaseRequestArgumentTests(Type type)
     {
-      base.Test_ToFromBinary_ReflectionBasedTests<BaseRequestArgument>(type);
+      Test_ToFromBinary_ReflectionBasedTests<BaseRequestArgument>(type);
     }
   }
 }

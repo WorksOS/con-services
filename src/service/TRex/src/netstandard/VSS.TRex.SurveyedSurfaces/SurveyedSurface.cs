@@ -14,6 +14,21 @@ namespace VSS.TRex.SurveyedSurfaces
   public class SurveyedSurface : IEquatable<ISurveyedSurface>, IBinaryReaderWriter, ISurveyedSurface
   {
     /// <summary>
+    /// Readonly property exposing the surveyed surface ID
+    /// </summary>
+    public Guid ID { get; set; }
+
+    /// <summary>
+    /// Readonly property exposing the design decriptor for the underlying topology surface
+    /// </summary>
+    public DesignDescriptor DesignDescriptor;
+
+    /// <summary>
+    /// Readonly attribute for AsAtData
+    /// </summary>
+    public DateTime AsAtDate { get; set; }
+
+    /// <summary>
     /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
     /// </summary>
     BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
@@ -50,21 +65,6 @@ namespace VSS.TRex.SurveyedSurfaces
     }
 
     /// <summary>
-    /// Readonly property exposing the surveyed surface ID
-    /// </summary>
-    public Guid ID { get; set; }
-
-    /// <summary>
-    /// Readonly property exposing the design decriptor for the underlying topology surface
-    /// </summary>
-    public DesignDescriptor DesignDescriptor;
-
-    /// <summary>
-    /// Readonly attribute for AsAtData
-    /// </summary>
-    public DateTime AsAtDate { get; set; }
-
-    /// <summary>
     /// Returns the real world 3D enclosing extents for the surveyed surface topology, including any configured vertical offset
     /// </summary>
     public BoundingWorldExtent3D Extents
@@ -85,6 +85,7 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public SurveyedSurface()
     {
+      DesignDescriptor = DesignDescriptor.Null();
     }
 
     /// <summary>

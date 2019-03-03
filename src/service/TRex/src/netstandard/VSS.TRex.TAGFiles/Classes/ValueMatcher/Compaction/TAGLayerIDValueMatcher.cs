@@ -18,13 +18,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             if (valueType.Type == TAGDataType.t12bitUInt)
             {
                 valueSink.ICLayerIDValue = (ushort)value;
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

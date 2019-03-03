@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions.Common;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Common.Utilities;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -21,7 +17,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [MemberData(nameof(GetTypes))]
     public void Test_BlanketBaseRequestResponseTests(Type type)
     {
-      base.Test_ToFromBinary_ReflectionBasedTests<BaseRequestResponse>(type);
+      Test_ToFromBinary_ReflectionBasedTests<BaseRequestResponse>(type);
     }
   }
 }

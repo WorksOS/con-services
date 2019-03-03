@@ -14,7 +14,7 @@ using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.Reports.Gridded.GridFabric;
-using VSS.TRex.RequestStatistics;
+using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;

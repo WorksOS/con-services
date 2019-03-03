@@ -1,13 +1,15 @@
 ﻿using System;
+using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Time;
 using Xunit;
 
 namespace VSS.TRex.Tests.Utility
 {
-        public class GPSTests
+    public class GPSTests
     {
         [Fact]
-        public void Test_GPSOriginTimeToDateTime()
+        public void GPSOriginTimeToDateTime()
         {
             DateTime dateTime = GPS.GPSOriginTimeToDateTime(10000, 10000000);
 
@@ -18,19 +20,30 @@ namespace VSS.TRex.Tests.Utility
         }
 
         [Fact]
-        public void Test_GPSOriginTimeToDateTime_Invalid()
+        public void DateTimeToGPSOriginTime_Invalid_Early()
         {
-            // Ensure an argument exception occurs for request to convert dates before the GPS origin time
-            try
-            {
-                GPS.DateTimeToGPSOriginTime(new DateTime(1950, 1, 1), out _, out _);
-
-                Assert.True(false,"Date before GPS origin did not cause an exception");
-            }
-            catch ( ArgumentException )
-            {
-                // As expected
-            }
+            Action act = () => GPS.DateTimeToGPSOriginTime(new DateTime(1950, 1, 1), out _, out _);
+            act.Should().Throw<ArgumentException>().WithMessage("Date to be converted to GPS date is before the GPS date origin*");
         }
-    }
+
+        [Fact]
+        public void GPSOriginTimeToDateTime_Invalid_MilliSecondsInWeek()
+        {
+          Action act = () => GPS.GPSOriginTimeToDateTime(1000, 1_000_000_000);
+          act.Should().Throw<TRexException>().WithMessage("GPS millisecondsInWeek: * not in range 0*");
+        }
+
+        [Fact]
+        public void GetLocalGMTOffset()
+        {
+          GPS.GetLocalGMTOffset().Should().Be(TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow));
+        }
+
+        [Fact]
+        public void GetLocalGMTOffset_AtOffset()
+        {
+          var dateTime = DateTime.UtcNow;
+          GPS.GetLocalGMTOffset(dateTime).Should().Be(TimeZoneInfo.Local.GetUtcOffset(dateTime));
+        }
+  }
 }

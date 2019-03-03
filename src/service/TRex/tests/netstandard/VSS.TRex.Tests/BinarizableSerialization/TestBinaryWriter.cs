@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   public class TestBinaryWriter : IBinaryWriter, IBinaryRawWriter
   {
     /** Stream. */
-    public readonly System.IO.BinaryWriter _stream = new System.IO.BinaryWriter(new MemoryStream());
+    public readonly BinaryWriter _stream = new BinaryWriter(new MemoryStream());
 
     /// <summary>
     /// Write named boolean value.
@@ -716,7 +716,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="T"></typeparam>
     /// <param name="fieldName">Field name.</param>
     /// <param name="val">Object value.</param>
-    public void WriteObject<T>(string fieldName, T val)
+    public virtual void WriteObject<T>(string fieldName, T val)
     {
       throw new NotImplementedException();
     }
@@ -726,7 +726,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="val">Object value.</param>
-    public void WriteObject<T>(T val)
+    public virtual void WriteObject<T>(T val)
     {
       throw new NotImplementedException();
     }

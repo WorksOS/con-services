@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Common.Exceptions
 {
-  public class TRexSubGridProcessingException : Exception
+  public class TRexSubGridProcessingException : TRexException
   {
     public TRexSubGridProcessingException(string message) : base(message)
     {

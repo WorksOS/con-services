@@ -11,7 +11,6 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
 {
   public class CombinedFilterProfile : Profile
   {
-
     public class CustomCellPassAttributeFilterResolver : IValueResolver<FilterResult, CombinedFilter, ICellPassAttributeFilter>
     {
       public ICellPassAttributeFilter Resolve(FilterResult src, CombinedFilter dst, ICellPassAttributeFilter member, ResolutionContext context)
@@ -22,8 +21,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         {
           ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
           HasElevationTypeFilter = true,
-          ElevationType = returnEarliestFilteredCellPass ? Types.ElevationType.First : Types.ElevationType.Last,
-          SurveyedSurfaceExclusionList = null //done afterwards
+          ElevationType = returnEarliestFilteredCellPass ? Types.ElevationType.First : Types.ElevationType.Last
         };
       }
     }
