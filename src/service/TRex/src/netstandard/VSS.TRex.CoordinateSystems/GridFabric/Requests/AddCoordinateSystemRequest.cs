@@ -13,7 +13,7 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Requests
       IComputeFunc<AddCoordinateSystemArgument, AddCoordinateSystemResponse> func = new AddCoordinateSystemComputeFunc();
 
       // Send the appropriate response to the caller
-      return _Compute.Apply(func, arg);
+      return Compute.Apply(func, arg);
     }
   }
 }

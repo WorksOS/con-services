@@ -40,6 +40,7 @@ data:
   RAPTOR_NOTIFICATION_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
   SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/background
+  SCHEDULER_INTERNAL_BASE_URL: http://scheduler.dev.eks.vspengg.com/internal/v1
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.dev.eks.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
   TREX_TAGFILE_API_URL: http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
@@ -62,6 +63,7 @@ data:
   DOWNLOAD_FOLDER: C:/temp/
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   AWS_TAGFILE_BUCKET_NAME: vss-stg-directtagfile-archives
+  ENVIRONMENT: DEV
 #AWS configuration  
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
@@ -116,3 +118,8 @@ data:
   PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
+  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
+#Slack
+  SLACK_URL: https://hooks.slack.com/services/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
+  SLACK_CHANNEL: "#notifications-dev"
+  SLACK_USERNAME: vss-jobs-dev

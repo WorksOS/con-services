@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.CoordinateSystems;
+using CSFileValidationRequest = VSS.Productivity3D.Models.Models.Coords.CoordinateSystemFileValidationRequest;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -28,10 +28,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as CoordinateSystemFileValidationRequest;
+      var request = item as CSFileValidationRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<CoordinateSystemFileValidationRequest>();
+        ThrowRequestTypeCastException<CSFileValidationRequest>();
 
       var csd = ConvertCoordinates.DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 

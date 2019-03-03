@@ -20,7 +20,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// Default no-args constructor that prepares a spatial affinity partition map for the immutable spatial caches
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
-            base(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)
+            base(DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable)
                 .GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()))
         {
         }

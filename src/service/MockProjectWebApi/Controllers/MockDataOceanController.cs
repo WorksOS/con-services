@@ -73,12 +73,13 @@ namespace MockProjectWebApi.Controllers
             status = "AVAILABLE",
             upload = new
             {
-              url = $"{baseUrl}/dummy_upload_signed_url"
+              url = $"{baseUrl}/fake_upload_signed_url"
             },
             download = new
             {
-              url = $"{baseUrl}/dummy_download_signed_url{suffix}"
-            }
+              url = $"{baseUrl}/fake_download_signed_url{suffix}"
+            },
+            multifile = !string.IsNullOrEmpty(suffix)
           }
         }
 
@@ -103,11 +104,11 @@ namespace MockProjectWebApi.Controllers
           status = "AVAILABLE",
           upload = new
           {
-            url = $"{baseUrl}/dummy_upload_signed_url"
+            url = $"{baseUrl}/fake_upload_signed_url"
           },
           download = new
           {
-            url = $"{baseUrl}/dummy_download_signed_url"
+            url = $"{baseUrl}/fake_download_signed_url"
           }
         }
       };
@@ -160,11 +161,11 @@ namespace MockProjectWebApi.Controllers
           status = "UPLOADABLE",
           upload = new
           {
-            url = $"{baseUrl}/dummy_upload_signed_url"
+            url = $"{baseUrl}/fake_upload_signed_url"
           },
           download = new
           {
-            url = $"{baseUrl}/dummy_download_signed_url"
+            url = $"{baseUrl}/fake_download_signed_url"
           }
         }
       };
@@ -172,7 +173,7 @@ namespace MockProjectWebApi.Controllers
       return new CreatedResult(Request.Path, result);
     }
 
-    [Route("/dummy_upload_signed_url")]
+    [Route("/fake_upload_signed_url")]
     [HttpPut]
     public HttpResponseMessage UploadFile()
     {
@@ -181,7 +182,7 @@ namespace MockProjectWebApi.Controllers
       return new HttpResponseMessage(HttpStatusCode.OK);
     }
 
-    [Route("/dummy_download_signed_url")]
+    [Route("/fake_download_signed_url")]
     [HttpGet]
     public Stream DownloadFile()
     {
@@ -191,7 +192,7 @@ namespace MockProjectWebApi.Controllers
       return new MemoryStream(buffer);
     }
 
-    [Route("/dummy_download_signed_url/tiles/tiles.json")]
+    [Route("/fake_download_signed_url/tiles/tiles.json")]
     [HttpGet]
     public Stream DownloadTilesMetadataFile()
     {
@@ -199,6 +200,17 @@ namespace MockProjectWebApi.Controllers
 
       byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(tileMetadata));
       return new MemoryStream(byteArray);
+    }
+
+    [Route("/fake_download_signed_url/tiles/xyz/{zoomLevel}/{yTile}/{xTile}.png")]
+    [HttpGet]
+    public Stream DownloadTilesLineworkFile([FromRoute] int zoomLevel, [FromRoute] int yTile, [FromRoute] int xTile)
+    {
+      Console.WriteLine($"{nameof(DownloadTilesLineworkFile)}");
+
+      string fileName = $"Resources/Z{zoomLevel}-Y{yTile}-X{xTile}.png";
+
+      return new FileStream(fileName, FileMode.Open);
     }
 
     //We need a copy of this model class from DataOcean as we can't use dynamic due to the hypenated property names

@@ -7,7 +7,6 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TriVertices : List<TriVertex>
   {
-
     private HashOrdinate HashOrdinate;
     private double MinHashOrdinate;
     private double MaxHashOrdinate;
@@ -39,22 +38,17 @@ namespace VSS.TRex.Designs.TTM
     /// <returns></returns>
     private TriVertex SearchForPoint(double X, double Y, double Z, out int HashIndex)
     {
-      List<TriVertex> CollisionList;
       HashIndex = GetHashIndex(X, Y, Z);
 
       // Search the list of vertices hashed to this collision list
-      CollisionList = HashArray[HashIndex];
+      List<TriVertex> CollisionList = HashArray[HashIndex];
       if (CollisionList == null)
-      {
         return null;
-      }
 
       foreach (TriVertex vertex in CollisionList)
       {
         if (vertex.IsEqual(X, Y, Z, SearchTolerance))
-        {
           return vertex;
-        }
       }
 
       return null;
@@ -63,7 +57,7 @@ namespace VSS.TRex.Designs.TTM
     /// <summary>
     /// The default delegate for creating triangle vertices present in the vertices collection for the surface
     /// </summary>
-    public Func<double, double, double, TriVertex> CreateVertexFunc { set; get; } = (x, y, z) => new TriVertex(x, y, z);
+    public Func<double, double, double, TriVertex> CreateVertexFunc { get; } = (x, y, z) => new TriVertex(x, y, z);
 
     /// <summary>
     /// Create a new vertex from X, Y and Z coordinates
@@ -127,21 +121,9 @@ namespace VSS.TRex.Designs.TTM
 
       return Result;
     }
-
+  
     /// <summary>
-    /// Locates an existing vertex based on given X, Y, Z coordinates
-    /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Z"></param>
-    /// <returns></returns>
-    public TriVertex FindPoint(double X, double Y, double Z)
-    {
-      return SearchForPoint(X, Y, Z, out int _ /*HashIdx*/);
-    }
-
-    /// <summary>
-    /// Initialise the internal hashmap for storing vertices across the given geospatial range
+    /// Initialise the internal hash map for storing vertices across the given geospatial range
     /// </summary>
     /// <param name="MinX"></param>
     /// <param name="MinY"></param>
@@ -193,7 +175,5 @@ namespace VSS.TRex.Designs.TTM
 
       RemoveRange(index_to, Count - index_to);
     }
-
-    // procedure DumpVertexList(FileName : TFileName);
   }
 }

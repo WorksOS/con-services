@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
+using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 {
@@ -18,20 +18,23 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
   /// </summary>
   public class VSSHangfireJobRunner : IVSSJobRunner, IVSSHangfireJobRunner
   {
-    private readonly ILogger Log;
-    private readonly SchedulerErrorCodesProvider ErrorCodesProvider;
-    private readonly IServiceProvider ServiceProvider;
-    private Dictionary<Guid, Type> vssJobs;
+    private readonly ILogger log;
+    private readonly SchedulerErrorCodesProvider errorCodesProvider;
+
+    private readonly IVSSJobFactory jobFactory;
+    private readonly string environment;
+    private readonly IDevOpsNotification devOpsNotification;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    public VSSHangfireJobRunner(ILoggerFactory logger, IErrorCodesProvider errorCodesProvider, IServiceProvider serviceProvider)
+    public VSSHangfireJobRunner(ILoggerFactory logger, IErrorCodesProvider errorCodesProvider, IConfigurationStore configStore, IVSSJobFactory jobFactory, IDevOpsNotification devOpsNotification)
     {
-      Log = logger.CreateLogger<VSSHangfireJobRunner>();
-      ErrorCodesProvider = errorCodesProvider as SchedulerErrorCodesProvider;
-      ServiceProvider = serviceProvider;
-      vssJobs = new Dictionary<Guid, Type>();
+      log = logger.CreateLogger<VSSHangfireJobRunner>();
+      this.errorCodesProvider = errorCodesProvider as SchedulerErrorCodesProvider;
+      this.jobFactory = jobFactory;
+      environment = configStore.GetValueString("ENVIRONMENT");
+      this.devOpsNotification = devOpsNotification;
     }
 
     /// <summary>
@@ -46,12 +49,21 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     /// <summary>
     /// Runs a VSS job through hangfire
     /// </summary>
+    [JobFailureFilter]
     [AutomaticRetry(Attempts = 3)]
-    //[AutomaticRetry(Attempts = 3, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
-    //[DisableConcurrentExecution(5)]
-    public Task<ContractExecutionResult> RunHangfireJob(JobRequest request, PerformContext context)
+    public async Task<ContractExecutionResult> RunHangfireJob(JobRequest request, PerformContext context)
     {
-      return RunJob(request);
+      ContractExecutionResult result;
+      try
+      {
+        result = await RunJob(request);
+      }
+      catch (Exception e)
+      {
+        devOpsNotification.Notify(e.JobNotificationDetails(context.BackgroundJob.Id));
+        throw;
+      }
+      return result;
     }
 
     /// <summary>
@@ -59,62 +71,45 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     /// </summary>
     public async Task<ContractExecutionResult> RunJob(JobRequest request)
     {
-      //TODO for real
-      //Find the job with give job id in our list of jobs
-      if (!vssJobs.ContainsKey(request.JobUid))
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully);
+
+      var job = jobFactory.GetJob(request.JobUid);
+
+      if (job == null)
       {
-        return ErrorCodesProvider.CreateErrorResult(SchedulerErrorCodes.MissingVSSJob, request.JobUid.ToString());
+        result = errorCodesProvider.CreateErrorResult(environment, SchedulerErrorCodes.VSSJobCreationFailure, request.JobUid.ToString(), "Unable to create job");
       }
-      Log.LogInformation($"Found job {request.JobUid}");
-      IVSSJob job = null;
-      try
+      else
       {
-        job = ActivatorUtilities.GetServiceOrCreateInstance(ServiceProvider, vssJobs[request.JobUid]) as IVSSJob;
-        if (job == null)
+        try
         {
-          Log.LogError($"Failed to create VSS job {request.JobUid}: job is null");
-          return ErrorCodesProvider.CreateErrorResult(SchedulerErrorCodes.VSSJobCreationFailure, request.JobUid.ToString(), "job is null");
+          log.LogInformation($"Setting up job {request.JobUid}");
+          await job.Setup(request.SetupParameters);
+          log.LogInformation($"Running job {request.JobUid}");
+          await job.Run(request.RunParameters);
+          log.LogInformation($"Tearing down job {request.JobUid}");
+          await job.TearDown(request.TearDownParameters);
+          log.LogInformation($"Job {request.JobUid} completed");
+        }
+        catch (ServiceException se)
+        {
+          result = errorCodesProvider.CreateErrorResult(environment, SchedulerErrorCodes.VSSJobExecutionFailure,
+            request.JobUid.ToString(), se.GetFullContent);
+        }
+        catch (Exception e)
+        {
+          result = errorCodesProvider.CreateErrorResult(environment, SchedulerErrorCodes.VSSJobExecutionFailure,
+            request.JobUid.ToString(), e.Message);
         }
       }
-      catch (Exception e)
-      {
-        Log.LogError($"Failed to create VSS job {request.JobUid}: {e.Message}");
-        return ErrorCodesProvider.CreateErrorResult(SchedulerErrorCodes.VSSJobCreationFailure, request.JobUid.ToString(), e.Message);
-      }
- 
-      try
-      {
-        Log.LogInformation($"Setting up job {request.JobUid}");
-        await job.Setup(request.SetupParameters);
-        Log.LogInformation($"Running job {request.JobUid}");
-        await job.Run(request.RunParameters);
-        Log.LogInformation($"Tearing down job {request.JobUid}");
-        await job.TearDown(request.TearDownParameters);
-        Log.LogInformation($"Job {request.JobUid} completed");
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully);
-      }
-      catch (Exception e)
-      {
-        Log.LogError($"Failed to execute VSS job {request.JobUid}: {e.Message}");
-        return ErrorCodesProvider.CreateErrorResult(SchedulerErrorCodes.VSSJobExecutionFailure, request.JobUid.ToString(), e.Message);
-      }
-    }
 
-    /// <summary>
-    /// Register a VSS job.
-    /// </summary>
-    /// <param name="uid">Unique id for the job</param>
-    /// <param name="type">The type of the job for instantiation</param>
-    public void RegisterJob(Guid uid, Type type)
-    {
-      if (vssJobs.ContainsKey(uid))
+      if (result.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"Job {uid} is already registered"));
+        log.LogError(result.Message);
+        throw new ServiceException(HttpStatusCode.InternalServerError, result);
       }
-      vssJobs.Add(uid, type);
+      return result;
     }
-
   }
 }
+  

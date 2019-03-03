@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace VSS.TRex.Designs.TTM
 {
@@ -43,11 +44,15 @@ namespace VSS.TRex.Designs.TTM
 
     public static TTMHeader NewHeader()
     {
-      return new TTMHeader()
+      var result = new TTMHeader()
       {
         FileSignature = new byte[HeaderConsts.kDTMFileSignatureSize],
         DTMModelInternalName = new byte[HeaderConsts.kDTMInternalModelNameSize]
       };
+
+      result.FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
+
+      return result;
     }
 
     public void Read(BinaryReader reader)

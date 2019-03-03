@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
-            MsgGroup = DIContext.Obtain<ITRexGridFactory>().Grid(GridName)?.GetCluster().GetMessaging();
+            MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
 
             if (MsgGroup != null)
                 MsgGroup.LocalListen(this, MessageTopicName);

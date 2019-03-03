@@ -1033,9 +1033,11 @@ namespace VSS.MasterData.Repositories
           if (upsertedCount > 0)
             await UpsertImportedFileHistory(importedFile);
         }
-
-        Log.LogDebug(
-          $"ProjectRepository/UpdateImportedFile: old update event ignored importedFile {importedFile.ImportedFileUid}");
+        else
+        {
+          Log.LogDebug(
+            $"ProjectRepository/UpdateImportedFile: old update event ignored importedFile {importedFile.ImportedFileUid}");
+        }
       }
       else
       {

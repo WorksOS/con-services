@@ -56,6 +56,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>()
 #if RAPTOR
@@ -87,7 +89,9 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         null, null, null, null, null, null, null, null, design, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
-
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
+      
       TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
@@ -125,6 +129,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         null, null, null, null, null, design, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
@@ -160,6 +166,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       DesignDescriptor design = new DesignDescriptor(-1, null, 0);
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
@@ -208,7 +216,9 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       DesignDescriptor design = new DesignDescriptor(-1, null, 0);
 
       var raptorClient = new Mock<IASNodeClient>();
-
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
+      
       TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
@@ -245,6 +255,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       TWGS84Point[] fence =
       {
@@ -306,6 +318,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>()
 #if RAPTOR
@@ -429,6 +443,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void GetBoundingBoxProjectExtentsNoMode()
     {
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       TICDataModelStatistics statistics;
       raptorClient
@@ -453,12 +469,14 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void GetBoundingBoxProjectExtentsWithMode()
     {
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
       raptorClient
         .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
-
+      
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>()
 #if RAPTOR
         , raptorClient.Object

@@ -49,60 +49,62 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       var latAxis = coordSystem.ZoneInfo.IsSouthGrid ? SOUTH_STR : NORTH_STR;
       var lonAxis = coordSystem.ZoneInfo.IsWestGrid ? WEST_STR : EAST_STR;
 
-      return new CoordinateSystemSettings(
+      return new CoordinateSystemSettings()
+      { 
         // Coordinate System...
-        coordSystem.SystemName,
-        csFileName,
-        coordSystem.ZoneInfo.ZoneGroupName,
-        Encoding.ASCII.GetBytes(coordSystem.Id),
+        CSName = coordSystem.SystemName,
+        CSFileName = csFileName,
+        CSGroup = coordSystem.ZoneInfo.ZoneGroupName,
+        CSIB = Encoding.ASCII.GetBytes(coordSystem.Id),
         // Ellipsoid...
-        coordSystem.DatumInfo.EllipseName,
-        coordSystem.DatumInfo.EllipseA,
-        0.0, // ellipsoidSemiMinorAxis
-        coordSystem.DatumInfo.EllipseInverseFlat,
-        0.0, // ellipsoidFirstEccentricity
-        0.0, // ellipsoidSecondEccentricity
-             // Datum...
-        coordSystem.DatumInfo.DatumName,
-        coordSystem.DatumInfo.DatumType,
-        ConvertCoordinateSystemDatumMethodType(coordSystem.DatumInfo.DatumType),
-        coordSystem.DatumInfo.LatitudeShiftGridFileName,
-        coordSystem.DatumInfo.LongitudeShiftGridFileName,
-        coordSystem.DatumInfo.HeightShiftGridFileName != string.Empty,
-        coordSystem.DatumInfo.HeightShiftGridFileName,
-        coordSystem.DatumInfo.DirectionIsLocalToWGS84 ? STR_DATUM_DIRECTION_TO_WGS84 : STR_DATUM_DIRECTION_TO_LOCAL,
-        coordSystem.DatumInfo.TranslationX,
-        coordSystem.DatumInfo.TranslationY,
-        coordSystem.DatumInfo.TranslationZ,
-        coordSystem.DatumInfo.RotationX,
-        coordSystem.DatumInfo.RotationY,
-        coordSystem.DatumInfo.RotationZ,
-        coordSystem.DatumInfo.Scale,
-        string.Empty, // datumParametersFileName
-                      // Geoid...
-        coordSystem.GeooidInfo?.GeoidName,
-        string.Empty, // geoidMethod
-        CoordinateSystemGeoidMethodType.Unknown, // datumMethodType, convert to CoordinateSystemGeoidMethodType
-        coordSystem.GeooidInfo?.GeoidFileName,
-        0.0, // geoidConstantSeparation 
-        0.0, // geoidOriginX
-        0.0, // geoidOriginY
-        0.0, // geoidOriginZ
-        0.0, // geoidTranslationZ
-        0.0, // geoidRotationX
-        0.0, // geoidRotationY
-        0.0, // geoidScaleFactor
-             // Projection
-        coordSystem.ZoneInfo.ZoneType,
-        GetProjectionParameters(coordSystem.ZoneInfo),
-        $"{AZIMUTH_STR} {azimuthDirection}",
-        $"{latAxis} {lonAxis}",
-        coordSystem.ZoneInfo.HorizontalAdjustment != null || coordSystem.ZoneInfo.VerticalAdjustment != null,
-        string.Empty, // verticalDatumName
-        string.Empty, // shiftGridName
-        string.Empty, // snakeGridName
-        false // unsupportedProjection
-      );
+        EllipsoidName = coordSystem.DatumInfo.EllipseName,
+        EllipsoidSemiMajorAxis = coordSystem.DatumInfo.EllipseA,
+        EllipsoidSemiMinorAxis = 0.0, // ellipsoidSemiMinorAxis
+        EllipsoidFlattening = coordSystem.DatumInfo.EllipseInverseFlat,
+        EllipsoidFirstEccentricity = 0.0, // ellipsoidFirstEccentricity
+        EllipsoidSecondEccentricity = 0.0, // ellipsoidSecondEccentricity
+        // Datum...
+        DatumName = coordSystem.DatumInfo.DatumName,
+        DatumMethod = coordSystem.DatumInfo.DatumType,
+        DatumMethodType = ConvertCoordinateSystemDatumMethodType(coordSystem.DatumInfo.DatumType),
+        LatitudeShiftDatumGridFileName = coordSystem.DatumInfo.LatitudeShiftGridFileName,
+        LongitudeShiftDatumGridFileName = coordSystem.DatumInfo.LongitudeShiftGridFileName,
+        IsDatumGridHeightShiftDefined = coordSystem.DatumInfo.HeightShiftGridFileName != string.Empty,
+        HeightShiftDatumGridFileName = coordSystem.DatumInfo.HeightShiftGridFileName,
+        DatumDirection = coordSystem.DatumInfo.DirectionIsLocalToWGS84 ? STR_DATUM_DIRECTION_TO_WGS84 : STR_DATUM_DIRECTION_TO_LOCAL,
+        DatumTranslationX = coordSystem.DatumInfo.TranslationX,
+        DatumTranslationY = coordSystem.DatumInfo.TranslationY,
+        DatumTranslationZ = coordSystem.DatumInfo.TranslationZ,
+        DatumRotationX = coordSystem.DatumInfo.RotationX,
+        DatumRotationY = coordSystem.DatumInfo.RotationY,
+        DatumRotationZ = coordSystem.DatumInfo.RotationZ,
+        DatumScaleFactor = coordSystem.DatumInfo.Scale,
+        DatumParametersFileName = string.Empty, // datumParametersFileName
+        // Geoid...
+        GeoidName = coordSystem.GeooidInfo?.GeoidName,
+        GeoidMethod = string.Empty, // geoidMethod
+        GeoidMethodType = CoordinateSystemGeoidMethodType.Unknown, // datumMethodType, convert to CoordinateSystemGeoidMethodType
+        GeoidFileName = coordSystem.GeooidInfo?.GeoidFileName,
+        GeoidConstantSeparation = 0.0, // geoidConstantSeparation 
+        GeoidOriginX = 0.0, // geoidOriginX
+        GeoidOriginY = 0.0, // geoidOriginY
+        GeoidOriginZ = 0.0, // geoidOriginZ
+        GeoidTranslationZ = 0.0, // geoidTranslationZ
+        GeoidRotationX = 0.0, // geoidRotationX
+        GeoidRotationY = 0.0, // geoidRotationY
+        GeoidScaleFactor = 0.0, // geoidScaleFactor
+        // Projection
+        ProjectionType = coordSystem.ZoneInfo.ZoneType,
+        ProjectionParameters = GetProjectionParameters(coordSystem.ZoneInfo),
+        AzimuthDirection = $"{AZIMUTH_STR} {azimuthDirection}",
+        PositiveCoordinateDirection = $"{latAxis} {lonAxis}",
+        // Others...
+        SiteCalibration = coordSystem.ZoneInfo.HorizontalAdjustment != null || coordSystem.ZoneInfo.VerticalAdjustment != null,
+        VerticalDatumName = string.Empty, // verticalDatumName
+        ShiftGridName = string.Empty, // shiftGridName
+        SnakeGridName = string.Empty, // snakeGridName
+        UnsupportedProjection = false // unsupportedProjection
+      };
     }
 
     private ProjectionParameter[] GetProjectionParameters(ZoneInfo coordSystemZoneInfo)

@@ -31,7 +31,7 @@ namespace VSS.TRex.GridFabric.Requests
 
       // Send the request to the application service pool and retrieve the result
       // and return it to the caller
-      return _Compute.Apply(func, arg);
+      return Compute.Apply(func, arg);
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace VSS.TRex.GridFabric.Requests
       TComputeFunc func = new TComputeFunc();
 
       // Send the request to the application service pool and retrieve the result
-      return _Compute.ApplyAsync(func, arg);
+      return Compute.ApplyAsync(func, arg);
     }
   }
 }

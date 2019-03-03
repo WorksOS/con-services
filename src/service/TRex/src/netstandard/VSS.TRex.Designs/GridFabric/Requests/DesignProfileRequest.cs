@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
     var func = new CalculateDesignProfileComputeFunc();
 
     // Send the appropriate response to the caller
-    return _Compute.Apply(func, arg);
+    return Compute.Apply(func, arg);
 
       //  Task<CalculateDesignProfileResponse> taskResult = compute.ApplyAsync(func, arg);
 

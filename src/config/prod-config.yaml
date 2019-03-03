@@ -55,6 +55,7 @@ data:
   DOWNLOAD_FOLDER: C:/temp/
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   AWS_TAGFILE_BUCKET_NAME: vss-prod-directtagfile-archives
+  ENVIRONMENT: PROD
 #AWS configuration  
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
@@ -105,4 +106,9 @@ data:
   PEGASUS_URL: https://api-usw2.trimblepaas.com/pegasus_stage-v1.0
   PEGASUS_EXECUTION_TIMEOUT_MINS: "10"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "5000"
+  PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
+#Slack
+  SLACK_URL: https://hooks.slack.com/services/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
+  SLACK_CHANNEL: "#notifications-prod"
+  SLACK_USERNAME: vss-jobs-prod
 

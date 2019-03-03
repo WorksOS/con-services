@@ -1,5 +1,7 @@
-﻿using ASNodeDecls;
+﻿#if RAPTOR
+using ASNodeDecls;
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -27,9 +29,12 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
 
+#if RAPTOR
     /// <summary>
     /// Converts Production Data Server (PDS) client CS data set to Coordinate Service one.
     /// </summary>
@@ -38,61 +43,62 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// 
     protected static CoordinateSystemSettings ConvertResult(TCoordinateSystemSettings settings)
     {
-      return new CoordinateSystemSettings(
+      return new CoordinateSystemSettings()
+      { 
         // Coordinate System...
-        settings.CSName,
-        settings.CSFileName,
-        settings.CSGroup,
-        settings.CSIB,
+        CSName = settings.CSName,
+        CSFileName = settings.CSFileName,
+        CSGroup = settings.CSGroup,
+        CSIB = settings.CSIB,
         // Ellipsoid...
-        settings.EllipsoidName,
-        settings.EllipsoidSemiMajorAxis,
-        settings.EllipsoidSemiMinorAxis,
-        settings.EllipsoidFlattening,
-        settings.EllipsoidFirstEccentricity,
-        settings.EllipsoidSecondEccentricity,
+        EllipsoidName = settings.EllipsoidName,
+        EllipsoidSemiMajorAxis = settings.EllipsoidSemiMajorAxis,
+        EllipsoidSemiMinorAxis = settings.EllipsoidSemiMinorAxis,
+        EllipsoidFlattening = settings.EllipsoidFlattening,
+        EllipsoidFirstEccentricity = settings.EllipsoidFirstEccentricity,
+        EllipsoidSecondEccentricity = settings.EllipsoidSecondEccentricity,
         // Datum...
-        settings.DatumName,
-        settings.DatumMethod,
-        RaptorConverters.convertCoordinateSystemDatumMethodType(settings.DatumMethodType),
-        settings.LatitudeDatumGridFileName,
-        settings.LongitudeDatumGridFileName,
-        settings.IsDatumGridHeightShiftDefined,
-        settings.HeightDatumGridFileName,
-        settings.DatumDirection,
-        settings.DatumTranslationX,
-        settings.DatumTranslationY,
-        settings.DatumTranslationZ,
-        settings.DatumRotationX,
-        settings.DatumRotationY,
-        settings.DatumRotationZ,
-        settings.DatumScaleFactor,
-        settings.DatumParametersFileName,
+        DatumName = settings.DatumName,
+        DatumMethod = settings.DatumMethod,
+        DatumMethodType = RaptorConverters.convertCoordinateSystemDatumMethodType(settings.DatumMethodType),
+        LatitudeShiftDatumGridFileName = settings.LatitudeDatumGridFileName,
+        LongitudeShiftDatumGridFileName = settings.LongitudeDatumGridFileName,
+        IsDatumGridHeightShiftDefined = settings.IsDatumGridHeightShiftDefined,
+        HeightShiftDatumGridFileName = settings.HeightDatumGridFileName,
+        DatumDirection = settings.DatumDirection,
+        DatumTranslationX = settings.DatumTranslationX,
+        DatumTranslationY = settings.DatumTranslationY,
+        DatumTranslationZ = settings.DatumTranslationZ,
+        DatumRotationX = settings.DatumRotationX,
+        DatumRotationY = settings.DatumRotationY,
+        DatumRotationZ = settings.DatumRotationZ,
+        DatumScaleFactor = settings.DatumScaleFactor,
+        DatumParametersFileName = settings.DatumParametersFileName,
         // Geoid...
-        settings.GeoidName,
-        settings.GeoidMethod,
-        RaptorConverters.convertCoordinateSystemGeoidMethodType(settings.GeoidMethodType),
-        settings.GeoidFileName,
-        settings.GeoidConstantSeparation,
-        settings.GeoidOriginX,
-        settings.GeoidOriginY,
-        settings.GeoidOriginZ,
-        settings.GeoidTranslationZ,
-        settings.GeoidRotationX,
-        settings.GeoidRotationY,
-        settings.GeoidScaleFactor,
+        GeoidName = settings.GeoidName,
+        GeoidMethod = settings.GeoidMethod,
+        GeoidMethodType = RaptorConverters.convertCoordinateSystemGeoidMethodType(settings.GeoidMethodType),
+        GeoidFileName = settings.GeoidFileName,
+        GeoidConstantSeparation = settings.GeoidConstantSeparation,
+        GeoidOriginX = settings.GeoidOriginX,
+        GeoidOriginY = settings.GeoidOriginY,
+        GeoidOriginZ = settings.GeoidOriginZ,
+        GeoidTranslationZ = settings.GeoidTranslationZ,
+        GeoidRotationX = settings.GeoidRotationX,
+        GeoidRotationY = settings.GeoidRotationY,
+        GeoidScaleFactor = settings.GeoidScaleFactor,
         // Projection
-        settings.ProjectionType,
-        RaptorConverters.convertCoordinateSystemProjectionParameters(settings.ProjectionParameters),
-        settings.AzimuthDirection,
-        settings.PositiveCoordinateDirection,
+        ProjectionType = settings.ProjectionType,
+        ProjectionParameters = RaptorConverters.convertCoordinateSystemProjectionParameters(settings.ProjectionParameters),
+        AzimuthDirection = settings.AzimuthDirection,
+        PositiveCoordinateDirection = settings.PositiveCoordinateDirection,
         // Others...
-        settings.SiteCalibration,
-        settings.VerticalDatumName,
-        settings.ShiftGridName,
-        settings.SnakeGridName,
-        settings.UnsupportedProjection
-      );
+        SiteCalibration = settings.SiteCalibration,
+        VerticalDatumName = settings.VerticalDatumName,
+        ShiftGridName = settings.ShiftGridName,
+        SnakeGridName = settings.SnakeGridName,
+        UnsupportedProjection = settings.UnsupportedProjection
+      };
     }
 
     /// <summary>
@@ -100,7 +106,20 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     /// </summary>
     /// 
     protected TCoordinateSystemSettings coordSystemSettings;
+#endif
 
+    /// <summary>
+    /// Sends a request to TRex Gateway client.
+    /// </summary>
+    /// <param name="item">A domain object.</param>
+    /// <returns>Result of the processed request from TRex Gateway.</returns>
+    /// 
+    protected virtual CoordinateSystemSettings SendRequestToTRexGatewayClient(object item)
+    {
+      return null;
+    }
+
+#if RAPTOR      
     /// <summary>
     /// Sends a request to Production Data Server (PDS) client.
     /// </summary>
@@ -111,6 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     {
       return TASNodeErrorStatus.asneUnknown;
     }
+#endif
 
     /// <summary>
     /// Coordinate system definition file executor (Post/Get).
@@ -123,12 +143,18 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     {
       try
       {
+#if RAPTOR
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_CS"))
+#endif
+          return SendRequestToTRexGatewayClient(item);
+#if RAPTOR
         var code = SendRequestToPDSClient(item);
             
         if (code == TASNodeErrorStatus.asneOK)
             return ConvertResult(coordSystemSettings);
 
         throw CreateServiceException<CoordinateSystemExecutor>((int)code);
+#endif
       }
       finally
       {

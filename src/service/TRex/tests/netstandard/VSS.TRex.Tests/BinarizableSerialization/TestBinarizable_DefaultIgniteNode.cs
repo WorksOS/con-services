@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         if (_ignite != null)
           return _ignite;
 
-        _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(TRexGrids.ImmutableGridName(), new IgniteConfiguration());
+        _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(TRexGrids.ImmutableGridName(), new IgniteConfiguration());
         return _ignite;
       }
     }

@@ -316,9 +316,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
       var coordRequest = new CoordinateConversionRequest(projectId,
         TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
-      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger
-          , raptorClient
-        )
+      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy)
         .Process(coordRequest) as CoordinateConversionResult;
       return coordResult;
 #else

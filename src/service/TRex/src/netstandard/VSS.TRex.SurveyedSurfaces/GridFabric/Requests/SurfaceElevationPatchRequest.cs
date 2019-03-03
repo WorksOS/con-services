@@ -65,7 +65,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
             try
             {
-                result = _Compute.Apply(_computeFunc, arg);
+                result = Compute.Apply(_computeFunc, arg);
             }
             catch (ClusterGroupEmptyException e)
             {
@@ -74,7 +74,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
                 try
                 {
-                    result = _Compute.Apply(_computeFunc, arg);
+                    result = Compute.Apply(_computeFunc, arg);
                 }
                 catch (ClusterGroupEmptyException e2)
                 {

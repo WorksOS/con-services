@@ -35,7 +35,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Build()
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))

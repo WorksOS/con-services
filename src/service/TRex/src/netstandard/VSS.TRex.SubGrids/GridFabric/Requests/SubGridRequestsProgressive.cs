@@ -60,7 +60,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             if (MsgGroup == null)
             {
                 // Create a messaging group the cluster can use to send messages back to and establish a local listener
-                MsgGroup = _Compute.ClusterGroup.GetMessaging();
+                MsgGroup = Compute.ClusterGroup.GetMessaging();
                 MsgGroup.LocalListen(Listener, arg.MessageTopic);
             }
         }
@@ -106,7 +106,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 // Construct the function to be used
                 IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
-                taskResult = _Compute.BroadcastAsync(func, arg);
+                taskResult = Compute.BroadcastAsync(func, arg);
                 taskResult.Wait(30000);
             }
             finally
@@ -133,7 +133,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             // Construct the function to be used
             IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
-            return _Compute.BroadcastAsync(func, arg)
+            return Compute.BroadcastAsync(func, arg)
               .ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)))
               .ContinueWith(x =>
               {

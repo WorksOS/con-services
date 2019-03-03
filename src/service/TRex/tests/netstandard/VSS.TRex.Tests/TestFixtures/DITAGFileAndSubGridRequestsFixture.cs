@@ -84,7 +84,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
-        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+
+        .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
 
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 

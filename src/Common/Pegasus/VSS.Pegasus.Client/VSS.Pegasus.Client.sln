@@ -35,6 +35,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{D5F71346-9BE5-4C3D-9CED-21B02904E1FB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\..\service\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{3BE2DBA3-37EB-4235-AE10-98ABC418260D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Models", "..\..\..\service\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj", "{76A5C53A-8BF6-4D8D-8591-1C458128875F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +97,14 @@ Global
 		{D5F71346-9BE5-4C3D-9CED-21B02904E1FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5F71346-9BE5-4C3D-9CED-21B02904E1FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5F71346-9BE5-4C3D-9CED-21B02904E1FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE2DBA3-37EB-4235-AE10-98ABC418260D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE2DBA3-37EB-4235-AE10-98ABC418260D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE2DBA3-37EB-4235-AE10-98ABC418260D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE2DBA3-37EB-4235-AE10-98ABC418260D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76A5C53A-8BF6-4D8D-8591-1C458128875F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76A5C53A-8BF6-4D8D-8591-1C458128875F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76A5C53A-8BF6-4D8D-8591-1C458128875F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76A5C53A-8BF6-4D8D-8591-1C458128875F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

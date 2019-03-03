@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace VSS.TRex.Designs.TTM.Optimised
+﻿namespace VSS.TRex.Designs.TTM.Optimised
 {
   /// <summary>
   /// Defines the collection of triangles that make up this surface
@@ -74,6 +71,8 @@ namespace VSS.TRex.Designs.TTM.Optimised
         }
     */
 
+    /* Retain as reference implementation using the standard binary reader IO for comparison with
+       the optimised direct memory access implementation berlow.
     /// <summary>
     /// Reads the set of triangles in the model utilising the given reader
     /// </summary>
@@ -115,6 +114,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
         reader.BaseStream.Position = RecPos + header.TriangleRecordSize;
       }
     }
+    */
 
     /// <summary>
     /// Reads the set of triangles in the model utilising the given reader
