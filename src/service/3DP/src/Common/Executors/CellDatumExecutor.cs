@@ -43,12 +43,14 @@ namespace VSS.Productivity3D.Common.Executors
 
     protected virtual bool GetTRexCellDatumData(CellDatumRequest request, out object data)
     {
+      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
     }
 
     protected virtual CellDatumResponse ConvertTRexCellDatumResult(object result)
     {
+      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       return null;
     }
 #if RAPTOR

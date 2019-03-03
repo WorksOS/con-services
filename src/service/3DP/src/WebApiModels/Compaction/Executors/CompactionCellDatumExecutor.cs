@@ -70,6 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override CellDatumResponse ConvertTRexCellDatumResult(object trexResult)
     {
+      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       return null;
     }
 
