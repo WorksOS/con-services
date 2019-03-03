@@ -60,8 +60,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
       var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
 
-      var request = CellDatumRequest.CreateCellDatumRequest(
+      var request = new CellDatumRequest(
         projectId.Result,
+        projectUid,
         displayMode,
         new WGSPoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()),
         null,
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
 
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient).Process(request) as CompactionCellDatumResult;
+      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CompactionCellDatumResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

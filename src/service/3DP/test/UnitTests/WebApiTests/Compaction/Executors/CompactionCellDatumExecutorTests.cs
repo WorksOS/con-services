@@ -7,6 +7,7 @@ using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -46,19 +47,20 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void CompactionCellDatumExecutorNoResult()
     {
       var request =
-        CellDatumRequest.CreateCellDatumRequest(0, DisplayMode.CompactionCoverage, null, null, null, null, null);
+        new CellDatumRequest(0, null, DisplayMode.CompactionCoverage, null, null, null, null, null);
 
       TCellProductionData data = new TCellProductionData();
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
 
       raptorClient.Setup(x => x.GetCellProductionData(
           request.ProjectId.Value,
-          (int) RaptorConverters.convertDisplayMode(request.displayMode),
-          request.gridPoint != null ? request.gridPoint.x : 0.0,
-          request.gridPoint != null ? request.gridPoint.y : 0.0,
+          (int) RaptorConverters.convertDisplayMode(request.DisplayMode),
+          request.GridPoint != null ? request.GridPoint.x : 0.0,
+          request.GridPoint != null ? request.GridPoint.y : 0.0,
           It.IsAny<TWGS84Point>(),
-          request.llPoint == null,
+          request.LLPoint == null,
           It.IsAny<TICFilterSettings>(),
           It.IsAny<TICLiftBuildSettings>(),
           It.IsAny<TVLPDDesignDescriptor>(),
@@ -66,7 +68,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(false);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object);
+        .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
 
@@ -74,24 +76,25 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void CompactionCellDatumExecutorSuccessNoNECoordinates()
     {
       var request =
-        CellDatumRequest.CreateCellDatumRequest(0, DisplayMode.CCV, new WGSPoint(0.84, -1.75), null, null, null, null);
+        new CellDatumRequest(0, null, DisplayMode.CCV, new WGSPoint(0.84, -1.75), null, null, null, null);
 
       TCellProductionData data = new TCellProductionData
       {
-        DisplayMode = (int) request.displayMode,
+        DisplayMode = (int) request.DisplayMode,
         Value = 500,
         ReturnCode = 0
       };
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
 
       raptorClient.Setup(x => x.GetCellProductionData(
           request.ProjectId.Value,
-          (int)RaptorConverters.convertDisplayMode(request.displayMode),
-          request.gridPoint != null ? request.gridPoint.x : 0.0,
-          request.gridPoint != null ? request.gridPoint.y : 0.0,
+          (int)RaptorConverters.convertDisplayMode(request.DisplayMode),
+          request.GridPoint != null ? request.GridPoint.x : 0.0,
+          request.GridPoint != null ? request.GridPoint.y : 0.0,
           It.IsAny<TWGS84Point>(),
-          request.llPoint == null,
+          request.LLPoint == null,
           It.IsAny<TICFilterSettings>(),
           It.IsAny<TICLiftBuildSettings>(),
           It.IsAny<TVLPDDesignDescriptor>(),
@@ -99,7 +102,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(true);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object);
+        .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
 
       Assert.ThrowsException<ServiceException>(() => executor.Process(request), "On Cell Datum request. Failed to process coordinate conversion request.");
     }

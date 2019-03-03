@@ -1,6 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+#if RAPTOR
 using SVOICDecls;
 using VLPDDecls;
+#endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -8,6 +11,9 @@ using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -25,18 +31,56 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ProcessErrorCodes();
     }
 
-    protected override bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
+    private void CheckForCoordinate(WGSPoint coordinate)
     {
-      if (request.llPoint == null)
+      if (coordinate == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           "No WGS84 coordinates provided"));
       }
+    }
 
+    protected override bool GetTRexCellDatumData(CellDatumRequest request, out object trexData)
+    {
+      CheckForCoordinate(request.LLPoint);
+
+      // Gett TRex grid coordinates...
+      var coordinate = GetTRexGridCoordinates(request.ProjectUid ?? Guid.Empty, request.LLPoint);
+
+      _northing = coordinate.Y;
+      _easting = coordinate.X;
+
+      return base.GetTRexCellDatumData(request, out trexData);
+    }
+
+    private TwoDConversionCoordinate GetTRexGridCoordinates(Guid projectUid, WGSPoint latLon)
+    {
+      var conversionCoordinates = new[] { new TwoDConversionCoordinate(latLon.Lon, latLon.Lat) };
+
+      var conversionRequest = new CoordinateConversionRequest(projectUid, TwoDCoordinateConversionType.NorthEastToLatLon, conversionCoordinates);
+      var conversionResult = trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", customHeaders).Result;
+
+      if (conversionResult.Code != 0 || conversionResult.ConversionCoordinates.Length == 0)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "Failed to retrieve long lat for the passed coordinate."));
+
+      return conversionResult.ConversionCoordinates[0];
+    }
+
+    protected override CellDatumResponse ConvertTRexCellDatumResult(object trexResult)
+    {
+      return null;
+    }
+
+#if RAPTOR
+    protected override bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
+    {
+      CheckForCoordinate(request.LLPoint);
+      
       // Gett grid coordinates...
-      var pointList = GetGridCoordinates(request.ProjectId ?? -1, request.llPoint);
-
-
+      var pointList = GetGridCoordinates(request.ProjectId ?? -1, request.LLPoint);
+      
       _northing = pointList.Points.Coords[0].Y;
       _easting = pointList.Points.Coords[0].X;
 
@@ -71,10 +115,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       return pointList;
     }
+#endif
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddCoordinateResultErrorMessages(ContractExecutionStates);
+#endif
     }
   }
 }

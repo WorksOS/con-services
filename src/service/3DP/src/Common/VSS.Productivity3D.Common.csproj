@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
-    <Compile Remove=".\Executors\CellDatumExecutor.cs" />
     <Compile Remove=".\Interfaces\IASNodeClient.cs" />
     <Compile Remove=".\Interfaces\ITagProcessor.cs" />
     <Compile Remove=".\Proxies\ASNodeClient.cs" />
