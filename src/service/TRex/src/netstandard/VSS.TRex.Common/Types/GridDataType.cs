@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using VSS.Productivity3D.Models.Enums;
+﻿using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Types
 {
@@ -90,8 +90,7 @@ namespace VSS.TRex.Types
         case DisplayMode.Design3D: return GridDataType.DesignHeight;
 
         default:
-          Debug.Assert(false, $"Unknown mode ({Mode}) in ICGridDataTypeForDisplayMode");
-          return GridDataType.Height; // For modes that are not supported yet, we will use heights
+          throw new TRexException($"Unknown mode ({Mode})");
       }
     }
   }

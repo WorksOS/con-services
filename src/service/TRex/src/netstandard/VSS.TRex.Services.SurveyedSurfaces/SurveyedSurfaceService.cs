@@ -48,6 +48,10 @@ namespace VSS.TRex.Services.SurveyedSurfaces
             CacheName = TRexCaches.ImmutableNonSpatialCacheName();
         }
 
+        public SurveyedSurfaceService()
+        {
+        }
+
         public SurveyedSurfaceService(StorageMutability mutability, string cacheName) : this(mutability)
         {
             CacheName = cacheName;

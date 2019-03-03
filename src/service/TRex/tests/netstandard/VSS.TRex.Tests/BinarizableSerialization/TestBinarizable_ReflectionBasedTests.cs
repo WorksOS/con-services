@@ -39,6 +39,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         .FindAllDerivedTypesInAllLoadedAssemblies<T>("VSS")
         .Where(x => !x.ContainsGenericParameters)
         .Where(x => !x.Implements(typeof(INonBinarizable)))
+        .Where(x => !x.IsAbstract)
         .Select(x => new object[] { x })
         .ToList();
     }

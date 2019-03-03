@@ -24,14 +24,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CCA
 
     public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
     {
-      if (valueType.Type != TAGDataType.t8bitUInt)
+      bool result = false;
+
+      if (valueType.Type == TAGDataType.t8bitUInt)
       {
-        return false;
+          valueSink.SetICCCARightFrontValue((byte) value);
+          result = true;
       }
 
-      valueSink.SetICCCARightFrontValue((byte)value);
-
-      return true;
+      return result;
     }
   }
 }

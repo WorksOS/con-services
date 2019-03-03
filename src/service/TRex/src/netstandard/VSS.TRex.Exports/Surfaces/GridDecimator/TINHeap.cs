@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
+using VSS.TRex.Common.Exceptions;
 
-namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
+namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public class TINHeap : List<GridToTINHeapNode>
   {
-    public TINHeap()
+    public TINHeap(int capacity)
     {
-    }
-
-    public TINHeap(int capacity) : this()
-    {
-      this.Capacity = capacity;
+      Capacity = capacity;
     }
 
     /// <summary>
@@ -51,7 +47,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
     private int Right(int i) => 2 * i + 2;
 
     /// <summary>
-    /// Moves element i up the heap to its correct locatio to maintain order
+    /// Moves element i up the heap to its correct location to maintain order
     /// </summary>
     /// <param name="i"></param>
     private void Upheap(int i)
@@ -74,24 +70,23 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
     /// <param name="i"></param>
     private void Downheap(int i)
     {
-      if (i >= Count)
-        return; // perhaps just extracted the last
-
-
-      int largest = i;
-      int l = Left(i);
-      int r = Right(i);
-
-      if (l < Count && this[l].Import > this[largest].Import)
-        largest = l;
-
-      if (r < Count && this[r].Import > this[largest].Import)
-        largest = r;
-
-      if (largest != i)
+      if (i < Count)
       {
-        Swap(i, largest);
-        Downheap(largest);
+        int largest = i;
+        int l = Left(i);
+        int r = Right(i);
+
+        if (l < Count && this[l].Import > this[largest].Import)
+          largest = l;
+
+        if (r < Count && this[r].Import > this[largest].Import)
+          largest = r;
+
+        if (largest != i)
+        {
+          Swap(i, largest);
+          Downheap(largest);
+        }
       }
     }
 
@@ -102,7 +97,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
     /// <param name="import"></param>
     public void Insert(GridToTINTriangle tri, double import)
     {
-      Debug.Assert(tri.Vertices[0] != null && tri.Vertices[1] != null && tri.Vertices[2] != null, "One or more vertices in triangle is null");
+      if (tri.Vertices[0] == null && tri.Vertices[1] == null && tri.Vertices[2] == null)
+        throw new TRexException("One or more vertices in triangle is null");
 
       tri.HeapIndex = Count;
       Add(new GridToTINHeapNode(tri, import));
@@ -114,12 +110,13 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       int i = tri.HeapIndex;
 
       if (i >= Count)
-        Debug.Assert(false, $"WARNING: Attempting to update past end of heap! [index = {i}, Count = {Count}");
+        throw new TRexException($"Attempting to update past end of heap [index = {i}, Count = {Count}");
 
       if (i == GridToTINHeapNode.NOT_IN_HEAP)
-        Debug.Assert(false, "WARNING: Attempting to update object not in heap");
+        throw new TRexException("Attempting to update object not in heap");
 
-      Debug.Assert(this[i].Tri == tri, "Inconsistent triangle references in Update()");
+      if (this[i].Tri != tri)
+        throw new TRexException("Inconsistent triangle references");
 
       double old = this[i].Import;
       this[i].Import = import;
@@ -132,18 +129,19 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
     public GridToTINHeapNode Extract()
     {
-      if (Count < 1)
-        return null;
+      GridToTINHeapNode result = null;
 
-      Swap(0, Count - 1);
+      if (Count >= 1)
+      {
+        Swap(0, Count - 1);
 
-      GridToTINHeapNode result = this[Count - 1];
+        result = this[Count - 1];
 
-      RemoveAt(Count - 1);
+        RemoveAt(Count - 1);
+        Downheap(0);
 
-      Downheap(0);
-
-      result.Tri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
+        result.Tri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
+      }
 
       return result;
     }
@@ -152,28 +150,31 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
     public void Kill(int i)
     {
-      if (i >= Count)
-        Debug.Assert(false, "WARNING: Attempt to delete invalid heap node.");
+      if (i < Count)
+      {
+        bool LastNode = i == Count - 1;
+        Swap(i, Count - 1);
 
-      bool LastNode = i == Count - 1;
-      Swap(i, Count - 1);
+        GridToTINHeapNode Node = this[Count - 1];
+        Node.Tri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
 
-      GridToTINHeapNode Node = this[Count - 1];
-      Node.Tri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
+        RemoveAt(Count - 1);
 
-      RemoveAt(Count - 1);
-
-      if (!LastNode)
-        if (this[i].Import < Node.Import)
-          Downheap(i);
-        else
-          Upheap(i);
+        if (!LastNode)
+        {
+          if (this[i].Import < Node.Import)
+            Downheap(i);
+          else
+            Upheap(i);
+        }
+      }
     }
 
     public void CheckConsistency()
     {
       for (int i = 0; i < Count; i++)
-        Debug.Assert(i == this[i].Tri.HeapIndex, "Inconsistent heap indexing...");
+        if (i != this[i].Tri.HeapIndex)
+          throw new TRexException("Inconsistent heap indexing");
     }
 
     public void CheckConsistency2(GridToTINTriangle tri)
@@ -182,14 +183,14 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         if (this[i].Tri == tri)
           return;
 
-      Debug.Assert(false, "Triangle is not in the heap");
+      throw new TRexException("Triangle is not in the heap");
     }
 
     public void CheckListConsistency()
     {
       for (int i = 0; i < Count; i++)
         if (!this[i].Tri.PointInTriangleInclusive(this[i].sx, this[i].sy))
-          Debug.Assert(false, "Tri does not contain heap location");
+          throw new TRexException("Tri does not contain heap location");
     }
   }
 }

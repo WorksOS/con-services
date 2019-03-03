@@ -17,7 +17,7 @@ namespace VSS.TRex.SiteModels
 
     public short MachineID { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public DateTime StartTime { get; set; }
 

@@ -1,21 +1,33 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Designs.Models
 {
-  public struct DesignDescriptor : IEquatable<DesignDescriptor>
+  public class DesignDescriptor : IEquatable<DesignDescriptor>, IBinaryReaderWriter, IBinarizable
   {
+    private const byte VERSION_NUMBER = 1;
+
     public Guid DesignID;
     public string Folder;
     public string FileName;
     public double Offset;
 
+    public DesignDescriptor()
+    {
+      DesignID = Guid.Empty;
+      Folder = string.Empty;
+      FileName = string.Empty;
+      Offset = 0.0;
+    }
+
     public DesignDescriptor(Guid designID,
                             string folder,
                             string fileName,
-                            double offset)
+                            double offset) : this()
     {
       DesignID = designID;
       Folder = folder;
@@ -52,14 +64,11 @@ namespace VSS.TRex.Designs.Models
              (Offset == other.Offset);
     }
 
-        public void Clear() => Init(Guid.Empty, "", "", 0.0);
+    public void Clear() => Init(Guid.Empty, "", "", 0.0);
 
-    public static DesignDescriptor Null()
-    {
-      DesignDescriptor result = new DesignDescriptor();
-      result.Clear();
-      return result;
-    }
+    public static DesignDescriptor Null() => new DesignDescriptor();
+
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     public void Write(BinaryWriter writer)
     {
@@ -83,6 +92,8 @@ namespace VSS.TRex.Designs.Models
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(DesignID);
       writer.WriteString(Folder);
       writer.WriteString(FileName);
@@ -95,11 +106,17 @@ namespace VSS.TRex.Designs.Models
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       DesignID = reader.ReadGuid() ?? Guid.Empty;
       Folder = reader.ReadString();
       FileName = reader.ReadString();
       Offset = reader.ReadDouble();
     }
+
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
+
+    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }
 

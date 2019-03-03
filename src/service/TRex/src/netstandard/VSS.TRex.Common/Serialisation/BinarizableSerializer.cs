@@ -18,9 +18,9 @@ namespace VSS.TRex.Common.Serialisation
         return;
       }
 
-      if (obj is Exception)
+      if (obj is Exception e)
       {
-        writer.WriteObject("Exception", obj);
+        writer.WriteObject("Exception", e);
         return;
       }
 
@@ -35,10 +35,10 @@ namespace VSS.TRex.Common.Serialisation
         return;
       }
 
-      if (obj is Exception)
+      if (obj is Exception e)
       {
-        var res = reader.ReadObject<object>("Exception");
-        res.ShallowCloneTo(obj);
+        var res = reader.ReadObject<Exception>("Exception");
+        res.ShallowCloneTo(e);
         return;
       }
 

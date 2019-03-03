@@ -49,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         ReferenceDesignUID = request.DesignUid ?? Guid.Empty, 
-        CellSize = siteModel.Grid.CellSize,
+        CellSize = siteModel.CellSize,
         ProfilePath = new XYZ[] {new XYZ(request.StartX.Value, request.StartY.Value), new XYZ (request.EndX.Value, request.EndY.Value)}
       });
 

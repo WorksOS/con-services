@@ -356,12 +356,12 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       throw new NotImplementedException();
     }
 
-    public T ReadObject<T>(string fieldName)
+    public virtual T ReadObject<T>(string fieldName)
     {
       throw new NotImplementedException();
     }
 
-    public T ReadObject<T>()
+    public virtual T ReadObject<T>()
     {
       return Deserialize<T>();
     }

@@ -11,7 +11,7 @@ using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
-using VSS.TRex.RequestStatistics;
+using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -493,10 +493,10 @@ namespace VSS.TRex.Rendering.Executors
         // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
 
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-          RotatedTileBoundingExtents.MinY, SiteModel.Grid.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+          RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
           out uint CellExtents_MinX, out uint CellExtents_MinY);
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-          RotatedTileBoundingExtents.MaxY, SiteModel.Grid.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+          RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
           out uint CellExtents_MaxX, out uint CellExtents_MaxY);
 
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);
@@ -542,7 +542,7 @@ namespace VSS.TRex.Rendering.Executors
         // cannot meaningfully render the data). If the size of s subgrid is smaller than
         // the size of a pixel in the requested tile then do this. Just check the X dimension
         // as the data display is isotropic.
-        if (Utilities.SubgridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
+        if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
           return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
 
         /* TODO - Create a scaled palette to use when rendering the data

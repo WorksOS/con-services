@@ -29,41 +29,33 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
-            if (!state.HaveSeenAnAbsoluteVolkelMeasUtilRange)
-            {
-                return false;
-            }
+            bool result = false;
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t4bitInt:
-                case TAGDataType.t8bitInt:
-                    if (((int)valueSink.VolkelMeasureUtilRanges.GetLatest() + value) < 0)
-                    {
-                        return false;
-                    }
-
+            if (state.HaveSeenAnAbsoluteVolkelMeasUtilRange &&
+                (valueType.Type == TAGDataType.t4bitInt || valueType.Type == TAGDataType.t8bitInt))
+            { 
+                if (((int)valueSink.VolkelMeasureUtilRanges.GetLatest() + value) >= 0)
+                {    
                     valueSink.SetVolkelMeasUtilRange((int)valueSink.VolkelMeasureUtilRanges.GetLatest() + value);
-                    break;
-
-                default:
-                    return false;
+                    result = true;
+                }
             }
 
-            return true;
+            return result;
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type != TAGDataType.t12bitUInt)
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t12bitUInt)
             {
-                return false;
+              valueSink.SetVolkelMeasUtilRange((int) value);
+              state.HaveSeenAnAbsoluteVolkelMeasUtilRange = true;
+              result = true;
             }
 
-            valueSink.SetVolkelMeasUtilRange((int)value);
-            state.HaveSeenAnAbsoluteVolkelMeasUtilRange = true;
-
-            return true;
+            return result;
         }
     }
 }

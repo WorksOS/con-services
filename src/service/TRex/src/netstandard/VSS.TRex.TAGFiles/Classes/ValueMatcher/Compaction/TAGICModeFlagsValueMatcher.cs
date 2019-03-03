@@ -15,13 +15,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             if (valueType.Type == TAGDataType.t4bitUInt)
             {
                 valueSink.ICMode = (byte)value;
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

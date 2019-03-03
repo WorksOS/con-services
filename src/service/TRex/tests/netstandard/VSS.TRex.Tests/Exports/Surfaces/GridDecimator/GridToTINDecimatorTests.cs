@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
   public class DecimationElevationSubGridTree : GenericSubGridTree<float, GenericLeafSubGrid_Float>
   {
-    public override float NullCellValue => Common.Consts.NullHeight;
+    public override float NullCellValue => TRex.Common.Consts.NullHeight;
   }
   
   public class GridToTINDecimatorTests : IClassFixture<DILoggingFixture>
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
             if (elev != 0)
               ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
             else
-              ((GenericLeafSubGrid_Float)subGrid).Items[x, y] = Common.Consts.NullHeight;
+              ((GenericLeafSubGrid_Float)subGrid).Items[x, y] = TRex.Common.Consts.NullHeight;
           });
 
           return true;

@@ -48,6 +48,11 @@ namespace VSS.TRex.GridFabric
       AcquireIgniteTopologyProjections();
     }
 
+    public BaseIgniteClass()
+    {
+
+    }
+
     /// <summary>
     /// Default no-arg constructor that sets up cluster and compute projections available for use
     /// </summary>

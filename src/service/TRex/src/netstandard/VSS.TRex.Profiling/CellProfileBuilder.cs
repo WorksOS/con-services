@@ -228,7 +228,7 @@ namespace VSS.TRex.Profiling
       NEECoords = nEECoords;
       ProfileCells = profileCells;
 
-      CellSize = SiteModel.Grid.CellSize;
+      CellSize = SiteModel.CellSize;
 
       CurrStationPos = 0;
 

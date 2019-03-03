@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -29,45 +28,34 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
-            if (!state.HaveSeenAnAbsoluteFrequency)
-            {
-                return false;
-            }
+            bool result = false;
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t4bitInt:
-                case TAGDataType.t8bitInt:
-                    if (((ushort)(valueSink.ICFrequencys.GetLatest()) + value) < 0)
-                    {
-                        return false;
-                    }
-
+            if (state.HaveSeenAnAbsoluteFrequency &&
+                (valueType.Type == TAGDataType.t4bitInt || valueType.Type == TAGDataType.t8bitInt))
+            { 
+                if (((ushort)(valueSink.ICFrequencys.GetLatest()) + value) >= 0)
+                {
                     valueSink.SetICFrequency((ushort)((ushort)(valueSink.ICFrequencys.GetLatest()) + value));
-                    break;
-
-                default:
-                    return false;
+                    result = true;
+                }
             }
 
-            return true;
+            return result;
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
             state.HaveSeenAnAbsoluteFrequency = true;
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t12bitUInt:
-                    valueSink.SetICFrequency((ushort)value);
-                    break;
+            bool result = false;
 
-                default:
-                    return false;
+            if (valueType.Type == TAGDataType.t12bitUInt)
+            { 
+                valueSink.SetICFrequency((ushort)value);
+                result = true;
             }
 
-            return true;
+            return result;
         }
     }
 }

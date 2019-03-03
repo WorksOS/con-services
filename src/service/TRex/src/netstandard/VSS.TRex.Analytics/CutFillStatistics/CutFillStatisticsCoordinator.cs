@@ -27,7 +27,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       Offsets = argument.Offsets,
       Counts = argument.Offsets != null ? new long[argument.Offsets.Length] : null
     };

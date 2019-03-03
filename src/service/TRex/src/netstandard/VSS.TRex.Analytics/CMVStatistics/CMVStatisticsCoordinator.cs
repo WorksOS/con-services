@@ -24,7 +24,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       OverrideMachineCMV = argument.OverrideMachineCMV,
       OverridingMachineCMV = argument.OverridingMachineCMV,
       CMVPercentageRange = argument.CMVPercentageRange,

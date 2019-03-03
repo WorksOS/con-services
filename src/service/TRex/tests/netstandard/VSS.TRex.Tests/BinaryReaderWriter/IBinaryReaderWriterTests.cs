@@ -6,7 +6,7 @@ using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
 using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinaryReaderWriter
@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
   /// This test class finds all types that implement IBinaryReaderWriter and test they can serialise
   /// and deserialise a default instance of the type
   /// </summary>
-  public class IBinaryReaderWriterTests
+  public class IBinaryReaderWriterTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
   {
     public static bool TypeIsInteresting(Type x)
     {
@@ -80,7 +80,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       var instance2 = Activator.CreateInstance(type) as IBinaryReaderWriter;
       instance2.Read(br);
 
-      instance.Should().BeEquivalentTo(instance2);
+      instance.Should().BeEquivalentTo(instance2, options => options.RespectingRuntimeTypes().IgnoringCyclicReferences());
     }
 
     private void TestBufferedWrite(Type type)
@@ -95,7 +95,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       var instance2 = Activator.CreateInstance(type) as IBinaryReaderWriter;
       instance2.Read(br);
 
-      instance.Should().BeEquivalentTo(instance2);
+      instance.Should().BeEquivalentTo(instance2, options => options.RespectingRuntimeTypes().IgnoringCyclicReferences());
     }
 
     [Theory]
@@ -103,9 +103,9 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     public void Serialization_StandardWrite(Type type)
     {
       // Determine if the class implements the BinaryReaderWriter Read/Write members of the IBinaryReaderWriter interface
-      var typeHasReadWriteMembers = HasMethod(type, "Write", new[] {typeof(BinaryReader)}, true) &&
-                                    HasMethod(type, "Write", new[] {typeof(BinaryReader), typeof(byte[])}, true) &&
-                                    HasMethod(type, "Read", new[] {typeof(BinaryWriter)}, true);
+      var typeHasReadWriteMembers = HasMethod(type, "Write", new[] {typeof(BinaryWriter) }, true) &&
+                                    HasMethod(type, "Write", new[] {typeof(BinaryWriter), typeof(byte[])}, true) &&
+                                    HasMethod(type, "Read", new[] {typeof(BinaryReader)}, true);
 
       if (typeHasReadWriteMembers)
       {

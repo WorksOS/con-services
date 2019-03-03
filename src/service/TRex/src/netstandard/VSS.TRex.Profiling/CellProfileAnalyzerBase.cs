@@ -151,7 +151,7 @@ namespace VSS.TRex.Profiling
       (siteModelID:  SiteModel.ID,
        oTGCellBottomLeftX: uint.MaxValue,
        oTGCellBottomLeftY: uint.MaxValue,
-       cellSize: SiteModel.Grid.CellSize,
+       cellSize: SiteModel.CellSize,
        includedSurveyedSurfaces: FilteredSurveyedSurfaces,
        surveyedSurfacePatchType: SurveyedSurfacePatchType.CompositeElevations,
        processingMap: new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));

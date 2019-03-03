@@ -24,7 +24,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       OverrideTargetPassCount = argument.OverrideTargetPassCount,
       OverridingTargetPassCountRange = argument.OverridingTargetPassCountRange,
       DetailsDataValues = argument.PassCountDetailValues,

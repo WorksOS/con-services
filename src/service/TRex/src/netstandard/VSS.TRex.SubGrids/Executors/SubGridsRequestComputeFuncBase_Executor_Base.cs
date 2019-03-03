@@ -156,7 +156,7 @@ namespace VSS.TRex.SubGrids.Executors
                   throw new TRexSubGridProcessingException("SimpleVolumeOverlay not implemented");
 
                 case GridDataType.Height:
-                  NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.Grid.CellSize, siteModel.Grid.NumLevels, subGridResult.OriginX, subGridResult.OriginY);
+                  NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.CellSize, siteModel.Grid.NumLevels, subGridResult.OriginX, subGridResult.OriginY);
 
                   /*
                   Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
@@ -238,7 +238,7 @@ namespace VSS.TRex.SubGrids.Executors
     {
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
+        ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.CellSize,
           out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
         clientGrid = DesignElevations;
