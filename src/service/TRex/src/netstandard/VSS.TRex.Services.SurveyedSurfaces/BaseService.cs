@@ -11,9 +11,6 @@ namespace VSS.TRex.Services
     {
     }
 
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
     public BaseService(string gridName, string role) : base(gridName, role)
     {
 

@@ -5,7 +5,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.GridFabric.Interfaces;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -23,7 +23,6 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         .Where(x => !typeof(BaseRequestArgument).IsAssignableFrom((Type)x[0]))
         .Where(x => !typeof(BaseComputeFunc).IsAssignableFrom((Type)x[0]))
         .Where(x => !typeof(IBaseRequest).IsAssignableFrom((Type)x[0]))
-        .Select(x => x)
         .ToList();
     }
 
