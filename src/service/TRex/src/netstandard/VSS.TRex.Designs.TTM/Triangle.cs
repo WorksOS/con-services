@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
@@ -17,6 +16,7 @@ namespace VSS.TRex.Designs.TTM
     public TriVertex[] Vertices = new TriVertex[3];
     public Triangle[] Neighbours = new Triangle[3];
 
+    /*  Re-include if required, and add unit tests for them at that time.
     /// <summary>
     ///  FFlags is a general purpose flags field for a triangle. It is not persistent
     /// (ie: is not written to the TTM file)
@@ -29,13 +29,9 @@ namespace VSS.TRex.Designs.TTM
     {
       Flags = (ushort) (Value ? Flags | (1 << Index) : Flags & ~(1 << Index));
     }
+    */
 
-    public Triangle()
-    {
-
-    }
-
-    public Triangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3) : this()
+    public Triangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3)
     {
       Vertices[0] = Vertex1;
       Vertices[1] = Vertex2;
@@ -44,8 +40,12 @@ namespace VSS.TRex.Designs.TTM
       Neighbours[1] = null;
       Neighbours[2] = null;
 
-      Flags = 0;
+      /*  Re-include if required, and add unit tests for them at that time.
+        Flags = 0;
+        */
     }
+
+    /* Re-include if required, and add unit tests for them at that time.
 
     public bool Side1StaticFlag
     {
@@ -76,6 +76,7 @@ namespace VSS.TRex.Designs.TTM
       get { return GetFlag(Consts.IsDiscardedFlagIndex); }
       set { SetFlag(Consts.IsDiscardedFlagIndex, value); }
     }
+    */
 
     public bool IsEdgeTriangle() => Neighbours[0] == null || Neighbours[1] == null || Neighbours[2] == null;
 
@@ -87,47 +88,43 @@ namespace VSS.TRex.Designs.TTM
 
     public XYZ Centroid() => XYZ.GetTriCentroid(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ);
 
-    public bool PointInTriangle(double X, double Y)
-    {
-      return XYZ.PointInTriangle(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
-    }
+    public bool PointInTriangle(double X, double Y) => XYZ.PointInTriangle(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
+    
+    public bool PointInTriangleInclusive(double X, double Y) => XYZ.PointInTriangleInclusive(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);    
 
-    public bool PointInTriangleInclusive(double X, double Y)
-    {
-      return XYZ.PointInTriangleInclusive(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
-    }
-
+    /* Re-include if required, and add unit tests for them at that time.
     public bool CrossesNeighbour(int Side)
     {
-      Triangle NbrTri = Neighbours[Side];
-
-      if (NbrTri == null)
-        return false;
-
-      TriVertex SideStartPt = Vertices[Side];
-      TriVertex SideEndPt = Vertices[XYZ.NextSide(Side)];
-      TriVertex OppositePt = Vertices[XYZ.PrevSide(Side)];
-      int NbrSide = NbrTri.GetSideIndex(SideStartPt, SideEndPt);
-      TriVertex NbrOppositePt = NbrTri.Vertices[XYZ.PrevSide(NbrSide)];
-
-      return XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, OppositePt.XYZ) == XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, NbrOppositePt.XYZ);
+    Triangle NbrTri = Neighbours[Side];
+    
+    if (NbrTri == null)
+      return false;
+    
+    TriVertex SideStartPt = Vertices[Side];
+    TriVertex SideEndPt = Vertices[XYZ.NextSide(Side)];
+    TriVertex OppositePt = Vertices[XYZ.PrevSide(Side)];
+    int NbrSide = NbrTri.GetSideIndex(SideStartPt, SideEndPt);
+    TriVertex NbrOppositePt = NbrTri.Vertices[XYZ.PrevSide(NbrSide)];
+    
+    return XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, OppositePt.XYZ) == XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, NbrOppositePt.XYZ);
     }
-
+    
     public bool GetCrossingNeighbour(out int Side)
     {
-      Side = 0;
-
-      for (int i = 0; i < 3; i++)
+    Side = 0;
+    
+    for (int i = 0; i < 3; i++)
+    {
+      if (CrossesNeighbour(i))
       {
-        if (CrossesNeighbour(i))
-        {
-          Side = i;
-          return true;
-        }
+        Side = i;
+        return true;
       }
-
-      return false;
     }
+    
+    return false;
+    }
+    */
 
     public int GetSideIndex(TriVertex VertexA, TriVertex VertexB)
     {
@@ -142,7 +139,7 @@ namespace VSS.TRex.Designs.TTM
       return Result;
     }
 
-    public int GetPointIndex(TriVertex V)
+    private int GetPointIndex(TriVertex V)
     {
       int Result = FindPointIndex(V);
       Debug.Assert(Result != -1, "Invalid vertex in GetPointIndex");
@@ -150,13 +147,18 @@ namespace VSS.TRex.Designs.TTM
       return Result;
     }
 
-    public int FindPointIndex(TriVertex V)
+    private int FindPointIndex(TriVertex V)
     {
-      if (V == Vertices[0]) return 0;
-      if (V == Vertices[1]) return 1;
-      if (V == Vertices[2]) return 2;
-      return -1;
+      int result = -1;
+
+      if (V == Vertices[0]) result = 0;
+      else if (V == Vertices[1]) result = 1;
+      else if (V == Vertices[2]) result = 2;
+
+      return result;
     }
+
+    /* Re-include if required, and add unit tests for them at that time.
 
     public void GetMinMaxSides(out int ShortestSide, out int LongestSide,
       out double MinSideLen, out double MaxSideLen)
@@ -237,5 +239,6 @@ namespace VSS.TRex.Designs.TTM
       MinY = Vertices.Min(x => x.Y);
       MaxY = Vertices.Max(x => x.Y);
     }
+    */
   }
 }
