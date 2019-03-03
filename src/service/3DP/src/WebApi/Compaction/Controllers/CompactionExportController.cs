@@ -35,9 +35,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ProjectVerifier]
   public class CompactionExportController : BaseController<CompactionExportController>
   {
-#if RAPTOR
-    private readonly IASNodeClient raptorClient;
-#endif
     private readonly IPreferenceProxy prefProxy;
     private readonly IProductionDataRequestFactory requestFactory;
     private const int FIVE_MIN_SCHEDULER_TIMEOUT = 300000;
@@ -49,17 +46,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionExportController(
-#if RAPTOR
-      IASNodeClient raptorClient,
-#endif
       IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
       ITransferProxy transferProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
       this.transferProxy = transferProxy;
@@ -185,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         timeout = configStoreTimeout > 0 ? configStoreTimeout : FIVE_MIN_SCHEDULER_TIMEOUT;
       }
 
-      var request = new ScheduleJobRequest {Url = exportDataUrl, Filename = fileName, Timeout = timeout};
+      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
 
       return WithServiceExceptionTryExecute(() => new ScheduleResult
       {
@@ -210,7 +201,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation($"{nameof(GetExportReportVeta)}: {Request.QueryString}");
 
-      var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var userPreferences = GetUserPreferences();
@@ -227,7 +218,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(projectSettings.Result)
           .Filter(filter))
 #if RAPTOR
-        .SetRaptorClient(raptorClient)
+        .SetRaptorClient(RaptorClient)
 #endif
         .SetUserPreferences(userPreferences.Result)
         .SetProjectDescriptor(project)
@@ -248,7 +239,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
@@ -288,8 +279,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       Log.LogInformation($"{nameof(GetExportReportMachinePasses)}: {Request.QueryString}");
-      
-      var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
+
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var userPreferences = GetUserPreferences();
@@ -307,18 +298,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Filter(filter))
         .SetUserPreferences(userPreferences.Result)
 #if RAPTOR
-        .SetRaptorClient(raptorClient)
+        .SetRaptorClient(RaptorClient)
 #endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
           startEndDate.startUtc,
           startEndDate.endUtc,
-          (CoordType) coordType,
+          (CoordType)coordType,
           ExportTypes.PassCountExport,
           fileName,
           restrictOutput,
           rawDataOutput,
-          (OutputTypes) outputType,
+          (OutputTypes)outputType,
           string.Empty);
 
       exportRequest.Validate();
@@ -327,7 +318,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
@@ -371,7 +362,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -386,7 +377,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Filter(filter))
         .SetUserPreferences(userPreferences)
 #if RAPTOR
-        .SetRaptorClient(raptorClient)
+        .SetRaptorClient(RaptorClient)
 #endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
@@ -407,7 +398,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
@@ -419,7 +410,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return new FileStreamResult(fileStream, "application/zip");
     }
 
-#endregion
+    #endregion
 
     /// <summary>
     /// Get user preferences

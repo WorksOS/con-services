@@ -20,11 +20,12 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -35,10 +36,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
-    private readonly IConfigurationStore configStore;
 #if RAPTOR
     private readonly IASNodeClient raptorClient;
 #endif
+    private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
     private readonly IFileListProxy fileListProxy;
 
@@ -48,25 +49,25 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private ProjectStatisticsHelper _projectStatisticsHelper = null;
     protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileListProxy, tRexCompactionDataProxy
 #if RAPTOR
-                                                                   , raptorClient
+         , raptorClient
 #endif
-                                                                 ));
+       ));
 
-    public BoundingBoxService(ILoggerFactory logger, IConfigurationStore configStore
+    public BoundingBoxService(ILoggerFactory logger,
 #if RAPTOR
-      , IASNodeClient raptor
+        IASNodeClient raptor,
 #endif
-        , ITRexCompactionDataProxy tRexCompactionDataProxy
-        , IFileListProxy fileListProxy
+        IConfigurationStore configStore,
+        ITRexCompactionDataProxy tRexCompactionDataProxy,
+        IFileListProxy fileListProxy
       )
     {
       log = logger.CreateLogger<BoundingBoxService>();
       this.logger = logger;
-      this.configStore = configStore;
 #if RAPTOR
       raptorClient = raptor;
 #endif
-
+      this.configStore = configStore;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
       this.fileListProxy = fileListProxy;
     }
@@ -177,9 +178,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="userId"></param>
     /// <param name="customHeaders"></param>
     /// <returns>A bounding box in latitude/longitude (radians)</returns>
-    public MapBoundingBox GetBoundingBox(ProjectData project, FilterResult filter, TileOverlayType[] overlays, 
-        FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor, 
-        string userId = null, IDictionary<string, string> customHeaders = null)
+    public MapBoundingBox GetBoundingBox(ProjectData project, FilterResult filter, TileOverlayType[] overlays,
+      FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor,
+      string userId = null, IDictionary<string, string> customHeaders = null)
     {
       log.LogInformation($"GetBoundingBox: project {project.ProjectUid}");
 
@@ -248,12 +249,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           var projectMinLng = projectPoints.Min(p => p.Lon);
           var projectMaxLat = projectPoints.Max(p => p.Lat);
           var projectMaxLng = projectPoints.Max(p => p.Lon);
-          bool assign = bbox == null
-            ? true
-            : bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
-              bbox.maxLat < projectMinLat || bbox.maxLat > projectMaxLat ||
-              bbox.minLng < projectMinLng || bbox.minLng > projectMaxLng ||
-              bbox.maxLng < projectMinLng || bbox.minLng > projectMaxLng;
+          bool assign = bbox == null || (bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
+                                         bbox.maxLat < projectMinLat || bbox.maxLat > projectMaxLat ||
+                                         bbox.minLng < projectMinLng || bbox.minLng > projectMaxLng ||
+                                         bbox.maxLng < projectMinLng || bbox.minLng > projectMaxLng);
 
           if (assign)
           {
@@ -277,6 +276,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
+    /// <param name="projectUid"></param>
     /// <param name="projectId"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
@@ -288,13 +288,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
-    /// <param name="projectUid"></param>
     /// <param name="projectId"></param>
     /// <param name="excludedIds"></param>
-    /// <param name="userId"></param>
-    /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public CoordinateConversionResult GetProductionDataExtents(Guid projectUid, long projectId, List<long> excludedIds, string userId, IDictionary<string, string> customHeaders )
+    public CoordinateConversionResult GetProductionDataExtents(Guid projectUid, long projectId, List<long> excludedIds, string userId, IDictionary<string, string> customHeaders)
     {
       ProjectStatisticsResult statsResult = null;
       try
@@ -320,16 +317,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       var coordRequest = new CoordinateConversionRequest(projectId,
         TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
       var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger
-          ,raptorClient
-          )
+          , raptorClient
+        )
         .Process(coordRequest) as CoordinateConversionResult;
       return coordResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
-   }
-
+    }
 
     /// <summary>
     /// Gets a list of polygons representing the design surface boundary. 
@@ -432,7 +428,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="rightOffset">Right offset for the alignment file boundary</param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
     public IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,
-      double startStation=0, double endStation=0, double leftOffset=0, double rightOffset=0)
+      double startStation = 0, double endStation = 0, double leftOffset = 0, double rightOffset = 0)
     {
 #if RAPTOR
       var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
@@ -511,7 +507,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       AlignmentStationResult result = null;
       var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
       log.LogDebug($"GetAlignmentStationRange: projectId={projectId}, alignment={description}");
- 
+
       //Get the station extents
       TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
       bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
@@ -533,27 +529,5 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
-  }
-
-
-  public interface IBoundingBoxService
-  {
-    MapBoundingBox GetBoundingBox(ProjectData project, FilterResult filter, TileOverlayType[] overlays, 
-        FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor, 
-        string userId, IDictionary<string, string> customHeaders);
-
-    List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter,
-                                             FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType);
-
-    List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType);
-
-    IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,
-      double startStation=0, double endStation=0, double leftOffset=0, double rightOffset=0);
-
-    List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor);
-
-    AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor);
-
-    CoordinateConversionResult GetProductionDataExtents(Guid projectUid, long projectId, List<long> excludedIds, string userId, IDictionary<string, string> customHeaders);
   }
 }

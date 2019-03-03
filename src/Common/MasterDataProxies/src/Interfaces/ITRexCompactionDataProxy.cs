@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Profiling;
-using VSS.Productivity3D.Models.Models.Reports;
-using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Models.ResultHandling.Profiling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
@@ -16,210 +11,34 @@ namespace VSS.MasterData.Proxies.Interfaces
   public interface ITRexCompactionDataProxy
   {
     /// <summary>
-    /// Sends a request to get CMV % Change statistics from the TRex database.
+    /// Sends a request to get/save data from/to the TRex immutable/mutable database.
     /// </summary>
-    /// <param name="cmvChangeDetailsRequest"></param>
+    /// <param name="dataRequest"></param>
+    /// <param name="route"></param>
+    /// <param name="customHeaders"></param>
+    /// <param name="mutableGateway"></param>
+    /// <returns></returns>
+    Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
+      IDictionary<string, string> customHeaders = null, bool mutableGateway = false) where TResponse : ContractExecutionResult;
+
+    /// <summary>
+    /// Sends a request to get data as a stream from the TRex immutable database.
+    /// </summary>
+    /// <param name="dataRequest"></param>
+    /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<CMVChangeSummaryResult> SendCMVChangeDetailsRequest(CMVChangeDetailsRequest cmvChangeDetailsRequest,
+    Task<Stream> SendDataPostRequestWithStreamResponse<TRequest>(TRequest dataRequest, string route,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
-    /// Sends a request to get CMV Details statistics from the TRex database.
+    /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
-    /// <param name="cmvDetailsRequest"></param>
+    /// <param name="sitModelId"></param>
+    /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<CMVDetailedResult> SendCMVDetailsRequest(CMVDetailsRequest cmvDetailsRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get CMV Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="cmvSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<CMVSummaryResult> SendCMVSummaryRequest(CMVSummaryRequest cmvSummaryRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Pass Count Details statistics from the TRex database.
-    /// </summary>
-    /// <param name="pcDetailsRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<PassCountDetailedResult> SendPassCountDetailsRequest(PassCountDetailsRequest pcDetailsRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Pass Count Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="pcSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<PassCountSummaryResult> SendPassCountSummaryRequest(PassCountSummaryRequest pcSummaryRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Cut/Fill Details statistics from the TRex database.
-    /// </summary>
-    /// <param name="cfDetailsRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<CompactionCutFillDetailedResult> SendCutFillDetailsRequest(CutFillDetailsRequest cfDetailsRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get MDP Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="mdpSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<MDPSummaryResult> SendMDPSummaryRequest(MDPSummaryRequest mdpSummaryRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Material Temperature Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="temperatureSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<TemperatureSummaryResult> SendTemperatureSummaryRequest(TemperatureSummaryRequest temperatureSummaryRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Material Temperature Details statistics from the TRex database.
-    /// </summary>
-    /// <param name="temperatureDetailsRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<TemperatureDetailResult> SendTemperatureDetailsRequest(TemperatureDetailRequest temperatureDetailsRequest,
-    IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Machine Speed Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="speedSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<SpeedSummaryResult> SendSpeedSummaryRequest(SpeedSummaryRequest speedSummaryRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get CCA Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="ccaSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<CCASummaryResult> SendCCASummaryRequest(CCASummaryRequest ccaSummaryRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get production data tile from the TRex database.
-    /// </summary>
-    /// <param name="tileRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<Stream> SendProductionDataTileRequest(TileRequest tileRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Summary Volumes statistics from the TRex database.
-    /// </summary>
-    /// <param name="summaryVolumesRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<SummaryVolumesResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Summary Volumes profiling data from the TRex database.
-    /// </summary>
-    /// <param name="summaryVolumesProfileDataRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<ProfileDataResult<SummaryVolumesProfileCell>> SendSummaryVolumesProfileDataRequest(SummaryVolumesProfileDataRequest summaryVolumesProfileDataRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Production Data profiling data from the TRex database.
-    /// </summary>
-    /// <param name="productionDataProfileDataRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<ProfileDataResult<ProfileCellData>> SendProductionDataProfileDataRequest(ProductionDataProfileDataRequest productionDataProfileDataRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get project extents for a site model from the TRex database.
-    /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get project statistics for a site model from the TRex database.
-    /// </summary>
-    /// <param name="projectStatisticsTRexRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<ProjectStatisticsResult> SendProjectStatisticsRequest(ProjectStatisticsTRexRequest projectStatisticsTRexRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get a TIN surface data from the TRex database.
-    /// </summary>
-    /// <param name="compactionSurfaceExportRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<CompactionExportResult> SendSurfaceExportRequest(CompactionSurfaceExportRequest compactionSurfaceExportRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get Veta format .csv output from TRex.
-    /// </summary>
-    /// <param name="compactionVetaExportRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<CompactionExportResult> SendVetaExportRequest(CompactionVetaExportRequest compactionVetaExportRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get PassCount .csv output from TRex.
-    /// </summary>
-    /// <param name="compactionPassCountExportRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<CompactionExportResult> SendPassCountExportRequest(CompactionPassCountExportRequest compactionPassCountExportRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get production data patches from the TRex database.
-    /// </summary>
-    /// <param name="patchDataRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<Stream> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get station and offset report data from TRex.
-    /// </summary>
-    /// <param name="stationOffsetRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetTRexRequest stationOffsetRequest,
-      IDictionary<string, string> customHeaders = null);
-
-    /// <summary>
-    /// Sends a request to get grid report data from TRex.
-    /// </summary>
-    /// <param name="gridRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    Task<Stream> SendGridReportRequest(CompactionReportGridTRexRequest gridRequest,
+    Task<TResponse> SendDataGetRequest<TResponse>(string sitModelId, string route,
       IDictionary<string, string> customHeaders = null);
   }
 }

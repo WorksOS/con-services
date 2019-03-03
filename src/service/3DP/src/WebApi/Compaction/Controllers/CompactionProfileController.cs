@@ -27,38 +27,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionProfileController : BaseController<CompactionProfileController>
   {
-#if RAPTOR
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-#endif
     /// <summary>
     /// The request factory
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionProfileController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy) :
+      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.requestFactory = requestFactory;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -143,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionProfileExecutor>(LoggerFactory,
 #if RAPTOR
-            raptorClient,
+            RaptorClient,
 #endif
             configStore: ConfigStore, profileResultHelper: profileResultHelper, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
@@ -200,7 +182,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       var slicerDesignResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionDesignProfileExecutor>(LoggerFactory, raptorClient)
+          .Build<CompactionDesignProfileExecutor>(LoggerFactory, RaptorClient)
           .Process(slicerDesignProfileRequest) as CompactionProfileResult<CompactionProfileVertex>
       );
 
@@ -258,7 +240,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<CompactionDesignProfileExecutor>(LoggerFactory, raptorClient)
+            .Build<CompactionDesignProfileExecutor>(LoggerFactory, RaptorClient)
             .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
         );
         results.Add(impFileUid, slicerDesignResult);

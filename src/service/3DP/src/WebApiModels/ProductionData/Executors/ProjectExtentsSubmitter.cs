@@ -26,7 +26,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
 #endif
-          bbExtents = trexCompactionDataProxy.SendProjectExtentsRequest(request.ProjectUid.ToString(), customHeaders).Result;
+          var siteModelId = request.ProjectUid.ToString();
+
+          bbExtents = trexCompactionDataProxy.SendDataGetRequest<BoundingBox3DGrid>(siteModelId, $"/sitemodels/{siteModelId}/extents", customHeaders).Result;
           success = bbExtents != null;
 #if RAPTOR
         }

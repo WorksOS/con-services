@@ -42,14 +42,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
 #endif
           var patchDataRequest = new PatchDataRequest(
-            request.ProjectUid, 
-            request.Filter1, 
-            request.Filter2, 
-            request.Mode, 
-            request.PatchNumber, 
-            request.PatchSize); 
+            request.ProjectUid,
+            request.Filter1,
+            request.Filter2,
+            request.Mode,
+            request.PatchNumber,
+            request.PatchSize);
 
-          var fileResult = trexCompactionDataProxy.SendProductionDataPatchRequest(patchDataRequest, customHeaders).Result;
+          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders).Result;
 
           return fileResult.Length > 0
               ? ConvertPatchResult(fileResult, true)

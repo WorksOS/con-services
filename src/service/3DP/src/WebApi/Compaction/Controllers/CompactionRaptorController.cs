@@ -16,7 +16,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "At least one overlay type must be specified to calculate bounding box"));
       }
-      var project = await((RaptorPrincipal)User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, baseUid, topUid);
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetFilterPointsList: " + Request.QueryString);
-       
+
       var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       //Base or top may be a design UID
@@ -152,7 +152,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var topFilterTask = summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
 
       PointsListResult result = new PointsListResult();
- 
+
       await Task.WhenAll(projectTask, filterTask, baseFilterTask, topFilterTask);
 
       var polygons = boundingBoxService.GetFilterBoundaries(projectTask.Result, filterTask.Result, baseFilterTask.Result, topFilterTask.Result, boundaryType);
@@ -213,7 +213,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         if (alignmentPoints != null && alignmentPoints.Any())
         {
-          list.Add(alignmentPoints.ToList());      
+          list.Add(alignmentPoints.ToList());
         }
       }
 
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
     }
-    
+
     /// <summary>
     /// Temporary method to convert between WGSPoint3D and WGSPoint
     /// </summary>

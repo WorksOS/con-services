@@ -38,7 +38,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-    
 #if RAPTOR
     private IASNodeClient raptorClient;
 #endif
@@ -70,9 +69,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private ProjectStatisticsHelper _projectStatisticsHelper = null;
     protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileListProxy, TRexCompactionDataProxy
 #if RAPTOR
-                                                                   , RaptorClient
+         , RaptorClient
 #endif
-                                                                 ));
+       ));
 
     /// <summary>
     /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
@@ -120,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       SlidingExpiration = TimeSpan.FromDays(3)
     };
- 
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -137,14 +136,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected Task<long> GetLegacyProjectId(Guid projectUid)
     {
       return ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-    }
-
-    /// <summary>
-    /// Returns the ProjectUid (Guid) for a given ProjectId (long).
-    /// </summary>
-    protected Task<Guid> GetProjectUid(long projectId)
-    {
-      return ((RaptorPrincipal)User).GetProjectUid(projectId);
     }
 
     /// <summary>

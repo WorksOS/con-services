@@ -44,9 +44,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (useTrexGateway)
         {
 #endif
-          var settings = (CMVSettingsEx) request.CmvSettings;
+          var settings = (CMVSettingsEx)request.CmvSettings;
           var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
-          return trexCompactionDataProxy.SendCMVDetailsRequest(cmvDetailsRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CMVDetailedResult, CMVDetailsRequest>(cmvDetailsRequest, "/cmv/details", customHeaders).Result;
 #if RAPTOR
         }
 
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         throw CreateServiceException<DetailedCMVExecutor>((int)raptorResult);
 #endif
-        }
+      }
       finally
       {
         ContractExecutionStates.ClearDynamic();

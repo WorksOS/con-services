@@ -13,6 +13,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -20,6 +21,7 @@ using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
@@ -32,12 +34,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionElevationController : BaseController<CompactionElevationController>
   {
-#if RAPTOR
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-#endif
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
     /// </summary>
@@ -48,21 +44,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
 
-
     /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionElevationController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
       IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
       ICompactionSettingsManager settingsManager, IProductionDataRequestFactory productionDataRequestFactory) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.elevProxy = elevProxy;
       requestFactory = productionDataRequestFactory;
     }
@@ -88,8 +77,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         await Task.WhenAll(projectSettingsTask, filterTask, projectIdTask);
 
-        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders) ??
-                     ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
+        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
+
+        if (result == null)
+        {
+          //Ideally want to return an error code and message only here
+          result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
+        }
 
         Log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
@@ -171,7 +165,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
-
     /// <summary>
     /// Gets production data extents from Raptor in lat/lng degrees.
     /// </summary>
@@ -185,6 +178,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProjectExtents V2: " + Request.QueryString);
       var projectId = await GetLegacyProjectId(projectUid);
+      return await GetProjectExtentsV1(projectId, boundingBoxService);
+    }
+
+    /// <summary>
+    /// Gets production data extents from Raptor in lat/lng degrees.
+    /// </summary>
+    /// <returns>Production data extents</returns>
+    [ProjectVerifier]
+    [Route("api/v1/productiondataextents")]
+    [HttpGet]
+    public async Task<ProjectExtentsResult> GetProjectExtentsV1(
+      [FromQuery] long projectId,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
+
+      var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
       var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
 
       try
@@ -204,44 +214,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
     }
 
-    /// <summary>
-    /// Gets production data extents from Raptor in lat/lng degrees.
-    /// </summary>
-    /// <returns>Production data extents</returns>
-    [ProjectVerifier]
-    [Route("api/v1/productiondataextents")]
-    [HttpGet]
-    public async Task<ProjectExtentsResult> GetProjectExtentsV1(
-      [FromQuery] long projectId,
-      [FromServices] IBoundingBoxService boundingBoxService)
-    {
-      Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
-
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
-
-      try
-      {
-        var result = boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
-        return await FormatProjectExtentsResult(projectUid, result); 
-      }
-      catch (ServiceException se)
-      {
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
-      }
-      finally
-      {
-        Log.LogInformation("GetProjectExtents returned: " + Response.StatusCode);
-      }
-    }
-
     private async Task<ProjectExtentsResult> FormatProjectExtentsResult(
       Guid projectUid, CoordinateConversionResult coordinateConversionResult)
     {
       Log.LogInformation($"{nameof(FormatProjectExtentsResult)}: {coordinateConversionResult}");
-      var project = await((RaptorPrincipal)User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
 
       var returnResult = new ProjectExtentsResult
       {
@@ -278,6 +255,5 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
       return returnResult;
     }
-
   }
 }

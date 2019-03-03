@@ -20,10 +20,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected readonly IProductionDataRequestFactory RequestFactory;
 
+
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
       : base(configStore, fileListProxy, settingsManager)
     {
       RequestFactory = requestFactory;

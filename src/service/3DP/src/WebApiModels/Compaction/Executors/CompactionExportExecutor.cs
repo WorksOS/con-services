@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
 
           log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendSurfaceExportRequest(compactionSurfaceExportRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
         }
         else if (
 #if RAPTOR
@@ -64,29 +64,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
           var compactionVetaExportRequest =
             new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
-                             requestHelper.GetMachineNameList() );
+                             requestHelper.GetMachineNameList());
 
           log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
-          return trexCompactionDataProxy.SendVetaExportRequest(compactionVetaExportRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
         }
         else if (
 #if RAPTOR
             UseTRexGateway("ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT") &&
 #endif
             request?.ExportType == ExportTypes.PassCountExport)
-          {
-            var compactionPassCountExportRequest =
-              new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
+        {
+          var compactionPassCountExportRequest =
+            new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
 
-            log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
-            return trexCompactionDataProxy.SendPassCountExportRequest(compactionPassCountExportRequest, customHeaders).Result;
+          log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
 #if !RAPTOR
         }
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-
         }
 #else
         }
@@ -115,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.Precheckonly, request.Filename, RaptorConverters.convertToRaptorMachines(request.MachineList), (int)request.CoordType,
         (int)request.OutputType,
         request.DateFromUTC, request.DateToUTC,
-        RaptorConverters.convertToRaptorTranslations(request.Translations), 
+        RaptorConverters.convertToRaptorTranslations(request.Translations),
         RaptorConverters.convertToRaptorProjectExtents(request.ProjectExtents), out var dataexport);
 
       if (success)
