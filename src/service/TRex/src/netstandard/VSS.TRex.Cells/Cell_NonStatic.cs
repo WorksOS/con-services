@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Cells
 {
@@ -104,9 +105,7 @@ namespace VSS.TRex.Cells
         {
             // Locate the position in the list of time ordered passes to insert the new pass
             if (position == -1 && LocateTime(pass.Time, out position))
-            {
-                Debug.Assert(false, "Pass with same time being added to cell");
-            }
+                throw new TRexException("Pass with same time being added to cell");
 
             // Yes, this looks naive, however, this operation really only occurs during TAG
             // file processing where the cell pass results from that processing are added into
@@ -115,9 +114,7 @@ namespace VSS.TRex.Cells
 
             AllocatePasses(PassCount + 1);
             if (position < PassCount - 1)
-            {
                 Array.Copy(Passes, position, Passes, position + 1, PassCount - position - 1);
-            }
 
             // Add the new pass to the passes list.
             Passes[position] = pass;
@@ -151,9 +148,7 @@ namespace VSS.TRex.Cells
             Debug.Assert(PassCount > passIndex, "Attempt to remove non-existent pass");
 
             if (PassCount > passIndex)
-            {
                 Array.Copy(Passes, passIndex + 1, Passes, passIndex, PassCount - passIndex - 1);
-            }
 
             AllocatePasses(PassCount - 1);
         }
@@ -177,9 +172,7 @@ namespace VSS.TRex.Cells
             modifiedCount = 0;
 
             if (sourcePasses.Length == 0)
-            {
                 return;
-            }
 
             CellPass[] IntegratedPasses = null;
             int ThisIndex = 0;
@@ -236,11 +229,6 @@ namespace VSS.TRex.Cells
                                 SourceIndex++;
                                 break;
                             }
-                        default:
-                            {
-                                Debug.Assert(false, "Invalid result from CompareTo");
-                                break;
-                            }
                     }
 
                 IntegratedIndex++;
@@ -248,13 +236,9 @@ namespace VSS.TRex.Cells
 
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             if (IntegratedPasses.Length > IntegratedPassCount)
-            {
                 Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
-            }
             else
-            {
                 Debug.Assert(IntegratedPasses.Length == IntegratedPassCount, "Integrated pass count lists not same length");
-            }
 
             Passes = IntegratedPasses;
             addedCount = IntegratedPassCount - OriginalPassCount;

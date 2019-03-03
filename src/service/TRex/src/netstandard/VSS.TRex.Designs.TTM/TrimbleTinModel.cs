@@ -45,7 +45,7 @@ namespace VSS.TRex.Designs.TTM
       triangles = new TTMTriangles();
     }
 
-    public TrimbleTINModel() : base()
+    public TrimbleTINModel()
     {
       Edges = new TTMEdges();
       StartPoints = new TTMStartPoints();
