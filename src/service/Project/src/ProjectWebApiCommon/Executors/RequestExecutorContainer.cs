@@ -18,6 +18,8 @@ using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Scheduler.Abstractions;
+using VSS.Productivity3D.Project.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 

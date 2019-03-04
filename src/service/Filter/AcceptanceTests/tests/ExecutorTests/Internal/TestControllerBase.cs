@@ -15,6 +15,9 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Log4Net.Extensions;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.Project.Repository;
 
 namespace ExecutorTests.Internal
 {

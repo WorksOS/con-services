@@ -15,6 +15,9 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {

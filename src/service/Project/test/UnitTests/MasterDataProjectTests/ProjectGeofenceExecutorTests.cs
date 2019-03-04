@@ -12,11 +12,12 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -47,13 +48,13 @@ namespace VSS.MasterData.ProjectTests
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project()
+      var project = new ProjectDatabaseModel()
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
       };
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
@@ -97,13 +98,13 @@ namespace VSS.MasterData.ProjectTests
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project()
+      var project = new ProjectDatabaseModel()
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard
       };
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
@@ -151,13 +152,13 @@ namespace VSS.MasterData.ProjectTests
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project()
+      var project = new ProjectDatabaseModel()
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
       };
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
@@ -201,13 +202,13 @@ namespace VSS.MasterData.ProjectTests
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project()
+      var project = new ProjectDatabaseModel()
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
       };
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
@@ -247,7 +248,7 @@ namespace VSS.MasterData.ProjectTests
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
 
       var projectRepo = new Mock<IProjectRepository>();
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
         .ReturnsAsync(testGeofencesForCustomer);
@@ -294,13 +295,13 @@ namespace VSS.MasterData.ProjectTests
       var testGeofencesForCustomer = CreateGeofenceWithAssociations(customerUid, projectUid);
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project()
+      var project = new ProjectDatabaseModel
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
       };
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))

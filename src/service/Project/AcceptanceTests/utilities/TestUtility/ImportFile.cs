@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TestUtility.Model;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility

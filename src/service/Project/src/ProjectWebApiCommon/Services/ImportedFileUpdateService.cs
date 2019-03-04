@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Repositories;
 using VSS.Productivity.Push.Models.Attributes;
 using VSS.Productivity.Push.Models.Enums;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
-using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Services
 {

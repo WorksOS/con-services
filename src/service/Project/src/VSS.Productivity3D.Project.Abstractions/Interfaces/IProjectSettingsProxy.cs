@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Proxies.Interfaces
+namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
   public interface IProjectSettingsProxy : ICacheProxy
   {

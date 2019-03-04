@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Project.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.Productivity3D.Project.Proxy
 {
   public class ProjectSettingsProxy : BaseProxy, IProjectSettingsProxy
   {
@@ -70,7 +69,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="userId">The user ID</param>
     public void ClearCacheItem(string projectUid, string userId)
     {
-      ClearCacheItem<ProjectSettingsDataResult>(projectUid, userId);
+      ClearCacheByTag(projectUid);
+      ClearCacheByTag(userId);
     }
   }
 }
