@@ -14,11 +14,12 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -36,8 +37,8 @@ namespace VSS.MasterData.ProjectTests
       string projectUid = Guid.NewGuid().ToString();
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
-      var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
+      var project = new ProjectDatabaseModel() { CustomerUID = customerUid, ProjectUID = projectUid };
+      var projectList = new List<ProjectDatabaseModel>(); projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), settingsType)).ReturnsAsync((ProjectSettings)null);
 
@@ -72,8 +73,8 @@ namespace VSS.MasterData.ProjectTests
       string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
-      var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
+      var project = new ProjectDatabaseModel() { CustomerUID = customerUid, ProjectUID = projectUid };
+      var projectList = new List<ProjectDatabaseModel>(); projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
       var projectSettings = new ProjectSettings { ProjectUid = projectUid, Settings = settings, ProjectSettingsType = settingsType, UserID = userId };
@@ -111,8 +112,8 @@ namespace VSS.MasterData.ProjectTests
       ProjectSettingsType settingsType2 = ProjectSettingsType.Targets;
 
       var projectRepo = new Mock<IProjectRepository>();
-      var project = new Repositories.DBModels.Project() { CustomerUID = customerUid, ProjectUID = projectUid };
-      var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
+      var project = new ProjectDatabaseModel() { CustomerUID = customerUid, ProjectUID = projectUid };
+      var projectList = new List<ProjectDatabaseModel>(); projectList.Add(project);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
       var projectSettings1 = new ProjectSettings { ProjectUid = projectUid, Settings = settings1, ProjectSettingsType = settingsType1, UserID = userId };
@@ -152,7 +153,7 @@ namespace VSS.MasterData.ProjectTests
       string userId = "my app";
 
       var projectRepo = new Mock<IProjectRepository>();
-      var projectList = new List<Repositories.DBModels.Project>(); 
+      var projectList = new List<ProjectDatabaseModel>(); 
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
 
@@ -191,8 +192,8 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       var projectSettings = new ProjectSettings { ProjectUid = projectUid, Settings = settings, ProjectSettingsType = settingsType, UserID = userId};
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType)).ReturnsAsync(projectSettings);
-      var projectList = new List<Repositories.DBModels.Project>();
-      projectList.Add(new Repositories.DBModels.Project(){ ProjectUID = projectUid});
+      var projectList = new List<ProjectDatabaseModel>();
+      projectList.Add(new ProjectDatabaseModel(){ ProjectUID = projectUid});
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateProjectSettingsEvent>())).ReturnsAsync(1); 
 
@@ -259,8 +260,8 @@ namespace VSS.MasterData.ProjectTests
       var projectSettings2 = new ProjectSettings { ProjectUid = projectUid, Settings = settings2, ProjectSettingsType = settingsType2, UserID = userId };
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType2)).ReturnsAsync(projectSettings2);
 
-      var projectList = new List<Repositories.DBModels.Project>();
-      projectList.Add(new Repositories.DBModels.Project() { ProjectUID = projectUid });
+      var projectList = new List<ProjectDatabaseModel>();
+      projectList.Add(new ProjectDatabaseModel() { ProjectUID = projectUid });
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateProjectSettingsEvent>())).ReturnsAsync(1);
 

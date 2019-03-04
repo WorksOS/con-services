@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Repositories.DBModels
+namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 {
   public class ProjectSettings
   {

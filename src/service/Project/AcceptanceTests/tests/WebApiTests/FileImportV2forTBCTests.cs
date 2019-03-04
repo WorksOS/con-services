@@ -4,7 +4,7 @@ using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType;
 
 namespace WebApiTests

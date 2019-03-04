@@ -59,6 +59,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{09104DD3-AA5F-4937-A611-6B2AEE5084B7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Service", "Project Service", "{2B6B2182-37DE-4AD9-98CB-69423EAE0E14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{56D598C9-B467-4A2E-B6EA-3C54B4EF5912}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Proxy", "..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj", "{1AEA1EF3-9F56-43F0-92C3-5F91B33AE12D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Repository", "..\..\Project\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj", "{905C571F-A49B-4737-9BFA-49A1BCB7071D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +145,18 @@ Global
 		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09104DD3-AA5F-4937-A611-6B2AEE5084B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56D598C9-B467-4A2E-B6EA-3C54B4EF5912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56D598C9-B467-4A2E-B6EA-3C54B4EF5912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56D598C9-B467-4A2E-B6EA-3C54B4EF5912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56D598C9-B467-4A2E-B6EA-3C54B4EF5912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AEA1EF3-9F56-43F0-92C3-5F91B33AE12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AEA1EF3-9F56-43F0-92C3-5F91B33AE12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AEA1EF3-9F56-43F0-92C3-5F91B33AE12D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AEA1EF3-9F56-43F0-92C3-5F91B33AE12D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{905C571F-A49B-4737-9BFA-49A1BCB7071D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{905C571F-A49B-4737-9BFA-49A1BCB7071D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{905C571F-A49B-4737-9BFA-49A1BCB7071D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{905C571F-A49B-4737-9BFA-49A1BCB7071D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,6 +181,9 @@ Global
 		{06CEFE72-5656-4B57-92E4-3890B56F9937} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
 		{35BAC88E-3EA1-4883-A09D-F0C71607930A} = {8C971052-2D17-4456-9ECB-EBA1FD3C07B7}
 		{09104DD3-AA5F-4937-A611-6B2AEE5084B7} = {F8C30A34-BCD5-479A-89BC-6385695B77A5}
+		{56D598C9-B467-4A2E-B6EA-3C54B4EF5912} = {2B6B2182-37DE-4AD9-98CB-69423EAE0E14}
+		{1AEA1EF3-9F56-43F0-92C3-5F91B33AE12D} = {2B6B2182-37DE-4AD9-98CB-69423EAE0E14}
+		{905C571F-A49B-4737-9BFA-49A1BCB7071D} = {2B6B2182-37DE-4AD9-98CB-69423EAE0E14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FA01801-9906-482F-8016-493112DB9267}

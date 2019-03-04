@@ -2,11 +2,9 @@
 using System;
 using System.Net;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using TestUtility;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests

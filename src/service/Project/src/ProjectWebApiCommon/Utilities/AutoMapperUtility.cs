@@ -2,7 +2,10 @@
 using AutoMapper;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ImportedFileHistoryItem = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -51,7 +54,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectID, opt => opt.Ignore());
-          cfg.CreateMap<CreateProjectEvent, Repositories.DBModels.Project>()
+          cfg.CreateMap<CreateProjectEvent, ProjectDatabaseModel>()
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.ProjectStartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.ProjectEndDate))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
@@ -70,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<Repositories.DBModels.Project, ProjectV4Descriptor>()
+          cfg.CreateMap<ProjectDatabaseModel, ProjectV4Descriptor>()
             .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(dest => dest.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
             .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.LandfillTimeZone))
@@ -91,7 +94,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
             .ForMember(dest => dest.ImportedFileHistory, opt => opt.MapFrom(src => src.ImportedFileHistory.ImportedFileHistoryItems))
             .ForMember(dest => dest.IsActivated, opt => opt.MapFrom(x => true));
-          cfg.CreateMap<Repositories.DBModels.ImportedFileHistoryItem, Models.ImportedFileHistoryItem>()
+          cfg.CreateMap<ImportedFileHistoryItem, ImportedFileHistoryItem>()
             .ForMember(dest => dest.FileCreatedUtc, opt => opt.MapFrom(src => src.FileCreatedUtc))
             .ForMember(dest => dest.FileUpdatedUtc, opt => opt.MapFrom(src => src.FileUpdatedUtc));
           cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()
@@ -101,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
           // for v2 BC apis
-          cfg.CreateMap<Repositories.DBModels.Project, ProjectV2DescriptorResult>()
+          cfg.CreateMap<ProjectDatabaseModel, ProjectV2DescriptorResult>()
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
             .ForMember(dest => dest.Code, opt => opt.Ignore())

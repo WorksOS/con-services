@@ -7,10 +7,11 @@ using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -67,7 +68,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the project list for a customer
     /// </summary>
     /// <returns></returns>
-    protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
+    protected async Task<ImmutableList<ProjectDatabaseModel>> GetProjectList()
     {
       var customerUid = LogCustomerDetails("GetProjectList", "");
       var projects = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();

@@ -20,9 +20,13 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -520,7 +524,7 @@ namespace VSS.MasterData.ProjectTests
       }
     }
 
-    private async Task<Repositories.DBModels.Project> CreateProject(Guid projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
+    private async Task<ProjectDatabaseModel> CreateProject(Guid projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
     {
       var createProjectEvent = new CreateProjectEvent()
       {
@@ -545,7 +549,7 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new Repositories.DBModels.Project() {LegacyProjectID = 999});
+        .ReturnsAsync(new ProjectDatabaseModel() {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
@@ -594,7 +598,7 @@ namespace VSS.MasterData.ProjectTests
         dataOceanClient.Object, authn.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
-      return AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);
+      return AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(createProjectEvent);
     }
   }
 }

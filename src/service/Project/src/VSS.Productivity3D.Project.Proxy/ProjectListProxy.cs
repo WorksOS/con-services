@@ -4,10 +4,11 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
-namespace VSS.MasterData.Proxies
+namespace VSS.Productivity3D.Project.Proxy
 {
   public class ProjectListProxy : BaseProxy, IProjectListProxy
   {
@@ -36,11 +37,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="userId">The user ID</param>
     public void ClearCacheItem(string uid, string userId=null)
     {
-      // We either need to clear a list based on the Customer UID 
-      // Or a single result based on the Project UID
-      // But Uid should be unique, plus the cache key adds the class name
-      ClearCacheItem<ProjectDataResult>(uid, userId);
-      ClearCacheItem<ProjectDataSingleResult>(uid, userId);
+      ClearCacheByTag(uid);
+
+      if(string.IsNullOrEmpty(userId))
+        ClearCacheByTag(userId);
     }
  
     public async Task<ProjectData> GetProjectForCustomer(string customerUid, string projectUid,

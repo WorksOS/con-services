@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.ResultHandling
+namespace VSS.Productivity3D.Project.Abstractions.Models
 {
   public class ProjectDataResult : BaseDataResult, IMasterDataModel
   {  

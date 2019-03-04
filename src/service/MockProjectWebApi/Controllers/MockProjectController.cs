@@ -7,6 +7,8 @@ using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace MockProjectWebApi.Controllers
 {

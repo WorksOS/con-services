@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -171,7 +171,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(true);
-      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new Repositories.DBModels.Project()
+      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel()
       {
         ProjectUID = updateProjectEvent.ProjectUID.ToString(),
         StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
@@ -194,7 +194,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(true);
-      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new Repositories.DBModels.Project()
+      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel()
       {
         ProjectUID = updateProjectEvent.ProjectUID.ToString(),
         StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
@@ -272,7 +272,7 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Repositories.DBModels.Project>();
+      var projectList = new List<ProjectDatabaseModel>();
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
@@ -292,7 +292,7 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Repositories.DBModels.Project>(){ new Repositories.DBModels.Project() {Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()} };
+      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project>(){ new ProjectDatabaseModel() {Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()} };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
@@ -312,9 +312,9 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Repositories.DBModels.Project>()
+      var projectList = new List<ProjectDatabaseModel>()
       {
-        new Repositories.DBModels.Project() { Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString() }
+        new ProjectDatabaseModel() { Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString() }
       };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
@@ -338,10 +338,10 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Repositories.DBModels.Project>()
+      var projectList = new List<ProjectDatabaseModel>()
       {
-        new Repositories.DBModels.Project(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
-        new Repositories.DBModels.Project() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
+        new ProjectDatabaseModel(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectDatabaseModel() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
       };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
@@ -367,11 +367,11 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Repositories.DBModels.Project>()
+      var projectList = new List<ProjectDatabaseModel>()
       {
-        new Repositories.DBModels.Project(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
-        new Repositories.DBModels.Project(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
-        new Repositories.DBModels.Project() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
+        new ProjectDatabaseModel(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectDatabaseModel(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectDatabaseModel() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
       };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
