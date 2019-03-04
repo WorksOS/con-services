@@ -27,7 +27,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
-			CellSize = SiteModel.Grid.CellSize,
+			CellSize = SiteModel.CellSize,
 			OverrideTemperatureWarningLevels = argument.OverrideTemperatureWarningLevels,
 			OverridingTemperatureWarningLevels = argument.OverridingTemperatureWarningLevels,
 		  DetailsDataValues = argument.TemperatureDetailValues,

@@ -16,21 +16,20 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 
         public override string[] MatchedValueTypes() => valueTypes;
 
-        public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
-        {
-            return true;
-        }
+        public override bool ProcessEmptyValue(TAGDictionaryItem valueType) => true;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             // Value is the absolute CCV value
             if (valueType.Type == TAGDataType.t16bitUInt)
             {
                 valueSink.ICTargetLiftThickness = (float) value / 1000;
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

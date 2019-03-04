@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes
 {
@@ -18,10 +18,8 @@ namespace VSS.TRex.Rendering.Palettes
             switch (mode)
             {
                 case DisplayMode.Height:
-                    {
-                        BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
-                        return new HeightPalette(extent.MinZ, extent.MaxZ);
-                    }
+                    BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
+                    return new HeightPalette(extent.MinZ, extent.MaxZ);
 
                 case DisplayMode.MachineSpeed:       return new SpeedPalette();
                 case DisplayMode.TargetSpeedSummary: return new SpeedSummaryPalette();
@@ -33,9 +31,8 @@ namespace VSS.TRex.Rendering.Palettes
                 case DisplayMode.CCA:
                 case DisplayMode.CCASummary:         return new CCAPalette();
 
-        default: // Just use the elevation palette as a default...
-                    BoundingWorldExtent3D extent2 = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
-                    return new HeightPalette(extent2.MinZ, extent2.MaxZ);
+                default: 
+                    throw new TRexException($"Unknown display mode in {nameof(GetPallete)}");
             }
             
             // TODO The additional logic in the commented out code below should be implemented as per the corresponding User Story...
@@ -111,7 +108,6 @@ namespace VSS.TRex.Rendering.Palettes
                   end;
               end;
                          */
-
         }
     }
 }

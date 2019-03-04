@@ -83,7 +83,7 @@ namespace VSS.TRex.Types
       Max = (ushort)reader.ReadInt();
     }
 
-    public bool Equal(TemperatureWarningLevelsRecord other)
+    public bool Equals(TemperatureWarningLevelsRecord other)
     {
       return Min == other.Min && Max == other.Max;
     }

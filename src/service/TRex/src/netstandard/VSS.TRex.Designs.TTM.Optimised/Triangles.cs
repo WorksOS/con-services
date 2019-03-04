@@ -72,7 +72,7 @@
     */
 
     /* Retain as reference implementation using the standard binary reader IO for comparison with
-       the optimised direct memory access implementation berlow.
+       the optimised direct memory access implementation below.
     /// <summary>
     /// Reads the set of triangles in the model utilising the given reader
     /// </summary>

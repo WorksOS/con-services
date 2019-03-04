@@ -20,17 +20,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
         private void SetProofingRunStartTime()
         {
             if (state.HaveSeenATimeValue && state.HaveSeenAWeekValue)
-            {
                 valueSink.StartProofingDataTime = valueSink.DataTime;
-            }
         }
 
         public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
         {
             if (!state.ProofingRunProcessed)
-            {
                 state.ProofingRunProcessed = valueSink.ProcessEpochContext();
-            }
 
             valueSink.StartProofing = Encoding.ASCII.GetString(value);
 
@@ -42,9 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
         {
             if (!state.ProofingRunProcessed)
-            {
                 state.ProofingRunProcessed = valueSink.ProcessEpochContext();
-            }
 
             valueSink.StartProofing = "";
 

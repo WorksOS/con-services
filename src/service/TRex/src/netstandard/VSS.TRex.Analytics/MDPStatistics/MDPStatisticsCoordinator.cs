@@ -27,7 +27,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       //LiftBuildSettings := LiftBuildSettings;
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       OverrideMachineMDP = argument.OverrideMachineMDP,
       OverridingMachineMDP = argument.OverridingMachineMDP,
       MDPPercentageRange = argument.MDPPercentageRange,

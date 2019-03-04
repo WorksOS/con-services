@@ -434,7 +434,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         private BitArray InitialiseMachineIDsSet(short[] machineIDs)
         {
-            BitArray bits = new BitArray(machineIDs.Max() + 1);
+            BitArray bits = new BitArray((machineIDs.Length > 0 ? machineIDs.Max() : 0) + 1);
 
             foreach (var machineID in machineIDs)
                 bits[machineID] = true;
@@ -471,12 +471,15 @@ namespace VSS.TRex.SubGridTrees.Server
 
             EncodedFieldDescriptors.Write(writer);
 
-            int count = MachineIDs.Length;
+            int count = MachineIDs?.Length ?? 0;
             writer.Write(count);
-            
-            for (int i = 0; i < count; i++)
+
+            if (count > 0)
             {
-                writer.Write(MachineIDs[i]);
+                for (int i = 0; i < count; i++)
+                {
+                    writer.Write(MachineIDs[i]);
+                }
             }
 
             writer.Write(NumBitsPerCellPass);
@@ -849,5 +852,7 @@ namespace VSS.TRex.SubGridTrees.Server
           MaxElev = EncodedFieldDescriptors.Height.MaxValue / 1000;
         }
       }
-    }
+
+      public bool HasPassData() => true; //BF_CellPasses != null;
+  }
 }

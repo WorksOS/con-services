@@ -208,6 +208,14 @@ namespace VSS.TRex.Tests.Servers.Server
     }
 
     [Fact]
+    public void Test_CSVExportRequestServer_Creation()
+    {
+      var server = new CSVExportRequestServer();
+
+      server.Should().NotBeNull();
+    }  
+
+    [Fact]
     public void Test_ActivatePersistentGridServer_Creation()
     {
       var server = new ActivatePersistentGridServer();

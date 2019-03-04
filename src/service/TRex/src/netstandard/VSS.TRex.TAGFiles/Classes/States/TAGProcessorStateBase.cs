@@ -105,7 +105,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
       return TravelTime > 0 ? DistanceTraveled / TravelTime : 0.0;
     }
 
-    private bool GetLLHReceived() => (LLHLat != Consts.NullDouble) && (LLHLon != Consts.NullDouble) && (LLHHeight != Consts.NullDouble);
+    private bool GetLLHReceived() => LLHLat != Consts.NullDouble && LLHLon != Consts.NullDouble && LLHHeight != Consts.NullDouble;
 
     private bool GetGPSBaseLLHReceived => (GPSBaseLat != Consts.NullDouble) && (GPSBaseLon != Consts.NullDouble) && (GPSBaseHeight != Consts.NullDouble);
 
@@ -386,10 +386,10 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public XYZ DataRearLeft = XYZ.Null;
     public XYZ DataRearRight = XYZ.Null;
 
-    public AccumulatedAttributes GPSModes { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes OnGrounds { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes GPSModes { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes OnGrounds { get; } = new AccumulatedAttributes();
 
-    public AccumulatedAttributes AgeOfCorrections { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes AgeOfCorrections { get; } = new AccumulatedAttributes();
 
     //  ValidPosition is only used in terms of the most recent epoch and do not need to have the history of these
     // values maintained in a TAccumulatedAttributeList
@@ -413,40 +413,40 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public string HardwareID { get; set; } = string.Empty;
     public uint Sequence { get; set; }
 
-    public AccumulatedAttributes ICCCVValues { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICMachineSpeedValues { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICCCVValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICMachineSpeedValues { get; } = new AccumulatedAttributes();
 
     public short ICCCVTargetValue { get { return _ICCCVTargetValue; } set { SetICCCVTargetValue(value); } }
 
     public ushort ICPassTargetValue { get { return _ICPassTargetValue; } set { SetICPassTargetValue(value); } }
     public ushort ICLayerIDValue { get { return _ICLayerIDValue; } set { SetICLayerIDValue(value); } }
 
-    public AccumulatedAttributes ICRMVValues { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICRMVValues { get; } = new AccumulatedAttributes();
 
     public short ICRMVJumpthreshold { get { return _RMVJumpThreshold; } set { SetRMVJumpThresholdValue(value); } }
 
-    public AccumulatedAttributes ICFrequencys { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICAmplitudes { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICFrequencys { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICAmplitudes { get; } = new AccumulatedAttributes();
 
     public MachineGear ICGear { get { return _ICGear; } set { SetICGear(value); } }
     public byte ICSonic3D { get { return _ICSonic3D; } set { SetICSonic3D(value); } }
     public byte ICMode { get { return _ICMode; } set { SetICMode(value); } }
     public CompactionSensorType ICSensorType { get { return _ICSensorType; } set { SetICSensorType(value); } }
-    public AccumulatedAttributes ICMDPValues { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICMDPValues { get; } = new AccumulatedAttributes();
     public short ICMDPTargetValue { get { return _ICMDPTargetValue; } set { SetICMDPTargetValue(value); } }
-    public AccumulatedAttributes ICCCAValues { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCALeftFrontValues { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCARightFrontValues { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCALeftRearValues { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes ICCCARightRearValues { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICCCAValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICCCALeftFrontValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICCCARightFrontValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICCCALeftRearValues { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICCCARightRearValues { get; } = new AccumulatedAttributes();
     public byte ICCCATargetValue { get { return _ICCCATargetValue; } set { SetICCCATargetValue(value); } }
-    public AccumulatedAttributes ICTemperatureValues { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes ICTemperatureValues { get; } = new AccumulatedAttributes();
 
     public ushort ICTempWarningLevelMinValue { get { return _ICTempWarningLevelMinValue; } set { SetICTempWarningLevelMinValue(value); } }
     public ushort ICTempWarningLevelMaxValue { get { return _ICTempWarningLevelMaxValue; } set { SetICTempWarningLevelMaxValue(value); } }
 
-    public AccumulatedAttributes VolkelMeasureRanges { get; set; } = new AccumulatedAttributes();
-    public AccumulatedAttributes VolkelMeasureUtilRanges { get; set; } = new AccumulatedAttributes();
+    public AccumulatedAttributes VolkelMeasureRanges { get; } = new AccumulatedAttributes();
+    public AccumulatedAttributes VolkelMeasureUtilRanges { get; } = new AccumulatedAttributes();
 
     public string ApplicationVersion { get { return _ApplicationVersion; } set { SetApplicationVersion(value); } }
 

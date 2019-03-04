@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Common.Exceptions
 {
-  public class TRexTAGFileProcessingException : Exception
+  public class TRexTAGFileProcessingException : TRexException
   {
     public TRexTAGFileProcessingException(string message) : base(message)
     {

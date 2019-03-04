@@ -165,7 +165,7 @@ namespace VSS.TRex.Profiling
         if (svDesign != null)
         {
 
-          svDesign.GetDesignHeights(SiteModel.ID, address, SiteModel.Grid.CellSize, out designHeights, out var errorCode);
+          svDesign.GetDesignHeights(SiteModel.ID, address, SiteModel.CellSize, out designHeights, out var errorCode);
           if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
           {
             if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)

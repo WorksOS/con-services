@@ -70,6 +70,8 @@ namespace VSS.TRex.SiteModels
 
     public DateTime LastModifiedDate { get; set; }
 
+    public double CellSize { get; private set; } = SubGridTreeConsts.DefaultCellSize;
+
     /// <summary>
     /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
@@ -80,12 +82,14 @@ namespace VSS.TRex.SiteModels
     private readonly object siteModelMachineDesignsLockObject = new object();
     private readonly object siteModelDesignsLockObject = new object();
 
+    public IServerSubGridTree grid;
+
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid { get; private set; }
+    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID) {CellSize = this.CellSize});
 
-    public bool GridLoaded => Grid != null;
+    public bool GridLoaded => grid != null;
 
     private ISubGridTreeBitMask existenceMap;
 
@@ -343,6 +347,7 @@ namespace VSS.TRex.SiteModels
     {
       CreationDate = DateTime.UtcNow;
       LastModifiedDate = CreationDate;
+
     }
 
     /// <summary>
@@ -356,14 +361,15 @@ namespace VSS.TRex.SiteModels
         throw new TRexSiteModelException("Cannot use a transient site model as an origin for constructing a new site model");
 
       ID = originModel.ID;
+      CellSize = originModel.CellSize;
       IsTransient = false;
 
       CreationDate = originModel.CreationDate;
       LastModifiedDate = originModel.LastModifiedDate;
 
-      Grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
+      grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
         ? originModel.Grid
-        : new ServerSubGridTree(originModel.ID);
+        : null;
 
       csib = (originFlags & SiteModelOriginConstructionFlags.PreserveCsib) != 0
         ? originModel.CSIB()
@@ -415,14 +421,13 @@ namespace VSS.TRex.SiteModels
       ID = id;
       IsTransient = isTransient;
 
-      Grid = new ServerSubGridTree(ID);
-
       // Allow existence map loading to be deferred/lazy on reference
       existenceMap = null;
     }
 
     public SiteModel(Guid id, double cellSize) : this(id)
     {
+      CellSize = cellSize;
       Grid.CellSize = cellSize;
     }
 
@@ -462,7 +467,7 @@ namespace VSS.TRex.SiteModels
 
       //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
 
-      writer.Write(Grid.CellSize);
+      writer.Write(CellSize);
 
       SiteModelExtent.Write(writer);
 
@@ -497,17 +502,12 @@ namespace VSS.TRex.SiteModels
 
       // FIgnoreInvalidPositions:= ReadBooleanFromStream(Stream);
 
-      double SiteModelGridCellSize = reader.ReadDouble();
-      if (SiteModelGridCellSize < 0.001)
+      CellSize = reader.ReadDouble();
+      if (CellSize < 0.001)
       {
-        Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
-        SiteModelGridCellSize = SubGridTreeConsts.DefaultCellSize;
+        Log.LogError($"SiteModelGridCellSize is suspicious: {CellSize} for datamodel {ID}, setting to default: {SubGridTreeConsts.DefaultCellSize}");
+        CellSize = SubGridTreeConsts.DefaultCellSize;
       }
-
-      if (Grid == null)
-        Grid = new ServerSubGridTree(ID);
-
-      Grid.CellSize = SiteModelGridCellSize;
 
       SiteModelExtent.Read(reader);
 
@@ -598,7 +598,7 @@ namespace VSS.TRex.SiteModels
           }
 
           if (Result == FileSystemErrorStatus.OK)
-            Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+            Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {CellSize}");
           else
             Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
         }

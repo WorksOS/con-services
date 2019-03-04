@@ -50,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         DataPatchSize = request.PatchSize
       });
 
-      result.CellSize = siteModel.Grid.CellSize;
+      result.CellSize = siteModel.CellSize;
 
       return new PatchDataResult(result.ConstructResultData());
     }

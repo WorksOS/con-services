@@ -12,7 +12,7 @@ namespace VSS.TRex.Rendering.Palettes
         private double MaxElevation;// = Consts.NullDouble;
         private double ElevationPerBand;// = Consts.NullDouble;
 
-        private static Draw.Color[] ElevationPalette = 
+        private static readonly Draw.Color[] ElevationPalette = 
         {
         Draw.Color.Aqua,
         Draw.Color.Yellow,
@@ -45,14 +45,15 @@ namespace VSS.TRex.Rendering.Palettes
 
         public Draw.Color ChooseColour(double value)
         {
-            if (value == Consts.NullDouble)
+            var color = Draw.Color.Black;
+
+            if (value != Consts.NullDouble)
             {
-                return Draw.Color.Black;
+              int index = (int) Math.Floor((value - MinElevation) / ElevationPerBand);
+              return Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : Draw.Color.Black; // Color.Empty;
             }
 
-            int index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
-
-            return Range.InRange(index, 0, ElevationPalette.Length - 1) ?  ElevationPalette[index] : Draw.Color.Black; // Color.Empty;
+            return color;
         }
     }
 }

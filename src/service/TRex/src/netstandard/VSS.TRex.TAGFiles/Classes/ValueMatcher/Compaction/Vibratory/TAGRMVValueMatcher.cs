@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -29,45 +28,34 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
-            if (!state.HaveSeenAnAbsoluteRMV)
+            bool result = false;
+
+            if (state.HaveSeenAnAbsoluteRMV && 
+                (valueType.Type == TAGDataType.t4bitInt || valueType.Type == TAGDataType.t8bitInt))
             {
-                return false;
+                if (((short) (valueSink.ICRMVValues.GetLatest()) + value) >= 0)
+                {
+                     valueSink.SetICRMVValue((short) ((short) (valueSink.ICRMVValues.GetLatest()) + value));
+                     result = true;
+                }
             }
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t4bitInt:
-                case TAGDataType.t8bitInt:
-                    if (((short)(valueSink.ICRMVValues.GetLatest()) + value) < 0)
-                    {
-                        return false;
-                    }
-
-                    valueSink.SetICRMVValue((short)((short)(valueSink.ICRMVValues.GetLatest()) + value));
-                    break;
-
-                default:
-                    return false;
-            }
-
-            return true;
+            return result;
         }
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
             state.HaveSeenAnAbsoluteRMV = true;
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t12bitUInt:
-                    valueSink.SetICRMVValue((short)value);
-                    break;
+            bool result = false;
 
-                default:
-                    return false;
+            if (valueType.Type == TAGDataType.t12bitUInt)
+            { 
+                valueSink.SetICRMVValue((short)value);
+                result = true;
             }
 
-            return true;
+            return result;
         }
     }
 }

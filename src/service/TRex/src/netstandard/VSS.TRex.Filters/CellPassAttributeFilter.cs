@@ -205,14 +205,14 @@ namespace VSS.TRex.Filters
       var list2Length = list2.Length;
 
       // Check list lengths
-      int result = list1.Length < list2Length ? -1 : list1Length == list2Length ? 0 : 1;
+      int result = list1Length.CompareTo(list2Length);
 
       // If the lengths are the same check individual items
       if (result == 0)
       {
         for (int i = 0; i < list1Length; i++)
         {
-          result = list1[i] < list2[i] ? -1 : list1[i] == list2[i] ? 0 : 1;
+          result = list1[i].CompareTo(list2[i]);
 
           if (result != 0)
             break;
@@ -235,14 +235,12 @@ namespace VSS.TRex.Filters
       {
         return Result;
       }
-      else
+
+      if (HasTimeFilter) // Check the contents of the time filter
       {
-        if (HasTimeFilter) // Check the contents of the time filter
-        {
-          Result = StartTime.CompareTo(AFilter.StartTime);
-          if (Result == 0)
-            Result = EndTime.CompareTo(AFilter.EndTime);
-        }
+        Result = StartTime.CompareTo(AFilter.StartTime);
+        if (Result == 0)
+          Result = EndTime.CompareTo(AFilter.EndTime);
       }
 
       if (Result != 0)
@@ -1065,7 +1063,6 @@ namespace VSS.TRex.Filters
         if (Machine != null && !Machine.MachineIsCompactorType())
           return false;
       }
-
 
       if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behaviors depending on display or grid type etc
       {

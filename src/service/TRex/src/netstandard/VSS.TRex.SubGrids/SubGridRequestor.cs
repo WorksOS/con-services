@@ -433,7 +433,7 @@ namespace VSS.TRex.SubGrids
             // if <config>.Debug_ExtremeLogSwitchB then Log.LogDebug("About to call RetrieveSubGrid()");
 
             clientGrid = ClientLeafSubGridFactory.GetSubGridEx(Utilities.IntermediaryICGridDataTypeForDataType(GridDataType, subGridAddress.SurveyedSurfaceDataRequested), 
-                                                               SiteModel.Grid.CellSize, SubGridTreeConsts.SubGridTreeLevels,
+                                                               SiteModel.CellSize, SubGridTreeConsts.SubGridTreeLevels,
                                                                (uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
                                                                (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
             ClientGrid = clientGrid;

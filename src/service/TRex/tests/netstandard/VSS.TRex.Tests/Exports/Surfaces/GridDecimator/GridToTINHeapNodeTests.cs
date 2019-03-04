@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
+﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
 using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator

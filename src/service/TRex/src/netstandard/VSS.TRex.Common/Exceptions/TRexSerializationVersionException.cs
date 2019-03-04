@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace VSS.TRex.Common.Exceptions
 {
@@ -6,7 +7,15 @@ namespace VSS.TRex.Common.Exceptions
   {
     public static string ErrorMessage(uint [] expectedVersions, uint encounteredVersion)
     {
-      return $"Invalid version read during deserialization: {encounteredVersion}, expected version {expectedVersions}";
+      return $"Invalid version read during deserialization: {encounteredVersion}, expected version in [{string.Join(", ", expectedVersions)}]";
+    }
+
+    public TRexSerializationVersionException(string message): base(message)
+    {
+    }
+
+    public TRexSerializationVersionException(string message, Exception e) : base(message, e)
+    {
     }
 
     public TRexSerializationVersionException(uint expectedVersion, uint encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(new []{expectedVersion}, encounteredVersion))
@@ -17,7 +26,7 @@ namespace VSS.TRex.Common.Exceptions
     {
     }
 
-    public TRexSerializationVersionException(byte[] expectedVersions, uint encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(expectedVersions.Cast<uint>().ToArray(), encounteredVersion))
+    public TRexSerializationVersionException(byte[] expectedVersions, uint encounteredVersion) : base(TRexSerializationVersionException.ErrorMessage(expectedVersions.Select(x => (uint)x).ToArray(), encounteredVersion))
     {
     }
   }

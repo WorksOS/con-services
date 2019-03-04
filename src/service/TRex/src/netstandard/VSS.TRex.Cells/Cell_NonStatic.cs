@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
@@ -145,12 +144,12 @@ namespace VSS.TRex.Cells
         /// <param name="passIndex"></param>
         public void RemovePass(int passIndex)
         {
-            Debug.Assert(PassCount > passIndex, "Attempt to remove non-existent pass");
 
             if (PassCount > passIndex)
-                Array.Copy(Passes, passIndex + 1, Passes, passIndex, PassCount - passIndex - 1);
-
-            AllocatePasses(PassCount - 1);
+            {
+              Array.Copy(Passes, passIndex + 1, Passes, passIndex, PassCount - passIndex - 1);
+              AllocatePasses(PassCount - 1);
+            }
         }
 
         /// <summary>
@@ -237,8 +236,6 @@ namespace VSS.TRex.Cells
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             if (IntegratedPasses.Length > IntegratedPassCount)
                 Array.Resize(ref IntegratedPasses, (int)IntegratedPassCount);
-            else
-                Debug.Assert(IntegratedPasses.Length == IntegratedPassCount, "Integrated pass count lists not same length");
 
             Passes = IntegratedPasses;
             addedCount = IntegratedPassCount - OriginalPassCount;

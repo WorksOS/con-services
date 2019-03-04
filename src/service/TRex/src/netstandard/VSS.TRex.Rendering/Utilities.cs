@@ -13,11 +13,11 @@ namespace VSS.TRex.Rendering
         /// <returns></returns>
         public static bool DisplayModeRequireSurveyedSurfaceInformation(DisplayMode Mode)
         {
-            return (Mode == DisplayMode.Height) ||
-                   (Mode == DisplayMode.CutFill) ||
-                   (Mode == DisplayMode.CompactionCoverage) ||
-                   (Mode == DisplayMode.VolumeCoverage) ||
-                   (Mode == DisplayMode.TargetThicknessSummary);
+            return Mode == DisplayMode.Height ||
+                   Mode == DisplayMode.CutFill ||
+                   Mode == DisplayMode.CompactionCoverage ||
+                   Mode == DisplayMode.VolumeCoverage ||
+                   Mode == DisplayMode.TargetThicknessSummary;
         }
 
         /// <summary>
@@ -27,12 +27,8 @@ namespace VSS.TRex.Rendering
         /// <returns></returns>
         public static bool FilterRequireSurveyedSurfaceInformation(IFilterSet filters)
         {
-            if (filters == null)
-            {
-                return true;
-            }
-
-            return !filters.Filters.Any(x => x.AttributeFilter.HasVibeStateFilter ||
+            return filters == null ||
+                   !filters.Filters.Any(x => x.AttributeFilter.HasVibeStateFilter ||
                                              x.AttributeFilter.HasDesignFilter ||
                                              x.AttributeFilter.HasMachineDirectionFilter ||
                                              x.AttributeFilter.HasMachineFilter ||
@@ -52,10 +48,10 @@ namespace VSS.TRex.Rendering
             // These are Cut Fill, Summary Volume(*) and Thickness Summary requests (*)
             // (*) Where these requests are specified with either filter-design or design-filter
             //     volume computation modes
-            return (Mode == DisplayMode.CutFill ||
+            return Mode == DisplayMode.CutFill ||
                      ((Mode == DisplayMode.VolumeCoverage || Mode == DisplayMode.TargetThicknessSummary) 
                      //&& (ReferenceVolumeType in [ic_cvtBetweenFilterAndDesign, ic_cvtBetweenDesignAndFilter]))
-                      ));
+                      );
         }
 
         /// <summary>
@@ -68,7 +64,7 @@ namespace VSS.TRex.Rendering
         /// <param name="NPixelsY"></param>
         /// <param name="SubGridCellSize"></param>
         /// <returns></returns>
-        public static bool SubgridShouldBeRenderedAsRepresentationalDueToScale(double WorldTileWidth, double WorldTileHeight, int NPixelsX, int NPixelsY, double SubGridCellSize)
+        public static bool SubGridShouldBeRenderedAsRepresentationalDueToScale(double WorldTileWidth, double WorldTileHeight, int NPixelsX, int NPixelsY, double SubGridCellSize)
         {
             return (WorldTileWidth / NPixelsX) >= SubGridCellSize || (WorldTileHeight / NPixelsY) >= SubGridCellSize;
         }

@@ -187,10 +187,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
+
         Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(passCountSummaryResult));
 
         await SetCacheControlPolicy(projectUid);

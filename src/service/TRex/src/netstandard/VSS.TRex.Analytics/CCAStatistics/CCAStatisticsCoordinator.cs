@@ -26,7 +26,7 @@ namespace VSS.TRex.Analytics.CCAStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
     };
 
     /// <summary>

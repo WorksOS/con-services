@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Details.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
 
       Assert.True(aggregator.DetailsDataValues.Length == Arg_Details.CMVDetailValues.Length, "Invalid aggregator value for DetailsDataValues.Length.");
 
@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Summary.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideMachineCMV == Arg_Summary.OverrideMachineCMV, "Invalid aggregator value for OverrideMachineCMV.");
       Assert.True(aggregator.OverridingMachineCMV == Arg_Summary.OverridingMachineCMV, "Invalid aggregator value for OverridingMachineCMV.");
     }

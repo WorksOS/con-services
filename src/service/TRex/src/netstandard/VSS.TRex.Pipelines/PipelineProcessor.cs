@@ -230,7 +230,7 @@ namespace VSS.TRex.Pipelines
       // Retrieve the existence map for the datamodel
       OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask
       {
-        CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize
+        CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.CellSize
       };
 
       if (RequireSurveyedSurfaceInformation)
@@ -307,7 +307,7 @@ namespace VSS.TRex.Pipelines
           return false;
         }
 
-        DesignSubGridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize;
+        DesignSubGridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.CellSize;
       }
 
       // Impose the final restriction on the spatial extents from the client context
