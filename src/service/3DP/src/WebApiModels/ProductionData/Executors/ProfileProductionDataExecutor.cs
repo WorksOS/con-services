@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         ProfilesHelper.ConvertProfileEndPositions(
           request.gridPoints,
-          request.wgs84Points, 
+          request.wgs84Points,
           out VLPDDecls.TWGS84Point startPt,
           out VLPDDecls.TWGS84Point endPt,
           out bool positionsAreGrid);
@@ -237,7 +237,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           previousCmvPercent = lastCell.previousCmvPercent
         });
       }
-      
+
       profile.gridDistanceBetweenProfilePoints = gridDistanceBetweenProfilePoints;
 
       return profile;

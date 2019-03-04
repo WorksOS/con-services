@@ -32,15 +32,26 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault().ErrorMessage));
       }
+
+      if (ExcludedSurveyedSurfaceIds != null && ExcludedSurveyedSurfaceIds.Length > 0)
+      {
+        foreach (var id in ExcludedSurveyedSurfaceIds)
+        {
+          if (id == 0)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                string.Format(
+                  "Excluded Surface Id is invalid")));
+          }
+        }
+      }
     }
 
-    public static ProjectStatisticsRequest CreateStatisticsParameters(long ProjectId, long[] ExcludedSurveyedSurfaceIds)
+    public ProjectStatisticsRequest(long projectId, long[] excludedSurveyedSurfaceIds)
     {
-      return new ProjectStatisticsRequest
-      {
-        ProjectId = ProjectId,
-        ExcludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds
-      };
+      ProjectId = projectId;
+      ExcludedSurveyedSurfaceIds = excludedSurveyedSurfaceIds;
     }
 
     //Private constructor to hide the request builder

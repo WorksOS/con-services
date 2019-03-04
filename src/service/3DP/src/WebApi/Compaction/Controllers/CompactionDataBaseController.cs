@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -25,19 +20,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected readonly IProductionDataRequestFactory RequestFactory;
 
-    /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
       : base(configStore, fileListProxy, settingsManager)
     {
       RequestFactory = requestFactory;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -107,29 +97,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Tests if there is overlapping data in Raptor 
     /// </summary>
-    protected async Task<(bool isValidFilterForProjextExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
+    protected async Task<(bool isValidFilterForProjectExtents, FilterResult filterResult)> ValidateFilterAgainstProjectExtents(Guid projectUid, Guid? filterUid)
     {
       if (!filterUid.HasValue) return (true, null);
-
-      var excludedIdsTask = GetExcludedSurveyedSurfaceIds(projectUid);
-      var projectIdTask = GetLegacyProjectId(projectUid);
-      var filterTask = GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
-
-      await Task.WhenAll(filterTask, excludedIdsTask, projectIdTask);
-
-      var filter = await filterTask;
-      var projectId = await projectIdTask;
-      var excludedIds = await excludedIdsTask;
-
-      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
-      request.Validate();
+      var filter = await GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
 
       try
       {
-#if RAPTOR
-        var projectExtents = RequestExecutorContainerFactory
-                             .Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
-                             .Process(request) as ProjectStatisticsResult;
+        var projectId = await GetLegacyProjectId(projectUid);
+        var projectExtents = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
 
         //No data in Raptor - stop
         if (projectExtents == null) return (false, null);
@@ -145,10 +121,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         //All other cases - proceed further
         return (true, filter);
-#else
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
       }
       catch
       {

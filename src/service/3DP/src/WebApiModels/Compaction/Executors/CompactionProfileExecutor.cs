@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           totalResult.results.Add(summaryVolumesResult);
         }
-    
+
         profileResultHelper.RemoveRepeatedNoData(totalResult, request.volumeCalcType);
         profileResultHelper.AddMidPoints(totalResult);
         profileResultHelper.InterpolateEdges(totalResult, request.volumeCalcType);
@@ -528,7 +528,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0)
       );
 
-      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest> (summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders).Result;
+      var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders).Result;
 
       return trexResult != null ? ConvertTRexSummaryVolumesProfileResult(trexResult, volumeCalcType) : null;
     }
@@ -546,7 +546,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
       {
-        var volCalcType = (TComputeICVolumesType) request.volumeCalcType.Value;
+        var volCalcType = (TComputeICVolumesType)request.volumeCalcType.Value;
         if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters && !request.ExplicitFilters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);

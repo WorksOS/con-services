@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
                   MinTemperatureMachineTarget = summary.MinimumTemperature,
                   MaxTemperatureMachineTarget = summary.MaximumTemperature,
                   TargetVaries = !summary.IsTargetTemperatureConstant
-                }, 
+                },
                 summary.ReturnCode,
                 summary.TotalAreaCoveredSqMeters,
                 summary.AboveTemperaturePercent,

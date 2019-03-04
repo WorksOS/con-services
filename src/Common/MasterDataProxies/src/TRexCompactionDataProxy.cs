@@ -132,7 +132,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private async Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
     {
-      var response = await SendRequest<T>(TREX_GATEWAY_IMMUTABLE_BASE_URL, string.Empty, customHeaders, route,  HttpMethod.Get, queryParameters);
+      var response = await SendRequest<T>(TREX_GATEWAY_IMMUTABLE_BASE_URL, string.Empty, customHeaders, route, HttpMethod.Get, queryParameters);
 
       log.LogDebug($"{nameof(SendRequestGet)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 

@@ -18,6 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
     /// <executor>GetEditDataExecutor</executor> 
     EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request);
 
+#if RAPTOR
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
     /// </summary>
@@ -25,5 +26,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
     /// <returns></returns>
     /// <executor>EditDataExecutor</executor> 
     ContractExecutionResult Post([FromBody] EditDataRequest request);
+#endif 
   }
 }

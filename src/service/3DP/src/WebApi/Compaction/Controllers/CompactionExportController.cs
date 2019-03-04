@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +16,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -23,7 +24,6 @@ using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -40,11 +40,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataRequestFactory requestFactory;
     private const int FIVE_MIN_SCHEDULER_TIMEOUT = 300000;
 
-    /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
     private readonly ITransferProxy transferProxy;
 
     /// <summary>
@@ -54,13 +49,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public CompactionExportController(
       IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy,
-      ITRexCompactionDataProxy trexCompactionDataProxy,
       ITransferProxy transferProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
       this.transferProxy = transferProxy;
     }
 
@@ -184,7 +177,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         timeout = configStoreTimeout > 0 ? configStoreTimeout : FIVE_MIN_SCHEDULER_TIMEOUT;
       }
 
-      var request = new ScheduleJobRequest {Url = exportDataUrl, Filename = fileName, Timeout = timeout};
+      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
 
       return WithServiceExceptionTryExecute(() => new ScheduleResult
       {
@@ -209,7 +202,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation($"{nameof(GetExportReportVeta)}: {Request.QueryString}");
 
-      var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var userPreferences = GetUserPreferences();
@@ -217,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
-      var startEndDate = GetDateRange(project.LegacyProjectId, filter);
+      var startEndDate = await GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
@@ -231,8 +224,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetUserPreferences(userPreferences.Result)
         .SetProjectDescriptor(project)
         .CreateExportRequest(
-          startEndDate.Item1,
-          startEndDate.Item2,
+          startEndDate.startUtc,
+          startEndDate.endUtc,
           coordType,
           ExportTypes.VedaExport,
           fileName,
@@ -288,7 +281,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation($"{nameof(GetExportReportMachinePasses)}: {Request.QueryString}");
 
-      var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       var filterTask = GetCompactionFilter(projectUid, filterUid);
       var userPreferences = GetUserPreferences();
@@ -296,7 +289,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
-      var startEndDate = GetDateRange(project.LegacyProjectId, filter);
+      var startEndDate = await GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
@@ -310,14 +303,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
         .SetProjectDescriptor(project)
         .CreateExportRequest(
-          startEndDate.Item1,
-          startEndDate.Item2,
-          (CoordType) coordType,
+          startEndDate.startUtc,
+          startEndDate.endUtc,
+          (CoordType)coordType,
           ExportTypes.PassCountExport,
           fileName,
           restrictOutput,
           rawDataOutput,
-          (OutputTypes) outputType,
+          (OutputTypes)outputType,
           string.Empty);
 
       exportRequest.Validate();
@@ -370,7 +363,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -439,30 +432,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the date range for the export.
     /// </summary>
-    private Tuple<DateTime, DateTime> GetDateRange(long projectId, FilterResult filter)
+    private async Task<(DateTime startUtc, DateTime endUtc)> GetDateRange(long projectId, FilterResult filter)
     {
+#if RAPTOR
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor performance.
         //But need to set here for export.
-        var excludedIds = filter?.SurveyedSurfaceExclusionList?.ToArray() ?? new long[0];
-        ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds);
-        request.Validate();
-#if RAPTOR
-        var result =
-          RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, RaptorClient)
-            .Process(request) as ProjectStatisticsResult;
+        var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
+        var result = ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
+          filter?.SurveyedSurfaceExclusionList?.ToList() ?? new List<long>(0), GetUserId(), CustomHeaders).Result;
 
         var startUtc = filter?.StartUtc ?? result.startTime;
         var endUtc = filter?.EndUtc ?? result.endTime;
-        return new Tuple<DateTime, DateTime>(startUtc, endUtc);
-#else
-        // TRex determines this date range within the export API call
-        return new Tuple<DateTime, DateTime>(DateTime.MinValue, DateTime.MinValue);
-#endif
+        return (startUtc, endUtc);
       }
 
-      return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
+      return (filter.StartUtc.Value, filter.EndUtc.Value);
+#else
+        // TRex determines this date range within the export API call
+        return (DateTime.MinValue, DateTime.MinValue);
+#endif
     }
   }
 }

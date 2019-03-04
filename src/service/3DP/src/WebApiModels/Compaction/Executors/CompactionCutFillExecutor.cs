@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #endif
           return trexCompactionDataProxy.SendDataPostRequest<CompactionCutFillDetailedResult, CutFillDetailsRequest>(request, "/cutfill/details", customHeaders).Result;
 #if RAPTOR
-      }
+        }
 
         var filter = RaptorConverters.ConvertFilter(request.Filter);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);

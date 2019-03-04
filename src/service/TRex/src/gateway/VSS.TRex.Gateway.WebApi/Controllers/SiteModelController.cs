@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.DI;
-using VSS.TRex.Geometry;
+using VSS.TRex.Executors;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -46,6 +47,39 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         );
 
       return null;
+    }
+
+    /// <summary>
+    /// Returns project statistics for a site model.
+    /// </summary>
+    /// <param name="projectStatisticsTRexRequest"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [Route("statistics")]
+    public ProjectStatisticsResult GetStatistics([FromBody]ProjectStatisticsTRexRequest projectStatisticsTRexRequest)
+    {
+      projectStatisticsTRexRequest.Validate();
+
+      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectStatisticsTRexRequest.ProjectUid);
+      if (siteModel == null)
+        return new ProjectStatisticsResult(ContractExecutionStatesEnum.ValidationError);
+
+      var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid, projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
+
+      var result = new ProjectStatisticsResult();
+      if (extents != null)
+        result.extents = BoundingBox3DGrid.CreatBoundingBox3DGrid(
+          extents.MinX, extents.MinY, extents.MinZ,
+          extents.MaxX, extents.MaxY, extents.MaxZ
+        );
+     
+      var startEndDates = siteModel.GetDateRange();
+      result.startTime = startEndDates.startUtc;
+      result.endTime = startEndDates.endUtc;
+
+      result.cellSize = siteModel.Grid.CellSize;
+      result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
+      return result;
     }
   }
 }

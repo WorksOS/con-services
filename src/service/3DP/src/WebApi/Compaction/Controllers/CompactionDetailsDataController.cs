@@ -33,8 +33,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDetailsDataController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
-      : base(configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
+    public CompactionDetailsDataController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+      : base(configStore, fileListProxy, settingsManager, requestFactory)
     { }
 
     /// <summary>
@@ -64,13 +64,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var request = new CMVChangeSummaryRequest(projectId, projectUid, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
-      
+
       try
       {
         var result = RequestExecutorContainerFactory
           .Build<CMVChangeSummaryExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVChangeSummaryResult;
@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
           .Build<DetailedCMVExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVDetailedResult;
@@ -170,9 +170,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result1 = RequestExecutorContainerFactory
           .Build<DetailedCMVExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy:TRexCompactionDataProxy, customHeaders:CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVDetailedResult;
 
         if (result1 != null && result1.ConstantTargetCmv == -1)
@@ -180,7 +180,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           var result2 = RequestExecutorContainerFactory
             .Build<SummaryCMVExecutor>(LoggerFactory,
 #if RAPTOR
-              RaptorClient, 
+              RaptorClient,
 #endif
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVSummaryResult;
@@ -235,7 +235,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<DetailedPassCountExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(passCountsRequest) as PassCountDetailedResult;
@@ -296,7 +296,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionCutFillExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(cutFillRequest) as CompactionCutFillDetailedResult);
@@ -339,7 +339,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RequestExecutorContainerFactory
             .Build<DetailedTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
-              RaptorClient, 
+              RaptorClient,
 #endif
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(detailsRequest) as CompactionTemperatureDetailResult);
@@ -350,7 +350,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           var result2 = RequestExecutorContainerFactory
             .Build<SummaryTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
-              RaptorClient, 
+              RaptorClient,
 #endif
               configStore: ConfigStore,
               trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)

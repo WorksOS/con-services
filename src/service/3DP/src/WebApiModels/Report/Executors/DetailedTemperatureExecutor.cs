@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       var request = CastRequestObjectTo<TemperatureDetailsRequest>(item);
 
-      var temperatureTargets = request.Targets.Select(t => (int) t).ToArray(); // already converted to 10ths 
+      var temperatureTargets = request.Targets.Select(t => (int)t).ToArray(); // already converted to 10ths 
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_TEMPERATURE"))
       {
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         filter,
         liftBuildSettings,
         out var temperatureDetails);
-  
+
       if (raptorResult == TASNodeErrorStatus.asneOK)
         return new CompactionTemperatureDetailResult(temperatureDetails.Percents);
 
