@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
@@ -42,6 +41,7 @@ namespace TCCToDataOcean
 
     // Diagnostic settings
     private readonly bool _isDebugMode;
+    private readonly bool _downloadProjectFiles;
     private readonly bool _updateProjectCoordinateSystemFile;
 
     private readonly List<ImportedFileType> MigrationFileTypes = new List<ImportedFileType>
@@ -73,6 +73,7 @@ namespace TCCToDataOcean
       _resumeModeEnabled = ConfigStore.GetValueBool("RESUME_MODE_ENABLED", defaultValue: false);
       // Diagnostic settings
       _isDebugMode = ConfigStore.GetValueBool("MIGRATION_MODE_IS_DEBUG", defaultValue: true);
+      _downloadProjectFiles = ConfigStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
       _updateProjectCoordinateSystemFile = ConfigStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
     }
 
@@ -101,6 +102,11 @@ namespace TCCToDataOcean
       Log.LogInformation($"{Method.Info()} | Found {projects.Count} projects");
 
       var projectTasks = new List<Task<bool>>(projects.Count);
+
+      //var project = projects.First(p => p.ProjectUID == "6470f6f5-77d7-e511-80dc-a0369f4c5117");
+      //_migrationDb.WriteRecord(Table.Projects, project);
+
+      //await MigrateProject(project);
 
       foreach (var project in projects)
       {
@@ -153,6 +159,11 @@ namespace TCCToDataOcean
         }
       }
 
+      if (!_downloadProjectFiles)
+      {
+        return coordinateSystemFileMigrationResult;
+      }
+
       var importedFilesResult = false;
       var filesResult = ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
 
@@ -160,7 +171,7 @@ namespace TCCToDataOcean
       {
         var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
         _migrationDb.SetProjectFilesDetails(Table.Projects, project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
-        
+
         Log.LogInformation($"{Method.Info()} | Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
 
         var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();

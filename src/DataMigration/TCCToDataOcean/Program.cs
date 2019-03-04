@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
@@ -31,10 +29,7 @@ namespace TCCToDataOcean
       var serviceProvider = serviceCollection.BuildServiceProvider();
       var migrator = serviceProvider.GetRequiredService<IMigrator>();
       
-      var success = migrator.MigrateFilesForAllActiveProjects().Result;
-
-      Console.WriteLine($"Outcome: {success}");
-      Debugger.Break();
+      _ = migrator.MigrateFilesForAllActiveProjects().Result;
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -57,7 +52,7 @@ namespace TCCToDataOcean
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
 
-      Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4nettest.xml");
+      Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4net.xml");
     }
   }
 }

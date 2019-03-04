@@ -77,7 +77,7 @@ namespace TCCToDataOcean.DatabaseAgent
       var projects = db.GetCollection<MigrationProject>(tableName);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
-      dbObj.TotalFileCoutn = totalFileCount;
+      dbObj.TotalFileCount = totalFileCount;
       dbObj.EligibleFileCount = eligibleFileCount;
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
