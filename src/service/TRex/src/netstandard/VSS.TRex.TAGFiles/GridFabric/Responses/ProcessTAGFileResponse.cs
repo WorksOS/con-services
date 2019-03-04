@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
@@ -21,17 +19,15 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt(Results.Count);
       Results.ForEach(result => result.ToBinary(writer));
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte readVersionNumber = reader.ReadByte();
-
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       for (int i = 0; i < reader.ReadInt(); i++)
       {

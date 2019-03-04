@@ -14,6 +14,8 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
   {
+    const byte VERSION_NUMBER = 1;
+
     protected bool _prepared;
 
     /// <summary>
@@ -339,8 +341,7 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte VERSION_NUMBER = 1;
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteByte((byte) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
@@ -413,12 +414,7 @@ namespace VSS.TRex.Filters
     /// </summary>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte VERSION_NUMBER = 1;
-
-      byte readVersionNumber = reader.ReadByte();
-
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       RequestedGridDataType = (GridDataType)reader.ReadByte();
       HasTimeFilter = reader.ReadBoolean();

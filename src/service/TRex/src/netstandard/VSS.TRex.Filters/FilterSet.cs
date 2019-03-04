@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Interfaces;
@@ -80,7 +81,7 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt(Filters.Length);
       foreach (var filter in Filters)
@@ -94,10 +95,8 @@ namespace VSS.TRex.Filters
     public void FromBinary(IBinaryRawReader reader)
     {
       const int MAX_REASONABLE_NUMBER_OF_FILTERS = 100;
-      byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       var filterCount = reader.ReadInt();
       if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))

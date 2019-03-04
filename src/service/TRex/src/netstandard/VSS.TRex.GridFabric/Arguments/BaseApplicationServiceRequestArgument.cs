@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 
@@ -12,8 +13,6 @@ namespace VSS.TRex.GridFabric.Arguments
   public class BaseApplicationServiceRequestArgument : BaseRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
-
-    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor
 
     /// <summary>
     /// The identifier of the TRex node responsible for issuing a request and to which messages containing responses
@@ -40,7 +39,9 @@ namespace VSS.TRex.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteString(TRexNodeID);
       writer.WriteGuid(ProjectID);
@@ -53,10 +54,9 @@ namespace VSS.TRex.GridFabric.Arguments
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte readVersionNumber = reader.ReadByte();
+      base.FromBinary(reader);
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       TRexNodeID = reader.ReadString();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;

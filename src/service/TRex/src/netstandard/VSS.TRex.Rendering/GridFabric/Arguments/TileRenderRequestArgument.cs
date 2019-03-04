@@ -1,7 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -52,7 +52,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt((int)Mode);
 
@@ -72,10 +72,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
-      var version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Mode = (DisplayMode)reader.ReadInt();
 

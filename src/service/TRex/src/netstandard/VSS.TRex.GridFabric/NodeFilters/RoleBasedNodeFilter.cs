@@ -1,8 +1,7 @@
-﻿using System;
-using Apache.Ignite.Core.Cluster;
+﻿using Apache.Ignite.Core.Cluster;
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 
@@ -53,16 +52,14 @@ namespace VSS.TRex.GridFabric.NodeFilters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteString(Role);
     }
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      var version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Role = reader.ReadString();
     }
