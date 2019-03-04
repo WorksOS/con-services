@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
+﻿namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public class GridToTINHeapNode
   {

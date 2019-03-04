@@ -25,7 +25,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
-			CellSize = SiteModel.Grid.CellSize,
+			CellSize = SiteModel.CellSize,
 			TargetMachineSpeed = argument.TargetMachineSpeed
 		};
 

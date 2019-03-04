@@ -106,7 +106,7 @@ namespace VSS.TRex.SubGrids
           siteModelID: siteModel.ID,
           oTGCellBottomLeftX: uint.MinValue,
           oTGCellBottomLeftY: uint.MinValue,
-          cellSize: siteModel.Grid.CellSize,
+          cellSize: siteModel.CellSize,
           includedSurveyedSurfaces: FilteredSurveyedSurfaces, 
           surveyedSurfacePatchType: filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
           processingMap: new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)

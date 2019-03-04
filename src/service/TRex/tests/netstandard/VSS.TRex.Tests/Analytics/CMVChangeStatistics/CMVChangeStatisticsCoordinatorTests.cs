@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
 
       Assert.True(aggregator.CMVChangeDetailsDataValues.Length == Arg.CMVChangeDetailsDataValues.Length, "Invalid aggregator value for DetailsDataValues.Length.");
 

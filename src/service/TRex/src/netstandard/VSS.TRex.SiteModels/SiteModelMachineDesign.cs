@@ -12,7 +12,7 @@ namespace VSS.TRex.SiteModels
     private const int VERSION_NUMBER = 1;
 
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public SiteModelMachineDesign()
     {

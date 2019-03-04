@@ -38,8 +38,8 @@ namespace VSS.Productivity3D.WebApi
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
 
-      Log4NetProvider.RepoName = Startup.LoggerRepoName;
-
+      //Log4NetProvider.RepoName = Startup.LoggerRepoName;
+      Log4NetAspExtensions.ConfigureLog4Net(Startup.LoggerRepoName);
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
@@ -63,6 +63,7 @@ namespace VSS.Productivity3D.WebApi
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
         {
+          Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Debug);
           builder.AddConfiguration(config);
@@ -72,6 +73,7 @@ namespace VSS.Productivity3D.WebApi
         .Build();
 
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+      Console.WriteLine("Productivity3D service starting");
       log.LogInformation("Productivity3D service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
       

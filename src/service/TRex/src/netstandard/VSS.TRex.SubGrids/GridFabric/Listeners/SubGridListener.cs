@@ -132,6 +132,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       return true;
     }
 
+    public SubGridListener() { }
+
+
     /// <summary>
     /// Constructor accepting a rexTask to pass sub grids into
     /// </summary>

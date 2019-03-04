@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
-using VSS.TRex.Exports.Surfaces.GridFabric;
+﻿using VSS.TRex.Exports.Surfaces.GridFabric;
 
 namespace VSS.TRex.Exports.Surfaces.Requestors
 {

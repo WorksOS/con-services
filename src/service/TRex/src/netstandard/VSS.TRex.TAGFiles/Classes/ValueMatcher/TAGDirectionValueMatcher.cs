@@ -20,20 +20,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type != TAGDataType.t4bitUInt)
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t4bitUInt &&             
+                Enum.IsDefined(typeof(MachineDirection), (byte) (value - 1))) // Direction value in tag file is 1-based
             {
-                return false;
+                 valueSink.MachineDirection = (MachineDirection) (value - 1);
+                 result = true;
             }
 
-            // Direction value in tag file is 1-based
-
-            if (!Enum.IsDefined(typeof(MachineDirection), (byte)(value - 1)))
-            {
-                return false;
-            }
-
-            valueSink.MachineDirection = (MachineDirection)(value - 1);
-            return true;
+            return result;
         }
     }
 }

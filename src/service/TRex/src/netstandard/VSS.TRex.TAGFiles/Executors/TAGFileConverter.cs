@@ -88,11 +88,10 @@ namespace VSS.TRex.TAGFiles.Executors
         SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
         Machine = new Machine();
 
-        SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
-        if (SiteModel.Grid != null)
+        SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID)
         {
-          SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
-        }
+          CellSize = SiteModel.CellSize
+        };
 
         MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 

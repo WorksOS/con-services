@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideTemperatureWarningLevels == Arg.OverrideTemperatureWarningLevels, "Invalid aggregator value for OverrideTemperatureWarningLevels.");
       Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == Arg.OverridingTemperatureWarningLevels.Max, "Invalid aggregator value for OverridingTemperatureWarningLevels.Max.");
       Assert.True(aggregator.OverridingTemperatureWarningLevels.Min == Arg.OverridingTemperatureWarningLevels.Min, "Invalid aggregator value for OverridingTemperatureWarningLevels.Min.");

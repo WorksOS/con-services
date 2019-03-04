@@ -19,46 +19,41 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
 
     public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
     {
+      bool result = false;
+
       if (valueType.Name == TAGValueNames.kTagFileStartProofingTimeTag)
       {
         // Every time record marks the end of the collected data for an epoch
-        // Thus, we instruct the value sink to process its context whenever we recieve a time value.
-        if (state.HaveSeenAProofingRunTimeValue)
-        {
-          if (!valueSink.ProcessEpochContext())
-          {
-            return false;
-          }
-        }
-
-        if (valueType.Type != TAGDataType.t32bitUInt)
-        {
+        // Thus, we instruct the value sink to process its context whenever we receive a time value.
+        if (state.HaveSeenAProofingRunTimeValue && !valueSink.ProcessEpochContext())
           return false;
-        }
 
-        valueSink.StartProofingTime = value;                                  // Time value is GPS milliseconds since start of week
-        state.HaveSeenAProofingRunTimeValue = true;
+        if (valueType.Type == TAGDataType.t32bitUInt)
+        {
+          valueSink.StartProofingTime = value; // Time value is GPS milliseconds since start of week
+          state.HaveSeenAProofingRunTimeValue = true;
+          result = true;
+        }
       }
 
       if (valueType.Name == TAGValueNames.kTagFileStartProofingWeekTag)
       {
-        if (valueType.Type != TAGDataType.t16bitUInt)
+        if (valueType.Type == TAGDataType.t16bitUInt)
         {
-          return false;
+          valueSink.StartProofingWeek = (short) value;
+          state.HaveSeenAProofingRunWeekValue = true;
+          result = true;
         }
-
-        valueSink.StartProofingWeek = (short)value;
-        state.HaveSeenAProofingRunWeekValue = true;
       }
 
       // if we have seen both a GPS week and time then we can compute the DataTime
       // value for the value sink
-      if (state.HaveSeenAProofingRunTimeValue && state.HaveSeenAProofingRunWeekValue)
+      if (result && state.HaveSeenAProofingRunTimeValue && state.HaveSeenAProofingRunWeekValue)
       {
         valueSink.StartProofingDataTime = GPS.GPSOriginTimeToDateTime(valueSink.StartProofingWeek, valueSink.StartProofingTime);
       }
 
-      return true;
+      return result;
     }
   }
 }

@@ -209,5 +209,11 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="MinElev"></param>
         /// <param name="MaxElev"></param>
         void GetSegmentElevationRange(out double MinElev, out double MaxElev);
+
+        /// <summary>
+        /// Does this segment have allocated pass data available
+        /// </summary>
+        /// <returns></returns>
+        bool HasPassData();
     }
 }

@@ -53,17 +53,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
         {
             state.HaveSeenAnAbsoluteCCV = true;
 
-            switch (valueType.Type)
-            {
-                case TAGDataType.t12bitUInt:
-                    valueSink.SetICCCVValue((short)value);
-                    break;
+            bool result = false;
 
-                default:
-                    return false;
+            if (valueType.Type == TAGDataType.t12bitUInt)
+            { 
+                valueSink.SetICCCVValue((short)value);
+                result = true;
             }
 
-            return true;
+            return result;
         }
     }
 }

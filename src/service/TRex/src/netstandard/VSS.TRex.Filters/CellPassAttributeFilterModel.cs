@@ -311,7 +311,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The list of surveyed surface identifiers to be excluded from the filtered result
     /// </summary>
-    public Guid[] SurveyedSurfaceExclusionList { get; set; } // note this is not saved in the database and must be set in the server
+    public Guid[] SurveyedSurfaceExclusionList { get; set; }// note this is not saved in the database and must be set in the server
 
     /// <summary>
     /// Only permit cell passes for temperature values within min max range

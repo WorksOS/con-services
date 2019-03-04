@@ -1,6 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -20,11 +20,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// The cell stepping size to move between points in the patch being interpolated
     /// </summary>
     public double CellSize { get; set; }
-
-    /// <summary>
-    /// The guid identifying the design to compute the profile over
-    /// </summary>
-    //public Guid DesignUid { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -69,7 +64,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteDouble(CellSize);
 
@@ -88,10 +83,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
-      byte version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       CellSize = reader.ReadDouble();
 

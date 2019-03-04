@@ -35,10 +35,9 @@ namespace VSS.TRex.Rendering.Palettes
     {
       // Check to see if the value is in the target range and use the target MDP colour
       // if it is. MDPRange holds a min/max percentage of target MDP...
-      if (DisplayTargetMDPColourInPVM && (value >= targetValue * _minTarget && value <= targetValue * _maxTarget))
-        return _targetMDPColour;
-
-      return ChooseColour(value);
+      return DisplayTargetMDPColourInPVM && value >= targetValue * _minTarget && value <= targetValue * _maxTarget
+        ? _targetMDPColour
+        : ChooseColour(value);
     }
   }
 }

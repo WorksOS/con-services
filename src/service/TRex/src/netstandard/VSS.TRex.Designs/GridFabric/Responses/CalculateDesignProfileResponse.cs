@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
@@ -13,32 +13,26 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      if (Profile == null)
+      writer.WriteInt(Profile?.Count ?? 0);
+
+      if (Profile != null)
       {
-        writer.WriteInt(0);
-        return;
-      }
-
-      writer.WriteInt(Profile.Count);
-
-      foreach (var pt in Profile)
-      {
-        writer.WriteDouble(pt.X);
-        writer.WriteDouble(pt.Y);
-        writer.WriteDouble(pt.Z);
-        writer.WriteDouble(pt.Station);
-        writer.WriteInt(pt.TriIndex);
+        foreach (var pt in Profile)
+        {
+          writer.WriteDouble(pt.X);
+          writer.WriteDouble(pt.Y);
+          writer.WriteDouble(pt.Z);
+          writer.WriteDouble(pt.Station);
+          writer.WriteInt(pt.TriIndex);
+        }
       }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       var count = reader.ReadInt();
       Profile = new List<XYZS>(count);

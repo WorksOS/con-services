@@ -45,7 +45,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     public bool Equals(ClientCellProfileAllPassesLeafSubgridRecord other)
     {
       return TotalPasses == other.TotalPasses && 
-             !CellPasses.Where((x, i) => !x.Equals(other.CellPasses[i])).Any();
+             ((other.TotalPasses == 0 && TotalPasses == 0) ||
+             !CellPasses.Where((x, i) => !x.Equals(other.CellPasses[i])).Any());
     }
 
     public override bool Equals(object obj)
