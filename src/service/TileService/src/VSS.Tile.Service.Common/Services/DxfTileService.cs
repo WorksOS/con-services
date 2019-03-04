@@ -7,13 +7,14 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using MasterDataModels = VSS.MasterData.Models.Models;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 using Point = SixLabors.Primitives.Point;
 
 namespace VSS.Tile.Service.Common.Services
@@ -24,17 +25,16 @@ namespace VSS.Tile.Service.Common.Services
   public class DxfTileService : IDxfTileService
   {
     private readonly IConfigurationStore config;
-    private readonly IFileRepository tccFileRepo;
+    private readonly IDataOceanClient dataOceanClient;
     private readonly ILogger log;
+    private readonly ITPaaSApplicationAuthentication authn;
 
-    private readonly string tccFilespaceId;
-
-    public DxfTileService(IConfigurationStore configuration, IFileRepository tccRepository, ILoggerFactory logger)
+    public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn)
     {
       config = configuration;
-      tccFileRepo = tccRepository;
+      this.dataOceanClient = dataOceanClient;
       log = logger.CreateLogger<DxfTileService>();
-      tccFilespaceId = config.GetValueString("TCCFILESPACEID");
+      this.authn = authn;
     }
 
     /// <summary>
@@ -114,32 +114,22 @@ namespace VSS.Tile.Service.Common.Services
         Rectangle clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
 
         //Join all the DXF tiles into one large tile
-        var suffix = FileUtils.GeneratedFileSuffix(dxfFile.ImportedFileType);
-        string generatedName = FileUtils.GeneratedFileName(dxfFile.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
-        string zoomPath =
-          $"{FileUtils.ZoomPath(FileUtils.TilePath(dxfFile.Path, generatedName), parameters.zoomLevel)}";
-
+        var dataOceanFileUtil = new DataOceanFileUtil(dxfFile.Name, dxfFile.Path);
         for (int yTile = (int) tileTopLeft.y; yTile <= (int) tileBottomRight.y; yTile++)
         {
-          string targetFolder = $"{zoomPath}/{yTile}";
-          //TCC only renders tiles where there is DXF data. So check if any tiles for this y.
-          if (await tccFileRepo.FolderExists(tccFilespaceId, targetFolder))
+          for (int xTile = (int) tileTopLeft.x; xTile <= (int) tileBottomRight.x; xTile++)
           {
-            for (int xTile = (int) tileTopLeft.x; xTile <= (int) tileBottomRight.x; xTile++)
+            var targetFile = dataOceanFileUtil.GetTileFileName(parameters.zoomLevel, yTile, xTile);
+            log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
+            var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders());
+            if (file != null)
             {
-              string targetFile = $"{targetFolder}/{xTile}.png";
-              if (await tccFileRepo.FileExists(tccFilespaceId, targetFile))
-              {
-                log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
+              Image<Rgba32> tile = Image.Load<Rgba32>(file);
 
-                var file = await tccFileRepo.GetFile(tccFilespaceId, targetFile);
-                Image<Rgba32> tile = Image.Load<Rgba32>(file);
-
-                Point offset = new Point(
-                  (xTile - (int) tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
-                  (yTile - (int) tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
-                tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
-              }
+              Point offset = new Point(
+                (xTile - (int) tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
+                (yTile - (int) tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
+              tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
             }
           }
         }

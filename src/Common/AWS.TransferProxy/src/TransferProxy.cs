@@ -8,6 +8,7 @@ using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 
 namespace VSS.AWS.TransferProxy
@@ -57,7 +58,7 @@ namespace VSS.AWS.TransferProxy
         catch (ArgumentException)
         {
           // Unknown or invalid extension, not bad but we don't know the content type
-          mimeType = "application/octet-stream"; // binary data....
+          mimeType = ContentTypeConstants.ApplicationOctetStream; // binary data....
         }
 
         return new FileStreamResult(stream, mimeType);

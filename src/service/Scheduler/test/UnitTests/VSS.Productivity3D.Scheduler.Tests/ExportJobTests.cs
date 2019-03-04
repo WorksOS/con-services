@@ -11,6 +11,7 @@ using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
@@ -74,14 +75,14 @@ namespace VSS.Productivity3D.Scheduler.Tests
       // We will say our filename is named something different to the content type, and make sure the export function gives us back the correct file name
 
       const string extension = ".json";
-      const string contentType = "application/json";
+      const string contentType = ContentTypeConstants.ApplicationJson;
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest {Url = "some url", Filename = "dummy.mp3"};
       var expectedFilename = scheduleRequest.Filename + extension; 
 
       var ms = new MemoryStream(Encoding.UTF8.GetBytes( JsonConvert.SerializeObject(scheduleRequest)));
-      var fileStreamResult = new FileStreamResult(ms, "application/json");
+      var fileStreamResult = new FileStreamResult(ms, ContentTypeConstants.ApplicationJson);
 
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
 
@@ -118,7 +119,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
       var ms = new MemoryStream(Encoding.UTF8.GetBytes( JsonConvert.SerializeObject(scheduleRequest)));
-      var fileStreamResult = new FileStreamResult(ms, "application/json");
+      var fileStreamResult = new FileStreamResult(ms, ContentTypeConstants.ApplicationJson);
 
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
 

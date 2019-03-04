@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
                             raptorFilter,
                             RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
                             out var ccaSummary);
-         
+
         if (success)
           return ConvertResult(ccaSummary);
 

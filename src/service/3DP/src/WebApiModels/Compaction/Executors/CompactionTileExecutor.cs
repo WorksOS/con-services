@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             return new TileResult(ms.ToArray());
           }
 #if RAPTOR
-      }
+        }
 
         return ProcessWithRaptor(request);
 #endif

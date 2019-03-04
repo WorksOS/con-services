@@ -607,7 +607,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 3, false))
+        .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 0, false))
         .ReturnsAsync(expectedDownloadResult);
 
       serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);

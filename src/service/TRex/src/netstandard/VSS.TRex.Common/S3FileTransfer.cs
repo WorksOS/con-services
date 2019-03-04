@@ -69,8 +69,10 @@ namespace VSS.TRex.Common
     {
       try
       {
-        var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        DIContext.Obtain<ITransferProxy>().Upload(fileStream, s3FullPath);
+        using (var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read))
+        {
+          DIContext.Obtain<ITransferProxy>().Upload(fileStream, s3FullPath);
+        }
       }
       catch (Exception e)
       {
@@ -91,8 +93,10 @@ namespace VSS.TRex.Common
     {
       try
       {
-        var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        DIContext.Obtain<ITransferProxy>().UploadToBucket(fileStream, s3FullPath, awsBucketName);
+        using (var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read))
+        {
+          DIContext.Obtain<ITransferProxy>().UploadToBucket(fileStream, s3FullPath, awsBucketName);
+        }
       }
       catch (Exception e)
       {

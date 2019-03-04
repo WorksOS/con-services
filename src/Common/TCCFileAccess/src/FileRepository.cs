@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.TCCFileAccess.Models;
@@ -189,7 +190,7 @@ namespace VSS.TCCFileAccess
       headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
       headers.Add("X-File-Size", sizeOfContents.ToString());
       headers.Add("X-FileType", "");
-      headers.Add("Content-Type", "application/octet-stream");
+      headers.Add("Content-Type", ContentTypeConstants.ApplicationOctetStream);
 
       PutFileResponse result = default(PutFileResponse);
       try
@@ -711,7 +712,7 @@ namespace VSS.TCCFileAccess
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
-      headers.Add("Content-Type", "application/json");
+      headers.Add("Content-Type", ContentTypeConstants.ApplicationJson);
       var result = default(T);
       try
       {
@@ -744,7 +745,7 @@ namespace VSS.TCCFileAccess
       var gracefulClient = new GracefulWebRequest(logFactory, configStore);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
-      headers.Add("Content-Type", "application/json");
+      headers.Add("Content-Type", ContentTypeConstants.ApplicationJson);
       T result = default(T);
       try
       {

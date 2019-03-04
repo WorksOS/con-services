@@ -16,10 +16,11 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Contracts;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -49,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// The TRex Gateway proxy for use by executor.
     /// </summary>
-    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
 
     /// <summary>
     /// Gets the custom headers for the request.
@@ -62,12 +63,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
-    /// <param name="TRexCompactionDataProxy"></param>
+    /// <param name="tRexCompactionDataProxy"></param>
     public ReportController(
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy TRexCompactionDataProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -75,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       this.logger = logger;
       log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
-      this.TRexCompactionDataProxy = TRexCompactionDataProxy;
+      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -160,7 +161,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             raptorClient, 
 #endif
             configStore: configStore,
-            trexCompactionDataProxy: TRexCompactionDataProxy,
+            trexCompactionDataProxy: tRexCompactionDataProxy,
             customHeaders: CustomHeaders)
             .Process(request) as PassCountSummaryResult;
     }
@@ -195,7 +196,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as PassCountDetailedResult;
     }
 
@@ -221,7 +222,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVSummaryResult;
     }
 
@@ -247,7 +248,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVDetailedResult;
     }
 
@@ -257,20 +258,24 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="request">The request for statistics request to Raptor</param>
     /// <returns></returns>
     /// <executor>ProjectStatisticsExecutor</executor>
+    [Obsolete("We now use CompactionElevationController api/v2/projectstatistics")]
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/projects/statistics")]
     [HttpPost]
     public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
-      log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
-
-      request.Validate();
 #if RAPTOR
-      return
-        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient).Process(request)
-          as ProjectStatisticsResult;
+      log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
+      request.Validate();
+
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
+        fileListProxy: null, tRexCompactionDataProxy: null
+        , raptorClient: raptorClient
+      );
+      return projectStatisticsHelper.GetProjectStatisticsWithExclusions(request.ProjectId.Value, request.ExcludedSurveyedSurfaceIds);
 #else
+      // see NOTE above
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
@@ -347,7 +352,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as SpeedSummaryResult;
     }
 
@@ -372,7 +377,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVChangeSummaryResult;
     }
 
@@ -428,7 +433,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
           CCASummaryResult;
     }
   }

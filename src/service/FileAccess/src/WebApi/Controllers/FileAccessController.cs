@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.Executors;
@@ -57,7 +58,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
 
         if (RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) is RawFileAccessResult result)
         {
-          return new FileStreamResult(new MemoryStream(result.fileContents), "application/octet-stream");
+          return new FileStreamResult(new MemoryStream(result.fileContents), ContentTypeConstants.ApplicationOctetStream);
         }
 
         throw new ServiceException(HttpStatusCode.NoContent,

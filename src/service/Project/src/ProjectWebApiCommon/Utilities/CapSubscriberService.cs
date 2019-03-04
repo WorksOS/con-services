@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {

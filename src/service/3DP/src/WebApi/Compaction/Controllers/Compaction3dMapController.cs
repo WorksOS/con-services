@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -28,6 +29,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -232,7 +234,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string bbox)
     {
       var result = await GetMapTileData(projectUid, filterUid, designUid, cutfillDesignUid, type, mode, width, height, bbox);
-      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -485,7 +487,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // Don't forget to seek back, or else the content length will be 0
       outputStream.Seek(0, SeekOrigin.Begin);
-      return new FileStreamResult(outputStream, "application/zip");
+      return new FileStreamResult(outputStream, ContentTypeConstants.ApplicationZip);
     }
 
     /// <summary>
@@ -521,7 +523,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           CustomHeaders, false));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -619,7 +621,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         outputStream.Seek(0, SeekOrigin.Begin);
         Log.LogInformation($"GetExportReportSurface completed: ExportData size={outputStream.Length}");
-        return new FileStreamResult(outputStream, "text/plain");
+        return new FileStreamResult(outputStream, ContentTypeConstants.TextPlain);
       }
     }
 

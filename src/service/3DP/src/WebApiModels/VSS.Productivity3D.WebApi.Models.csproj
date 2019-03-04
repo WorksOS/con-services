@@ -79,7 +79,6 @@
     <Compile Remove=".\Report\Executors\ElevationStatisticsExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />    
     <Compile Remove=".\Report\Executors\ExportReportExecutor.cs" />
-    <Compile Remove=".\Report\Executors\ProjectStatisticsExecutor.cs" />    
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />    
     <Compile Remove=".\Report\Executors\SummaryVolumesExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />

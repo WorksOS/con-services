@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var cmvSummaryRequest = new CMVSummaryRequest(
-            request.ProjectUid, 
+            request.ProjectUid,
             request.Filter,
             request.CmvSettings.CmvTarget,
             request.CmvSettings.OverrideTargetCMV,

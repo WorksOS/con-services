@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -124,7 +125,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (project.ProjectID <= 0)
       {
-        Repositories.DBModels.Project existing = null;
+        ProjectDatabaseModel existing = null;
         try
         {
           existing = await projectRepo.GetProjectOnly(project.ProjectUID.ToString()).ConfigureAwait(false);

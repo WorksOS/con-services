@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies
@@ -310,7 +312,7 @@ namespace VSS.MasterData.Proxies
 
       var parameters = new Dictionary<string, string>
       {
-        {"SERVICE", "WMS" }, {"VERSION" , "1.3.0" }, {"REQUEST", "GetMap" }, {"FORMAT", "image/png"}, {"TRANSPARENT", "true"},
+        {"SERVICE", "WMS" }, {"VERSION" , "1.3.0" }, {"REQUEST", "GetMap" }, {"FORMAT", ContentTypeConstants.ImagePng}, {"TRANSPARENT", "true"},
         { "LAYERS", "Layers"}, {"CRS", "EPSG:4326" }, {"STYLES", string.Empty}, {"projectUid", projectUid.ToString()},
         { "mode", mode.ToString()}, {"width", width.ToString()}, {"height", height.ToString()}, {"bbox", bbox}
       };

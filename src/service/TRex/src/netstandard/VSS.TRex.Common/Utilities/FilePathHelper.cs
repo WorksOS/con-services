@@ -26,12 +26,10 @@ namespace VSS.TRex.Common.Utilities
     /// <returns></returns>
     public static string GetTempFolderForExport(Guid projectUid, string filePath)
     {
-      var localExportPath = Path.Combine(new[] { Path.GetTempPath(), projectUid.ToString(), "Exports" });
+      var localExportPath = Path.Combine(new[] { GetTempFolderForProject(projectUid), "Exports" });
       var localPath = Path.Combine(new[] { localExportPath, filePath });
-      if (Directory.Exists(localPath))
-        Directory.Delete(localPath, true);
-      
-      Directory.CreateDirectory(localPath);
+      if (!Directory.Exists(localPath))
+        Directory.CreateDirectory(localPath);
 
       return localExportPath;
     }

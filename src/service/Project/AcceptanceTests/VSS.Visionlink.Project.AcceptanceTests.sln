@@ -81,6 +81,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push.Abs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Abstractions", "..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Abstractions\VSS.Productivity3D.Scheduler.Abstractions.csproj", "{1280EFEC-A4E4-44B4-A4B0-868157621F02}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{42AA239F-8713-465B-849D-73C433402552}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Proxy", "..\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj", "{8F2AAD43-FF37-4535-BB03-76528081D192}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Repository", "..\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj", "{24050E20-C34B-4BFE-9419-3D3BE512D615}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +213,18 @@ Global
 		{1280EFEC-A4E4-44B4-A4B0-868157621F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1280EFEC-A4E4-44B4-A4B0-868157621F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1280EFEC-A4E4-44B4-A4B0-868157621F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42AA239F-8713-465B-849D-73C433402552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42AA239F-8713-465B-849D-73C433402552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42AA239F-8713-465B-849D-73C433402552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42AA239F-8713-465B-849D-73C433402552}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F2AAD43-FF37-4535-BB03-76528081D192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F2AAD43-FF37-4535-BB03-76528081D192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F2AAD43-FF37-4535-BB03-76528081D192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F2AAD43-FF37-4535-BB03-76528081D192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

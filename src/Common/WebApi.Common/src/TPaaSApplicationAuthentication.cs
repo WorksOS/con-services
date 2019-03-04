@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -45,8 +46,8 @@ namespace VSS.WebApi.Common
         {
           var customHeaders = new Dictionary<string, string>
           {
-            {"Accept", "application/json"},
-            {"Content-Type", "application/x-www-form-urlencoded"},
+            {"Accept", ContentTypeConstants.ApplicationJson},
+            {"Content-Type", ContentTypeConstants.ApplicationFormUrlEncoded},
             {"Authorization", string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           string grantType = "client_credentials";
@@ -91,6 +92,15 @@ namespace VSS.WebApi.Common
           $"GetApplicationBearerToken()  Using bearer token: {_applicationBearerToken}");
         return _applicationBearerToken;
       }
+    }
+
+    public IDictionary<string, string> CustomHeaders()
+    {
+      return new Dictionary<string, string>
+      {
+        {"Content-Type", ContentTypeConstants.ApplicationJson},
+        {"Authorization", $"Bearer {GetApplicationBearerToken()}"}
+      };
     }
   }
 }
