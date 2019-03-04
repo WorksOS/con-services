@@ -1,6 +1,4 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache.Configuration;
-using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 

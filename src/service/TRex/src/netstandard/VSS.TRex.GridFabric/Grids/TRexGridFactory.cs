@@ -30,17 +30,12 @@ namespace VSS.TRex.GridFabric.Grids
     /// <returns></returns>
     public IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null)
     {
-      return igniteGrids[(int) mutability] ?? (igniteGrids[(int) mutability] = DIContext.Obtain<Func<string, IgniteConfiguration, IIgnite>>()(TRexGrids.GridName(mutability), cfg));
+      return igniteGrids[(int) mutability] ?? (igniteGrids[(int) mutability] = IgniteGridFactory(TRexGrids.GridName(mutability), cfg));
     }
 
     private void CreateCache()
     {
       igniteGrids = new IIgnite[Enum.GetValues(typeof(StorageMutability)).Cast<int>().Max(x => x) + 1];
-    }
-
-    public void ClearCache()
-    {
-      CreateCache();
     }
     
     /// <summary>
@@ -52,12 +47,12 @@ namespace VSS.TRex.GridFabric.Grids
     {
       if (gridName.Equals(TRexGrids.MutableGridName()))
       {
-        return igniteGrids[(int)StorageMutability.Mutable] ?? (igniteGrids[(int)StorageMutability.Mutable] = DIContext.Obtain<Func<string, IgniteConfiguration, IIgnite>>()(gridName, cfg));
+        return igniteGrids[(int)StorageMutability.Mutable] ?? (igniteGrids[(int)StorageMutability.Mutable] = IgniteGridFactory(gridName, cfg));
       }
 
       if (gridName.Equals(TRexGrids.ImmutableGridName()))
       {
-        return igniteGrids[(int)StorageMutability.Immutable] ?? (igniteGrids[(int)StorageMutability.Immutable] = DIContext.Obtain<Func<string, IgniteConfiguration, IIgnite>>()(gridName, cfg));
+        return igniteGrids[(int)StorageMutability.Immutable] ?? (igniteGrids[(int)StorageMutability.Immutable] = IgniteGridFactory(gridName, cfg));
       }
 
       throw new TRexException($"{gridName} is an unknown grid to create a reference for.");
@@ -72,7 +67,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// <returns></returns>
     public static IIgnite IgniteGridFactory(string gridName, IgniteConfiguration cfg = null)
     {
-      return Ignition.TryGetIgnite(gridName) ?? (cfg == null ? null : Ignition.Start(cfg));
+      return DIContext.Obtain<Func<string, IgniteConfiguration, IIgnite>>()(gridName, cfg);
     }
 
     /// <summary>
@@ -88,7 +83,7 @@ namespace VSS.TRex.GridFabric.Grids
     {
       DIBuilder.Continue()
         .Add(x => x.AddSingleton<IActivatePersistentGridServer>(new ActivatePersistentGridServer()))
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => TRexGridFactory.IgniteGridFactory))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => Ignition.TryGetIgnite(gridName) ?? (cfg == null ? null : Ignition.Start(cfg))))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()));
     }
   }
