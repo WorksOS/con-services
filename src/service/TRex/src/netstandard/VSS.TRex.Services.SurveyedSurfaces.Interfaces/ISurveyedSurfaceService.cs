@@ -11,7 +11,7 @@ namespace VSS.TRex.Services.Surfaces
     public interface ISurveyedSurfaceService
     {
         /// <summary>
-        /// Add a new surveyd surface to a site model
+        /// Add a new surveyed surface to a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>

@@ -15,7 +15,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Exports.Patches.Executors
 {
   /// <summary>
-  /// Generates a patch of subgrids from a wider query
+  /// Generates a patch of sub grids from a wider query
   /// </summary>
   public class PatchExecutor
   {
@@ -83,7 +83,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     }
 
     /// <summary>
-    /// Executor that implements requesting and rendering subgrid information to create the rendered tile
+    /// Executor that implements requesting and rendering sub grid information to create the rendered tile
     /// </summary>
     /// <returns></returns>
     public bool Execute()
@@ -122,7 +122,7 @@ namespace VSS.TRex.Exports.Patches.Executors
           return false;
         }
 
-        // If this is the first page requested then count the total number of patches required for all subgrids to be returned
+        // If this is the first page requested then count the total number of patches required for all sub grids to be returned
         if (DataPatchPageNumber == 0)
           PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
             (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubGridsThatWillBeSubmitted() / (double)DataPatchPageSize));
@@ -134,6 +134,7 @@ namespace VSS.TRex.Exports.Patches.Executors
       }
       catch (Exception E)
       {
+        PatchSubGridsResponse.ResultStatus = RequestErrorStatus.Exception;
         Log.LogError(E, "ExecutePipeline raised Exception:");
         return false;
       }

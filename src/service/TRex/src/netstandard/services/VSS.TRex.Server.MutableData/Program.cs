@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
@@ -15,7 +14,6 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -99,7 +97,6 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
-        typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),

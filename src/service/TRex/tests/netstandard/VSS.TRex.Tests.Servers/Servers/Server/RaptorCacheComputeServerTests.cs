@@ -52,17 +52,6 @@ namespace VSS.TRex.Tests.Servers.Server
 
   public class TRexCacheComputeServerTests : IClassFixture<DIIgniteServers>//, IDisposable
   {
-    /*
-    private DIIgniteServers DIInstance = null;
-
-    public TRexCacheComputeServerTests()
-    {
-      DIInstance = new DIIgniteServers();
-    }
-    */
-
-
-
     [Fact]
     public void Test_TRexCacheComputeServer_Creation()
     {
@@ -266,17 +255,5 @@ namespace VSS.TRex.Tests.Servers.Server
       Func<bool> act = () => server.WaitUntilGridActive(INVALID_GRID_NAME);
       act.Should().Throw<TRexException>().WithMessage($"{INVALID_GRID_NAME} is an unknown grid to create a reference for.");
     }
-
-    /*
-    public void Dispose()
-    {
-      DIInstance = null;
-      DIBuilder.Eject();
-
-      // Ensure the TRex global config has its preference for immutable data left alone...
-      TRexServerConfig.Instance().UseMutableSpatialData = false;
-      TRexServerConfig.Instance().UseMutableNonSpatialData = false;
-    }
-    */
   }
 }

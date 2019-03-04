@@ -59,9 +59,6 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
 
       GridDistanceBetweenProfilePoints = reader.ReadDouble();
 
-    //  if (ProfileCells == null)
-      //  ProfileCells = new List<T>();
-
       if (reader.ReadBoolean())
       {
         var numberOfProfileCells = reader.ReadInt();
