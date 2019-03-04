@@ -41,10 +41,8 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">    
-    <Compile Remove=".\Compaction\Executors\CompactionCellDatumExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\CompactionDesignProfileExecutor.cs" />    
     <Compile Remove=".\Compaction\Executors\CompactionPatchExecutor.cs" />
-    <!--<Compile Remove=".\Compaction\Executors\CompactionProfileExecutor.cs" />-->    
     <Compile Remove=".\Compaction\Executors\DxfTileExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\LineworkFileExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
@@ -56,12 +54,7 @@
     <Compile Remove=".\Compaction\Models\Reports\StationRow.cs" />
     
     <Compile Remove=".\Compaction\ResultHandling\DxfLineworkFileResult.cs" />
-
-    <!--<Compile Remove=".\Coord\Executors\CoordinateSystemExecutor.cs" />
-    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorGet.cs" />
-    <Compile Remove=".\Coord\Executors\CoordinateSystemExecutorPost.cs" />
-    <Compile Remove=".\Coord\Executors\CoordinateConversionExecutor.cs" />-->
-    
+   
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
     
@@ -75,7 +68,6 @@
     <Compile Remove=".\ProductionData\Executors\GetMachineIdsExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetLayerIdsExecutor.cs" />    
     <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
-    <!--<Compile Remove=".\ProductionData\Executors\ProfileProductionDataExecutor.cs" />-->    
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />
@@ -83,7 +75,6 @@
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPut.cs" />
     <Compile Remove=".\ProductionData\ResultHandling\CompactionDesignProfile.cs" />    
 
-    <Compile Remove=".\Report\Executors\CompactionCellDatumExecutor.cs" />
     <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />    
     <Compile Remove=".\Report\Executors\ElevationStatisticsExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />    
