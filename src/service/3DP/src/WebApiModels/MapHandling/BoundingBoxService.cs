@@ -249,10 +249,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           var projectMinLng = projectPoints.Min(p => p.Lon);
           var projectMaxLat = projectPoints.Max(p => p.Lat);
           var projectMaxLng = projectPoints.Max(p => p.Lon);
-          bool assign = bbox == null || (bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
-                                         bbox.maxLat < projectMinLat || bbox.maxLat > projectMaxLat ||
-                                         bbox.minLng < projectMinLng || bbox.minLng > projectMaxLng ||
-                                         bbox.maxLng < projectMinLng || bbox.minLng > projectMaxLng);
+          bool assign = bbox == null
+            ? true
+            : bbox.minLat < projectMinLat || bbox.minLat > projectMaxLat ||
+              bbox.maxLat < projectMinLat || bbox.maxLat > projectMaxLat ||
+              bbox.minLng < projectMinLng || bbox.minLng > projectMaxLng ||
+              bbox.maxLng < projectMinLng || bbox.minLng > projectMaxLng;
 
           if (assign)
           {

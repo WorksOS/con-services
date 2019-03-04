@@ -13,7 +13,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -22,7 +21,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -66,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation("GetElevationRange: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetElevationRange)}: {Request.QueryString}");
 
       try
       {
@@ -85,18 +83,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
         }
 
-        Log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
+        Log.LogInformation($"{nameof(GetElevationRange)} result: {JsonConvert.SerializeObject(result)}");
         return result;
       }
       catch (ServiceException se)
       {
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+        Log.LogError(se, $"{nameof(GetElevationRange)}: exception");
+        throw;
       }
       finally
       {
-        Log.LogInformation("GetElevationRange returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetElevationRange)} returned: {Response.StatusCode}");
       }
     }
 
@@ -143,25 +140,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<ProjectStatisticsResult> GetProjectStatistics(
       [FromQuery] Guid projectUid)
     {
-      Log.LogInformation("GetProjectStatistics: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetProjectStatistics)}:  {Request.QueryString}");
 
       try
       {
         var projectId = await GetLegacyProjectId(projectUid);
         var result = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, GetUserId(), CustomHeaders);
 
-        Log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(result));
+        Log.LogInformation($"{nameof(GetProjectStatistics)}: result: {JsonConvert.SerializeObject(result)}");
         return result;
       }
       catch (ServiceException se)
       {
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+        Log.LogError(se, $"{nameof(GetProjectStatistics)}: exception");
+        throw;
       }
       finally
       {
-        Log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetProjectStatistics)}: returned: {Response.StatusCode}");
       }
     }
 
@@ -192,7 +188,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long projectId,
       [FromServices] IBoundingBoxService boundingBoxService)
     {
-      Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetProjectExtentsV1)}: {Request.QueryString}");
 
       var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
       var excludedIds = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
@@ -204,13 +200,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException se)
       {
-        //Change FailedToGetResults to 204
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+        Log.LogError(se, $"{nameof(GetProjectExtentsV1)}: exception");
+        throw;
       }
       finally
       {
-        Log.LogInformation("GetProjectExtents returned: " + Response.StatusCode);
+        Log.LogInformation($"{nameof(GetProjectExtentsV1)} returned: {Response.StatusCode}");
       }
     }
 

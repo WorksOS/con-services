@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
@@ -67,13 +68,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
     }
 
-#if RAPTOR
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
-    ///    NOTE: Obsolete
-    ///        Elspeth believes this is a BusinessCenter endpoint.
-    ///        It is not expected that this endpoint will have a v2, which would use Uids and Trex.
     /// </summary>
+    [Obsolete("This is a BusinessCenter endpoint. It is not expected that this endpoint will have a v2")]
     [PostRequestVerifier]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
@@ -158,6 +156,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
-#endif
   }
 }

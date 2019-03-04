@@ -26,6 +26,11 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "excludedSurveyedSurfaceUids", Required = Required.Default)]
     public Guid[] ExcludedSurveyedSurfaceUids { get; private set; }
 
+    /// <summary>
+    /// Prevents a default instance of the <see cref="ProjectStatisticsTRexRequest"/> class from being created.
+    /// </summary>
+    private ProjectStatisticsTRexRequest()
+    { }
 
     public ProjectStatisticsTRexRequest(Guid projectUid, Guid[] excludedSurveyedSurfaceUids)
     {

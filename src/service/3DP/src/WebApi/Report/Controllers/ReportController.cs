@@ -252,14 +252,13 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .Process(request) as CMVDetailedResult;
     }
 
-#if RAPTOR
     /// <summary>
     /// Gets project statistics from Raptor.
-    /// NOTE:  Obsolete: We now use CompactionElevationController "api/v2/projectstatistics"
     /// </summary>
     /// <param name="request">The request for statistics request to Raptor</param>
     /// <returns></returns>
     /// <executor>ProjectStatisticsExecutor</executor>
+    [Obsolete("We now use CompactionElevationController api/v2/projectstatistics")]
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/projects/statistics")]
@@ -281,7 +280,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
-#endif
 
     /// <summary>
     /// Gets volumes summary from Raptor.
