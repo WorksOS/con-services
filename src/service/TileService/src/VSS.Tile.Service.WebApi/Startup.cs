@@ -18,6 +18,8 @@ using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Services;
 using VSS.DataOcean.Client;
 using VSS.Pegasus.Client;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
 
 namespace VSS.Tile.Service.WebApi
 {

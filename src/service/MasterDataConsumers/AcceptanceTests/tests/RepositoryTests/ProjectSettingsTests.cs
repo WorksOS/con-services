@@ -5,7 +5,7 @@ using RepositoryTests.Internal;
 using System;
 using System.Linq;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests

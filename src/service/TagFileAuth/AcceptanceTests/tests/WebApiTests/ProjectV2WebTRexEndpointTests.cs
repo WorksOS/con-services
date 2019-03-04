@@ -7,9 +7,7 @@ using System.Threading;
 using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests

@@ -7,7 +7,6 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
@@ -72,7 +71,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer",
               JsonConvert.SerializeObject(projects));
 
-            var enumerable = projects as IList<Project> ?? projects.ToList();
+            var enumerable = projects as IList<Project.Abstractions.Models.DatabaseModels.Project> ?? projects.ToList();
             if (enumerable.Any())
             {
               var list = new List<ProjectBoundaryPackage>();

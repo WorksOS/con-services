@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

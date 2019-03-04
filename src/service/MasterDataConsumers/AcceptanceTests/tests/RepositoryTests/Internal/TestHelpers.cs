@@ -1,6 +1,7 @@
 ﻿using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests.Internal

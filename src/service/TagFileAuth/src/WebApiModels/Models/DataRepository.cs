@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
@@ -62,9 +63,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       this.KafkaTopicName = kafkaTopicName;
     }
 
-    public async Task<Project> LoadProject(long legacyProjectId)
+    public async Task<Project.Abstractions.Models.DatabaseModels.Project> LoadProject(long legacyProjectId)
     {
-      Project project = null;
+      Project.Abstractions.Models.DatabaseModels.Project project = null;
       try
       {
         if (legacyProjectId > 0)
@@ -82,9 +83,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<Project> LoadProject(string projectUid)
+    public async Task<Project.Abstractions.Models.DatabaseModels.Project> LoadProject(string projectUid)
     {
-      Project project = null;
+      Project.Abstractions.Models.DatabaseModels.Project project = null;
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
@@ -102,9 +103,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<IEnumerable<Project>> LoadProjects(string customerUid, DateTime validAtDate)
+    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> LoadProjects(string customerUid, DateTime validAtDate)
     {
-      IEnumerable<Project> projects = null;
+      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
 
       try
       {
@@ -129,10 +130,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project>> GetStandardProject(string customerUid, double latitude,
+    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> GetStandardProject(string customerUid, double latitude,
       double longitude, DateTime timeOfPosition)
     {
-      IEnumerable<Project> projects = null;
+      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
 
       try
       {
@@ -152,11 +153,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project>> GetProjectMonitoringProject(string customerUid, double latitude,
+    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> GetProjectMonitoringProject(string customerUid, double latitude,
       double longitude, DateTime timeOfPosition,
       int projectType, int serviceType)
     {
-      IEnumerable<Project> projects = null;
+      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
       try
       {
         if (customerUid != null)
@@ -177,10 +178,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, 
+    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, 
       double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null)
     {
-      IEnumerable<Project> projects = null;
+      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
       try
       {
         if (customerUid != null)
