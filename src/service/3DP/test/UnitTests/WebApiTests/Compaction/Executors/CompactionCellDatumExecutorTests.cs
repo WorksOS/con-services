@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+      Assert.ThrowsException<ServiceException>(async () => await executor.ProcessAsync(request));
     }
 
     [TestMethod]
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
 
-      Assert.ThrowsException<ServiceException>(() => executor.Process(request), "On Cell Datum request. Failed to process coordinate conversion request.");
+      Assert.ThrowsException<ServiceException>(async () => await executor.ProcessAsync(request), "On Cell Datum request. Failed to process coordinate conversion request.");
     }
   }
 }
