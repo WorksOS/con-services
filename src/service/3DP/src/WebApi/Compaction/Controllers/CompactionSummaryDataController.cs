@@ -176,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         return Ok(new CompactionPassCountSummaryResult());
       }
-      
+
       var request = await GetPassCountRequest(projectUid, filterUid, filter, isSummary: true);
       request.Validate();
 
@@ -185,12 +185,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<SummaryPassCountsExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
+
         Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(passCountSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
