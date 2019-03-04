@@ -12,7 +12,6 @@ using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
-using VSS.TCCFileAccess;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Interfaces;
@@ -44,7 +43,6 @@ namespace VSS.Tile.Service.WebApi
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TID auth for customer/user validation
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddSingleton<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
       services.AddScoped<IMapTileGenerator, MapTileGenerator>();
       services.AddScoped<IMapTileService, MapTileService>();
@@ -60,6 +58,11 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
+      services.AddTransient<IDataOceanClient, DataOceanClient>();
+      services.AddTransient<IPegasusClient, PegasusClient>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
+      services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+      services.AddTransient<ITPaasProxy, TPaasProxy>();
 
       services.AddSingleton<CacheInvalidationService>();
 

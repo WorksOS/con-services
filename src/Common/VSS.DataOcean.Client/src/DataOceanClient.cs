@@ -236,12 +236,12 @@ namespace VSS.DataOcean.Client
       try
       {
         response = await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders, 
-          null, null, 3, false);
+          null, null, result.Multifile ? 0 : 3, false);
       }
       catch (HttpRequestException ex)
       {
         //If tile does not exist DataOcean returns 403
-        if (result.Multifile && string.Compare(ex.Message, "403 access denied", true) != 0)
+        if (!result.Multifile || !(string.Compare(ex.Message, "403 access denied", true) == 0 || string.Compare(ex.Message, "Forbidden access denied", true) == 0))
         {
           throw;
         }

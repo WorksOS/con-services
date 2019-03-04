@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4NetExtensions;
@@ -21,6 +22,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
+using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -32,11 +34,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
   {
     private readonly IPreferenceProxy prefProxy;
     private readonly IRaptorProxy raptorProxy;
-    private readonly IFileListProxy fileListProxy;
+    protected readonly IFileListProxy fileListProxy;
     private readonly IMapTileGenerator tileGenerator;
     protected readonly IGeofenceProxy geofenceProxy;
     private ILogger<T> logger;
     private IServiceExceptionHandler serviceExceptionHandler;
+    protected readonly IConfigurationStore configStore;
+    protected readonly IBoundingBoxHelper boundingBoxHelper;
+    protected readonly ITPaaSApplicationAuthentication authn;
 
     private readonly IMemoryCache tileCache;
     private readonly TimeSpan tileCacheExpiration;
@@ -60,8 +65,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
-      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore)
+    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, 
+      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore, 
+      IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
     {
       this.raptorProxy = raptorProxy;
       this.prefProxy = prefProxy;
@@ -70,6 +76,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
       this.geofenceProxy = geofenceProxy;
       tileCache = cache;
       tileCacheExpiration = GetCacheExpiration(configurationStore);
+      configStore = configurationStore;
+      this.boundingBoxHelper = boundingBoxHelper;
+      this.authn = authn;
     }
 
     /// <summary>
@@ -203,7 +212,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var byteResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileGenerator.GetMapData(request));
 
-      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+      return new FileStreamResult(new MemoryStream(byteResult), ContentTypeConstants.ImagePng);
 
     }
 
@@ -236,7 +245,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
           tileGenerator.GetMapData(request));
       });
 
-      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+      return new FileStreamResult(new MemoryStream(byteResult), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -261,7 +270,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var byteResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileGenerator.GetMapData(request));
 
-      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+      return new FileStreamResult(new MemoryStream(byteResult), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>

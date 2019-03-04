@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -32,7 +33,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn)
     {
-      var customHeaders = CustomHeaders(authn);
+      var customHeaders = authn.CustomHeaders();
       var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid);
       string dataOceanFileName = Path.GetFileName(pathAndFileName);
 
@@ -81,7 +82,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
       log.LogInformation($"DeleteFileFromDataOcean: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
 
-      var customHeaders = CustomHeaders(authn);
+      var customHeaders = authn.CustomHeaders();
       bool ccDeleteFileResult = false;
       try
       {
@@ -108,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       return new Dictionary<string, string>
       {
-        {"Content-Type", "application/json"},
+        {"Content-Type", ContentTypeConstants.ApplicationJson},
         {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"},
         {"Accept", "*/*" }
       };
