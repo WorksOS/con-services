@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Filters;
 using Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.TRex.DI;
+using Moq;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -29,14 +30,18 @@ namespace VSS.TRex.Tests.Exports.CSV
       requestArgument.TRexNodeID = Guid.NewGuid().ToString();
 
       var dataRows = new List<string>() { "string one", "string two" };
-      
+
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockConfig = new Mock<IConfigurationStore>();
+      mockConfig.Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns("vss-exports-stg");
+
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddSingleton<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME")))
+        .Add(x => x.AddSingleton(mockConfig.Object))
+        .Add(x => x.AddSingleton(mockTransferProxy.Object))
         .Complete();
-
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument);
       var s3FullPath = csvExportFileWriter.PersistResult(dataRows);

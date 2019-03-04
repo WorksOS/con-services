@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using System.Net;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -27,16 +27,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionCellController : BaseController<CompactionCellController>
   {
-    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CompactionCellController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
       : base(configStore, fileListProxy, settingsManager)
-    {
-      TRexCompactionDataProxy = trexCompactionDataProxy;
-    }
+    { }
 
     /// <summary>
     /// Requests a single thematic datum value from a single cell. Examples are elevation, compaction. temperature etc.
@@ -70,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         cutFillDesign.Result);
 
       request.Validate();
-
+      
 #if RAPTOR
       return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient).Process(request) as CompactionCellDatumResult;
 #else
@@ -120,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
         .Build<CompactionPatchV2Executor>(LoggerFactory,
 #if RAPTOR
-          RaptorClient, 
+          RaptorClient,
 #endif
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(patchRequest));

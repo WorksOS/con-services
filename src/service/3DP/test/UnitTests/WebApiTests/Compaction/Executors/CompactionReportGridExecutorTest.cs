@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var projectUid = Guid.NewGuid();
       var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(
-        0, projectUid, null, -1, null, true, false, false, false, false, false, 
+        0, projectUid, null, -1, null, true, false, false, false, false, false,
         null, 4.0, GridReportOption.Automatic,
         0.0, 0.0, 1.0, 2.0, 0.0);
 

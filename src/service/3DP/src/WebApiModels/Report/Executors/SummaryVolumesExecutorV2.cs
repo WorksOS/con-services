@@ -81,8 +81,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             baseDesignDescriptor,
             topFilter,
             topDesignDescriptor,
-            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter), (double) request.CutTolerance,
-            (double) request.FillTolerance,
+            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter), (double)request.CutTolerance,
+            (double)request.FillTolerance,
             RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
             out result);
         }

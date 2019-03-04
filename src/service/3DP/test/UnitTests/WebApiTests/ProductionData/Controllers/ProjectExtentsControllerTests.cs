@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
-      
+
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
         .Throws(exception);

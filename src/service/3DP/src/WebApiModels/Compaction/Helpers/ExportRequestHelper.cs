@@ -87,10 +87,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
-#if !RAPTOR
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#else
+      // todo once the requirement for RAPTOR build to be able to call TRex endpoints is removed
+      //      this whole tangle can be unraveled
+#if RAPTOR
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
@@ -143,6 +142,38 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         outputType,
         RaptorConverters.convertMachines(machineList),
+        exportType == ExportTypes.SurfaceExport,
+        fileName,
+        exportType,
+        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));
+#else
+      if (exportType == ExportTypes.SurfaceExport)
+      {
+        if (!string.IsNullOrEmpty(machineNames) && machineNames != "All")
+        {
+          machineNameList = machineNames.Split(',');
+        }
+      }
+      return new ExportReport(
+        ProjectId,
+        ProjectUid,
+        null,
+        Filter,
+        -1,
+        null,
+        false,
+        null,
+        coordType,
+        startUtc ?? DateTime.MinValue,
+        endUtc ?? DateTime.MinValue,
+        tolerance,
+        false,
+        restrictSize,
+        rawData,
+        null,
+        false,
+        outputType,
+        null,
         exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
@@ -203,6 +234,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
+#endif
 
     /// <summary>
     /// Converts a set user preferences in the common format.
@@ -241,7 +273,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
-
-#endif
   }
 }

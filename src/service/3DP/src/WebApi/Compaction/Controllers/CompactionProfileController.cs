@@ -33,20 +33,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionProfileController(
       IConfigurationStore configStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy) :
+      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory) :
       base(configStore, fileListProxy, settingsManager)
     {
       this.requestFactory = requestFactory;
-      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
