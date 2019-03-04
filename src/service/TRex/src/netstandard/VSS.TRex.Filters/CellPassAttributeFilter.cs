@@ -546,9 +546,9 @@ namespace VSS.TRex.Filters
       EndTime = Source.EndTime;
 
       // Machine based filtering members
-      int machinesCount = Source.MachinesList?.Length ?? 0;
+      var machinesCount = Source.MachinesList?.Length ?? 0;
       MachinesList = new Guid[machinesCount];
-      if (Source.MachinesList != null)
+      if (machinesCount > 0)
         Array.Copy(Source.MachinesList, MachinesList, machinesCount);
 
       MachineIDSet = Source.MachineIDSet != null ? new BitArray(Source.MachineIDSet) : null;

@@ -27,7 +27,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// Cache storing sitemodel instances
+        /// Cache storing sit emodel instances
         /// </summary>
         private ICache<INonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
@@ -58,7 +58,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         }
 
         /// <summary>
-        /// Add a new surveyed surface to a sitemodel
+        /// Add a new surveyed surface to a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
@@ -72,7 +72,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         }
 
         /// <summary>
-        /// Add a new surveyed surface to a sitemodel via direct manipulation of the information in the grid
+        /// Add a new surveyed surface to a site model via direct manipulation of the information in the grid
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
@@ -96,10 +96,6 @@ namespace VSS.TRex.Services.SurveyedSurfaces
             catch (KeyNotFoundException)
             {
                 // Swallow exception, the list will be empty
-            }
-            catch
-            {
-                throw;
             }
 
             // Add the new surveyed surface, generating a random ID from a GUID

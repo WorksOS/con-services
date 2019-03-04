@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -9,7 +8,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Filters;
@@ -115,8 +113,6 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.Machines.Machine),
         typeof(VSS.TRex.Pipelines.PipelineProcessor),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
-        typeof(VSS.TRex.Services.Designs.DesignsService),
-        typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),
         typeof(VSS.TRex.SubGrids.CutFillUtilities),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
