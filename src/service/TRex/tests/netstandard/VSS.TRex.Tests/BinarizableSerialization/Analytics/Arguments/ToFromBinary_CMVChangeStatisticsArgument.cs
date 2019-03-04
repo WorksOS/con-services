@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
     [Fact]
     public void Test_CMVChangeStatisticsArgument()
     {
-      var argument = new CMVChangeStatisticsArgument()
+      var argument = new CMVChangeStatisticsArgument
       {
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),

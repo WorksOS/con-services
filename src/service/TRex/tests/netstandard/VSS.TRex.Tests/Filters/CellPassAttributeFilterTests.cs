@@ -433,7 +433,7 @@ namespace VSS.TRex.Tests.Filters
             x => { x.HasMachineFilter = true; },
             x => x.HasMachineFilter,
             x => { x.ClearMachines(); },
-            x => !x.HasMachineFilter && x.MachinesList == null);
+            x => !x.HasMachineFilter && x.MachinesList.Length == 0);
         }
 
         [Fact()]

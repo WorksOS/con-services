@@ -36,9 +36,7 @@ namespace VSS.TRex.Filters
       //RequestResult: TDesignProfilerRequestResult;
 
       if (Filter == null)
-      {
         return Result;
-      }
 
       if (Filter.SpatialFilter != null)
       {
@@ -150,7 +148,7 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public static RequestErrorStatus PrepareFiltersForUse(ICombinedFilter[] Filters, Guid DataModelID)
     {
-      RequestErrorStatus status = RequestErrorStatus.Unknown;
+      var status = RequestErrorStatus.Unknown;
 
       foreach (ICombinedFilter filter in Filters)
       {
