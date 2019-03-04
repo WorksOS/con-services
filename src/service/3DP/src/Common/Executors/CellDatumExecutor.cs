@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Common.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_DATUM"))
       {
 #endif
-        var trexData = GetTRexCellDatumData(request);
+        var trexData = await GetTRexCellDatumData(request);
 
         if (trexData != null)
           return ConvertTRexCellDatumResult(trexData);
