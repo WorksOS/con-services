@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using SVOICDecls;
 using VLPDDecls;
@@ -20,14 +22,16 @@ namespace VSS.Productivity3D.Common.Executors
         "No cell datum returned"));
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<CellDatumRequest>(item);
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_DATUM"))
       {
 #endif
-        if (GetTRexCellDatumData(request, out var trexData))
+        var trexData = GetTRexCellDatumData(request);
+
+        if (trexData != null)
           return ConvertTRexCellDatumResult(trexData);
 
         throw CreateNoCellDatumReturnedException();
@@ -41,7 +45,7 @@ namespace VSS.Productivity3D.Common.Executors
 #endif
     }
 
-    protected virtual bool GetTRexCellDatumData(CellDatumRequest request, out object data)
+    protected virtual async Task<object> GetTRexCellDatumData(CellDatumRequest request)
     {
       // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -80,5 +84,10 @@ namespace VSS.Productivity3D.Common.Executors
               result.TimeStampUTC);
     }
 #endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }

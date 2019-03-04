@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 #if RAPTOR
 using SVOICDecls;
 using VLPDDecls;
@@ -40,25 +41,25 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
     }
 
-    protected override bool GetTRexCellDatumData(CellDatumRequest request, out object trexData)
+    protected override async Task<object> GetTRexCellDatumData(CellDatumRequest request)
     {
       CheckForCoordinate(request.LLPoint);
 
       // Gett TRex grid coordinates...
-      var coordinate = GetTRexGridCoordinates(request.ProjectUid ?? Guid.Empty, request.LLPoint);
+      var coordinate = await GetTRexGridCoordinates(request.ProjectUid ?? Guid.Empty, request.LLPoint);
 
       _northing = coordinate.Y;
       _easting = coordinate.X;
 
-      return base.GetTRexCellDatumData(request, out trexData);
+      return base.GetTRexCellDatumData(request);
     }
 
-    private TwoDConversionCoordinate GetTRexGridCoordinates(Guid projectUid, WGSPoint latLon)
+    private async Task<TwoDConversionCoordinate> GetTRexGridCoordinates(Guid projectUid, WGSPoint latLon)
     {
       var conversionCoordinates = new[] { new TwoDConversionCoordinate(latLon.Lon, latLon.Lat) };
 
       var conversionRequest = new CoordinateConversionRequest(projectUid, TwoDCoordinateConversionType.NorthEastToLatLon, conversionCoordinates);
-      var conversionResult = trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", customHeaders).Result;
+      var conversionResult = await trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", customHeaders);
 
       if (conversionResult.Code != 0 || conversionResult.ConversionCoordinates.Length == 0)
         throw new ServiceException(HttpStatusCode.BadRequest,

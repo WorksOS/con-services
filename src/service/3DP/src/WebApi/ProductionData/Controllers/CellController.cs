@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
@@ -77,11 +78,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/cells/datum")]
     [HttpPost]
-    public CellDatumResponse Post([FromBody]CellDatumRequest request)
+    public async Task<CellDatumResponse> Post([FromBody]CellDatumRequest request)
     {
       request.Validate();
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).Process(request) as CellDatumResponse;
+      return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResponse;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
