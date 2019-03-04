@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.TRex.Common;
-using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.GridFabric.Interfaces;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization

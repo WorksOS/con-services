@@ -19,7 +19,5 @@ namespace VSS.TRex.GridFabric.Grids
     /// <param name="mutability"></param>
     /// <returns></returns>
     IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null);
-
-    void ClearCache();
   }
 }

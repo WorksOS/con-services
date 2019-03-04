@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.CoordinateSystems.GridFabric.Responses
 {
@@ -22,7 +21,7 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Responses
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteBoolean(Succeeded);
     }
@@ -33,10 +32,7 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Responses
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Succeeded = reader.ReadBoolean();
     }

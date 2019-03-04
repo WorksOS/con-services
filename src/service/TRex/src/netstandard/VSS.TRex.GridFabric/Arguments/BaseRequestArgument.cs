@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.GridFabric.Arguments
@@ -9,21 +10,27 @@ namespace VSS.TRex.GridFabric.Arguments
   /// set of methods from IFromToBinary based on the Ignite raw read/write serialization as the preferred performant serialization
   /// approach
   /// </summary>
-  public abstract class BaseRequestArgument : IBinarizable, IFromToBinary
+  public class BaseRequestArgument : IBinarizable, IFromToBinary
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// A common descriptor that may be supplied by the argument consumer to hold an
     /// externally provided Guid identifier for the request
     /// </summary>
-    public Guid ExternalDescriptor { get; set; } = Guid.Empty;
+    public Guid ExternalDescriptor { get; private set; } = Guid.Empty;
 
     public virtual void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByteArray(ExternalDescriptor.ToByteArray());
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteGuid(ExternalDescriptor);
     }
 
     public virtual void FromBinary(IBinaryRawReader reader)
     {
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       ExternalDescriptor = reader.ReadGuid() ?? Guid.Empty;
     }
 

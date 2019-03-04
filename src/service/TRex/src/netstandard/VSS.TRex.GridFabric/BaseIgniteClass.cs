@@ -50,11 +50,10 @@ namespace VSS.TRex.GridFabric
 
     public BaseIgniteClass()
     {
-
     }
 
     /// <summary>
-    /// Default no-arg constructor that sets up cluster and compute projections available for use
+    /// Constructor that sets up cluster and compute projections available for use
     /// </summary>
     protected BaseIgniteClass(string gridName, string role)
     {

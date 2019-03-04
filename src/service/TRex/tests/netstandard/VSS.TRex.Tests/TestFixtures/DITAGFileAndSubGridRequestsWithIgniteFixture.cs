@@ -167,9 +167,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
       DIBuilder
         .Continue()
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
+
+        // Override the main Ignite grid factiry method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
-        .Add(x => x.AddSingleton<IActivatePersistentGridServer>(new ActivatePersistentGridServer())) // mockActivatePersistentGridServer.Object))
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))

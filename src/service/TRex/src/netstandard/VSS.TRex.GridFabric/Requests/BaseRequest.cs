@@ -5,10 +5,6 @@ using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Requests
 {
-  public interface IBaseRequest : IBinarizable
-  {
-  }
-
   /// <summary>
   /// The base class for requests. This provides common aspects such as the injected Ignite instance
   /// </summary>

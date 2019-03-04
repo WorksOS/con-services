@@ -252,7 +252,7 @@ namespace VSS.TRex.SubGrids
           {
             sieveBitmask.SetBit(eastCol, northRow);
             assignmentContext.ProbePositions[eastCol, northRow]
-              .SetOffsets(currentEast - subGridMinX, currentNorth - subGridMinY);
+              .SetOffsets((float)(currentEast - subGridMinX), (float)(currentNorth - subGridMinY));
           }
 
           currentEast += stepEastX;

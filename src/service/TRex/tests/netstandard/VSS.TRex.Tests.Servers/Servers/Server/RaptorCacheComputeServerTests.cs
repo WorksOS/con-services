@@ -4,7 +4,6 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache.Configuration;
 using FluentAssertions;
 using Moq;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Servers.Client;
 using VSS.TRex.DI;
@@ -62,6 +61,8 @@ namespace VSS.TRex.Tests.Servers.Server
     }
     */
 
+
+
     [Fact]
     public void Test_TRexCacheComputeServer_Creation()
     {
@@ -75,7 +76,6 @@ namespace VSS.TRex.Tests.Servers.Server
     public void Test_ImmutableClientServer_Creation()
     {
       var server = new ImmutableClientServer("UnitTests");
-
       server.Should().NotBeNull();
     }
 
@@ -83,7 +83,6 @@ namespace VSS.TRex.Tests.Servers.Server
     public void Test_MutableClientServer_Creation()
     {
       var server = new MutableClientServer("UnitTests");
-
       server.Should().NotBeNull();
     }
 
@@ -148,6 +147,9 @@ namespace VSS.TRex.Tests.Servers.Server
     {
       var server = new ProfilingServer();
 
+      server.Should().NotBeNull();
+
+      server = new ProfilingServer(new [] {"UnitTest"});
       server.Should().NotBeNull();
     }
 

@@ -14,6 +14,8 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
   {
+    const byte VERSION_NUMBER = 1;
+
     protected bool _prepared;
 
     /// <summary>
@@ -236,7 +238,7 @@ namespace VSS.TRex.Filters
     public DateTime EndTime { get; set; } = DateTime.MaxValue;
 
     // Machine based filtering members
-    public Guid[] MachinesList { get; set; }
+    public Guid[] MachinesList { get; set; } = new Guid[0];
 
     // Design based filtering member (for designs reported by name from machine via TAG files)
     public int DesignNameID { get; set; } // DesignNameID :TICDesignNameID;
@@ -311,7 +313,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The list of surveyed surface identifiers to be excluded from the filtered result
     /// </summary>
-    public Guid[] SurveyedSurfaceExclusionList { get; set; }// note this is not saved in the database and must be set in the server
+    public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
 
     /// <summary>
     /// Only permit cell passes for temperature values within min max range
@@ -339,8 +341,7 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte VERSION_NUMBER = 1;
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteByte((byte) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
@@ -366,13 +367,10 @@ namespace VSS.TRex.Filters
       writer.WriteLong(StartTime.ToBinary());
       writer.WriteLong(EndTime.ToBinary());
 
-      writer.WriteBoolean(MachinesList != null);
-      if (MachinesList != null)
-      {
-        writer.WriteInt(MachinesList.Length);
-        for (int i = 0; i < MachinesList.Length; i++)
-          writer.WriteGuid(MachinesList[i]);
-      }
+      int machineCount = MachinesList?.Length ?? 0;
+      writer.WriteInt(machineCount);
+      for (int i = 0; i < machineCount; i++)
+        writer.WriteGuid(MachinesList[i]);
 
       writer.WriteInt(DesignNameID);
       writer.WriteByte((byte)VibeState);
@@ -400,13 +398,10 @@ namespace VSS.TRex.Filters
       writer.WriteByte((byte)LayerState);
       writer.WriteInt(LayerID);
 
-      writer.WriteBoolean(SurveyedSurfaceExclusionList != null);
-      if (SurveyedSurfaceExclusionList != null)
-      {
-        writer.WriteInt(SurveyedSurfaceExclusionList.Length);
-        for (int i = 0; i < (SurveyedSurfaceExclusionList.Length); i++)
-          writer.WriteGuid(SurveyedSurfaceExclusionList[i]);
-      }
+      int SurveyedSurfaceExclusionCount = SurveyedSurfaceExclusionList?.Length ?? 0;
+      writer.WriteInt(SurveyedSurfaceExclusionCount);
+      for (int i = 0; i < SurveyedSurfaceExclusionCount; i++)
+        writer.WriteGuid(SurveyedSurfaceExclusionList[i]);
 
       writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
       writer.WriteInt(MaterialTemperatureMax); // No Writer.WriteUShort, use int instead
@@ -419,12 +414,7 @@ namespace VSS.TRex.Filters
     /// </summary>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte VERSION_NUMBER = 1;
-
-      byte readVersionNumber = reader.ReadByte();
-
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       RequestedGridDataType = (GridDataType)reader.ReadByte();
       HasTimeFilter = reader.ReadBoolean();
@@ -450,13 +440,10 @@ namespace VSS.TRex.Filters
       StartTime = DateTime.FromBinary(reader.ReadLong());
       EndTime = DateTime.FromBinary(reader.ReadLong());
 
-      if (reader.ReadBoolean())
-      {
-        int machineCount = reader.ReadInt();
-        MachinesList = new Guid[machineCount];
-        for (int i = 0; i < machineCount; i++)
-          MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
-      }
+      int machineCount = reader.ReadInt();
+      MachinesList = new Guid[machineCount];
+      for (int i = 0; i < machineCount; i++)
+        MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
 
       DesignNameID = reader.ReadInt();
       VibeState = (VibrationState)reader.ReadByte();
@@ -484,13 +471,10 @@ namespace VSS.TRex.Filters
       LayerState = (LayerState)reader.ReadByte();
       LayerID = reader.ReadInt();
 
-      if (reader.ReadBoolean())
-      {
-        int surveyedSurfaceCount = reader.ReadInt();
-        SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
-        for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
-          SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
-      }
+      int surveyedSurfaceCount = reader.ReadInt();
+      SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
+      for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
+        SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();
       MaterialTemperatureMax = (ushort)reader.ReadInt();
