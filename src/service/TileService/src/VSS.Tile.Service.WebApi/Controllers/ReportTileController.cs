@@ -6,24 +6,27 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
+using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Services;
+using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
-  public class TileController : BaseController<TileController>
+  public class ReportTileController : BaseController<ReportTileController>
   {
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public TileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
-      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore)
-      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore)
+    public ReportTileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy,
+      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore,
+      IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
+      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
     {
     }
 
@@ -84,6 +87,5 @@ namespace VSS.Tile.Service.WebApi.Controllers
       Response.Headers.Add("X-Warning", "false");
       return tileResult;
     }
-
   }
 }

@@ -44,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.FileAccess.WebAPI.Models.csproj" />
   </ItemGroup>
 

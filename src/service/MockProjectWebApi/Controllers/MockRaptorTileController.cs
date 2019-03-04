@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
@@ -108,7 +109,7 @@ namespace MockProjectWebApi.Controllers
         bitmap.SaveAsPng(bitmapStream);
         //Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
         bitmapStream.Position = 0;
-        return new FileStreamResult(bitmapStream, "image/png");
+        return new FileStreamResult(bitmapStream, ContentTypeConstants.ImagePng);
       }
     }
 

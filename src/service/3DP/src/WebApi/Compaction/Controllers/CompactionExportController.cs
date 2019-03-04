@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -255,7 +256,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
 
       Log.LogInformation($"GetExportReportVeta completed: ExportData size={fileStream.Length}");
-      return new FileStreamResult(fileStream, "application/zip");
+      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
     }
 
     /// <summary>
@@ -341,7 +342,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
 
       Log.LogInformation($"GetExportReportMachinePasses completed: ExportData size={fileStream.Length}");
-      return new FileStreamResult(fileStream, "application/zip");
+      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
     }
 
     /// <summary>
@@ -408,7 +409,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
 
       Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
-      return new FileStreamResult(fileStream, "application/zip");
+      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
     }
 
     #endregion

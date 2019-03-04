@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tileResult = await GetReportTile(overlays, width, height, mapType, projectUid, filterUid, cutFillDesignUid,
         mode, volumeBaseUid, volumeTopUid, volumeCalcType, language);
       Response.Headers.Add("X-Warning", "false");
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
 
     private string GetTileUrl()

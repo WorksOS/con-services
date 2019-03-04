@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
@@ -194,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
     private TileRequest CreateAndValidateRequest(
       long projectId,

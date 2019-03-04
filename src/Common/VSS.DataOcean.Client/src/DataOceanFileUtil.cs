@@ -47,7 +47,7 @@ namespace VSS.DataOcean.Client
     /// <returns></returns>
     private string BaseTilePath()
     {
-      return $"{TilesFolderWithSuffix()}{Path.DirectorySeparatorChar}tiles";
+      return $"{TilesFolderWithSuffix()}/tiles";
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ namespace VSS.DataOcean.Client
     /// <returns>The full path of the tile folder</returns>
     private string TilePath()
     {
-      return $"{BaseTilePath()}{Path.DirectorySeparatorChar}xyz";
+      return $"{BaseTilePath()}/xyz";
     }
 
 
@@ -66,7 +66,7 @@ namespace VSS.DataOcean.Client
     /// <returns>The full name of the tile metadata file</returns>
     public string TileMetadataFileName()
     {
-      return $"{BaseTilePath()}{Path.DirectorySeparatorChar}tiles.json";
+      return $"{BaseTilePath()}/tiles.json";
     }
 
 
@@ -79,7 +79,7 @@ namespace VSS.DataOcean.Client
     /// <returns></returns>
     public string GetTileFileName(int zoomLevel, int topLeftTileY, int topLeftTileX)
     {
-      return $"{ZoomPath(zoomLevel)}{Path.DirectorySeparatorChar}{topLeftTileY}{Path.DirectorySeparatorChar}{topLeftTileX}.png";
+      return $"{ZoomPath(zoomLevel)}/{topLeftTileY}/{topLeftTileX}.png";
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ namespace VSS.DataOcean.Client
     /// <returns>The zoom path</returns>
     private string ZoomPath(int zoomLevel)
     {
-      return $"{TilePath()}{Path.DirectorySeparatorChar}{zoomLevel}";
+      return $"{TilePath()}/{zoomLevel}";
     }
 
     /// <summary>
@@ -156,6 +156,14 @@ namespace VSS.DataOcean.Client
         return fileName;
       }
       throw new ArgumentException($"{fileName} is not a DXF or alignment file.");
+    }
+
+    /// <summary>
+    /// Construct the path in DataOcean
+    /// </summary>
+    public static string DataOceanPath(string rootFolder, string customerUid, string projectUid)
+    {
+      return $"{Path.DirectorySeparatorChar}{rootFolder}{Path.DirectorySeparatorChar}{customerUid}{Path.DirectorySeparatorChar}{projectUid}";
     }
   }
 }

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using VSS.Common.Abstractions.Http;
 using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace VSS.MasterData.Proxies
@@ -27,7 +28,7 @@ namespace VSS.MasterData.Proxies
       HttpContent content = null;
       if (requestStream != null)
       {
-        const string DefaultContentType = "application/json";
+        const string DefaultContentType = ContentTypeConstants.ApplicationJson;
        
         var contentType = MediaTypeHeaderValue.Parse(DefaultContentType);
         if (customHeaders != null && customHeaders.ContainsKey(HeaderNames.ContentType))

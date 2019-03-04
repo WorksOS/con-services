@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{BDA2765A-7968-4ACD-9665-EA15FA9E24E6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\service\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{EC2D348F-9D6C-414C-A1E5-79EC388EBCEC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Models", "..\..\service\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj", "{C7218F56-B563-482C-8922-F595EC403A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +89,14 @@ Global
 		{BDA2765A-7968-4ACD-9665-EA15FA9E24E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDA2765A-7968-4ACD-9665-EA15FA9E24E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDA2765A-7968-4ACD-9665-EA15FA9E24E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC2D348F-9D6C-414C-A1E5-79EC388EBCEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC2D348F-9D6C-414C-A1E5-79EC388EBCEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC2D348F-9D6C-414C-A1E5-79EC388EBCEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC2D348F-9D6C-414C-A1E5-79EC388EBCEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7218F56-B563-482C-8922-F595EC403A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7218F56-B563-482C-8922-F595EC403A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7218F56-B563-482C-8922-F595EC403A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7218F56-B563-482C-8922-F595EC403A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

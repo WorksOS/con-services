@@ -216,7 +216,7 @@ namespace MockProjectWebApi.Controllers
         //This is what DataOcean returns for a tile that doesn't exist
         return StatusCode((int)HttpStatusCode.Forbidden, "access denied");
       }
-      return new FileStreamResult(new FileStream(fileName, FileMode.Open), "image/png");
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open), ContentTypeConstants.ImagePng);
     }
 
     //We need a copy of this model class from DataOcean as we can't use dynamic due to the hypenated property names

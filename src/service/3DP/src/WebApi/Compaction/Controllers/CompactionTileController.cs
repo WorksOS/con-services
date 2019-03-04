@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -198,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           volumeCalcType, CustomHeaders, explicitFilters));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -304,7 +305,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
-      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

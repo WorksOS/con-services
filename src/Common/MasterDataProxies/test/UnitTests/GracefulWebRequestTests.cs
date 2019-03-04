@@ -21,6 +21,7 @@ using uhttpsharp.Headers;
 using uhttpsharp.Listeners;
 using uhttpsharp.Logging;
 using uhttpsharp.RequestProviders;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
@@ -200,7 +201,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     public void TestPostBinaryDataWithNoContentType()
     {
       const string correctMd5 = "36dd727b3ac476d39ee98daf465a0658"; // calculated manually
-      const string expectedContentType = "application/octet-stream";
+      const string expectedContentType = ContentTypeConstants.ApplicationOctetStream;
       Assert.IsTrue(File.Exists(BinaryTestFilename), $"Test file '{BinaryTestFilename}' doesn't exist");
 
       var memoryStream = new MemoryStream(File.ReadAllBytes(BinaryTestFilename));
@@ -272,7 +273,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         return true;
       });
       
-      Assert.IsTrue(ExecutePostRequest(jsonTestMemoryStream, "application/json", validateData));
+      Assert.IsTrue(ExecutePostRequest(jsonTestMemoryStream, ContentTypeConstants.ApplicationJson, validateData));
 
       Assert.IsNotNull(resultModel);
       Assert.AreEqual(jsonTestModel, JsonConvert.SerializeObject(resultModel));
