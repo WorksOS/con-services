@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
   /// This test class finds all types that implement IBinaryReaderWriter and test they can serialise
   /// and deserialise a default instance of the type
   /// </summary>
-  public class IBinaryReaderWriter_Mimic_Tests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
+  public class IBinaryReaderWriter_Mimic_Tests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     public static bool TypeIsInteresting(Type x)
     {
