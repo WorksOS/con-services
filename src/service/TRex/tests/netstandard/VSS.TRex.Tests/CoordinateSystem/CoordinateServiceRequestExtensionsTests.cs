@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
 {
   public class CoordinateServiceRequestExtensionsTests
   {
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void Array_of_LLH_objects_Should_serialize_to_multidim_array_of_doubles()
     {
       var llhData = new[]
@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void Array_of_WGS84Points_Should_serialize_to_multidim_array_of_doubles()
     {
       var wgs84Points = new[]
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void Array_of_NEE_objects_Should_serialize_to_multidim_array_of_doubles()
     {
       var neeData = new[]
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void Array_of_LLH_doubles_Should_serialize_to_collection_of_LLH_objects()
     {
       var llhData = new[,]
@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void Array_of_NEE_doubles_Should_deserialize_to_collection_of_NEE_objects()
     {
       var neeData = new[,]
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void XYZ_Should_convert_to_NEE_object()
     {
       var XYZCoords = new XYZ { X = 2300, Y = 1200, Z = 10 };
@@ -118,7 +118,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       Assert.Equal(XYZCoords.Z, NEECoords.Elevation);
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void XYZ_array_Should_convert_to_NEE_objects()
     {
       var XYZCoords = new[]
@@ -137,7 +137,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void XYZ_Should_convert_to_LLH_object()
     {
       var XYZCoords = new XYZ { X = 2300, Y = 1200, Z = 10 };
@@ -148,7 +148,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       Assert.Equal(XYZCoords.Z, LLHCoords.Height);
     }
 
-    [Fact]
+    [Fact(Skip = "Skip until coreX is available")]
     public void XYZ_array_Should_convert_to_LLH_objects()
     {
       var XYZCoords = new[]
