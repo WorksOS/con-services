@@ -10,7 +10,6 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
 using FluentAssertions;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.Common.Serialisation;
@@ -159,7 +158,10 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCluster.Setup(x => x.ForAttribute(It.IsAny<string>(), It.IsAny<string>())).Returns(mockClusterGroup.Object);
       mockCluster.Setup(x => x.GetLocalNode()).Returns(mockClusterNode.Object);
       mockCluster.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
-      mockCluster.Setup(x => x.IsActive()).Returns(true);
+
+      bool custerActiveState = true;
+      mockCluster.Setup(x => x.IsActive()).Returns(() => custerActiveState);
+      mockCluster.Setup(x => x.SetActive(It.IsAny<bool>())).Callback((bool state) => { custerActiveState = state; });
 
       mockIgnite = new Mock<IIgnite>();
       mockIgnite.Setup(x => x.GetCluster()).Returns(mockCluster.Object);
@@ -178,11 +180,6 @@ namespace VSS.TRex.Tests.TestFixtures
         out var mockCluster,
         out var mockIgnite
         );      
-
-      //      var mockActivatePersistentGridServer = new Mock<IActivatePersistentGridServer>();
-      //      mockActivatePersistentGridServer.Setup(x => x.WaitUntilGridActive(It.IsAny<string>())).Callback(() => { });
-      //      mockActivatePersistentGridServer.Setup(x => x.SetGridActive(It.IsAny<string>())).Returns(true);
-      //      mockActivatePersistentGridServer.Setup(x => x.SetGridInActive(It.IsAny<string>())).Returns(true);
 
       DIBuilder
         .Continue()
