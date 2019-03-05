@@ -207,7 +207,7 @@ namespace VSS.TRex.Tests.Rendering
       // Create the site model containing a single cell and add the design to it for the cut/fill
       BuildModelForSingleCellTileRender(out var siteModel, 0.5f, cellX, cellY);
 
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm");
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill);
 

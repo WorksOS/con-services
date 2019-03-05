@@ -15,6 +15,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 {
   public class CSVExportFileWriterTests : IDisposable
   {
+
     [Fact]
     public void Persist_Successful()
     {

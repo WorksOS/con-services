@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       AddDesignProfilerGridRouting();
 
       var siteModel = NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm");
 
       // Get the cell location of the probe position. Note that the request will return the sub grid
       // that contains this cell, so the origin location of the sub grid may not be the same as the cell location
