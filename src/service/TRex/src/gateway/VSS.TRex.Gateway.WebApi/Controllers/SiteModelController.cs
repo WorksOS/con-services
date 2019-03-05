@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.DI;
 using VSS.TRex.Executors;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -54,8 +56,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <param name="projectStatisticsTRexRequest"></param>
     /// <returns></returns>
-    [HttpPost]
-    [Route("statistics")]
+    [HttpPost("statistics")]
     public ProjectStatisticsResult GetStatistics([FromBody]ProjectStatisticsTRexRequest projectStatisticsTRexRequest)
     {
       projectStatisticsTRexRequest.Validate();
@@ -79,6 +80,24 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       result.cellSize = siteModel.Grid.CellSize;
       result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
+      return result;
+    }
+
+    /// <summary>
+    /// Returns list of machines which have contributed to a site model.
+    /// </summary>
+    /// <param name="siteModelID">Site model identifier.</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/machines")]
+    public MachineExecutionResult GetMachines(string siteModelID)
+    {
+      var machines = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.Machines.ToList();
+
+      var result = MachineExecutionResult.CreateMachineExecutionResult(new MachineStatus[0]);
+      if (machines != null)
+        result.MachineStatuses = machines.Select(machine =>
+          AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();
+
       return result;
     }
   }

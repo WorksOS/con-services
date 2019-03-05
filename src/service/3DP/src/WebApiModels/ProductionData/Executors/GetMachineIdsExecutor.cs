@@ -5,6 +5,7 @@ using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -16,13 +17,25 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
+
+#if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES") && request.ProjectUid != null)
+#endif
+      {
+        var siteModelId = request.ProjectUid.ToString();
+
+        var machineResult = trexCompactionDataProxy.SendDataGetRequest<MachineExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machines", customHeaders).Result;
+        return machineResult;
+      }
+
+#if RAPTOR
       TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
 
       if (machines != null)
       {
         return MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
       }
-
+#endif
       throw CreateServiceException<GetMachineIdsExecutor>();
     }
 

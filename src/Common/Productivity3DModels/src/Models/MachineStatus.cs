@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
+namespace VSS.Productivity3D.Models.Models
 {
   public class MachineStatus : MachineDetails
   {
@@ -59,7 +59,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         double? lastKnownLatitude,
         double? lastKnownLongitude,
         double? lastKnownX,
-        double? lastKnownY
+        double? lastKnownY,
+        Guid? assetUid = null
         )
     {
       return new MachineStatus
@@ -73,7 +74,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         lastKnownLatitude = lastKnownLatitude,
         lastKnownLongitude = lastKnownLongitude,
         lastKnownX = lastKnownX,
-        lastKnownY = lastKnownY
+        lastKnownY = lastKnownY,
+        AssetUid = assetUid
       };
     }
   }

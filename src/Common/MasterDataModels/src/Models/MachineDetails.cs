@@ -25,6 +25,16 @@ namespace VSS.MasterData.Models.Models
     public long AssetId { get; protected set; }
 
     /// <summary>
+    /// The Uid of the machine/asset. This is the unique identifier, used by TRex.
+    /// </summary>
+    /// <remarks>
+    /// This Uid usually comes from UnitedFleet and is the AssetUid returned via TFA when processing tag files.
+    /// If a John doe, then the Uid is a Guid.Empty?
+    /// </remarks>
+    [JsonProperty(PropertyName = "assetUid", Required = Required.Default)]
+    public Guid? AssetUid { get; protected set; }
+
+    /// <summary>
     /// The textual name of the machine. This is the human readable machine name from the machine control display, and written in tagfiles.
     /// </summary>
     [MaxLength(MAX_MACHINE_NAME)]
@@ -47,13 +57,14 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Create instance of MachineDetails
     /// </summary>
-    public static MachineDetails Create(long assetId, string machineName, bool isJohnDoe)
+    public static MachineDetails Create(long assetId, string machineName, bool isJohnDoe, Guid? assetUid = null)
     {
       return new MachineDetails
       {
         AssetId = assetId,
         MachineName = machineName,
-        IsJohnDoe = isJohnDoe
+        IsJohnDoe = isJohnDoe,
+        AssetUid = assetUid
       };
     }
 
@@ -69,7 +80,11 @@ namespace VSS.MasterData.Models.Models
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return AssetId == other.AssetId && string.Equals(MachineName, other.MachineName) && IsJohnDoe == other.IsJohnDoe;
+      return AssetId == other.AssetId && string.Equals(MachineName, other.MachineName) && IsJohnDoe == other.IsJohnDoe && 
+              (
+               (AssetUid == null && other.AssetUid == null) ||
+               (AssetUid != null && other.AssetUid != null && AssetUid.Value == other.AssetUid.Value)
+              );
     }
 
     public override bool Equals(object obj)
@@ -87,6 +102,7 @@ namespace VSS.MasterData.Models.Models
         var hashCode = AssetId.GetHashCode();
         hashCode = (hashCode * 397) ^ (MachineName != null ? MachineName.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ IsJohnDoe.GetHashCode();
+        hashCode = (hashCode * 397) ^ AssetUid.GetHashCode();
         return hashCode;
       }
     }
