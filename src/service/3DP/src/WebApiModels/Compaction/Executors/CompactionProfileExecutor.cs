@@ -48,9 +48,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           totalResult.results.Add(summaryVolumesResult);
         }
 
-        profileResultHelper.RemoveRepeatedNoData(totalResult, request.volumeCalcType);
+        profileResultHelper.RemoveRepeatedNoData(totalResult, request.VolumeCalcType);
         profileResultHelper.AddMidPoints(totalResult);
-        profileResultHelper.InterpolateEdges(totalResult, request.volumeCalcType);
+        profileResultHelper.InterpolateEdges(totalResult, request.VolumeCalcType);
 
         return totalResult;
       }
@@ -161,19 +161,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
-        request.baseFilter,
-        request.volumeDesignDescriptor?.FileUid,
-        request.gridPoints != null,
-        request.gridPoints?.x1 ?? (request.wgs84Points?.lon1 ?? 0.0),
-        request.gridPoints?.x2 ?? (request.wgs84Points?.lon2 ?? 0.0),
-        request.gridPoints?.y1 ?? (request.wgs84Points?.lat1 ?? 0.0),
-        request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0),
-        request.returnAllPassesAndLayers
+        request.BaseFilter,
+        request.VolumeDesignDescriptor?.FileUid,
+        request.GridPoints != null,
+        request.GridPoints?.x1 ?? (request.WGS84Points?.lon1 ?? 0.0),
+        request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
+        request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
+        request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
+        request.ReturnAllPassesAndLayers
       );
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
 
-      return trexResult != null ? ConvertTRexProductioDataProfileResult(trexResult, request.liftBuildSettings) : null;
+      return trexResult != null && trexResult.HasData() ? ConvertTRexProductioDataProfileResult(trexResult, request.LiftBuildSettings) : null;
     }
 
 #if RAPTOR
@@ -183,11 +183,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       MemoryStream memoryStream;
 
       var filter = RaptorConverters.ConvertFilter(request.Filter);
-      var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
-      var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
+      var designDescriptor = RaptorConverters.DesignDescriptor(request.CutFillDesignDescriptor);
+      var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentDesign);
       var liftBuildSettings =
-        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out var startPt, out var endPt,
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
+      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out var startPt, out var endPt,
         out var positionsAreGrid);
 
       CompactionProfileResult<CompactionProfileDataResult> totalResult = null;
@@ -197,13 +197,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
           (request.ProjectId ?? -1,
             ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
-            request.startStation ?? ValidationConstants3D.MIN_STATION,
-            request.endStation ?? ValidationConstants3D.MIN_STATION,
+            request.StartStation ?? ValidationConstants3D.MIN_STATION,
+            request.EndStation ?? ValidationConstants3D.MIN_STATION,
             alignmentDescriptor,
             filter,
             liftBuildSettings,
             designDescriptor,
-            request.returnAllPassesAndLayers);
+            request.ReturnAllPassesAndLayers);
 
         memoryStream = raptorClient.GetAlignmentProfile(args);
       }
@@ -219,12 +219,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             filter,
             liftBuildSettings,
             designDescriptor,
-            request.returnAllPassesAndLayers);
+            request.ReturnAllPassesAndLayers);
 
         memoryStream = raptorClient.GetProfile(args);
       }
 
-      return memoryStream != null ? ConvertProfileResult(memoryStream, request.liftBuildSettings) : null;
+      return memoryStream != null ? ConvertProfileResult(memoryStream, request.LiftBuildSettings) : null;
     }
 #endif
 
@@ -504,7 +504,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               }
             };
       }
-      return profileResultHelper.RearrangeProfileResult(volumesResult, request.volumeCalcType);
+      return profileResultHelper.RearrangeProfileResult(volumesResult, request.VolumeCalcType);
     }
 
     private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithTRexGateway(CompactionProfileProductionDataRequest request)
@@ -513,19 +513,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 
-      var volumeCalcType = request.volumeCalcType ?? VolumeCalcType.None;
+      var volumeCalcType = request.VolumeCalcType ?? VolumeCalcType.None;
 
       var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
-        request.baseFilter,
-        request.topFilter,
-        request.volumeDesignDescriptor?.FileUid,
+        request.BaseFilter,
+        request.TopFilter,
+        request.VolumeDesignDescriptor?.FileUid,
         ConvertVolumeCalcType(volumeCalcType),
-        request.gridPoints != null,
-        request.gridPoints?.x1 ?? (request.wgs84Points?.lon1 ?? 0.0),
-        request.gridPoints?.x2 ?? (request.wgs84Points?.lon2 ?? 0.0),
-        request.gridPoints?.y1 ?? (request.wgs84Points?.lat1 ?? 0.0),
-        request.gridPoints?.y2 ?? (request.wgs84Points?.lat2 ?? 0.0)
+        request.GridPoints != null,
+        request.GridPoints?.x1 ?? (request.WGS84Points?.lon1 ?? 0.0),
+        request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
+        request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
+        request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0)
       );
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders).Result;
@@ -535,18 +535,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
     private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithRaptor(CompactionProfileProductionDataRequest request)
     {
-      var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
+      var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentDesign);
       var liftBuildSettings =
-        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      var baseFilter = RaptorConverters.ConvertFilter(request.baseFilter);
-      var topFilter = RaptorConverters.ConvertFilter(request.topFilter);
-      var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out var startPt, out var endPt,
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
+      var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilter);
+      var topFilter = RaptorConverters.ConvertFilter(request.TopFilter);
+      var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.VolumeDesignDescriptor);
+      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out var startPt, out var endPt,
         out var positionsAreGrid);
 
-      if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
+      if (request.VolumeCalcType.HasValue && request.VolumeCalcType.Value != VolumeCalcType.None)
       {
-        var volCalcType = (TComputeICVolumesType)request.volumeCalcType.Value;
+        var volCalcType = (TComputeICVolumesType)request.VolumeCalcType.Value;
         if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters && !request.ExplicitFilters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
@@ -561,8 +561,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                 (request.ProjectId ?? -1,
                   ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
                   volCalcType,
-                  request.startStation ?? ValidationConstants3D.MIN_STATION,
-                  request.endStation ?? ValidationConstants3D.MIN_STATION,
+                  request.StartStation ?? ValidationConstants3D.MIN_STATION,
+                  request.EndStation ?? ValidationConstants3D.MIN_STATION,
                   alignmentDescriptor,
                   baseFilter,
                   topFilter,
@@ -588,7 +588,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           memoryStream = raptorClient.GetSummaryVolumesProfile(args);
         }
 
-        return memoryStream != null ? ConvertSummaryVolumesProfileResult(memoryStream, request.volumeCalcType.Value) : null;
+        return memoryStream != null ? ConvertSummaryVolumesProfileResult(memoryStream, request.VolumeCalcType.Value) : null;
       }
 
       return null;

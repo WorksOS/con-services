@@ -28,6 +28,10 @@ namespace VSS.MasterData.Models.Models
       Lon = longtitude;
     }
 
+    public WGSPoint()
+    {
+    }
+
     public bool Equals(WGSPoint other)
     {
       if (ReferenceEquals(null, other)) return false;

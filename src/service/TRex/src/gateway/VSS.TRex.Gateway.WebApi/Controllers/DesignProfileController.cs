@@ -47,6 +47,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get the design profile between a pair of points across a design surface
     /// </summary>
+    /// <param name="projectUID"></param>
     /// <param name="designUID"></param>
     /// <param name="startX"></param>
     /// <param name="startY"></param>
@@ -55,13 +56,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpGet]
-    public DesignProfileResult GetDesignProfile([FromQuery] Guid designUID,
+    public DesignProfileResult GetDesignProfile(
+      [FromQuery] Guid projectUID,
+      [FromQuery] Guid designUID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      var designProfileRequest = new DesignProfileRequest(designUID, startX, startY, endX, endY);
+      var designProfileRequest = new DesignProfileRequest(projectUID, designUID, startX, startY, endX, endY);
       return PostDesignProfile(designProfileRequest);
     }
   }

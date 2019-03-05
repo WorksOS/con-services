@@ -20,38 +20,38 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// The design to use for a cut fill profile
     /// </summary>
     [JsonProperty(PropertyName = "cutFillDesignDescriptor", Required = Required.Default)]
-    public DesignDescriptor cutFillDesignDescriptor { get; private set; }
+    public DesignDescriptor CutFillDesignDescriptor { get; private set; }
 
     /// <summary>
     /// The base filter to use for a summary volumes profile. 
     /// </summary>
     [JsonProperty(PropertyName = "baseFilter", Required = Required.Default)]
-    public FilterResult baseFilter { get; private set; }
+    public FilterResult BaseFilter { get; private set; }
 
     /// <summary>
     /// The top filter to use for a summary volumes profile. 
     /// </summary>
     [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
-    public FilterResult topFilter { get; private set; }
+    public FilterResult TopFilter { get; private set; }
 
     /// <summary>
     /// The calculation type to use for a summary volumes profile. 
     /// </summary>
     [JsonProperty(PropertyName = "volumeCalcType", Required = Required.Default)]
-    public VolumeCalcType? volumeCalcType { get; private set; }
+    public VolumeCalcType? VolumeCalcType { get; private set; }
 
     /// <summary>
     /// The design to use for a summary volumes profile
     /// </summary>
     [JsonProperty(PropertyName = "volumeDesignDescriptor", Required = Required.Default)]
-    public DesignDescriptor volumeDesignDescriptor { get; private set; }
+    public DesignDescriptor VolumeDesignDescriptor { get; private set; }
 
     [JsonIgnore]
     public bool ExplicitFilters { get; set; }
 
 
 
-    public static CompactionProfileProductionDataRequest CreateCompactionProfileProductionDataRequest(
+    public CompactionProfileProductionDataRequest(
       long? projectID,
       Guid? projectUid,
       Guid? callId,
@@ -73,28 +73,25 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       bool explicitFilters = false
     )
     {
-      return new CompactionProfileProductionDataRequest
-      {
-        ProjectId = projectID,
-        ProjectUid = projectUid,
-        callId = callId,
-        profileType = profileType,
-        Filter = filter,
-        filterID = filterID,
-        alignmentDesign = alignmentDesign,
-        gridPoints = gridPoints,
-        wgs84Points = wgs84Points,
-        startStation = startStation,
-        endStation = endStation,
-        liftBuildSettings = liftBuildSettings,
-        returnAllPassesAndLayers = returnAllPassesAndLayers,
-        cutFillDesignDescriptor = cutFillDesignDescriptor,
-        baseFilter = baseFilter,
-        topFilter = topFilter,
-        volumeCalcType = volumeCalcType,
-        volumeDesignDescriptor = volumeDesignDescriptor,
-        ExplicitFilters = explicitFilters
-      };
+      ProjectId = projectID;
+      ProjectUid = projectUid;
+      CallId = callId;
+      ProfileType = profileType;
+      Filter = filter;
+      FilterID = filterID;
+      AlignmentDesign = alignmentDesign;
+      GridPoints = gridPoints;
+      WGS84Points = wgs84Points;
+      StartStation = startStation;
+      EndStation = endStation;
+      LiftBuildSettings = liftBuildSettings;
+      ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+      CutFillDesignDescriptor = cutFillDesignDescriptor;
+      BaseFilter = baseFilter;
+      TopFilter = topFilter;
+      VolumeCalcType = volumeCalcType;
+      VolumeDesignDescriptor = volumeDesignDescriptor;
+      ExplicitFilters = explicitFilters;
     }
 
     /// <summary>
@@ -103,35 +100,35 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     public override void Validate()
     {
       base.Validate();
-      baseFilter?.Validate();
-      topFilter?.Validate();
-      cutFillDesignDescriptor?.Validate();
-      volumeDesignDescriptor?.Validate();
+      BaseFilter?.Validate();
+      TopFilter?.Validate();
+      CutFillDesignDescriptor?.Validate();
+      VolumeDesignDescriptor?.Validate();
 
-      if (volumeCalcType.HasValue)
+      if (VolumeCalcType.HasValue)
       {
-        switch (volumeCalcType.Value)
+        switch (VolumeCalcType.Value)
         {
-          case VolumeCalcType.None:
+          case MasterData.Models.Models.VolumeCalcType.None:
             break;
-          case VolumeCalcType.GroundToGround:
-            if (baseFilter == null || topFilter == null)
+          case MasterData.Models.Models.VolumeCalcType.GroundToGround:
+            if (BaseFilter == null || TopFilter == null)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "Missing filter(s) for summary volumes profile"));
             }
             break;
-          case VolumeCalcType.GroundToDesign:
-            if (baseFilter == null || volumeDesignDescriptor == null)
+          case MasterData.Models.Models.VolumeCalcType.GroundToDesign:
+            if (BaseFilter == null || VolumeDesignDescriptor == null)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "Missing base filter and/or design for summary volumes profile"));
             }
             break;
-          case VolumeCalcType.DesignToGround:
-            if (volumeDesignDescriptor == null || topFilter == null)
+          case MasterData.Models.Models.VolumeCalcType.DesignToGround:
+            if (VolumeDesignDescriptor == null || TopFilter == null)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

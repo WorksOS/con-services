@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 #if RAPTOR
 using VLPDDecls;
@@ -58,5 +59,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
     }
 #endif
+
+    public static void ConvertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,
+      out WGSPoint startPt, out WGSPoint endPt)
+    {
+      if (gridPoints != null)
+      {
+        startPt = new WGSPoint(gridPoints.y1, gridPoints.x1);
+        endPt = new WGSPoint(gridPoints.y2, gridPoints.x2);
+      }
+      else
+      if (lLPoints != null)
+      {
+        startPt = new WGSPoint(lLPoints.lat1, lLPoints.lon1);
+        endPt = new WGSPoint(lLPoints.lat2, lLPoints.lon2);
+      }
+      else
+      {
+        startPt = new WGSPoint();
+        endPt = new WGSPoint();
+
+        // TODO throw an exception
+      }
+    }
   }
 }
