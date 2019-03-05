@@ -13,6 +13,7 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Now3D.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.Now3D.Controllers
