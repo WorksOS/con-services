@@ -68,25 +68,17 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithNullClusterGroup()
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructIgniteMock(
-        out var mockCompute,
-        out var mockClusterNode,
-        out var mockClusterNodes,
-        out var mockMessaging,
-        out var mockClusterGroup,
-        out var mockCluster,
-        out var mockIgnite
-      );
+      var igniteMock = new IgniteMock();
 
       // Nobble the Ignite.GetCluster setup to mimic no available cluster group
 
-      mockIgnite.Setup(x => x.GetCluster()).Returns((ICluster) null);
+      igniteMock.mockIgnite.Setup(x => x.GetCluster()).Returns((ICluster) null);
 
       DIBuilder.Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
       var ignite = new BaseIgniteClass
@@ -103,25 +95,17 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithEmptyClusterGroup()
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructIgniteMock(
-        out var mockCompute,
-        out var mockClusterNode,
-        out var mockClusterNodes,
-        out var mockMessaging,
-        out var mockClusterGroup,
-        out var mockCluster,
-        out var mockIgnite
-      );
+      var igniteMock = new IgniteMock();
 
       // Nobble the IClusterNodes.Count() setup to mimic an empty cluster group
 
-      mockClusterNodes.Setup(x => x.Count).Returns(0);
+      igniteMock.mockClusterNodes.Setup(x => x.Count).Returns(0);
 
       DIBuilder.Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
       var ignite = new BaseIgniteClass
@@ -138,24 +122,16 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithNullComputeProjection()
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructIgniteMock(
-        out var mockCompute,
-        out var mockClusterNode,
-        out var mockClusterNodes,
-        out var mockMessaging,
-        out var mockClusterGroup,
-        out var mockCluster,
-        out var mockIgnite
-      );
+      var igniteMock = new IgniteMock();
 
       // Nobble the ICompute setup to mimic a null compute projection
-      mockClusterGroup.Setup(x => x.GetCompute()).Returns((ICompute) null);
+      igniteMock.mockClusterGroup.Setup(x => x.GetCompute()).Returns((ICompute) null);
 
       DIBuilder.Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
       var ignite = new BaseIgniteClass
@@ -172,22 +148,13 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithUnknownGrid()
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructIgniteMock(
-        out var mockCompute,
-        out var mockClusterNode,
-        out var mockClusterNodes,
-        out var mockMessaging,
-        out var mockClusterGroup,
-        out var mockCluster,
-        out var mockIgnite
-      );
+      var igniteMock = new IgniteMock();
 
       DIBuilder.Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
-        //.Add(x => x.AddSingleton(mockIgnite))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
       var ignite = new BaseIgniteClass
@@ -204,21 +171,13 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_Success()
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructIgniteMock(
-        out var mockCompute,
-        out var mockClusterNode,
-        out var mockClusterNodes,
-        out var mockMessaging,
-        out var mockClusterGroup,
-        out var mockCluster,
-        out var mockIgnite
-      );
+      var igniteMock = new IgniteMock();
 
       DIBuilder.Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
       var ignite = new BaseIgniteClass

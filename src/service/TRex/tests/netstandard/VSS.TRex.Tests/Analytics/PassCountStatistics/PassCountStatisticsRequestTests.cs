@@ -25,9 +25,9 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       return siteModel;
     }
 
-    private void AddApplicationGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting<IComputeFunc<PassCountStatisticsArgument, PassCountStatisticsResponse>, PassCountStatisticsArgument, PassCountStatisticsResponse>();
+    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<IComputeFunc<PassCountStatisticsArgument, PassCountStatisticsResponse>, PassCountStatisticsArgument, PassCountStatisticsResponse>();
 
-    private void AddClusterComputeGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting<IComputeFunc<PassCountStatisticsArgument, PassCountStatisticsResponse>, PassCountStatisticsArgument, PassCountStatisticsResponse>();
+    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<IComputeFunc<PassCountStatisticsArgument, PassCountStatisticsResponse>, PassCountStatisticsArgument, PassCountStatisticsResponse>();
 
     private PassCountStatisticsArgument SimplePassCountStatisticsArgument(ISiteModel siteModel, ushort targetMin, ushort targetMax)
     {
