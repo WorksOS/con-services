@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -18,6 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as ProjectStatisticsMultiRequest;
+      log.LogInformation($"ProjectStatisticsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS")}");
 
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") && request.ProjectUid != null)

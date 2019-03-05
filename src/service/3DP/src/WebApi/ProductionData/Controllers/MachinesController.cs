@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -27,23 +30,32 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   public class MachinesController : Controller, IMachinesContract
   {
 #if RAPTOR
-    private readonly IASNodeClient raptorClient;
+    private readonly IASNodeClient _raptorClient;
 #endif
-    private readonly ILoggerFactory logger;
+
+    private readonly ILoggerFactory _logger;
+
+    private readonly IConfigurationStore _configStore;
+
+    private readonly ITRexCompactionDataProxy _trexCompactionDataProxy;
+
+    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     public MachinesController(
 #if RAPTOR
-      IASNodeClient raptorClient, 
+      IASNodeClient raptorClient,
 #endif
-      ILoggerFactory logger)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
 #if RAPTOR
-      this.raptorClient = raptorClient;
+      this._raptorClient = raptorClient;
 #endif
-      this.logger = logger;
+      this._logger = logger;
+      this._configStore = configStore;
+      this._trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -53,17 +65,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machines")]
     [HttpGet]
-
-    public MachineExecutionResult Get([FromRoute] long projectId)
+    public async Task<MachineExecutionResult> Get([FromRoute] long projectId)
     {
-      var id = new ProjectID(projectId);
-      id.Validate();
+      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
+      return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+          _raptorClient,
 #endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineExecutionResult;
     }
 
     /// <summary>
@@ -73,18 +85,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machines")]
     [HttpGet]
-
     public async Task<MachineExecutionResult> Get([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = new ProjectID(projectId, projectUid);
-      id.Validate();
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
+      return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+          _raptorClient,
 #endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineExecutionResult;
     }
 
     // GET: api/Machines
@@ -99,13 +110,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v1/projects/{projectId}/machines/{machineId}")]
     [HttpGet]
 
-    public ContractExecutionResult Get([FromRoute] long projectId, [FromRoute] long machineId)
+    public async Task<ContractExecutionResult> Get([FromRoute] long projectId, [FromRoute] long machineId)
     {
-      var id = new ProjectID(projectId);
-      id.Validate();
+      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
+      // todoJeannie handle machineId?
 #if RAPTOR
       var result =
-          RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+        RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+#if RAPTOR
+            _raptorClient,
+#endif
+            configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Process(projectIds) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
 #else
@@ -124,15 +142,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machines/{machineId}")]
     [HttpGet]
-
     public async Task<ContractExecutionResult> Get([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = new ProjectID(projectId, projectUid);
-      id.Validate();
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
+      // todoJeannie handle machineId?
 #if RAPTOR
       var result =
-          RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+        RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+#if RAPTOR
+            _raptorClient,
+#endif
+            configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Process(projectIds) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
 #else
@@ -151,13 +174,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
-
-    public MachineDesignsExecutionResult GetMachineDesigns([FromRoute] long projectId)
+    public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] long projectId)
     {
-      var id = new ProjectID(projectId);
-      id.Validate();
+      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 #if RAPTOR
-      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -178,10 +206,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = new ProjectID(projectId, projectUid);
-      id.Validate();
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 #if RAPTOR
-      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -216,18 +249,30 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigndetails")]
     [HttpGet]
-    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid, [FromQuery]string startUtc, [FromQuery]string endUtc)
+    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid,
+      [FromQuery] string startUtc, [FromQuery] string endUtc)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = new ProjectID(projectId, projectUid);
-      id.Validate();
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 #if RAPTOR
       DateTime? beginUtc;
       DateTime? finishUtc;
       ValidateDates(startUtc, endUtc, out beginUtc, out finishUtc);
 
-      var designsResult = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
-      var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+      var designsResult = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineDesignsExecutionResult;
+
+      var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineExecutionResult;
 
       var designDetailsList = new List<MachineDesignDetails>();
       foreach (var machine in machineResult.MachineStatuses)
@@ -244,6 +289,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             RemoveDuplicateDesigns(filteredDesigns).ToArray()));
         }
       }
+
       return MachineDesignDetailsExecutionResult.Create(designDetailsList.ToArray());
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
@@ -260,12 +306,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/liftids")]
     [HttpGet]
-    public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] long projectId)
+    public async Task<LayerIdsExecutionResult> GetMachineLayerIds([FromRoute] long projectId)
     {
-      var id = new ProjectID(projectId);
-      id.Validate();
+      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as LayerIdsExecutionResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
@@ -284,10 +336,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<LayerIdsExecutionResult> GetMachineLayerIds([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = new ProjectID(projectId, projectUid);
-      id.Validate();
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
+      return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as LayerIdsExecutionResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
@@ -306,12 +363,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinelifts")]
     [HttpGet]
-    public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] long projectId, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
+    public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] long projectId,
+      [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
-      var id = new ProjectID(projectId);
-      id.Validate();
+      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 
-      return GetMachineLiftsWith(id, startUtc, endUtc);
+      return GetMachineLiftsWith(projectIds, startUtc, endUtc);
     }
 
     /// <summary>
@@ -326,16 +385,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinelifts")]
     [HttpGet]
-    public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] Guid projectUid, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
+    public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] Guid projectUid,
+      [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = new ProjectID(projectId, projectUid);
-      id.Validate();
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
 
-      return GetMachineLiftsWith(id, startUtc, endUtc);
+      return GetMachineLiftsWith(projectIds, startUtc, endUtc);
     }
 
-    private MachineLayerIdsExecutionResult GetMachineLiftsWith(ProjectID id, string startUtc, string endUtc)
+    private MachineLayerIdsExecutionResult GetMachineLiftsWith(ProjectID projectIds, string startUtc, string endUtc)
     {
 #if RAPTOR
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
@@ -343,8 +403,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //and IsoDateTimeConverter but that didn't fix the problem.
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
 
-      var layerIdsResult = RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
-      var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+      var layerIdsResult = RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as LayerIdsExecutionResult;
+
+      var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+#if RAPTOR
+          _raptorClient,
+#endif
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(projectIds) as MachineExecutionResult;
 
       var liftDetailsList = new List<MachineLiftDetails>();
       foreach (var machine in machineResult.MachineStatuses)
@@ -401,8 +472,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private DateTime? ParseUtcDate(string utcDate)
     {
       return string.IsNullOrEmpty(utcDate)
-            ? (DateTime?)null
-            : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+        ? (DateTime?) null
+        : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture,
+          DateTimeStyles.AdjustToUniversal);
     }
 
     /// <summary>
@@ -413,13 +485,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="startDate2">Start of second date range</param>
     /// <param name="endDate2">End of second date range</param>
     /// <returns>True if they overlap otherwise false</returns>
-    private bool IsDateRangeOverlapping(DateTime startDate1, DateTime endDate1, DateTime? startDate2, DateTime? endDate2)
+    private bool IsDateRangeOverlapping(DateTime startDate1, DateTime endDate1, DateTime? startDate2,
+      DateTime? endDate2)
     {
       if (startDate2.HasValue && endDate2.HasValue)
       {
         var noOverlap = endDate2 < startDate1 || startDate2 > endDate1;
         return !noOverlap;
       }
+
       return true;
     }
 #endif

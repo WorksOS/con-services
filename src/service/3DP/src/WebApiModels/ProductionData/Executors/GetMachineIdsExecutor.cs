@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
@@ -17,10 +19,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
+      log.LogInformation($"GetMachineIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
+
+      if (request.ProjectUid.HasValue
 
 #if RAPTOR
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES") && request.ProjectUid != null)
+        && UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES") 
 #endif
+        )
       {
         var siteModelId = request.ProjectUid.ToString();
 
@@ -29,16 +35,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
 
 #if RAPTOR
-      TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
-
-      if (machines != null)
+      if (request.ProjectId.HasValue)
       {
-        return MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
+        TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
+
+        if (machines != null)
+        {
+          return MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
+        }
       }
 #endif
       throw CreateServiceException<GetMachineIdsExecutor>();
     }
 
+#if RAPTOR
     private IEnumerable<MachineStatus> convertMachineStatus(TMachineDetail[] machines)
     {
       foreach (TMachineDetail machineDetail in machines)
@@ -56,5 +66,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             machineDetail.LastKnownY == 0 ? (double?)null : machineDetail.LastKnownY
             );
     }
+#endif
   }
 }

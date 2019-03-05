@@ -7,13 +7,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
@@ -21,7 +19,6 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using BoundingExtents;
 using SVOICStatistics;
 using VLPDDecls;
-using ShineOn.Rtl;
 #endif
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
@@ -30,7 +27,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
   public class ProjectStatisticsExecutorTests
   {
     private static IServiceProvider serviceProvider;
-    private static IConfigurationStore configStore;
     private static ILoggerFactory logger;
     private static Dictionary<string, string> _customHeaders;
 
@@ -42,17 +38,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var serviceCollection = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(loggerFactory)
-        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-#if RAPTOR
-        .AddTransient<IErrorCodesProvider, RaptorResult>()
-#endif
-        ;
+        .AddSingleton(loggerFactory);
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-
-      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();
     }
