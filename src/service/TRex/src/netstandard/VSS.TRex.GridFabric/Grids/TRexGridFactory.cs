@@ -86,5 +86,20 @@ namespace VSS.TRex.GridFabric.Grids
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => Ignition.TryGetIgnite(gridName) ?? (cfg == null ? null : Ignition.Start(cfg))))
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()));
     }
+
+    private void StopGrid(StorageMutability mutability)
+    {
+      if (igniteGrids[(int)mutability] != null)
+      {
+        Ignition.Stop(igniteGrids[(int)mutability].Name, false);
+        igniteGrids[(int)mutability] = null;
+      }
+    }
+
+    public void StopGrids()
+    {
+      StopGrid(StorageMutability.Immutable);
+      StopGrid(StorageMutability.Mutable);
+    }
   }
 }

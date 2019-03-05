@@ -2,6 +2,8 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System;
+using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 
@@ -83,11 +85,7 @@ namespace VSS.TRex.GridFabric.Servers
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            if (mutableTRexGrid != null)
-                Ignition.Stop(mutableTRexGrid.Name, false);
-          
-            if (immutableTRexGrid != null)
-                Ignition.Stop(immutableTRexGrid.Name, false);    
+          DIContext.Obtain<ITRexGridFactory>()?.StopGrids();
         }
     }
 }
