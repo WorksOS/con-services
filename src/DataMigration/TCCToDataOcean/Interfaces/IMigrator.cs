@@ -4,6 +4,6 @@ namespace TCCToDataOcean.Interfaces
 {
   interface IMigrator
   {
-    Task<bool> MigrateFilesForAllActiveProjects();
+    Task MigrateFilesForAllActiveProjects();
   }
 }

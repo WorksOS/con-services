@@ -13,5 +13,11 @@ namespace TCCToDataOcean.DatabaseAgent
     void SetMigrationState(string tableName, FileData file, MigrationState migrationState);
     void SetProjectCoordinateSystemDetails(string tableName, Project project, bool isValid);
     void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount);
+
+    void InitDatabase();
+    void SetMigationInfo_EndTime();
+    void SetMigationInfo_SetProjectCount(int projectCount);
+    void SetMigationInfo_SetEligibleProjectCount(int projectCount);
+    void SetMigationInfo_IncrementProjectsProcessed();
   }
 }

@@ -28,8 +28,11 @@ namespace TCCToDataOcean
 
       var serviceProvider = serviceCollection.BuildServiceProvider();
       var migrator = serviceProvider.GetRequiredService<IMigrator>();
-      
-      _ = migrator.MigrateFilesForAllActiveProjects().Result;
+
+      _ = migrator.MigrateFilesForAllActiveProjects().ConfigureAwait(true);
+
+      serviceProvider.GetRequiredService<ILiteDbAgent>()
+                     .SetMigationInfo_EndTime();
     }
 
     private static void ConfigureServices(IServiceCollection services)

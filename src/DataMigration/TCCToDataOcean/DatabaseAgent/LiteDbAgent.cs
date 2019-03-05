@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LiteDB;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -23,6 +24,49 @@ namespace TCCToDataOcean.DatabaseAgent
       }
     }
 
+    public void InitDatabase()
+    {
+      db.GetCollection<MigrationInfo>(Table.MigrationInfo).Insert(new MigrationInfo());
+    }
+
+    public void SetMigationInfo_EndTime()
+    {
+      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
+      var dbObj = objs.Find(x => x.Id == 1).First();
+
+      var endTimeUtc = DateTime.Now;
+      dbObj.EndTime = endTimeUtc;
+      dbObj.Duration = endTimeUtc.Subtract(dbObj.StartTime).ToString();
+      objs.Update(dbObj);
+    }
+    
+    public void SetMigationInfo_SetProjectCount(int projectCount)
+    {
+      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
+      var dbObj = objs.Find(x => x.Id == 1).First();
+
+      dbObj.ProjectsTotal = projectCount;
+      objs.Update(dbObj);
+    }
+    
+    public void SetMigationInfo_SetEligibleProjectCount(int projectCount)
+    {
+      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
+      var dbObj = objs.Find(x => x.Id == 1).First();
+
+      dbObj.EligibleProjects = projectCount;
+      objs.Update(dbObj);
+    }
+
+    public void SetMigationInfo_IncrementProjectsProcessed()
+    {
+      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
+      var dbObj = objs.Find(x => x.Id == 1).First();
+
+      dbObj.ProjectsCompleted += 1;
+      objs.Update(dbObj);
+    }
+    
     public void WriteRecord(string tableName, Project project)
     {
       db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project));
