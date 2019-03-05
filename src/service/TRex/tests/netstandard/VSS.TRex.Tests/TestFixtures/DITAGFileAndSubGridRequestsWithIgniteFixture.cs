@@ -10,6 +10,7 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
 using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.Common.Serialisation;
@@ -29,7 +30,6 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -88,28 +88,34 @@ namespace VSS.TRex.Tests.TestFixtures
       }
     }
 
-    public new void SetupFixture()
+    public static void ConstructIgniteMock(out Mock<ICompute> mockCompute,
+      out Mock<IClusterNode> mockClusterNode,
+      out Mock<ICollection<IClusterNode>> mockClusterNodes,
+      out Mock<IMessaging> mockMessaging,
+      out Mock<IClusterGroup> mockClusterGroup,
+      out Mock<ICluster> mockCluster,
+      out Mock<IIgnite> mockIgnite)
     {
       // Wire up Ignite Compute Apply and Broadcast apis on the Compute interface
-      var mockCompute = new Mock<ICompute>();
+      mockCompute = new Mock<ICompute>();
 
       // Pretend there is a single node in the cluster group
-      var mockClusterNode = new Mock<IClusterNode>();
+      mockClusterNode = new Mock<IClusterNode>();
       mockClusterNode.Setup(x => x.GetAttribute<string>("TRexNodeId")).Returns("UnitTest-TRexNodeId");
 
-      var mockClusterNodes = new Mock<ICollection<IClusterNode>>();
+      mockClusterNodes = new Mock<ICollection<IClusterNode>>();
       mockClusterNodes.Setup(x => x.Count).Returns(1);
 
       // Set up the Ignite message fabric mocks to plumb sender and receiver together
       var messagingDictionary = new Dictionary<object, object>(); // topic => listener
-     
-      var mockMessaging = new Mock<IMessaging>();
+
+      mockMessaging = new Mock<IMessaging>();
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<byte[]>>(), It.IsAny<object>()))
         .Callback((IMessageListener<byte[]> listener, object topic) =>
-      {
-        messagingDictionary.Add(topic, listener);
-      });
+        {
+          messagingDictionary.Add(topic, listener);
+        });
 
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()))
@@ -121,44 +127,57 @@ namespace VSS.TRex.Tests.TestFixtures
       mockMessaging
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
         .Callback((object message, object topic) =>
-      {
-        messagingDictionary.TryGetValue(topic, out var listener);
-        if (listener is SubGridListener _listener)
-         _listener.Invoke(Guid.Empty, message as byte[]);
-        else
-          throw new TRexException($"Type of listener ({listener}) not SubGridListener as expected.");
-      });
+        {
+          messagingDictionary.TryGetValue(topic, out var listener);
+          if (listener is SubGridListener _listener)
+            _listener.Invoke(Guid.Empty, message as byte[]);
+          else
+            throw new TRexException($"Type of listener ({listener}) not SubGridListener as expected.");
+        });
 
       mockMessaging
         .Setup(x => x.SendOrdered(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<TimeSpan?>()))
         .Callback((object message, object topic, TimeSpan? timeSpan) =>
-      {
-        messagingDictionary.TryGetValue(topic, out var listener);
-        if (listener is SubGridListener _listener1)
-          _listener1.Invoke(Guid.Empty, message as byte[]);
-        else if (listener is SiteModelAttributesChangedEventListener _listener2)
-          _listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
-        else
-          throw new TRexException($"Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
-      });
+        {
+          messagingDictionary.TryGetValue(topic, out var listener);
+          if (listener is SubGridListener _listener1)
+            _listener1.Invoke(Guid.Empty, message as byte[]);
+          else if (listener is SiteModelAttributesChangedEventListener _listener2)
+            _listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
+          else
+            throw new TRexException($"Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
+        });
 
-      var mockClusterGroup = new Mock<IClusterGroup>();
+      mockClusterGroup = new Mock<IClusterGroup>();
       mockClusterGroup.Setup(x => x.GetNodes()).Returns(mockClusterNodes.Object);
       mockClusterGroup.Setup(x => x.GetCompute()).Returns(mockCompute.Object);
       mockClusterGroup.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
 
       mockCompute.Setup(x => x.ClusterGroup).Returns(mockClusterGroup.Object);
 
-      var mockCluster = new Mock<ICluster>();
+      mockCluster = new Mock<ICluster>();
       mockCluster.Setup(x => x.ForAttribute(It.IsAny<string>(), It.IsAny<string>())).Returns(mockClusterGroup.Object);
       mockCluster.Setup(x => x.GetLocalNode()).Returns(mockClusterNode.Object);
       mockCluster.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockCluster.Setup(x => x.IsActive()).Returns(true);
 
-      var mockIgnite = new Mock<IIgnite>();
+      mockIgnite = new Mock<IIgnite>();
       mockIgnite.Setup(x => x.GetCluster()).Returns(mockCluster.Object);
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
+    }
+
+    public new void SetupFixture()
+    {
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructIgniteMock(
+        out var mockCompute,
+        out var mockClusterNode,
+        out var mockClusterNodes,
+        out var mockMessaging,
+        out var mockClusterGroup,
+        out var mockCluster,
+        out var mockIgnite
+        );      
 
       //      var mockActivatePersistentGridServer = new Mock<IActivatePersistentGridServer>();
       //      mockActivatePersistentGridServer.Setup(x => x.WaitUntilGridActive(It.IsAny<string>())).Callback(() => { });
@@ -169,7 +188,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
-        // Override the main Ignite grid factiry method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
+        // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => mockIgnite.Object))
 
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
