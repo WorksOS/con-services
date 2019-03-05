@@ -17,16 +17,18 @@ namespace VSS.TRex.Tests.GridFabric
   public class BaseIgniteClassTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
-    public void AcquireIgniteTopologyProjections_FailWithNullRole()
+    public void AcquireIgniteTopologyProjections_FailWithNullOrEmptyRole()
     {
       var ignite = new BaseIgniteClass
       {
-        Role = "",
+        Role = null,
         GridName = TRexGrids.GridName(StorageMutability.Immutable)
       };
 
       Action act = () => ignite.AcquireIgniteTopologyProjections();
+      act.Should().Throw<TRexException>().WithMessage("Role name not defined when acquiring topology projection");
 
+      ignite.Role = null;
       act.Should().Throw<TRexException>().WithMessage("Role name not defined when acquiring topology projection");
     }
 
@@ -40,7 +42,9 @@ namespace VSS.TRex.Tests.GridFabric
       };
 
       Action act = () => ignite.AcquireIgniteTopologyProjections();
+      act.Should().Throw<TRexException>().WithMessage("GridName name not defined when acquiring topology projection");
 
+      ignite.GridName = null;
       act.Should().Throw<TRexException>().WithMessage("GridName name not defined when acquiring topology projection");
     }
 
@@ -56,7 +60,7 @@ namespace VSS.TRex.Tests.GridFabric
 
       var ignite = new BaseIgniteClass
       {
-        Role = "TestTole",
+        Role = "TestRole",
         GridName = TRexGrids.GridName(StorageMutability.Immutable)
       };
 
@@ -83,7 +87,7 @@ namespace VSS.TRex.Tests.GridFabric
 
       var ignite = new BaseIgniteClass
       {
-        Role = "TestTole",
+        Role = "TestRole",
         GridName = TRexGrids.GridName(StorageMutability.Immutable)
       };
 
@@ -110,7 +114,7 @@ namespace VSS.TRex.Tests.GridFabric
 
       var ignite = new BaseIgniteClass
       {
-        Role = "TestTole",
+        Role = "TestRole",
         GridName = TRexGrids.GridName(StorageMutability.Immutable)
       };
 
@@ -136,7 +140,7 @@ namespace VSS.TRex.Tests.GridFabric
 
       var ignite = new BaseIgniteClass
       {
-        Role = "TestTole",
+        Role = "TestRole",
         GridName = TRexGrids.GridName(StorageMutability.Immutable)
       };
 
@@ -159,7 +163,7 @@ namespace VSS.TRex.Tests.GridFabric
 
       var ignite = new BaseIgniteClass
       {
-        Role = "TestTole",
+        Role = "TestRole",
         GridName = "TestGrid"
       };
 
@@ -182,7 +186,7 @@ namespace VSS.TRex.Tests.GridFabric
 
       var ignite = new BaseIgniteClass
       {
-        Role = "TestTole",
+        Role = "TestRole",
         GridName = TRexGrids.GridName(StorageMutability.Immutable)
       };
 
