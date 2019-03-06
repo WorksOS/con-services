@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -723,6 +725,15 @@ namespace VSS.TRex.SiteModels
       }
 
       return (minDate, maxDate);
+    }
+
+    /// <summary>
+    /// GetMachineDesignEvents returns the chronological extents of designs used by specific machines.
+    /// </summary>
+    /// <returns></returns>
+    public List<MachineDesignEvent> GetMachineDesignEvents()
+    {
+      return new List<MachineDesignEvent>(0);
     }
 
     /// <summary>

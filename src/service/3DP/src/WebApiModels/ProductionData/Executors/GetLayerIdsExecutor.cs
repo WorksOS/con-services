@@ -11,10 +11,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       var request = CastRequestObjectTo<ProjectID>(item);
 
+      /* todoJeannie
       if (raptorClient.GetOnMachineLayers(request.ProjectId ?? -1, out var layerlist) >= 0 && layerlist != null)
       {
-        return LayerIdsExecutionResult.CreateLayerIdsExecutionResult(layerlist);
+        return new LayerIdsExecutionResult(layerlist);
       }
+      */
 
       throw CreateServiceException<GetLayerIdsExecutor>();
     }

@@ -13,12 +13,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     [JsonProperty(PropertyName = "designs")]
     public List<DesignName> Designs { get; private set; }
 
-    public static MachineDesignsExecutionResult Create(List<DesignName> designNames)
+    public MachineDesignsExecutionResult(List<DesignName> designNames)
     {
-      return new MachineDesignsExecutionResult
-      {
-        Designs = designNames,
-      };
+      Designs = designNames;
     }
   }
 }

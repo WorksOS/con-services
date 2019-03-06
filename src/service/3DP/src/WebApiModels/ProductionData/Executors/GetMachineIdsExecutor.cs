@@ -19,19 +19,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
-      log.LogInformation($"GetMachineIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
+      log.LogInformation(
+        $"GetMachineIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
 
-      if (request.ProjectUid.HasValue
+      MachineExecutionResult machinesResult = null;
 
 #if RAPTOR
-        && UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES") 
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
 #endif
-        )
       {
         var siteModelId = request.ProjectUid.ToString();
 
-        var machineResult = trexCompactionDataProxy.SendDataGetRequest<MachineExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machines", customHeaders).Result;
-        return machineResult;
+        machinesResult = trexCompactionDataProxy
+          .SendDataGetRequest<MachineExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machines", customHeaders)
+          .Result;
+        PairUpAssetIdentifiers(machinesResult, false);
+        return machinesResult;
       }
 
 #if RAPTOR
@@ -41,11 +44,29 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         if (machines != null)
         {
-          return MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
+          machinesResult =
+            MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
+          PairUpAssetIdentifiers(machinesResult, true);
+          return machinesResult;
         }
       }
 #endif
       throw CreateServiceException<GetMachineIdsExecutor>();
+    }
+
+    private void PairUpAssetIdentifiers(MachineExecutionResult machinesResult, bool haveIds)
+    {
+      if (machinesResult?.MachineStatuses == null || machinesResult.MachineStatuses.Length == 0)
+        return;
+
+      // todoJeannie get assetList from AssetService and match e.g. longs with Uids
+      
+      // note that new assets (since Gen3) will not have a valid legacyId. It will be null/-1/0. set to -1?
+      //if (haveIds)
+      // { }
+      //  else
+      // { }
+      return;
     }
 
 #if RAPTOR

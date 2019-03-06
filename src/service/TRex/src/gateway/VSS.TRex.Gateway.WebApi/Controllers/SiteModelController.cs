@@ -99,5 +99,22 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       return result;
     }
+
+    /// <summary>
+    /// Returns list of design/machines which have contributed to a site model.
+    /// </summary>
+    /// <param name="siteModelID">Site model identifier.</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/designs")]
+    public MachineExecutionResult GetDesigns(string siteModelID)
+    {
+      var machineDesigns = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.GetMachineDesignEvents();
+
+// todoJeannie 
+// return list and create result in here
+
+      return new MachineExecutionResult(machineDesigns);
+    }
+
   }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
@@ -117,6 +119,12 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     /// <returns></returns>
     (DateTime startUtc, DateTime endUtc) GetDateRange();
+
+    /// <summary>
+    /// GetMachineDesignEvents returns the chronological extents of designs used by specific machines.
+    /// </summary>
+    /// <returns></returns>
+    List<MachineDesignEvent> GetMachineDesignEvents();
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }

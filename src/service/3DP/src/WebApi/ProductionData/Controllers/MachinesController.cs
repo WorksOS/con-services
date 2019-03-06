@@ -115,8 +115,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
-      // todoJeannie handle machineId?
-#if RAPTOR
+
       var result =
         RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
@@ -124,12 +123,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
             configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(projectIds) as MachineExecutionResult;
+
       result.FilterByMachineId(machineId);
       return result;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>
@@ -147,8 +143,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
-      // todoJeannie handle machineId?
-#if RAPTOR
+
       var result =
         RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
@@ -158,10 +153,33 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           .Process(projectIds) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
       return result;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+    }
+
+    /// <summary>
+    ///Gets details such as last known position, design, status etc. for machines for a specified machine (must have contributed data to the project with a unique identifier)
+    /// </summary>
+    /// <param name="projectUid">The project unique identifier.</param>
+    /// <param name="machineUid">The machine identifier.</param>
+    /// <returns>Info about machine</returns>
+    /// <executor>GetMachineIdsExecutor</executor> 
+    [ProjectVerifier]
+    [Route("api/v3/projects/{projectUid}/machines/{machineId}")]
+    [HttpGet]
+    public async Task<ContractExecutionResult> Get([FromRoute] Guid projectUid, [FromRoute] Guid machineUid)
+    {
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var projectIds = new ProjectID(projectId, projectUid);
+      projectIds.Validate();
+
+      var result =
+        RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+#if RAPTOR
+            _raptorClient,
 #endif
+            configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
+          .Process(projectIds) as MachineExecutionResult;
+      result.FilterByMachineUid(machineUid);
+      return result;
     }
 
     // GET: api/Machines/Designs
@@ -179,7 +197,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
-#if RAPTOR
+
       var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
@@ -187,10 +205,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(projectIds) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     // GET: api/Machines/Designs
@@ -208,7 +222,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
-#if RAPTOR
+
       var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
@@ -216,10 +230,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(projectIds) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>
@@ -227,7 +237,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private MachineDesignsExecutionResult CreateUniqueDesignList(MachineDesignsExecutionResult result)
     {
-      return MachineDesignsExecutionResult.Create(RemoveDuplicateDesigns(result.Designs));
+      return new MachineDesignsExecutionResult(RemoveDuplicateDesigns(result.Designs));
     }
 
     /// <summary>
@@ -235,6 +245,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private List<DesignName> RemoveDuplicateDesigns(List<DesignName> designNames)
     {
+      // todoJeannie order by Uid? again, Gen3 designs won't have LegacyId
       return designNames.Distinct().OrderBy(d => d.Id).ToList();
     }
 
@@ -255,7 +266,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
-#if RAPTOR
+
       DateTime? beginUtc;
       DateTime? finishUtc;
       ValidateDates(startUtc, endUtc, out beginUtc, out finishUtc);
@@ -266,6 +277,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(projectIds) as MachineDesignsExecutionResult;
+// todoJeannie can we map LegacyDesignId and Uid?
+
 
       var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
@@ -274,27 +287,28 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(projectIds) as MachineExecutionResult;
 
+      // todoJeannie for this pairing to match, we best need both calls to be using the same source: Raptor/Trex,
+      //  otherwise there will be a mismatch of Id v.s. Uid. For Gen3 assets, there will be no valid LegacyId.
       var designDetailsList = new List<MachineDesignDetails>();
       foreach (var machine in machineResult.MachineStatuses)
       {
         var filteredDesigns =
           designsResult.Designs.Where(
             design =>
-              design.MachineId == machine.AssetId &&
+              ( design.MachineUid.HasValue ?
+                  design.MachineUid == machine.AssetUid :
+                  design.MachineId == machine.AssetId 
+              ) &&
               IsDateRangeOverlapping(design.StartDate, design.EndDate, beginUtc, finishUtc)).ToList();
         if (filteredDesigns.Count > 0)
         {
           designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(
             machine.AssetId, machine.MachineName, machine.IsJohnDoe,
-            RemoveDuplicateDesigns(filteredDesigns).ToArray()));
+            RemoveDuplicateDesigns(filteredDesigns).ToArray(), machine.AssetUid));
         }
       }
 
       return MachineDesignDetailsExecutionResult.Create(designDetailsList.ToArray());
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>
@@ -311,6 +325,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
+
 #if RAPTOR
       return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
 #if RAPTOR
@@ -426,7 +441,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
         if (filteredLayers.Count > 0)
         {
-          liftDetailsList.Add(MachineLiftDetails.CreateMachineLiftDetails(
+          liftDetailsList.Add(new MachineLiftDetails(
             machine.AssetId, machine.MachineName, machine.IsJohnDoe,
             filteredLayers.Select(f => new LiftDetails
             {
@@ -443,7 +458,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
     }
-#if RAPTOR
+
     private void ValidateDates(string startUtc, string endUtc, out DateTime? beginUtc, out DateTime? finishUtc)
     {
       beginUtc = ParseUtcDate(startUtc);
@@ -496,6 +511,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       return true;
     }
-#endif
   }
 }

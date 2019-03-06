@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
@@ -11,15 +12,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static MachineLiftDetails CreateMachineLiftDetails(long assetId, string machineName, bool isJohnDoe, LiftDetails[] lifts)
+    public MachineLiftDetails(long assetId, string machineName, bool isJohnDoe, LiftDetails[] lifts, Guid? assetUid = null)
     {
-      return new MachineLiftDetails
-      {
-        AssetId = assetId,
-        MachineName = machineName,
-        IsJohnDoe = isJohnDoe,
-        Lifts = lifts
-      };
+      AssetId = assetId;
+      MachineName = machineName;
+      IsJohnDoe = isJohnDoe;
+      Lifts = lifts;
+      AssetUid = assetUid;
     }
   }
 }
