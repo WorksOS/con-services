@@ -116,8 +116,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       DesignDescriptor alignmentDesign,
       ProfileGridPoints gridPoints,
       ProfileLLPoints wgs84Points,
-      double startStation,
-      double endStation,
+      double? startStation,
+      double? endStation,
       LiftBuildSettings liftBuildSettings,
       bool returnAllPassesAndLayers
       )

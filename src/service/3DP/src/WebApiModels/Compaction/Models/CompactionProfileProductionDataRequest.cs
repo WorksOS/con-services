@@ -2,11 +2,11 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VolumeCalcTypes = VSS.MasterData.Models.Models.VolumeCalcType;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// The calculation type to use for a summary volumes profile. 
     /// </summary>
     [JsonProperty(PropertyName = "volumeCalcType", Required = Required.Default)]
-    public VolumeCalcType? VolumeCalcType { get; private set; }
+    public VolumeCalcTypes? VolumeCalcType { get; private set; }
 
     /// <summary>
     /// The design to use for a summary volumes profile
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       DesignDescriptor cutFillDesignDescriptor,
       FilterResult baseFilter,
       FilterResult topFilter,
-      VolumeCalcType? volumeCalcType,
+      VolumeCalcTypes? volumeCalcType,
       DesignDescriptor volumeDesignDescriptor,
       bool explicitFilters = false
     )
@@ -109,9 +109,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       {
         switch (VolumeCalcType.Value)
         {
-          case MasterData.Models.Models.VolumeCalcType.None:
+          case VolumeCalcTypes.None:
             break;
-          case MasterData.Models.Models.VolumeCalcType.GroundToGround:
+          case VolumeCalcTypes.GroundToGround:
             if (BaseFilter == null || TopFilter == null)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
                   "Missing filter(s) for summary volumes profile"));
             }
             break;
-          case MasterData.Models.Models.VolumeCalcType.GroundToDesign:
+            case VolumeCalcTypes.GroundToDesign:
             if (BaseFilter == null || VolumeDesignDescriptor == null)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
                   "Missing base filter and/or design for summary volumes profile"));
             }
             break;
-          case MasterData.Models.Models.VolumeCalcType.DesignToGround:
+          case VolumeCalcTypes.DesignToGround:
             if (VolumeDesignDescriptor == null || TopFilter == null)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,

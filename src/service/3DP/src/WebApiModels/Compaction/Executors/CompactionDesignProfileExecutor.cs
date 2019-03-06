@@ -53,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (memoryStream != null)
         {
           result = ConvertProfileResult(memoryStream);
+          memoryStream.Close();
         }
         else
         {
@@ -82,8 +83,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         elevation = dpv.elevation >= VelociraptorConstants.NO_HEIGHT ? float.NaN : dpv.elevation,
         station = dpv.station
       });
-
-      ms.Close();
 
       profileResult.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
