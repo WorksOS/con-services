@@ -133,13 +133,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (cutFillDesign != null)
       {
-        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+        await FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
       if (volumeDesign != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
       {
-        FindCutFillElevations(projectId, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+        await FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
@@ -149,6 +149,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Calculate the elevations for cut-fill or summary volumes cells from the design surface.
     /// </summary>
     /// <param name="projectId">Legacy project ID</param>
+    /// <param name="ProjectUid">Project's unique identifier</param>
     /// <param name="settings">Project settings</param>
     /// <param name="startLatDegrees">The start latitude of the slicer line in decimal degrees</param>
     /// <param name="startLonDegrees">The start longitude of the slicer line in decimal degrees</param>
@@ -159,8 +160,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="slicerProductionDataResult">The slicer profile results containing the production data profiles</param>
     /// <param name="type">The type of profile, either cut-fill or summary volumes</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
-    private void FindCutFillElevations(
+    private async Task FindCutFillElevations(
       long projectId,
+      Guid ProjectUid,
       CompactionProjectSettings settings,
       double startLatDegrees, double startLonDegrees,
       double endLatDegrees, double endLonDegrees,
@@ -173,25 +175,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //Get design profile
       var slicerDesignProfileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
           .ProjectId(projectId)
+          .ProjectUid(ProjectUid)
           .Headers(this.CustomHeaders)
           .ProjectSettings(settings)
           .DesignDescriptor(design))
         .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerDesignProfileRequest.Validate();
-#if RAPTOR
-      var slicerDesignResult = WithServiceExceptionTryExecute(() =>
+      var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionDesignProfileExecutor>(LoggerFactory, RaptorClient)
-          .Process(slicerDesignProfileRequest) as CompactionProfileResult<CompactionProfileVertex>
+          .Build<CompactionDesignProfileExecutor>(LoggerFactory,
+#if RAPTOR
+            RaptorClient,
+#endif
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          .ProcessAsync(slicerDesignProfileRequest)
       );
 
       //Find the cut-fill elevations for the cell stations from the design vertex elevations
-      profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+      profileResultHelper.FindCutFillElevations(slicerProductionDataResult, (CompactionProfileResult<CompactionProfileVertex>) slicerDesignResult, type, volumeCalcType);
     }
 
     /// <summary>
@@ -210,7 +212,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid = null)
     {
       Log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
-#if RAPTOR
+
       var projectId = await GetLegacyProjectId(projectUid);
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -230,6 +232,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
             .ProjectId(projectId)
+            .ProjectUid(projectUid)
             .Headers(this.CustomHeaders)
             .ProjectSettings(settings)
             .Filter(filter)
@@ -238,22 +241,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         profileRequest.Validate();
 
-        var slicerDesignResult = WithServiceExceptionTryExecute(() =>
+          var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<CompactionDesignProfileExecutor>(LoggerFactory, RaptorClient)
-            .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
+            .Build<CompactionDesignProfileExecutor>(LoggerFactory,
+#if RAPTOR
+              RaptorClient,
+#endif
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .ProcessAsync(profileRequest)
         );
-        results.Add(impFileUid, slicerDesignResult);
+        results.Add(impFileUid, (CompactionProfileResult<CompactionProfileVertex>) slicerDesignResult);
       }
 
       var transformedResult = profileResultHelper.ConvertProfileResult(results);
       profileResultHelper.AddSlicerEndPoints(transformedResult);
 
       return transformedResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
   }
 }

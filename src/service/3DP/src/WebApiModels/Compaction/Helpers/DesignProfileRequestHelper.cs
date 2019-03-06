@@ -37,8 +37,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(
         startLatDegrees.LatDegreesToRadians(), startLonDegrees.LonDegreesToRadians(), endLatDegrees.LatDegreesToRadians(), endLonDegrees.LonDegreesToRadians());
       
-      return CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
+      return new CompactionProfileDesignRequest(
         ProjectId,
+        ProjectUid,
         DesignDescriptor,
         Filter,
         null,

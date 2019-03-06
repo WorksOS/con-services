@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -20,28 +21,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterId", Required = Required.Default)]
-    public long? filterID { get; private set; }
+    public long? FilterID { get; private set; }
 
     /// <summary>
     /// The descriptor for an alignment centerline design to be used as the geometry along which the profile is generated
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "alignmentDescriptor", Required = Required.Default)]
-    public DesignDescriptor alignmentDescriptor { get; private set; }
+    public DesignDescriptor AlignmentDescriptor { get; private set; }
 
     /// <summary>
     /// A series of points along which to generate the profile. Coordinates are expressed in terms of the grid coordinate system used by the project. Values are expressed in meters.
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "gridPoints", Required = Required.Default)]
-    public ProfileGridPoints gridPoints { get; private set; }
+    public ProfileGridPoints GridPoints { get; private set; }
 
     /// <summary>
     /// A series of points along which to generate the profile. Coordinates are expressed in terms of the WGS84 lat/lon coordinates. Values are expressed in radians.
@@ -49,42 +50,40 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "wgs84Points", Required = Required.Default)]
-    public ProfileLLPoints wgs84Points { get; private set; }
+    public ProfileLLPoints WGS84Points { get; private set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to start computing the profile from. Values are expressed in meters.
     /// </summary>
     [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
-    public double? startStation { get; private set; }
+    public double? StartStation { get; private set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to finish computing the profile at. Values are expressed in meters.
     /// </summary>
     [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
-    public double? endStation { get; private set; }
+    public double? EndStation { get; private set; }
 
     /// <summary>
     /// The descriptor for the design for which to to generate the profile.
     /// </summary>
     [JsonProperty(PropertyName = "designDescriptor", Required = Required.Always)]
-    public DesignDescriptor designDescriptor { get; private set; }
+    public DesignDescriptor DesignDescriptor { get; private set; }
 
-    public static CompactionProfileDesignRequest CreateCompactionProfileDesignRequest(long projectId, DesignDescriptor designDescriptor, FilterResult filter, long? filterId, DesignDescriptor alignmentDescriptor, ProfileGridPoints gridPoints, ProfileLLPoints wgs84Points, double startStation, double endStation)
+    public CompactionProfileDesignRequest(long projectId, Guid? projectUid, DesignDescriptor designDescriptor, FilterResult filter, long? filterId, DesignDescriptor alignmentDescriptor, ProfileGridPoints gridPoints, ProfileLLPoints wgs84Points, double startStation, double endStation)
     {
-      return new CompactionProfileDesignRequest
-      {
-        ProjectId = projectId,
-        designDescriptor = designDescriptor,
-        filter = filter,
-        filterID = filterId,
-        alignmentDescriptor = alignmentDescriptor,
-        gridPoints = gridPoints,
-        wgs84Points = wgs84Points,
-        startStation = startStation,
-        endStation = endStation
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      DesignDescriptor = designDescriptor;
+      Filter = filter;
+      FilterID = filterId;
+      AlignmentDescriptor = alignmentDescriptor;
+      GridPoints = gridPoints;
+      WGS84Points = wgs84Points;
+      StartStation = startStation;
+      EndStation = endStation;
     }
 
     /// <summary>
@@ -94,32 +93,32 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     {
       base.Validate();
 
-      if (filter != null)
+      if (Filter != null)
       {
-        filter.Validate();
+        Filter.Validate();
 
-        if (filterID.HasValue && filterID.Value <= 0)
+        if (FilterID.HasValue && FilterID.Value <= 0)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                $"Filter ID {filterID.Value} should be greater than zero."));
+                $"Filter ID {FilterID.Value} should be greater than zero."));
         }
       }
 
-      if (alignmentDescriptor != null)
+      if (AlignmentDescriptor != null)
       {
-        alignmentDescriptor.Validate();
+        AlignmentDescriptor.Validate();
       }
       else
       {
-        if (gridPoints != null && wgs84Points != null)
+        if (GridPoints != null && WGS84Points != null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "Only one linear or alignment based profile must be provided."));
         }
 
-        if (gridPoints == null && wgs84Points == null)
+        if (GridPoints == null && WGS84Points == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -127,9 +126,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         }
       }
 
-      if (designDescriptor != null)
+      if (DesignDescriptor != null)
       {
-        designDescriptor.Validate();
+        DesignDescriptor.Validate();
       }
       else
       {

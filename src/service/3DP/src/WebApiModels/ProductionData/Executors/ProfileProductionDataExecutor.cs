@@ -40,13 +40,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var productionDataProfileDataRequest = new ProductionDataProfileDataRequest(
         request.ProjectUid ?? Guid.Empty,
         request.Filter,
-        request.alignmentDesign?.FileUid,
-        request.gridPoints != null,
-        request.gridPoints?.x1 ?? request.wgs84Points.lon1,
-        request.gridPoints?.x2 ?? request.wgs84Points.lon2,
-        request.gridPoints?.y1 ?? request.wgs84Points.lat1,
-        request.gridPoints?.y2 ?? request.wgs84Points.lat2,
-        request.returnAllPassesAndLayers
+        request.AlignmentDesign?.FileUid,
+        request.GridPoints != null,
+        request.GridPoints?.x1 ?? request.WGS84Points.lon1,
+        request.GridPoints?.x2 ?? request.WGS84Points.lon2,
+        request.GridPoints?.y1 ?? request.WGS84Points.lat1,
+        request.GridPoints?.y2 ?? request.WGS84Points.lat2,
+        request.ReturnAllPassesAndLayers
       );
 
       var trexResult = trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders).Result;
@@ -73,21 +73,21 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var args = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args(
           request.ProjectId ?? -1,
           ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
-          request.startStation ?? ValidationConstants3D.MIN_STATION,
-          request.endStation ?? ValidationConstants3D.MIN_STATION,
-          RaptorConverters.DesignDescriptor(request.alignmentDesign),
+          request.StartStation ?? ValidationConstants3D.MIN_STATION,
+          request.EndStation ?? ValidationConstants3D.MIN_STATION,
+          RaptorConverters.DesignDescriptor(request.AlignmentDesign),
           RaptorConverters.ConvertFilter(request.Filter),
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
-          RaptorConverters.DesignDescriptor(request.alignmentDesign),
-          request.returnAllPassesAndLayers);
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.DesignDescriptor(request.AlignmentDesign),
+          request.ReturnAllPassesAndLayers);
 
         memoryStream = raptorClient.GetAlignmentProfile(args);
       }
       else
       {
         ProfilesHelper.ConvertProfileEndPositions(
-          request.gridPoints,
-          request.wgs84Points,
+          request.GridPoints,
+          request.WGS84Points,
           out VLPDDecls.TWGS84Point startPt,
           out VLPDDecls.TWGS84Point endPt,
           out bool positionsAreGrid);
@@ -99,15 +99,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           startPt,
           endPt,
           RaptorConverters.ConvertFilter(request.Filter),
-          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
-          RaptorConverters.DesignDescriptor(request.alignmentDesign),
-          request.returnAllPassesAndLayers);
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.DesignDescriptor(request.AlignmentDesign),
+          request.ReturnAllPassesAndLayers);
 
         memoryStream = raptorClient.GetProfile(args);
       }
 
       return memoryStream != null
-        ? ConvertProfileResult(memoryStream, request.callId ?? Guid.NewGuid())
+        ? ConvertProfileResult(memoryStream, request.CallId ?? Guid.NewGuid())
         : null; // TODO: return appropriate result
     }
 #endif

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace VSS.Productivity3D.Models.Models.Profiling
 {
   /// <summary>
-  /// The representation of a summary volumes request
+  /// The representation of a design profile request.
   /// </summary>
   public class DesignProfileRequest : ProjectID
   {
@@ -64,10 +64,10 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <param name="startY"></param>
     /// <param name="endX"></param>
     /// <param name="endY"></param>
-    public DesignProfileRequest(
-      Guid? projectUid, double? startX, double? startY, double? endX, double? endY)
+    public DesignProfileRequest(Guid projectUid, Guid designUid, double startX, double startY, double endX, double endY)
     {
       ProjectUid = projectUid;
+      DesignUid = designUid;
       StartX = startX;
       StartY = startY;
       EndX = endX;
