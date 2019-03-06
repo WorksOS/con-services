@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.DesignProfiling
   {
     private ISiteModel NewEmptyModel() => DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
-    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, double>();
 
     [Fact]

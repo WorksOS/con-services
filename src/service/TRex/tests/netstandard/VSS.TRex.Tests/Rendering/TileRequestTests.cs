@@ -35,13 +35,13 @@ namespace VSS.TRex.Tests.Rendering
       return siteModel;
     }
 
-    private void AddApplicationGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
       <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
-    private void AddClusterComputeGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting
+    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting
       <SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
 
-    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)

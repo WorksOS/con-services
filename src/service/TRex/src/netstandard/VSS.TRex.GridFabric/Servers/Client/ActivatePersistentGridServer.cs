@@ -95,23 +95,13 @@ namespace VSS.TRex.GridFabric.Servers.Client
                 return false;
             }
 
-            bool isActive = false;
+            bool isActive;
             do
             {
-                try
-                {
-                    isActive = ignite.GetCluster().IsActive();
+                isActive = ignite.GetCluster().IsActive();
 
-                    if (!isActive)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                }
-                catch
-                {
-                    // Ignore it and spin
+                if (!isActive)
                     Thread.Sleep(1000);
-                }
             } while (!isActive);
 
             return ignite.GetCluster().IsActive();

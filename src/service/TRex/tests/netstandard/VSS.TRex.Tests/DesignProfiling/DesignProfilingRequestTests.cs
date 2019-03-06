@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       return siteModel;
     }
 
-    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignProfileComputeFunc, CalculateDesignProfileArgument, CalculateDesignProfileResponse>();
 
     [Fact]

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
 {
-  public class ToFromBinary_AlignmentDesignFilterBoundaryRequest : IClassFixture<DILoggingFixture>
+  public class ToFromBinary_AlignmentDesignFilterBoundaryRequest : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public void Test_AlignmentDesignFilterBoundaryRequest_Simple()

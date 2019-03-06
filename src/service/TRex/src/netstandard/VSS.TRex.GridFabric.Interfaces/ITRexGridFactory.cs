@@ -19,5 +19,10 @@ namespace VSS.TRex.GridFabric.Grids
     /// <param name="mutability"></param>
     /// <returns></returns>
     IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null);
+
+    /// <summary>
+    /// Stops all running Ignite grids in this instance
+    /// </summary>
+    void StopGrids();
   }
 }

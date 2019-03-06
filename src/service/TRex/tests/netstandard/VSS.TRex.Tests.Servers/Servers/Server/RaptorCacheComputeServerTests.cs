@@ -50,7 +50,7 @@ namespace VSS.TRex.Tests.Servers.Server
     }
   }
 
-  public class TRexCacheComputeServerTests : IClassFixture<DIIgniteServers>//, IDisposable
+  public class TRexCacheComputeServerTests : IClassFixture<DIIgniteServers>
   {
     [Fact]
     public void Test_TRexCacheComputeServer_Creation()
