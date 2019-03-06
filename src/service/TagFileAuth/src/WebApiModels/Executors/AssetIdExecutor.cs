@@ -1,17 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
-using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var serviceType = 0;
       var result = false;
 
-      Project project = null;
+      Project.Abstractions.Models.DatabaseModels.Project project = null;
       IEnumerable<Subscriptions> projectCustomerSubs = new List<Subscriptions>();
       IEnumerable<Subscriptions> assetCustomerSubs = new List<Subscriptions>();
       IEnumerable<Subscriptions> assetSubs = new List<Subscriptions>();
@@ -158,7 +158,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         legacyAssetId, serviceType);
     }
 
-    private int GetMostSignificantServiceType(string assetUID, Project project,
+    private int GetMostSignificantServiceType(string assetUID, Project.Abstractions.Models.DatabaseModels.Project project,
       IEnumerable<Subscriptions> projectCustomerSubs, IEnumerable<Subscriptions> assetCustomerSubs,
       IEnumerable<Subscriptions> assetSubs)
     {

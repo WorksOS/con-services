@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers

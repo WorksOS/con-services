@@ -11,6 +11,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;

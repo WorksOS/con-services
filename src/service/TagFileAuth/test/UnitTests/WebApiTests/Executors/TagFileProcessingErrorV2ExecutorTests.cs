@@ -10,6 +10,8 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
