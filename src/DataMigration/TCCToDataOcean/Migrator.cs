@@ -79,7 +79,7 @@ namespace TCCToDataOcean
 
     public async Task MigrateFilesForAllActiveProjects()
     {
-      Log.LogInformation(Method.In);
+      Log.LogInformation(Method.In());
 
       // TODO (Aaron) Remove if part of recovery phase.
       Log.LogInformation($"{Method.Info()} | Cleaning database, dropping collections");
@@ -129,7 +129,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<bool> MigrateProject(Project project)
     {
-      Log.LogInformation($"{Method.In} | Migrating project {project.ProjectUID}, Name: '{project.Name}'");
+      Log.LogInformation($"{Method.In()} | Migrating project {project.ProjectUID}, Name: '{project.Name}'");
       _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress);
 
       var coordinateSystemFileMigrationResult = false;
@@ -193,7 +193,7 @@ namespace TCCToDataOcean
 
       _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed);
 
-      Log.LogInformation($"{Method.Out} | Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
+      Log.LogInformation($"{Method.Out()} | Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
 
       _migrationDb.SetMigationInfo_IncrementProjectsProcessed();
 
@@ -205,7 +205,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
     {
-      Log.LogInformation($"{Method.In} | Downloading coord system file '{project.CoordinateSystemFileName}'");
+      Log.LogInformation($"{Method.In()} | Downloading coord system file '{project.CoordinateSystemFileName}'");
 
       Stream memStream = null;
       byte[] coordSystemFileContent;
@@ -235,7 +235,7 @@ namespace TCCToDataOcean
       Log.LogInformation(
         $"Coord system file for project {project.ProjectUID}: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
 
-      Log.LogInformation(Method.Out);
+      Log.LogInformation(Method.Out());
 
       return coordSystemFileContent;
     }
@@ -245,7 +245,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<(bool success, FileDataSingleResult file)> MigrateFile(FileData file)
     {
-      Log.LogInformation($"{Method.In} | Migrating file '{file.Name}', Uid: {file.ImportedFileUid}");
+      Log.LogInformation($"{Method.In()} | Migrating file '{file.Name}', Uid: {file.ImportedFileUid}");
 
       string tempFileName;
 
@@ -259,7 +259,7 @@ namespace TCCToDataOcean
           _migrationDb.SetMigrationState(Table.Files, file, MigrationState.FileNotFound);
           _migrationDb.WriteError(file.ProjectUid, errorMessage);
 
-          Log.LogError($"{Method.Out} | {errorMessage}");
+          Log.LogError($"{Method.Out()} | {errorMessage}");
 
           return (false, null);
         }
@@ -300,7 +300,7 @@ namespace TCCToDataOcean
         Log.LogDebug($"{Method.Info("DEBUG")} | Skipped uploading file '{tempFileName}' to project service");
       }
 
-      Log.LogInformation($"{Method.Out} | File {file.ImportedFileUid} update result {result.Code} {result.Message}");
+      Log.LogInformation($"{Method.Out()} | File {file.ImportedFileUid} update result {result.Code} {result.Message}");
 
       return (true, result);
     }

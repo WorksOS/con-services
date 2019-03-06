@@ -26,7 +26,7 @@ namespace TCCToDataOcean
     public RestClient(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication)
     {
       Log = loggerFactory.CreateLogger<HttpClient>();
-      Log.LogInformation(Method.In);
+      Log.LogInformation(Method.In());
 
       var bearerToken = authentication.GetApplicationBearerToken();
 
@@ -34,12 +34,12 @@ namespace TCCToDataOcean
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
       httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {bearerToken}");
 
-      Log.LogInformation(Method.Out);
+      Log.LogInformation(Method.Out());
     }
 
     public Task<HttpResponseMessage> SendHttpClientRequest(string uri, HttpMethod method, string payloadData, string acceptHeader, string contentType, string customerUid)
     {
-      Log.LogInformation(Method.In);
+      Log.LogInformation(Method.In());
 
       var request = GetRequestMessage(method, uri);
 
@@ -65,7 +65,7 @@ namespace TCCToDataOcean
         }
       }
 
-      Log.LogInformation(Method.Out);
+      Log.LogInformation(Method.Out());
 
       return httpClient.SendAsync(request);
     }

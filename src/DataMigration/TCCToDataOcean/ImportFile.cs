@@ -49,7 +49,7 @@ namespace TCCToDataOcean
     /// </summary>
     public FileDataResult GetImportedFilesFromWebApi(string uri, Project project)
     {
-      Log.LogInformation($"{Method.In} | Get imported files for {project.ProjectUID}, customer {project.CustomerUID}");
+      Log.LogInformation($"{Method.In()} | Get imported files for {project.ProjectUID}, customer {project.CustomerUID}");
 
       var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, project.CustomerUID)).Result;
 
@@ -63,14 +63,14 @@ namespace TCCToDataOcean
       {
         case HttpStatusCode.Unauthorized:
           {
-            Log.LogError($"{Method.Out} | Check TPAAS authentication credentials.");
+            Log.LogError($"{Method.Out()} | Check TPAAS authentication credentials.");
 
             Environment.Exit(1);
             break;
           }
       }
 
-      Log.LogInformation(Method.Out);
+      Log.LogInformation(Method.Out());
 
       return JsonConvert.DeserializeObject<FileDataResult>(responseBody, new JsonSerializerSettings
       {
@@ -83,7 +83,7 @@ namespace TCCToDataOcean
     /// </summary>
     public FileDataSingleResult SendRequestToFileImportV4(string uriRoot, FileData fileDescr, string fullFileName, ImportOptions importOptions = new ImportOptions())
     {
-      Log.LogInformation(Method.In);
+      Log.LogInformation(Method.In());
 
       var createdDt = fileDescr.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = fileDescr.FileUpdatedUtc.ToUniversalTime().ToString("o");
@@ -124,7 +124,7 @@ namespace TCCToDataOcean
         Log.LogError(exception.Message);
       }
 
-      Log.LogInformation(Method.Out);
+      Log.LogInformation(Method.Out());
 
       return null;
     }
@@ -135,7 +135,7 @@ namespace TCCToDataOcean
     /// <returns>Repsonse from web api as string</returns>
     private string UploadFileToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
-      Log.LogInformation($"{Method.In} | Filename: {fullFileName}, CustomerUid: {customerUid}");
+      Log.LogInformation($"{Method.In()} | Filename: {fullFileName}, CustomerUid: {customerUid}");
 
       try
       {
@@ -177,7 +177,7 @@ namespace TCCToDataOcean
       }
       finally
       {
-        Log.LogInformation(Method.Out);
+        Log.LogInformation(Method.Out());
       }
     }
 
@@ -186,7 +186,7 @@ namespace TCCToDataOcean
     /// </summary>
     private string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType)
     {
-      Log.LogInformation($"{Method.In} | {httpMethod.Method}, Uri: {resourceUri}");
+      Log.LogInformation($"{Method.In()} | {httpMethod.Method}, Uri: {resourceUri}");
 
       if (!(WebRequest.Create(resourceUri) is HttpWebRequest request)) { return string.Empty; }
 
@@ -224,13 +224,13 @@ namespace TCCToDataOcean
 
           if (response == null) { continue; }
 
-          Log.LogInformation(Method.Out);
+          Log.LogInformation(Method.Out());
 
           return GetStringFromResponseStream(response);
         }
       }
 
-      Log.LogInformation(Method.Out);
+      Log.LogInformation(Method.Out());
 
       return responseString;
     }
