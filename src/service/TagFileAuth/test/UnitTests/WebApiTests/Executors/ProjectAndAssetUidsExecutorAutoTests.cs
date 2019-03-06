@@ -11,6 +11,8 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

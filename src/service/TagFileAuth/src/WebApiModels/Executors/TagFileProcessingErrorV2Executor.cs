@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // Try to find a customerUid - from tccorg/asset/project
       string customerUid = null;
       CustomerTccOrg customerTCCOrg = null;
-      Project project = null;
+      Project.Abstractions.Models.DatabaseModels.Project project = null;
       Asset asset = null;
       if (!string.IsNullOrEmpty(request.tccOrgId))
       {

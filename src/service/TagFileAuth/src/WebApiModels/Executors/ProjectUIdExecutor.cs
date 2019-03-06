@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       var request = item as GetProjectUidRequest;
       string projectUid = string.Empty;
-      IEnumerable<Project> potentialProjects = new List<Project>();
+      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 
       log.LogDebug($"ProjectUidExecutor: Going to process request {JsonConvert.SerializeObject(request)}");
 
@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       //  standard 2d / 3d project aka construction project
       //    must have valid assetID, which must have a 3d sub.
-      List<Project> enumerable;
+      List<Project.Abstractions.Models.DatabaseModels.Project> enumerable;
       if (assetSubs != null && assetSubs.Any())
       {
         var standardProjects = await dataRepository.GetStandardProject(assetDevice.OwningCustomerUID, request.latitude,

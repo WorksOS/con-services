@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,7 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var assetSubs = new List<Subscriptions>();
       string assetOwningCustomerUid = string.Empty;
 
-      Project project = null;
+      Project.Abstractions.Models.DatabaseModels.Project project = null;
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
@@ -169,7 +169,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
 
     private async Task<GetProjectAndAssetUidsResult> HandleManualImport(GetProjectAndAssetUidsRequest request,
-      Project project, List<Subscriptions> projectCustomerSubs, string assetUid, string assetOwningCustomerUid,
+      Project.Abstractions.Models.DatabaseModels.Project project, List<Subscriptions> projectCustomerSubs, string assetUid, string assetOwningCustomerUid,
       List<Subscriptions> assetSubs)
     {
       // by this stage...
@@ -341,7 +341,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       return serviceType;
     }
 
-    private async Task<List<Project>> GetPotentialProjects
+    private async Task<List<Project.Abstractions.Models.DatabaseModels.Project>> GetPotentialProjects
     (string assetOwningCustomerUid, List<Subscriptions> assetSubs, string tccCustomerUid,
       GetProjectAndAssetUidsRequest request)
     {
@@ -352,7 +352,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  Note: In VL multiple customers can have subscriptions
       //    for an asset but only the owner gets the tag file data.
 
-      var potentialProjects = new List<Project>();
+      var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 
       //  standard 2d / 3d project 
       //    IGNORE any tccOrgID

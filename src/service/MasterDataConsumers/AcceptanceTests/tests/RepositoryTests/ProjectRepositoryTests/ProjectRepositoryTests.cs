@@ -8,6 +8,8 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests.ProjectRepositoryTests
