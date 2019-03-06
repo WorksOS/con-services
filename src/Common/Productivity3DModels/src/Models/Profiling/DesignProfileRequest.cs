@@ -64,8 +64,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <param name="startY"></param>
     /// <param name="endX"></param>
     /// <param name="endY"></param>
-    public DesignProfileRequest(
-      Guid? projectUid, Guid? designUid, double? startX, double? startY, double? endX, double? endY)
+    public DesignProfileRequest(Guid projectUid, Guid designUid, double startX, double startY, double endX, double endY)
     {
       ProjectUid = projectUid;
       DesignUid = designUid;

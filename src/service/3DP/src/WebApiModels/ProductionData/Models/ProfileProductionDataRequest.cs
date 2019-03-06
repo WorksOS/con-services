@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       AlignmentDesign = alignmentDesign;
       GridPoints = gridPoints;
       WGS84Points = wgs84Points;
-      StartStation = startStation;
+      this.StartStation = startStation;
       EndStation = endStation;
       LiftBuildSettings = liftBuildSettings;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;

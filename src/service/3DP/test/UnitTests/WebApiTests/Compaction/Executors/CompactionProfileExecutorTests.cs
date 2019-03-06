@@ -23,6 +23,7 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -111,7 +112,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
       var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty, ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, liftBuildSettings, false, null, null, null, null, null);
+        null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, liftBuildSettings, false, null, null, null, null, null);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
@@ -931,7 +932,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
         var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty,
-          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, 
+          ProductionDataType.Height, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, 
           liftBuildSettings, false, null, null, null, null, null);
 
         var executor = RequestExecutorContainerFactory
@@ -1200,7 +1201,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
         var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty,
-          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
+          ProductionDataType.Height, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
           liftBuildSettings, false, null, null, null, calcType, null);
 
         var executor = RequestExecutorContainerFactory
@@ -1410,7 +1411,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
         var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty,
-          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
+          ProductionDataType.Height, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
           liftBuildSettings, false, null, null, null, calcType, null);
 
         var executor = RequestExecutorContainerFactory

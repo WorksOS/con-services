@@ -133,13 +133,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (cutFillDesign != null)
       {
-        FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+        await FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           cutFillDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.CUT_FILL, VolumeCalcType.None);
       }
 
       if (volumeDesign != null && (volumeCalcType == VolumeCalcType.DesignToGround || volumeCalcType == VolumeCalcType.GroundToDesign))
       {
-        FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
+        await FindCutFillElevations(projectId, projectUid, settings, startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees,
           volumeDesign, profileResultHelper, slicerProductionDataResult, CompactionDataPoint.SUMMARY_VOLUMES, volumeCalcType.Value);
       }
       return slicerProductionDataResult;
@@ -160,7 +160,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="slicerProductionDataResult">The slicer profile results containing the production data profiles</param>
     /// <param name="type">The type of profile, either cut-fill or summary volumes</param>
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
-    private void FindCutFillElevations(
+    private async Task FindCutFillElevations(
       long projectId,
       Guid ProjectUid,
       CompactionProjectSettings settings,
@@ -182,18 +182,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
       slicerDesignProfileRequest.Validate();
-      var slicerDesignResult = WithServiceExceptionTryExecute(() =>
+      var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CompactionDesignProfileExecutor>(LoggerFactory,
 #if RAPTOR
             RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-          .Process(slicerDesignProfileRequest) as CompactionProfileResult<CompactionProfileVertex>
+          .ProcessAsync(slicerDesignProfileRequest)
       );
 
       //Find the cut-fill elevations for the cell stations from the design vertex elevations
-      profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
+      profileResultHelper.FindCutFillElevations(slicerProductionDataResult, (CompactionProfileResult<CompactionProfileVertex>) slicerDesignResult, type, volumeCalcType);
     }
 
     /// <summary>
@@ -241,16 +241,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         profileRequest.Validate();
 
-        var slicerDesignResult = WithServiceExceptionTryExecute(() =>
+          var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
             .Build<CompactionDesignProfileExecutor>(LoggerFactory,
 #if RAPTOR
               RaptorClient,
 #endif
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-            .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
+            .ProcessAsync(profileRequest)
         );
-        results.Add(impFileUid, slicerDesignResult);
+        results.Add(impFileUid, (CompactionProfileResult<CompactionProfileVertex>) slicerDesignResult);
       }
 
       var transformedResult = profileResultHelper.ConvertProfileResult(results);
