@@ -1,17 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
+#if RAPTOR
 using VLPDDecls;
+using VSS.Velociraptor.PDSInterface.DesignProfile;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models.Profiling;
+using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -20,13 +27,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// </summary>
   public class CompactionDesignProfileExecutor : RequestExecutorContainer 
   {
+#if RAPTOR
     private CompactionProfileResult<CompactionProfileVertex> PerformProductionDataProfilePost(CompactionProfileDesignRequest request)
     {
       CompactionProfileResult<CompactionProfileVertex> result;
 
       try
       {
-        ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
+        ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
         
         var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
           request.ProjectId ?? -1,
@@ -35,9 +43,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           endPt,
           ValidationConstants3D.MIN_STATION,
           ValidationConstants3D.MAX_STATION,
-          RaptorConverters.DesignDescriptor(request.designDescriptor),
+          RaptorConverters.DesignDescriptor(request.DesignDescriptor),
           RaptorConverters.EmptyDesignDescriptor,
-          RaptorConverters.ConvertFilter(request.filter),
+          RaptorConverters.ConvertFilter(request.Filter),
           positionsAreGrid);
 
         var memoryStream = raptorClient.GetDesignProfile(designProfile);
@@ -45,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (memoryStream != null)
         {
           result = ConvertProfileResult(memoryStream);
+          memoryStream.Close();
         }
         else
         {
@@ -58,24 +67,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       return result;
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      try
-      {
-        var request = CastRequestObjectTo<CompactionProfileDesignRequest>(item);
-        var profile = PerformProductionDataProfilePost(request);
-
-        if (profile != null)
-          return profile;
-
-        throw CreateServiceException<CompactionDesignProfileExecutor>();
-      }
-      finally
-      {
-        ContractExecutionStates.ClearDynamic();
-      }
     }
 
     private CompactionProfileResult<CompactionProfileVertex> ConvertProfileResult(MemoryStream ms)
@@ -93,10 +84,68 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         station = dpv.station
       });
 
-      ms.Close();
-
       profileResult.gridDistanceBetweenProfilePoints = pdsiProfile.GridDistanceBetweenProfilePoints;
 
+      FixGaps(profileResult.results);
+
+      return profileResult;
+    }
+#endif
+
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
+      try
+      {
+        var request = CastRequestObjectTo<CompactionProfileDesignRequest>(item);
+
+        var profile =
+#if RAPTOR
+            UseTRexGateway("ENABLE_TREX_GATEWAY_PROFILING") ?
+#endif
+              await PerformProductionDataProfilePostWithTRexGateway(request)
+#if RAPTOR
+              : PerformProductionDataProfilePost(request)
+#endif
+        ;
+
+        if (profile != null)
+          return profile;
+
+        throw CreateServiceException<CompactionDesignProfileExecutor>();
+      }
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
+    }
+
+    private async Task<CompactionProfileResult<CompactionProfileVertex>> PerformProductionDataProfilePostWithTRexGateway(CompactionProfileDesignRequest request)
+    {
+      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out WGSPoint startPt, out var endPt);
+
+      var designProfileRequest = new DesignProfileRequest(request.ProjectUid ?? Guid.Empty, request.DesignDescriptor?.FileUid ?? Guid.Empty, startPt.Lon, startPt.Lat, endPt.Lon, endPt.Lat);
+
+      var trexResult = await trexCompactionDataProxy.SendDataPostRequest<DesignProfileResult, DesignProfileRequest>(designProfileRequest, "/profile/design", customHeaders);
+
+      return trexResult != null && trexResult.HasData() ? ConvertTRexProfileResult(trexResult) : null;
+    }
+
+    private CompactionProfileResult<CompactionProfileVertex> ConvertTRexProfileResult(DesignProfileResult profile)
+    {
+      log.LogDebug("Converting TRex profile result");
+
+      var profileResult = new CompactionProfileResult<CompactionProfileVertex>();
+
+      profileResult.results = profile.ProfileLine.ConvertAll(dpv => new CompactionProfileVertex
+      {
+        cellType = dpv.Z >= VelociraptorConstants.NO_HEIGHT ? ProfileCellType.Gap : ProfileCellType.Edge,
+        elevation = dpv.Z >= VelociraptorConstants.NO_HEIGHT ? float.NaN : (float) dpv.Z,
+        station = dpv.Station
+      });
+
+      profileResult.gridDistanceBetweenProfilePoints =
+        profile.ProfileLine.Count > 1 ? profile.ProfileLine[profile.ProfileLine.Count - 1].Station - profile.ProfileLine[0].Station : 0;
+      
       FixGaps(profileResult.results);
 
       return profileResult;
@@ -130,5 +179,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
       }
     }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
+
   }
 }

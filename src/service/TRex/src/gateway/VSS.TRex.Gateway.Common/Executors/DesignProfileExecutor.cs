@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         return ConvertResult(designProfileResponse);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested Summary Volumes data"));
+        "Failed to get requested Design Profile data"));
     }
 
     /// <summary>
