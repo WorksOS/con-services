@@ -26,7 +26,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
-    public VolumeComputationType VolumeType = VolumeComputationType.None;
+    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
     /// <summary>
     /// Constructs a default profile request argument

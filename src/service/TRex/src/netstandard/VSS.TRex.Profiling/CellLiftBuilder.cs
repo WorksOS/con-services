@@ -3,6 +3,7 @@ using System.Diagnostics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -972,7 +973,7 @@ namespace VSS.TRex.Profiling
           FilteredValuePopulationComplete = true;
         }
         else
-          Debug.Assert(false, "CellPassFastEventLookerUpper not available");
+          throw new TRexException("CellPassFastEventLookerUpper not available");
       }
       else
       {
@@ -1069,7 +1070,7 @@ namespace VSS.TRex.Profiling
           // filter them on any required machine events in the process
           for (int I = 0; I < TempPassCount; I++)
           {
-            Cell.Passes.AddPass(TempPasses[I], false);
+            Cell.Passes.AddPass(TempPasses[I] /*, false*/);
 
             if (Cell.Passes.PassCount == Cell.FilteredPassFlags.Length)
               Array.Resize(ref Cell.FilteredPassFlags, Cell.FilteredPassFlags.Length + 100);

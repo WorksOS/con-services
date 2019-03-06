@@ -18,11 +18,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
     [Fact]
     public void Test_ProfileRequestResponse()
     {
-      var cell = new ProfileCell(new FilteredMultiplePassInfo
-        {
-          PassCount = 1,
-          FilteredPassData = new [] { new FilteredPassData() }
-        },
+      var cell = new ProfileCell(new FilteredMultiplePassInfo( new [] { new FilteredPassData() }),        
         1, 2, 3.0, 4.0);
 
       var cells = new List<ProfileCell>{ cell };

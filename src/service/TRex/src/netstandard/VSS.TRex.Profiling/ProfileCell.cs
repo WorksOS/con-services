@@ -101,11 +101,7 @@ namespace VSS.TRex.Profiling
       CellPreviousMeasuredTargetCCV = CellPassConsts.NullCCV;
     }
 
-    public void SetFilteredPasses(FilteredPassData[] filteredPasses)
-    {
-      Passes.FilteredPassData = filteredPasses;
-      Passes.PassCount = filteredPasses.Length;
-    }
+    public void SetFilteredPasses(FilteredPassData[] filteredPasses) => Passes.SetFilteredPasses(filteredPasses);
 
     /// <summary>
     /// Changes the count of passes present in the filtered set of passes held in the profile cell

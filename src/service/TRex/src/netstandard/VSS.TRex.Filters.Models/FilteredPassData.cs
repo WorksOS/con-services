@@ -24,7 +24,7 @@ namespace VSS.TRex.Filters.Models
     /// </summary>
     public void Clear()
     {
-      MachineType = 0;
+      MachineType = MachineType.Unknown;
       FilteredPass.Clear();
       TargetValues.Clear();
       EventValues.Clear();

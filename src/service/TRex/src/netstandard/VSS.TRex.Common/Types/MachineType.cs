@@ -5,6 +5,7 @@
     /// </summary>
     public enum MachineType : byte
   {
+        Unknown = 0,
         Dozer = 23,
         Grader = 24,
         Excavator = 25,

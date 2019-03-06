@@ -29,8 +29,12 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
         var result = new DesignFilterSubGridMaskResponse();
         var patchCells = patch.Cells;
         for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+        {
           for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
-             result.Bits[i, j] = patchCells[i, j].Equals(Common.Consts.NullHeight);
+          {
+            result.Bits[i, j] = patchCells[i, j].Equals(Common.Consts.NullHeight);
+          }
+        }
 
         return result;
       }
