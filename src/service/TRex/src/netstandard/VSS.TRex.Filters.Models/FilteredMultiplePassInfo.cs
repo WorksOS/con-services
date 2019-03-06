@@ -18,21 +18,54 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list
     /// </summary>
-    public int PassCount;
+    public int PassCount { get; set; }
+
+    private FilteredPassData[] filteredPassData;
 
     /// <summary>
     /// The set of passes selected by the filtering operation
     /// </summary>
-    public FilteredPassData[] FilteredPassData;
+    public FilteredPassData[] FilteredPassData => filteredPassData;
+
+    public FilteredMultiplePassInfo()
+    {
+    }
+
+    public FilteredMultiplePassInfo(FilteredPassData[] filteredPasses)
+    {
+      SetFilteredPasses(filteredPasses);
+    }
+
+    public void SetFilteredPasses(FilteredPassData[] filteredPasses)
+    {
+      filteredPassData = filteredPasses;
+      PassCount = filteredPasses.Length;
+    }
 
     private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
+
+    private void CheckArrayCapacity()
+    {
+      // Increase the length of the passes array
+      if (filteredPassData == null)
+      {
+        filteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement()];
+      }
+      else
+      {
+        if (PassCount == filteredPassData.Length)
+        {
+          Array.Resize(ref filteredPassData, PassCount + CellPassAggregationListSizeIncrement());
+        }
+      }
+    }
 
     /// <summary>
     /// Adds a pass to the set of passes beign constructed as a result of the filtering operation.
     /// </summary>
     /// <param name="pass"></param>
     /// <param name="passesOrderedInIncreasingTime"></param>
-    public void AddPass(CellPass pass, bool passesOrderedInIncreasingTime = true)
+    public void AddPass(CellPass pass /*, bool passesOrderedInIncreasingTime = true*/)
     {
       /*TODO convert when C# equivalent of IFOPT C+ is understood
        {$IFOPT C+}
@@ -54,26 +87,14 @@ namespace VSS.TRex.Filters.Models
       {$ENDIF}
       */
 
-      // Increase the length of the passes array
-      if (FilteredPassData == null)
-      {
-        FilteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement()];
-      }
-      else
-      {
-        if (PassCount == FilteredPassData.Length)
-        {
-          Array.Resize(ref FilteredPassData, PassCount + CellPassAggregationListSizeIncrement());
-        }
-      }
+      CheckArrayCapacity();
 
       // Add the pass to the list
       FilteredPassData[PassCount].FilteredPass = pass;
-
       PassCount++;
     }
 
-    public void AddPass(FilteredPassData pass, bool passesOrderedInIncreasingTime)
+    public void AddPass(FilteredPassData pass /*, bool passesOrderedInIncreasingTime*/)
     {
       /* TODO include when IFOPT C+ equivalent is identified
       {$IFOPT C+}
@@ -91,21 +112,10 @@ namespace VSS.TRex.Filters.Models
       {$ENDIF}
       */
 
-      if (FilteredPassData == null)
-      {
-        FilteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement()];
-      }
-      else // Increase the length of the passes array
-      {
-        if (PassCount == FilteredPassData.Length)
-        {
-          Array.Resize(ref FilteredPassData, PassCount + CellPassAggregationListSizeIncrement());
-        }
-      }
+      CheckArrayCapacity();
 
       // Add the pass to the list
-      FilteredPassData[PassCount] = pass;
-
+      filteredPassData[PassCount] = pass;
       PassCount++;
     }
 
@@ -116,11 +126,11 @@ namespace VSS.TRex.Filters.Models
     public void Assign(FilteredMultiplePassInfo Source)
     {
       if (PassCount < Source.PassCount)
-        FilteredPassData = new FilteredPassData[PassCount];
+        filteredPassData = new FilteredPassData[Source.PassCount];
 
       PassCount = Source.PassCount;
 
-      Array.Copy(Source.FilteredPassData, FilteredPassData, PassCount);
+      Array.Copy(Source.FilteredPassData, filteredPassData, PassCount);
     }
 
     /// <summary>
@@ -134,7 +144,7 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Returns the time of the first cell pass in the set of filtered cell passes
     /// </summary>
-    public DateTime FirstPassTime => PassCount > 0 ? FilteredPassData[0].FilteredPass.Time : DateTime.MinValue;
+    public DateTime FirstPassTime => PassCount > 0 ? filteredPassData[0].FilteredPass.Time : DateTime.MinValue;
 
     /// <summary>
     /// Determines the time of the cell pass with the highest elevation in the set of cell passes
@@ -146,19 +156,20 @@ namespace VSS.TRex.Filters.Models
 
       DateTime Result = DateTime.MinValue;
 
+      // todo: benchmark this against taking a copy of the Filteredpass in each loop iteration. Apply results to other similar contexts in this class
       for (int i = PassCount - 1; i >= 0; i--)
       {
         if (TempHeight == Consts.NullHeight)
         {
-          TempHeight = FilteredPassData[i].FilteredPass.Height;
-          Result = FilteredPassData[i].FilteredPass.Time;
+          TempHeight = filteredPassData[i].FilteredPass.Height;
+          Result = filteredPassData[i].FilteredPass.Time;
         }
         else
         {
-          if (FilteredPassData[i].FilteredPass.Height > TempHeight)
+          if (filteredPassData[i].FilteredPass.Height > TempHeight)
           {
-            TempHeight = FilteredPassData[i].FilteredPass.Height;
-            Result = FilteredPassData[i].FilteredPass.Time;
+            TempHeight = filteredPassData[i].FilteredPass.Height;
+            Result = filteredPassData[i].FilteredPass.Time;
           }
         }
       }
@@ -171,14 +182,14 @@ namespace VSS.TRex.Filters.Models
     /// Determine the time of the last cell pass in the set of filtered cell passes
     /// </summary>
     /// <returns></returns>
-    public DateTime LastPassTime() => PassCount > 0 ? FilteredPassData[PassCount - 1].FilteredPass.Time : DateTime.MinValue;
+    public DateTime LastPassTime() => PassCount > 0 ? filteredPassData[PassCount - 1].FilteredPass.Time : DateTime.MinValue;
 
 
     public ushort LastPassValidAmp()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.Amplitude != CellPassConsts.NullAmplitude)
-          return FilteredPassData[i].FilteredPass.Amplitude;
+        if (filteredPassData[i].FilteredPass.Amplitude != CellPassConsts.NullAmplitude)
+          return filteredPassData[i].FilteredPass.Amplitude;
 
       return CellPassConsts.NullAmplitude;
     }
@@ -189,13 +200,13 @@ namespace VSS.TRex.Filters.Models
       aTarget = CellPassConsts.NullCCV;
       for (int i = PassCount - 1; i >= 0; i--)
       {
-        if (FilteredPassData[i].TargetValues.TargetCCV != CellPassConsts.NullCCV && aTarget == CellPassConsts.NullCCV) 
-          aTarget = FilteredPassData[i].TargetValues.TargetCCV; // just in case ccv is missing but not target
+        if (filteredPassData[i].TargetValues.TargetCCV != CellPassConsts.NullCCV && aTarget == CellPassConsts.NullCCV) 
+          aTarget = filteredPassData[i].TargetValues.TargetCCV; // just in case ccv is missing but not target
 
-        if (FilteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
+        if (filteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
         {
-          aCCV = FilteredPassData[i].FilteredPass.CCV;
-          aTarget = FilteredPassData[i].TargetValues.TargetCCV; // update target with this record
+          aCCV = filteredPassData[i].FilteredPass.CCV;
+          aTarget = filteredPassData[i].TargetValues.TargetCCV; // update target with this record
           return;
         }
       }
@@ -204,8 +215,8 @@ namespace VSS.TRex.Filters.Models
     public byte LastPassValidCCA()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.CCA != CellPassConsts.NullCCA)
-          return FilteredPassData[i].FilteredPass.CCA;
+        if (filteredPassData[i].FilteredPass.CCA != CellPassConsts.NullCCA)
+          return filteredPassData[i].FilteredPass.CCA;
 
       return CellPassConsts.NullCCA;
     }
@@ -216,13 +227,13 @@ namespace VSS.TRex.Filters.Models
       aTarget = CellPassConsts.NullCCA;
       for (int i = PassCount - 1; i >= 0; i--)
       {
-        if (FilteredPassData[i].TargetValues.TargetCCA != CellPassConsts.NullCCA && aTarget == CellPassConsts.NullCCA)
-          aTarget = FilteredPassData[i].TargetValues.TargetCCA; // just in case cca is missing but not target
+        if (filteredPassData[i].TargetValues.TargetCCA != CellPassConsts.NullCCA && aTarget == CellPassConsts.NullCCA)
+          aTarget = filteredPassData[i].TargetValues.TargetCCA; // just in case cca is missing but not target
 
-        if (FilteredPassData[i].FilteredPass.CCA != CellPassConsts.NullCCA)
+        if (filteredPassData[i].FilteredPass.CCA != CellPassConsts.NullCCA)
         {
-          aCCA = FilteredPassData[i].FilteredPass.CCA;
-          aTarget = FilteredPassData[i].TargetValues.TargetCCA; // update target with this record
+          aCCA = filteredPassData[i].FilteredPass.CCA;
+          aTarget = filteredPassData[i].TargetValues.TargetCCA; // update target with this record
           return;
         }
       }
@@ -231,8 +242,8 @@ namespace VSS.TRex.Filters.Models
     public short LastPassValidCCV()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
-          return FilteredPassData[i].FilteredPass.CCV;
+        if (filteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
+          return filteredPassData[i].FilteredPass.CCV;
 
       return CellPassConsts.NullCCV;
     }
@@ -240,11 +251,11 @@ namespace VSS.TRex.Filters.Models
     public double LastPassValidCCVPercentage()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
+        if (filteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
         {
-          short CCVtarget = FilteredPassData[i].TargetValues.TargetCCV;
+          short CCVtarget = filteredPassData[i].TargetValues.TargetCCV;
           if (CCVtarget != 0 && CCVtarget != CellPassConsts.NullCCV)
-            return FilteredPassData[i].FilteredPass.CCV / CCVtarget;
+            return filteredPassData[i].FilteredPass.CCV / (1.0 * CCVtarget);
 
           return CellPassConsts.NullCCVPercentage;
         }
@@ -255,8 +266,8 @@ namespace VSS.TRex.Filters.Models
     public ushort LastPassValidFreq()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.Frequency != CellPassConsts.NullFrequency)
-          return FilteredPassData[i].FilteredPass.Frequency;
+        if (filteredPassData[i].FilteredPass.Frequency != CellPassConsts.NullFrequency)
+          return filteredPassData[i].FilteredPass.Frequency;
 
       return CellPassConsts.NullFrequency;
     }
@@ -264,8 +275,8 @@ namespace VSS.TRex.Filters.Models
     public short LastPassValidMDP()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
-          return FilteredPassData[i].FilteredPass.MDP;
+        if (filteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
+          return filteredPassData[i].FilteredPass.MDP;
 
       return CellPassConsts.NullMDP;
     }
@@ -276,13 +287,13 @@ namespace VSS.TRex.Filters.Models
       aTarget = CellPassConsts.NullMDP;
       for (int i = PassCount - 1; i >= 0; i--)
       {
-        if (FilteredPassData[i].TargetValues.TargetMDP != CellPassConsts.NullMDP && aTarget == CellPassConsts.NullMDP)
-          aTarget = FilteredPassData[i].TargetValues.TargetMDP; // just in case ccv is missing but not target
+        if (filteredPassData[i].TargetValues.TargetMDP != CellPassConsts.NullMDP && aTarget == CellPassConsts.NullMDP)
+          aTarget = filteredPassData[i].TargetValues.TargetMDP; // just in case ccv is missing but not target
 
-        if (FilteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
+        if (filteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
         {
-          aMDP = FilteredPassData[i].FilteredPass.MDP;
-          aTarget = FilteredPassData[i].TargetValues.TargetMDP; // update target with this record
+          aMDP = filteredPassData[i].FilteredPass.MDP;
+          aTarget = filteredPassData[i].TargetValues.TargetMDP; // update target with this record
           return;
         }
       }
@@ -290,11 +301,11 @@ namespace VSS.TRex.Filters.Models
     public double LastPassValidMDPPercentage()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
+        if (filteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
         {
-          short MDPtarget = FilteredPassData[i].TargetValues.TargetCCV;
+          short MDPtarget = filteredPassData[i].TargetValues.TargetMDP;
           if (MDPtarget != 0 && MDPtarget != CellPassConsts.NullMDP)
-            return FilteredPassData[i].FilteredPass.MDP / MDPtarget;
+            return filteredPassData[i].FilteredPass.MDP / (1.0 * MDPtarget);
 
           return CellPassConsts.NullMDPPercentage;
         }
@@ -305,8 +316,8 @@ namespace VSS.TRex.Filters.Models
     public GPSMode LastPassValidGPSMode()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.gpsMode != CellPassConsts.NullGPSMode)
-          return FilteredPassData[i].FilteredPass.gpsMode;
+        if (filteredPassData[i].FilteredPass.gpsMode != CellPassConsts.NullGPSMode)
+          return filteredPassData[i].FilteredPass.gpsMode;
 
       return CellPassConsts.NullGPSMode;
     }
@@ -314,8 +325,8 @@ namespace VSS.TRex.Filters.Models
     public byte LastPassValidRadioLatency()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.RadioLatency != CellPassConsts.NullRadioLatency)
-          return FilteredPassData[i].FilteredPass.RadioLatency;
+        if (filteredPassData[i].FilteredPass.RadioLatency != CellPassConsts.NullRadioLatency)
+          return filteredPassData[i].FilteredPass.RadioLatency;
 
       return CellPassConsts.NullRadioLatency;
     }
@@ -323,8 +334,8 @@ namespace VSS.TRex.Filters.Models
     public short LastPassValidRMV()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.RMV != CellPassConsts.NullRMV)
-          return FilteredPassData[i].FilteredPass.RMV;
+        if (filteredPassData[i].FilteredPass.RMV != CellPassConsts.NullRMV)
+          return filteredPassData[i].FilteredPass.RMV;
 
       return CellPassConsts.NullRMV;
     }
@@ -338,12 +349,12 @@ namespace VSS.TRex.Filters.Models
       {
         if (TempHeight == Consts.NullHeight)
         {
-          TempHeight = FilteredPassData[i].FilteredPass.Height;
-          Result = FilteredPassData[i].FilteredPass.Time;
+          TempHeight = filteredPassData[i].FilteredPass.Height;
+          Result = filteredPassData[i].FilteredPass.Time;
         }
         else 
-          if (FilteredPassData[i].FilteredPass.Height < TempHeight)
-            Result = FilteredPassData[i].FilteredPass.Time;
+          if (filteredPassData[i].FilteredPass.Height < TempHeight)
+            Result = filteredPassData[i].FilteredPass.Time;
       }
 
       return Result;
@@ -352,8 +363,8 @@ namespace VSS.TRex.Filters.Models
     public ushort LastPassValidMaterialTemperature()
     {
       for (int i = PassCount - 1; i >= 0; i--)
-        if (FilteredPassData[i].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
-          return FilteredPassData[i].FilteredPass.MaterialTemperature;
+        if (filteredPassData[i].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
+          return filteredPassData[i].FilteredPass.MaterialTemperature;
 
       return CellPassConsts.NullMaterialTemperatureValue;
     }
@@ -366,12 +377,13 @@ namespace VSS.TRex.Filters.Models
     {
       writer.WriteInt(PassCount);
 
-      writer.WriteBoolean(FilteredPassData != null);
-      if (FilteredPassData != null)
+      writer.WriteBoolean(filteredPassData != null);
+      if (filteredPassData != null)
       {
-        writer.WriteInt(FilteredPassData.Length);
-        foreach (var pass in FilteredPassData)
-          pass.ToBinary(writer);
+        writer.WriteInt(filteredPassData.Length);
+
+        for (int i = 0; i < filteredPassData.Length; i++)
+          filteredPassData[i].ToBinary(writer);
       }
     }
 
@@ -386,9 +398,10 @@ namespace VSS.TRex.Filters.Models
       if (reader.ReadBoolean())
       {
         var count = reader.ReadInt();
-        FilteredPassData = new FilteredPassData[count];
-        foreach (var pass in FilteredPassData)
-          pass.FromBinary(reader);
+        filteredPassData = new FilteredPassData[count];
+
+        for (int i = 0; i < filteredPassData.Length; i++)
+          filteredPassData[i].FromBinary(reader);
       }
     }
   }

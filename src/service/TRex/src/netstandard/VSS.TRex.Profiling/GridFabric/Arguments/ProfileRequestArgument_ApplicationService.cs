@@ -29,7 +29,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// The volume computation method to use when calculating summary volume information
     /// </summary>
-    public VolumeComputationType VolumeType = VolumeComputationType.None;
+    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
 
     /// <summary>
@@ -44,12 +44,13 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// Creates a new profile request argument initialized with the supplied parameters
     /// </summary>
     /// <param name="profileTypeRequired"></param>
-    /// <param name="profileStyleRequired"></param>
+    /// <param name="profileStyle"></param>
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
     /// <param name="positionsAreGrid"></param>
     /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
+    /// <param name="volumeType"></param>
     public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, ProfileStyle profileStyle, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileTypeRequired = profileTypeRequired;

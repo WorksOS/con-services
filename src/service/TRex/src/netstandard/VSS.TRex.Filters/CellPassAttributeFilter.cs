@@ -812,9 +812,7 @@ namespace VSS.TRex.Filters
     public bool FilterPass(ref FilteredPassData PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyFilterSelections)
-      {
         return true;
-      }
 
       if (HasTimeFilter)
       {
@@ -1023,9 +1021,7 @@ namespace VSS.TRex.Filters
     public bool FilterPass_NoMachineEvents(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyNonMachineEventFilterSelections)
-      {
         return true;
-      }
 
       if (HasTimeFilter)
       {
@@ -1081,9 +1077,7 @@ namespace VSS.TRex.Filters
       bool Result = false;
 
       if (passValueCount == 0)
-      {
         return false;
-      }
 
       bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
       int AcceptedIndex = -1;
@@ -1093,9 +1087,7 @@ namespace VSS.TRex.Filters
         for (int I = 0; I < passValueCount; I++)
         {
           if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
-          {
             return false;
-          }
 
           Accept = profileCell == null
             ? PassIsAcceptable(ref passValues[I])
@@ -1114,9 +1106,7 @@ namespace VSS.TRex.Filters
         for (int I = passValueCount - 1; I >= 0; I--)
         {
           if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
-          {
             return false;
-          }
 
           Accept = profileCell == null
             ? PassIsAcceptable(ref passValues[I])
