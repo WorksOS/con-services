@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex;
 using System.Text;
+using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Cells
 {
-        public class CellPassTests
+    public class CellPassTests
     {
         public static CellPass ATestCellPass()
         {
@@ -208,6 +209,23 @@ namespace VSS.TRex.Tests.Cells
             cp2.Read(br2);
 
             Assert.False(cp1.Equals(cp2), "Equality check on different cell passes failed after write then read (returned true)");
+        }
+
+        /// <summary>
+        /// Test reading and writing binary format
+        /// </summary>
+        [Fact]
+        public void Test_CellPass_FromToBinary()
+        {
+          var cp1 = ATestCellPass();
+
+          var writer = new TestBinaryWriter();
+          cp1.ToBinary(writer);
+
+          var cp2 = new CellPass();
+          cp2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
+
+          cp1.Should().BeEquivalentTo(cp2);
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace VSS.TRex.Cells
         /// A reference to the total list of cell passes the passes for this cell is stored within is passed into this method
         /// </summary>
         /// <returns></returns>
-        public float TopMostHeight(CellPass[] Passes) => IsEmpty ? CellPassConsts.NullHeight : Passes[CellPassOffset + PassCount].Height;
+        public float TopMostHeight(CellPass[] Passes) => IsEmpty ? CellPassConsts.NullHeight : Passes[CellPassOffset + PassCount - 1].Height;
 
         /// <summary>
         /// LocateTime attempts to locate an entry in the passes list that has
