@@ -31,10 +31,10 @@ namespace VSS.TRex.Volumes
             */
 
             if (FromSelectionType == ProdReportSelectionType.Filter)
-                Extents = BaseFilter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
+                BaseFilter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
 
             if (ToSelectionType == ProdReportSelectionType.Filter)
-                Extents = TopFilter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
+                TopFilter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
         }
 
         public override bool ComputeVolumeInformation()

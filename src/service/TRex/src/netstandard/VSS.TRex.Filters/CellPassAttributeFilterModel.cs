@@ -223,7 +223,7 @@ namespace VSS.TRex.Filters
 
     public bool FilterTemperatureByLastPass { get; set; }
 
-    public virtual bool IsTimeRangeFilter() => false;
+    public bool IsTimeRangeFilter() => HasTimeFilter && StartTime > DateTime.MinValue;
 
     // Time based filtering members
     /// <summary>

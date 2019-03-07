@@ -311,7 +311,7 @@ namespace VSS.TRex.Pipelines
       }
 
       // Impose the final restriction on the spatial extents from the client context
-      SpatialExtents = SpatialExtents.Intersect(OverrideSpatialExtents);
+      SpatialExtents.Intersect(OverrideSpatialExtents);
 
       // Introduce the Request analyzer to the pipeline and spatial extents it requires
       RequestAnalyser.Pipeline = Pipeline;

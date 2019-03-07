@@ -4,7 +4,6 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
