@@ -1,6 +1,7 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Cells;
-using VSS.TRex;
+using VSS.TRex.Common.Exceptions;
 using Xunit;
 
 namespace VSS.TRex.Tests.Cells
@@ -55,10 +56,21 @@ namespace VSS.TRex.Tests.Cells
             Assert.True(c.Passes[1].Equals(cp2), "Added cell pass not the same content as it was constructed with");
         }
 
-        /// <summary>
-        /// Ensure the topmostheight mechanism creates the appropriate number of entries when added in an unordered manner
-        /// </summary>
         [Fact]
+        public void Test_Cell_AddCellPass_WithDuplicateTime()
+        {
+          Cell_NonStatic c = new Cell_NonStatic(0);
+
+          c.AddPass(CellPassTests.ATestCellPass(), -1);
+
+          Action act = () => c.AddPass(CellPassTests.ATestCellPass(), -1);
+          act.Should().Throw<TRexException>();
+        }
+
+    /// <summary>
+    /// Ensure the topmostheight mechanism creates the appropriate number of entries when added in an unordered manner
+    /// </summary>
+    [Fact]
         public void Test_Cell_AddCellPassUnOrdered()
         {
             Cell_NonStatic c = new Cell_NonStatic(0);
@@ -213,6 +225,52 @@ namespace VSS.TRex.Tests.Cells
         /// Test integration of the cell passes from one cell into the cell passes of another
         /// </summary>
         [Fact]
+        public void Test_Cell_IntegrateCells_CellPasses_NoModified_WithInvertedDates()
+        {
+          // Create cells with a single (different) cell pass in each
+          CellPass cp1 = CellPassTests.ATestCellPass();
+          CellPass cp2 = CellPassTests.ATestCellPass2();
+
+          Cell_NonStatic c1 = new Cell_NonStatic(0);
+          c1.AddPass(cp1);
+          cp1.Time = cp1.Time.AddSeconds(1);
+          c1.AddPass(cp1);
+
+          Cell_NonStatic c2 = new Cell_NonStatic(0);
+          c2.AddPass(cp2);
+          cp2.Time = cp2.Time.AddSeconds(1);
+          c2.AddPass(cp2);
+
+          c2.Integrate(c1.Passes, 0, c1.PassCount - 1, out uint addedCount, out uint modifiedCount);
+
+          Assert.Equal(2U, addedCount);
+          Assert.Equal(0U, modifiedCount);
+        }
+
+        /// <summary>
+        /// Test integration of the cell passes from one cell into the cell passes of another
+        /// </summary>
+        [Fact]
+        public void Test_Cell_IntegrateCells_WithEmptySource()
+        {
+          CellPass cp1 = CellPassTests.ATestCellPass();
+
+          Cell_NonStatic c1 = new Cell_NonStatic(0);
+          c1.AddPass(cp1);
+
+          Cell_NonStatic c2 = new Cell_NonStatic(0);
+
+          // Test integration of cell with no cell passes
+          c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out uint addedCount, out uint modifiedCount);
+
+          Assert.Equal(0U, addedCount);
+          Assert.Equal(0U, modifiedCount);
+        }
+
+    /// <summary>
+    /// Test integration of the cell passes from one cell into the cell passes of another
+    /// </summary>
+    [Fact]
         public void Test_Cell_IntegrateCells_SingleCellPasses_Modified()
         {
             // Create cells with the same single cell pass in each

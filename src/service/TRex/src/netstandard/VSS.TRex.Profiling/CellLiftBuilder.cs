@@ -1070,7 +1070,7 @@ namespace VSS.TRex.Profiling
           // filter them on any required machine events in the process
           for (int I = 0; I < TempPassCount; I++)
           {
-            Cell.Passes.AddPass(TempPasses[I] /*, false*/);
+            Cell.Passes.AddPass(TempPasses[I] /*, false*/); // false parameter comment out until cell pass order enforcement finalisaed
 
             if (Cell.Passes.PassCount == Cell.FilteredPassFlags.Length)
               Array.Resize(ref Cell.FilteredPassFlags, Cell.FilteredPassFlags.Length + 100);
