@@ -435,6 +435,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private async Task<(DateTime startUtc, DateTime endUtc)> GetDateRange(long projectId, FilterResult filter)
     {
+#if RAPTOR
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {
         //Special case of project extents where start and end UTC not set in filter for Raptor performance.
@@ -449,6 +450,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       return (filter.StartUtc.Value, filter.EndUtc.Value);
+#else
+// TRex determines this date range within the export API call
+        return (DateTime.MinValue, DateTime.MinValue);
+#endif
     }
   }
 }
