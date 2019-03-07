@@ -42,7 +42,9 @@ namespace TCCToDataOcean
     // Diagnostic settings
     private readonly bool _downloadProjectFiles;
     private readonly bool _uploadProjectFiles;
+    private readonly bool _downloadProjectCoordinateSystemFile;
     private readonly bool _updateProjectCoordinateSystemFile;
+    private readonly bool _saveCoordinateSystemFile;
 
     private readonly List<ImportedFileType> MigrationFileTypes = new List<ImportedFileType>
     {
@@ -68,13 +70,15 @@ namespace TCCToDataOcean
       ProjectApiUrl = GetEnvironmentVariable("PROJECT_API_URL", 1);
       UploadFileApiUrl = GetEnvironmentVariable("IMPORTED_FILE_API_URL2", 1);
       ImportedFileApiUrl = GetEnvironmentVariable("IMPORTED_FILE_API_URL", 3);
-      TemporaryFolder = GetEnvironmentVariable("TEMPORARY_FOLDER", 2);
+      TemporaryFolder = Path.Combine(GetEnvironmentVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
       _resumeModeEnabled = ConfigStore.GetValueBool("RESUME_MODE_ENABLED", defaultValue: false);
       // Diagnostic settings
       _downloadProjectFiles = ConfigStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
       _uploadProjectFiles = ConfigStore.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
+      _downloadProjectCoordinateSystemFile = ConfigStore.GetValueBool("DOWNLOAD_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
       _updateProjectCoordinateSystemFile = ConfigStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
+      _saveCoordinateSystemFile = ConfigStore.GetValueBool("SAVE_COORDIANTE_SYSTEM_FILE", defaultValue: false);
     }
 
     public async Task MigrateFilesForAllActiveProjects()
@@ -91,10 +95,9 @@ namespace TCCToDataOcean
           Table.Errors
       });
 
-      var workingTmpDir = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp");
-      if (Directory.Exists(workingTmpDir))
+      if (Directory.Exists(TemporaryFolder))
       {
-        Directory.Delete(workingTmpDir, recursive: true);
+        Directory.Delete(TemporaryFolder, recursive: true);
       }
       // TODO (Aaron) Tidy up complete.
 
@@ -120,8 +123,6 @@ namespace TCCToDataOcean
       }
 
       await Task.WhenAll(projectTasks);
-
-      return;
     }
 
     /// <summary>
@@ -207,6 +208,13 @@ namespace TCCToDataOcean
     {
       Log.LogInformation($"{Method.In()} | Downloading coord system file '{project.CoordinateSystemFileName}'");
 
+      // DIAGNOSTIC RUNTIME SWITCH
+      if (!_downloadProjectCoordinateSystemFile)
+      {
+        Log.LogDebug($"{Method.Info("DEBUG")} | Skipped downloading coordinate system file '{project.CoordinateSystemFileName}' for project {project.ProjectUID}");
+        return null;
+      }
+
       Stream memStream = null;
       byte[] coordSystemFileContent;
       int numBytesRead;
@@ -219,6 +227,23 @@ namespace TCCToDataOcean
           coordSystemFileContent = new byte[memStream.Length];
           int numBytesToRead = (int)memStream.Length;
           numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
+
+          // DIAGNOSTIC RUNTIME SWITCH
+          if (_saveCoordinateSystemFile)
+          {
+            var tempPath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
+            Directory.CreateDirectory(tempPath);
+
+            var tempFileName = Path.Combine(tempPath, project.CoordinateSystemFileName);
+
+            Log.LogInformation($"{Method.Info()} | Creating temporary file '{tempFileName}' for project {project.ProjectUID}");
+
+            using (var tempFile = new FileStream(tempFileName, FileMode.Create))
+            {
+              memStream.Position = 0;
+              memStream.CopyTo(tempFile);
+            }
+          }
         }
         else
         {
@@ -264,7 +289,7 @@ namespace TCCToDataOcean
           return (false, null);
         }
 
-        var tempPath = Path.Combine(TemporaryFolder, "DataOceanMigrationTmp", file.CustomerUid, file.ProjectUid, file.ImportedFileUid);
+        var tempPath = Path.Combine(TemporaryFolder, file.CustomerUid, file.ProjectUid, file.ImportedFileUid);
         Directory.CreateDirectory(tempPath);
 
         tempFileName = Path.Combine(tempPath, file.Name);
