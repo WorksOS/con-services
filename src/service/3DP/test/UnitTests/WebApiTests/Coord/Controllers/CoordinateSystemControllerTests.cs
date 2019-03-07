@@ -7,6 +7,7 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
         new MemoryStream(request.CSFileContent),
         request.CSFileName,
-        request.ProjectId ?? -1, out csSettings)).Returns(raptorResult);
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
       CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
@@ -82,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
          It.IsAny<MemoryStream>(),
         request.CSFileName,
-        request.ProjectId ?? -1, out csSettings)).Returns(raptorResult);
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
       CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
@@ -248,7 +249,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       TCoordPointList pointList;
 
       mockRaptorClient.Setup(prj => prj.GetGridCoordinates(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         It.IsAny<TWGS84FenceContainer>(),
         request.ConversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH,
         out pointList)).Returns(raptorResult);
@@ -288,7 +289,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       TCoordPointList pointList;
 
       mockRaptorClient.Setup(prj => prj.GetGridCoordinates(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         It.IsAny<TWGS84FenceContainer>(),
         request.ConversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH,
         out pointList)).Returns(raptorResult);

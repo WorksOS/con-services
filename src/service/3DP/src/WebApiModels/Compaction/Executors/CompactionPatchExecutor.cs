@@ -4,6 +4,7 @@ using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
 
-        var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtDataPatches),
           RaptorConverters.convertDisplayMode(request.Mode),

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
@@ -16,7 +17,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
-      TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
+      TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID);
 
       if (machines != null)
       {

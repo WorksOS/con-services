@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -102,7 +103,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       // End temporary fix.
 
       var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtWMSTile),
         RaptorConverters.convertDisplayMode(request.Mode),

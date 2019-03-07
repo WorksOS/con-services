@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -82,12 +83,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (!request.undo)
       {
         //Validate against existing data edits
-        GetEditDataRequest getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? -1,
+        GetEditDataRequest getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
             request.dataEdit.assetId);
         EditDataResult editResult = PostEditDataAcquire(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
-        ValidateDates(request.ProjectId ?? -1, request.dataEdit);
+        ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit);
       }
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
