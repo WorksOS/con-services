@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -32,16 +33,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteLong(retirementDateAsLong);
     }
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      var version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       retirementDateAsLong = reader.ReadLong();
     }

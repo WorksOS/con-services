@@ -11,7 +11,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric
 {
-  public abstract class BaseIgniteClass : IBinarizable, IFromToBinary
+  public class BaseIgniteClass : IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
@@ -50,11 +50,10 @@ namespace VSS.TRex.GridFabric
 
     public BaseIgniteClass()
     {
-
     }
 
     /// <summary>
-    /// Default no-arg constructor that sets up cluster and compute projections available for use
+    /// Constructor that sets up cluster and compute projections available for use
     /// </summary>
     protected BaseIgniteClass(string gridName, string role)
     {
@@ -66,26 +65,33 @@ namespace VSS.TRex.GridFabric
     /// </summary>
     public void AcquireIgniteTopologyProjections()
     {
+      Log.LogInformation($"Acquiring TRex topology projections for grid {GridName}");
+
+      if (string.IsNullOrEmpty(GridName))
+        throw new TRexException("GridName name not defined when acquiring topology projection");
+
       if (string.IsNullOrEmpty(Role))
         throw new TRexException("Role name not defined when acquiring topology projection");
 
       Ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName);
 
       if (Ignite == null)
-        Log.LogInformation("Ignite reference is null in AcquireIgniteTopologyProjections");
+        throw new TRexException("Ignite reference is null in AcquireIgniteTopologyProjections");
 
-      _Group = Ignite?.GetCluster().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
+      _Group = Ignite?.GetCluster()?.ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
 
       if (_Group == null)
-        Log.LogInformation($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
+        throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
 
-      if (_Group?.GetNodes().Count == 0)
-        Log.LogInformation($"_group cluster topology is empty for role {Role} on grid {GridName}");
+      if (_Group.GetNodes()?.Count == 0)
+        throw new TRexException($"Group cluster topology is empty for role {Role} on grid {GridName}");
 
-      Compute = _Group?.GetCompute();
+      Compute = _Group.GetCompute();
 
       if (Compute == null)
-        Log.LogInformation($"_compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
+        throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
+
+      Log.LogInformation($"Completed acquisition of TRex topology projections for grid {GridName}");
     }
 
     public virtual void ToBinary(IBinaryRawWriter writer)

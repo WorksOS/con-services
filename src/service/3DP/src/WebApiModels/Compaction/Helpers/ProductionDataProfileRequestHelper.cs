@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
-      return CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(
+      return new CompactionProfileProductionDataRequest(
         ProjectId,
         ProjectUid,
         Guid.Empty,

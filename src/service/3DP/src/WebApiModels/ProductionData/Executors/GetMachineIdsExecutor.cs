@@ -28,24 +28,28 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
 #endif
       {
-        var siteModelId = request.ProjectUid.ToString();
+        if (request.ProjectUid.HasValue && request.ProjectUid != Guid.Empty)
+        {
+          var siteModelId = request.ProjectUid.ToString();
 
-        machinesResult = trexCompactionDataProxy
-          .SendDataGetRequest<MachineExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machines", customHeaders)
-          .Result;
-        PairUpAssetIdentifiers(machinesResult, false);
-        return machinesResult;
+          machinesResult = trexCompactionDataProxy
+            .SendDataGetRequest<MachineExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machines",
+              customHeaders)
+            .Result;
+          PairUpAssetIdentifiers(machinesResult, false);
+          return machinesResult;
+        }
       }
 
 #if RAPTOR
-      if (request.ProjectId.HasValue)
+      if (request.ProjectId.HasValue && request.ProjectId >= 1)
       {
         TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
 
         if (machines != null)
         {
           machinesResult =
-            MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
+            new MachineExecutionResult(convertMachineStatus(machines).ToArray());
           PairUpAssetIdentifiers(machinesResult, true);
           return machinesResult;
         }

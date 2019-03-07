@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using DesignProfiler.ComputeProfile.RPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -49,17 +51,18 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void Should_return_empty_result_When_no_result_returned_from_Raptor()
     {
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
 
       raptorClient
         .Setup(x => x.GetDesignProfile(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args>()))
         .Returns((MemoryStream)null);
 
-      var request = CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
-        1234, null,  null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION);
+      var request = new CompactionProfileDesignRequest(
+        1234, null, null,  null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object);
-      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileVertex>;
+        .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
+      var result = executor.ProcessAsync(request).Result as CompactionProfileResult<CompactionProfileVertex>;
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(0, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
       Assert.AreEqual(0, result.results.Count, ResultsShouldBeEmpty);
@@ -79,7 +82,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 13.951246308791798
       };
  
-      var result = MockGetProfile(designProfile);
+      var result = MockGetProfile(designProfile).Result;
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(designProfile.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -100,7 +103,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         GridDistanceBetweenProfilePoints = 13.951246308791798
       };
 
-      var result = MockGetProfile(designProfile);
+      var result = MockGetProfile(designProfile).Result;
 
       Assert.IsNotNull(result, ExecutorFailed);
       Assert.AreEqual(designProfile.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -113,9 +116,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.AreEqual(designProfile.vertices[2].elevation, result.results[1].elevation, "Wrong elevation 2");
     }
 
-    private CompactionProfileResult<CompactionProfileVertex> MockGetProfile(DesignProfile designProfile)
+    private async Task<CompactionProfileResult<CompactionProfileVertex>> MockGetProfile(DesignProfile designProfile)
     {
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
+
       var ms = new MemoryStream();
       //No serialization so do it by hand
       BinaryWriter writer = new BinaryWriter(ms);     
@@ -131,12 +136,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetDesignProfile(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignProfile_Args>()))
         .Returns(ms);
 
-      var request = CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
-        1234, null, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION);
+      var request = new CompactionProfileDesignRequest(
+        1234, null, null, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object);
-      var result = executor.Process(request) as CompactionProfileResult<CompactionProfileVertex>;
+        .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
+      var result = await executor.ProcessAsync(request) as CompactionProfileResult<CompactionProfileVertex>;
       return result;     
     }
   }

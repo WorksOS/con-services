@@ -84,7 +84,7 @@ namespace VSS.TRex.SiteModels
     private readonly object siteModelMachineDesignsLockObject = new object();
     private readonly object siteModelDesignsLockObject = new object();
 
-    public IServerSubGridTree grid;
+    private IServerSubGridTree grid;
 
     /// <summary>
     /// The grid data for this site model

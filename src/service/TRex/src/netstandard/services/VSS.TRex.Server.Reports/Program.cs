@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -129,8 +126,6 @@ namespace VSS.TRex.Server.Reports
         typeof(PipelineProcessor),
         typeof(Profiling.CellLiftBuilder),
         typeof(Rendering.PlanViewTileRenderer),
-        typeof(Services.Designs.DesignsService),
-        typeof(Services.SurveyedSurfaces.SurveyedSurfaceService),
         typeof(SubGrids.CutFillUtilities),
         typeof(ClientCMVLeafSubGrid),
         typeof(SubGridTrees.Core.Utilities.SubGridUtilities),

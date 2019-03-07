@@ -190,5 +190,10 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the site model metadata to preserve the site model extent information across a site model change notification event
       siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
     }
+
+    public new void Dispose()
+    {
+      base.Dispose();
+    }
   }
 }

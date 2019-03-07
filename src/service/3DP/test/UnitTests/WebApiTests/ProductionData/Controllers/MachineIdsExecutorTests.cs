@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     {
       var projectIds = new ProjectID(){ProjectUid = Guid.NewGuid() };
       var assetUid = Guid.NewGuid();
-      var expectedResult =  MachineExecutionResult.CreateMachineExecutionResult
+      var expectedResult =  new MachineExecutionResult
       (
         new MachineStatus[1]
         {
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     {
       var projectIds = new ProjectID() { ProjectId = 999 };
       var assetId = 777;
-      var expectedResult = MachineExecutionResult.CreateMachineExecutionResult
+      var expectedResult = new MachineExecutionResult
       (
         new MachineStatus[1]
         {

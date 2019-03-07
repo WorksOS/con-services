@@ -20,12 +20,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static MachineExecutionResult CreateMachineExecutionResult(MachineStatus[] machineDetails)
+    public MachineExecutionResult(MachineStatus[] machineDetails)
     {
-      return new MachineExecutionResult
-      {
-        MachineStatuses = machineDetails,
-      };
+      MachineStatuses = machineDetails;
     }
 
     public void FilterByMachineId(long machineId)

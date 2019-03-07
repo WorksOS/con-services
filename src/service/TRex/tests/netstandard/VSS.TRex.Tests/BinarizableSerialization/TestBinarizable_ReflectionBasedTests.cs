@@ -11,6 +11,8 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
@@ -31,7 +33,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     }
   }
 
-  public class TestBinarizable_ReflectionBasedTests : IClassFixture<TestBinarizable_ReflectionBasedTests_Fixture>
+  public class TestBinarizable_ReflectionBasedTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     public static IEnumerable<object[]> GetTypes<T>() where T : class, IBinarizable
     {

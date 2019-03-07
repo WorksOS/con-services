@@ -14,6 +14,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// </summary>
     public ServiceTypeMappings ServiceTypeMappings = new ServiceTypeMappings();
 
-    public DataRepository(ILogger logger, IConfigurationStore configStore, IAssetRepository assetRepository, IDeviceRepository deviceRepository, 
+    public DataRepository(ILogger logger, IConfigurationStore configStore, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
       ICustomerRepository customerRepository, IProjectRepository projectRepository,
       ISubscriptionRepository subscriptionsRepository,
       IKafka producer, string kafkaTopicName)
@@ -56,16 +57,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       this.ConfigStore = configStore;
       this.AssetRepository = assetRepository;
       this.DeviceRepository = deviceRepository;
-      this.CustomerRepository = customerRepository;  
+      this.CustomerRepository = customerRepository;
       this.ProjectRepository = projectRepository;
       this.SubscriptionsRepository = subscriptionsRepository;
       this.Producer = producer;
       this.KafkaTopicName = kafkaTopicName;
     }
 
-    public async Task<Project.Abstractions.Models.DatabaseModels.Project> LoadProject(long legacyProjectId)
+    public async Task<ProjectDataModel> LoadProject(long legacyProjectId)
     {
-      Project.Abstractions.Models.DatabaseModels.Project project = null;
+      ProjectDataModel project = null;
       try
       {
         if (legacyProjectId > 0)
@@ -83,9 +84,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<Project.Abstractions.Models.DatabaseModels.Project> LoadProject(string projectUid)
+    public async Task<ProjectDataModel> LoadProject(string projectUid)
     {
-      Project.Abstractions.Models.DatabaseModels.Project project = null;
+      ProjectDataModel project = null;
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
@@ -103,9 +104,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> LoadProjects(string customerUid, DateTime validAtDate)
+    public async Task<IEnumerable<ProjectDataModel>> LoadProjects(string customerUid, DateTime validAtDate)
     {
-      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
+      IEnumerable<ProjectDataModel> projects = null;
 
       try
       {
@@ -130,10 +131,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> GetStandardProject(string customerUid, double latitude,
+    public async Task<IEnumerable<ProjectDataModel>> GetStandardProject(string customerUid, double latitude,
       double longitude, DateTime timeOfPosition)
     {
-      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
+      IEnumerable<ProjectDataModel> projects = null;
 
       try
       {
@@ -153,11 +154,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> GetProjectMonitoringProject(string customerUid, double latitude,
+    public async Task<IEnumerable<ProjectDataModel>> GetProjectMonitoringProject(string customerUid, double latitude,
       double longitude, DateTime timeOfPosition,
       int projectType, int serviceType)
     {
-      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
+      IEnumerable<ProjectDataModel> projects = null;
       try
       {
         if (customerUid != null)
@@ -178,10 +179,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project.Abstractions.Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, 
+    public async Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
       double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null)
     {
-      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> projects = null;
+      IEnumerable<ProjectDataModel> projects = null;
       try
       {
         if (customerUid != null)

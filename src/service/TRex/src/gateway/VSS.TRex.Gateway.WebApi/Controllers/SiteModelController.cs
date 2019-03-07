@@ -92,7 +92,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       var machines = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.Machines.ToList();
 
-      var result = MachineExecutionResult.CreateMachineExecutionResult(new MachineStatus[0]);
+      var result = new MachineExecutionResult(new MachineStatus[0]);
       if (machines != null)
         result.MachineStatuses = machines.Select(machine =>
           AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();
@@ -113,7 +113,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 // todoJeannie 
 // return list and create result in here
 
-      return new MachineExecutionResult(machineDesigns);
+      return new MachineExecutionResult(new MachineStatus[0]);
     }
 
   }

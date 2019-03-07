@@ -29,23 +29,30 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS"))
 #endif
       {
-        var siteModelId = request.ProjectUid.ToString();
+        if (request.ProjectUid.HasValue && request.ProjectUid != Guid.Empty)
+        {
+          var siteModelId = request.ProjectUid.ToString();
 
-        machineDesignsResult = trexCompactionDataProxy
-          .SendDataGetRequest<MachineDesignsExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/designs", customHeaders)
-          .Result;
-        // todoJeannie pair machineUids and designUids
-        return machineDesignsResult;
+          machineDesignsResult = trexCompactionDataProxy
+            .SendDataGetRequest<MachineDesignsExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/designs",
+              customHeaders)
+            .Result;
+          // todoJeannie pair machineUids and designUids
+          return machineDesignsResult;
+        }
       }
 
 #if RAPTOR
+      if (request.ProjectId.HasValue && request.ProjectId >= 1)
+      {
         var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
 
-      if (raptorDesigns != null)
-      {
-        machineDesignsResult = CreateResultFromTDesignName(raptorDesigns);
-        // todoJeannie pair machineUids and designUids
-        return machineDesignsResult;
+        if (raptorDesigns != null)
+        {
+          machineDesignsResult = CreateResultFromTDesignName(raptorDesigns);
+          // todoJeannie pair machineUids and designUids
+          return machineDesignsResult;
+        }
       }
 #endif
 

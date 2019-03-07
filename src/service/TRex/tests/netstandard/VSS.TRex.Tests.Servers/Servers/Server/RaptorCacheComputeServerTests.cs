@@ -4,7 +4,6 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache.Configuration;
 using FluentAssertions;
 using Moq;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Servers.Client;
 using VSS.TRex.DI;
@@ -51,17 +50,8 @@ namespace VSS.TRex.Tests.Servers.Server
     }
   }
 
-  public class TRexCacheComputeServerTests : IClassFixture<DIIgniteServers>//, IDisposable
+  public class TRexCacheComputeServerTests : IClassFixture<DIIgniteServers>
   {
-    /*
-    private DIIgniteServers DIInstance = null;
-
-    public TRexCacheComputeServerTests()
-    {
-      DIInstance = new DIIgniteServers();
-    }
-    */
-
     [Fact]
     public void Test_TRexCacheComputeServer_Creation()
     {
@@ -75,7 +65,6 @@ namespace VSS.TRex.Tests.Servers.Server
     public void Test_ImmutableClientServer_Creation()
     {
       var server = new ImmutableClientServer("UnitTests");
-
       server.Should().NotBeNull();
     }
 
@@ -83,7 +72,6 @@ namespace VSS.TRex.Tests.Servers.Server
     public void Test_MutableClientServer_Creation()
     {
       var server = new MutableClientServer("UnitTests");
-
       server.Should().NotBeNull();
     }
 
@@ -148,6 +136,9 @@ namespace VSS.TRex.Tests.Servers.Server
     {
       var server = new ProfilingServer();
 
+      server.Should().NotBeNull();
+
+      server = new ProfilingServer(new [] {"UnitTest"});
       server.Should().NotBeNull();
     }
 
@@ -264,17 +255,5 @@ namespace VSS.TRex.Tests.Servers.Server
       Func<bool> act = () => server.WaitUntilGridActive(INVALID_GRID_NAME);
       act.Should().Throw<TRexException>().WithMessage($"{INVALID_GRID_NAME} is an unknown grid to create a reference for.");
     }
-
-    /*
-    public void Dispose()
-    {
-      DIInstance = null;
-      DIBuilder.Eject();
-
-      // Ensure the TRex global config has its preference for immutable data left alone...
-      TRexServerConfig.Instance().UseMutableSpatialData = false;
-      TRexServerConfig.Instance().UseMutableNonSpatialData = false;
-    }
-    */
   }
 }
