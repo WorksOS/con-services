@@ -8,16 +8,6 @@ namespace VSS.TRex.Filters.Interfaces
   {
     object /*ISiteModel*/ SiteModel { get; set; }
 
-    /// <summary>
-    /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filter is being applied to
-    /// </summary>
-    short[] MachineIDs { get; set; }
-
-    /// <summary>
-    /// The machines present in the filter represented as a bit set
-    /// </summary>
-    BitArray MachineIDSet { get; set; }
-
     bool LastRecordedCellPassSatisfiesFilter { get; }
 
     bool AnyFilterSelections { get; }
@@ -66,7 +56,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
     /// internal machine IDs relative to this site model
     /// </summary>
-    void InitialiseMachineIDsSet();
+    BitArray GetMachineIDsSet();
 
     bool FilterMultiplePasses(CellPass[] passValues,
       int PassValueCount,
