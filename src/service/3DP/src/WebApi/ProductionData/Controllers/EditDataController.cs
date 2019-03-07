@@ -134,13 +134,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private void ValidateDates(long projectId, ProductionDataEdit dataEdit)
     {
 #if RAPTOR
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
-        fileListProxy: null, tRexCompactionDataProxy: null
-#if RAPTOR
-        , raptorClient: raptorClient
-#endif
-      );
-      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]);
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, null, null, raptorClient);
+      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]).Result;
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
