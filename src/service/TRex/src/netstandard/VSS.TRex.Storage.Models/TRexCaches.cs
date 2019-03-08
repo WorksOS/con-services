@@ -4,7 +4,7 @@ using VSS.TRex.Storage.Models;
 namespace VSS.TRex.Storage.Caches
 {
     /// <summary>
-    /// Sptial grid cache provides logic to determine which of the spatial data grid caches an application should read data from
+    /// Spatial grid cache provides logic to determine which of the spatial data grid caches an application should read data from
     /// depending on it settings in TRexServerConfig
     /// </summary>
     public static class TRexCaches
@@ -27,21 +27,7 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
         public static string MutableSpatialCacheName() => kSpatialMutable;
-/*
-         {
-            if (TRexServerConfig.Instance().UseMutableSpatialData)
-            {
-                return kSpatialMutable;
-            }
 
-            if (TRexServerConfig.Instance().CompressImmutableSpatialData)
-            {
-                return kSpatialImmutableCompressed;
-            }
-
-            return kSpatialImmutable;
-        }
-*/
         /// <summary>
         /// Returns the name of the spatial grid cache to use to store mutable cell and cell pass information
         /// </summary>
@@ -52,21 +38,6 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
         /// </summary>
         public static string MutableNonSpatialCacheName() => kNonSpatialMutable;
-/*
-         {
-            if (TRexServerConfig.Instance().UseMutableNonSpatialData)
-            {
-                return kNonSpatialMutable;
-            }
-
-            if (TRexServerConfig.Instance().CompressImmutableNonSpatialData)
-            {
-                return kNonSpatialImmutableCompressed;
-            }
-
-            return kNonSpatialImmutable;
-        }
-*/
 
         /// <summary>
         /// Returns the name of the spatial grid cache to use to store immutable cell and cell pass information

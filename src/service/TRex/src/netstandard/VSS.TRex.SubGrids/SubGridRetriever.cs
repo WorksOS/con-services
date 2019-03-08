@@ -567,7 +567,7 @@ namespace VSS.TRex.SubGrids
         _segmentIterator = new SubGridSegmentIterator(_subGridAsLeaf, _subGridAsLeaf.Directory, _storageProxy);
 
         if (_filter.AttributeFilter.HasMachineFilter)
-          _segmentIterator.SetMachineRestriction(_filter.AttributeFilter.MachineIDSet);
+          _segmentIterator.SetMachineRestriction(_filter.AttributeFilter.GetMachineIDsSet());
 
         // Create and configure the cell pass iterator to be used
 

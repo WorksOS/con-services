@@ -1,8 +1,13 @@
 ﻿using System;
+using System.IO;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using Xunit;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Tests.BinarizableSerialization;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.Filters
 {
@@ -72,6 +77,8 @@ namespace VSS.TRex.Tests.Filters
         {
             CellSpatialFilter filter = new CellSpatialFilter();
 
+            filter.HasAlignmentDesignMask().Should().BeFalse();
+
             filter.IsAlignmentMask = true;
             filter.AlignmentFence = new Fence(0, 0, 1, 1);
             filter.AlignmentDesignMaskDesignUID = Guid.NewGuid();
@@ -79,6 +86,8 @@ namespace VSS.TRex.Tests.Filters
             filter.EndStation = 1000;
             filter.LeftOffset = -1;
             filter.RightOffset = 1;
+
+            filter.HasAlignmentDesignMask().Should().BeTrue();
 
             Assert.True(filter.IsAlignmentMask && !filter.AlignmentFence.IsNull() &&
                 filter.StartStation == 100 && filter.EndStation == 1000 && filter.LeftOffset == -1 && filter.RightOffset == 1 &&
@@ -91,13 +100,16 @@ namespace VSS.TRex.Tests.Filters
         {
             CellSpatialFilter filter = new CellSpatialFilter();
 
+            filter.HasSurfaceDesignMask().Should().BeFalse();
+
             filter.IsDesignMask = true;
             filter.SurfaceDesignMaskDesignUid = Guid.NewGuid();
 
             Assert.True(filter.IsDesignMask && filter.SurfaceDesignMaskDesignUid != Guid.Empty, "Alignment mask not initialised correctly");
+            filter.HasSurfaceDesignMask().Should().BeTrue();
         }
 
-        [Fact()]
+    [Fact()]
         public void Test_CellSpatialFilter_SetPositional()
         {
             CellSpatialFilter filter = new CellSpatialFilter();
@@ -134,6 +146,7 @@ namespace VSS.TRex.Tests.Filters
 
             filter.ClearAlignmentMask();
             Assert.True(!filter.IsAlignmentMask && filter.AlignmentFence.IsNull(), "Alignment mask not cleared correctly");
+            filter.HasAlignmentDesignMask().Should().BeFalse();
         }
 
         [Fact()]
@@ -178,25 +191,6 @@ namespace VSS.TRex.Tests.Filters
             filter.ClearSpatial();
 
             Assert.True(!filter.IsSpatial && filter.Fence.IsNull(),  "Spatial filter not cleared correctly");
-        }
-
-        [Fact()]
-        public void Test_CellSpatialFilter_HasAlignmentDesignMask()
-        {
-            CellSpatialFilter filter = new CellSpatialFilter();
-
-            Assert.False(filter.HasSpatialOrPositionalFilters, "Default fence does not have spatial or positional filter");
-            filter.IsSpatial = true;
-
-            Assert.True(filter.HasSpatialOrPositionalFilters, "Default fence does not have spatial or positional filter");
-            filter.ClearSpatial();
-            Assert.False(filter.HasSpatialOrPositionalFilters, "Default fence has spatial or positional filter");
-
-            filter.IsPositional = true;
-
-            Assert.True(filter.HasSpatialOrPositionalFilters, "Default fence does not have spatial or positional filter");
-            filter.ClearPositional();
-            Assert.False(filter.HasSpatialOrPositionalFilters, "Default fence has spatial or positional filter");
         }
 
         [Fact()]
@@ -256,6 +250,74 @@ namespace VSS.TRex.Tests.Filters
 
             Assert.True(filter.IsPositionInSelection(0.5, 0.5), "Cell location is IN the fence not OUT of it");
             Assert.False(filter.IsCellInSelection(10, 10), "Cell location is OUT of the fence not IN it");
+        }
+
+        [Fact]
+        public void Test_CellSpatialFilter_CalculateIntersectionWithExtents_Spatial()
+        {
+          var data = new CellSpatialFilter
+          {
+            IsSpatial = true,
+            Fence = new Fence(1, 1, 100, 100)
+          };
+
+          BoundingWorldExtent3D expectedExtent = new BoundingWorldExtent3D(1, 1, 100, 100);
+          BoundingWorldExtent3D startingExtent = new BoundingWorldExtent3D(0, 0, 101, 101);
+
+          data.CalculateIntersectionWithExtents(startingExtent);
+          startingExtent.Should().BeEquivalentTo(expectedExtent);
+        }
+
+        [Fact]
+        public void Test_CellSpatialFilter_CalculateIntersectionWithExtents_Positional()
+        {
+          var data = new CellSpatialFilter
+          {
+            IsPositional = true,
+            PositionX = 100,
+            PositionY = 100,
+            PositionRadius = 50
+          };
+
+          BoundingWorldExtent3D expectedExtent = new BoundingWorldExtent3D(50, 50, 150, 150);
+          BoundingWorldExtent3D startingExtent = new BoundingWorldExtent3D(0, 0, 1000, 1000);
+
+          data.CalculateIntersectionWithExtents(startingExtent);
+          startingExtent.Should().BeEquivalentTo(expectedExtent);
+        }
+
+        [Fact]
+        public void Test_CellSpatialFilter_FromToBinary()
+        {
+          var data = new CellSpatialFilter
+          {
+            PositionX = 1,
+            PositionY = 2,
+            PositionRadius = 3,
+            IsAlignmentMask = true,
+            IsPositional = true,
+            Fence = new Fence(0, 0, 100, 100),
+            AlignmentFence = new Fence(0, 0, 100, 100),
+            IsSpatial = true,
+            AlignmentDesignMaskDesignUID = Guid.NewGuid(),
+            CoordsAreGrid = true,
+            EndStation = 10,
+            IsDesignMask = true,
+            IsSquare = true,
+            LeftOffset = 11,
+            OverrideSpatialCellRestriction = new BoundingIntegerExtent2D(1, 1, 10, 10),
+            RightOffset = 12,
+            StartStation = 13,
+            SurfaceDesignMaskDesignUid = Guid.NewGuid()
+          };
+
+          var writer = new TestBinaryWriter();
+          data.ToBinary(writer);
+
+          var data2 = new CellSpatialFilter();
+          data2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
+
+          data2.Should().BeEquivalentTo(data2);
         }
     }
 }

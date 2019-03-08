@@ -480,7 +480,8 @@ namespace VSS.TRex.Rendering.Executors
           return null;
 
         // Intersect the site model extents with the extents requested by the caller
-        if (!SiteModel.SiteModelExtent.Intersect(RotatedTileBoundingExtents).IsValidPlanExtent)
+        RotatedTileBoundingExtents.Intersect(SiteModel.SiteModelExtent);
+        if (!RotatedTileBoundingExtents.IsValidPlanExtent)
         {
           ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
             
@@ -526,7 +527,7 @@ namespace VSS.TRex.Rendering.Executors
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
         ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
-        // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate syste to act as
+        // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
         // a final restrictor of the spatial extent used to govern data requests
         processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 

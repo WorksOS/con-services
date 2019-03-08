@@ -1,6 +1,8 @@
 ﻿using System;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -69,10 +71,12 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasMachineFilter()
     {
+      var siteModel = new SiteModel();
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
+        x.AttributeFilter.SiteModel = siteModel;
         x.AttributeFilter.HasMachineFilter = true;
-        x.AttributeFilter.MachineIDs = new short[] {0};      
+        x.AttributeFilter.MachinesList = new Guid[] {Guid.NewGuid()};      
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains(ExcludeSurveyedSurfacesID, StringComparison.OrdinalIgnoreCase),
@@ -191,13 +195,29 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_MachineFilter_Present()
     {
-      var filter = CombinedFilter.MakeFilterWith(x =>
+      Guid Machine1Guid = Guid.NewGuid();
+      Guid Machine2Guid = Guid.NewGuid();
+
+      var siteModel = new SiteModel();
+      siteModel.Machines.Add(new Machine
       {
-        x.AttributeFilter.HasMachineFilter = true;
-        x.AttributeFilter.MachineIDs = new short[] {1, 12, 23};
+        ID = Machine1Guid,
+        InternalSiteModelMachineIndex = 0
+      });
+      siteModel.Machines.Add(new Machine
+      {
+        ID = Machine2Guid,
+        InternalSiteModelMachineIndex = 1
       });
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MF:-1-12-23", StringComparison.OrdinalIgnoreCase),
+      var filter = CombinedFilter.MakeFilterWith(x =>
+      {
+        x.AttributeFilter.SiteModel = siteModel;
+        x.AttributeFilter.HasMachineFilter = true;
+        x.AttributeFilter.MachinesList = new [] { Machine1Guid, Machine2Guid};
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("MF:-0-1", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain machine filter ID");
     }
 
