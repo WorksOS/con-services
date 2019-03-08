@@ -6,6 +6,7 @@ using SVOICOptionsDecls;
 using VLPDDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 
-      var raptorResult = raptorClient.GetTemperatureDetails(request.ProjectId ?? -1,
+      var raptorResult = raptorClient.GetTemperatureDetails(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtTemperatureDetailed),
         new TTemperatureDetailSettings
         {

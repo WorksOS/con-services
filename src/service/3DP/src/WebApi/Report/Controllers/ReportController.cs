@@ -12,6 +12,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -448,7 +449,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CCA"), out var useTrexGateway);
 
       if (useTrexGateway)
-        request.ProjectUid = GetProjectUid(request.ProjectId ?? -1).Result;
+        request.ProjectUid = GetProjectUid(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID).Result;
 
       request.Validate();
 

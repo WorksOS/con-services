@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.WebApi.Models.Common
+﻿namespace VSS.Productivity3D.Common
 {
   public class VelociraptorConstants
   {

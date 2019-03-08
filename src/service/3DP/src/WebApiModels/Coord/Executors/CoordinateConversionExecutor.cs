@@ -5,6 +5,7 @@ using VLPDDecls;
 #endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
@@ -64,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 
           var code = raptorClient.GetGridCoordinates
             (
-              request.ProjectId ?? -1, 
+              request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, 
               latLongs, 
               request.ConversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH, 
               out var pointList

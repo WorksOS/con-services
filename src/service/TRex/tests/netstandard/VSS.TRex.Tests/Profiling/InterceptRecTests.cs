@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Profiling.Models;
+﻿using FluentAssertions;
+using VSS.TRex.Profiling.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling
@@ -56,6 +57,30 @@ namespace VSS.TRex.Tests.Profiling
 
         Assert.False(intercept.Equals(intercept2), "Intercept recs not equal when they should be (1)");
         Assert.False(intercept.Equals(intercept2.OriginX, intercept2.OriginY, intercept2.ProfileItemIndex), "Intercept recs not equal when they should be (2)");
+      }
+
+      [Fact]
+      public void Test_InterceptRec_CompareTo()
+      {
+        var intercept1 = new InterceptRec(1, 2, 3, 4, 5, 6);
+        var intercept2 = new InterceptRec(1, 2, 3, 4, 5, 6);
+        var intercept3 = new InterceptRec(1, 2, 3, 4, 0, 6);
+
+        intercept1.CompareTo(intercept2).Should().Be(0);
+        intercept1.CompareTo(intercept3).Should().Be(1);
+        intercept3.CompareTo(intercept1).Should().Be(-1);
+    }
+
+      [Fact]
+      public void Test_InterceptRec_Compare()
+      {
+        var intercept1 = new InterceptRec(1, 2, 3, 4, 5, 6);
+        var intercept2 = new InterceptRec(1, 2, 3, 4, 5, 6);
+        var intercept3 = new InterceptRec(1, 2, 3, 4, 0, 6);
+
+        intercept1.Compare(intercept1, intercept2).Should().Be(0);
+        intercept1.Compare(intercept1, intercept3).Should().Be(1);
+        intercept3.Compare(intercept3, intercept1).Should().Be(-1);
       }
   }
 }

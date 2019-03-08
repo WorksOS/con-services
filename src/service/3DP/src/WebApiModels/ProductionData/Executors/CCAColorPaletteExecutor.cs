@@ -2,6 +2,7 @@
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           palettes.Transitions = new TColourPalette[0];
 
           //if (pdsClient.GetMachineCCAColourPalettes(projectId.projectId, assetId.dataId, out palettes))
-          if (raptorClient.GetMachineCCAColourPalettes(request.ProjectId ?? -1, request.assetId, request.startUtc, request.endUtc, request.liftId, out palettes))
+          if (raptorClient.GetMachineCCAColourPalettes(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.assetId, request.startUtc, request.endUtc, request.liftId, out palettes))
           {
             if (palettes.Transitions.Length == 0)
             {

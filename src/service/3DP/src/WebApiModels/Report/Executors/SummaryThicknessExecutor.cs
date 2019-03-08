@@ -5,6 +5,7 @@ using BoundingExtents;
 using SVOICOptionsDecls;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       var request = CastRequestObjectTo<SummaryParametersBase>(item);
 
-      bool success = raptorClient.GetSummaryThickness(request.ProjectId ?? -1,
+      bool success = raptorClient.GetSummaryThickness(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
         RaptorConverters.ConvertFilter(request.BaseFilter),

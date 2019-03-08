@@ -5,6 +5,7 @@ using SVOICFiltersDecls;
 using SVOICGridCell;
 using SVOICProfileCell;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var raptorFilter = RaptorConverters.ConvertFilter(request.filter, overrideAssetIds: new List<long>());
 
       int code = raptorClient.RequestCellProfile
-      (request.ProjectId ?? -1,
+      (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
         probeX, probeY,
         isGridCoord,

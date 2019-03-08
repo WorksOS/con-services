@@ -1,4 +1,6 @@
-﻿#if RAPTOR
+﻿
+using VSS.Productivity3D.Common;
+#if RAPTOR
 using ASNodeDecls;
 #endif
 using VSS.Productivity3D.Models.Models;
@@ -24,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
     protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
     {
       var request = item as ProjectID;
-      var code = raptorClient.RequestCoordinateSystemDetails(request.ProjectId ?? -1, out var tempCoordSystemSettings);
+      var code = raptorClient.RequestCoordinateSystemDetails(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out var tempCoordSystemSettings);
 
       if (code == TASNodeErrorStatus.asneOK)
         coordSystemSettings = tempCoordSystemSettings;

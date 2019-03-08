@@ -1,5 +1,6 @@
 ﻿using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
@@ -23,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
       var args = ASNode.GroundSurface.RPC.__Global
         .Construct_GroundSurface_Args(
-          request.ProjectId ?? -1,
+          request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           request.SurveyedSurface.Id,
           request.SurveyedUtc,
           RaptorConverters.DesignDescriptor(request.SurveyedSurface)

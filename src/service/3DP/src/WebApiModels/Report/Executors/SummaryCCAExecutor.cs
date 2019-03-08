@@ -4,6 +4,7 @@ using ASNodeDecls;
 using VLPDDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
-        bool success = raptorClient.GetCCASummary(request.ProjectId ?? -1,
+        bool success = raptorClient.GetCCASummary(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCCASummary),
                             raptorFilter,
                             RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),

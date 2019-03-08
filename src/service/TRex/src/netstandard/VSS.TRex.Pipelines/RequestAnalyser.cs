@@ -115,11 +115,7 @@ namespace VSS.TRex.Pipelines
       else
         FilterRestriction.SetMaximalCoverage();
 
-      foreach (ICombinedFilter filter in Pipeline.FilterSet.Filters)
-      {
-        if (filter != null)
-          FilterRestriction = filter.SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
-      }
+      Pipeline.FilterSet.ApplyFilterAndSubsetBoundariesToExtents(FilterRestriction);
 
       // Combine the overall existence map with the existence maps from any surface design filter aspects in 
       // the filter set supplied with the request.

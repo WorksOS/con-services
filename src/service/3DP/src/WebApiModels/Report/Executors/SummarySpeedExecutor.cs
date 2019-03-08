@@ -6,6 +6,7 @@ using ASNodeDecls;
 using SVOICOptionsDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
         }
 
-        var raptorResult = raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetSummarySpeed(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           RaptorConverters.ConvertFilter(request.Filter, overrideAssetIds: new List<long>()),

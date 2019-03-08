@@ -27,7 +27,6 @@ using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
@@ -39,9 +38,7 @@ using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.SubGrids.GridFabric.Listeners;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Tests.BinarizableSerialization;
 
 namespace VSS.TRex.Tests.TestFixtures
 {

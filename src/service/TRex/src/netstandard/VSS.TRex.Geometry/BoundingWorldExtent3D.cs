@@ -51,10 +51,7 @@ namespace VSS.TRex.Geometry
     /// Provide human readable version of instance state
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
-      return $"MinX: {MinX}, MaxX:{MaxX}, MinY:{MinY}, MaxY:{MaxY}, MinZ: {MinZ}, MaxZ:{MaxZ}";
-    }
+    public override string ToString() => $"MinX: {MinX}, MaxX:{MaxX}, MinY:{MinY}, MaxY:{MaxY}, MinZ: {MinZ}, MaxZ:{MaxZ}";
 
     /// <summary>
     /// Calculate mid-point in the X axis of the bounding extent
@@ -293,7 +290,7 @@ namespace VSS.TRex.Geometry
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public bool Includes(double x, double y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
+    public bool Includes(double x, double y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
     /// <summary>
     /// Include the supplied x, y coordinate into the bounding box by increasing its size if necessary
@@ -320,8 +317,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="Extent"></param>
     /// <returns></returns>
-    public BoundingWorldExtent3D Intersect(BoundingWorldExtent3D Extent) => Intersect(Extent.MinX, Extent.MinY, Extent.MaxX, Extent.MaxY);
-
+    public void Intersect(BoundingWorldExtent3D Extent) => Intersect(Extent.MinX, Extent.MinY, Extent.MaxX, Extent.MaxY);
 
     /// <summary>
     /// Compute the 3D bounding box that result from intersecting this bounding box with the one described by the min/max X, Y and Z coordinates.
@@ -331,32 +327,19 @@ namespace VSS.TRex.Geometry
     /// <param name="AMaxX"></param>
     /// <param name="AMaxY"></param>
     /// <returns></returns>
-    public BoundingWorldExtent3D Intersect(double AMinX, double AMinY, double AMaxX, double AMaxY)
+    public void Intersect(double AMinX, double AMinY, double AMaxX, double AMaxY)
     {
-      BoundingWorldExtent3D Result = new BoundingWorldExtent3D();
-      Result.Clear();
-
       if (AMinX > MinX)
-        Result.MinX = AMinX;
-      else
-        Result.MinX = MinX;
+        MinX = AMinX;
 
       if (AMinY > MinY)
-        Result.MinY = AMinY;
-      else
-        Result.MinY = MinY;
+        MinY = AMinY;
 
-      if (AMaxX > MaxX)
-        Result.MaxX = MaxX;
-      else
-        Result.MaxX = AMaxX;
+      if (AMaxX < MaxX)
+        MaxX = AMaxX;
 
-      if (AMaxY > MaxY)
-        Result.MaxY = MaxY;
-      else
-        Result.MaxY = AMaxY;
-
-      return Result;
+      if (AMaxY < MaxY)
+        MaxY = AMaxY;
     }
 
     /* Intersection of a filter boundary is not implemented in the C# version from the Delphi version below. 
@@ -375,19 +358,9 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if the extent of the bounding box is maximal in that the bounds are at extreme ranges of the coordinates
     /// </summary>
-    public bool IsMaximalPlanConverage => (MinX < -1E99) && (MaxX > 1E99) && (MinY < -1E99) && (MaxY > 1E99);
+    public bool IsMaximalPlanConverage => MinX < -1E99 && MaxX > 1E99 && MinY < -1E99 && MaxY > 1E99;
 
-    /// <summary>
-    /// Delegates GetHashCode to the default object hash code
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public int GetHashCode(Fence obj) => obj.GetHashCode();
-
-    public override bool Equals(object obj)
-    {
-      return this == obj || Equals(obj as BoundingWorldExtent3D);
-    }
+    public override bool Equals(object obj) => this == obj || Equals(obj as BoundingWorldExtent3D);
 
     /// <summary>
     /// Determine if this bounding box is equal to another

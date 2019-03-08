@@ -15,6 +15,7 @@ using VSS.Velociraptor.PDSInterface;
 #endif
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -195,7 +196,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var args
           = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
-          (request.ProjectId ?? -1,
+          (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
             ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
             request.StartStation ?? ValidationConstants3D.MIN_STATION,
             request.EndStation ?? ValidationConstants3D.MIN_STATION,
@@ -211,7 +212,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var args
           = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
-          (request.ProjectId ?? -1,
+          (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
             ProfilesHelper.PROFILE_TYPE_HEIGHT,
             positionsAreGrid,
             startPt,
@@ -558,7 +559,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           var args
               = ASNode.RequestSummaryVolumesAlignmentProfile.RPC.__Global
                 .Construct_RequestSummaryVolumesAlignmentProfile_Args
-                (request.ProjectId ?? -1,
+                (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
                   ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
                   volCalcType,
                   request.StartStation ?? ValidationConstants3D.MIN_STATION,
@@ -575,7 +576,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           var args
             = ASNode.RequestSummaryVolumesProfile.RPC.__Global.Construct_RequestSummaryVolumesProfile_Args(
-              (request.ProjectId ?? -1),
+              request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
               ProfilesHelper.PROFILE_TYPE_HEIGHT,
               volCalcType,
               startPt,

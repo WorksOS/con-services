@@ -238,5 +238,36 @@ namespace VSS.TRex.Tests.TestFixtures
         return task;
       });
     }
+
+    public static void AddClusterComputeSpatialAffinityGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TResponse>, IComputeFuncArgument<TArgument>
+    {
+      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+
+      mockCompute.Setup(x => x.AffinityCall(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<TCompute>())).Returns((string cacheName, object key, TCompute func) =>
+      {
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(key);
+
+        var response = func.Invoke();
+
+        TestIBinarizableSerializationForItem(response);
+
+        return response;
+      });
+
+      mockCompute.Setup(x => x.AffinityCallAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<TCompute>())).Returns((string cacheName, object key, TCompute func) =>
+      {
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(key);
+
+        var response = func.Invoke();
+
+        TestIBinarizableSerializationForItem(response);
+
+        return Task.FromResult(response);
+      });
+    }
   }
 }
