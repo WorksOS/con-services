@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(2, result.Designs.Count, "Wrong design count");
       Assert.AreEqual(expectedResult.Designs[0].MachineUid, result.Designs[0].MachineUid, "Wrong machine Uid");
       Assert.AreEqual(expectedResult.Designs[0].StartDate, result.Designs[0].StartDate, "Wrong StartDate");
-      Assert.AreEqual(expectedResult.Designs[1].EndDate, result.Designs[0].EndDate, "Wrong EndDate");
+      Assert.AreEqual(expectedResult.Designs[1].StartDate, result.Designs[0].EndDate, "Wrong EndDate");
 
       Assert.AreEqual(expectedResult.Designs[1].MachineUid, result.Designs[1].MachineUid, "Wrong machine Uid");
       Assert.AreEqual(expectedResult.Designs[1].StartDate, result.Designs[1].StartDate, "Wrong StartDate");
