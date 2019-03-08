@@ -13,6 +13,18 @@ namespace VSS.Productivity3D.Models.Models
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public Guid? AssetUid { get; set; }
-    public Guid? DesignUid { get; set; }
+
+    public LayerIdDetails(long assetId, long designId, long layerId,
+      DateTime startDate, DateTime endDate,
+      Guid? assetUid = null
+    )
+    {
+      AssetId = assetId;
+      DesignId = designId;
+      LayerId = layerId;
+      StartDate = startDate;
+      EndDate = endDate;
+      AssetUid = assetUid;
+    }
   }
 }

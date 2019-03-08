@@ -48,6 +48,13 @@
     public const ushort kMaxGPSAccuracyErrorLimit = 0x3FFF;
 
     /// <summary>
+    /// ID a placeholder for LegacyAssetId as not available in TRex
+    /// </summary>
+    /// <returns></returns>
+    public const long LEGACY_ASSETID = -1;
+
+
+    /// <summary>
     /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references
     /// </summary>
     /// <returns></returns>

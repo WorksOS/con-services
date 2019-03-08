@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
+namespace VSS.Productivity3D.Models.Models
 {
   public class DesignName : IEquatable<DesignName>
   {
@@ -37,24 +37,16 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [JsonIgnore]
     public Guid? MachineUid { get; private set; }
 
-    /// <summary>
-    ///The VSS design identifier.
-    /// </summary>
-    [JsonProperty(PropertyName = "designUid", Required = Required.Default)]
-    public Guid? DesignUid { get; private set; }
 
-    public static DesignName CreateDesignNames(string name, long id, long machineId, DateTime startDate, DateTime endDate, Guid? machineUid = null, Guid? designUid = null)
+    public DesignName(string name, long id, long machineId, DateTime startDate, DateTime endDate,
+      Guid? machineUid = null)
     {
-        return new DesignName
-        {
-          Id = id,
-          Name = name,
-          MachineId = machineId,
-          StartDate = startDate,
-          EndDate = endDate,
-          MachineUid = machineUid,
-          DesignUid = designUid
-        };
+      Id = id;
+      Name = name;
+      MachineId = machineId;
+      StartDate = startDate;
+      EndDate = endDate;
+      MachineUid = machineUid;
     }
 
     #region Equality test
@@ -64,13 +56,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         return false;
       //Note: This is used for the Distinct query to return a unique design list
       //so only want to compare id and name. The other fields are used for details filtering.
-
-      if ((DesignUid == null && other.DesignUid != null) ||
-          (DesignUid != null && other.DesignUid == null) ||
-           DesignUid != other.DesignUid
-        )
-        return false;
-
       return this.Id == other.Id &&
              this.Name == other.Name;
     }

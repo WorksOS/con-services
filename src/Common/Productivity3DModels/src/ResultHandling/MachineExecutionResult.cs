@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -9,7 +10,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
   public class MachineExecutionResult : ContractExecutionResult
   {
     [JsonProperty(PropertyName = "machineStatuses")]
-    public MachineStatus[] MachineStatuses { get; set; }
+    public List<MachineStatus> MachineStatuses { get; set; }
 
     /// <summary>
     /// Default private constructor.
@@ -20,19 +21,19 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public MachineExecutionResult(MachineStatus[] machineDetails)
+    public MachineExecutionResult(List<MachineStatus> machineDetails)
     {
       MachineStatuses = machineDetails;
     }
 
     public void FilterByMachineId(long machineId)
     {
-      MachineStatuses = MachineStatuses.Where(m => m.AssetId == machineId).ToArray();
+      MachineStatuses = MachineStatuses.Where(m => m.AssetId == machineId).ToList();
     }
 
     public void FilterByMachineUid(Guid machineUid)
     {
-      MachineStatuses = MachineStatuses.Where(m => m.AssetUid.HasValue && m.AssetUid == machineUid).ToArray();
+      MachineStatuses = MachineStatuses.Where(m => m.AssetUid.HasValue && m.AssetUid == machineUid).ToList();
     }
   }
 }

@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Create instance of MachineStatus
     /// </summary>
-    public static MachineStatus CreateMachineStatus(
+    public MachineStatus(
         long assetID,
         string machineName,
         bool isJohnDoe,
@@ -63,20 +63,17 @@ namespace VSS.Productivity3D.Models.Models
         Guid? assetUid = null
         )
     {
-      return new MachineStatus
-      {
-        AssetId = assetID,
-        MachineName = machineName,
-        IsJohnDoe = isJohnDoe,
-        lastKnownDesignName = lastKnownDesignName,
-        lastKnownLayerId = lastKnownLayerId,
-        lastKnownTimeStamp = lastKnownTimeStamp,
-        lastKnownLatitude = lastKnownLatitude,
-        lastKnownLongitude = lastKnownLongitude,
-        lastKnownX = lastKnownX,
-        lastKnownY = lastKnownY,
-        AssetUid = assetUid
-      };
+      this.AssetId = assetID;
+      this.MachineName = machineName;
+      this.IsJohnDoe = isJohnDoe;
+      this.lastKnownDesignName = lastKnownDesignName;
+      this.lastKnownLayerId = lastKnownLayerId;
+      this.lastKnownTimeStamp = lastKnownTimeStamp;
+      this.lastKnownLatitude = lastKnownLatitude;
+      this.lastKnownLongitude = lastKnownLongitude;
+      this.lastKnownX = lastKnownX;
+      this.lastKnownY = lastKnownY;
+      this.AssetUid = assetUid;
     }
   }
 }

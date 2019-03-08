@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -728,12 +728,106 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// GetMachineDesignEvents returns the chronological extents of designs used by specific machines.
+    /// GetMachineDesigns returns design changes for each machine.
+    ///    We remove any duplicates (occurs at start, where a period of time is missing between tag files)
+    /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\VLPD\PS\PSNode.MachineDesigns.RPC.Execute.pas
     /// </summary>
     /// <returns></returns>
-    public List<MachineDesignEvent> GetMachineDesignEvents()
+    public List<DesignName> GetMachineDesigns()
     {
-      return new List<MachineDesignEvent>(0);
+      var designSlices = new List<DesignName>();
+      foreach (var machine in Machines)
+      {
+        var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
+
+        int priorMachineDesignId = int.MinValue;
+        DateTime priorDateTime = DateTime.MinValue;
+        for (int i = 0; i < events.Count(); i++)
+        {
+          events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
+          if (machineDesignId < 0)
+          {
+            Log.LogError($"{nameof(GetMachineDesigns)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
+            continue;
+          }
+
+          if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
+          {
+            var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+            designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
+              priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+          }
+
+          // where multi events for same design -  want to retain startDate of first
+          if (priorMachineDesignId != machineDesignId)
+          {
+            priorMachineDesignId = machineDesignId;
+            priorDateTime = dateTime;
+          }
+        }
+
+        if (priorMachineDesignId != int.MinValue)
+        {
+          var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+          designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
+            priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+        }
+      }
+
+      return designSlices;
+    }
+
+    /// <summary>
+    /// GetMachineLayers returns the designs and layers used by specific machines.
+    /// </summary>
+    /// <returns></returns>
+    public List<LayerIdDetails> GetMachineLayers()
+    {
+
+      //var designSlices = new List<DesignName>();
+      //foreach (var machine in Machines)
+      //{
+      //  var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
+
+      //  int priorMachineDesignId = int.MinValue;
+      //  DateTime priorDateTime = DateTime.MinValue;
+      //  for (int i = 0; i < events.Count(); i++)
+      //  {
+      //    events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
+      //    if (machineDesignId < 0)
+      //    {
+      //      Log.LogError($"{nameof(GetMachineDesigns)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
+      //      continue;
+      //    }
+
+      //    if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
+      //    {
+      //      var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+      //      designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
+      //        priorMachineDesignId, -1, priorDateTime, dateTime, machine.ID));
+      //    }
+
+      //    // handle case where multi events for same design - occurs where tagFile data is missing
+      //    //    want to retain startDate of first
+      //    if (priorMachineDesignId != machineDesignId)
+      //    {
+      //      priorMachineDesignId = machineDesignId;
+      //      priorDateTime = dateTime;
+      //    }
+
+      //  }
+
+      //  if (priorMachineDesignId != int.MinValue)
+      //  {
+      //    var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+      //    designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
+      //      priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+      //  }
+      //}
+
+ 
+
+      return new List<LayerIdDetails>(0);
     }
 
     /// <summary>

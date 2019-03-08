@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -92,10 +93,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       var machines = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.Machines.ToList();
 
-      var result = new MachineExecutionResult(new MachineStatus[0]);
+      var result = new MachineExecutionResult(new List<MachineStatus>());
       if (machines != null)
         result.MachineStatuses = machines.Select(machine =>
-          AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();
+          AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
 
       return result;
     }
@@ -105,15 +106,31 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <param name="siteModelID">Site model identifier.</param>
     /// <returns></returns>
-    [HttpGet("{siteModelID}/designs")]
-    public MachineExecutionResult GetDesigns(string siteModelID)
+    [HttpGet("{siteModelID}/machinedesigns")]
+    public MachineDesignsExecutionResult GetMachineDesigns(string siteModelID)
     {
-      var machineDesigns = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.GetMachineDesignEvents();
+      var machineDesigns = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.GetMachineDesigns();
 
 // todoJeannie 
 // return list and create result in here
 
-      return new MachineExecutionResult(new MachineStatus[0]);
+      return new MachineDesignsExecutionResult(new List<DesignName>());
+    }
+
+    /// <summary>
+    /// Returns list of design layers/machines which have contributed to a site model.
+    /// </summary>
+    /// <param name="siteModelID">Site model identifier.</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/machinelayers")]
+    public LayerIdsExecutionResult GetMachineLayers(string siteModelID)
+    {
+      var machineLayers = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.GetMachineLayers();
+
+      // todoJeannie 
+      // return list and create result in here
+
+      return new LayerIdsExecutionResult(new List<LayerIdDetails>());
     }
 
   }

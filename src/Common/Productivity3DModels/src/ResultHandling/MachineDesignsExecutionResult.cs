@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
   public class MachineDesignsExecutionResult : ContractExecutionResult
   {
@@ -12,6 +12,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     [JsonProperty(PropertyName = "designs")]
     public List<DesignName> Designs { get; private set; }
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private MachineDesignsExecutionResult()
+    { }
 
     public MachineDesignsExecutionResult(List<DesignName> designNames)
     {
