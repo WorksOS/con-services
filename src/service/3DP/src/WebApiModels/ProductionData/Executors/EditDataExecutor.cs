@@ -2,6 +2,7 @@
 using ShineOn.Rtl;
 using TAGProcServiceDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -51,20 +52,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         {
           if (request.dataEdit == null)
           {
-            returnResult = tagClient.SubmitOverrideDesignRemove(request.ProjectId ?? -1, -1, new TDateTime());
+            returnResult = tagClient.SubmitOverrideDesignRemove(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, -1, new TDateTime());
             if (returnResult == TTAGProcServerProcessResult.tpsprOK)
-              returnResult = tagClient.SubmitOverrideLayerRemove(request.ProjectId ?? -1, -1, new TDateTime());
+              returnResult = tagClient.SubmitOverrideLayerRemove(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, -1, new TDateTime());
           }
           else
           {
             if (!string.IsNullOrEmpty(request.dataEdit.onMachineDesignName))
             {
-              returnResult = tagClient.SubmitOverrideDesignRemove(request.ProjectId ?? -1, request.dataEdit.assetId,
+              returnResult = tagClient.SubmitOverrideDesignRemove(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit.assetId,
                   startTime);
             }
             if (request.dataEdit.liftNumber.HasValue && returnResult == TTAGProcServerProcessResult.tpsprOK)
             {
-              returnResult = tagClient.SubmitOverrideLayerRemove(request.ProjectId ?? -1, request.dataEdit.assetId,
+              returnResult = tagClient.SubmitOverrideLayerRemove(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit.assetId,
                   startTime);
             }
           }
@@ -75,14 +76,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           {
             //Machine design
             returnResult = tagClient.SubmitDesignToOverride(
-                request.ProjectId ?? -1, request.dataEdit.assetId, request.dataEdit.onMachineDesignName, startTime,
+                request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit.assetId, request.dataEdit.onMachineDesignName, startTime,
                 endTime);
           }
           if (request.dataEdit.liftNumber.HasValue && returnResult == TTAGProcServerProcessResult.tpsprOK)
           {
             //Lift number
             returnResult = tagClient.SubmitLayerToOverride(
-                request.ProjectId ?? -1, request.dataEdit.assetId, request.dataEdit.liftNumber.Value, startTime, endTime);
+                request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit.assetId, request.dataEdit.liftNumber.Value, startTime, endTime);
           }
         }
 

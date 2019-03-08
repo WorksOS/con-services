@@ -4,6 +4,7 @@ using ASNodeDecls;
 using VLPDDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
         var raptorFilter = RaptorConverters.ConvertFilter(request.Filter, request.OverrideStartUtc, request.OverrideEndUtc, request.OverrideAssetIds, fileSpaceName);
-        var raptorResult = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetMDPSummary(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
           ConvertSettings(request.MdpSettings),
           raptorFilter,

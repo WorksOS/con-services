@@ -5,6 +5,7 @@ using SVOICOptionsDecls;
 using VLPDDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -44,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var liftBuildSettings =
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 
-        var raptorResult = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetCutFillDetails(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
           new TCutFillSettings
           {

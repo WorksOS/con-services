@@ -10,13 +10,13 @@ using VLPDDecls;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
         
         var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
-          request.ProjectId ?? -1,
+          request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           false,
           startPt,
           endPt,
