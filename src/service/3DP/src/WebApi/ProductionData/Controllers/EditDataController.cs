@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
@@ -9,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
@@ -75,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
-    public ContractExecutionResult Post([FromBody]EditDataRequest request)
+    public async Task<ContractExecutionResult> Post([FromBody]EditDataRequest request)
     {
       request.Validate();
 #if RAPTOR
@@ -87,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         EditDataResult editResult = PostEditDataAcquire(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
-        ValidateDates(request.ProjectId ?? -1, request.dataEdit);
+        await ValidateDates(request.ProjectId ?? -1, request.dataEdit);
       }
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
@@ -131,11 +133,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Validates new edit is within production data date range for the project
     /// </summary>
-    private void ValidateDates(long projectId, ProductionDataEdit dataEdit)
+    private async Task ValidateDates(long projectId, ProductionDataEdit dataEdit)
     {
 #if RAPTOR
       var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, null, null, raptorClient);
-      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]).Result;
+      var stats = await projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]) as ProjectStatisticsResult;
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

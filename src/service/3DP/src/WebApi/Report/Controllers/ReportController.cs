@@ -284,7 +284,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/statistics")]
     [HttpPost]
-    public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
+    public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
       log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
 
@@ -299,10 +299,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #endif
         );
 
-      return projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(
+      return await projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(
         request.ProjectUid ?? Guid.Empty, 
         request.ProjectId ?? -1, 
-        request.ExcludedSurveyedSurfaceIds.ToList(), GetUserId(), CustomHeaders).Result;
+        request.ExcludedSurveyedSurfaceIds.ToList(), GetUserId(), CustomHeaders);
     }
 
     /// <summary>
