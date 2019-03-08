@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using k8s;
 using k8s.Exceptions;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
-using VSS.Common.Abstractions.Cache.Models;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.Common.Abstractions.ServiceDiscovery.Models;
+using VSS.Common.Kubernetes.Interfaces;
+using VSS.ConfigurationStore;
 
 namespace VSS.Common.ServiceDiscovery.Resolvers
 {
@@ -29,64 +28,27 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     private const int DEFAULT_PRIORITY = 100;
 
     private readonly ILogger<KubernetesServiceResolver> logger;
-    private readonly IDataCache cache;
     
-    private readonly Kubernetes kubernetesClient;
+    private readonly IKubernetes kubernetesClient;
 
     private readonly string kubernetesContext;
     private readonly string kubernetesNamespace;
 
-    public KubernetesServiceResolver(ILogger<KubernetesServiceResolver> logger, IConfiguration configuration, IDataCache cache)
+    public KubernetesServiceResolver(ILogger<KubernetesServiceResolver> logger, IKubernetesClientFactory kubernetesClientFactory, IConfigurationStore configuration)
     {
       this.logger = logger;
-      this.cache = cache;
 
-      if (int.TryParse(configuration["KubernetesServicePriority"], out var priority))
-        Priority = priority;
-      else
-      {
-        logger.LogWarning($"Cannot find priority, defaulting to {DEFAULT_PRIORITY}");
-        Priority = DEFAULT_PRIORITY;
-      }
+      Priority =  configuration.GetValueInt("KubernetesServicePriority", DEFAULT_PRIORITY);
 
-      kubernetesNamespace = configuration["KubernetesNamespace"];
+      kubernetesNamespace = configuration.GetValueString("KubernetesNamespace", null);
       if (string.IsNullOrEmpty(kubernetesNamespace))
         kubernetesNamespace = "default";
 
       logger.LogInformation($"Using the kubernetes namespace {kubernetesNamespace} with priority {Priority}");
 
-      if (string.IsNullOrEmpty(kubernetesContext))
-        kubernetesContext = configuration["KubernetesContext"];
+      kubernetesContext = configuration.GetValueString("KubernetesContext", null);
 
-      if (string.IsNullOrEmpty(kubernetesNamespace))
-      {
-        logger.LogWarning(
-          $"{nameof(kubernetesNamespace)} is not defined, we cannot query the cluster to discover services");
-      }
-      else
-      {
-        KubernetesClientConfiguration config;
-        if (string.IsNullOrWhiteSpace(kubernetesContext))
-        {
-          try
-          {
-            config = KubernetesClientConfiguration.InClusterConfig();
-            logger.LogInformation("Using In Cluster Config");
-          }
-          catch (KubeConfigException e)
-          {
-            logger.LogWarning("Cannot get InClusterConfig, using the config file");
-            config = KubernetesClientConfiguration.BuildConfigFromConfigFile();
-          }
-        }
-        else
-        {
-          logger.LogInformation($"Using Context {kubernetesContext}");
-          config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: kubernetesContext);
-        }
-
-        kubernetesClient = new Kubernetes(config);
-      }
+      kubernetesClient = kubernetesClientFactory.CreateClient(kubernetesNamespace, kubernetesContext);
     }
 
     public ServiceResultType ServiceType => ServiceResultType.InternalKubernetes;
@@ -95,41 +57,18 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
     public Task<string> ResolveService(string serviceName)
     {
-      var cacheKey = $"{nameof(KubernetesServiceResolver)}-{serviceName}";
-      var item = cache.GetOrCreate(cacheKey, entry =>
-      {
-        entry.SetOptions(new MemoryCacheEntryOptions()
-        {
-          AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 0, 30)
-        });
-
-        var result = GetService(serviceName);
-        var cacheItem = new CacheItem<string>(result, new List<string>
-        {
-          serviceName
-        });
-
-        return Task.FromResult(cacheItem);
-
-      });
-
-      return item;
-    }
-
-    private string GetService(string serviceName)
-    {
       var labelFilter = $"{LABEL_FILTER_NAME}={serviceName}";
 
       // Are we configured? if not we won't have setup the client 
       if (string.IsNullOrEmpty(kubernetesNamespace) || kubernetesClient == null)
-        return null;
+        return Task.FromResult<string>(null);
 
       // Attempt to get the list of services in our namespace that match our label
       // We must use our Namespace as there could more than one of the service in our cluster, across namespaces
       // E.g Alpha and Dev pods are hosted in the same cluster
       var list = kubernetesClient.ListNamespacedService(kubernetesNamespace, labelSelector: labelFilter);
       if (list?.Items == null || list.Items.Count == 0)
-        return null;
+        return Task.FromResult<string>(null);
 
       foreach (var item in list.Items)
       {
@@ -143,7 +82,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
         if (httpPort == null)
         {
-          logger.LogWarning($"Could not find an {PORT_NAME} Port for the service {item.Metadata.Name} - ignoring");
+          logger.LogWarning($"Could not find an {PORT_NAME} Port for the service `{item.Metadata?.Name}` - ignoring");
         }
         else if (string.IsNullOrEmpty(item.Spec.ClusterIP))
         {
@@ -154,12 +93,12 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
           // First one found that matches
           var url = $"{httpPort.Name}://{spec.ClusterIP}:{httpPort.Port}";
           logger.LogInformation($"Found `{url}` for the service name `{serviceName}` from kubernetes");
-          return url;
+          return Task.FromResult(url);
         }
       }
 
       // No results
-      return null;
+      return Task.FromResult<string>(null);
     }
   }
 }

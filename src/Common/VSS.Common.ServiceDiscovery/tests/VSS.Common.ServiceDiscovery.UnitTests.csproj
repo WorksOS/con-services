@@ -26,12 +26,16 @@
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
     <PackageReference Include="coverlet.msbuild" Version="2.0.1" />   
+    <PackageReference Include="Moq" Version="4.10.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj" />
+    <ProjectReference Include="..\src\VSS.Common.ServiceDiscovery.csproj" />
   </ItemGroup>
 
 </Project>

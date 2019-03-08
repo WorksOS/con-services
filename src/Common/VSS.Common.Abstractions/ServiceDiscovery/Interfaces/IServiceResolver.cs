@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using VSS.Common.Abstractions.ServiceDiscovery.Models;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 
 namespace VSS.Common.Abstractions.ServiceDiscovery.Interfaces
 {

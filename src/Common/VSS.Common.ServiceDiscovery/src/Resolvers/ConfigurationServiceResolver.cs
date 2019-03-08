@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.Common.Abstractions.ServiceDiscovery.Models;
+using VSS.ConfigurationStore;
 
 namespace VSS.Common.ServiceDiscovery.Resolvers
 {
@@ -16,24 +15,18 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     private const int DEFAULT_PRIORITY = 10;
 
     private readonly ILogger<ConfigurationServiceResolver> logger;
-    private readonly IConfiguration configuration;
+    private readonly IConfigurationStore configuration;
 
-    public ConfigurationServiceResolver(ILogger<ConfigurationServiceResolver> logger, IConfiguration configuration)
+    public ConfigurationServiceResolver(ILogger<ConfigurationServiceResolver> logger, IConfigurationStore configuration)
     {
       this.logger = logger;
       this.configuration = configuration;
-      if (int.TryParse(configuration["ConfigurationServicePriority"], out var p))
-        Priority = p;
-      else
-      {
-        logger.LogWarning($"Cannot find priority, defaulting to {DEFAULT_PRIORITY}");
-        Priority = DEFAULT_PRIORITY;
-      }
+      Priority = configuration.GetValueInt("ConfigurationServicePriority", DEFAULT_PRIORITY);
     }
 
     public Task<string> ResolveService(string serviceName)
     {
-      var configValue = configuration[serviceName];
+      var configValue = configuration.GetValueString(serviceName, null);
 
       if (!string.IsNullOrEmpty(configValue))
       {
