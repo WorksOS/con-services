@@ -7,10 +7,9 @@ namespace VSS.TRex.Geometry
     public int MinX, MinY, MaxX, MaxY;
 
     /// <summary>
-    /// Calculates the area in square meters of the X/Y plan extent. If the extent is too large to represent
-    /// as a 64 bit number of square meters, -1 is returned
+    /// Calculates the number of cells this integer extent convers
     /// </summary>
-    public long Area() => (MaxX - MinX) * (long) (MaxY - MinY);
+    public long Area() => (MaxX - MinX + 1) * (long) (MaxY - MinY + 1);
 
     /// <summary>
     /// Assign the context of another 3D bounding extent to this one
@@ -98,8 +97,8 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if the 2D bounding extent includes the coordinate given by the X and Y parameters
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     /// <returns>A boolean indicating where the bounding extent includes the given position</returns>
     public bool Includes(int x, int y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
@@ -134,12 +133,12 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Compute the size of the X dimension in the bounding extents
     /// </summary>
-    public int SizeX => MaxX - MinX;
+    public int SizeX => MaxX - MinX + 1;
 
     /// <summary>
     /// Compute the size of the Y dimension in the bounding extents
     /// </summary>
-    public int SizeY => MaxY - MinY;
+    public int SizeY => MaxY - MinY + 1;
 
     /// <summary>
     /// Determine if this bounding extent equals another bounding extent instance
