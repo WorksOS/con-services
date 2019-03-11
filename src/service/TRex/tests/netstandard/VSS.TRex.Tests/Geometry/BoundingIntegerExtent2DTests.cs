@@ -52,8 +52,8 @@ namespace VSS.TRex.Tests.Geometry
     {
       var bound = new BoundingIntegerExtent2D(0, 0, 100, 100);
 
-      bound.SizeX.Should().Be(10);
-      bound.SizeY.Should().Be(10);
+      bound.SizeX.Should().Be(100);
+      bound.SizeY.Should().Be(100);
       bound.Area().Should().Be(10000);
     }
 

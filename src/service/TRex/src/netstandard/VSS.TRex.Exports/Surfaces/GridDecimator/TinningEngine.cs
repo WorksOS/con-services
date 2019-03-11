@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 
@@ -124,7 +124,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       Triangle secondSide,
       Triangle thirdSide)
     {
-      Debug.Assert(tri != firstSide && tri != secondSide && tri != thirdSide, "Triangle cannot be its own neighbour");
+      if (tri == firstSide || tri == secondSide || tri == thirdSide)
+        throw new TRexTINException($"Triangle cannot be its own neighbour: Tri={tri}, versus neighbours={string.Concat(new object[] { firstSide, secondSide, thirdSide })}");
 
       tri.Vertices[0] = firstCoord;
       tri.Vertices[1] = secondCoord;
@@ -158,7 +159,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             coord2.X == coord3.X && coord2.Y == coord3.Y ||
             coord3.X == coord1.X && coord3.Y == coord1.Y)
         {
-          Debug.Assert(false, "Coordinates for new triangle are not unique");
+          TIN.SaveToFile(@"C:\Temp\TINStateBeforeCoordNonUniquenessException.ttm", false);
+
+          throw new TRexTINException($"Coordinates for new triangle are not unique {string.Concat(new object[]{coord1, coord2, coord3})}");
         }
 
         result.Vertices[0] = coord1;
@@ -176,7 +179,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         TriangleAdded(result);
       }
 
-      Debug.Assert(result != side1 && result != side2 && result != side3, "Triangle cannot be its own neighbour");
+      if (result == side1 || result == side2 || result == side3)
+        throw new TRexTINException($"Triangle cannot be its own neighbour: Tri={result}, versus neighbours={string.Concat(new object[]{side1, side2, side3})}");
 
       result.Neighbours[0] = side1;
       result.Neighbours[1] = side2;
@@ -545,6 +549,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       TIN.Triangles.NumberTriangles();
     }
 
+    private static int IndexCount = 0;
+
     /// <summary>
     /// The triangles in the affected list form a polygon about the coord being
     /// inserted.Update these triangles, and form new triangles using each
@@ -578,8 +584,12 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
         if (AffectedIdx >= numAffected)
         {
+          TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
+
           // the last one or two triangles will be new, rather than updated 
-          Debug.Assert(succLastTriangle != null, "Cannot use a nil triangle for a new triangle");
+          if (succLastTriangle == null)
+            throw new TRexTINException("Cannot use a nil triangle for a new triangle");
+
           lastSide = NewTriangle(nextPoint,
             newCoord,
             affSideList[sidePtr].point,
@@ -587,11 +597,15 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
+          TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterAddingTriangle.ttm", false);
+
           succLastTriangle = succSuccLastTriangle;
           succSuccLastTriangle = null;
         }
         else
         {
+          TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
+
           //  update affectedPtr^.tri triangle 
           makeUpdatedTriangle(affectedList[AffectedIdx].Tri,
             nextPoint,
@@ -600,6 +614,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             nextSide,
             lastSide,
             affSideList[sidePtr].side);
+
+          TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterModifyingTriangle.ttm", false);
 
           lastSide = affectedList[AffectedIdx].Tri;
           AffectedIdx++;
@@ -713,7 +729,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       AddCoordToModel(theCoord, currentTri);
 
-      Debug.Assert(succLastTriangle != null, "Not all created triangles used.");
+      if (succLastTriangle != null)
+        throw new TRexTINException("Not all created triangles used.");
 
       return true;
     }
@@ -755,14 +772,14 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       AddCoordToModel(theCoord, tri);
 
       if (succLastTriangle != null)
-        Debug.Assert(false, "Not all created triangles used.");
+        throw new TRexTINException("Not all created triangles used.");
 
       return true;
     }
 
     /// <summary>
     /// Builds a triangle mesh from the vertices contained in the TIN model. All
-    /// triangles are discarded. When using BuildTINMesh, it is sufficent to
+    /// triangles are discarded. When using BuildTINMesh, it is sufficient to
     /// populate the vertex list (using AddVertex()) with all the vertices
     /// requiring tinning, then calling BuildTINMesh. All points to be tinned must be
     /// added prior to calling BuilTINMesh. To build TIN surfaces incrementally
