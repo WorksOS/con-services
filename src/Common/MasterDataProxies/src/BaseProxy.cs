@@ -12,10 +12,8 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
 using VSS.Common.Abstractions.MasterData.Interfaces;
-using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Proxies
@@ -273,7 +271,7 @@ namespace VSS.MasterData.Proxies
     ///   or
     ///   Incorrect expiration time parameter
     /// </exception>
-    private async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IDictionary<string, string> customHeaders, Func<Task<T>> action) where T : class, IMasterDataModel
+    protected async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IDictionary<string, string> customHeaders, Func<Task<T>> action) where T : class, IMasterDataModel
     {
       if (dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");

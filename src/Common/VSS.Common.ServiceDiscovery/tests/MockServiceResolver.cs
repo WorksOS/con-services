@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.Common.Abstractions.ServiceDiscovery.Models;
 
 namespace VSS.Common.ServiceDiscovery.UnitTests
 {
