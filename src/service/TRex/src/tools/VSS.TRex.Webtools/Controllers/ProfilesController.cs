@@ -83,8 +83,8 @@ namespace VSS.TRex.Webtools.Controllers
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      ProfileRequest_ApplicationService<ProfileCell> request = new ProfileRequest_ApplicationService<ProfileCell>();
-      ProfileRequestResponse<ProfileCell> Response = request.Execute(arg);
+      var request = new ProfileRequest_ApplicationService_ProfileCell();
+      var Response = request.Execute(arg);
 
       if (Response == null)
         return new JsonResult(@"Profile response is null");
@@ -139,8 +139,8 @@ namespace VSS.TRex.Webtools.Controllers
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      ProfileRequest_ApplicationService<ProfileCell> request = new ProfileRequest_ApplicationService<ProfileCell>();
-      ProfileRequestResponse<ProfileCell> Response = request.Execute(arg);
+      var request = new ProfileRequest_ApplicationService_ProfileCell();
+      var Response = request.Execute(arg);
       
       if (Response == null)
         return new JsonResult(@"Profile response is null");
@@ -181,7 +181,7 @@ namespace VSS.TRex.Webtools.Controllers
       arg.Filters.Filters[1].AttributeFilter.ReturnEarliestFilteredCellPass = false;
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      var request = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
+      var request = new ProfileRequest_ApplicationService_SummaryVolumeProfileCell();
 
       var Response = request.Execute(arg);
       if (Response == null)

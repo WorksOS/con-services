@@ -20,6 +20,7 @@ namespace VSS.TRex.Tests
       return TypesHelper
         .FindAllDerivedTypesInAllLoadedAssemblies<IBaseRequest>("VSS")
         .Where(x => !x.IsAbstract)
+        .Where(x => !x.IsGenericTypeDefinition)
         .Select(x => new object[] {x});
     }
 
@@ -50,7 +51,7 @@ namespace VSS.TRex.Tests
       var covered = FindClassesCoveringType(type);
 
       // All requests need at least one unit test class that covers them
-      (covered?.Count() ?? 0).Should().BeGreaterOrEqualTo(1, $"Because request type {type} is not covered by any unite tests attributed with UnitTestCoveredRequestAttribute");
+      (covered?.Count() ?? 0).Should().BeGreaterOrEqualTo(1, $"Because request type {type} is not covered by any unit tests attributed with UnitTestCoveredRequestAttribute");
     }
   }
 }
