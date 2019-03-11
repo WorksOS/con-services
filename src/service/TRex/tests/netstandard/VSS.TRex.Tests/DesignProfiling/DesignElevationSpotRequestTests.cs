@@ -11,6 +11,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.DesignProfiling
 {
+  [UnitTestCoveredRequest(RequestType = typeof(DesignElevationSpotRequest))]
   public class DesignElevationSpotRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private ISiteModel NewEmptyModel() => DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
