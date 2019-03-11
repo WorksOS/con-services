@@ -264,7 +264,7 @@ namespace VSS.TRex.Tests.Geometry
         }
 
         [Fact()]
-        public void Test_XYZTests_PointInTriangleInclusive()
+        public void Test_XYZTests_PointInTriangleInclusive_Clockwise()
         {
             XYZ bottom = new XYZ(0, 0, 0);
             XYZ top = new XYZ(0, 10, 0);
@@ -275,6 +275,20 @@ namespace VSS.TRex.Tests.Geometry
             Assert.True(XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 10.0), $"2, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 10.0)}" );
             Assert.True(XYZ.PointInTriangleInclusive(bottom, top, right, 10.0, 10.0), $"3, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 10.0, 10.0)}" );
             Assert.True(XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 5.0), $"4, Expected point in triangle inclusive == true, got { XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 5.0)}");
+        }
+
+        [Fact()]
+        public void Test_XYZTests_PointInTriangleInclusive_AntiClockwise()
+        {
+          XYZ bottom = new XYZ(0, 0, 0);
+          XYZ top = new XYZ(0, 10, 0);
+          XYZ right = new XYZ(10, 10, 0);
+
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 1.0, 9.0), $"0, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 1.0, 9.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 0.0, 0.0), $"1, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 0.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 0.0, 10.0), $"2, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 10.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 10.0, 10.0), $"3, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 10.0, 10.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 0.0, 5.0), $"4, Expected point in triangle inclusive == true, got { XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 5.0)}");
         }
 
         [Fact()]

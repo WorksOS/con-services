@@ -560,7 +560,13 @@ namespace VSS.TRex.Geometry
       XYZ TestPos = new XYZ(X, Y, 0);
       bool IsOnRight = PointOnOrOnRight(P1, P2, TestPos);
 
-      return IsOnRight == PointOnOrOnRight(P2, P3, TestPos) && IsOnRight == PointOnOrOnRight(P3, P1, TestPos);
+      if (IsOnRight == PointOnOrOnRight(P2, P3, TestPos) && IsOnRight == PointOnOrOnRight(P3, P1, TestPos))
+        return true;
+
+      // Check left-hand winding...
+      bool IsOnLeft = PointOnOrOnRight(P2, P1, TestPos);
+
+      return IsOnLeft == PointOnOrOnRight(P1, P3, TestPos) && IsOnLeft == PointOnOrOnRight(P3, P2, TestPos);
     }
 
     /// <summary>

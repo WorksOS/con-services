@@ -7,9 +7,9 @@ namespace VSS.TRex.Geometry
     public int MinX, MinY, MaxX, MaxY;
 
     /// <summary>
-    /// Calculates the number of cells this integer extent convers
+    /// Calculates the number of cells this integer extent covers
     /// </summary>
-    public long Area() => (MaxX - MinX + 1) * (long) (MaxY - MinY + 1);
+    public long Area() => SizeX * (long) SizeY; 
 
     /// <summary>
     /// Assign the context of another 3D bounding extent to this one
@@ -133,12 +133,12 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Compute the size of the X dimension in the bounding extents
     /// </summary>
-    public int SizeX => MaxX - MinX + 1;
+    public int SizeX => MaxX - MinX;
 
     /// <summary>
     /// Compute the size of the Y dimension in the bounding extents
     /// </summary>
-    public int SizeY => MaxY - MinY + 1;
+    public int SizeY => MaxY - MinY;
 
     /// <summary>
     /// Determine if this bounding extent equals another bounding extent instance
