@@ -9,7 +9,6 @@ using Xunit;
 
 namespace VSS.TRex.Tests
 {
-
   /// <summary>
   /// The intention of these reflection based tests is to ensure that every request based class derived from BaseRequest is
   /// represented by a unit tests declaring they cover the requests n question. 
@@ -26,19 +25,12 @@ namespace VSS.TRex.Tests
 
     private IEnumerable<Type> FindClassesCoveringType(Type type)
     {
-      var typesWithMyAttribute =
-        AppDomain.CurrentDomain.GetAssemblies()
+      return AppDomain.CurrentDomain
+          .GetAssemblies()
           .Where(x => x.FullName.StartsWith("VSS", StringComparison.OrdinalIgnoreCase))
           .SelectMany(x => x.GetTypes())
-          .Where(y =>
-          {
-            var attrs = y.GetCustomAttributes(typeof(UnitTestCoveredRequestAttribute), true)
-              .Cast<UnitTestCoveredRequestAttribute>()
-              .Where(x => x.RequestType == type);
-            return attrs.Any();
-          });
-
-      return typesWithMyAttribute;
+          .Where(y => y.GetCustomAttributes(typeof(UnitTestCoveredRequestAttribute), true)
+                       .Cast<UnitTestCoveredRequestAttribute>().Any(x => x.RequestType == type));         
     }
 
     [Fact]
@@ -54,10 +46,10 @@ namespace VSS.TRex.Tests
     [MemberData(nameof(GetTypes))]
     public void CheckRequest(Type type)
     {
-      // Get the set of set class that advertie they cover the type in question
+      // Get the set of set class that advertise they cover the type in question
       var covered = FindClassesCoveringType(type);
 
-      // All Requests need at least one unit test class that covers them
+      // All requests need at least one unit test class that covers them
       (covered?.Count() ?? 0).Should().BeGreaterOrEqualTo(1, $"Because request type {type} is not covered by any unite tests attributed with UnitTestCoveredRequestAttribute");
     }
   }
