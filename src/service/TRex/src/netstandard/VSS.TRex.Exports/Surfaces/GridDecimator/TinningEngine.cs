@@ -549,7 +549,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       TIN.Triangles.NumberTriangles();
     }
 
-    private static int IndexCount = 0;
+    //private static int IndexCount = 0;
 
     /// <summary>
     /// The triangles in the affected list form a polygon about the coord being
@@ -584,7 +584,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
         if (AffectedIdx >= numAffected)
         {
-          TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
+          //TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
 
           // the last one or two triangles will be new, rather than updated 
           if (succLastTriangle == null)
@@ -597,14 +597,14 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
-          TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterAddingTriangle.ttm", false);
+          //TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterAddingTriangle.ttm", false);
 
           succLastTriangle = succSuccLastTriangle;
           succSuccLastTriangle = null;
         }
         else
         {
-          TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
+          //TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
 
           //  update affectedPtr^.tri triangle 
           makeUpdatedTriangle(affectedList[AffectedIdx].Tri,
@@ -615,7 +615,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
-          TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterModifyingTriangle.ttm", false);
+          //TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterModifyingTriangle.ttm", false);
 
           lastSide = affectedList[AffectedIdx].Tri;
           AffectedIdx++;
