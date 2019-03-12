@@ -27,13 +27,5 @@ namespace VSS.TRex.Designs.Interfaces
     bool RemoveDesign(Guid ADesignID);
 
     IDesign Locate(Guid AID);
-    void Assign(IDesigns source);
-
-    /// <summary>
-    /// Determine if the designs in this list are the same as the designs in the other list, based on ID comparison
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    bool IsSameAs(IDesigns other);
   }
 }

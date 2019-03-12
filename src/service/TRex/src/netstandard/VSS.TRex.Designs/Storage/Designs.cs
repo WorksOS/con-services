@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
 {
     public class Designs : List<IDesign>, IDesigns
     {
-        private const byte kMajorVersion = 1;
-        private const byte kMinorVersion = 0;
+        private const byte VERSION_NUMBER = 1;
 
         /// <summary>
         /// No-arg constructor
@@ -21,19 +19,10 @@ namespace VSS.TRex.Designs.Storage
         {
         }
 
-        /// <summary>
-        /// Constructor accepting a Binary Reader instance from which to instantiate itself
-        /// </summary>
-        /// <param name="reader"></param>
-        public Designs(BinaryReader reader)
-        {
-            Read(reader);
-        }
-
         public void Write(BinaryWriter writer)
         {
-            writer.Write(kMajorVersion);
-            writer.Write(kMinorVersion);
+            VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
             writer.Write((int)Count);
 
             foreach (Design design in this)
@@ -46,17 +35,7 @@ namespace VSS.TRex.Designs.Storage
 
         public void Read(BinaryReader reader)
         {
-            ReadVersionFromStream(reader, out byte MajorVersion, out byte MinorVersion);
-
-            if (MajorVersion != kMajorVersion)
-            {
-                throw new FormatException("Major version incorrect");
-            }
-
-            if (MinorVersion != kMinorVersion)
-            {
-                throw new FormatException("Minor version incorrect");
-            }
+            VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
             int TheCount = reader.ReadInt32();
             for (int i = 0; i < TheCount; i++)
@@ -65,13 +44,6 @@ namespace VSS.TRex.Designs.Storage
                 design.Read(reader);
                 Add(design);
             }
-        }
-
-        public void ReadVersionFromStream(BinaryReader reader, out byte MajorVersion, out byte MinorVersion)
-        {
-            // Load file version info
-            MajorVersion = reader.ReadByte();
-            MinorVersion = reader.ReadByte();
         }
 
         /// <summary>
@@ -111,45 +83,5 @@ namespace VSS.TRex.Designs.Storage
         }
 
         public IDesign Locate(Guid AID) => Find(x => x.ID == AID);
-
-        public void Assign(IDesigns source)
-        {
-            Clear();
-
-            foreach (IDesign design in source)
-            {
-                Add(design.Clone());
-            }
-        }
-
-        /// <summary>
-        /// Determine if the designs in this list are the same as the designs in the other list, based on ID comparison
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool IsSameAs(IDesigns other)
-        {
-            if (Count != other.Count)
-            {
-                return false;
-            }
-
-            for (int I = 0; I < Count; I++)
-            {
-                if (this[I].ID != other[I].ID)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Calculate the cache key for the design list
-        /// </summary>
-        /// <param name="SiteModelID"></param>
-        /// <returns></returns>
-        public static INonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
     }
 }
