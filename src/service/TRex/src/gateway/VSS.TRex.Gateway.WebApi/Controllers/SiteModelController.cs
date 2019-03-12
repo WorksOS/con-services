@@ -3,16 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Executors;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Helpers;
+using VSS.TRex.Gateway.WebApi.ActionServices;
+using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -35,8 +42,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpGet("{siteModelID}/extents")]
     public BoundingBox3DGrid GetExtents(string siteModelID)
     {
-      var extents = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.SiteModelExtent;
-      
+      Log.LogInformation($"{nameof(GetExtents)}: siteModelID: {siteModelID}");
+
+      ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(siteModelID);
+
+      var extents = siteModel.SiteModelExtent;
       if (extents != null)
         return BoundingBox3DGrid.CreatBoundingBox3DGrid(
 
@@ -59,11 +69,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("statistics")]
     public ProjectStatisticsResult GetStatistics([FromBody]ProjectStatisticsTRexRequest projectStatisticsTRexRequest)
     {
+      Log.LogInformation($"{nameof(GetStatistics)}: projectStatisticsTRexRequest: {JsonConvert.SerializeObject(projectStatisticsTRexRequest)}");
       projectStatisticsTRexRequest.Validate();
 
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectStatisticsTRexRequest.ProjectUid);
-      if (siteModel == null)
-        return new ProjectStatisticsResult(ContractExecutionStatesEnum.ValidationError);
+      ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(projectStatisticsTRexRequest.ProjectUid);
 
       var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid, projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
 
@@ -87,19 +96,68 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Returns list of machines which have contributed to a site model.
     /// </summary>
     /// <param name="siteModelID">Site model identifier.</param>
+    /// <param name="coordinateServiceUtility"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}/machines")]
-    public MachineExecutionResult GetMachines(string siteModelID)
+    public MachineExecutionResult GetMachines(string siteModelID,
+      [FromServices] ICoordinateServiceUtility coordinateServiceUtility)
     {
-      var machines = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.Machines.ToList();
+      Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
 
-      var result = new MachineExecutionResult(new List<MachineStatus>());
-      if (machines != null)
-        result.MachineStatuses = machines.Select(machine =>
-          AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
+      ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(siteModelID);
+
+      // todoJeannie is this a failure situation, or should I just not fill lat/longs?
+      if (string.IsNullOrEmpty(siteModel.CSIB()))
+      {
+        Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
+        return (MachineExecutionResult)new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
+      }
+
+      var machines = siteModel.Machines.ToList();
+      var result = new MachineExecutionResult(new List<MachineStatus>(machines.Count));
+
+      if (machines.Any())
+      {
+        List<MachineStatus> resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
+        var response = coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
+        if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
+          result.MachineStatuses = resultMachines;
+        else
+          return (MachineExecutionResult)new ContractExecutionResult(response);
+      }
 
       return result;
     }
+
+    //private int PatchLatLongs(string CSIB, List<MachineStatus> machines)
+    //{
+    //  var NEECoords = new XYZ[machines.Count];
+    //  machines.ForEach(machine =>
+    //  {
+    //    if (machine.lastKnownX != null && machine.lastKnownY != null) NEECoords.Append(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value));
+    //  });
+
+    //  (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords);
+    //  if (errorCode == RequestErrorStatus.OK)
+    //  {
+    //    var retrieveCoordCount = 0;
+    //    machines.ForEach(machine =>
+    //    {
+    //      if (machine.lastKnownX != null && machine.lastKnownY != null)
+    //      {
+    //        machine.lastKnownLatitude = MathUtilities.RadiansToDegrees(LLHCoords[retrieveCoordCount].Y);
+    //        machine.lastKnownLongitude = MathUtilities.RadiansToDegrees(LLHCoords[retrieveCoordCount].X);
+    //        retrieveCoordCount++;
+    //      }        });
+    //  }
+    //  else
+    //  {
+    //    Log.LogInformation($"{nameof(PatchLatLongs)}: PatchLatLongs failure, could not convert machine coordinates. Error: {errorCode.ToString()}");
+    //    return ContractExecutionStatesEnum.InternalProcessingError;
+    //  }
+
+    //  return ContractExecutionStatesEnum.ExecutedSuccessfully;
+    //}
 
     /// <summary>
     /// Returns list of design/machines which have contributed to a site model.
@@ -109,12 +167,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpGet("{siteModelID}/machinedesigns")]
     public MachineDesignsExecutionResult GetMachineDesigns(string siteModelID)
     {
-      var machineDesigns = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.GetMachineDesigns();
+      Log.LogInformation($"{nameof(GetMachineDesigns)}: siteModelID: {siteModelID}");
 
-// todoJeannie 
-// return list and create result in here
+      ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(siteModelID);
 
-      return new MachineDesignsExecutionResult(new List<DesignName>());
+      return new MachineDesignsExecutionResult(siteModel.GetMachineDesigns());
     }
 
     /// <summary>
@@ -125,12 +182,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpGet("{siteModelID}/machinelayers")]
     public LayerIdsExecutionResult GetMachineLayers(string siteModelID)
     {
-      var machineLayers = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.GetMachineLayers();
+      Log.LogInformation($"{nameof(GetMachineLayers)}: siteModelID: {siteModelID}");
 
-      // todoJeannie 
-      // return list and create result in here
+      ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(siteModelID);
 
-      return new LayerIdsExecutionResult(new List<LayerIdDetails>());
+      return new LayerIdsExecutionResult(siteModel.GetMachineLayers());
     }
 
   }

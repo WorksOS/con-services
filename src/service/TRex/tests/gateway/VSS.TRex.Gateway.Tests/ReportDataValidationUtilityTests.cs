@@ -1,18 +1,18 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.Productivity3D.Models.Models.Reports;
-using VSS.TRex.DI;
-using VSS.TRex.Gateway.WebApi.ActionServices;
 using Moq;
-using Xunit;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.Alignments.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
+using VSS.TRex.Gateway.WebApi.ActionServices;
+using VSS.TRex.SiteModels.Interfaces;
+using Xunit;
 
-namespace VSS.TRex.Tests.Reports.StationOffset
+namespace VSS.TRex.Gateway.Tests
 {
   public class ReportDataValidationUtilityTests : IDisposable
   {

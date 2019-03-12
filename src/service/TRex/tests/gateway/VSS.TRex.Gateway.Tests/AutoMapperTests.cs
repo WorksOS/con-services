@@ -147,9 +147,9 @@ namespace VSS.TRex.Gateway.Tests
       machineStatuses[0].lastKnownTimeStamp.HasValue.Equals(true);
       machineStatuses[0].lastKnownTimeStamp?.Equals(machines[0].LastKnownPositionTimeStamp);
       machineStatuses[0].lastKnownLatitude.HasValue.Equals(true);
-      machineStatuses[0].lastKnownLatitude?.Equals(Double.MaxValue);    // todoJeannie
+      machineStatuses[0].lastKnownLatitude?.Equals(Double.MaxValue); 
       machineStatuses[0].lastKnownLongitude.HasValue.Equals(true);
-      machineStatuses[0].lastKnownLongitude?.Equals(Double.MaxValue);   // todoJeannie
+      machineStatuses[0].lastKnownLongitude?.Equals(Double.MaxValue); 
       machineStatuses[0].lastKnownX.HasValue.Equals(true);
       machineStatuses[0].lastKnownX?.Equals(machines[0].LastKnownX);
       machineStatuses[0].lastKnownY.HasValue.Equals(true);

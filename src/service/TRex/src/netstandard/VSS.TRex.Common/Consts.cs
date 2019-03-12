@@ -35,6 +35,7 @@
     /// <summary>
     /// Null ID for a design reference descriptor ID
     /// </summary>
+    public const string kNoDesignName = "'<No Design>";
     public const int kNoDesignNameID = 0;
 
     /// <summary>

@@ -20,11 +20,10 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.MapFrom(f => f.IsJohnDoeMachine))
         .ForMember(x => x.lastKnownTimeStamp,
           opt => opt.MapFrom(f => f.LastKnownPositionTimeStamp))
+        // Lat/long should be set outside of this simple mapper as it requires call to another service
         .ForMember(x => x.lastKnownLongitude,
-        // todoJeannie convert from x/y opt => opt.MapFrom(f => f.LastKnownX))
-        opt => opt.UseValue(Double.MaxValue))
+         opt => opt.UseValue(Double.MaxValue))
         .ForMember(x => x.lastKnownLatitude,
-        // todoJeannie convert from x/y opt => opt.MapFrom(f => f.LastKnownY))
         opt => opt.UseValue(Double.MaxValue))
         ;
     }

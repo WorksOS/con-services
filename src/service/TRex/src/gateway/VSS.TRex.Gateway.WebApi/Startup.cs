@@ -67,6 +67,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>();
+      services.AddTransient<ICoordinateServiceUtility, CoordinateServiceUtility>();
       services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
 
       services.AddOpenTracing(builder =>

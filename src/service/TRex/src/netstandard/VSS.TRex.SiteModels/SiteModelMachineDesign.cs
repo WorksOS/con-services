@@ -9,7 +9,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteModelMachineDesign : ISiteModelMachineDesign
   {
-    private const int VERSION_NUMBER = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

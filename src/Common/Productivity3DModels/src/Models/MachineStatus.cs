@@ -23,12 +23,12 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// The last reported position of the machine in radians.
     /// </summary>
-    public double? lastKnownLatitude { get; private set; }
+    public double? lastKnownLatitude { get; set; }
 
     /// <summary>
     /// The last reported position of the machine in radians.
     /// </summary>
-    public double? lastKnownLongitude { get; private set; }
+    public double? lastKnownLongitude { get; set; }
 
     /// <summary>
     /// The last reported position of the machine in grid coordinates.

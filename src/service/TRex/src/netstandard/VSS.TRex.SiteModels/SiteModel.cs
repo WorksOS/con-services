@@ -25,6 +25,7 @@ using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.SiteModels
 {
@@ -736,6 +737,7 @@ namespace VSS.TRex.SiteModels
     public List<DesignName> GetMachineDesigns()
     {
       var designSlices = new List<DesignName>();
+
       foreach (var machine in Machines)
       {
         var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
@@ -779,55 +781,59 @@ namespace VSS.TRex.SiteModels
 
     /// <summary>
     /// GetMachineLayers returns the designs and layers used by specific machines.
+    /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\SVO\ProductionServer\SVOICSiteModels.pas
+    /// As per Raymond: it is guaranteed that start/stop will occur as pairs to form a reportingPeriod,
+    ///                 AND there will be NO events outside of these pairs
+    ///                 AND at startEnd, status of all event types will be recited e.g. last on layer1 and designA
     /// </summary>
     /// <returns></returns>
     public List<LayerIdDetails> GetMachineLayers()
     {
+      var layerDetails = new List<LayerIdDetails>();
+      foreach (var machine in Machines)
+      {
+        var startStopEvents = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+        var layerEventCount = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.Count();
+        if (layerEventCount == 0 || MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents.Count() == 0)
+          continue;
 
-      //var designSlices = new List<DesignName>();
-      //foreach (var machine in Machines)
-      //{
-      //  var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
+        for (int startStopEventIndex = 1; startStopEventIndex < startStopEvents.Count(); startStopEventIndex += 2)
+        {
+          startStopEvents.GetStateAtIndex(startStopEventIndex - 1, out DateTime startReportingPeriod, out ProductionEventType startStateType);
+          startStopEvents.GetStateAtIndex(startStopEventIndex, out DateTime endReportingPeriod, out ProductionEventType endStateType);
 
-      //  int priorMachineDesignId = int.MinValue;
-      //  DateTime priorDateTime = DateTime.MinValue;
-      //  for (int i = 0; i < events.Count(); i++)
-      //  {
-      //    events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
-      //    if (machineDesignId < 0)
-      //    {
-      //      Log.LogError($"{nameof(GetMachineDesigns)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
-      //      continue;
-      //    }
+          // identify layer changes within a report period which will likely overlap reporting periods.
+          int layerStateChangeIndex = 0;
+          var priorLayerId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetValueAtDate(startReportingPeriod, out layerStateChangeIndex, ushort.MaxValue);
+          var priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(startReportingPeriod, out int _, Consts.kNoDesignNameID );
+          if (priorLayerId == ushort.MaxValue || layerStateChangeIndex < 0)
+            layerStateChangeIndex = 0; // no layer events found at or before startReportingPeriod
+          else
+            layerStateChangeIndex += 1;
 
-      //    if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
-      //    {
-      //      var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
-      //      designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
-      //        priorMachineDesignId, -1, priorDateTime, dateTime, machine.ID));
-      //    }
+          var priorLayerChangeTime = startReportingPeriod;
+          var thisLayerChangeTime = startReportingPeriod;
+          for (; thisLayerChangeTime < endReportingPeriod && layerStateChangeIndex < layerEventCount; layerStateChangeIndex++)
+          {
+            MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetStateAtIndex(layerStateChangeIndex, out thisLayerChangeTime, out ushort nextLayerId);
 
-      //    // handle case where multi events for same design - occurs where tagFile data is missing
-      //    //    want to retain startDate of first
-      //    if (priorMachineDesignId != machineDesignId)
-      //    {
-      //      priorMachineDesignId = machineDesignId;
-      //      priorDateTime = dateTime;
-      //    }
+            if (priorLayerId != ushort.MaxValue)
+              layerDetails.Add(new LayerIdDetails(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+              thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID));
 
-      //  }
+            priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(thisLayerChangeTime, out int _, Consts.kNoDesignNameID);
+            priorLayerChangeTime = thisLayerChangeTime;
+            priorLayerId = nextLayerId;
+          }
 
-      //  if (priorMachineDesignId != int.MinValue)
-      //  {
-      //    var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
-      //    designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
-      //      priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
-      //  }
-      //}
+          // event earlier in report period, this covers to end of period
+          if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
+            layerDetails.Add(new LayerIdDetails(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+              endReportingPeriod, machine.ID));
+        }
+      }
 
- 
-
-      return new List<LayerIdDetails>(0);
+      return new List<LayerIdDetails>(layerDetails);
     }
 
     /// <summary>
