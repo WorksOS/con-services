@@ -50,18 +50,18 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       return sorted;
     }
 
-    public static void CompareExportCsvFiles(List<string> list1, List<string> list2)
+    public static void CompareExportCsvFiles(List<string> actualCsvExport, List<string> expectedCsvExport)
     {
       // Assert the correct number of rows.
-      list1.Count.Should().Be(list2.Count);
+      actualCsvExport.Count.Should().Be(expectedCsvExport.Count);
 
       // Assert the header lines match.
-      list1[0].Should().Be(list2[0]);
+      actualCsvExport[0].Should().Be(expectedCsvExport[0]);
 
-      for (var index = 1; index < list2.Count; index++)
+      for (var index = 1; index < expectedCsvExport.Count; index++)
       {
-        var expectedCells = list2[index].Split(',');
-        var actualCells = list1.ElementAt(index).Split(',');
+        var expectedCells = expectedCsvExport[index].Split(',');
+        var actualCells = actualCsvExport.ElementAt(index).Split(',');
 
         // Assert the correct number of columns.
         expectedCells.Length.Should().Be(actualCells.Length);
