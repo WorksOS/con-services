@@ -116,7 +116,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Build<ProjectStatisticsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
-      var result = executor.Process(request) as ProjectStatisticsResult;
+      var result = executor.ProcessAsync(request).Result as ProjectStatisticsResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(expectedResult.startTime, result.startTime, "Wrong startTime");
       Assert.AreEqual(expectedResult.extents.MaxX, result.extents.MaxX, "Wrong MaxX extent");
@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var executor = RequestExecutorContainerFactory
         .Build<ProjectStatisticsExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
-      var result = executor.Process(request) as ProjectStatisticsResult;
+      var result = executor.ProcessAsync(request).Result as ProjectStatisticsResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(statistics.CellSize, result.cellSize, "Wrong CellSize");
       Assert.AreEqual(statistics.Extents.MaxX, result.extents.MaxX, "Wrong MaxX extent");

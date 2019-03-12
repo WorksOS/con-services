@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -15,7 +17,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class ProjectStatisticsExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected async override Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as ProjectStatisticsMultiRequest;
 
@@ -25,8 +27,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var tRexRequest =
           new ProjectStatisticsTRexRequest(request.ProjectUid.Value, request.ExcludedSurveyedSurfaceUids?.ToArray());
-        return trexCompactionDataProxy.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(
-          tRexRequest, $"/sitemodels/statistics", customHeaders).Result;
+        return await trexCompactionDataProxy.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(
+          tRexRequest, $"/sitemodels/statistics", customHeaders);
       }
 #if RAPTOR
       bool success = raptorClient.GetDataModelStatistics(
@@ -65,7 +67,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       };
     }
 #endif
-
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
   }
 }
 

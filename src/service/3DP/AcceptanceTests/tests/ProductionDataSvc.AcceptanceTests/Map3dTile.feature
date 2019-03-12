@@ -32,7 +32,7 @@ Scenario Outline: Get textures
   | RequestName             | ResultName                   | ProjectUID                           | BBox                                                                  | Width | Height | Mode | Type | Difference | HttpCode |
   | Height Mode Texture     | HeightModeTextureNoFilter    | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 0    | 2    | 6          | 200      |
   | CCV Mode Texture        | CCVModeTextureNoFilter       | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 1    | 2    | 6          | 200      |
-  | Pass Count Mode Texture | PassCountModeTextureNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 4    | 2    | 6          | 200      |
+  | Pass Count Mode Texture | PassCountModeTextureNoFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 4    | 2    | 9          | 200      |
 
 Scenario Outline: Get height maps and textures with filters
   Given the service route "/api/v2/map3d" and result repo "Map3dGetDataTilesResponse.json"
