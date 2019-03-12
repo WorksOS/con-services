@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
 using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using Xunit;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Tests.BinarizableSerialization;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.Filters
 {
@@ -311,13 +308,7 @@ namespace VSS.TRex.Tests.Filters
             SurfaceDesignMaskDesignUid = Guid.NewGuid()
           };
 
-          var writer = new TestBinaryWriter();
-          data.ToBinary(writer);
-
-          var data2 = new CellSpatialFilter();
-          data2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
-
-          data2.Should().BeEquivalentTo(data2);
+          TestBinarizable_ReaderWriterHelper.RoundTripSerialise(data);
         }
     }
 }
