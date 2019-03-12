@@ -1,11 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Types;
@@ -124,15 +122,9 @@ namespace VSS.TRex.Tests.Filters
             AlignmentFence = new Fence(0, 0, 100, 100)
           }
         }, 
-      }); 
+      });
 
-      var writer = new TestBinaryWriter();
-      data.ToBinary(writer);
-
-      var data2 = new FilterSet();
-      data2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
-
-      data2.Should().BeEquivalentTo(data2);
+      TestBinarizable_ReaderWriterHelper.RoundTripSerialise(data);
     }
 
     [Fact]
@@ -153,13 +145,7 @@ namespace VSS.TRex.Tests.Filters
           }
       }).ToArray());
 
-      var writer = new TestBinaryWriter();
-      data.ToBinary(writer);
-
-      var data2 = new FilterSet();
-
-      Action act = () => data2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
-
+      Action act = () => TestBinarizable_ReaderWriterHelper.RoundTripSerialise(data);
       act.Should().Throw<TRexException>().WithMessage("Invalid number of filters * in deserialisation");
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -13,13 +14,15 @@ namespace VSS.TRex.SurveyedSurfaces
   /// </summary>
   public class SurveyedSurface : IEquatable<ISurveyedSurface>, IBinaryReaderWriter, ISurveyedSurface
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// Readonly property exposing the surveyed surface ID
     /// </summary>
     public Guid ID { get; set; }
 
     /// <summary>
-    /// Readonly property exposing the design decriptor for the underlying topology surface
+    /// Readonly property exposing the design descriptor for the underlying topology surface
     /// </summary>
     public DesignDescriptor DesignDescriptor;
 
@@ -39,6 +42,8 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.Write(ID.ToByteArray());
       DesignDescriptor.Write(writer);
       writer.Write(AsAtDate.ToBinary());
@@ -58,6 +63,8 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       ID = reader.ReadGuid();
       DesignDescriptor.Read(reader);
       AsAtDate = DateTime.FromBinary(reader.ReadInt64());

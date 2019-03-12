@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using FluentAssertions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.BinarizableSerialization;
@@ -71,13 +69,7 @@ namespace VSS.TRex.Tests.Filters
         VibeState = VibrationState.On       
       };
 
-      var writer = new TestBinaryWriter();
-      data.ToBinary(writer);
-
-      var data2 = new CellPassAttributeFilterModel();
-      data2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
-
-      data2.Should().BeEquivalentTo(data2);
+      TestBinarizable_ReaderWriterHelper.RoundTripSerialise(data);
     }
   }
 }

@@ -83,7 +83,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IImmutableSpatialAffinityPartitionMap>(mockImmutableSpatialAffinityPartitionMap.Object))
 
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
-        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new TRex.Designs.Storage.Designs()))
 
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
 
