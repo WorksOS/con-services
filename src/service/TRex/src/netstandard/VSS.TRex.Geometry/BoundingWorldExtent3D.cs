@@ -415,12 +415,12 @@ namespace VSS.TRex.Geometry
     /// </summary>
     public void SetInverted()
     {
-      MinX = 1E100;
-      MaxX = -1E100;
-      MinY = 1E100;
-      MaxY = -1E100;
-      MinZ = 1E100;
-      MaxZ = -1E100;
+      MinX = Consts.MAX_RANGE;
+      MaxX = Consts.MIN_RANGE;
+      MinY = Consts.MAX_RANGE;
+      MaxY = Consts.MIN_RANGE;
+      MinZ = Consts.MAX_RANGE;
+      MaxZ = Consts.MIN_RANGE;
     }
 
     /// <summary>
@@ -428,12 +428,12 @@ namespace VSS.TRex.Geometry
     /// </summary>
     public void SetMaximalCoverage()
     {
-      MinX = -1E100;
-      MaxX = 1E100;
-      MinY = -1E100;
-      MaxY = 1E100;
-      MinZ = -1E100;
-      MaxZ = 1E100;
+      MinX = Consts.MIN_RANGE;
+      MaxX = Consts.MAX_RANGE;
+      MinY = Consts.MIN_RANGE;
+      MaxY = Consts.MAX_RANGE;
+      MinZ = Consts.MIN_RANGE;
+      MaxZ = Consts.MAX_RANGE;
     }
 
     /// <summary>

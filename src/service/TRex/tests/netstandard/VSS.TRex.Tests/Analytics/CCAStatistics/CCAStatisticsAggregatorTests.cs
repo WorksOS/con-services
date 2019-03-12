@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using VSS.TRex.Analytics.CCAStatistics;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -31,7 +29,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
     }
 
     [Fact]
-    public void Test_CCAStatisticsAggregator_ProcessResult_NoAggregation_Details()
+    public void Test_CCAStatisticsAggregator_ProcessResult_NoAggregation()
     {
       var aggregator = new CCAStatisticsAggregator();
 
