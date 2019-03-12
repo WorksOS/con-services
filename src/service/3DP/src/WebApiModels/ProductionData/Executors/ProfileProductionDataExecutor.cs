@@ -12,13 +12,13 @@ using VSS.Velociraptor.PDSInterface;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (request.IsAlignmentDesign)
       {
         var args = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args(
-          request.ProjectId ?? -1,
+          request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
           request.StartStation ?? ValidationConstants3D.MIN_STATION,
           request.EndStation ?? ValidationConstants3D.MIN_STATION,
@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           out bool positionsAreGrid);
 
         var args = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args(
-          request.ProjectId ?? -1,
+          request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
           positionsAreGrid,
           startPt,

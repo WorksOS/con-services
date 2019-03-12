@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// Raptor data model/project identifier.
   /// </summary>
-  public class ProjectID 
+  public class ProjectID
   {
     /// <summary>
     /// The project to process the CS definition file into.
@@ -49,19 +49,11 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public virtual void Validate()
     {
-      var validator = new DataAnnotationsValidator();
-      validator.TryValidate(this, out var results);
+      new DataAnnotationsValidator().TryValidate(this, out var results);
 
       if (results.Any())
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault()?.ErrorMessage));
-      }
-
-      if (!ProjectId.HasValue && !ProjectUid.HasValue)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "At least one of the project identifiers must be defined!"));
       }
     }
   }

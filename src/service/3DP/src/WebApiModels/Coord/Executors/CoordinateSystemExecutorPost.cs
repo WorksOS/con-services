@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using VSS.Productivity3D.Common;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -42,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
         if (file.HasProjectID())
         {
           var request = file as CoordinateSystemFile;
-          code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.CSFileContent), request.CSFileName, request.ProjectId ?? -1, out tempCoordSystemSettings);
+          code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.CSFileContent), request.CSFileName, request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out tempCoordSystemSettings);
         }
         else
         {

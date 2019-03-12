@@ -10,11 +10,11 @@ using VLPDDecls;
 #endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           .SubmitTAGFileToTAGFileProcessor
           (tfRequest.FileName,
             data,
-            tfRequest.ProjectId ?? -1, 0, 0, tfRequest.MachineId ?? -1,
+            tfRequest.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, 0, 0, tfRequest.MachineId ?? -1,
             tfRequest.Boundary != null
               ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
               : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);

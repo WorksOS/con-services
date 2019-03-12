@@ -43,6 +43,28 @@ namespace VSS.TRex.Tests.Profiling
     }
 
     [Fact]
+    public void Test_InterceptList_AddPoint_3D_Resize()
+    {
+      InterceptList list = new InterceptList();
+
+      for (int i = 0; i < InterceptList.ListInc + 5; i++)
+        list.AddPoint(i, i, i);
+
+      Assert.True(InterceptList.ListInc + 5 == list.Count, "List count incorrect after addition");
+    }
+
+    [Fact]
+    public void Test_InterceptList_AddPoint_3D_Duplicate()
+    {
+      InterceptList list = new InterceptList();
+
+      for (int i = 0; i < 5; i++)
+        list.AddPoint(1, 1, 1);
+
+      Assert.True(1 == list.Count, "List count incorrect after addition of duplicates");
+    }
+
+    [Fact]
     public void Test_InterceptList_MergeInterceptLists_SameItems()
     {
       InterceptList list1 = new InterceptList();
@@ -155,16 +177,57 @@ namespace VSS.TRex.Tests.Profiling
     {
       InterceptList list1 = new InterceptList();
       InterceptList list2 = new InterceptList();
-      for (int i = 0; i < InterceptList.MaxIntercepts / 2 + 10; i++)
+
+      for (int i = 0; i < InterceptList.MaxIntercepts + 10; i++)
       {
         list1.AddPoint(new InterceptRec(i, i, i, i, i, i));
-        list2.AddPoint(new InterceptRec(i + 0.5f, i + 0.5f, i + 0.5f, i + 0.5f, i + 0.5f, i + 0.5f));
+      }
+
+      for (int i = 99; i < 199; i++)
+      {
+        list2.AddPoint(new InterceptRec(i, i, i, i, i + 0.5, i));
       }
 
       InterceptList mergedList = new InterceptList();
       mergedList.MergeInterceptLists(list1, list2);
 
       Assert.True(InterceptList.MaxIntercepts == mergedList.Count, $"Count not == MaxIntercepts after overfilling list ({InterceptList.MaxIntercepts } vs {mergedList.Count}");
+
+      mergedList = new InterceptList();
+      mergedList.MergeInterceptLists(list2, list1);
+
+      Assert.True(InterceptList.MaxIntercepts == mergedList.Count, $"Count not == MaxIntercepts after overfilling list ({InterceptList.MaxIntercepts } vs {mergedList.Count}");
+    }
+
+    [Fact]
+    public void Test_InterceptList_UpdateMergedListInterceptMidPoints_EmptyList()
+    {
+      InterceptList list1 = new InterceptList();
+      InterceptList list2 = new InterceptList();
+
+      InterceptList mergedList = new InterceptList();
+      mergedList.MergeInterceptLists(list1, list2);
+      mergedList.UpdateMergedListInterceptMidPoints();
+
+      Assert.True(0 == mergedList.Count, $"merged list count != 0 after merge, = {mergedList.Count}");
+    }
+
+    [Fact]
+    public void Test_InterceptList_UpdateMergedListInterceptMidPoints_NonEmptyList()
+    {
+      InterceptList list1 = new InterceptList();
+      InterceptList list2 = new InterceptList();
+
+      var newPoint = new InterceptRec(1, 2, 3, 4, 5, 6);
+
+      list1.AddPoint(newPoint);
+      list2.AddPoint(newPoint);
+
+      InterceptList mergedList = new InterceptList();
+      mergedList.MergeInterceptLists(list1, list2);
+
+      Assert.True(1 == mergedList.Count, $"merged list count != after merge, = {mergedList.Count}");
+      Assert.Equal(newPoint, mergedList.Items[0]);
     }
   }
 }

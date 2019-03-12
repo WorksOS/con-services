@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       log.LogDebug($"{nameof(ProcessWithRaptor)}: About to call GetReportStationOffset");
 
       var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         (int)CompactionReportType.StationOffset,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataReport),

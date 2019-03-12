@@ -66,14 +66,9 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filter is being applied to
-    /// </summary>
-    public short[] MachineIDs { get; set; }
-
-    /// <summary>
     /// The machines present in the filter represented as a bit set
     /// </summary>
-    public BitArray MachineIDSet { get; set; }
+    protected BitArray MachineIDSet { get; private set; }
 
     private bool _anyFilterSelections;
     public bool AnyFilterSelections => _prepared ? _anyFilterSelections : Prepare() && _anyFilterSelections;
@@ -137,7 +132,7 @@ namespace VSS.TRex.Filters
         HasCompactionMachinesOnlyFilter ||
         HasTemperatureRangeFilter;
 
-      InitialiseMachineIDsSet();
+      _ = GetMachineIDsSet();
 
       _prepared = true;
       return true;
@@ -551,7 +546,7 @@ namespace VSS.TRex.Filters
       if (machinesCount > 0)
         Array.Copy(Source.MachinesList, MachinesList, machinesCount);
 
-      MachineIDSet = Source.MachineIDSet != null ? new BitArray(Source.MachineIDSet) : null;
+      MachineIDSet = null;
 
       // Design based filtering member
       DesignNameID = Source.DesignNameID;
@@ -637,6 +632,7 @@ namespace VSS.TRex.Filters
     {
       HasMachineFilter = false;
       MachinesList = new Guid[0];
+      MachineIDSet = null;
     }
 
     public void ClearMinElevationMapping()
@@ -1236,8 +1232,11 @@ namespace VSS.TRex.Filters
       if (HasMachineFilter)
       {
         sb.Append("MF:");
-        foreach (var id in MachineIDs)
-          sb.Append($"-{id}");
+
+        var machineIDBitArray = GetMachineIDsSet();
+        for (int i = 0; i <  MachineIDSet.Length; i++)
+          if (machineIDBitArray[i])
+            sb.Append($"-{i}");
       }
 
       // Machine direction filter
@@ -1319,27 +1318,30 @@ namespace VSS.TRex.Filters
     /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
     /// internal machine IDs relative to this site model
     /// </summary>
-    public void InitialiseMachineIDsSet()
+    private short[] GetMachineIDs()
     {
-      if (siteModel == null)
-        return;
-
-      short[] internalMachineIDs = MachinesList.Where(x => siteModel.Machines.Locate(x) != null).Select(x => siteModel.Machines.Locate(x).InternalSiteModelMachineIndex).ToArray();
-
-      if (internalMachineIDs.Length == 0)
-      {
-        MachineIDSet = null;
-      }
-      else
-      {
-        MachineIDSet = new BitArray(internalMachineIDs.Max() + 1);
-
-        foreach (var internalID in internalMachineIDs)
-          MachineIDSet[internalID] = true;
-      }
+      return (siteModel?.Machines?.Count ?? 0) > 0
+        ? MachinesList.Where(x => siteModel.Machines.Locate(x) != null).Select(x => siteModel.Machines.Locate(x).InternalSiteModelMachineIndex).ToArray()
+        : new short[0];
     }
 
-    public override bool IsTimeRangeFilter() => HasTimeFilter && StartTime > DateTime.MinValue;
+    /// <summary>
+    /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
+    /// internal machine IDs relative to this site model
+    /// </summary>
+    public BitArray GetMachineIDsSet()
+    {
+      if (MachineIDSet != null)
+        return MachineIDSet;
+
+      var machineIDs = GetMachineIDs();
+      MachineIDSet = machineIDs.Length > 0 ? new BitArray(machineIDs.Max() + 1) : new BitArray(0);
+
+      foreach (var internalID in machineIDs)
+        MachineIDSet[internalID] = true;
+
+      return MachineIDSet;
+    }
 
     /// <summary>
     /// LastRecordedCellPassSatisfiesFilter denotes whether the settings in the filter
