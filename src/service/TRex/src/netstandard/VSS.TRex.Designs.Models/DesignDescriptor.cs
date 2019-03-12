@@ -2,12 +2,13 @@
 using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Designs.Models
 {
-  public class DesignDescriptor : IEquatable<DesignDescriptor>, IBinaryReaderWriter, IBinarizable
+  public class DesignDescriptor : IEquatable<DesignDescriptor>, IBinaryReaderWriter, IBinarizable, IFromToBinary
   {
     private const byte VERSION_NUMBER = 1;
 
