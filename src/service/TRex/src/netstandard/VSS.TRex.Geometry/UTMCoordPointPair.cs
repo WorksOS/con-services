@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.Geometry
 {
   /// <summary>
-  /// Describes a pait of 3D point positions (X, Y and Z dimensions in NEE space) with an attached UTM zone that
+  /// Describes a pair of 3D point positions (X, Y and Z dimensions in NEE space) with an attached UTM zone that
   /// are used describe the measured UTM positions of a machine implement (blade or drum etc)
   /// </summary>
   public struct UTMCoordPointPair
@@ -17,7 +17,7 @@
     public XYZ Right;
 
     /// <summary>
-    /// Universal Transverse Mercartor xone projection that left and right positions are measured in.
+    /// Universal Transverse Mercator zone projection that left and right positions are measured in.
     /// </summary>
     public byte UTMZone;
 

@@ -9,9 +9,9 @@ namespace VSS.TRex.GridFabric.Interfaces
   public interface IComputeFuncArgument<T>
 
   {
-  /// <summary>
-  /// The argument type
-  /// </summary>
-  T Argument { get; set; }
+    /// <summary>
+    /// The argument type
+    /// </summary>
+    T Argument { get; set; }
   }
 }

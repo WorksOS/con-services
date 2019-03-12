@@ -70,7 +70,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
             // Check that the swathing of this epoch will not create an inordinate number of cell passes
             // If so, prevent swathing of this epoch interval
-            long CellCount = (long)(CellExtent.MaxX - CellExtent.MinX) * (long)(CellExtent.MaxY - CellExtent.MinY);
+            long CellCount = (long)CellExtent.SizeX * (long)CellExtent.SizeY;
             if (CellCount > kMaxNumberCellPassesPerSwathingEpoch)
             {
                 Log.LogError($"Epoch {ProcessedEpochNumber} cell extents {CellExtent} (SizeX={CellExtent.SizeX}, SizeY={CellExtent.SizeX}) cover too many cell passes to swath ({CellCount}), limit is {kMaxNumberCellPassesPerSwathingEpoch} per epoch");

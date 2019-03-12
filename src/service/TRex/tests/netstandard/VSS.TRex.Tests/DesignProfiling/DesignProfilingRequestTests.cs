@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -17,6 +16,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.DesignProfiling
 {
+  [UnitTestCoveredRequest(RequestType = typeof(DesignProfileRequest))]
   public class DesignProfilingRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private ISiteModel NewEmptyModel()

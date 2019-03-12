@@ -16,6 +16,8 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 {
+  [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ApplicationService))]
+  [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ClusterCompute))]
   public class PassCountStatisticsRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private ISiteModel NewEmptyModel()

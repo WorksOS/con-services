@@ -11,7 +11,6 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
