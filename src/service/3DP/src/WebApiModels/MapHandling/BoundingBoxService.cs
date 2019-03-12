@@ -6,7 +6,6 @@ using System.Net;
 #if RAPTOR
 using DesignProfilerDecls;
 using VLPDDecls;
-using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 #endif
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -23,6 +22,7 @@ using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -315,16 +315,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         new TwoDConversionCoordinate(statsResult.extents.MaxX, statsResult.extents.MaxY)
       };
 
-#if RAPTOR
       var coordRequest = new CoordinateConversionRequest(projectId,
         TwoDCoordinateConversionType.NorthEastToLatLon, coordList.ToArray());
-      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy)
+      var coordResult = RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
+#if RAPTOR          
+          raptorClient,
+#endif          
+          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy)
         .Process(coordRequest) as CoordinateConversionResult;
       return coordResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>

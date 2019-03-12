@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -54,9 +56,27 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
 
     /// <summary>
+    /// For getting list of imported files for a project
+    /// </summary>
+    private readonly IFileListProxy fileListProxy;
+
+    /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    private string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
+    }
 
     /// <summary>
     /// Constructor with injection
@@ -69,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy, IFileListProxy fileListProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -78,6 +98,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
+      this.fileListProxy = fileListProxy;
     }
 
     /// <summary>
@@ -264,22 +285,25 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/statistics")]
     [HttpPost]
-    public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
+    public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
-#if RAPTOR
       log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
+
+      if (!request.ProjectUid.HasValue)
+        request.ProjectUid = ((RaptorPrincipal) User).GetProjectUid(request.ProjectId ?? -1).Result;
+
       request.Validate();
 
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
-        fileListProxy: null, tRexCompactionDataProxy: null
-        , raptorClient: raptorClient
-      );
-      return projectStatisticsHelper.GetProjectStatisticsWithExclusions(request.ProjectId.Value, request.ExcludedSurveyedSurfaceIds);
-#else
-      // see NOTE above
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileListProxy, tRexCompactionDataProxy
+#if RAPTOR
+        , raptorClient
 #endif
+        );
+
+      return await projectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(
+        request.ProjectUid ?? Guid.Empty, 
+        request.ProjectId ?? -1, 
+        request.ExcludedSurveyedSurfaceIds.ToList(), GetUserId(), CustomHeaders);
     }
 
     /// <summary>
