@@ -2,7 +2,7 @@
 using VSS.TRex.Geometry;
 using Xunit;
 
-namespace VSS.TRex.GeometryTests
+namespace VSS.TRex.Tests.Geometry
 {
   public class UTMCoordPointPairTests
   {
