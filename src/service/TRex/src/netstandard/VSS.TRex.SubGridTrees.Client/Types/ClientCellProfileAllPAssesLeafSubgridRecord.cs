@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client.Types
 {
-  public struct ClientCellProfileAllPassesLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileAllPassesLeafSubgridRecord>
+  public struct ClientCellProfileAllPassesLeafSubgridRecord : IBinaryReaderWriter //, IEquatable<ClientCellProfileAllPassesLeafSubgridRecord>
   {
     public int TotalPasses { get; set; }
 
@@ -27,10 +25,14 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     public void Read(BinaryReader reader)
     {
       TotalPasses = reader.ReadInt32();
-      CellPasses = new ClientCellProfileLeafSubgridRecord[TotalPasses];
 
-      for (int i = 0; i < TotalPasses; i++)
-        CellPasses[i].Read(reader);
+      if (TotalPasses > 0)
+      {
+        CellPasses = new ClientCellProfileLeafSubgridRecord[TotalPasses];
+
+        for (int i = 0; i < TotalPasses; i++)
+          CellPasses[i].Read(reader);
+      }
     }
 
     public void Write(BinaryWriter writer)
@@ -42,6 +44,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
 
     public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
+    /*
     public bool Equals(ClientCellProfileAllPassesLeafSubgridRecord other)
     {
       return TotalPasses == other.TotalPasses && 
@@ -54,5 +57,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       if (ReferenceEquals(null, obj)) return false;
       return obj is ClientCellProfileAllPassesLeafSubgridRecord other && Equals(other);
     }
+  */
   }
 }
