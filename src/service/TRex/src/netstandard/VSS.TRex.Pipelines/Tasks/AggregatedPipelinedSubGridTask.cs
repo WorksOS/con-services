@@ -38,7 +38,7 @@ namespace VSS.TRex.Pipelines.Tasks
         {
             if (base.TransferResponse(response))
             {
-                Aggregator.ProcessSubgridResult(response as IClientLeafSubGrid[][]);
+                Aggregator.ProcessSubGridResult(response as IClientLeafSubGrid[][]);
                 return true;
             }
 

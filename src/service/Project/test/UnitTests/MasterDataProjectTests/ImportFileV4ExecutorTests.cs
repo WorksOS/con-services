@@ -17,14 +17,16 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -123,8 +125,8 @@ namespace VSS.MasterData.ProjectTests
         fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface,
         null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder");
 
-      var project = new Repositories.DBModels.Project() { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
-      var projectList = new List<Repositories.DBModels.Project>(); projectList.Add(project);
+      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
+      var projectList = new List<ProjectDatabaseModel>(); projectList.Add(project);
 
       var importedFilesList = new List<ImportedFile>(); importedFilesList.Add(newImportedFile);
 
@@ -292,11 +294,13 @@ namespace VSS.MasterData.ProjectTests
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
+      var pegasusClient = new Mock<IPegasusClient>();
+
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object, 
-          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
+          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug("ProjectIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
       long projectId = -1;
-      IEnumerable<Project> potentialProjects = null;
+      IEnumerable<Project.Abstractions.Models.DatabaseModels.Project> potentialProjects = null;
 
       IEnumerable<Subscriptions> assetSubs = null;
       CustomerTccOrg customerTCCOrg = null;
@@ -98,7 +99,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           var p = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude,
             request.longitude,
             request.timeOfPosition);
-          var enumerable = p as IList<Project> ?? p.ToList();
+          var enumerable = p as IList<Project.Abstractions.Models.DatabaseModels.Project> ?? p.ToList();
           if (p != null && enumerable.Any())
           {
             potentialProjects = potentialProjects == null ? p : potentialProjects.Concat(p);
@@ -120,7 +121,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
             (int) ProjectType.ProjectMonitoring, (int) ServiceTypeEnum.ProjectMonitoring);
-          var enumerable = p as IList<Project> ?? p.ToList();
+          var enumerable = p as IList<Project.Abstractions.Models.DatabaseModels.Project> ?? p.ToList();
           if (p != null && enumerable.Any())
           {
             potentialProjects = potentialProjects == null ? enumerable : potentialProjects.Concat(enumerable);

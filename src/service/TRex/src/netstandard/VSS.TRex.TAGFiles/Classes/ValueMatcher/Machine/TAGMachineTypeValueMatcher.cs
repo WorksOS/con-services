@@ -16,13 +16,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (valueType.Type != TAGDataType.t8bitUInt) 
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t8bitUInt) 
             {
-                return false;
+              valueSink.MachineType = (MachineType)value;
+              result = true;
             }
 
-            valueSink.MachineType = (MachineType)value;
-            return true;
+            return result;
         }
     }
 }

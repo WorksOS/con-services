@@ -424,13 +424,6 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     }
 
     /// <summary>
-    /// Note - null implementation as there is no context for max min
-    /// </summary>
-    /// <param name="aPoint"></param>
-    /// <returns></returns>
-    protected bool OutsideMaxMin(TriVertex aPoint) => false;
-
-    /// <summary>
     /// Ensure lastTri is not discarded (ie invalid). If so, return a valid triangle
     /// </summary>
     /// <param name="lastTri"></param>
@@ -439,6 +432,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       if (lastTri == null)
         lastTri = TIN.Triangles[0];
 
+      /* Re-include if required, and add unit tests for them at that time.
       if (lastTri.IsDiscardedFlag)
         for (int i = 0; i < TIN.Triangles.Count; i++)
           if (!TIN.Triangles[i].IsDiscardedFlag)
@@ -449,6 +443,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       if (lastTri.IsDiscardedFlag)
         lastTri = null;
+      */
     }
 
     /// <summary>
@@ -465,7 +460,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       int nSteps = 0;
       bool found = false;
-      bool outsideModel = OutsideMaxMin(coord);
+      bool outsideModel = false;
 
       if (lastTri == null)
         lastTri = TIN.Triangles[0];
@@ -616,7 +611,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         sidePtr = affSideList[sidePtr].Next;
       }
 
-      /*//Some debugging code useful for tracking down issues when the 1 or 2 empty triangles     
+      /*// Some debugging code useful for tracking down issues when the 1 or 2 empty triangles     
         //that may get created as a part of resolving affected triangles to not get used as expected
        if (Assigned(SUCCSuccLastTriangle))
       Assert(Not Assigned(SUCCSuccLastTriangle.Vertex[1]), 'SUCCSuccLastTriangle appears to point to non-null vertices');

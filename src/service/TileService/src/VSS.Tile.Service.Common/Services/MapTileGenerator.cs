@@ -129,7 +129,7 @@ namespace VSS.Tile.Service.Common.Services
             $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
           bitmap = await raptorProxy.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
             request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
-            bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders);
+            bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, request.ExplicitFilters);
           break;
         case TileOverlayType.ProjectBoundary:
           bitmap = projectTileService.GetProjectBitmap(request.mapParameters, request.project);

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
@@ -14,7 +13,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
   /// </summary>
   public class CutFillStatisticsCoordinator : BaseAnalyticsCoordinator<CutFillStatisticsArgument, CutFillStatisticsResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CutFillStatisticsCoordinator>();
 
     /// <summary>
     /// Constructs the aggregator from the supplied argument to be used for the cut/fill statistics analytics request
@@ -28,7 +27,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       Offsets = argument.Offsets,
       Counts = argument.Offsets != null ? new long[argument.Offsets.Length] : null
     };

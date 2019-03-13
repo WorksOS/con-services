@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -57,7 +55,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public ProfileDataResult<SummaryVolumesProfileCell> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
     { 
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
-
+      
       summaryVolumesProfileRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>

@@ -12,14 +12,14 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
-    public byte[] csFileContent { get; set; }
+    public byte[] CSFileContent { get; set; }
 
     /// <summary>
     /// The name of the CS definition file.
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
-    public string csFileName { get; set; }
+    public string CSFileName { get; set; }
 
     /// <summary>
     /// Private constructor.
@@ -37,15 +37,10 @@ namespace VSS.MasterData.Models.Models
     /// <param name="csFileName">The file's name.</param>
     /// <returns>An instance of the CoordinateSystemFile class.</returns>
     ///
-    public static CoordinateSystemFileValidationRequest CreateCoordinateSystemFileValidationRequest(byte[] csFileContent, string csFileName)
+    public CoordinateSystemFileValidationRequest(byte[] csFileContent, string csFileName)
     {
-      var tempCS = new CoordinateSystemFileValidationRequest
-      {
-        csFileName = csFileName,
-        csFileContent = csFileContent
-      };
-
-      return tempCS;
+      CSFileContent = csFileContent;
+      CSFileName = csFileName;
     }
 
     /// <summary>

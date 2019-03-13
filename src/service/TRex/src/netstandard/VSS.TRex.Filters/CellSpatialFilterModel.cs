@@ -10,6 +10,8 @@ namespace VSS.TRex.Filters
 {
   public class CellSpatialFilterModel : ICellSpatialFilterModel
   {
+    const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The fence used for polygon based spatial filtering
     /// </summary>
@@ -124,9 +126,7 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte VERSION_NUMBER = 1;
-
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteBoolean(Fence != null);
       Fence?.ToBinary(writer);
@@ -174,11 +174,7 @@ namespace VSS.TRex.Filters
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte VERSION_NUMBER = 1;
-      byte readVersionNumber = reader.ReadByte();
-
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       if (reader.ReadBoolean())
       {

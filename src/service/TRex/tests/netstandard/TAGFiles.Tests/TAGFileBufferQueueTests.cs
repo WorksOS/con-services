@@ -24,12 +24,12 @@ namespace TAGFiles.Tests
         {
             try
             {
-              ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+              ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
             }
             catch (Exception)
             {
                 TAGClientServer = TAGClientServer ?? new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-              ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+              ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
             }
         }
 

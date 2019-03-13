@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -73,7 +73,7 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void MapProjectToV4Result()
     {
-      var project = new Repositories.DBModels.Project
+      var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 123,
@@ -124,7 +124,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
-      var copyOfProject = AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(project);
+      var copyOfProject = AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(project);
       Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }
@@ -132,7 +132,7 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void MapProjectToV2Result()
     {
-      var project = new Repositories.DBModels.Project
+      var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 123,

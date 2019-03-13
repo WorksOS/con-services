@@ -197,7 +197,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
         if (DesignIndex == -1)
         {
-          // This may be because there is no selected design name, of that the
+          // This may be because there is no selected design name, or that the
           // entry for this named design is not in the list. If the former, just clear the
           // design extents. If the latter, create a new design extents entry
 
@@ -258,12 +258,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         MachineTargetValueChangesAggregator.AutoVibrationStateEvents.PutValueAtDate(DataTime, TempAutoVibrationState);
         MachineTargetValueChangesAggregator.ICFlagsStateEvents.PutValueAtDate(DataTime, value);
       }
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICMode',slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -276,12 +276,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetCCVStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICCCVTargetValue', slpmcDebug); 
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -294,12 +294,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetCCAStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICCCATargetValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -312,12 +312,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetMDPStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICMDPTargetValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -330,12 +330,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetPassCountStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICPassTargetValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -358,12 +358,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
         MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Gear);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 or Gear not Forward/Reverse in SetMachineDirection', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -376,12 +376,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue && Value != MachineGear.SensorFailedDeprecated)
         MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICGear', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -394,12 +394,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetMinMaterialTemperature.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTempWarningLevelMinValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -413,12 +413,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetMaxMaterialTemperature.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTempWarningLevelMaxValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     /// <summary>
@@ -431,12 +431,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.TargetLiftThicknessStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTargetLiftThickness', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     public override void SetICCCVValue(short Value)
@@ -493,12 +493,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.RMVJumpThresholdEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetRMVJumpThresholdValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     protected override void SetICSensorType(CompactionSensorType Value)
@@ -510,12 +510,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         // Tell the machine object itself what the current sensor type is
         Machine.CompactionSensorType = Value;
       }
-      else
-      {
+      //else
+      //{
         // {$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICSensorType', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     protected override void SetAutomaticsMode(MachineAutomaticsMode Value)
@@ -524,12 +524,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.MachineAutomaticsStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetAutomaticsMode', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     protected override void SetICLayerIDValue(ushort Value)
@@ -538,12 +538,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.LayerIDStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICLayerIDValue', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     public override void SetGPSMode(GPSMode Value)
@@ -564,12 +564,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
         HasGPSModeBeenSet = true;
       }
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetGPSMode', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     public override void SetElevationMappingModeState(ElevationMappingMode Value)
@@ -578,12 +578,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.PutValueAtDate(DataTime, Value);
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetElevationMappingModeState', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     public override void SetGPSAccuracyState(GPSAccuracy accuracy, ushort tolerance)
@@ -592,12 +592,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       if (DataTime != DateTime.MinValue)
         MachineTargetValueChangesAggregator.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DataTime, new GPSAccuracyAndTolerance(accuracy, tolerance));
-      else
-      {
+      //else
+      //{
         //{$IFDEF DENSE_TAG_FILE_LOGGING}
         //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetGPSAccuracyState', slpmcDebug);
         //{$ENDIF}
-      }
+      //}
     }
 
     protected override bool IgnoreInvalidPositions() => SiteModel.IgnoreInvalidPositions;
@@ -644,19 +644,14 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// </summary>
     /// <param name="InterpolationFence"></param>
     /// <param name="machineSide"></param>
-    /// <returns></returns>
-    public override bool DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide)
+    public override void DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide)
     {
       Debug.Assert(SiteModel != null, "Null site model/data store for processor");
       Debug.Assert(Machine != null, "Null machine reference for processor");
 
       (Swather ?? (Swather = CreateSwather(null))).InterpolationFence = InterpolationFence;
 
-      if (Swather == null)
-      {
-        Debug.Assert(false, "Unable to create appropriate swather for processing epoch");
-        return false;
-      }
+      Debug.Assert(Swather != null, "Unable to create appropriate swather for processing epoch");
 
       // Primary e.g. blade, front drum
       Swather.PerformSwathing(FrontHeightInterpolator1, FrontHeightInterpolator2, FrontTimeInterpolator1,
@@ -664,26 +659,18 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       // rear positions
       if (HasRearAxleInThisEpoch)
-      {
         Swather.PerformSwathing(RearHeightInterpolator1, RearHeightInterpolator2, RearTimeInterpolator1,
                                 RearTimeInterpolator2, HasRearAxleInThisEpoch, PassType.Rear, machineSide);
-      }
 
       // track positions
       if (HasTrackInThisEpoch)
-      {
         Swather.PerformSwathing(TrackHeightInterpolator1, TrackHeightInterpolator2, TrackTimeInterpolator1,
                                 TrackTimeInterpolator2, false, PassType.Track, machineSide);
-      }
 
       // wheel positions
       if (HasWheelInThisEpoch)
-      {
         Swather.PerformSwathing(WheelHeightInterpolator1, WheelHeightInterpolator2, WheelTimeInterpolator1,
                                 WheelTimeInterpolator2, false, PassType.Wheel, machineSide);
-      }
-
-      return true;
     }
 
     /// <summary>
@@ -730,10 +717,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       switch (eventType)
       {
-        case EpochStateEvent.Unknown:
-          Debug.Assert(false, "Unknown epoch state event type");
-          break;
-
         case EpochStateEvent.MachineStartup:
           if (DataTime != DateTime.MinValue)
             MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.StartEvent);
@@ -759,7 +742,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
           break;
 
         default:
-          throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);
+          throw new ArgumentOutOfRangeException(nameof(eventType), eventType, "Unknown epoch state event type");
       }
 
       return true;

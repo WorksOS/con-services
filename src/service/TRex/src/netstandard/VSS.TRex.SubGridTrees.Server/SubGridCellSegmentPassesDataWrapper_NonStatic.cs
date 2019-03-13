@@ -287,5 +287,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             return result;
         }
-    }
+
+        public bool HasPassData() => PassData != null;
+    } 
 }

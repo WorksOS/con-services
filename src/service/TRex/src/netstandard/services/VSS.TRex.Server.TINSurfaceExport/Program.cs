@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -9,7 +8,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Filters;
@@ -62,15 +60,14 @@ namespace VSS.TRex.Server.TINSurfaceExport
       DIBuilder.New()
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-      .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
-      .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+      .Add(TRexGridFactory.AddGridFactoriesToDI)
       .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
       .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
       .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-      .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+      .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
       .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
@@ -116,8 +113,6 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.Machines.Machine),
         typeof(VSS.TRex.Pipelines.PipelineProcessor),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
-        typeof(VSS.TRex.Services.Designs.DesignsService),
-        typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),
         typeof(VSS.TRex.SubGrids.CutFillUtilities),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),

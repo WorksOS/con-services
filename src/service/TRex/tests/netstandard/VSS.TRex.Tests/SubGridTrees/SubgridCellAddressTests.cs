@@ -1,15 +1,42 @@
 ﻿using System;
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using VSS.ConfigurationStore;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubgridCellAddressTests
+  public class SubgridCellAddressTestsFixture : IDisposable
+  {
+    public SubgridCellAddressTestsFixture()
+    {
+      DIBuilder.New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Complete();
+    }
+
+    public void Dispose()
+    {
+      DIBuilder.Eject();
+    }
+  }
+
+  public class SubgridCellAddressTests : IClassFixture<SubgridCellAddressTestsFixture>
     {
         [Fact]
         public void Test_SubgridCellAddress_Creation()
         {
-            SubGridCellAddress ca = new SubGridCellAddress(1, 1);
+            SubGridCellAddress ca = new SubGridCellAddress();
+
+            // Check the simple style of creation is OK
+            Assert.True(ca.X == 0 && ca.Y == 0 && ca.ProdDataRequested == false && ca.SurveyedSurfaceDataRequested == false,
+              "Default simple cell address creation did not set properties as expected");
+
+            ca = new SubGridCellAddress(1, 1);
 
             // Check the simple style of creation is OK
             Assert.True(ca.X == 1 && ca.Y == 1 && ca.ProdDataRequested == false && ca.SurveyedSurfaceDataRequested == false,
@@ -23,6 +50,18 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact]
+        public void Test_SubgridCellAddress_Set()
+        {
+          SubGridCellAddress ca = new SubGridCellAddress();
+
+          ca.Set(1, 2, true, false);
+
+          // Check the simple style of creation is OK
+          Assert.True(ca.X == 1 && ca.Y == 2 && ca.ProdDataRequested == true && ca.SurveyedSurfaceDataRequested == false,
+            "Setting simple cell address not set properties as expected");
+        }
+
+    [Fact]
         public void Test_SubgridCellAddress_FlagManagement()
         {
             SubGridCellAddress ca2 = new SubGridCellAddress(1, 1, true, true);
@@ -63,7 +102,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             SubGridCellAddress ca = new SubGridCellAddress(1, 1);
 
-            long correct = ((long)1 << 32) | 1;
+            long correct = (1L << 32) | 1;
             Assert.Equal(ca.ToNormalisedInt64, correct);
         }
 
@@ -77,7 +116,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             SubGridCellAddress ca2 = new SubGridCellAddress(1 << 5, 1 << 5);
 
-            long correct2 = ((long)1 << 25) | 1;
+            long correct2 = (1L << 25) | 1;
             Assert.Equal(ca2.ToNormalisedSubgridOriginInt64, correct2);
         }
 
@@ -121,6 +160,26 @@ namespace VSS.TRex.Tests.SubGridTrees
             ca = new SubGridCellAddress(1 << 5, 1 << 5);
             correct = 1;
             Assert.Equal(ca.ToSkipInterleavedSubgridOriginDescriptor, correct);
-        }   
+        }
+
+        [Theory]
+        [InlineData(1000, 1000, 31)]
+        [InlineData(10_000, 10_000, 312)]
+        [InlineData(100_000, 100_000, 53)]
+        [InlineData(1_000_000, 1_000_000, 530)]
+        [InlineData(10_000_000, 10_000_000, 180)]
+        [InlineData(100_000_000, 100_000_000, 776)]
+        [InlineData(1_000_000_000, 1_000_000_000, 592)]
+        public void Test_SubgridCellAddress_ToSpatialPartitionDescriptor(uint cellX, uint cellY, uint expectedPartition)
+        {
+          // These tests assume the default number of 1024 partitions from the configuration
+
+          // Test the instance method
+          SubGridCellAddress ca = new SubGridCellAddress(cellX, cellY);
+          ca.ToSpatialPartitionDescriptor().Should().Be(expectedPartition);
+
+          // Test the static method
+          SubGridCellAddress.ToSpatialPartitionDescriptor(cellX, cellY).Should().Be(expectedPartition);
+        }
     }
 }

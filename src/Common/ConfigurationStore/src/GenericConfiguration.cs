@@ -5,6 +5,7 @@ using System.IO;
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using VSS.Log4NetExtensions;
 
 namespace VSS.ConfigurationStore
 {
@@ -64,7 +65,8 @@ namespace VSS.ConfigurationStore
     {
       IConfigurationBuilder configBuilder;
       log = logger.CreateLogger<GenericConfiguration>();
-      log.LogTrace("GenericConfig constructing");
+      if (log.IsTraceEnabled())
+        log.LogTrace("GenericConfig constructing");
 
       if (kubernetesInitialized == KubernetesState.NotInitialized)
       {
@@ -80,8 +82,8 @@ namespace VSS.ConfigurationStore
       try
       {
         var pathToConfigFile = PathToConfigFile();
-
-        log.LogTrace($"Using configuration file: {pathToConfigFile}");
+        if (log.IsTraceEnabled())
+            log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
           .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: false);
@@ -109,9 +111,11 @@ namespace VSS.ConfigurationStore
 
     private string PathToConfigFile()
     {
-      log.LogTrace("Base:" + AppContext.BaseDirectory);
+      if (log.IsTraceEnabled())
+        log.LogTrace("Base:" + AppContext.BaseDirectory);
       var dirToAppsettings = Directory.GetCurrentDirectory();
-      log.LogTrace("Current:" + dirToAppsettings);
+      if (log.IsTraceEnabled())
+        log.LogTrace("Current:" + dirToAppsettings);
       string pathToConfigFile;
 
       log.LogDebug(
@@ -130,8 +134,8 @@ namespace VSS.ConfigurationStore
       {
         var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
         pathToConfigFile = Path.GetDirectoryName(pathToExe);
-
-        log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
+        if (log.IsTraceEnabled())
+          log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
       }
 
       return pathToConfigFile;
@@ -149,7 +153,8 @@ namespace VSS.ConfigurationStore
         {
           kubernetesInitialized = KubernetesState.Requested;
           UseKubernetes = true;
-          log.LogTrace("Setting variables for kubernetes");
+          if (log.IsTraceEnabled())
+            log.LogTrace("Setting variables for kubernetes");
           KubernetesConfigMapName = localConfig["KubernetesConfigMapName"];
           KubernetesNamespace = localConfig["KubernetesNamespace"];
           KubernetesContext = localConfig["KubernetesContext"];
@@ -166,7 +171,8 @@ namespace VSS.ConfigurationStore
         {
           try
           {
-            log.LogTrace("Connecting to kubernetes cluster");
+            if (log.IsTraceEnabled())
+              log.LogTrace("Connecting to kubernetes cluster");
             KubernetesClientConfiguration config = null;
             if (string.IsNullOrWhiteSpace(KubernetesContext))
             {
@@ -183,7 +189,8 @@ namespace VSS.ConfigurationStore
               .ReadNamespacedConfigMapWithHttpMessagesAsync(KubernetesConfigMapName, KubernetesNamespace).Result.Body
               .Data);
             kubernetesInitialized = KubernetesState.Initialized;
-            log.LogTrace("Successfully retrieved configuration from Kubernetes");
+            if (log.IsTraceEnabled())
+              log.LogTrace("Successfully retrieved configuration from Kubernetes");
           }
           catch (Exception ex)
           {
@@ -230,123 +237,87 @@ namespace VSS.ConfigurationStore
         throw new InvalidOperationException(errorString);
       }
 
-      var connString =
-        "server=" + serverName +
-        ";port=" + serverPort +
-        ";database=" + serverDatabaseName +
-        ";userid=" + serverUserName +
-        ";password=" + serverPassword +
-        ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
-      log.LogTrace($"Served connection string {connString}");
+        var connString =
+          "server=" + serverName +
+          ";port=" + serverPort +
+          ";database=" + serverDatabaseName +
+          ";userid=" + serverUserName +
+          ";password=" + serverPassword +
+          ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+      if (log.IsTraceEnabled())
+        log.LogTrace($"Served connection string {connString}");
 
       return connString;
     }
 
     public string GetValueString(string key)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration[key]}");
-      return configuration[key];
+      return GetValueString(key, null);
     }
 
     public string GetValueString(string key, string defaultValue)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public int GetValueInt(string key)
     {
-      // zero is valid. Returns int.MinValue on error
-      if (!int.TryParse(configuration[key], out var valueInt))
-      {
-        valueInt = int.MinValue;
-      }
-
-      log.LogTrace($"Served configuration value {key}:{valueInt}");
-
-      return valueInt;
+      return GetValueInt(key, int.MinValue);
     }
 
     public int GetValueInt(string key, int defaultValue)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
+    }
+
+    public uint GetValueUint(string key)
+    {
+      return GetValueUint(key, uint.MinValue);
+    }
+
+    public uint GetValueUint(string key, uint defaultValue)
+    {
+      return GetValue(key, defaultValue);
     }
 
     public long GetValueLong(string key)
     {
-      // zero is valid. Returns long.MinValue on error
-      if (!long.TryParse(configuration[key], out var valueLong))
-      {
-        valueLong = long.MinValue;
-      }
-
-      log.LogTrace($"Served configuration value {key}:{valueLong}");
-
-      return valueLong;
+      return GetValueLong(key, long.MinValue);
     }
 
     public long GetValueLong(string key, long defaultValue)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public double GetValueDouble(string key)
     {
-      // zero is valid. Returns double.MinValue on error
-      if (!double.TryParse(configuration[key], out var valueDouble))
-      {
-        valueDouble = double.MinValue;
-      }
-
-      log.LogTrace($"Served configuration value {key}:{valueDouble}");
-
-      return valueDouble;
+      return GetValueDouble(key, double.MinValue);
     }
 
     public double GetValueDouble(string key, double defaultValue)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public bool? GetValueBool(string key)
     {
-      bool? theBoolToReturn = null;
-      if (bool.TryParse(configuration[key], out var theBool))
-      {
-        theBoolToReturn = theBool;
-      }
-
-      log.LogTrace($"Served configuration value {key}:{theBoolToReturn}");
-
-      return theBoolToReturn;
+      return GetValue< bool?> (key, (bool?)null);
     }
 
     public bool GetValueBool(string key, bool defaultValue)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public TimeSpan? GetValueTimeSpan(string key)
     {
-      TimeSpan? theTimeSpanToReturn = null;
-      if (TimeSpan.TryParse(configuration[key], out var theTimeSpan))
-      {
-        theTimeSpanToReturn = theTimeSpan;
-      }
-
-      log.LogTrace($"Served configuration value {key}:{theTimeSpanToReturn}");
-
-      return theTimeSpanToReturn;
+      return GetValue<TimeSpan?>(key, (TimeSpan?)null);
     }
 
     public TimeSpan GetValueTimeSpan(string key, TimeSpan defaultValue)
     {
-      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
-      return configuration.GetValue(key, defaultValue);
+      return GetValue(key, defaultValue);
     }
 
     public IConfigurationSection GetSection(string key)
@@ -357,6 +328,30 @@ namespace VSS.ConfigurationStore
     public IConfigurationSection GetLoggingConfig()
     {
       return GetSection("Logging");
+    }
+
+    private T GetValue<T>(string key, T defaultValue)
+    {
+      T value = defaultValue;
+
+      if (configuration[key] == null)
+      {
+        log.LogWarning($"Missing configuration key {key}");
+      }
+      else
+      {
+        try
+        {
+          value = configuration.GetValue(key, defaultValue);
+        }
+        catch (Exception e)
+        {
+          log.LogError($"Invalid configuration for key {key}: {e.Message}");
+        }
+      }   
+      if (log.IsTraceEnabled())
+        log.LogTrace($"Served configuration value {key}:{value}");
+      return value;
     }
   }
 }

@@ -8,6 +8,7 @@ using VSS.Productivity3D.Common.Proxies;
 #endif
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.Common.Executors
         if (useTrexGateway)
         {
 #endif
-          var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
+          var fileResult = trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/tile", customHeaders).Result;
 
           using (var ms = new MemoryStream())
           {
@@ -94,7 +95,8 @@ namespace VSS.Productivity3D.Common.Executors
         request.RepresentationalDisplayColor,
         out var tile);
 
-      log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
+      if (log.IsTraceEnabled())
+        log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
 
       if (raptorResult == TASNodeErrorStatus.asneOK ||
           raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange)
@@ -105,8 +107,9 @@ namespace VSS.Productivity3D.Common.Executors
         return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null tile returned");
       }
 
-      log.LogTrace(
-        $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
+      if (log.IsTraceEnabled())
+        log.LogTrace(
+          $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
         ContractExecutionStatesEnum.InternalProcessingError,

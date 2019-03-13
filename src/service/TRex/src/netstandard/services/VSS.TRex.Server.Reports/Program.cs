@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.Reports.Servers.Client;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -24,6 +22,7 @@ using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Reports.Gridded.Executors.Tasks;
+using VSS.TRex.Reports.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -34,6 +33,8 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
+using VSS.TRex.Exports.Servers.Client;
 
 namespace VSS.TRex.Server.Reports
 {
@@ -56,6 +57,8 @@ namespace VSS.TRex.Server.Reports
       {
         case PipelineProcessorTaskStyle.GriddedReport:
           return new GriddedReportTask();
+        case PipelineProcessorTaskStyle.CSVExport:
+          return new CSVExportTask();
         default:
           return null;
       }
@@ -66,15 +69,14 @@ namespace VSS.TRex.Server.Reports
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
@@ -83,6 +85,7 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
         .Build()
         .Add(x => x.AddSingleton(new GriddedReportRequestServer()))
+        .Add(x => x.AddSingleton(new CSVExportRequestServer()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
@@ -91,6 +94,8 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")))
+
         .Complete();
     }
 
@@ -100,7 +105,7 @@ namespace VSS.TRex.Server.Reports
       Type[] AssemblyDependencies =
       {
         typeof(Geometry.BoundingIntegerExtent2D),
-        typeof(GriddedReportResult),
+        //typeof(GriddedReportResult),
         typeof(GridFabric.BaseIgniteClass),
         typeof(SubGridsPipelinedResponseBase),
         typeof(Logging.Logger),
@@ -121,8 +126,6 @@ namespace VSS.TRex.Server.Reports
         typeof(PipelineProcessor),
         typeof(Profiling.CellLiftBuilder),
         typeof(Rendering.PlanViewTileRenderer),
-        typeof(Services.Designs.DesignsService),
-        typeof(Services.SurveyedSurfaces.SurveyedSurfaceService),
         typeof(SubGrids.CutFillUtilities),
         typeof(ClientCMVLeafSubGrid),
         typeof(SubGridTrees.Core.Utilities.SubGridUtilities),

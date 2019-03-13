@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
@@ -9,6 +8,7 @@ using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 
 namespace VSS.AWS.TransferProxy
@@ -43,16 +43,11 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
-    /// <summary>
-    /// Create a task to download a file from S3 storage
-    /// </summary>
-    /// <param name="s3Key">Key to the data to be downloaded</param>
-    /// <returns>FileStreamResult if the file exists</returns>
-    public async Task<FileStreamResult> Download(string s3Key)
+    public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
     {
       using (var transferUtil = new TransferUtility(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2))
       {
-        var stream = await transferUtil.OpenStreamAsync(awsBucketName, s3Key);
+        var stream = await transferUtil.OpenStreamAsync(bucketName, s3Key);
         string mimeType;
         try
         {
@@ -63,19 +58,34 @@ namespace VSS.AWS.TransferProxy
         catch (ArgumentException)
         {
           // Unknown or invalid extension, not bad but we don't know the content type
-          mimeType = "application/octet-stream"; // binary data....
+          mimeType = ContentTypeConstants.ApplicationOctetStream; // binary data....
         }
 
         return new FileStreamResult(stream, mimeType);
       }
     }
 
-    public void Upload(Stream stream, string s3Key)
+    /// <summary>
+    /// Create a task to download a file from S3 storage
+    /// </summary>
+    /// <param name="s3Key">Key to the data to be downloaded</param>
+    /// <returns>FileStreamResult if the file exists</returns>
+    public async Task<FileStreamResult> Download(string s3Key)
+    {
+      return await DownloadFromBucket(s3Key, awsBucketName);
+    }
+
+    public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {
       using (var transferUtil = new TransferUtility(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2))
       {
-        transferUtil.Upload(stream, awsBucketName, s3Key);
+        transferUtil.Upload(stream, bucketName, s3Key);
       }
+    }
+
+    public void Upload(Stream stream, string s3Key)
+    {
+      UploadToBucket(stream, s3Key, awsBucketName);
     }
 
     /// <summary>

@@ -35,13 +35,13 @@ namespace VSS.TRex.Tests.Rendering
       return siteModel;
     }
 
-    private void AddApplicationGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
       <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
-    private void AddClusterComputeGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddClusterComputeGridRouting
+    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting
       <SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
 
-    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)
@@ -105,12 +105,16 @@ namespace VSS.TRex.Tests.Rendering
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    //[InlineData(DisplayMode.CCVSummary)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
+    //[InlineData(DisplayMode.MDPSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
+    //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -130,12 +134,16 @@ namespace VSS.TRex.Tests.Rendering
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    //[InlineData(DisplayMode.CCVSummary)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
+    //[InlineData(DisplayMode.MDPSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
+    //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -152,12 +160,16 @@ namespace VSS.TRex.Tests.Rendering
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    //[InlineData(DisplayMode.CCVSummary)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
+    //[InlineData(DisplayMode.MDPSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
     [InlineData(DisplayMode.TargetSpeedSummary)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    //[InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -195,7 +207,7 @@ namespace VSS.TRex.Tests.Rendering
       // Create the site model containing a single cell and add the design to it for the cut/fill
       BuildModelForSingleCellTileRender(out var siteModel, 0.5f, cellX, cellY);
 
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm");
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill);
 

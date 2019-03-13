@@ -1,20 +1,16 @@
 ﻿using System;
-using System.IO;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
 using Hangfire;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Scheduler.Models;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {

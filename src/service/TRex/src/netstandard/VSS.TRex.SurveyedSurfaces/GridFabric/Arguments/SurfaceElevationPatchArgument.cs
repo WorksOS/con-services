@@ -12,46 +12,38 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>
-        public Guid SiteModelID { get; set; } = Guid.Empty;
+        public Guid SiteModelID { get; } 
 
         /// <summary>
         /// The bottom left on-the-ground cell origin X location for the patch of elevations to be computed from
         /// </summary>
-        public uint OTGCellBottomLeftX { get; set; }
+        public uint OTGCellBottomLeftX { get; private set; }
 
         /// <summary>
         /// The bottom left on-the-ground cell origin Y location for the patch of elevations to be computed from
         /// </summary>
-        public uint OTGCellBottomLeftY { get; set; }
+        public uint OTGCellBottomLeftY { get; private set; }
 
         /// <summary>
         /// The cell stepping size to move between points in the patch being interpolated
         /// </summary>
-        public double CellSize { get; set; }
+        public double CellSize { get; }
 
         /// <summary>
         /// Determines which surface information should be extracted: Earliest, Latest or Composite
         /// </summary>
-        public SurveyedSurfacePatchType SurveyedSurfacePatchType { get; set; }
+        public SurveyedSurfacePatchType SurveyedSurfacePatchType { get; }
 
         /// <summary>
-        /// A map of the cells within the subgrid patch to be computed
+        /// A map of the cells within the sub grid patch to be computed
         /// </summary>
-        public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
+        public SubGridTreeBitmapSubGridBits ProcessingMap { get; }
 
         /// <summary>
         /// The list of surveyed surfaces to be included in the calculation
         /// [Note: This is fairly inefficient, the receiver of the request should be able to access surveyed surfaces locally...]
         /// </summary>
-        public Guid[] IncludedSurveyedSurfaces { get; set; }
-
-        /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
-        public SurfaceElevationPatchArgument()
-        {
-
-        }
+        public Guid[] IncludedSurveyedSurfaces { get; }
 
         /// <summary>
         /// Constructor taking the full state of the surface patch computation operation
@@ -79,9 +71,20 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
             ProcessingMap = new SubGridTreeBitmapSubGridBits(processingMap);
 
             // Prepare the list of surveyed surfaces for use by all invocations using this argument
-            includedSurveyedSurfaces.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.EarliestSingleElevation);
-
-            IncludedSurveyedSurfaces = includedSurveyedSurfaces.Select(x => x.ID).ToArray();
+            includedSurveyedSurfaces?.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.EarliestSingleElevation);
+            IncludedSurveyedSurfaces = includedSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0];
+        }
+      
+        /// <summary>
+        /// Sets the location of the surveyed surface sub grid to be requested without modifying any other aspect
+        /// of the request
+        /// </summary>
+        /// <param name="oTGCellBottomLeftX"></param>
+        /// <param name="oTGCellBottomLeftY"></param>
+        public void SetOTGBottomLeFtLocation(uint oTGCellBottomLeftX, uint oTGCellBottomLeftY)
+        {
+          OTGCellBottomLeftX = oTGCellBottomLeftX;
+          OTGCellBottomLeftY = oTGCellBottomLeftY;
         }
 
         /// <summary>

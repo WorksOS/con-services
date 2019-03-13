@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
@@ -15,7 +15,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteDouble(StartStation);
       writer.WriteDouble(EndStation);
@@ -25,10 +27,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte version = reader.ReadByte();
+      base.FromBinary(reader);
 
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       StartStation = reader.ReadDouble();
       EndStation = reader.ReadDouble();

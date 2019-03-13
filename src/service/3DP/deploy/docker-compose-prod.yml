@@ -10,6 +10,7 @@ services:
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=qQAEmtYOcn0PCzSfpqIgmNFpyMclrZllnOnY1Ecx
      - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
+     - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp
      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.k8s.services.myvisionlink.com/api/status
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
      - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
@@ -22,6 +23,9 @@ services:
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_GRIDREPORT=false
      - ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY=false
+     - ENABLE_TREX_GATEWAY_SURFACE=false
+     - ENABLE_TREX_GATEWAY_VETA=false
+     - ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT=false
      - FILTER_API_URL=http://filter.prod.k8s.services.myvisionlink.com/api/v1
      - FILTER_CACHE_LIFE=00:15:00
      - GEOFENCE_API_URL=https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0

@@ -70,6 +70,8 @@ namespace VSS.TRex.SiteModels
 
     public DateTime LastModifiedDate { get; set; }
 
+    public double CellSize { get; private set; } = SubGridTreeConsts.DefaultCellSize;
+
     /// <summary>
     /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
@@ -80,12 +82,14 @@ namespace VSS.TRex.SiteModels
     private readonly object siteModelMachineDesignsLockObject = new object();
     private readonly object siteModelDesignsLockObject = new object();
 
+    private IServerSubGridTree grid;
+
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid { get; private set; }
+    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID) {CellSize = this.CellSize});
 
-    public bool GridLoaded => Grid != null;
+    public bool GridLoaded => grid != null;
 
     private ISubGridTreeBitMask existenceMap;
 
@@ -109,7 +113,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Local cached copy of the coordinate system CSIB
     /// </summary>
-    private string csib = null;
+    private string csib;
 
     /// <summary>
     /// The string serialized CSIB gained from adding a coordinate system from a DC or similar file
@@ -121,7 +125,7 @@ namespace VSS.TRex.SiteModels
       if (csib != null)
         return csib;
 
-      if (!IsTransient)
+      if (IsTransient)
       {
         csib = string.Empty;
         return csib;
@@ -164,7 +168,7 @@ namespace VSS.TRex.SiteModels
       // Any requests holding references to events lists will continue to do so as the lists themselves
       // wont be garbage collected until all request references to them are relinquished
       get => machinesTargetValues ?? (machinesTargetValues = new MachinesProductionEventLists(this, Machines.Count));
-      private set => machinesTargetValues = value;
+      //private set => machinesTargetValues = value;
     }
 
     public bool MachineTargetValuesLoaded => machinesTargetValues != null;
@@ -343,6 +347,7 @@ namespace VSS.TRex.SiteModels
     {
       CreationDate = DateTime.UtcNow;
       LastModifiedDate = CreationDate;
+
     }
 
     /// <summary>
@@ -356,14 +361,15 @@ namespace VSS.TRex.SiteModels
         throw new TRexSiteModelException("Cannot use a transient site model as an origin for constructing a new site model");
 
       ID = originModel.ID;
+      CellSize = originModel.CellSize;
       IsTransient = false;
 
       CreationDate = originModel.CreationDate;
       LastModifiedDate = originModel.LastModifiedDate;
 
-      Grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
+      grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
         ? originModel.Grid
-        : new ServerSubGridTree(originModel.ID);
+        : null;
 
       csib = (originFlags & SiteModelOriginConstructionFlags.PreserveCsib) != 0
         ? originModel.CSIB()
@@ -415,14 +421,13 @@ namespace VSS.TRex.SiteModels
       ID = id;
       IsTransient = isTransient;
 
-      Grid = new ServerSubGridTree(ID);
-
       // Allow existence map loading to be deferred/lazy on reference
       existenceMap = null;
     }
 
     public SiteModel(Guid id, double cellSize) : this(id)
     {
+      CellSize = cellSize;
       Grid.CellSize = cellSize;
     }
 
@@ -462,7 +467,7 @@ namespace VSS.TRex.SiteModels
 
       //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
 
-      writer.Write(Grid.CellSize);
+      writer.Write(CellSize);
 
       SiteModelExtent.Write(writer);
 
@@ -497,17 +502,12 @@ namespace VSS.TRex.SiteModels
 
       // FIgnoreInvalidPositions:= ReadBooleanFromStream(Stream);
 
-      double SiteModelGridCellSize = reader.ReadDouble();
-      if (SiteModelGridCellSize < 0.001)
+      CellSize = reader.ReadDouble();
+      if (CellSize < 0.001)
       {
-        Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
-        SiteModelGridCellSize = SubGridTreeConsts.DefaultCellSize;
+        Log.LogError($"SiteModelGridCellSize is suspicious: {CellSize} for datamodel {ID}, setting to default: {SubGridTreeConsts.DefaultCellSize}");
+        CellSize = SubGridTreeConsts.DefaultCellSize;
       }
-
-      if (Grid == null)
-        Grid = new ServerSubGridTree(ID);
-
-      Grid.CellSize = SiteModelGridCellSize;
 
       SiteModelExtent.Read(reader);
 
@@ -554,51 +554,14 @@ namespace VSS.TRex.SiteModels
           Result = false;
         }
 
-        try
-        {
-          machines?.SaveToPersistentStore(storageProxy);
-        }
-        catch (Exception e)
-        {
-          Log.LogError(e, $"Failed to save machine list for site model {ID} to persistent store:");
-          Result = false;
-        }
-
-        try
-        {
-          siteProofingRuns?.SaveToPersistentStore(storageProxy);
-        }
-        catch (Exception e)
-        {
-          Log.LogError(e, $"Failed to save proofing run list for site model {ID} to persistent store:");
-          Result = false;
-        }
-
-        try
-        {
-          siteModelMachineDesigns?.SaveToPersistentStore(storageProxy);
-        }
-        catch (Exception e)
-        {
-          Log.LogError(e, $"Failed to save machine design name list for site model {ID} to persistent store:");
-          Result = false;
-        }
-
-        try
-        {
-          _siteModelDesigns?.SaveToPersistentStore(ID, storageProxy);
-        }
-        catch (Exception e)
-        {
-          Log.LogError(e, $"Failed to save machine design name list for site model {ID} to persistent store:");
-          Result = false;
-        }
+        machines?.SaveToPersistentStore(storageProxy);
+        siteProofingRuns?.SaveToPersistentStore(storageProxy);
+        siteModelMachineDesigns?.SaveToPersistentStore(storageProxy);
+        _siteModelDesigns?.SaveToPersistentStore(ID, storageProxy);
       }
 
       if (!Result)
-      {
         Log.LogError($"Failed to save site model for project {ID} to persistent store");
-      }
 
       return Result;
     }
@@ -635,13 +598,9 @@ namespace VSS.TRex.SiteModels
           }
 
           if (Result == FileSystemErrorStatus.OK)
-          {
-            Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
-          }
+            Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {CellSize}");
           else
-          {
             Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
-          }
         }
       }
 
@@ -667,19 +626,10 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     private FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
     {
-      try
-      {
-        // Serialize and write out the stream to the persistent store
-        if (existenceMap == null)
-          return FileSystemErrorStatus.OK;
+      if (existenceMap == null)
+        return FileSystemErrorStatus.OK;
 
-        storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception occurred:");
-        return FileSystemErrorStatus.UnknownErrorWritingToFS;
-      }
+      storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
 
       return FileSystemErrorStatus.OK;
     }
@@ -690,30 +640,22 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     private FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
     {
-      try
+      ISubGridTreeBitMask localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
+
+      // Read its content from storage 
+      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+
+      if (MS == null)
       {
-        // Create the new existence map instance
-        ISubGridTreeBitMask localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
-
-        // Read its content from storage 
-        DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
-
-        if (MS == null)
-        {
-          Log.LogInformation($"Attempt to read existence map for site model {ID} failed as the map does not exist, creating new existence map");
-          existenceMap = new SubGridTreeSubGridExistenceBitMask();
-          return FileSystemErrorStatus.OK;
-        }
-
-        localExistenceMap.FromStream(MS);
-
-        // Replace existence map with the newly read map
-        existenceMap = localExistenceMap;
+        Log.LogInformation($"Attempt to read existence map for site model {ID} failed as the map does not exist, creating new existence map");
+        existenceMap = new SubGridTreeSubGridExistenceBitMask();
+        return FileSystemErrorStatus.OK;
       }
-      catch
-      {
-        return FileSystemErrorStatus.UnknownErrorReadingFromFS;
-      }
+
+      localExistenceMap.FromStream(MS);
+
+      // Replace existence map with the newly read map
+      existenceMap = localExistenceMap;
 
       return FileSystemErrorStatus.OK;
     }
@@ -748,6 +690,39 @@ namespace VSS.TRex.SiteModels
       }
 
       return SpatialExtents;
+    }
+
+    /// <summary>
+    /// GetDateRange returns the chronological extents of production data in the site model.
+    /// if no production data exists, then min = MaxValue and max and MinValue
+    /// </summary>
+    /// <returns></returns>
+    public (DateTime startUtc, DateTime endUtc) GetDateRange()
+    {
+      DateTime minDate = DateTime.MaxValue;
+      DateTime maxDate = DateTime.MinValue;
+
+      foreach (var machine in Machines)
+      {
+        var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+        if (events.Count() > 0)
+        {
+          events.GetStateAtIndex(0, out DateTime eventDateFirst, out _);
+          if (minDate > eventDateFirst)
+            minDate = eventDateFirst;
+          if (maxDate < eventDateFirst)
+            maxDate = eventDateFirst;
+
+          if (events.Count() > 1)
+          {
+            var eventDateLast = events.LastStateDate();
+            if (maxDate < eventDateLast)
+              maxDate = eventDateLast;
+          }
+        }
+      }
+
+      return (minDate, maxDate);
     }
 
     /// <summary>

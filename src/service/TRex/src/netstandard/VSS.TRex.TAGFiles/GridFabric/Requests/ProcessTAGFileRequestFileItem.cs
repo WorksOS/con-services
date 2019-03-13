@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
@@ -7,9 +8,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// Represents an internal TAG file item to be processed into a site model. It defines the underlying filename for 
     /// the TAG file, and the content of the file as a byte array
     /// </summary>
-    public class ProcessTAGFileRequestFileItem
+    public class ProcessTAGFileRequestFileItem : IFromToBinary 
     {
-      private const byte VERSION_NUMBER = 1;
+        private const byte VERSION_NUMBER = 1;
 
         public string FileName { get; set; }
 
@@ -34,7 +35,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
       public void ToBinary(IBinaryRawWriter writer)
       {
-        writer.WriteByte(VERSION_NUMBER);
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
         writer.WriteString(FileName);
         writer.WriteBoolean(IsJohnDoe);
         writer.WriteByteArray(TagFileContent);
@@ -42,10 +44,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
       public void FromBinary(IBinaryRawReader reader)
       {
-        byte readVersionNumber = reader.ReadByte();
-
-        if (readVersionNumber != VERSION_NUMBER)
-          throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
         FileName = reader.ReadString();
         IsJohnDoe = reader.ReadBoolean();

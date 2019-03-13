@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -595,6 +596,92 @@ namespace RepositoryTests
         var g = await assetContext.GetAsset(assetFinal.AssetUID);
         Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
         Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
+        return null;
+      }).Wait();
+    }
+
+    /// <summary>
+    /// This is from a reported bub with the AssetService which
+    ///    incorrectly creates an empty OwnerCustomerUID (bug 71612).
+    ///    this bug was supposedly fixed but has resurfaced.
+    /// Our consumers will now ignore
+    /// </summary>
+    [TestMethod]
+    public void UpdateAsset_IgnoreEmptyCustomerUID()
+    {
+      DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
+      var assetEventCreate = new CreateAssetEvent()
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = null,
+        LegacyAssetId = 33334444,
+        SerialNumber = "S6T00561",
+        MakeCode = "J82",
+        Model = "D6RXL",
+        AssetType = "TRACK TYPE TRACTORS",
+        IconKey = 0,
+        EquipmentVIN = "origVin",
+        ModelYear = 1998,
+        OwningCustomerUID = Guid.NewGuid(),
+        ActionUTC = firstCreatedUTC
+      };
+
+      var assetEventUpdate = new UpdateAssetEvent()
+      {
+        AssetUID = assetEventCreate.AssetUID,
+        AssetName = "AnAssetName changed",
+        LegacyAssetId = 33334444,
+        // following 2 are not avail in our vss-interfaces version,
+        //   but are in vss-messaging later versions.
+        //   however, neither should be changeable
+        // SerialNumber = "S6T00561",
+        // MakeCode = null,
+        Model = "D6RXL changed",
+        AssetType = "TRACK TYPE TRACTORS changed",
+        IconKey = 11,
+        EquipmentVIN = null,
+        ModelYear = null,
+        OwningCustomerUID = Guid.Empty,
+        ActionUTC = firstCreatedUTC.AddMinutes(10)
+      };
+
+      var assetFinal = new Asset
+      {
+        AssetUID = assetEventCreate.AssetUID.ToString(),
+        Name = assetEventUpdate.AssetName,
+        LegacyAssetID = assetEventUpdate.LegacyAssetId.Value,
+        SerialNumber = assetEventCreate.SerialNumber,
+        MakeCode = assetEventCreate.MakeCode,
+        Model = assetEventUpdate.Model,
+        AssetType = assetEventUpdate.AssetType,
+        IconKey = assetEventUpdate.IconKey,
+        EquipmentVIN = assetEventCreate.EquipmentVIN,
+        ModelYear = assetEventCreate.ModelYear,
+        OwningCustomerUID = assetEventCreate.OwningCustomerUID.ToString(),
+        IsDeleted = false,
+        LastActionedUtc = assetEventUpdate.ActionUTC
+      };
+
+      assetContext.InRollbackTransactionAsync<object>(async o =>
+      {
+        var s = await assetContext.StoreEvent(assetEventCreate);
+        s = await assetContext.StoreEvent(assetEventUpdate);
+
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal.AssetUID, g.AssetUID, $"Asset AssetUID incorrect. Expected: {assetFinal.AssetUID} got: {g.AssetUID}");
+        Assert.AreEqual(assetFinal.Name, g.Name, $"Asset name incorrect. Expected: {assetFinal.Name} got: {g.Name}");
+        Assert.AreEqual(assetFinal.LegacyAssetID, g.LegacyAssetID, $"Asset LegacyAssetID incorrect. Expected: {assetFinal.LegacyAssetID} got: {g.LegacyAssetID}");
+        Assert.AreEqual(assetFinal.SerialNumber, g.SerialNumber, $"Asset SerialNumber incorrect. Expected: {assetFinal.SerialNumber} got: {g.SerialNumber}");
+        Assert.AreEqual(assetFinal.MakeCode, g.MakeCode, $"Asset MakeCode incorrect. Expected: {assetFinal.MakeCode} got: {g.MakeCode}");
+        Assert.AreEqual(assetFinal.Model, g.Model, $"Asset Model incorrect. Expected: {assetFinal.Model} got: {g.Model}");
+        Assert.AreEqual(assetFinal.AssetType, g.AssetType, $"Asset AssetType incorrect. Expected: {assetFinal.AssetType} got: {g.AssetType}");
+        Assert.AreEqual(assetFinal.IconKey, g.IconKey, $"Asset IconKey incorrect. Expected: {assetFinal.IconKey} got: {g.IconKey}");
+        Assert.AreEqual(assetFinal.EquipmentVIN, g.EquipmentVIN, $"Asset EquipmentVIN incorrect. Expected: {assetFinal.EquipmentVIN} got: {g.EquipmentVIN}");
+        Assert.AreEqual(assetFinal.ModelYear, g.ModelYear, $"Asset ModelYear incorrect. Expected: {assetFinal.ModelYear} got: {g.ModelYear}");
+        Assert.AreEqual(assetFinal.OwningCustomerUID, g.OwningCustomerUID, $"Asset OwningCustomerUID incorrect. Expected: {assetFinal.OwningCustomerUID} got: {g.OwningCustomerUID}");
+        Assert.AreEqual(assetFinal.IsDeleted, g.IsDeleted, $"Asset IsDeleted incorrect. Expected: {assetFinal.IsDeleted} got: {g.IsDeleted}");
+        Assert.AreEqual(assetFinal.LastActionedUtc, g.LastActionedUtc, $"Asset LastActionedUtc incorrect. Expected: {assetFinal.LastActionedUtc} got: {g.LastActionedUtc}");
         return null;
       }).Wait();
     }

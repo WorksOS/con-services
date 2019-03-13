@@ -1,17 +1,8 @@
 ﻿using System;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.Common.Models
 {
-  /// <summary>
-  /// The temperature units for user preferences
-  /// </summary>
-  public enum TemperatureUnitEnum
-  {
-    None = 0,
-    Celsius = 1,
-    Fahrenheit = 2
-  }
-
   public static class TemperatureUnitEnumExtensions
   {
     /// <summary>

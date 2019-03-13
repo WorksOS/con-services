@@ -161,19 +161,5 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Maximum.FromBinary(reader);
       Average.FromBinary(reader);
     }
-    
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ Station.GetHashCode();
-        hashCode = (hashCode * 397) ^ Offsets.GetHashCode();
-        hashCode = (hashCode * 397) ^ Minimum.GetHashCode();
-        hashCode = (hashCode * 397) ^ Maximum.GetHashCode();
-        hashCode = (hashCode * 397) ^ Average.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

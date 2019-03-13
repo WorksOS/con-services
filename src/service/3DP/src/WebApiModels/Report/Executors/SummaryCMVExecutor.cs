@@ -41,14 +41,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var cmvSummaryRequest = new CMVSummaryRequest(
-            request.ProjectUid, 
+            request.ProjectUid,
             request.Filter,
             request.CmvSettings.CmvTarget,
             request.CmvSettings.OverrideTargetCMV,
             request.CmvSettings.MaxCMVPercent,
             request.CmvSettings.MinCMVPercent);
 
-          return trexCompactionDataProxy.SendCMVSummaryRequest(cmvSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<CMVSummaryResult, CMVSummaryRequest>(cmvSummaryRequest, "/cmv/summary", customHeaders).Result;
 #if RAPTOR
         }
 

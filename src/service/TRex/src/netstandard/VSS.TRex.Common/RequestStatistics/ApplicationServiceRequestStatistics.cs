@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.RequestStatistics
+﻿namespace VSS.TRex.Common.RequestStatistics
 {
     /// <summary>
     /// Tracks statistics relating to the number and variety of requests being serviced.
@@ -9,22 +9,6 @@
         /// Singleton instance of the application request statistics
         /// </summary>
         public static ApplicationServiceRequestStatistics Instance = new ApplicationServiceRequestStatistics();
-
-        public struct StatisticsElement
-        {
-            /// <summary>
-            /// Value of the statistics elements being tracked
-            /// </summary>
-            private long value;
-
-            // ReSharper disable once ConvertToAutoPropertyWhenPossible
-            public long Value { get => value; }
-
-            /// <summary>
-            /// Thread safe incrementor for the satistics element
-            /// </summary>
-            public void Increment() => System.Threading.Interlocked.Increment(ref value);
-        }
 
         public StatisticsElement NumVolumeRequests = new StatisticsElement();
         public StatisticsElement NumVolumeRequestsFailed = new StatisticsElement();

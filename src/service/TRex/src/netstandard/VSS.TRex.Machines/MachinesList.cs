@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -17,7 +17,7 @@ namespace VSS.TRex.Machines
   /// </summary>
   public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
   {
-    private const int READER_WRITER_VERSION_MACHINE_LIST = 1;
+    private const byte VERSION_NUMBER = 1;
     private const string MACHINES_LIST_STREAM_NAME = "Machines";
 
     /// <summary>
@@ -50,15 +50,11 @@ namespace VSS.TRex.Machines
       IMachine ExistingMachine = isJohnDoeMachine ? Locate(name, true) : Locate(machineID, false);
 
       if (ExistingMachine != null)
-      {
         return ExistingMachine;
-      }
 
       // Create the new machine
       if (isJohnDoeMachine)
-      {
         machineID = UniqueJohnDoeID();
-      }
 
       // Determine the internal ID for the new machine.
       // Note: This assumes machines are never removed from a project
@@ -123,7 +119,7 @@ namespace VSS.TRex.Machines
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(READER_WRITER_VERSION_MACHINE_LIST);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.Write(Count);
       for (int i = 0; i < Count; i++)
@@ -138,9 +134,7 @@ namespace VSS.TRex.Machines
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      int version = reader.ReadInt32();
-      if (version != READER_WRITER_VERSION_MACHINE_LIST)
-        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_LIST, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       int count = reader.ReadInt32();
       Capacity = count;

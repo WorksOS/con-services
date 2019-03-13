@@ -132,5 +132,10 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       SetupFixture();
     }
+
+    public new void Dispose()
+    {
+      base.Dispose();
+    }
   }
 }

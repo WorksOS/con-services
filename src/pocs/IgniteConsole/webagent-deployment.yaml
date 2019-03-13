@@ -1,0 +1,32 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: web-agent
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: web-agent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web-agent
+    spec:
+      containers:
+      - name: web-agent
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-webagent
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 500m 
+            memory: 500Mi
+        env:
+        - name: DRIVER_FOLDER
+          value: "./jdbc-drivers"
+        - name: NODE_URI
+          value: "http://ignite-mutable.dev.svc.cluster.local:8080"
+        - name: SERVER_URI
+          value: "http://frontend.ignite-web-console.svc.cluster.local"
+        - name: TOKENS
+          value: "QVrU7sId4OdKOE5A39zA"

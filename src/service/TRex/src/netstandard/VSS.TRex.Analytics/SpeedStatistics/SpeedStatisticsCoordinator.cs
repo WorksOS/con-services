@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Reflection;
-using VSS.TRex.Analytics.Foundation;
+﻿using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
@@ -14,20 +12,20 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// </summary>
   public class SpeedStatisticsCoordinator : BaseAnalyticsCoordinator<SpeedStatisticsArgument, SpeedStatisticsResponse>
   {
-		private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    // private static readonly ILogger Log = Logging.Logger.CreateLogger<SpeedStatisticsCoordinator>();
 
-		/// <summary>
-		/// Constructs the aggregator from the supplied argument to be used for the Speed statistics analytics request
-		/// Create the aggregator to collect and reduce the results.
-		/// </summary>
-		/// <param name="argument"></param>
-		/// <returns></returns>
-		public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedStatisticsAggregator
+    /// <summary>
+    /// Constructs the aggregator from the supplied argument to be used for the Speed statistics analytics request
+    /// Create the aggregator to collect and reduce the results.
+    /// </summary>
+    /// <param name="argument"></param>
+    /// <returns></returns>
+    public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedStatisticsAggregator
 		{
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
-			CellSize = SiteModel.Grid.CellSize,
+			CellSize = SiteModel.CellSize,
 			TargetMachineSpeed = argument.TargetMachineSpeed
 		};
 

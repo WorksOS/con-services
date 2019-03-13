@@ -28,8 +28,8 @@ namespace VSS.TRex.Tests.Profiling
       {
         ProfileCell cell = new ProfileCell(new FilteredMultiplePassInfo(), 1, 2, 3.0, 4.0, true);
 
-        Assert.Equal((uint)1, cell.OTGCellX);
-        Assert.Equal((uint)2, cell.OTGCellY);
+        Assert.Equal(1U, cell.OTGCellX);
+        Assert.Equal(2U, cell.OTGCellY);
         Assert.Equal(3.0, cell.Station);
         Assert.Equal(4.0, cell.InterceptLength);
 
@@ -40,15 +40,11 @@ namespace VSS.TRex.Tests.Profiling
       [Fact]
       public void Test_ProfileCell_Creation2_WithPasses()
       {
-        ProfileCell cell = new ProfileCell(new FilteredMultiplePassInfo
-          {
-            PassCount = 1,
-            FilteredPassData = new FilteredPassData[] {new FilteredPassData() }
-          },
+        ProfileCell cell = new ProfileCell(new FilteredMultiplePassInfo(new [] {new FilteredPassData() }),
           1, 2, 3.0, 4.0, true);
 
-        Assert.Equal((uint)1, cell.OTGCellX);
-        Assert.Equal((uint)2, cell.OTGCellY);
+        Assert.Equal(1U, cell.OTGCellX);
+        Assert.Equal(2U, cell.OTGCellY);
         Assert.Equal(3.0, cell.Station);
         Assert.Equal(4.0, cell.InterceptLength);
 
@@ -60,11 +56,7 @@ namespace VSS.TRex.Tests.Profiling
       {
         ProfileCell cell = new ProfileCell();
 
-        cell.AddLayer(new FilteredMultiplePassInfo
-          {
-            PassCount = 1,
-            FilteredPassData = new FilteredPassData[] { new FilteredPassData() }
-          });
+        cell.AddLayer(new FilteredMultiplePassInfo(new[] {new FilteredPassData()}));
 
         Assert.True(1 == cell.Layers.Count(), "Layer count not one after adding layer");
     }
@@ -74,12 +66,7 @@ namespace VSS.TRex.Tests.Profiling
       {
         ProfileCell cell = new ProfileCell();
 
-        cell.AddLayer(new FilteredMultiplePassInfo
-        {
-          PassCount = 1,
-          FilteredPassData = new FilteredPassData[] { new FilteredPassData() }
-        });
-
+        cell.AddLayer(new FilteredMultiplePassInfo(new[] { new FilteredPassData() }));
         cell.ClearLayers();
 
         Assert.True(cell.IsEmpty(), "Cell layers not empty after clear layers");
@@ -92,11 +79,7 @@ namespace VSS.TRex.Tests.Profiling
 
         Assert.True(cell.IsEmpty(), "Cell not empty after construction");
 
-        cell.AddLayer(new FilteredMultiplePassInfo
-          {
-            PassCount = 1,
-            FilteredPassData = new FilteredPassData[] { new FilteredPassData() }
-          });
+        cell.AddLayer(new FilteredMultiplePassInfo(new[] { new FilteredPassData() }));
 
         Assert.False(cell.IsEmpty(), "Cell empty after addition of a layer");
 

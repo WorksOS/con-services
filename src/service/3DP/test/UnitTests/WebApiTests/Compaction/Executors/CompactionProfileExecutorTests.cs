@@ -23,6 +23,7 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -99,6 +100,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
     
       raptorClient
@@ -108,11 +111,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var settingsManager = new CompactionSettingsManager();
       var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
-      var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty, ProductionDataType.Height, null, -1,
-        null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, liftBuildSettings, false, null, null, null, null, null);
+      var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty, ProductionDataType.Height, null, -1,
+        null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, liftBuildSettings, false, null, null, null, null, null);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+        .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
 
       var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
       Assert.IsNotNull(result, ExecutorFailed);
@@ -914,6 +917,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
       using (var ms = new MemoryStream())
       {
@@ -926,12 +931,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var settingsManager = new CompactionSettingsManager();
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
-        var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,
-          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, 
+        var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty,
+          ProductionDataType.Height, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION, 
           liftBuildSettings, false, null, null, null, null, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -1181,6 +1186,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
       using (var ms = new MemoryStream())
       {
@@ -1193,12 +1200,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var settingsManager = new CompactionSettingsManager();
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
-        var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,
-          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
+        var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty,
+          ProductionDataType.Height, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
           liftBuildSettings, false, null, null, null, calcType, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(packager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);
@@ -1382,6 +1389,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var profileResultHelper = serviceProvider.GetRequiredService<ICompactionProfileResultHelper>();
 
+      var mockConfigStore = new Mock<IConfigurationStore>();
+
       var raptorClient = new Mock<IASNodeClient>();
       using (var msProdData = new MemoryStream())
       using (var msSumVol = new MemoryStream())
@@ -1401,12 +1410,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         var settingsManager = new CompactionSettingsManager();
         var liftBuildSettings = settingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
 
-        var request = CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(1234, Guid.Empty,
-          ProductionDataType.Height, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
+        var request = new CompactionProfileProductionDataRequest(1234, null, Guid.Empty,
+          ProductionDataType.Height, null, -1, null, new ProfileGridPoints(), new ProfileLLPoints(), ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION,
           liftBuildSettings, false, null, null, null, calcType, null);
 
         var executor = RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, null, null, null, null, null, profileResultHelper);
+          .Build<CompactionProfileExecutor>(logger, raptorClient.Object, configStore: mockConfigStore.Object, profileResultHelper: profileResultHelper);
         var result = executor.Process(request) as CompactionProfileResult<CompactionProfileDataResult>;
         Assert.IsNotNull(result, ExecutorFailed);
         Assert.AreEqual(pdPackager.GridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints, WrongGridDistanceBetweenProfilePoints);

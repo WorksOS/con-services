@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.Utility
         [Fact]
         public void Test_CountBits()
         {
-            BitCounterHelper.TestCountSetBits(out _).Should().BeTrue();
+            BitCounterHelper.TestCountSetBits().Should().BeTrue();
         }
     }
 }

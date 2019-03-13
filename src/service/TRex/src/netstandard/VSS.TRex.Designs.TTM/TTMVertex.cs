@@ -21,24 +21,5 @@ namespace VSS.TRex.Designs.TTM
       X = Utilities.ReadFloat(reader, header.VertexCoordinateSize) + header.EastingOffsetValue;
       Z = Utilities.ReadFloat(reader, header.VertexValueSize);
     }
-
-    public void SnapToOutputResolution(TTMHeader header)
-    {
-      float s;
-
-      if (header.VertexCoordinateSize == sizeof(float))
-      {
-        s = (float) (X - header.EastingOffsetValue);
-        X = s + header.EastingOffsetValue;
-        s = (float) (Y - header.NorthingOffsetValue);
-        Y = s + header.NorthingOffsetValue;
-      }
-
-      if (header.VertexValueSize == sizeof(float))
-      {
-        s = (float) Z;
-        Z = s;
-      }
-    }
   }
 }

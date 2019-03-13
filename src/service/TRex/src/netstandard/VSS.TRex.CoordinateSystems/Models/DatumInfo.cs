@@ -2,6 +2,17 @@
 {
   public class DatumInfo
   {
+    public bool DirectionIsLocalToWGS84;
+    public double TranslationX;
+    public double TranslationY;
+    public double TranslationZ;
+    public double RotationX;
+    public double RotationY;
+    public double RotationZ;
+    public double Scale;
+    public string LatitudeShiftGridFileName;
+    public string LongitudeShiftGridFileName;
+    public string HeightShiftGridFileName;
     public string EllipseName;
     public double EllipseA;
     public double EllipseInverseFlat;

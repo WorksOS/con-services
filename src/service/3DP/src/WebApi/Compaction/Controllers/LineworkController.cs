@@ -2,21 +2,18 @@
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-#if RAPTOR
-using VLPDDecls;
-#endif
-using VSS.Common.Exceptions;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Common;
@@ -121,9 +118,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           result.DxfData?.CopyTo(stream);
         }
       }
+
       // Don't forget to seek back, or else the content length will be 0
       outputStream.Seek(0, SeekOrigin.Begin);
-      return new FileStreamResult(outputStream, "application/zip");
+      return new FileStreamResult(outputStream, ContentTypeConstants.ApplicationZip);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

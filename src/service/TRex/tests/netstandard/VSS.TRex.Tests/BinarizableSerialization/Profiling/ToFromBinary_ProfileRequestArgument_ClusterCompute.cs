@@ -31,7 +31,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         ReferenceDesignUID = Guid.NewGuid(),
         ProfileTypeRequired = GridDataType.Height,
         NEECoords = coords,
-        ReturnAllPassesAndLayers = false
+        ReturnAllPassesAndLayers = false,
+        
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom ProfileRequestArgument_ClusterCompute not same after round trip serialisation");

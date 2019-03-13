@@ -68,7 +68,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           request.Width, // PixelsX
           request.Height, // PixelsY
           new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
-          request.DesignDescriptor.FileUid ?? Guid.Empty
+          request.DesignDescriptor?.FileUid ?? Guid.Empty
         )) as TileRenderResponse_Core2;
 
       return new TileResult(response?.TileBitmapData);

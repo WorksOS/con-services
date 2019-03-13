@@ -7,13 +7,9 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Gateway.WebApi.ActionServices;
-using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {

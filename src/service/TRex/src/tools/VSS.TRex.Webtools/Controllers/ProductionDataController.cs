@@ -194,7 +194,7 @@ namespace VSS.TRex.Webtools.Controllers
               {
                 ProjectID = siteModel.ID,
                 Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                CMVChangeDetailsDatalValues = cmvPercentBands
+                CMVChangeDetailsDataValues = cmvPercentBands
               }
             );
 

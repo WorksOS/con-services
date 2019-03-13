@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.MdpSettings.MaxMDPPercent,
             request.MdpSettings.MinMDPPercent);
 
-          return trexCompactionDataProxy.SendMDPSummaryRequest(mdpSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<MDPSummaryResult, MDPSummaryRequest>(mdpSummaryRequest, "/mdp/summary", customHeaders).Result;
 #if RAPTOR
         }
 

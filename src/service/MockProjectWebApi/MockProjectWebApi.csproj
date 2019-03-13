@@ -80,6 +80,8 @@
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilter.json" />
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeFirst.json" />
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeLast.json" />
+    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
+    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesBaseFilter20170305.json" />
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesTopFilter20170621.json" />
     <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
@@ -92,6 +94,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
+    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
     <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
@@ -153,6 +157,8 @@
     <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
+    <ProjectReference Include="..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -182,6 +188,12 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
     <None Update="Resources\Large Sites Road_AlignmentCenterline%24.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Z15-Y12844-X5914.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Z18-Y102753-X47317.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

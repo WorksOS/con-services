@@ -12,13 +12,15 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -168,7 +170,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         result = await action.Invoke().ConfigureAwait(false);
-        log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
+        if (log.IsTraceEnabled())
+          log.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException se)
       {
@@ -237,7 +240,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the project.
     /// </summary>
     /// <param name="legacyProjectId"></param>
-    protected async Task<Repositories.DBModels.Project> GetProject(long legacyProjectId)
+    protected async Task<ProjectDatabaseModel> GetProject(long legacyProjectId)
     {
       var customerUid = LogCustomerDetails("GetProject by legacyProjectId", legacyProjectId);
       var project =

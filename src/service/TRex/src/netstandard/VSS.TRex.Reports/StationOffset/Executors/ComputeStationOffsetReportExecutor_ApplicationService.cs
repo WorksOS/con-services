@@ -118,8 +118,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
             (x, y) =>
             {
               points.Add(new StationOffsetPoint(station += 1, 0,
-                originY + y * siteModel.Grid.CellSize + siteModel.Grid.CellSize / 2,
-                originX + x * siteModel.Grid.CellSize + siteModel.Grid.CellSize / 2));
+                originY + y * siteModel.CellSize + siteModel.CellSize / 2,
+                originX + x * siteModel.CellSize + siteModel.CellSize / 2));
               return points.Count < countPointsRequired;
             });
         }

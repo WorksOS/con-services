@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="endLatDegrees"></param>
     /// <param name="endLonDegrees"></param>
     /// <returns>An instance of the CompactionProfileProductionDataRequest class.</returns>
-    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees)
+    public CompactionProfileProductionDataRequest CreateProductionDataProfileRequest(double startLatDegrees, double startLonDegrees, double endLatDegrees, double endLonDegrees, bool explicitFilters)
     {
       var llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.LatDegreesToRadians(), startLonDegrees.LonDegreesToRadians(), endLatDegrees.LatDegreesToRadians(), endLonDegrees.LonDegreesToRadians());
 
@@ -77,8 +77,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       // callId is set to 'empty' because raptor will create and return a Guid if this is set to empty.
       // this would result in the acceptance tests failing to see the callID == in its equality test
-      return CompactionProfileProductionDataRequest.CreateCompactionProfileProductionDataRequest(
+      return new CompactionProfileProductionDataRequest(
         ProjectId,
+        ProjectUid,
         Guid.Empty,
         ProductionDataType.Height,
         Filter,
@@ -94,7 +95,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         baseFilter,
         topFilter,
         volCalcType,
-        volumeDesign);
+        volumeDesign,
+        explicitFilters);
     }
   }
 }

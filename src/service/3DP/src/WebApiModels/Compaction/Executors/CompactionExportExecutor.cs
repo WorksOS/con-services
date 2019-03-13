@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using Microsoft.Extensions.Logging;
 #if RAPTOR
 using ASNodeDecls;
 #endif
@@ -11,6 +13,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -40,26 +43,54 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (
 #if RAPTOR
-          UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") && 
+          UseTRexGateway("ENABLE_TREX_GATEWAY_SURFACE") &&
 #endif
           request?.ExportType == ExportTypes.SurfaceExport)
         {
+          var compactionSurfaceExportRequest =
+            new CompactionSurfaceExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.Tolerance);
 
-          var cmvChangeDetailsRequest =
-            new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
+          log.LogInformation($"Calling TRex SendSurfaceExportRequest for projectUid: {request.ProjectUid}");
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionSurfaceExportRequest>(compactionSurfaceExportRequest, "/export/surface/ttm", customHeaders).Result;
+        }
+        else if (
+#if RAPTOR
+          UseTRexGateway("ENABLE_TREX_GATEWAY_VETA") &&
+#endif
+          request?.ExportType == ExportTypes.VedaExport)
+        {
+          // can't change ExportReport as it's used by ProcessWithRaptor().
+          var requestHelper = item as ExportRequestHelper;
 
-          return trexCompactionDataProxy.SendSurfaceExportRequest(cmvChangeDetailsRequest, customHeaders).Result;
+          var compactionVetaExportRequest =
+            new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs,
+                             requestHelper.GetMachineNameList());
+
+          log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders).Result;
+        }
+        else if (
+#if RAPTOR
+            UseTRexGateway("ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT") &&
+#endif
+            request?.ExportType == ExportTypes.PassCountExport)
+        {
+          var compactionPassCountExportRequest =
+            new CompactionPassCountExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, request.OutputType, request.UserPrefs, request.RestrictSize, request.RawData);
+
+          log.LogInformation($"Calling TRex SendPassCountExportRequest for projectUid: {request.ProjectUid}");
+          return trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionPassCountExportRequest>(compactionPassCountExportRequest, "/export/passcount", customHeaders).Result;
 #if !RAPTOR
         }
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-
         }
 #else
         }
 
+        log.LogInformation($"Calling Raptor ProcessWithRaptor for projectUid: {request.ProjectUid}");
         return ProcessWithRaptor(request);
 #endif
       }
@@ -83,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.Precheckonly, request.Filename, RaptorConverters.convertToRaptorMachines(request.MachineList), (int)request.CoordType,
         (int)request.OutputType,
         request.DateFromUTC, request.DateToUTC,
-        RaptorConverters.convertToRaptorTranslations(request.Translations), 
+        RaptorConverters.convertToRaptorTranslations(request.Translations),
         RaptorConverters.convertToRaptorProjectExtents(request.ProjectExtents), out var dataexport);
 
       if (success)

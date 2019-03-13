@@ -1,17 +1,13 @@
-﻿using System.Net.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Reports;
-using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies
 {
@@ -20,6 +16,9 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class TRexCompactionDataProxy : BaseProxy, ITRexCompactionDataProxy
   {
+    private const string TREX_GATEWAY_IMMUTABLE_BASE_URL = "TREX_GATEWAY_API_URL";
+    private const string TREX_GATEWAY_MUTABLE_BASE_URL = "TREX_MUTABLE_GATEWAY_API_URL";
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -30,271 +29,51 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Sends a request to get CMV % Change statistics from the TRex database.
+    /// Sends a request to get/save data from/to the TRex immutable/mutable database.
     /// </summary>
-    /// <param name="cmvChangeDetailsRequest"></param>
+    /// <param name="dataRequest"></param>
+    /// <param name="route"></param>
     /// <param name="customHeaders"></param>
+    /// <param name="mutableGateway"></param>
     /// <returns></returns>
-    public Task<CMVChangeSummaryResult> SendCMVChangeDetailsRequest(CMVChangeDetailsRequest cmvChangeDetailsRequest, IDictionary<string, string> customHeaders = null)
+    public Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route, IDictionary<string, string> customHeaders = null, bool mutableGateway = false) where TResponse : ContractExecutionResult
     {
-      var request = JsonConvert.SerializeObject(cmvChangeDetailsRequest);
+      var request = JsonConvert.SerializeObject(dataRequest);
 
-      log.LogDebug($"{nameof(SendCMVChangeDetailsRequest)}: Sending the request: {request}");
+      log.LogDebug($"{nameof(TRequest)}: Sending the request: {request}");
 
-      return SendRequestPost<CMVChangeSummaryResult>(request, customHeaders, "/cmv/percentchange");
+      return SendRequestPost<TResponse>(request, customHeaders, route, mutableGateway ? TREX_GATEWAY_MUTABLE_BASE_URL : TREX_GATEWAY_IMMUTABLE_BASE_URL);
     }
 
     /// <summary>
-    /// Sends a request to get CMV Details statistics from the TRex database.
+    /// Sends a request to get data as a stream from the TRex immutable database.
     /// </summary>
-    /// <param name="cmvDetailsRequest"></param>
+    /// <param name="dataRequest"></param>
+    /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<CMVDetailedResult> SendCMVDetailsRequest(CMVDetailsRequest cmvDetailsRequest, IDictionary<string, string> customHeaders = null)
+    public Task<Stream> SendDataPostRequestWithStreamResponse<TRequest>(TRequest dataRequest, string route, IDictionary<string, string> customHeaders = null)
     {
-      var request = JsonConvert.SerializeObject(cmvDetailsRequest);
+      var request = JsonConvert.SerializeObject(dataRequest);
 
-      log.LogDebug($"{nameof(SendCMVDetailsRequest)}: Sending the request: {request}");
+      log.LogDebug($"{nameof(TRequest)}: Sending the request: {request}");
 
-      return SendRequestPost<CMVDetailedResult>(request, customHeaders, "/cmv/details");
+      return SendRequestPostAsStreamContent(request, customHeaders, route);
     }
 
     /// <summary>
-    /// Sends a request to get CMV Summary statistics from the TRex database.
+    /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
-    /// <param name="cmvSummaryRequest"></param>
+    /// <param name="sitModelId"></param>
+    /// <param name="route"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<CMVSummaryResult> SendCMVSummaryRequest(CMVSummaryRequest cmvSummaryRequest, IDictionary<string, string> customHeaders = null)
+    public Task<TResponse> SendDataGetRequest<TResponse>(string sitModelId, string route, IDictionary<string, string> customHeaders = null)
     {
-      var request = JsonConvert.SerializeObject(cmvSummaryRequest);
+      log.LogDebug($"{nameof(TResponse)}: Sending the get data request for site model ID: {sitModelId}");
 
-      log.LogDebug($"{nameof(SendCMVSummaryRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<CMVSummaryResult>(request, customHeaders, "/cmv/summary");
+      return SendRequestGet<TResponse>(customHeaders, route);
     }
-
-    /// <summary>
-    /// Sends a request to get Pass Count Details statistics from the TRex database.
-    /// </summary>
-    /// <param name="pcDetailsRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<PassCountDetailedResult> SendPassCountDetailsRequest(PassCountDetailsRequest pcDetailsRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(pcDetailsRequest);
-
-      log.LogDebug($"{nameof(SendPassCountDetailsRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<PassCountDetailedResult>(request, customHeaders, "/passcounts/details");
-    }
-
-    /// <summary>
-    /// Sends a request to get Pass Count Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="pcSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<PassCountSummaryResult> SendPassCountSummaryRequest(PassCountSummaryRequest pcSummaryRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(pcSummaryRequest);
-
-      log.LogDebug($"{nameof(SendPassCountSummaryRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<PassCountSummaryResult>(request, customHeaders, "/passcounts/summary");
-    }
-
-    /// <summary>
-    /// Sends a request to get Cut/Fill Details statistics from the TRex database.
-    /// </summary>
-    /// <param name="cfDetailsRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<CompactionCutFillDetailedResult> SendCutFillDetailsRequest(CutFillDetailsRequest cfDetailsRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(cfDetailsRequest);
-
-      log.LogDebug($"{nameof(SendCutFillDetailsRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<CompactionCutFillDetailedResult>(request, customHeaders, "/cutfill/details");
-    }
-
-    /// <summary>
-    /// Sends a request to get MDP Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="mdpSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<MDPSummaryResult> SendMDPSummaryRequest(MDPSummaryRequest mdpSummaryRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(mdpSummaryRequest);
-
-      log.LogDebug($"{nameof(SendMDPSummaryRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<MDPSummaryResult>(request, customHeaders, "/mdp/summary");
-    }
-
-    /// <summary>
-    /// Sends a request to get Material Temperature Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="temperatureSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<TemperatureSummaryResult> SendTemperatureSummaryRequest(TemperatureSummaryRequest temperatureSummaryRequest,
-      IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(temperatureSummaryRequest);
-
-      log.LogDebug($"{nameof(SendTemperatureSummaryRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<TemperatureSummaryResult>(request, customHeaders, "/temperature/summary");
-    }
-
-    public Task<TemperatureDetailResult> SendTemperatureDetailsRequest(TemperatureDetailRequest temperatureDetailsRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(temperatureDetailsRequest);
-
-      log.LogDebug($"{nameof(SendTemperatureDetailsRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<TemperatureDetailResult>(request, customHeaders, "/temperature/details");
-    }
-
-    /// <summary>
-    /// Sends a request to get Machine Speed Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="speedSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<SpeedSummaryResult> SendSpeedSummaryRequest(SpeedSummaryRequest speedSummaryRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(speedSummaryRequest);
-
-      log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<SpeedSummaryResult>(request, customHeaders, "/speed/summary");
-    }
-
-    /// <summary>
-    /// Sends a request to get CCA Summary statistics from the TRex database.
-    /// </summary>
-    /// <param name="ccaSummaryRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<CCASummaryResult> SendCCASummaryRequest(CCASummaryRequest ccaSummaryRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(ccaSummaryRequest);
-
-      log.LogDebug($"{nameof(SendCMVSummaryRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<CCASummaryResult>(request, customHeaders, "/cca/summary");
-    }
-
-    /// <summary>
-    /// Sends a request to get production data tile from the TRex database.
-    /// </summary>
-    /// <param name="tileRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<Stream> SendProductionDataTileRequest(TileRequest tileRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(tileRequest);
-
-      log.LogDebug($"{nameof(SendProductionDataTileRequest)}: Sending the request: {request}");
-      
-      return SendRequestPostAsStreamContent(request, customHeaders, "/tile");
-    }
-
-    /// <summary>
-    /// Sends a request to get Summary Volumes statistics from the TRex database.
-    /// </summary>
-    /// <param name="summaryVolumesRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<SummaryVolumesResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(summaryVolumesRequest);
-
-      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<SummaryVolumesResult>(request, customHeaders, "/volumes/summary");
-    }
-
-    /// <summary>
-    /// Sends a request to get project extents for a site model from the TRex database.
-    /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID, IDictionary<string, string> customHeaders = null)
-    {
-      log.LogDebug($"{nameof(SendProjectExtentsRequest)}: Sending the get project extents request for site model ID: {siteModelID}");
-
-      return SendRequestGet<BoundingBox3DGrid>(customHeaders, $"/sitemodels/{siteModelID}/extents");
-    }
-
-    /// <summary>
-    /// Sends a request to get a TIN surface data from the TRex database.
-    /// </summary>
-    /// <param name="compactionExportRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<CompactionExportResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
-      IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(compactionExportRequest);
-
-      log.LogDebug($"{nameof(SendSurfaceExportRequest)}: Sending the request: {request}");
-
-      return SendRequestPost<CompactionExportResult>(request, customHeaders, "/export/surface/ttm");
-    }
-
-    /// <summary>
-    /// Sends a request to get production data patches from the TRex database.
-    /// </summary>
-    /// <param name="patchDataRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<Stream> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest, IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(patchDataRequest);
-
-      log.LogDebug($"{nameof(SendProductionDataPatchRequest)}: Sending the request: {request}");
-
-      return SendRequestPostAsStreamContent(request, customHeaders, "/patches");
-    }
-
-    /// <summary>
-    /// Sends a request to get station and offset report data from TRex.
-    /// </summary>
-    /// <param name="stationOffsetRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetTRexRequest stationOffsetRequest,
-      IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(stationOffsetRequest);
-
-      log.LogDebug($"{nameof(SendStationOffsetReportRequest)}: Sending the request: {request}");
-
-      return SendRequestPostAsStreamContent(request, customHeaders, "/report/stationoffset");
-    }
-
-    /// <summary>
-    /// Sends a request to get grid report data from TRex.
-    /// </summary>
-    /// <param name="gridRequest"></param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    public Task<Stream> SendGridReportRequest(CompactionReportGridTRexRequest gridRequest,
-      IDictionary<string, string> customHeaders = null)
-    {
-      var request = JsonConvert.SerializeObject(gridRequest);
-
-      log.LogDebug($"{nameof(SendGridReportRequest)}: Sending the request: {request}");
-
-      return SendRequestPostAsStreamContent(request, customHeaders, "/report/grid");
-    }
-
 
     /// <summary>
     /// Executes a POST request against the TRex Gateway service.
@@ -302,10 +81,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload"></param>
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
+    /// <param name="baseUrl"></param>
     /// <returns></returns>
-    private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
+    private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route, string baseUrl = TREX_GATEWAY_IMMUTABLE_BASE_URL) where T : ContractExecutionResult
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = await SendRequest<T>(baseUrl, payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -318,10 +98,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload"></param>
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
+    /// <param name="baseUrl"></param>
     /// <returns></returns>
-    private async Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ActionResult
+    private async Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route, string baseUrl = TREX_GATEWAY_IMMUTABLE_BASE_URL) where T : ActionResult
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = await SendRequest<T>(baseUrl, payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPostEx)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -337,7 +118,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private Task<Stream> SendRequestPostAsStreamContent(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      var result = GetMasterDataStreamContent("TREX_GATEWAY_API_URL", customHeaders, HttpMethod.Post, payload, null, route);
+      var result = GetMasterDataStreamContent(TREX_GATEWAY_IMMUTABLE_BASE_URL, customHeaders, HttpMethod.Post, payload, null, route);
 
       return result;
     }
@@ -351,7 +132,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private async Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route,  HttpMethod.Get, queryParameters);
+      var response = await SendRequest<T>(TREX_GATEWAY_IMMUTABLE_BASE_URL, string.Empty, customHeaders, route, HttpMethod.Get, queryParameters);
 
       log.LogDebug($"{nameof(SendRequestGet)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -174,12 +175,10 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Extracts a CSIB from a DC file presented as a byte array.
+    /// Extracts a coordinate system defintion response object from a DC file presented as a byte array.
     /// </summary>
-    public async Task<string> ImportFromDCContentAsync(string filePath, byte[] fileContent)
+    public async Task<CoordinateSystemResponse> ImportCSDFromDCContentAsync(string filePath, byte[] fileContent)
     {
-      string imported = null;
-
       try
       {
         using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
@@ -195,15 +194,53 @@ namespace VSS.TRex.CoordinateSystems
           var json = await response.Content.ReadAsStringAsync();
           var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystemResponse>>(json);
 
-          imported = csList?.FirstOrDefault().CoordinateSystem.Id;
+          return csList.FirstOrDefault();
         }
       }
       catch (Exception exception)
       {
-        log.LogError(exception, $"Failed to import coordinate system from DC '{filePath}'");
+        log.LogError(exception, $"Failed to import coordinate system definition from DC '{filePath}'");
       }
 
-      return imported;
+      return new CoordinateSystemResponse();
     }
+
+    /// <summary>
+    /// Extracts a CSIB from a DC file presented as a byte array.
+    /// </summary>
+    public async Task<string> ImportFromDCContentAsync(string filePath, byte[] fileContent)
+    {
+      var csd = await ImportCSDFromDCContentAsync(filePath, fileContent);
+
+      return csd.CoordinateSystem.Id;
+    }
+
+    /// <summary>
+    /// Extracts a coordinate system defintion response object from a CSIB string.
+    /// </summary>
+    public async Task<CoordinateSystemResponse> ImportCSDFromCSIBAsync(string csib)
+    {
+      try
+      {
+        using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
+        {
+          var response = serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get).Result;
+          if (!response.IsSuccessStatusCode)
+          {
+            throw new Exception(response.ToString());
+          }
+
+          var json = await response.Content.ReadAsStringAsync();
+          return JsonConvert.DeserializeObject<CoordinateSystemResponse>(json);
+        }
+      }
+      catch (Exception exception)
+      {
+        log.LogError(exception, "Failed to import coordinate system definition from CSIB");
+      }
+
+      return new CoordinateSystemResponse();
+    }
+
   }
 }

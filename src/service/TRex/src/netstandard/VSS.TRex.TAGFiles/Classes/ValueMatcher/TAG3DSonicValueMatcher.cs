@@ -14,13 +14,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!(valueType.Type == TAGDataType.t4bitUInt && value <= 2)) // Sonic state currently only defines three states
+            bool result = false;
+
+            if (valueType.Type == TAGDataType.t4bitUInt && value <= 2) // Sonic state currently only defines three states
             {
-                return false;
+                valueSink.ICSonic3D = (byte)value;
+                result = true;;
             }
 
-            valueSink.ICSonic3D = (byte)value;
-            return true;
+            return result;
         }
     }
 }

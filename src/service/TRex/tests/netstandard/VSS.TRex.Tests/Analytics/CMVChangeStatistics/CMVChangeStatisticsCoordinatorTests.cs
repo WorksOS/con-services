@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet(new CombinedFilter()),
-      CMVChangeDetailsDatalValues = new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }
+      CMVChangeDetailsDataValues = new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }
     };
 
     private CMVChangeStatisticsCoordinator _getCoordinator()
@@ -48,12 +48,12 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
 
-      Assert.True(aggregator.CMVChangeDetailsDataValues.Length == Arg.CMVChangeDetailsDatalValues.Length, "Invalid aggregator value for DetailsDataValues.Length.");
+      Assert.True(aggregator.CMVChangeDetailsDataValues.Length == Arg.CMVChangeDetailsDataValues.Length, "Invalid aggregator value for DetailsDataValues.Length.");
 
       for (int i = 0; i < aggregator.Counts.Length; i++)
-        Assert.True(Math.Abs(aggregator.CMVChangeDetailsDataValues[i] - Arg.CMVChangeDetailsDatalValues[i]) < Consts.TOLERANCE_DIMENSION, $"Invalid aggregated value for DetailsDataValues[{i}].");
+        Assert.True(Math.Abs(aggregator.CMVChangeDetailsDataValues[i] - Arg.CMVChangeDetailsDataValues[i]) < Consts.TOLERANCE_DIMENSION, $"Invalid aggregated value for DetailsDataValues[{i}].");
     }
 
     [Fact]

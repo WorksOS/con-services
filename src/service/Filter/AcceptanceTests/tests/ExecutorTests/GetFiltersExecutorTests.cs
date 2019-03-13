@@ -18,6 +18,8 @@ using System.Linq;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
 
 namespace ExecutorTests
 {

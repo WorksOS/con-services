@@ -33,7 +33,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// The limit under which node sub grids are represented by sparse lists rather than a complete sub grid array of child sub grid references
     /// </summary>
     /// <returns></returns>
-    private readonly int _subGridTreeNodeCellSparcityLimit = DIContext.Obtain<IConfigurationStore>()?.GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT) ?? Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT;
+    public static uint SubGridTreeNodeCellSparcityLimit { get; } = DIContext.Obtain<IConfigurationStore>()?.GetValueUint("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT) ?? Consts.SUBGRIDTREENODE_CELLSPARCITYLIMIT;
 
     /// <summary>
     /// Default no-arg constructor
@@ -123,14 +123,12 @@ namespace VSS.TRex.SubGridTrees.Core
     /// </summary>
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
-    /// <param name="SubGridX"></param>
-    /// <param name="SubGridY"></param>
     /// <returns></returns>
-    public bool GetSubGridContainingCell(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY)
+    public virtual ISubGrid GetSubGridContainingCell(uint CellX, uint CellY)
     {
-      GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
+      GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-      return GetSubGrid(SubGridX, SubGridY) != null;
+      return GetSubGrid(SubGridX, SubGridY);
     }
 
     /// <summary>
@@ -180,7 +178,7 @@ namespace VSS.TRex.SubGridTrees.Core
       if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
           minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
       {
-        throw new ArgumentException("Min/max sub grid cell X/Y bounds are out of range");
+        throw new ArgumentException("Minimum sub grid cell X/Y bounds are out of range");
       }
 
       // Make use of the three parameter functor version of ForEachSubGrid and ignore the sub grid location parameters.
@@ -215,7 +213,7 @@ namespace VSS.TRex.SubGridTrees.Core
       if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
           minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
       {
-        throw new ArgumentException("Min/max sub grid cell X/Y bounds are out of range");
+        throw new ArgumentException("Minimum sub grid cell X/Y bounds are out of range");
       }
 
       if (_cells != null)
@@ -265,7 +263,7 @@ namespace VSS.TRex.SubGridTrees.Core
       Func<ISubGrid, bool> leafFunctor = null,
       Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
     {
-      // Allow the scanner to deal with the node sub grid and short circuit scanning here is desired
+      // Allow the scanner to deal with the node sub grid and short circuit scanning here if desired
       if (nodeFunctor != null && nodeFunctor(this) == SubGridProcessNodeSubGridResult.TerminateProcessing)
         return false;
 
@@ -282,7 +280,7 @@ namespace VSS.TRex.SubGridTrees.Core
       ForEachSubGrid(subGrid =>
         {
           if (leafFunctor != null && subGrid.IsLeafSubGrid()) // Leaf sub grids are passed to leafFunctor
-            return (leafFunctor(subGrid)) ? SubGridProcessNodeSubGridResult.OK : SubGridProcessNodeSubGridResult.TerminateProcessing;
+            return leafFunctor(subGrid) ? SubGridProcessNodeSubGridResult.OK : SubGridProcessNodeSubGridResult.TerminateProcessing;
 
           // Node sub grids are descended into recursively to continue processing
           return !((INodeSubGrid)subGrid).ScanSubGrids(Extent, leafFunctor, nodeFunctor) ? SubGridProcessNodeSubGridResult.TerminateProcessing : SubGridProcessNodeSubGridResult.OK;
@@ -324,12 +322,12 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         if (_sparseCells == null)
         {
-          _sparseCells = new SubGridTreeSparseCellRecord[_subGridTreeNodeCellSparcityLimit];
+          _sparseCells = new SubGridTreeSparseCellRecord[SubGridTreeNodeCellSparcityLimit];
           _sparseCellCount = 0;
         }
 
         // Add it to the sparse list
-        if (_sparseCellCount < _subGridTreeNodeCellSparcityLimit)
+        if (_sparseCellCount < SubGridTreeNodeCellSparcityLimit)
         {
           _sparseCells[_sparseCellCount++] = new SubGridTreeSparseCellRecord((byte) X, (byte) Y, Value);
         }
@@ -365,7 +363,7 @@ namespace VSS.TRex.SubGridTrees.Core
             if (_sparseCellCount == 0)
               _sparseCells = null;
 
-            break;
+           break;
           }
         }
       }
@@ -387,5 +385,7 @@ namespace VSS.TRex.SubGridTrees.Core
 
       return count;
     }
+
+    public override bool CellHasValue(byte CellX, byte CellY) => GetSubGrid(CellX, CellY) != null;
   }
 }

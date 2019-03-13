@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using VSS.TRex.TAGFiles.Classes.States;
+﻿using VSS.TRex.TAGFiles.Classes.States;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
@@ -21,13 +20,6 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         protected TAGValueMatcherState state { get; set; }
 
         /// <summary>
-        /// MatchesValueType determines if this value matcher is interested in fields with a field name of AValueName
-        /// </summary>
-        /// <param name="valueType"></param>
-        /// <returns></returns>
-        public bool MatchesValueType(TAGDictionaryItem valueType) => MatchedValueTypes().Contains(valueType.Name);
-
-        /// <summary>
         /// The set of TAG values a TAG value matcher advertises it is interested in.
         /// </summary>
         /// <returns></returns>
@@ -46,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         public virtual bool ProcessIntegerValue(TAGDictionaryItem valueType, int value) => false;
 
         /// <summary>
-        /// Processes an unsign integer TAG value
+        /// Processes an unsigned integer TAG value
         /// </summary>
         /// <param name="valueType"></param>
         /// <param name="value"></param>
@@ -85,7 +77,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         public virtual bool ProcessUnicodeStringValue(TAGDictionaryItem valueType, string value) => false;
 
         /// <summary>
-        /// TAGValueMatcher constructor. The stae machine state and the sink to send matched values to are
+        /// TAGValueMatcher constructor. The state machine state and the sink to send matched values to are
         /// provided as arguments.
         /// </summary>
         /// <param name="valueSink"></param>

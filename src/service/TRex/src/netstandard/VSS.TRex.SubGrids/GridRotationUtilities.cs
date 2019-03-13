@@ -108,7 +108,7 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <param name="subGridWorldOriginY"></param>
-    /// <param name="subGridMoniker"></param>
+    /// <param name="subGridMoniker"></param
     /// <param name="areaControlSet"></param>
     /// <param name="siteModelCellSize"></param>
     /// <param name="assignmentContext"></param>
@@ -252,7 +252,7 @@ namespace VSS.TRex.SubGrids
           {
             sieveBitmask.SetBit(eastCol, northRow);
             assignmentContext.ProbePositions[eastCol, northRow]
-              .SetOffsets(currentEast - subGridMinX, currentNorth - subGridMinY);
+              .SetOffsets((float)(currentEast - subGridMinX), (float)(currentNorth - subGridMinY));
           }
 
           currentEast += stepEastX;

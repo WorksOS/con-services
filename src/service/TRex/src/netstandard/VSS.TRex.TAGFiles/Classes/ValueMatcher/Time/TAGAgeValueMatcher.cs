@@ -15,13 +15,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             if (valueType.Type == TAGDataType.t4bitUInt)
             {
                 valueSink.SetAgeOfCorrection((byte) value);
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

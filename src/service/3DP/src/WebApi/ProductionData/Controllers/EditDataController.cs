@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -28,6 +29,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
+    private readonly IConfigurationStore configStore;
 
     /// <summary>
     /// Constructor with dependency injection
@@ -37,13 +39,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       IASNodeClient raptorClient, 
       ITagProcessor tagProcessor, 
 #endif
-      ILoggerFactory logger)
+      ILoggerFactory logger,
+      IConfigurationStore configStore)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
 #endif
       this.logger = logger;
+      this.configStore = configStore;
     }
 
     /// <summary>
@@ -67,6 +71,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
     /// </summary>
+    [Obsolete("This is a BusinessCenter endpoint. It is not expected that this endpoint will have a v2")]
     [PostRequestVerifier]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
@@ -87,6 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
 #else
+      // see NOTE above
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
 #endif
@@ -127,10 +133,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private void ValidateDates(long projectId, ProductionDataEdit dataEdit)
     {
-      var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, new long[0]);
-      request.Validate();
 #if RAPTOR
-      dynamic stats = RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient, tagProcessor).Process(request) as ProjectStatisticsResult;
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore,
+        fileListProxy: null, tRexCompactionDataProxy: null
+#if RAPTOR
+        , raptorClient: raptorClient
+#endif
+      );
+      var stats = projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]);
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

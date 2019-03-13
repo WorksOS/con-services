@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -34,12 +35,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ProjectVerifier]
   public class CompactionTileController : BaseTileController<CompactionTileController>
   {
-#if RAPTOR
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-#endif
     /// <summary>
     /// The tile generator
     /// </summary>
@@ -59,16 +54,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionTileController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
       IConfigurationStore configStore,
       IFileRepository fileRepo, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
       base(configStore, fileListProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.fileRepo = fileRepo;
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;
@@ -119,7 +108,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] bool explicitFilters = false)
     {
       Log.LogDebug($"{nameof(GetProductionDataTile)}: " + Request.QueryString);
 
@@ -133,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
           boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
-          volumeCalcType, CustomHeaders));
+          volumeCalcType, CustomHeaders, explicitFilters));
 
       return tileResult;
     }
@@ -188,7 +178,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] bool explicitFilters=false)
     {
       Log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
@@ -205,10 +196,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
           boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
-          volumeCalcType, CustomHeaders));
+          volumeCalcType, CustomHeaders, explicitFilters));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -256,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 #if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return result;
@@ -311,10 +302,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 #if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
-      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

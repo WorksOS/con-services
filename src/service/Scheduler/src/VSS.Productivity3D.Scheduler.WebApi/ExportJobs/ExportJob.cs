@@ -10,6 +10,7 @@ using Hangfire.Server;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 
 
@@ -129,7 +130,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         {
           // The default data will be zip file (for backwards compatability where it defaulted to zip files)
           path = path + ".zip"; 
-          contentType = "application/octet-stream";
+          contentType = ContentTypeConstants.ApplicationOctetStream;
         }
 
         // Transfer proxy will upload the file with a potentially different extension, matching the contenttype

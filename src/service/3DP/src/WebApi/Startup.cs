@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Log4NetExtensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -126,7 +127,18 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TILES") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SURFACE") != "true" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PATCHES") != "true")
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VETA") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_EXPORT_PASSCOUNT") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROFILING") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_GRIDREPORT") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_STATIONOFFSET") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_LINEWORKFILE") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CCA") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CS") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PATCHES") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CELL_DATUM") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") != "true")
         ConfigureRaptor();
     }
 
@@ -140,7 +152,8 @@ namespace VSS.Productivity3D.WebApi
       try
       {
         ServiceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
-        Log.LogTrace("Received config {0}", config);
+        if (Log.IsTraceEnabled())
+          Log.LogTrace("Received config {0}", config);
 
         if (config.Contains("Error retrieving Raptor config")) { throw new Exception(config); }
       }

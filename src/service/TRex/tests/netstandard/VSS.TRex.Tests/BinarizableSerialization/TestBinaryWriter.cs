@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Extensions;
-using VSS.TRex.Tests.BinarizableSerialization;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
@@ -11,10 +10,10 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   /// <summary>
   /// Binary writer implementation.
   /// </summary>
-  internal class TestBinaryWriter : IBinaryWriter, IBinaryRawWriter
+  public class TestBinaryWriter : IBinaryWriter, IBinaryRawWriter
   {
     /** Stream. */
-    public readonly System.IO.BinaryWriter _stream = new System.IO.BinaryWriter(new MemoryStream());
+    public readonly BinaryWriter _stream = new BinaryWriter(new MemoryStream());
 
     /// <summary>
     /// Write named boolean value.
@@ -68,7 +67,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       _stream.Write(BinaryTypeId.ArrayBool);
 
-      _stream.Write(val == null);
+      _stream.Write(val != null);
       if (val != null)
       {
         _stream.Write(val.Length);
@@ -127,7 +126,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       _stream.Write(BinaryTypeId.ArrayByte);
 
-      _stream.Write(val == null);
+      _stream.Write(val != null);
       if (val != null)
       {
         _stream.Write(val.Length);
@@ -293,7 +292,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       _stream.Write(BinaryTypeId.ArrayInt);
 
-      _stream.Write(val == null);
+      _stream.Write(val != null);
       if (val != null)
       {
         _stream.Write(val.Length);
@@ -351,7 +350,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       _stream.Write(BinaryTypeId.ArrayLong);
 
-      _stream.Write(val == null);
+      _stream.Write(val != null);
       if (val != null)
       {
         _stream.Write(val.Length);
@@ -464,7 +463,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       _stream.Write(BinaryTypeId.ArrayDouble);
 
-      _stream.Write(val == null);
+      _stream.Write(val != null);
       if (val != null)
       {
         _stream.Write(val.Length);
@@ -569,7 +568,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       _stream.Write(BinaryTypeId.String);
 
-      _stream.Write(val == null);
+      _stream.Write(val != null);
       if (val != null)
         _stream.Write(val);
     }
@@ -608,9 +607,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       WriteFieldId(fieldName, BinaryTypeId.Guid);
 
-      _stream.Write(BinaryTypeId.Guid);
-      throw new NotImplementedException();
-      //BinaryUtils.WriteGuid(val.Value, _stream);
+      WriteGuid(val);
     }
 
     /// <summary>
@@ -620,7 +617,10 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     public void WriteGuid(Guid? val)
     {
       _stream.Write(BinaryTypeId.Guid);
-      _stream.Write(val?.ToByteArray());
+
+      _stream.Write(val != null);
+      if (val != null)
+        _stream.Write(val.Value.ToByteArray());
     }
 
     /// <summary>
@@ -716,7 +716,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="T"></typeparam>
     /// <param name="fieldName">Field name.</param>
     /// <param name="val">Object value.</param>
-    public void WriteObject<T>(string fieldName, T val)
+    public virtual void WriteObject<T>(string fieldName, T val)
     {
       throw new NotImplementedException();
     }
@@ -726,7 +726,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="val">Object value.</param>
-    public void WriteObject<T>(T val)
+    public virtual void WriteObject<T>(T val)
     {
       throw new NotImplementedException();
     }

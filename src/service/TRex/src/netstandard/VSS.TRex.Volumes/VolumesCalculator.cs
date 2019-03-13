@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
-using VSS.TRex.Types;
 using VSS.TRex.Common;
-
+using VSS.TRex.Types;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// VolumesCalculator extends VolumesCalculatorBase to include volume
-    /// accumulation state tracking for simple volums calculations.
+    /// accumulation state tracking for simple volumes calculations.
     /// </summary>
     public class VolumesCalculator : VolumesCalculatorBase
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(VolumesCalculator));
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<VolumesCalculator>();
       
         /// <summary>
         /// Default no-arg constructor
@@ -31,23 +31,16 @@ namespace VSS.TRex.Volumes
             */
 
             if (FromSelectionType == ProdReportSelectionType.Filter)
-            {
                 Extents = BaseFilter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
-            }
 
             if (ToSelectionType == ProdReportSelectionType.Filter)
-            {
                 Extents = TopFilter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
-            }
         }
 
         public override bool ComputeVolumeInformation()
         {
             if (VolumeType == VolumeComputationType.None)
-            {
-                Log.LogError("No report type supplied to ComputeVolumeInformation");
-                return false;
-            }
+                throw new TRexException("No report type supplied to ComputeVolumeInformation");
 
             if (FromSelectionType == ProdReportSelectionType.Surface)
             {

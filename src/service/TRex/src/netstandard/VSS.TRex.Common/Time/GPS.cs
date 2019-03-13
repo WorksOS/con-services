@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Common.Time
 {
@@ -50,9 +50,7 @@ namespace VSS.TRex.Common.Time
         public static DateTime GPSOriginTimeToDateTime(int weekNumber, uint millisecondsInWeek)
         {
             if (millisecondsInWeek > MILLISECONDS_PER_WEEK_BOUNDARY_CHECK)
-            {
               throw new TRexException($"GPS millisecondsInWeek: {millisecondsInWeek} not in range 0..{MILLISECONDS_PER_WEEK_BOUNDARY_CHECK}");
-            }
 
             int days = 7 * weekNumber;
             int ms = (int)millisecondsInWeek;

@@ -32,6 +32,11 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         double CellSize { get; set; }
 
         /// <summary>
+        /// The maximum (positive and negative) real world value for both X and Y axes that may be encompassed by the grid
+        /// </summary>
+        double MaxOrdinate { get; }
+
+        /// <summary>
         /// The value of the index origin offset for this sub grid tree
         /// </summary>
         uint IndexOriginOffset { get; }
@@ -222,7 +227,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="worldExtent"></param>
         /// <param name="cellExtent"></param>
         /// <returns></returns>
-        bool CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent);
+        void CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent);
         
         byte[] ToBytes();
 

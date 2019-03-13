@@ -11,6 +11,8 @@ namespace VSS.ConfigurationStore
     bool GetValueBool(string v, bool defaultValue);
     int GetValueInt(string v);
     int GetValueInt(string v, int defaultValue);
+    uint GetValueUint(string v);
+    uint GetValueUint(string v, uint defaultValue);
     long GetValueLong(string v);
     long GetValueLong(string v, long defaultValue);
     double GetValueDouble(string v);

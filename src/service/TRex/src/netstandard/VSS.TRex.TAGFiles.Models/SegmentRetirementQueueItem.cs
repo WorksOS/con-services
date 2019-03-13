@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
@@ -13,7 +14,8 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class SegmentRetirementQueueItem : IBinarizable, IFromToBinary
   {
-    private const byte VERSION_NUMBER = 1;
+    public const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The project this segment retirement queue item refers to
     /// </summary>
@@ -36,7 +38,8 @@ namespace VSS.TRex.TAGFiles.Models
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(ProjectUID);
       writer.WriteLong(InsertUTCAsLong);
 
@@ -52,10 +55,7 @@ namespace VSS.TRex.TAGFiles.Models
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      var version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       InsertUTCAsLong = reader.ReadLong();

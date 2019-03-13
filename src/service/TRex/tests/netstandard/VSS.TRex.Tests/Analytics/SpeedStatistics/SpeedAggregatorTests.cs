@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       Assert.True(aggregator.SummaryCellsScanned == dLength, "Invalid value for SummaryCellsScanned.");
       Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       // Other aggregator...
       var otherAggregator = new SpeedStatisticsAggregator();
@@ -80,7 +80,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
       otherAggregator.CellSize = CELL_SIZE;
       otherAggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));
 
-      otherAggregator.ProcessSubgridResult(subGrids);
+      otherAggregator.ProcessSubGridResult(subGrids);
 
       aggregator.AggregateWith(otherAggregator);
 

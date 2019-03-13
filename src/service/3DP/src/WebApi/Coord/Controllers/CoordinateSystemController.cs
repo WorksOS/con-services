@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Coord.Contracts;
-#if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
-#endif
-using VSS.Productivity3D.WebApi.Models.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {
@@ -29,6 +30,10 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
+    private readonly IConfigurationStore configStore;
+    private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
+
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Constructor with dependency injection
@@ -37,12 +42,14 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
 #endif
       this.logger = logger;
+      this.configStore = configStore;
+      this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -54,12 +61,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
     {
       request.Validate();
+
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -71,12 +78,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
     {
       request.Validate();
+
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -87,15 +94,20 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] long projectId)
     {
-      ProjectID request = new ProjectID(projectId);
+#if !RAPTOR
+      var projectUid = ((RaptorPrincipal)User).GetProjectUid(projectId).Result;
+      var request = new ProjectID(projectId, projectUid);
+#else
+      var request = new ProjectID(projectId);
+#endif
 
       request.Validate();
+
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -107,15 +119,15 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
     {
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      ProjectID request = new ProjectID(projectId, projectUid);
+      var request = new ProjectID(projectId, projectUid);
 
       request.Validate();
+
+      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
@@ -127,12 +139,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)
     {
       request.Validate();
+
+      return RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger, raptorClient).Process(request) as CoordinateConversionResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as CoordinateConversionResult;
     }
   }
 }

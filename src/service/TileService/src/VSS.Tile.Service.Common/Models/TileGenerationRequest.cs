@@ -40,6 +40,7 @@ namespace VSS.Tile.Service.Common.Models
     public MapParameters mapParameters { get; set; }
     public IDictionary<string, string> customHeaders { get; set; }
     public List<WGSPoint> geoJsonPoints { get; set; }
+    public bool ExplicitFilters { get; set; }
 
     /// <summary>
     /// Create instance of TileGenerationRequest
@@ -66,7 +67,8 @@ namespace VSS.Tile.Service.Common.Models
       ProjectData project,
       MapParameters mapParameters,
       IDictionary<string, string> customHeaders,
-      List<WGSPoint> geoJsonPoints
+      List<WGSPoint> geoJsonPoints,
+      bool explicitFilters = false
       )
     {
       return new TileGenerationRequest
@@ -92,7 +94,8 @@ namespace VSS.Tile.Service.Common.Models
         project = project,
         mapParameters = mapParameters,
         customHeaders = customHeaders,
-        geoJsonPoints = geoJsonPoints
+        geoJsonPoints = geoJsonPoints,
+        ExplicitFilters = explicitFilters
       };
     }
 

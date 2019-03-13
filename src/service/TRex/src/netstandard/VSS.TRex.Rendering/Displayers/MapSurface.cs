@@ -1146,6 +1146,6 @@ double BorderSize)
 
 //    Procedure RecordRepaint;
 
-    public double Scale { get { return GetScale(); } set { SetScale(value); } }
+    public double Scale { get => GetScale(); set => SetScale(value); }
     }
 }

@@ -115,7 +115,7 @@ namespace VSS.TRex.Profiling
         if (passFilter.ElevationRangeDesignUID != Guid.Empty)
         {
           design.GetDesignHeights(siteModel.ID, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
-            siteModel.Grid.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations, out FilterDesignErrorCode);
+            siteModel.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations, out FilterDesignErrorCode);
 
           if (FilterDesignErrorCode != DesignProfilerRequestResult.OK || FilterDesignElevations == null)
           {

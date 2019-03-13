@@ -53,8 +53,8 @@ namespace VSS.TRex.SubGrids
     public (GridDataType GridDataType,
       ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
-      Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       ITRexSpatialMemoryCacheContext CacheContext)[] ConstructRequestorIntermediaries(ISiteModel siteModel,
         IFilterSet filters,
         bool includeSurveyedSurfaceInformation,
@@ -63,8 +63,8 @@ namespace VSS.TRex.SubGrids
       (GridDataType GridDataType,
       ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
-      Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       ITRexSpatialMemoryCacheContext CacheContext) getIntermediary(ICombinedFilter filter)
       {
         // Construct the appropriate list of surveyed surfaces
@@ -98,9 +98,26 @@ namespace VSS.TRex.SubGrids
           SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
         }
 
-        return (gridDataType, filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray,
+        // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
+        // the common elements for this set of sub grids being requested. We always want to request all surface elevations to 
+        // promote cacheability.
+        var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
+        (
+          siteModelID: siteModel.ID,
+          oTGCellBottomLeftX: uint.MinValue,
+          oTGCellBottomLeftY: uint.MinValue,
+          cellSize: siteModel.CellSize,
+          includedSurveyedSurfaces: FilteredSurveyedSurfaces, 
+          surveyedSurfacePatchType: filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
+          processingMap: new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
+        );
+
+        return (gridDataType, 
+          filter, 
+          FilteredSurveyedSurfaces, 
           SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
-            SubGridCacheContext);
+          surfaceElevationPatchArg as ISurfaceElevationPatchArgument,
+          SubGridCacheContext);
       }
 
       // Construct the intermediary requestor state
@@ -115,8 +132,8 @@ namespace VSS.TRex.SubGrids
       (GridDataType GridDataType,
         ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
-        Guid[] FilteredSurveyedSurfacesAsArray,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+        ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
         ITRexSpatialMemoryCacheContext CacheContext)[] Intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask)
@@ -126,19 +143,6 @@ namespace VSS.TRex.SubGrids
       // Construct the resulting requestors
       return Intermediaries.Select(x =>
       {
-        // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
-        // the common elements for this set of sub grids being requested. We always want to request all surface elevations to 
-        // promote cacheability.
-
-        var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
-        {
-          SiteModelID = siteModel.ID,
-          CellSize = siteModel.Grid.CellSize,
-          IncludedSurveyedSurfaces = x.FilteredSurveyedSurfacesAsArray,
-          SurveyedSurfacePatchType = x.Filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
-          ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
-        };
-
         var requestor = SubGridRequestorFactory();
         requestor.Initialize(siteModel,
           x.GridDataType,
@@ -153,9 +157,8 @@ namespace VSS.TRex.SubGrids
           SubGridCache,
           x.CacheContext,
           x.FilteredSurveyedSurfaces,
-          x.FilteredSurveyedSurfacesAsArray,
           x.surfaceElevationPatchRequest,
-          surfaceElevationPatchArg);
+          x.surfaceElevationPatchArgument);
 
         return requestor;
       }).ToArray();

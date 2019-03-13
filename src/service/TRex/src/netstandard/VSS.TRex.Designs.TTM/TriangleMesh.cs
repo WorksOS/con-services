@@ -5,34 +5,23 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TriangleMesh
   {
-    private TriVertices FVertices;
-    private Triangles FTriangles;
+    private readonly TriVertices vertices;
+    private readonly Triangles triangles;
 
-    protected virtual void CreateLists(out TriVertices vertices, out Triangles triangles)
+    protected virtual void CreateLists(out TriVertices _vertices, out Triangles _triangles)
     {
-      vertices = new TriVertices();
-      triangles = new Triangles();
-    }
-
-    protected virtual void SnapToOutputResolution()
-    {
-      // Descendents should do something here if required
+      _vertices = new TriVertices();
+      _triangles = new Triangles();
     }
 
     public TriangleMesh()
     {
-      CreateLists(out FVertices, out FTriangles);
+      CreateLists(out vertices, out triangles);
     }
 
-    public TriVertices Vertices
-    {
-      get { return FVertices; }
-    }
+    public TriVertices Vertices => vertices; 
 
-    public Triangles Triangles
-    {
-      get { return FTriangles; }
-    }
+    public Triangles Triangles => triangles;
 
     private Triangle FindNeighbour(List<List<Triangle>> Trianglelists, Triangle triangle, TriVertex fromVertex, TriVertex toVertex)
     {
@@ -98,45 +87,36 @@ namespace VSS.TRex.Designs.TTM
           if (Nbr != null)
           {
             int NbrSide = Nbr.GetSideIndex(FromVertex, ToVertex);
-            if (Nbr.Neighbours[NbrSide] == null)
-            {
-              Nbr.Neighbours[NbrSide] = Triangles[i];
-            }
-            else
-            {
-              Triangles[i].Neighbours[Side] = null;
-            }
+            Nbr.Neighbours[NbrSide] = Triangles[i];
           }
         }
       }
     }
 
-
     public Triangle GetTriangleAtPoint(double X, double Y, out double Z)
     {
+      Triangle result = null;
       Z = Common.Consts.NullReal;
 
       for (int i = 0; i < Triangles.Count; i++)
       {
-        Triangle Result = Triangles[i];
+        Triangle tri = Triangles[i];
 
-        if (Result.PointInTriangle(X, Y))
+        if (tri.PointInTriangle(X, Y))
         {
-          Z = Result.GetHeight(X, Y);
-          return Result;
+          Z = tri.GetHeight(X, Y);
+          result = tri;
+          break;
         }
       }
 
-      return null;
+      return result;
     }
 
     public virtual void Clear()
     {
-      FTriangles.Clear();
-      FVertices.Clear();
+      triangles.Clear();
+      vertices.Clear();
     }
-
-    //    procedure FixCrossingTriangles(MaxShortestSide: Double );
-
   }
 }

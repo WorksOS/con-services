@@ -156,7 +156,7 @@ namespace VSS.TRex.SubGrids.Executors
                   throw new TRexSubGridProcessingException("SimpleVolumeOverlay not implemented");
 
                 case GridDataType.Height:
-                  NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.Grid.CellSize, siteModel.Grid.NumLevels, subGridResult.OriginX, subGridResult.OriginY);
+                  NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.CellSize, siteModel.Grid.NumLevels, subGridResult.OriginX, subGridResult.OriginY);
 
                   /*
                   Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
@@ -238,7 +238,7 @@ namespace VSS.TRex.SubGrids.Executors
     {
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
+        ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.CellSize,
           out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
         clientGrid = DesignElevations;
@@ -248,10 +248,8 @@ namespace VSS.TRex.SubGrids.Executors
         Log.LogError($"Design profiler sub grid elevation request for {address} failed with error {ProfilerRequestResult}");
         return ServerRequestResult.FailedToComputeDesignElevationPatch;
       }
-
+      
       // Reach into the sub grid request layer and retrieve an appropriate sub grid
-      requester.CellOverrideMask.Fill();
-
       ServerRequestResult result = requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, out clientGrid);
 
       if (result != ServerRequestResult.NoError)
@@ -383,8 +381,8 @@ namespace VSS.TRex.SubGrids.Executors
     private (GridDataType GridDataType,
       ICombinedFilter Filter, 
       ISurveyedSurfaces FilteredSurveyedSurfaces, 
-      Guid[] FilteredSurveyedSurfacesAsArray,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
+      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       ITRexSpatialMemoryCacheContext CacheContext)[] RequestorIntermediaries;
 
     /// <summary>

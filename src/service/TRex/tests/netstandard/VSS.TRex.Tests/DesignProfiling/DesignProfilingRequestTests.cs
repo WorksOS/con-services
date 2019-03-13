@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       return siteModel;
     }
 
-    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignProfileComputeFunc, CalculateDesignProfileArgument, CalculateDesignProfileResponse>();
 
     [Fact]
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       AddDesignProfilerGridRouting();
 
       var siteModel = NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm");
 
       var request = new DesignProfileRequest();
       var response = request.Execute(new CalculateDesignProfileArgument

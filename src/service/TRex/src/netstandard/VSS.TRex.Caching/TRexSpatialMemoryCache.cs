@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -15,7 +15,7 @@ namespace VSS.TRex.Caching
   /// <summary>
   /// The top level class that implements spatial data caching in TRex where that spatial data is represented by SubGrids and SubGridTrees
   /// </summary>
-  public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache
+  public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache, IDisposable
   {
     private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.Caching
 
     public long MaxSizeInBytes { get; }
 
-    private TRexSpatialMemoryCacheContextRemover ContextRemover;
+    private readonly TRexSpatialMemoryCacheContextRemover ContextRemover;
 
     /// <summary>
     /// Creates a new spatial data cache containing at most maxNumElements items. Elements are stored in
@@ -217,9 +217,7 @@ namespace VSS.TRex.Caching
       var number = Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
 
       if (number < 0)
-      {
-        Debug.Assert(false, "CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
-      }
+        throw new TRexException("CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
 
       // Decrement the number of elements in the cache
       Interlocked.Decrement(ref currentNumElements);
@@ -229,8 +227,8 @@ namespace VSS.TRex.Caching
     /// Attempts to read an element from a cache context given the spatial location of the element
     /// </summary>
     /// <param name="context">The request, filter and other data specific context for spatial data</param>
-    /// <param name="originX">The origin (bottom left) cell of the spatial data subgrid</param>
-    /// <param name="originY">The origin (bottom left) cell of the spatial data subgrid</param>
+    /// <param name="originX">The origin (bottom left) cell of the spatial data sub grid</param>
+    /// <param name="originY">The origin (bottom left) cell of the spatial data sub grid</param>
     /// <returns></returns>
     public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY)
     {
@@ -238,7 +236,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Invalidates subgrids held within all cache contexts for a project that are sensitive to
+    /// Invalidates sub grids held within all cache contexts for a project that are sensitive to
     /// ingest of production data (eg: from TAG files)
     /// </summary>
     /// <param name="projectUid"></param>
@@ -264,8 +262,8 @@ namespace VSS.TRex.Caching
       if (projectContexts.Count == 0)
         return;
 
-      int numInvalidatedSubgrids = 0;
-      int numScannedSubgrids = 0;
+      int numInvalidatedSubGrids = 0;
+      int numScannedSubGrids = 0;
       DateTime startTime = DateTime.Now;
 
       // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
@@ -290,14 +288,14 @@ namespace VSS.TRex.Caching
           {
             context.InvalidateSubgridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
 
-            numScannedSubgrids++;
+            numScannedSubGrids++;
             if (subGridPresentForInvalidation)
-              numInvalidatedSubgrids++;
+              numInvalidatedSubGrids++;
           });
         }
       }
 
-      log.LogInformation($"Invalidated {numInvalidatedSubgrids} out of {numScannedSubgrids} scanned subgrid from {projectContexts.Count} contexts in {DateTime.Now - startTime} [project {projectUid}]");
+      log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts.Count} contexts in {DateTime.Now - startTime} [project {projectUid}]");
     }
 
     /// <summary>
@@ -338,6 +336,11 @@ namespace VSS.TRex.Caching
       }
 
       log.LogInformation($"{numRemoved} contexts removed in {DateTime.Now - startTime}");
+    }
+
+    public void Dispose()
+    {
+      ContextRemover.StopRemovalOperations();
     }
   }
 }

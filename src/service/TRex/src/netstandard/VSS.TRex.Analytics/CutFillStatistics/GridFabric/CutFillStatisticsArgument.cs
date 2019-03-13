@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
@@ -9,6 +10,8 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
   /// </summary>    
   public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The set of cut/fill offsets
     /// Current this is always 7 elements in array and assumes grade is set at zero
@@ -29,6 +32,8 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteDoubleArray(Offsets);
       writer.WriteGuid(DesignID);
     }
@@ -40,6 +45,8 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Offsets = reader.ReadDoubleArray();
       DesignID = reader.ReadGuid() ?? Guid.Empty;

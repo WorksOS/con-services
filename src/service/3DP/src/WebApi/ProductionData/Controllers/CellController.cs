@@ -1,8 +1,11 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
@@ -27,6 +30,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
+    private readonly IConfigurationStore configStore;
+    private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
     /// <summary>
     /// Default constructor.
@@ -35,12 +40,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
 #endif
       this.logger = logger;
+      this.configStore = configStore;
+      this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -71,11 +78,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/productiondata/cells/datum")]
     [HttpPost]
-    public CellDatumResponse Post([FromBody]CellDatumRequest request)
+    public async Task<CellDatumResponse> Post([FromBody]CellDatumRequest request)
     {
       request.Validate();
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient).Process(request) as CellDatumResponse;
+      return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResponse;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));

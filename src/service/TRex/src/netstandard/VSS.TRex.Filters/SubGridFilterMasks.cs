@@ -32,7 +32,7 @@ namespace VSS.TRex.Filters
             uint originX = SubGridAsLeaf.OriginX;
             uint originY = SubGridAsLeaf.OriginY;
 
-            double cellSize = SiteModel.Grid.CellSize;
+            double cellSize = SiteModel.CellSize;
 
             // Get the world location of the origin position
             SiteModel.Grid.GetCellCenterPosition(originX, originY, out double OX, out double OY);

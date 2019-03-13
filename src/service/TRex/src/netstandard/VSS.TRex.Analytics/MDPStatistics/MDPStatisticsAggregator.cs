@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
@@ -15,7 +14,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
   public class MDPStatisticsAggregator : DataStatisticsAggregator
   {
     /// <summary>
-    /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
+    /// The flag is to indicate whether or not the machine MDP target to be user overrides.
     /// </summary>
     public bool OverrideMachineMDP { get; set; }
 
@@ -71,20 +70,17 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// Processes a MDP subgrid into a MDP isopach and calculate the counts of cells where the MDP value matches the requested target.
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
 
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientMDPLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientMDPLeafSubGrid SubGrid)
           {
             var currentTargetMDP = CellPassConsts.NullMDP;
 

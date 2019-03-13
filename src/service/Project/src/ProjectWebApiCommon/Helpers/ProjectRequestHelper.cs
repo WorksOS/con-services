@@ -15,10 +15,12 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
+using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -38,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <param name="log"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="projectRepo"></param>
-    public static async Task<Repositories.DBModels.Project> GetProject(string projectUid, string customerUid,
+    public static async Task<ProjectDatabaseModel> GetProject(string projectUid, string customerUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var project =
@@ -78,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// validate if Coord sys file name and content are required
     /// </summary>
-    public static void ValidateCoordSystemFile(Repositories.DBModels.Project existing, IProjectEvent project,
+    public static void ValidateCoordSystemFile(ProjectDatabaseModel existing, IProjectEvent project,
       IServiceExceptionHandler serviceExceptionHandler)
     {
       // Creating project:

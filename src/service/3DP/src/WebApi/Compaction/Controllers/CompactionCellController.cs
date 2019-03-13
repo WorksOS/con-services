@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using System.Net;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -27,16 +27,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionCellController : BaseController<CompactionCellController>
   {
-    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CompactionCellController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
       : base(configStore, fileListProxy, settingsManager)
-    {
-      TRexCompactionDataProxy = trexCompactionDataProxy;
-    }
+    { }
 
     /// <summary>
     /// Requests a single thematic datum value from a single cell. Examples are elevation, compaction. temperature etc.
@@ -60,8 +58,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
       var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
 
-      var request = CellDatumRequest.CreateCellDatumRequest(
+      var request = new CellDatumRequest(
         projectId.Result,
+        projectUid,
         displayMode,
         new WGSPoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()),
         null,
@@ -72,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
 
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient).Process(request) as CompactionCellDatumResult;
+      return await RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CompactionCellDatumResult;
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
@@ -120,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
         .Build<CompactionPatchV2Executor>(LoggerFactory,
 #if RAPTOR
-          RaptorClient, 
+          RaptorClient,
 #endif
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(patchRequest));

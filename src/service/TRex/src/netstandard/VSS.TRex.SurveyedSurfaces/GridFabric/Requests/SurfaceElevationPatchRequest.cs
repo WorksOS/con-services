@@ -12,7 +12,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 {
-  public class SurfaceElevationPatchRequest : DesignProfilerRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>, ISurfaceElevationPatchRequest
+    public class SurfaceElevationPatchRequest : DesignProfilerRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>, ISurfaceElevationPatchRequest
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchRequest>();
 
@@ -46,7 +46,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
           _context = context; 
         }
      
-        private SurfaceElevationPatchRequest()
+        public SurfaceElevationPatchRequest()
         {
         }
 
@@ -65,7 +65,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
             try
             {
-                result = _Compute.Apply(_computeFunc, arg);
+                result = Compute.Apply(_computeFunc, arg);
             }
             catch (ClusterGroupEmptyException e)
             {
@@ -74,7 +74,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
                 try
                 {
-                    result = _Compute.Apply(_computeFunc, arg);
+                    result = Compute.Apply(_computeFunc, arg);
                 }
                 catch (ClusterGroupEmptyException e2)
                 {

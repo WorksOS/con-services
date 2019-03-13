@@ -21,15 +21,18 @@ namespace VSS.TRex.Rendering.Palettes
         /// <returns></returns>
         public Draw.Color ChooseColour(double value)
         {
+            Draw.Color color = Draw.Color.Empty;
+
             for (int i = PaletteTransitions.Length - 1; i >= 0; i--)
             {
                 if (value >= PaletteTransitions[i].Value)
                 {
-                    return PaletteTransitions[i].Color;
+                    color = PaletteTransitions[i].Color;
+                    break;
                 }
             }
 
-            return Draw.Color.Empty;
+            return color;
         }
     }
 }

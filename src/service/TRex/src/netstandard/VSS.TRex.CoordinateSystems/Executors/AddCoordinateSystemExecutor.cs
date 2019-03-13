@@ -44,7 +44,10 @@ namespace VSS.TRex.CoordinateSystems.Executors
             return false;
         }
 
-        // Notify listeners of the coordinate system change
+        if (!storageProxy.Commit())
+          return false;
+
+        // Notify the  grid listeners that attributes of this sitemodel have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, projectID, CsibChanged: true);
       }

@@ -19,14 +19,14 @@ namespace VSS.TRex.Services.Designs
     /// </summary>
     public class DesignsService : BaseService, IDesignsService 
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignsService>();
 
         /// <summary>
-        /// Cache storing sitemodel instances
+        /// Cache storing site model instances
         /// </summary>
         private ICache<INonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
-        private ICache<INonSpatialAffinityKey, byte[]> MutableNonSpatialCache => mutableNonSpatialCache ?? (mutableNonSpatialCache = _Ignite.GetCache<INonSpatialAffinityKey, byte[]>(CacheName));
+        private ICache<INonSpatialAffinityKey, byte[]> MutableNonSpatialCache => mutableNonSpatialCache ?? (mutableNonSpatialCache = Ignite.GetCache<INonSpatialAffinityKey, byte[]>(CacheName));
 
         /// <summary>
         /// Service name.

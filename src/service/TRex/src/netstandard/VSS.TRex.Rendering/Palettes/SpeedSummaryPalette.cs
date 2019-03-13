@@ -14,20 +14,22 @@ namespace VSS.TRex.Rendering.Palettes
     {
       // ...
     }
+
     public Draw.Color ChooseColour(MachineSpeedExtendedRecord measuredSpeed, MachineSpeedExtendedRecord targetSpeed)
     {
-      if (targetSpeed.Max == CellPassConsts.NullMachineSpeed)
-        return Draw.Color.Empty;
-      else
+      var color = Draw.Color.Empty;
+
+      if (targetSpeed.Max != CellPassConsts.NullMachineSpeed)
       {
         if (measuredSpeed.Max > targetSpeed.Max)
-          return OverSpeedRangeColour;
-        else if (measuredSpeed.Min < targetSpeed.Min && measuredSpeed.Max < targetSpeed.Min)
-          return LowerSpeedRangeColour;
-        else
-          return WithinSpeedRangeColour;
+          color = OverSpeedRangeColour;
+        else 
+          color = measuredSpeed.Min < targetSpeed.Min && measuredSpeed.Max < targetSpeed.Min 
+            ? LowerSpeedRangeColour
+            : WithinSpeedRangeColour;
       }
-    }
 
+      return color;
+    }
   }
 }

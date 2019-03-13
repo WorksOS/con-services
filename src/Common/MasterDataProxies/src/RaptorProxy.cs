@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies
@@ -54,7 +56,7 @@ namespace VSS.MasterData.Proxies
     public async Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileName: {coordinateSystemFileName}");
-      var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
+      var payLoadToSend = new CoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
 
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/validation");
     }
@@ -304,13 +306,13 @@ namespace VSS.MasterData.Proxies
     /// Gets a production data tile from the 3dpm WMS service.
     /// </summary>
     public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
-      string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
+      string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null, bool explicitFilters = false)
     {
       log.LogDebug($"RaptorProxy.{nameof(GetProductionDataTile)}: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 
       var parameters = new Dictionary<string, string>
       {
-        {"SERVICE", "WMS" }, {"VERSION" , "1.3.0" }, {"REQUEST", "GetMap" }, {"FORMAT", "image/png"}, {"TRANSPARENT", "true"},
+        {"SERVICE", "WMS" }, {"VERSION" , "1.3.0" }, {"REQUEST", "GetMap" }, {"FORMAT", ContentTypeConstants.ImagePng}, {"TRANSPARENT", "true"},
         { "LAYERS", "Layers"}, {"CRS", "EPSG:4326" }, {"STYLES", string.Empty}, {"projectUid", projectUid.ToString()},
         { "mode", mode.ToString()}, {"width", width.ToString()}, {"height", height.ToString()}, {"bbox", bbox}
       };
@@ -334,6 +336,7 @@ namespace VSS.MasterData.Proxies
       {
         parameters.Add("volumeCalcType", volCalcType.ToString());
       }
+      parameters.Add("explicitFilters", explicitFilters.ToString());
       var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       var request = new GracefulWebRequest(logger, configurationStore);

@@ -62,6 +62,11 @@ namespace VSS.TRex.Common.CellPasses
     public const short NullCCV = short.MaxValue;
 
     /// <summary>
+    /// Conversion ratio 
+    /// </summary>
+    public const short CCVvalueRatio = 10;
+
+    /// <summary>
     /// Null value for reported CCV percentage
     /// </summary>
     public const int NullCCVPercentage = -1;
@@ -92,9 +97,19 @@ namespace VSS.TRex.Common.CellPasses
     public const ushort NullAmplitude = ushort.MaxValue;
 
     /// <summary>
+    /// Conversion ratio 
+    /// </summary>
+    public const ushort AmplitudeRatio = 100;
+
+    /// <summary>
     /// Null Machine Drive Power compaction value
     /// </summary>
     public const short NullMDP = short.MaxValue;
+
+    /// <summary>
+    /// Conversion ratio 
+    /// </summary>
+    public const short MDPvalueRatio = 10;
 
     /// <summary>
     /// Null value for reported MDP percentage

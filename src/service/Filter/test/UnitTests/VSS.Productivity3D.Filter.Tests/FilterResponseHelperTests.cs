@@ -10,6 +10,8 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions;
 
 namespace VSS.Productivity3D.Filter.Tests
 {

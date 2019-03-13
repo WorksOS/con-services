@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Reports.Gridded;
 
@@ -10,6 +11,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
   /// </summary>
   public class StationOffsetReportRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgumentReport
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// Points in NEE derived from each station & offset
     /// </summary>
@@ -23,6 +26,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt(Points.Count);
       foreach (var point in Points)
       {
@@ -37,6 +43,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       var pointCount = reader.ReadInt();
       Points = new List<StationOffsetPoint>();
       for (int i = 0; i < pointCount; i++)
@@ -44,15 +53,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Arguments
         StationOffsetPoint point = null;
         (point = new StationOffsetPoint()).FromBinary(reader);
         Points.Add(point);
-      }
-    }
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Points != null ? Points.GetHashCode() : 0);
-        return hashCode;
       }
     }
   }

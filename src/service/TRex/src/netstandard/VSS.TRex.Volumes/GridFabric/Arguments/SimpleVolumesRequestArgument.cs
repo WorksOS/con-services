@@ -5,7 +5,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Common;
 
-
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {
   /// <summary>
@@ -13,7 +12,7 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
   /// </summary>
   public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument
   {
-    //ExternalDescriptor : TASNodeRequestDescriptor;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The volume computation method to use when calculating volume information
@@ -28,11 +27,11 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     /// meaningful for a filter to have a spatial extent, and to denote aa
     /// 'as-at' time only.
     /// </summary>
-    public ICombinedFilter BaseFilter = null;
-    public ICombinedFilter TopFilter = null;
+    public ICombinedFilter BaseFilter { get; set; }
+    public ICombinedFilter TopFilter { get; set; }
 
-    public Guid BaseDesignID = Guid.Empty;
-    public Guid TopDesignID = Guid.Empty;
+    public Guid BaseDesignID { get; set; } = Guid.Empty;
+    public Guid TopDesignID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
@@ -63,12 +62,14 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectID);
       writer.WriteInt((int)VolumeType);
@@ -90,12 +91,14 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       VolumeType = (VolumeComputationType)reader.ReadInt();

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace VSS.TRex.Designs.TTM
 {
@@ -9,11 +10,11 @@ namespace VSS.TRex.Designs.TTM
     public const int kDTMFileSignatureSize = 20;
   }
 
-  public struct TTMHeader
+  public class TTMHeader
   {
     public byte FileMajorVersion; // Must be 1
     public byte FileMinorVersion; // Must be 0
-    public byte[] FileSignature; // = new byte[HeaderConsts.kDTMFileSignatureSize]; // Must be "TNL TIN DTM FILE" \0\0\0\0
+    public byte[] FileSignature; // new byte[HeaderConsts.kDTMFileSignatureSize]; // Must be "TNL TIN DTM FILE" \0\0\0\0
     public byte[] DTMModelInternalName; // = new byte[HeaderConsts.kDTMInternalModelNameSize]; // E.g. "Christchurch area TIN DTM" \0
     public byte CoordinateUnits; // Must be 1: Metres
     public byte VertexValueUnits; // Must be 1: Metres
@@ -41,13 +42,13 @@ namespace VSS.TRex.Designs.TTM
     public int NumberOfStartPoints; // 50 or less
     public short StartPointRecordSize; // Typically 2 x (vertex coordinate size) + (size of triangle field) but could be larger.
 
-    public static TTMHeader NewHeader()
+    public static TTMHeader NewHeader() => new TTMHeader();
+
+    public TTMHeader()
     {
-      return new TTMHeader()
-      {
-        FileSignature = new byte[HeaderConsts.kDTMFileSignatureSize],
-        DTMModelInternalName = new byte[HeaderConsts.kDTMInternalModelNameSize]
-      };
+      //FileSignature = new byte[HeaderConsts.kDTMFileSignatureSize];
+      FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
+      DTMModelInternalName = new byte[HeaderConsts.kDTMInternalModelNameSize];
     }
 
     public void Read(BinaryReader reader)

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
+using VSS.Log4NetExtensions;
 
 namespace VSS.Common.Cache.MemoryCache
 {
@@ -16,11 +17,6 @@ namespace VSS.Common.Cache.MemoryCache
     private readonly IMemoryCache cache;
 
     /// <summary>
-    /// To save time in this code, we won't bother building a string to log if isn't going to be logged
-    /// </summary>
-    private bool isLogEnabled = false;
-
-    /// <summary>
     /// Store a dictionary of Cache Keys to Tags associated to the cached item
     /// </summary>
     private readonly ConcurrentDictionary<string, List<string>> keyLookup = new ConcurrentDictionary<string, List<string>>();
@@ -28,8 +24,6 @@ namespace VSS.Common.Cache.MemoryCache
     public InMemoryDataCache(ILoggerFactory loggerFactory, IMemoryCache cache)
     {
       logger = loggerFactory.CreateLogger<InMemoryDataCache>();
-      isLogEnabled = logger.IsEnabled(LogLevel.Trace);
-
       this.cache = cache;
     }
 
@@ -66,12 +60,12 @@ namespace VSS.Common.Cache.MemoryCache
     {
       if (cache.TryGetValue(key.ToLower(), out var obj))
       {
-        if(isLogEnabled)
+        if (logger.IsTraceEnabled())
           logger.LogTrace($"Getting key {key} from cache has a hit, returning cached item.");
         return (TItem) obj;
       }
 
-      if(isLogEnabled)
+      if (logger.IsTraceEnabled())
         logger.LogTrace($"Getting key {key} from cache has a miss, returning null");
 
       return null;
@@ -92,7 +86,7 @@ namespace VSS.Common.Cache.MemoryCache
       // IF we have our item in cache, returned it
       if (cache.TryGetValue(lowerKey, out var obj) && obj != null)
       {
-        if(isLogEnabled)
+        if (logger.IsTraceEnabled())
           logger.LogTrace($"Fetching key {key} from cache has a hit, returned cached item");
         return (TItem) obj;
       }
@@ -109,7 +103,7 @@ namespace VSS.Common.Cache.MemoryCache
         // Call the factory func passed in by the calling code, this should populate
         var item = await factory(entry);
 
-        if(isLogEnabled)
+        if (logger.IsTraceEnabled())
           logger.LogTrace($"Fetching key {key} from cache has a miss, creating a new item. Valid cache item: {item?.Value != null}");
 
         if (item?.Value == null)
@@ -134,7 +128,7 @@ namespace VSS.Common.Cache.MemoryCache
     /// <returns>The value passed in.</returns>
     public TItem Set<TItem>(string key, TItem value, IEnumerable<string> tags, MemoryCacheEntryOptions options = null) where TItem : class
     {
-      if(isLogEnabled)
+      if (logger.IsTraceEnabled())
         logger.LogTrace($"Setting new cache item with key {key}");
 
       var lowerKey = key.ToLower();
@@ -162,7 +156,7 @@ namespace VSS.Common.Cache.MemoryCache
     /// <param name="tag">The tag to look for on any cached items</param>
     public void RemoveByTag(string tag)
     {
-      if(isLogEnabled)
+      if (logger.IsTraceEnabled())
         logger.LogTrace($"Removing Cache items via the tag {tag}");
 
       // ToList will create a snapshot of the dictionary as at call time
@@ -185,7 +179,7 @@ namespace VSS.Common.Cache.MemoryCache
     public void RemoveByKey(string key)
     {
       var lowerKey = key.ToLower();
-      if(isLogEnabled)
+      if (logger.IsTraceEnabled())
         logger.LogTrace($"Removing Cache items via the key {key}");
       // We need to remove from our internal state, which doesn't directly update the cache
       RemoveKeyFromInternalState(lowerKey);
@@ -202,7 +196,7 @@ namespace VSS.Common.Cache.MemoryCache
       // Have this key got any tags stored?
       if (!keyLookup.TryRemove(key, out _))
       {
-        if(isLogEnabled)
+        if (logger.IsTraceEnabled())
           logger.LogTrace($"Failed to remove {key} from internal state, it may not exist anymore");
       }
     }
@@ -217,7 +211,7 @@ namespace VSS.Common.Cache.MemoryCache
       if (reason == EvictionReason.Replaced) return;
       if (key is string k)
       {
-        if(isLogEnabled)
+        if (logger.IsTraceEnabled())
           logger.LogTrace($"Key {k} was evicted from cache. Reason: {reason}");
         RemoveKeyFromInternalState(k);
       }

@@ -1,11 +1,10 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -13,66 +12,38 @@ using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.ExistenceMaps.Servers
 {
-    /// <summary>
+  /// <summary>
     /// A server representing access operations for existence maps derived from topological surfaces such as TTM designs
     /// and surveyed surfaces
     /// </summary>
-    public class ExistenceMapServer
+    public class ExistenceMapServer : IExistenceMapServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<ExistenceMapServer>();
-
-        /// <summary>
-        /// Ignite instance to be used in the server
-        /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
-        /// </summary>
-        private readonly IIgnite ignite;
-
         /// <summary>
         /// A cache that holds the existence maps derived from design files (eg: TTM files)
         /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
-
-        /// <summary>
-        /// Internal static instance variable for the server
-        /// </summary>
-        private static ExistenceMapServer _Instance;
-
-        /// <summary>
-        /// Creates or returns the singleton instance
-        /// </summary>
-        /// <returns></returns>
-        public static ExistenceMapServer Instance() => _Instance ?? (_Instance = new ExistenceMapServer());
+        private readonly ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
 
         /// <summary>
         /// Default no-arg constructor that creates the Ignite cache within the server
         /// </summary>
         public ExistenceMapServer()
         {
-            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+            IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
             
-            if (ignite == null)
-            {
-                Log.LogInformation($"Failed to get Ignite reference in {this}");
-                throw new TRexException("No Ignite instance available");
-            }
-
-            DesignTopologyExistenceMapsCache = ignite.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
+            DesignTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
 
             if (DesignTopologyExistenceMapsCache == null)
-            {
-                Log.LogInformation($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
-                throw new TRexException("Ignite cache not available");
-            }
+                throw new TRexException($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}, ignite reference is {ignite}");
         }
 
         /// <summary>
         /// Configure the parameters of the existence map cache
         /// </summary>
-        public CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
+        private CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
         {
-            return new CacheConfiguration()
+            return new CacheConfiguration
             {
                 Name = TRexCaches.DesignTopologyExistenceMapsCacheName(),
 

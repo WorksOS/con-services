@@ -5,7 +5,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs
@@ -93,7 +93,7 @@ end;
 
         IDesign designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID).Designs.Locate(designUid);
 
-        string designFilePathAndName = Path.Combine(DesignHelper.EstablishLocalDesignFilepath(DataModelID),
+        string designFilePathAndName = Path.Combine(FilePathHelper.GetTempFolderForProject(DataModelID),
           designRef.Get_DesignDescriptor().FileName);
 
         if (!File.Exists(designFilePathAndName))

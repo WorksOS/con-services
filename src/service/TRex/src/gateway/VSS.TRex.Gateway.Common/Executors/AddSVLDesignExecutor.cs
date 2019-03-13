@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         log.LogInformation($"#In# AddSVLDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
         // load core file from s3 to local
-        var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid);
+        var localPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
 
         AlignmentDesign alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);

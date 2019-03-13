@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.AWS.TransferProxy;
+using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -19,7 +19,7 @@ using Xunit;
 
 namespace VSS.TRex.Gateway.Tests
 {
-  public class DesignExecutorTests
+  public class DesignExecutorTests : IDisposable
   {
     [Theory]
     [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.DesignSurface, "validFileName.ttm", "408A150C-B606-E311-9E53-0050568824D7", null)]
@@ -52,20 +52,22 @@ namespace VSS.TRex.Gateway.Tests
     [Fact]
     public void FileTransfer_HappyPath()
     {
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+      var mockConfig = new Mock<IConfigurationStore>();
+      mockConfig.Setup(x => x.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("vss-projects-stg");
+
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddSingleton<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME")))
+        .Add(x => x.AddSingleton(mockConfig.Object))
+        .Add(x => x.AddSingleton(mockTransferProxy.Object))
         .Complete();
 
       Guid projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
       string transferFileName = "TransferTestDesign.ttm";
       var isWrittenToS3Ok = S3FileTransfer.WriteFile("TestData", projectUid, transferFileName);
       Assert.True(isWrittenToS3Ok);
-
-      var isReadFromS3Ok = S3FileTransfer.ReadFile(projectUid, transferFileName, Path.GetTempPath()).Result;
-      Assert.True(isReadFromS3Ok);
     }
 
     [Fact]
@@ -121,6 +123,9 @@ namespace VSS.TRex.Gateway.Tests
       Assert.Equal(designUid.ToString(), result.DesignUid);
       Assert.Equal(extents.MaxX, result.Extents.MaxX);
     }
-
+    public void Dispose()
+    {
+      DIBuilder.Eject();
+    }
   }
 }

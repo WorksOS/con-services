@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       IClientLeafSubGrid[][] subGrids = new [] { new [] { clientGrid } };
       
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
       for (int i = 0; i < aggregator.Counts.Length; i++)
@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       Assert.True(aggregator.SummaryCellsScanned == dLength, "Invalid value for SummaryCellsScanned.");
       Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
@@ -97,7 +97,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       // Other aggregator...
       var otherAggregator = new CMVStatisticsAggregator();
@@ -106,7 +106,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       otherAggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       otherAggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
-      otherAggregator.ProcessSubgridResult(subGrids);
+      otherAggregator.ProcessSubGridResult(subGrids);
 
       aggregator.AggregateWith(otherAggregator);
 
@@ -132,7 +132,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
-      aggregator.ProcessSubgridResult(subGrids);
+      aggregator.ProcessSubGridResult(subGrids);
 
       // Other aggregator...
       var otherAggregator = new CMVStatisticsAggregator();
@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       otherAggregator.OverridingMachineCMV = (short)(length - 1);
       otherAggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);
 
-      otherAggregator.ProcessSubgridResult(subGrids);
+      otherAggregator.ProcessSubGridResult(subGrids);
 
       aggregator.AggregateWith(otherAggregator);
 

@@ -51,6 +51,7 @@ namespace VSS.TRex.Tests.SiteModels
       var siteModel = new SiteModel(guid, 1.23);
 
       siteModel.ID.Should().Be(guid);
+      siteModel.CellSize.Should().Be(1.23);
       siteModel.Grid.CellSize.Should().Be(1.23);
       siteModel.IsTransient.Should().Be(true);
     }
@@ -84,6 +85,7 @@ namespace VSS.TRex.Tests.SiteModels
       newSiteModel.IsTransient.Should().Be(false);
       newSiteModel.LastModifiedDate.Should().Be(originModelModifiedDate);
       newSiteModel.CreationDate.Should().Be(originModelCreationDate);
+      newSiteModel.CellSize.Should().Be(originSiteModel.Grid.CellSize);
 
       newSiteModel.Grid.Should().NotBe(originSiteModel.Grid);
       newSiteModel.Grid.CellSize.Should().Be(originSiteModel.Grid.CellSize);
@@ -130,6 +132,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveGrid()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var _ = originSiteModel.Grid; // force it to be loaded.
       originSiteModel.GridLoaded.Should().Be(true);
 
       var original = originSiteModel.Grid;
@@ -143,13 +146,12 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveGrid()
     {
       var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var _ = originSiteModel.Grid; // force it to be loaded.
       originSiteModel.GridLoaded.Should().Be(true);
 
-      var original = originSiteModel.ExistenceMap;
-
       var newSiteModel = new SiteModel(originSiteModel, SiteModelOriginConstructionFlags.PreserveNothing);
-      newSiteModel.GridLoaded.Should().Be(true);
-      newSiteModel.Grid.Should().NotBe(original);
+      newSiteModel.GridLoaded.Should().Be(false);
+      newSiteModel.Grid.Should().NotBe(null);
     }
 
     /// <summary>
@@ -339,6 +341,7 @@ namespace VSS.TRex.Tests.SiteModels
       siteModel2.FromStream(stream);
 
       siteModel2.ID.Should().Be(siteModel.ID);
+      siteModel2.CellSize.Should().Be(siteModel.Grid.CellSize);
       siteModel2.Grid.ID.Should().Be(siteModel.Grid.ID);
       siteModel2.Grid.CellSize.Should().Be(siteModel.Grid.CellSize);
       siteModel2.CreationDate.Should().Be(siteModel.CreationDate);

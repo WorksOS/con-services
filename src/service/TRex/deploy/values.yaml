@@ -52,7 +52,7 @@ immutableData:
       memory: 1.6Gi
 
 mutableData:
-  replicaCount: 1
+  replicaCount: 2
   resources: 
     requests:
       cpu: 300m
@@ -60,7 +60,7 @@ mutableData:
   storageSize: 10Gi
   environment:
     tfaProjectV2ApiUrl: "http://tagfileauth.dev.eks.vspengg.com/api/v2/project"
-    enableTfa: true
+    enableTfa: false
     enableTagFileArchiving: false
     enableTagFileArchivingMetadata: false
     minTagFileLength: 99
@@ -74,19 +74,33 @@ mutableGateway:
       memory: 512Mi
 
 psnode:
-  replicaCount: 1
+  replicaCount: 2
   resources: 
     requests:
-      cpu: 300m
-      memory: 1.6Gi
+      cpu: 500m
+      memory: 2.0Gi
   storageSize: 10Gi
+
+reportServer:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 300m
+      memory: 1.0Gi
 
 tileServer:
   replicaCount: 1
   resources: 
     requests:
       cpu: 300m
-      memory: 1.6Gi
+      memory: 1.0Gi
+
+tinExportServer:
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 300m
+      memory: 1.0Gi
 
 utilities:
   replicaCount: 0

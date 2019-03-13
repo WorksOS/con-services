@@ -89,17 +89,19 @@ namespace VSS.TRex.Tests.SubGrids
     {
       var ru = new RequestorUtilities();
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter filter = new CombinedFilter();
       IFilterSet filters = new FilterSet(filter);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filters, false, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filters, false, GridDataType.Height);
 
       intermediaries.Length.Should().Be(1);
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().BeNull();
-      intermediaries[0].FilteredSurveyedSurfacesAsArray.Should().BeEmpty();
       intermediaries[0].CacheContext.Should().Be(RequestorUtilitiesTestsLoggingFixture.TRexSpatialMemoryCacheContext);
       intermediaries[0].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
     }
@@ -113,19 +115,21 @@ namespace VSS.TRex.Tests.SubGrids
       ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
       surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
-      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
-      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      mockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter filter = new CombinedFilter();
       IFilterSet filters = new FilterSet(filter);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filters, true, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filters, true, GridDataType.Height);
 
       intermediaries.Length.Should().Be(1);
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
-      intermediaries[0].FilteredSurveyedSurfacesAsArray.Should().Equal(new [] { ssGuid });
       intermediaries[0].CacheContext.Should().Be(RequestorUtilitiesTestsLoggingFixture.TRexSpatialMemoryCacheContext);
       intermediaries[0].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
     }
@@ -139,12 +143,15 @@ namespace VSS.TRex.Tests.SubGrids
     {
       var ru = new RequestorUtilities();
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x => new CombinedFilter()).ToArray();
       IFilterSet filterSet = new FilterSet(filters);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, false, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, false, GridDataType.Height);
 
       intermediaries.Length.Should().Be(filters.Length);
 
@@ -152,7 +159,6 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().BeNull();
-        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().BeEmpty();
         intermediaries[i].CacheContext.Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
       }
@@ -171,14 +177,18 @@ namespace VSS.TRex.Tests.SubGrids
       ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
       surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
-      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
-      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      mockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x => new CombinedFilter()).ToArray();
       IFilterSet filterSet = new FilterSet(filters);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
 
       intermediaries.Length.Should().Be(filters.Length);
 
@@ -186,7 +196,6 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
-        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new[] { ssGuid });
         intermediaries[i].CacheContext.Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
       }
@@ -205,9 +214,13 @@ namespace VSS.TRex.Tests.SubGrids
       ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
       surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
-      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
-      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      mockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
       {
@@ -217,7 +230,7 @@ namespace VSS.TRex.Tests.SubGrids
       }).ToArray();
       IFilterSet filterSet = new FilterSet(filters);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
 
       intermediaries.Length.Should().Be(filters.Length);
 
@@ -225,7 +238,6 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().BeEmpty();
-        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().BeEmpty();
         intermediaries[i].CacheContext.Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
       }
@@ -250,9 +262,13 @@ namespace VSS.TRex.Tests.SubGrids
       Guid ssGuid2 = Guid.NewGuid();
       var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.Now.AddDays(+1), BoundingWorldExtent3D.Null());
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
-      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
-      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      mockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
       {
@@ -262,7 +278,7 @@ namespace VSS.TRex.Tests.SubGrids
       }).ToArray();
       IFilterSet filterSet = new FilterSet(filters);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
 
       intermediaries.Length.Should().Be(filters.Length);
 
@@ -270,7 +286,6 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface>{ss2});
-        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new [] { ssGuid2 });
         intermediaries[i].CacheContext.Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
       }
@@ -295,9 +310,13 @@ namespace VSS.TRex.Tests.SubGrids
       Guid ssGuid2 = Guid.NewGuid();
       var ss2 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid2, DesignDescriptor.Null(), DateTime.Now.AddDays(+1), BoundingWorldExtent3D.Null());
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
-      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
-      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      mockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x =>
       {
@@ -314,7 +333,7 @@ namespace VSS.TRex.Tests.SubGrids
       }).ToArray();
       IFilterSet filterSet = new FilterSet(filters);
 
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
 
       intermediaries.Length.Should().Be(filters.Length);
 
@@ -322,7 +341,6 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface> { ss1 });
-        intermediaries[i].FilteredSurveyedSurfacesAsArray.Should().Equal(new[] { ssGuid1 });
         intermediaries[i].CacheContext.Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
       }
@@ -344,19 +362,19 @@ namespace VSS.TRex.Tests.SubGrids
       Guid ssGuid1 = Guid.NewGuid();
       var ss1 = surveyedSurfaces.AddSurveyedSurfaceDetails(ssGuid1, DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
 
-      Mock<IServerSubGridTree> MockGrid = new Mock<IServerSubGridTree>();
-      MockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
+      var mockGrid = new Mock<IServerSubGridTree>();
+      mockGrid.Setup(x => x.CellSize).Returns(SubGridTreeConsts.DefaultCellSize);
 
-      Mock<ISiteModel> MockSiteModel = new Mock<ISiteModel>();
-      MockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
-      MockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
-      MockSiteModel.Setup(x => x.Grid).Returns(MockGrid.Object);
+      var mockSiteModel = new Mock<ISiteModel>();
+      mockSiteModel.Setup(x => x.SurveyedSurfacesLoaded).Returns(true);
+      mockSiteModel.Setup(x => x.SurveyedSurfaces).Returns(surveyedSurfaces);
+      mockSiteModel.Setup(x => x.Grid).Returns(mockGrid.Object);
 
       ICombinedFilter[] filters = Enumerable.Range(1, filterCount).Select(x => new CombinedFilter()).ToArray();
       IFilterSet filterSet = new FilterSet(filters);
       
-      var intermediaries = ru.ConstructRequestorIntermediaries(MockSiteModel.Object, filterSet, true, GridDataType.Height);
-      var requestors = ru.ConstructRequestors(MockSiteModel.Object, intermediaries, AreaControlSet.CreateAreaControlSet(), null);
+      var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
+      var requestors = ru.ConstructRequestors(mockSiteModel.Object, intermediaries, AreaControlSet.CreateAreaControlSet(), null);
 
       requestors.Length.Should().Be(filters.Length);
 

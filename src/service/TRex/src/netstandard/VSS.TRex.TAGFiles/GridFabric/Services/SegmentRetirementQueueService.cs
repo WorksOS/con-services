@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -156,7 +156,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteLong(retirementAge.Ticks);
     }
@@ -167,10 +167,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      byte readVersionNumber = reader.ReadByte();
-
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       retirementAge = new TimeSpan(reader.ReadLong());
     }

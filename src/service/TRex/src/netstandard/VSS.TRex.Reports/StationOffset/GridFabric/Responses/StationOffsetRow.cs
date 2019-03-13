@@ -71,16 +71,5 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Station = reader.ReadDouble();
       Offset = reader.ReadDouble();
     }
-    
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ Station.GetHashCode();
-        hashCode = (hashCode * 397) ^ Offset.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

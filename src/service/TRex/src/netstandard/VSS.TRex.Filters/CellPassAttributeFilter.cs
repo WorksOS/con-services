@@ -182,6 +182,7 @@ namespace VSS.TRex.Filters
       VibeState = VibrationState.Invalid;
     }
 
+    /* Possibly obsolete functionality due to filter fingerprinting for cache support
     /// <summary>
     /// Compares left and right boolean expressions and returns a -1, 0, -1 relative comparison indicator
     /// </summary>
@@ -196,7 +197,7 @@ namespace VSS.TRex.Filters
     /// <param name="list1"></param>
     /// <param name="list2"></param>
     /// <returns></returns>
-    private static int MachineIDListsComparison(short[] list1, short[] list2)
+    public static int MachineIDListsComparison_Obsolete(short[] list1, short[] list2)
     {
       if (list1 == null || list2 == null)
         return 0;
@@ -205,14 +206,14 @@ namespace VSS.TRex.Filters
       var list2Length = list2.Length;
 
       // Check list lengths
-      int result = list1.Length < list2Length ? -1 : list1Length == list2Length ? 0 : 1;
+      int result = list1Length.CompareTo(list2Length);
 
       // If the lengths are the same check individual items
       if (result == 0)
       {
         for (int i = 0; i < list1Length; i++)
         {
-          result = list1[i] < list2[i] ? -1 : list1[i] == list2[i] ? 0 : 1;
+          result = list1[i].CompareTo(list2[i]);
 
           if (result != 0)
             break;
@@ -227,7 +228,7 @@ namespace VSS.TRex.Filters
     /// </summary>
     /// <param name="AFilter"></param>
     /// <returns></returns>
-    public int CompareTo(ICellPassAttributeFilter AFilter)
+    public int CompareTo_Obsolete(ICellPassAttributeFilter AFilter)
     {
       // Time
       int Result = FlagCheck(HasTimeFilter, AFilter.HasTimeFilter);
@@ -235,14 +236,12 @@ namespace VSS.TRex.Filters
       {
         return Result;
       }
-      else
+
+      if (HasTimeFilter) // Check the contents of the time filter
       {
-        if (HasTimeFilter) // Check the contents of the time filter
-        {
-          Result = StartTime.CompareTo(AFilter.StartTime);
-          if (Result == 0)
-            Result = EndTime.CompareTo(AFilter.EndTime);
-        }
+        Result = StartTime.CompareTo(AFilter.StartTime);
+        if (Result == 0)
+          Result = EndTime.CompareTo(AFilter.EndTime);
       }
 
       if (Result != 0)
@@ -265,7 +264,7 @@ namespace VSS.TRex.Filters
         return Result;
 
       if (HasMachineFilter) // Check the contents of the machine filter
-        Result = MachineIDListsComparison(MachineIDs, AFilter.MachineIDs);
+        Result = MachineIDListsComparison_Obsolete(MachineIDs, AFilter.MachineIDs);
 
       if (Result != 0)
         return Result;
@@ -468,6 +467,7 @@ namespace VSS.TRex.Filters
 
       return Result;
     }
+    */
 
     public void ClearDesigns()
     {
@@ -546,17 +546,10 @@ namespace VSS.TRex.Filters
       EndTime = Source.EndTime;
 
       // Machine based filtering members
-      if (Source.MachinesList != null)
-      {
-        MachinesList = new Guid[Source.MachinesList.Length];
-        if (Source.MachinesList.Length > 0)
-          Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
-        // all set types below HasMachineFilter = Source.HasMachineFilter;
-      }
-      else
-      {
-        ClearMachines();
-      }
+      var machinesCount = Source.MachinesList?.Length ?? 0;
+      MachinesList = new Guid[machinesCount];
+      if (machinesCount > 0)
+        Array.Copy(Source.MachinesList, MachinesList, machinesCount);
 
       MachineIDSet = Source.MachineIDSet != null ? new BitArray(Source.MachineIDSet) : null;
 
@@ -602,13 +595,10 @@ namespace VSS.TRex.Filters
       PassCountRangeMin = Source.PassCountRangeMin;
       PassCountRangeMax = Source.PassCountRangeMax;
 
+      int SurveyedSurfaceExclusionCount = Source.SurveyedSurfaceExclusionList?.Length ?? 0;
+      SurveyedSurfaceExclusionList = new Guid[SurveyedSurfaceExclusionCount];
       if (Source.SurveyedSurfaceExclusionList != null)
-      {
-        SurveyedSurfaceExclusionList = new Guid[Source.SurveyedSurfaceExclusionList.Length];
-        Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
-      }
-      else
-        SurveyedSurfaceExclusionList = new Guid[0];
+        Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionCount);
 
       HasTimeFilter = Source.HasTimeFilter;
       HasMachineFilter = Source.HasMachineFilter;
@@ -646,7 +636,7 @@ namespace VSS.TRex.Filters
     public void ClearMachines()
     {
       HasMachineFilter = false;
-      MachinesList = null;
+      MachinesList = new Guid[0];
     }
 
     public void ClearMinElevationMapping()
@@ -822,9 +812,7 @@ namespace VSS.TRex.Filters
     public bool FilterPass(ref FilteredPassData PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyFilterSelections)
-      {
         return true;
-      }
 
       if (HasTimeFilter)
       {
@@ -1033,9 +1021,7 @@ namespace VSS.TRex.Filters
     public bool FilterPass_NoMachineEvents(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyNonMachineEventFilterSelections)
-      {
         return true;
-      }
 
       if (HasTimeFilter)
       {
@@ -1066,7 +1052,6 @@ namespace VSS.TRex.Filters
           return false;
       }
 
-
       if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behaviors depending on display or grid type etc
       {
         // filtering on every cell here
@@ -1092,9 +1077,7 @@ namespace VSS.TRex.Filters
       bool Result = false;
 
       if (passValueCount == 0)
-      {
         return false;
-      }
 
       bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
       int AcceptedIndex = -1;
@@ -1104,9 +1087,7 @@ namespace VSS.TRex.Filters
         for (int I = 0; I < passValueCount; I++)
         {
           if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
-          {
             return false;
-          }
 
           Accept = profileCell == null
             ? PassIsAcceptable(ref passValues[I])
@@ -1125,9 +1106,7 @@ namespace VSS.TRex.Filters
         for (int I = passValueCount - 1; I >= 0; I--)
         {
           if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
-          {
             return false;
-          }
 
           Accept = profileCell == null
             ? PassIsAcceptable(ref passValues[I])

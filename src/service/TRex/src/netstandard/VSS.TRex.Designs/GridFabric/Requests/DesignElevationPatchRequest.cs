@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
             // Construct the function to be used
             var func = new CalculateDesignElevationPatchComputeFunc();
 
-            return _Compute.Apply(func, arg);
+            return Compute.Apply(func, arg);
         }
     }
 }

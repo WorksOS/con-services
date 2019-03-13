@@ -313,7 +313,7 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       Assert.True(Math.Abs(profilePoints[2].X - 1.0) < epsilon &&
                   Math.Abs(profilePoints[2].Y - 1.0) < epsilon &&
-                  profilePoints[2].Z == Common.Consts.NullDouble, $"Gap profile point not at (1.0, 1.0, {atElevation}), but is at {profilePoints[2]}");
+                  profilePoints[2].Z == TRex.Common.Consts.NullDouble, $"Gap profile point not at (1.0, 1.0, {atElevation}), but is at {profilePoints[2]}");
 
       Assert.True(Math.Abs(profilePoints[3].X - 1.0) < epsilon &&
                   Math.Abs(profilePoints[3].Y - 1.0) < epsilon &&

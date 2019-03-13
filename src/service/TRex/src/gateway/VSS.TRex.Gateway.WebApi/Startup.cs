@@ -17,6 +17,8 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.GridFabric.Servers.Client;
@@ -47,8 +49,7 @@ namespace VSS.TRex.Gateway.WebApi
 
       // Add framework services.
       DIBuilder.New(services)
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
 
@@ -66,6 +67,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>();
+      services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
 
       services.AddOpenTracing(builder =>
       {

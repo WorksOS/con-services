@@ -18,13 +18,15 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
+            bool result = false;
+
             if (valueType.Type == TAGDataType.t4bitUInt)
             {
                 valueSink.SetVolkelMeasRange((int)value);
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

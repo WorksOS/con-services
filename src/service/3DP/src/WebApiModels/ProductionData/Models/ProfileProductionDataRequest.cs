@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; protected set; }
+    public Guid? CallId { get; protected set; }
 
     /// <summary>
     /// The type of profile to be generated.
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [JsonProperty(PropertyName = "profileType", Required = Required.Always)]
     [Required]
-    public ProductionDataType profileType { get; protected set; }
+    public ProductionDataType ProfileType { get; protected set; }
 
     /// <summary>
     /// The filter instance to use in the request
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long? filterID { get; protected set; }
+    public long? FilterID { get; protected set; }
 
     /// <summary>
     /// The descriptor for an alignment centerline design to be used as the geometry along which the profile is generated
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "alignmentDesign", Required = Required.Default)]
-    public DesignDescriptor alignmentDesign { get; protected set; }
+    public DesignDescriptor AlignmentDesign { get; protected set; }
 
     /// <summary>
     /// A series of points along which to generate the profile. Coordinates are expressed in terms of the grid coordinate system used by the project. Values are expressed in meters.
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "gridPoints", Required = Required.Default)]
-    public ProfileGridPoints gridPoints { get; protected set; }
+    public ProfileGridPoints GridPoints { get; protected set; }
 
     /// <summary>
     /// A series of points along which to generate the profile. Coordinates are expressed in terms of the WGS84 lat/lon coordinates. Values are expressed in radians.
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "wgs84Points", Required = Required.Default)]
-    public ProfileLLPoints wgs84Points { get; protected set; }
+    public ProfileLLPoints WGS84Points { get; protected set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to start computing the profile from. Values are expressed in meters.
@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
-    public double? startStation { get; protected set; }
+    public double? StartStation { get; protected set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to finish computing the profile at. Values are expressed in meters.
@@ -86,14 +86,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
-    public double? endStation { get; protected set; }
+    public double? EndStation { get; protected set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; protected set; }
+    public LiftBuildSettings LiftBuildSettings { get; protected set; }
 
     /// <summary>
     /// Return all analysed layers and cell passes along with the summary cell based results of the profile query
@@ -101,9 +101,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     [JsonProperty(PropertyName = "returnAllPassesAndLayers", Required = Required.Always)]
     [Required]
-    public bool returnAllPassesAndLayers { get; protected set; }
+    public bool ReturnAllPassesAndLayers { get; protected set; }
 
-    public static ProfileProductionDataRequest CreateProfileProductionData(
+    protected ProfileProductionDataRequest()
+    { 
+    }
+
+    public ProfileProductionDataRequest(
       long? projectID,
       Guid? callId,
       ProductionDataType profileType,
@@ -112,33 +116,30 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       DesignDescriptor alignmentDesign,
       ProfileGridPoints gridPoints,
       ProfileLLPoints wgs84Points,
-      double startStation,
-      double endStation,
+      double? startStation,
+      double? endStation,
       LiftBuildSettings liftBuildSettings,
       bool returnAllPassesAndLayers
       )
     {
-      return new ProfileProductionDataRequest
-      {
-        ProjectId = projectID,
-        callId = callId,
-        profileType = profileType,
-        Filter = filter,
-        filterID = filterID,
-        alignmentDesign = alignmentDesign,
-        gridPoints = gridPoints,
-        wgs84Points = wgs84Points,
-        startStation = startStation,
-        endStation = endStation,
-        liftBuildSettings = liftBuildSettings,
-        returnAllPassesAndLayers = returnAllPassesAndLayers
-      };
+      ProjectId = projectID;
+      CallId = callId;
+      ProfileType = profileType;
+      Filter = filter;
+      FilterID = filterID;
+      AlignmentDesign = alignmentDesign;
+      GridPoints = gridPoints;
+      WGS84Points = wgs84Points;
+      this.StartStation = startStation;
+      EndStation = endStation;
+      LiftBuildSettings = liftBuildSettings;
+      ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
     
     /// <summary>
     /// Returns whether this request is for an alignment design profile.
     /// </summary>
-    public bool IsAlignmentDesign => alignmentDesign != null;
+    public bool IsAlignmentDesign => AlignmentDesign != null;
 
     /// <summary>
     /// Validates the request and throws if validation fails.
@@ -147,62 +148,62 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       base.Validate();
       // Validate the profile type...
-      if (!Enumerable.Range((int)ProductionDataType.All, (int)ProductionDataType.CCVChange + 1).Contains((int)profileType))
+      if (!Enumerable.Range((int)ProductionDataType.All, (int)ProductionDataType.CCVChange + 1).Contains((int)ProfileType))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              $"Profile type {(int)profileType} is out of range. It should be between: {(int)ProductionDataType.All} and {(int)ProductionDataType.CCVChange}."));
+              $"Profile type {(int)ProfileType} is out of range. It should be between: {(int)ProductionDataType.All} and {(int)ProductionDataType.CCVChange}."));
       }
 
       if (Filter != null)
       {
         Filter.Validate();
 
-        if (filterID.HasValue && filterID.Value <= 0)
+        if (FilterID.HasValue && FilterID.Value <= 0)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                $"Filter ID {filterID.Value} should be greater than zero."));
+                $"Filter ID {FilterID.Value} should be greater than zero."));
         }
       }
 
-      if (alignmentDesign == null && gridPoints == null && wgs84Points == null)
+      if (AlignmentDesign == null && GridPoints == null && WGS84Points == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Either a linear or alignment based profile must be provided."));
       }
 
-      if (alignmentDesign != null && (gridPoints != null || wgs84Points != null))
+      if (AlignmentDesign != null && (GridPoints != null || WGS84Points != null))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Only one type, either a linear or alignment based profile must be provided."));
       }
 
-      if (alignmentDesign != null)
+      if (AlignmentDesign != null)
       {
         // Validate alignment design parts...
-        if (!startStation.HasValue || !endStation.HasValue)
+        if (!StartStation.HasValue || !EndStation.HasValue)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "If using an alignment design for profiling, the alignment file, start and end station must be provided."));
         }
 
-        alignmentDesign.Validate();
+        AlignmentDesign.Validate();
       }
       else
       {
         // Validate profile points...
-        if (gridPoints != null && wgs84Points != null)
+        if (GridPoints != null && WGS84Points != null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "The profile line requires series either grid or WGS84 points."));
         }
 
-        if (gridPoints == null && wgs84Points == null)
+        if (GridPoints == null && WGS84Points == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -210,7 +211,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         }
       }
 
-      liftBuildSettings?.Validate();
+      LiftBuildSettings?.Validate();
     }
   }
 }

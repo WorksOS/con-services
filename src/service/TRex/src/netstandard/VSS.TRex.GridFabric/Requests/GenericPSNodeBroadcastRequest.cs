@@ -29,7 +29,7 @@ namespace VSS.TRex.GridFabric.Requests
       TComputeFunc func = new TComputeFunc();
 
       // Broadcast the request to the compute pool and assemble a list of the results
-      ICollection<TResponse> Result = _Compute?.Broadcast(func, arg);
+      ICollection<TResponse> Result = Compute?.Broadcast(func, arg);
 
       // Reduce the set of results to a single aggregated result and send the result back
       // If there is no task result then return a null response
@@ -47,7 +47,7 @@ namespace VSS.TRex.GridFabric.Requests
       TComputeFunc func = new TComputeFunc();
 
       // Broadcast the request to the compute pool and assemble a list of the results
-      return _Compute?.BroadcastAsync(func, arg).ContinueWith(aggregate =>
+      return Compute?.BroadcastAsync(func, arg).ContinueWith(aggregate =>
       {
         // Reduce the set of results to a single aggregated result and send the result back
         // If there is no task result then return a null response

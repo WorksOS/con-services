@@ -1,8 +1,5 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Extensions;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -16,7 +13,9 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       int[] buffer = new int[SubGridTreeConsts.SubGridTreeDimension];
       for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
@@ -27,10 +26,9 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte version = reader.ReadByte();
+      base.FromBinary(reader);
 
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       int[] buffer = reader.ReadIntArray();
       for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)

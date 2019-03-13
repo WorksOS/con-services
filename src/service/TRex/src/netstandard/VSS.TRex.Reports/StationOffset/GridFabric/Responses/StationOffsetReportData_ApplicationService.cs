@@ -39,18 +39,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       Rows.Read(reader, NumberOfRows);
       base.Read(reader);
     }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ NumberOfRows.GetHashCode();
-        hashCode = (hashCode * 397) ^ Rows.GetHashCode();
-        return hashCode;
-      }
-    }
-
   }
 }
 

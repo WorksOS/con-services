@@ -29,14 +29,5 @@ namespace VSS.Productivity3D.Models.Models.Reports
         Add(grdr);
       }
     }
-    
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

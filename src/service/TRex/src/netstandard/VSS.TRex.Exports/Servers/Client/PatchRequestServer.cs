@@ -14,7 +14,7 @@ namespace VSS.TRex.Exports.Servers.Client
     /// <summary>
     /// Default no-arg constructor that creates a server with the default Application Service role and the specialize tile rendering role.
     /// </summary>
-    public PatchRequestServer() : base(new[] {ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.PATCH_REQUEST_ROLE})
+    public PatchRequestServer() : this(new[] {ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.PATCH_REQUEST_ROLE})
     {
     }
 
@@ -23,16 +23,7 @@ namespace VSS.TRex.Exports.Servers.Client
     }
 
     /// <summary>
-    /// Creates a new instance of a Patch request server
-    /// </summary>
-    /// <returns></returns>
-    public static PatchRequestServer NewInstance(string[] roles)
-    {
-      return new PatchRequestServer(roles);
-    }
-
-    /// <summary>
-    /// Generate a patch of subgrids given the supplied arguments
+    /// Generate a patch of sub grids given the supplied arguments
     /// </summary>
     /// <param name="argument"></param>
     /// <returns></returns>

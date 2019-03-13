@@ -1043,7 +1043,7 @@ namespace TAGFiles.Tests
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t32bitUInt, 0),
               100),
           "Matcher process function returned false");
-      Assert.Equal((uint)100, sink.Sequence);
+      Assert.Equal(100U, sink.Sequence);
     }
 
     [Fact()]
@@ -1418,7 +1418,7 @@ namespace TAGFiles.Tests
               new TAGDictionaryItem(TAGValueNames.kTagFileStartProofingTimeTag, TAGDataType.t32bitUInt, 0),
               10000000),
           "Matcher process function returned false");
-      Assert.Equal((uint)10000000, sink.StartProofingTime);
+      Assert.Equal(10000000U, sink.StartProofingTime);
       Assert.True(state.HaveSeenAProofingRunTimeValue, "Incorrect value after assignment");
 
       // Test the Week aspect
@@ -1493,7 +1493,7 @@ namespace TAGFiles.Tests
               new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, TAGDataType.t32bitUInt, 0),
               10000000),
           "Matcher process function returned false");
-      Assert.Equal((uint)10000000, sink.GPSWeekTime);
+      Assert.Equal(10000000U, sink.GPSWeekTime);
       Assert.True(state.HaveSeenATimeValue, "Incorrect HaveSeenATimeValue value after time assignment");
       Assert.False(state.HaveSeenAWeekValue, "Incorrect HaveSeenAWeekValue value after time assignment");
 
@@ -1516,7 +1516,7 @@ namespace TAGFiles.Tests
               new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, TAGDataType.t4bitUInt, 0),
               10), // Adds 10, 1/10 of a second intervals, for an increment of 1000ms
           "Matcher process function returned false");
-      Assert.Equal((uint)10001000, sink.GPSWeekTime);
+      Assert.Equal(10001000U, sink.GPSWeekTime);
       Assert.True(state.HaveSeenAWeekValue, "Incorrect value after assignment");
 
       // Test the epoch data time is calculated correctly
@@ -1527,7 +1527,7 @@ namespace TAGFiles.Tests
     }
 
     [Fact()]
-    public void Test_TAGValueMatcher_AgeOfCOrrections()
+    public void Test_TAGValueMatcher_AgeOfCorrections()
     {
 
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
@@ -97,17 +96,18 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
                 return true;
             }
 
+            bool found = false;
             for (int I = NumAttrs - 1; I >= 0; I--)
             {
               if (dateTime >= list[I].dateTime)
               {
                 value = list[I].value;
-                return true;
+                found = true;
+                break;
               }
             }
             
-            // It should not be possible to get here...
-            return false;                     
+            return found;
         }
 
         /// <summary>

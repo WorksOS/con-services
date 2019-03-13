@@ -53,13 +53,10 @@ namespace VSS.TRex.DI
     public DefaultHttpClientBuilder AddHttpClient<TClient>(Action<HttpClient> configureClient) where TClient : class
     {
       if (ServiceCollection == null)
-      {
         throw new ArgumentNullException(nameof(ServiceCollection));
-      }
+
       if (configureClient == null)
-      {
         throw new ArgumentNullException(nameof(configureClient));
-      }
 
       ServiceCollection.AddHttpClient();
 

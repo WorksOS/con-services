@@ -59,23 +59,9 @@ namespace VSS.TRex.Webtools.Controllers
       if (siteModel == null)
         return new JsonResult(new Tuple<DateTime, DateTime>(DateTime.MinValue, DateTime.MinValue));
 
-      DateTime minDate = DateTime.MaxValue;
-      DateTime maxDate = DateTime.MinValue;
+      var startEndDates = siteModel.GetDateRange();
 
-      foreach (var machine in siteModel.Machines)
-      {
-        var events = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
-        if (events.Count() > 0)
-        {
-          events.GetStateAtIndex(0, out DateTime eventDate, out _);
-          if (minDate > eventDate)
-            minDate = eventDate;
-          if (maxDate < eventDate)
-            maxDate = eventDate;
-        }
-      }
-
-      return new JsonResult(new Tuple<DateTime, DateTime>(minDate, minDate));
+      return new JsonResult(new Tuple<DateTime, DateTime>(startEndDates.startUtc, startEndDates.endUtc));
     }
 
     /// <summary>

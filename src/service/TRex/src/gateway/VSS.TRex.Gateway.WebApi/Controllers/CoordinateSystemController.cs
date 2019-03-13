@@ -1,0 +1,87 @@
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems.Models;
+using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Executors.Coords;
+
+namespace VSS.TRex.Gateway.WebApi.Controllers
+{
+  /// <summary>
+  /// Controller for getting coordinate system definition data from a site model/project
+  /// and performing coordinates conversion. 
+  /// </summary>
+  public class CoordinateSystemController : BaseController
+  {
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="loggerFactory"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="configStore"></param>
+    public CoordinateSystemController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<CoordinateSystemController>(), serviceExceptionHandler, configStore)
+    {
+    }
+
+    /// <summary>
+    /// Posts a coordinate system (CS) definition file to a TRex's for validation.
+    /// </summary>
+    [Route("api/v1/coordsystem/validation")]
+    [HttpPost]
+    public CoordinateSystemSettings ValidateCoordinateSystem([FromBody] CoordinateSystemFileValidationRequest request)
+    {
+      Log.LogInformation($"{nameof(ValidateCoordinateSystem)}: {Request.QueryString}");
+
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CoordinateSystemValidationExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request) as CoordinateSystemSettings);
+    }
+
+    /// <summary>
+    /// Gets a coordinate system (CS) definition assigned to a TRex's site model/project with a unique identifier.
+    /// </summary>
+    [Route("api/v1/projects/{projectUid}/coordsystem")]
+    [HttpGet]
+    public CoordinateSystemSettings GetCoordinateSystem([FromRoute] Guid projectUid)
+    {
+      Log.LogInformation($"{nameof(GetCoordinateSystem)}: {Request.QueryString}");
+
+      var request = new ProjectID(null, projectUid);
+
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CoordinateSystemGetExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request) as CoordinateSystemSettings);
+    }
+
+    /// <summary>
+    /// Posts a list of coordinates to a TRex's site model/project for conversion.
+    /// </summary>
+    [Route("api/v1/coordinateconversion")]
+    [HttpPost]
+    public CoordinateConversionResult PostCoordinateConversion([FromBody] CoordinateConversionRequest request)
+    {
+      Log.LogInformation($"{nameof(PostCoordinateConversion)}: {Request.QueryString}");
+
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<CoordinateConversionExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request) as CoordinateConversionResult);
+    }
+  }
+}

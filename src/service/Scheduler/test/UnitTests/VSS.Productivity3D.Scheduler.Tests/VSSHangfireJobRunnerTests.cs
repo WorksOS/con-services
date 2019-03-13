@@ -5,7 +5,9 @@ using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 
 namespace VSS.Productivity3D.Scheduler.Tests
@@ -44,9 +46,12 @@ namespace VSS.Productivity3D.Scheduler.Tests
       mockJob.TearDownInvoked += OnTearDownInvoked;
       var context = GetMockHangfireContext(typeof(VSSHangfireJobRunnerTests), TestContext.TestName, string.Empty);
       var errorProvider = new Mock<IErrorCodesProvider>();
-      var jobRunner = new VSSHangfireJobRunner(loggerFactory, errorProvider.Object, serviceProvider);
+      var configStore = new Mock<IConfigurationStore>();
+      var jobFactory = new VSSJobFactory(loggerFactory, serviceProvider);
       var vssJobUid = Guid.NewGuid();
-      jobRunner.RegisterJob(vssJobUid, typeof(MockDxfTileGenerationJob));
+      jobFactory.RegisterJob(vssJobUid, typeof(MockDxfTileGenerationJob));
+      var devOpsNotification = new Mock<IDevOpsNotification>();
+      var jobRunner = new VSSHangfireJobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory, devOpsNotification.Object);
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };
       var result = jobRunner.RunHangfireJob(request, context);
       Assert.IsTrue(setupCalled);
@@ -59,7 +64,13 @@ namespace VSS.Productivity3D.Scheduler.Tests
     {
       var context = GetMockHangfireContext(typeof(VSSHangfireJobRunnerTests), TestContext.TestName, string.Empty);
       var errorProvider = new Mock<IErrorCodesProvider>();
-      var jobRunner = new VSSHangfireJobRunner(loggerFactory, errorProvider.Object, serviceProvider);
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(c => c.GetValueString(It.IsAny<string>())).Returns("some environment");
+      var jobFactory = new Mock<IVSSJobFactory>();
+      jobFactory.Setup(f => f.GetJob(It.IsAny<Guid>()))
+        .Returns((IVSSJob) null);
+      var devOpsNotification = new Mock<IDevOpsNotification>();
+      var jobRunner = new VSSHangfireJobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory.Object, devOpsNotification.Object);
       var vssJobUid = Guid.NewGuid();
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };
       Assert.ThrowsException<AggregateException>(() => jobRunner.RunHangfireJob(request, context).Result);

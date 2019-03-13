@@ -358,6 +358,20 @@ namespace MockProjectWebApi.Utils
         FilterType = FilterType.Persistent,
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAutomatics")
       };
+
+      public static FilterDescriptor VolumesWithExplicitFilter1Nov => new FilterDescriptor
+      {
+        FilterUid = "ba24a225-12f3-4525-940b-ec8720e7a4f4",
+        Name = "1 Nov",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("SummaryVolumes1Nov")
+      };
+
+      public static FilterDescriptor VolumesWithExplicitFilter1NovFirstPass => new FilterDescriptor
+      {
+        FilterUid = "8d9c19f6-298f-4ec2-8688-cc72242aaceb",
+        Name = "1 Nov First Pass",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("SummaryVolumes1NovFirstPass")
+      };
     }
   }
 }

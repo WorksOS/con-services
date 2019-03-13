@@ -12,7 +12,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
         public const string DEFAULT_ROLE = ServerRoles.ASNODE;
         public const string DEFAULT_ROLE_CLIENT = ServerRoles.ASNODE_CLIENT;
 
-        public ApplicationServiceServer() : base(new [] { DEFAULT_ROLE })
+        public ApplicationServiceServer() : this(new [] { DEFAULT_ROLE })
         {
         }
 

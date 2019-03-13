@@ -99,8 +99,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             leaf.AddPass(0, 0, pass);
 
             // Check the cell passes in the segment records the cell pass
-            Assert.Equal((uint)1, leaf.Directory.SegmentDirectory.First().Segment.PassesData.SegmentPassCount);
-            Assert.Equal((uint)1, leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassCount(0, 0));
+            Assert.Equal(1U, leaf.Directory.SegmentDirectory.First().Segment.PassesData.SegmentPassCount);
+            Assert.Equal(1U, leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassCount(0, 0));
             Assert.Equal(leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassTime(0, 0, 0), new DateTime(2000, 1, 1, 1, 1, 1));
 
             // Pull the pass a compare it to what was added

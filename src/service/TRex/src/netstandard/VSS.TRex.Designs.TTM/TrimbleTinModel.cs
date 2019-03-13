@@ -10,7 +10,7 @@ namespace VSS.TRex.Designs.TTM
 {
   public class TrimbleTINModel : TriangleMesh
   {
-    public string ModelName { get; set; }
+    public string ModelName { get; set; } = "Un-named Model";
 
     public TTMStartPoints StartPoints { get; private set; }
 
@@ -45,13 +45,7 @@ namespace VSS.TRex.Designs.TTM
       triangles = new TTMTriangles();
     }
 
-    protected override void SnapToOutputResolution()
-    {
-      SetUpSizes();
-      (Vertices as TTMVertices).SnapToOutputResolution(Header);
-    }
-
-    public TrimbleTINModel() : base()
+    public TrimbleTINModel()
     {
       Edges = new TTMEdges();
       StartPoints = new TTMStartPoints();
@@ -76,7 +70,6 @@ namespace VSS.TRex.Designs.TTM
         ElevationResolution);
       Header.VertexNumberSize = (byte) CalcIntSize(Vertices.Count);
       Header.TriangleNumberSize = (byte) CalcIntSize(Triangles.Count);
-
     }
 
     public void Read(BinaryReader reader)
@@ -103,14 +96,12 @@ namespace VSS.TRex.Designs.TTM
           if (Header.FileMajorVersion != Consts.TTMMajorVersion
               || Header.FileMinorVersion != Consts.TTMMinorVersion)
           {
-            throw new Exception($"TTM.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
+            throw new TTMFileReadException($"TTM.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
           }
 
           Clear();
 
-          // ModelName = (String)(InternalNameToANSIString(Header.DTMModelInternalName));
-          // Not handled for now
-          ModelName = "Reading not implemented";
+          ModelName = ASCIIEncoding.ASCII.GetString(Header.DTMModelInternalName).TrimEnd(new []{'\0'}); 
 
           LoadErrMsg = "Error reading vertices";
           reader.BaseStream.Position = Header.StartOffsetOfVertices;
@@ -128,11 +119,15 @@ namespace VSS.TRex.Designs.TTM
           reader.BaseStream.Position = Header.StartOffsetOfStartPoints;
           StartPoints.Read(reader, Header, Triangles);
         }
+        catch (TTMFileReadException)
+        {
+          Clear();
+          throw; // pass it on
+        }
         catch (Exception E)
         {
           Clear();
-
-          throw new Exception(LoadErrMsg + ": " + E.Message);
+          throw new TTMFileReadException($"Exception at TTM loading phase {LoadErrMsg}", E);
         }
       }
       finally
@@ -155,8 +150,7 @@ namespace VSS.TRex.Designs.TTM
       // Write a blank header now, and go back later and fix it up
       long HeaderPos = writer.BaseStream.Position;
 
-      Header.FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
-      Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName ?? "Un-named Model\0");
+      Header.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName);
       if (Header.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
       {
         Array.Resize(ref Header.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
@@ -206,21 +200,6 @@ namespace VSS.TRex.Designs.TTM
       Header.Write(writer);
 
       writer.BaseStream.Position = EndPos;
-    }
-
-    public void WriteDefault(BinaryWriter writer)
-    {
-      if (Triangles.Count > 0)
-      {
-        BuildTriangleLinks();
-        BuildEdgeList();
-        BuildStartPointList();
-      }
-
-      CoordinateResolution = Consts.DefaultCoordinateResolution;
-      ElevationResolution = Consts.DefaultElevationResolution;
-
-      Write(writer);
     }
 
     public void LoadFromStream(Stream stream)
@@ -302,9 +281,7 @@ namespace VSS.TRex.Designs.TTM
       StartPoints.Clear();
 
       if (Triangles.Count == 0)
-      {
         return;
-      }
 
       // How many start points do we want?
       int NumStartPoints = Math.Min(Math.Max((int) Math.Round(Math.Sqrt(Triangles.Count) / 2), 1), Consts.MaxStartPoints);
@@ -383,6 +360,7 @@ namespace VSS.TRex.Designs.TTM
       out TTMHeader Header)
     {
       Header = TTMHeader.NewHeader();
+      bool result = false;
 
       try
       {
@@ -394,25 +372,21 @@ namespace VSS.TRex.Designs.TTM
 
             // Check signature
             string signature = ASCIIEncoding.ASCII.GetString(Header.FileSignature).Substring(0, Consts.TTMFileIdentifier.Length);
-            if (!Consts.TTMFileIdentifier.Equals(signature))
+            if (Consts.TTMFileIdentifier.Equals(signature))
             {
-              return false;
+              // Check file version
+              if (Header.FileMajorVersion == Consts.TTMMajorVersion && Header.FileMinorVersion == Consts.TTMMinorVersion)
+                result = true;
             }
-
-            // Check file version
-            if (Header.FileMajorVersion != Consts.TTMMajorVersion || Header.FileMinorVersion != Consts.TTMMinorVersion)
-            {
-              return false;
-            }
-
-            return true;
           }
         }
       }
       catch
       {
-        return false;
+        result = false;
       }
+
+      return result;
     }
 
     //    class Function MemorySizeInKB(const AFileName: TFileName) : Integer;

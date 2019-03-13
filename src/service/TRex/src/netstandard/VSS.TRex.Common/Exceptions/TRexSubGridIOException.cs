@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Common.Exceptions
 {
-  public class TRexSubGridIOException : Exception
+  public class TRexSubGridIOException : TRexException
   {
     public TRexSubGridIOException(string message) : base(message)
     {

@@ -25,8 +25,8 @@ namespace VSS.Pegasus.Client
     private const string PEGASUS_URL_KEY = "PEGASUS_URL";
     private const string PEGASUS_EXECUTION_TIMEOUT_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
     private const string PEGASUS_EXECUTION_WAIT_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
+    private const string PEGASUS_DXF_PROCEDURE_ID_KEY= "PEGASUS_DXF_PROCEDURE_ID";
 
-    private readonly Guid DXF_PROCEDURE_ID = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7");
     private const string TILE_TYPE = "xyz";
     private const string TILE_ORDER = "YX";
 
@@ -37,6 +37,7 @@ namespace VSS.Pegasus.Client
     private readonly int executionWaitInterval;
     private readonly int executionTimeout;
     private readonly int maxZoomLevel;
+    private readonly Guid dxfProcedureId;
     /// <summary>
     /// Client for sending requests to the Pegasus API.
     /// </summary>
@@ -55,6 +56,10 @@ namespace VSS.Pegasus.Client
       executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_KEY, 1000);//Millisecs
       executionTimeout = configuration.GetValueInt(PEGASUS_EXECUTION_TIMEOUT_KEY, 5);//minutes
       maxZoomLevel = configuration.GetValueInt("TILE_RENDER_MAX_ZOOM_LEVEL", 21);
+      if (!Guid.TryParse(configuration.GetValueString(PEGASUS_DXF_PROCEDURE_ID_KEY), out dxfProcedureId))
+      {
+        throw new ArgumentException($"Missing environment variable {PEGASUS_DXF_PROCEDURE_ID_KEY}");
+      }
     }
 
     /// <summary>
@@ -117,7 +122,7 @@ namespace VSS.Pegasus.Client
       {
         Execution = new PegasusExecution
         {
-          ProcedureId = DXF_PROCEDURE_ID,
+          ProcedureId = dxfProcedureId,
           Parameters = new PegasusExecutionParameters
           {
             DcFileId = dcFileId.Value,

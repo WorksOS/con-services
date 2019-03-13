@@ -80,7 +80,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         // load core file from s3 to local
-        var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid);
+        var localPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName });
         TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);

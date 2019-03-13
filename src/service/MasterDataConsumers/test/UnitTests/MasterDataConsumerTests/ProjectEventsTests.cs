@@ -1,6 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Repositories.DBModels;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -12,14 +11,14 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
     string projectTimeZone = "New Zealand Standard Time";
     string boundaryWKT = "POLYGON((172.582309 -43.545285,172.582309 43.545239,172.582443 43.545239,172.582443 -43.545285))";
-    Project project = null;
+    Project.Abstractions.Models.DatabaseModels.Project project = null;
 
     const string polygonStr = "POLYGON";
 
     [TestInitialize]   
     public void TestInitialize()
     {
-      project = new Project()
+      project = new Project.Abstractions.Models.DatabaseModels.Project()
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 12343,
@@ -47,7 +46,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       Assert.AreNotEqual(project, copiedProject, "Project model conversion not completed sucessfully");
     }
 
-    private CreateProjectEvent CopyModel(Project project)
+    private CreateProjectEvent CopyModel(Project.Abstractions.Models.DatabaseModels.Project project)
     {
       // Check whether the GeometryWKT is in WKT format. Convert to the old format if it is. 
       if (project.GeometryWKT.Contains(polygonStr))
@@ -68,7 +67,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       };
     }
 
-    private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
+    private Project.Abstractions.Models.DatabaseModels.Project CopyModel(CreateProjectEvent kafkaProjectEvent)
     {
       // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
       if (!kafkaProjectEvent.ProjectBoundary.Contains(polygonStr)) {
@@ -76,7 +75,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
         kafkaProjectEvent.ProjectBoundary = String.Concat(polygonStr + "((", kafkaProjectEvent.ProjectBoundary, "))");
       }
 
-      return new Project()
+      return new Project.Abstractions.Models.DatabaseModels.Project()
       {
         ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
         LegacyProjectID = kafkaProjectEvent.ProjectID,

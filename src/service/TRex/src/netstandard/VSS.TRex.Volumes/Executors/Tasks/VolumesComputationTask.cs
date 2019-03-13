@@ -9,8 +9,8 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Volumes.Executors.Tasks
 {
     /// <summary>
-    /// A pipelined subgrid task that accepts pairs of processed client height grids and compares them to compute volume
-    /// informatikon using the supplied aggregator.
+    /// A pipelined sub grid task that accepts pairs of processed client height grids and compares them to compute volume
+    /// information using the supplied aggregator.
     /// </summary>
     public class VolumesComputationTask : PipelinedSubGridTask
     {
@@ -22,14 +22,14 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         public ISubGridRequestsAggregator Aggregator;
 
         /// <summary>
-        /// Constructor that hardwires the expected grid data type to height
+        /// Constructor that hard wires the expected grid data type to height
         /// </summary>
         public VolumesComputationTask() : base(Guid.NewGuid(), "", GridDataType.Height)
         {
         }
 
         /// <summary>
-        /// Receives a pait of subgrids from the subgrid compute engine and passes them to the simple volumes aggregator for summarisation
+        /// Receives a pair of sub grids from the sub grid compute engine and passes them to the simple volumes aggregator for summarisation
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
@@ -38,24 +38,19 @@ namespace VSS.TRex.Volumes.Executors.Tasks
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
             if (!base.TransferResponse(response))
-            {
-                Log.LogWarning("Base TransferResponse returned false");
                 return false;
-            }
 
             if (Aggregator == null)
-            {
                 throw new ArgumentException("Aggregator not defined in SimpleVolumesComputationTask");
-            }
 
             if (!(response is IClientLeafSubGrid[][]))
             {
-                Log.LogError($"response is not a IClientLeafSubGrid[][], --> {response}");
+                Log.LogError($"Response is not a IClientLeafSubGrid[][], --> {response}");
                 return false;
             }
 
-            // Include this subgrid result into the aggregated volumes result
-            Aggregator.ProcessSubgridResult(response as IClientLeafSubGrid[][]);
+            // Include this sub grid result into the aggregated volumes result
+            Aggregator.ProcessSubGridResult(response as IClientLeafSubGrid[][]);
 
             return true;
         }

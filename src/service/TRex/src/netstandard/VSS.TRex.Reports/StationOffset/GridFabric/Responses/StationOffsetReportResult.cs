@@ -68,17 +68,5 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
         return ms;
       }
     }
-    
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReturnCode.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReportType.GetHashCode();
-        hashCode = (hashCode * 397) ^ GriddedData.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

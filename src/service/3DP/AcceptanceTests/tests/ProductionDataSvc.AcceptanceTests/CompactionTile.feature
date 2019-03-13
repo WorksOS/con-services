@@ -74,3 +74,23 @@ Scenario Outline: Get CutFill Tiles
   | DGLatestWithPCRange               | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624   | 256   | 256    | 8    | DesignToGround | b06996e4-4944-4d84-b2c7-e1808dd7d7d7 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | DGLatestWithPCRange        | 5          | 200      |
   | GGroundWithPCRange2               | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624   | 256   | 256    | 8    | GroundToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | b06996e4-4944-4d84-b2c7-e1808dd7d7d7 | GGroundWithPCRange2        | 5          | 200      |
   | GGroundWithPCRange1               | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624   | 256   | 256    | 8    | GroundToGround | b06996e4-4944-4d84-b2c7-e1808dd7d7d7 | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | GGroundWithPCRange1        | 5          | 200      |
+
+
+
+  Scenario Outline: Get CutFill Tiles - Explicit
+  Given the service route "/api/v2/productiondatatiles" and result repo "CompactionGetProductionDataTilesResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "mode" with value "<Mode>"
+  And with parameter "bbox" with value "<BBox>"
+  And with parameter "width" with value "<Width>"
+  And with parameter "height" with value "<Height>"
+  And with parameter "volumeCalcType" with value "<VolCalc>"
+  And with parameter "volumeTopUid" with value "<TopUid>"
+  And with parameter "volumeBaseUid" with value "<BaseUid>"
+  And with parameter "explicitFilters" with value "<ExplicitFilters>"
+  When I send the GET request I expect response code <HttpCode>
+  Then the resulting image should match "<ResultName>" from the response repository within <Difference> percent
+  Examples: 
+  | RequestName              | ProjectUID                           | BBox                                                                         | Width | Height | Mode | VolCalc        | TopUid                               | BaseUid                              | ResultName                     | Difference | HttpCode | ExplicitFilters |
+  | SVGroundToGroundExplicit | ff91dd40-1569-4765-a2bc-014321f76ace | 36.20660692859012,-115.01998901367186,36.207160975535146,-115.01930236816406 | 256   | 256    | 8    | GroundToGround | ba24a225-12f3-4525-940b-ec8720e7a4f4 | 8d9c19f6-298f-4ec2-8688-cc72242aaceb | SummaryVolGroundGroundExplicit | 5          | 200      | true            |
+  | SVGroundToGroundImplicit | ff91dd40-1569-4765-a2bc-014321f76ace | 36.20660692859012,-115.01998901367186,36.207160975535146,-115.01930236816406 | 256   | 256    | 8    | GroundToGround | ba24a225-12f3-4525-940b-ec8720e7a4f4 | 8d9c19f6-298f-4ec2-8688-cc72242aaceb | SummaryVolGroundGroundImplicit | 5          | 200      | false           |

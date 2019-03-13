@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICOptionsDecls;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -33,7 +34,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         35.109149 * Coordinates.DEGREES_TO_RADIANS,
         -104.28745 * Coordinates.DEGREES_TO_RADIANS);
 
-      return ProfileProductionDataRequest.CreateProfileProductionData(
+      return new ProfileProductionDataRequest(
         PD_MODEL_ID,
         new Guid(),
         ProductionDataType.Height,
@@ -60,13 +61,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       MemoryStream raptorResult = new MemoryStream();
 
-      Assert.IsTrue(RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull(), "A linear profile expected.");
+      Assert.IsTrue(RaptorConverters.DesignDescriptor(request.AlignmentDesign).IsNull(), "A linear profile expected.");
 
       VLPDDecls.TWGS84Point startPt, endPt;
 
       bool positionsAreGrid;
 
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt, out positionsAreGrid);
+      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out startPt, out endPt, out positionsAreGrid);
 
       ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
            = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
@@ -76,18 +77,19 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
             startPt,
             endPt,
             RaptorConverters.ConvertFilter(request.Filter),
-            RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
-            RaptorConverters.DesignDescriptor(request.alignmentDesign),
-            request.returnAllPassesAndLayers);
+            RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+            RaptorConverters.DesignDescriptor(request.AlignmentDesign),
+            request.ReturnAllPassesAndLayers);
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
 
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object);
+      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
       ContractExecutionResult result = executor.Process(request);
 
@@ -106,9 +108,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       ProfileProductionDataRequest request = CreateRequest();
       MemoryStream raptorResult = null;
 
-      Assert.IsTrue(RaptorConverters.DesignDescriptor(request.alignmentDesign).IsNull(), "A linear profile expected.");
+      Assert.IsTrue(RaptorConverters.DesignDescriptor(request.AlignmentDesign).IsNull(), "A linear profile expected.");
 
-      ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out VLPDDecls.TWGS84Point startPt, out var endPt, out bool positionsAreGrid);
+      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out VLPDDecls.TWGS84Point startPt, out var endPt, out bool positionsAreGrid);
 
       ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
            = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
@@ -118,18 +120,19 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
             startPt,
             endPt,
             RaptorConverters.ConvertFilter(request.Filter),
-            RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
-            RaptorConverters.DesignDescriptor(request.alignmentDesign),
-            request.returnAllPassesAndLayers);
+            RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+            RaptorConverters.DesignDescriptor(request.AlignmentDesign),
+            request.ReturnAllPassesAndLayers);
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
 
       mockRaptorClient.Setup(prj => prj.GetProfile(It.IsAny<ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args>()/*args*/)).Returns(raptorResult);
 
       // Create an executor...
-      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object);
+      ProfileProductionDataExecutor executor = RequestExecutorContainerFactory.Build<ProfileProductionDataExecutor>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object);
 
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }

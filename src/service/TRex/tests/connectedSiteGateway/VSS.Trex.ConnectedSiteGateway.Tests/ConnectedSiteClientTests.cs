@@ -21,8 +21,8 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     {
       // Test constants
       var expectedUri = new Uri("http://nowhere.specific/positions/in/v1/CB460-1SW");
-      var messageTime = DateTime.Parse("2018-10-16T16:54:12.9933999+13:00");
-      var expectedRequestMessage = "{\"ts\":\"2018-10-16T16:54:12.9933999+13:00\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
+      var messageTime = DateTime.UtcNow;
+      var expectedRequestMessage = "{\"ts\":\"" + messageTime.ToString("o") +  "\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
       var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
       handlerMock
@@ -85,9 +85,9 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
     {
       // Test constants
       var expectedUri = new Uri("http://nowhere.specific/status/in/v1/CB430-1SM");
-      var messageTime = DateTime.Parse("2018-10-16T16:54:12.9933999+13:00");
+      var messageTime = DateTime.UtcNow;
       var expectedRequestMessage =
-        "{\"timestamp\":\"2018-10-16T16:54:12.9933999+13:00\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
+        "{\"timestamp\":\"" + messageTime.ToString("o") + "\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
       var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
       handlerMock

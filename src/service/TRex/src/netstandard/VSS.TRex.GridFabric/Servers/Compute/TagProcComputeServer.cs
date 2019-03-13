@@ -1,6 +1,4 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache.Configuration;
-using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 
@@ -12,29 +10,19 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// </summary>
     public class TagProcComputeServer : MutableCacheComputeServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<TagProcComputeServer>();
+        //private static readonly ILogger Log = Logging.Logger.CreateLogger<TagProcComputeServer>();
 
         /// <summary>
         /// A client reference to the immutable data grid for the TAG file processing logic to write immutable versions
         /// of the data being processed from TAG files into.
         /// </summary>
-        private ImmutableClientServer ImmutableClientServer;
+        public ImmutableClientServer ImmutableClientServer { get; }
 
         public override void ConfigureTRexGrid(IgniteConfiguration cfg)
         {
             base.ConfigureTRexGrid(cfg);
 
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.TAG_PROCESSING_NODE}", "True");
-        }
-
-        public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
-        {
-            base.ConfigureNonSpatialMutableCache(cfg);
-        }
-
-        public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
-        {
-            base.ConfigureMutableSpatialCache(cfg);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 
 namespace VSS.MasterData.Proxies
 {
@@ -23,7 +24,7 @@ namespace VSS.MasterData.Proxies
 
       string cacheLife = configurationStore.GetValueString(cacheLifeKey);
 
-      if(log.IsEnabled(LogLevel.Trace)) 
+      if (log.IsTraceEnabled())
         log.LogTrace($"Cache Life: {cacheLifeKey}: {cacheLife}");
 
       if (string.IsNullOrEmpty(cacheLife))

@@ -15,6 +15,10 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.Scheduler.Abstractions;
+using VSS.Productivity3D.Scheduler.Proxy;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Configuration;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -48,6 +52,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IASNodeClient, ASNodeClient>();
       services.AddScoped<ITagProcessor, TagProcessor>();
       services.AddScoped<IErrorCodesProvider, RaptorResult>();
+#else
+      services.AddScoped<IErrorCodesProvider, TRexResult>();
 #endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();

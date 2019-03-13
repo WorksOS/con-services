@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 
@@ -10,9 +11,9 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary
   { 
-    private const byte VERSION_NUMBER = 1;
+    public const byte VERSION_NUMBER = 1;
 
-    /// <summary>
+    /// <sumoary>
     /// The date at which the TAG file was inserted into the buffer queue. This field is indexed to permit
     /// processing TAG files in the order they arrived
     /// </summary>
@@ -53,7 +54,7 @@ namespace VSS.TRex.TAGFiles.Models
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteLong(InsertUTC.ToBinary());
       writer.WriteString(FileName);
@@ -65,10 +66,7 @@ namespace VSS.TRex.TAGFiles.Models
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      var version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       InsertUTC = DateTime.FromBinary(reader.ReadLong());
       FileName = reader.ReadString();

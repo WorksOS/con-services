@@ -39,25 +39,22 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
     }
 
     /// <summary>
-    /// Processes a CMV change subgrid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
+    /// Processes a CMV change sub grid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
     /// </summary>
     /// <param name="subGrids"></param>
-    public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+    public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       lock (this)
       {
         const double MAX_PERCENTAGE_VALUE = 100;
 
-        base.ProcessSubgridResult(subGrids);
+        base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
 
         foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-          if ((subGrid?.Length ?? 0) == 0)
-            continue;
-
-          if (subGrid[0] is ClientCMVLeafSubGrid SubGrid)
+          if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientCMVLeafSubGrid SubGrid)
           {
             double cmvChangeValue;
 

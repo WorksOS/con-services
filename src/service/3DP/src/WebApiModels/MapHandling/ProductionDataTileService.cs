@@ -4,6 +4,7 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders, bool explicitFilters=false)
     {
       var getTile = true;
       ElevationStatisticsResult elevationExtents = null;
@@ -86,7 +87,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       catch (ServiceException se)
       {
         getTile = mode != DisplayMode.Height;
-        log.LogTrace(
+        if (log.IsTraceEnabled())
+          log.LogTrace(
             $"Failed to get elevation extents for height request with error: {se.GetResult.Code}:{se.GetResult.Message} a transparent tile will be generated");
       }
 
@@ -104,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
            .SetVolumeDesign(volumeDesign)
            .SetBaseFilter(baseFilter)
            .SetTopFilter(topFilter)
-           .CreateTileRequest(mode, width, height, bbox, elevationExtents);
+           .CreateTileRequest(mode, width, height, bbox, elevationExtents, explicitFilters);
 
         //TileRequest is both v1 and v2 model so cannot change its validation directly.
         //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.

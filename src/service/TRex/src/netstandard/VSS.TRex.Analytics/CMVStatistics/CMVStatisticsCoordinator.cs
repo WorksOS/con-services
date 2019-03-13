@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+﻿using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.Coordinators;
@@ -14,7 +12,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
   /// </summary>
   public class CMVStatisticsCoordinator : BaseAnalyticsCoordinator<CMVStatisticsArgument, CMVStatisticsResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+   // private static readonly ILogger Log = Logging.Logger.CreateLogger<CMVStatisticsCoordinator>();
 
     /// <summary>
     /// Constructs the aggregator from the supplied argument to be used for the CMV statistics analytics request
@@ -26,7 +24,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.Grid.CellSize,
+      CellSize = SiteModel.CellSize,
       OverrideMachineCMV = argument.OverrideMachineCMV,
       OverridingMachineCMV = argument.OverridingMachineCMV,
       CMVPercentageRange = argument.CMVPercentageRange,

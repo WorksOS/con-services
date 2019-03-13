@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
@@ -49,17 +50,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
       ILeafSubGrid leaf = new LeafSubGrid(tree, null, tree.NumLevels);
 
-      // Base leaf classes don't implement CellHasValue(), so this call should fail with an exception
-      try
-      {
-        bool isEmpty = leaf.IsEmpty();
-
-        Assert.True(false, "Base LeafSubGrid class did not throw an exception due to unimplemented CellHasValu()");
-      }
-      catch (Exception)
-      {
-        // As expected
-      }
+      leaf.IsEmpty().Should().BeTrue();
     }
   }
 }

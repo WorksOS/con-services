@@ -3,7 +3,7 @@
   /// <summary>
   ///  Describes user preference data returned by the preference master data service.
   /// </summary>
-  public class UserPreferenceData 
+  public class UserPreferenceData
   {
     public string Timezone { get; set; }
     public string Language { get; set; }
@@ -20,6 +20,6 @@
     public string TemperatureUnit { get; set; }
     public string PressureUnit { get; set; }
     public string MapProvider { get; set; }
-    public string BrowserRefresh { get; set; }     
+    public string BrowserRefresh { get; set; }
   }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.GridFabric.ExtensionMethods
@@ -17,7 +17,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       bool isNull = item.IsNull();     
       writer.WriteBoolean(isNull);
@@ -42,10 +42,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     public static void FromBinary(this Fence item, IBinaryRawReader reader)
     {
       const byte VERSION_NUMBER = 1;
-      byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       bool isNull = reader.ReadBoolean();
       if (isNull)
@@ -67,7 +65,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteDouble(item.MinX);
       writer.WriteDouble(item.MinY);
@@ -83,10 +81,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     public static void FromBinary(this BoundingWorldExtent3D item, IBinaryRawReader reader)
     {
       const byte VERSION_NUMBER = 1;
-      byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       item.MinX = reader.ReadDouble();
       item.MinY = reader.ReadDouble();
@@ -103,7 +99,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt(item.MinX);
       writer.WriteInt(item.MinY);
@@ -117,10 +113,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     public static BoundingIntegerExtent2D FromBinary(this BoundingIntegerExtent2D item, IBinaryRawReader reader)
     {
       const byte VERSION_NUMBER = 1;
-      byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       item.MinX = reader.ReadInt();
       item.MinY = reader.ReadInt();
@@ -137,7 +131,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteDouble(item.X);
       writer.WriteDouble(item.Y);
@@ -150,10 +144,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     public static XYZ FromBinary(this XYZ item, IBinaryRawReader reader)
     {
       const byte VERSION_NUMBER = 1;
-      byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       item.X = reader.ReadDouble();
       item.Y = reader.ReadDouble();

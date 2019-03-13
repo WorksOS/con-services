@@ -1,8 +1,22 @@
 ﻿Feature: CompactionSummaryVolumes
   I should be able to request Summary Volumes.
 
-# Until we can mock execution dates the responses will not contain any volume data and are largely symbolic.
-Scenario Outline: Compaction Get Summary volumes
+Scenario Outline: CompactionGetSummary - ExplicitVolumes
+  Given the service route "/api/v2/volumes/summary" and result repo "CompactionSummaryVolumeResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "baseUid" with value "<BaseUID>"
+  And with parameter "topUid" with value "<TopUID>"
+  And with parameter "explicitFilters" with value "<ExplicitFilters>"
+  When I send the GET request I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | RequestName                            | ProjectUID                           | TopUID                               | BaseUID                              | ResultName                             | HttpCode | ExplicitFilters |
+  | GroundToGroundEarliestToLatestExplicit | ff91dd40-1569-4765-a2bc-014321f76ace | ba24a225-12f3-4525-940b-ec8720e7a4f4 | 8d9c19f6-298f-4ec2-8688-cc72242aaceb | GroundToGroundEarliestToLatestExplicit | 200      | true            |
+  | GroundToGroundEarliestToLatestImplicit | ff91dd40-1569-4765-a2bc-014321f76ace | ba24a225-12f3-4525-940b-ec8720e7a4f4 | 8d9c19f6-298f-4ec2-8688-cc72242aaceb | GroundToGroundEarliestToLatestImplicit | 200      | false           |
+
+
+  # Until we can mock execution dates the responses will not contain any volume data and are largely symbolic.
+Scenario Outline: CompactionGetSummaryVolumes - Standard
   Given the service route "/api/v2/volumes/summary" and result repo "CompactionSummaryVolumeResponse.json"
   And with parameter "projectUid" with value "<ProjectUID>"
   And with parameter "baseUid" with value "<BaseUID>"
@@ -25,3 +39,4 @@ Scenario Outline: Compaction Get Summary volumes
   | PassCountRangeEarliestToLatest   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3f91916b-7cfc-4c98-9e68-0e5307ffaba5 | 3507b523-9390-4e11-90e9-7a1263bb5cd9 | PassCountRangeEarliestToLatest   | 200      |
   | PassCountRangeDesignToLatest     | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3f91916b-7cfc-4c98-9e68-0e5307ffaba5 | 3d255208-8aa2-4172-9046-f97a36eff896 | PassCountRangeDesignToLatest     | 200      |
   | PassCountRangeEarliestToDesign   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d255208-8aa2-4172-9046-f97a36eff896 | 3507b523-9390-4e11-90e9-7a1263bb5cd9 | PassCountRangeEarliestToDesign   | 200      |
+

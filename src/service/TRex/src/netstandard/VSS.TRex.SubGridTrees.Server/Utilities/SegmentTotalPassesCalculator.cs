@@ -15,17 +15,20 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             uint _TotalPasses = 0;
             uint _MaxPassCount = 0;
 
-            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            if (segment.HasPassData())
             {
-                uint ThePassCount = segment.PassCount(i, j);
-
-                if (ThePassCount > _MaxPassCount)
+                Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
                 {
-                    _MaxPassCount = ThePassCount;
-                }
-
-                _TotalPasses += ThePassCount;
-            });
+                    uint ThePassCount = segment.PassCount(i, j);
+                 
+                    if (ThePassCount > _MaxPassCount)
+                    {
+                      _MaxPassCount = ThePassCount;
+                    }
+                 
+                    _TotalPasses += ThePassCount;
+                });
+            }
 
             TotalPasses = _TotalPasses;
             MaxPassCount = _MaxPassCount;

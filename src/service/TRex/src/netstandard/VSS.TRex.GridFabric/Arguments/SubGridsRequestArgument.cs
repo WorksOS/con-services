@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
@@ -10,6 +11,8 @@ namespace VSS.TRex.GridFabric.Arguments
   /// </summary>
   public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The request ID for the subgrid request
     /// </summary>
@@ -58,6 +61,8 @@ namespace VSS.TRex.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(RequestID);
       writer.WriteInt((int)GridDataType);
 
@@ -77,6 +82,8 @@ namespace VSS.TRex.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       RequestID = reader.ReadGuid() ?? Guid.Empty;
       GridDataType = (GridDataType) reader.ReadInt();

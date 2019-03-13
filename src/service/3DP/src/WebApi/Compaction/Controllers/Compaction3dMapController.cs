@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -25,7 +26,10 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -92,6 +96,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private readonly IProductionDataTileService tileService;
     private readonly IBoundingBoxHelper boundingBoxHelper;
+    private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
     /// <summary>
     /// Default Constructor
@@ -107,10 +112,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       IASNodeClient raptorClient,
 #endif
-      IBoundingBoxHelper boundingBoxHelper) : base(configStore, fileListProxy, settingsManager)
+      IBoundingBoxHelper boundingBoxHelper,
+      ITRexCompactionDataProxy trexCompactionDataProxy) : base(configStore, fileListProxy, settingsManager)
     {
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;
+      this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -190,7 +197,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders));
+          CustomHeaders, false));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return tileResult;
@@ -227,7 +234,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string bbox)
     {
       var result = await GetMapTileData(projectUid, filterUid, designUid, cutfillDesignUid, type, mode, width, height, bbox);
-      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -252,7 +259,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IProductionDataRequestFactory requestFactory,
       [FromServices] IFileRepository tccFileRepository)
     {
-      const double surfaceExportTollerance = 0.05;
+      const double SURFACE_EXPORT_TOLERANCE = 0.05;
+      const byte COORDS_ARRAY_LENGTH = 3;
 
       var tins = new List<TrimbleTINModel>();
 
@@ -290,7 +298,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           false,
           OutputTypes.VedaAllPasses,
           string.Empty,
-          surfaceExportTollerance);
+          SURFACE_EXPORT_TOLERANCE);
 
       exportRequest.Validate();
 
@@ -306,7 +314,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             trexCompactionDataProxy: tRexCompactionDataProxy,
             customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
-#if RAPTOR
+
       var zipStream = new FileStream(result.FullFileName, FileMode.Open);
 
       using (var archive = new ZipArchive(zipStream))
@@ -371,34 +379,64 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var maxNorthing = tins.Select(t => t.Header.MaximumNorthing).Max();
       var centerEasting = (maxEasting + minEasting) / 2.0;
       var centerNorthing = (maxNorthing + minNorthing) / 2.0;
-      
-      var points = new TWGS84FenceContainer
-      {
-        FencePoints = new[]
-        {
-          TWGS84Point.Point(minEasting, minNorthing),
-          TWGS84Point.Point(maxEasting, maxNorthing),
-          TWGS84Point.Point(centerEasting, centerNorthing),
-        }
-      };
-      
-      // Convert the northing easting values to long lat values
-      var res = raptorClient.GetGridCoordinates(project.LegacyProjectId, points, TCoordConversionType.ctNEEtoLLH, out var coordPointList);
-      if (res != TCoordReturnCode.nercNoError)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve long lat for boundary"));
-      }
+     
+      TwoDConversionCoordinate[] convertedCoordinates;
 
-      // The values returned from Raptor are in rads, where we need degrees for the bbox
-      var minLat = coordPointList.Points.Coords[0].Y * Coordinates.RADIANS_TO_DEGREES;
-      var minLng = coordPointList.Points.Coords[0].X * Coordinates.RADIANS_TO_DEGREES;
-      var maxLat = coordPointList.Points.Coords[1].Y * Coordinates.RADIANS_TO_DEGREES;
-      var maxLng = coordPointList.Points.Coords[1].X * Coordinates.RADIANS_TO_DEGREES;
-      var centerLat = coordPointList.Points.Coords[2].Y * Coordinates.RADIANS_TO_DEGREES;
-      var centerLng = coordPointList.Points.Coords[2].X * Coordinates.RADIANS_TO_DEGREES;
-      var bbox = $"{minLat},{minLng},{maxLat},{maxLng}"; 
+#if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
+      {
+#endif
+        var conversionCoordinates = new []
+        {
+          new TwoDConversionCoordinate(minEasting, minNorthing),
+          new TwoDConversionCoordinate(maxEasting, maxNorthing),
+          new TwoDConversionCoordinate(centerEasting, centerNorthing)
+        };
+
+        var conversionRequest = new CoordinateConversionRequest(projectUid, TwoDCoordinateConversionType.NorthEastToLatLon, conversionCoordinates);
+        var conversionResult = trexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(conversionRequest, "/coordinateconversion", CustomHeaders).Result;
+
+        if (conversionResult.Code != 0 || conversionResult.ConversionCoordinates.Length != COORDS_ARRAY_LENGTH)
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve long lat for boundary"));
+
+        convertedCoordinates = conversionResult.ConversionCoordinates;
+#if RAPTOR
+      }
+      else
+      {
+        var points = new TWGS84FenceContainer
+        {
+          FencePoints = new[]
+          {
+            TWGS84Point.Point(minEasting, minNorthing),
+            TWGS84Point.Point(maxEasting, maxNorthing),
+            TWGS84Point.Point(centerEasting, centerNorthing),
+          }
+        };
+
+        // Convert the northing easting values to long lat values
+        var res = raptorClient.GetGridCoordinates(project.LegacyProjectId, points, TCoordConversionType.ctNEEtoLLH, out var coordPointList);
+        if (res != TCoordReturnCode.nercNoError)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve long lat for boundary"));
+        }
+
+        convertedCoordinates = coordPointList.Points.Coords.Select(c => new TwoDConversionCoordinate(c.X, c.Y)).ToArray();
+      }
+#endif
+
+      // The values returned from Raptor/TRex are in rads, where we need degrees for the bbox
+      var minLat = convertedCoordinates[0].Y * Coordinates.RADIANS_TO_DEGREES;
+      var minLng = convertedCoordinates[0].X * Coordinates.RADIANS_TO_DEGREES;
+      var maxLat = convertedCoordinates[1].Y * Coordinates.RADIANS_TO_DEGREES;
+      var maxLng = convertedCoordinates[1].X * Coordinates.RADIANS_TO_DEGREES;
+      var centerLat = convertedCoordinates[2].Y * Coordinates.RADIANS_TO_DEGREES;
+      var centerLng = convertedCoordinates[2].X * Coordinates.RADIANS_TO_DEGREES;
+      var bbox = $"{minLat},{minLng},{maxLat},{maxLng}";
 
       var outputStream = new MemoryStream();
       using (var zipArchive = new ZipArchive(outputStream, ZipArchiveMode.Create, true))
@@ -449,11 +487,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // Don't forget to seek back, or else the content length will be 0
       outputStream.Seek(0, SeekOrigin.Begin);
-      return new FileStreamResult(outputStream, "application/zip");
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+      return new FileStreamResult(outputStream, ContentTypeConstants.ApplicationZip);
     }
 
     /// <summary>
@@ -486,10 +520,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders));
+          CustomHeaders, false));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -587,7 +621,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         outputStream.Seek(0, SeekOrigin.Begin);
         Log.LogInformation($"GetExportReportSurface completed: ExportData size={outputStream.Length}");
-        return new FileStreamResult(outputStream, "text/plain");
+        return new FileStreamResult(outputStream, ContentTypeConstants.TextPlain);
       }
     }
 

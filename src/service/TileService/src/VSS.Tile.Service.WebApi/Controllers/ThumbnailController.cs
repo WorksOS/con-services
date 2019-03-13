@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -16,9 +17,11 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
+using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.ResultHandling;
 using VSS.Tile.Service.Common.Services;
+using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
@@ -42,9 +45,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ThumbnailController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
-      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore)
-      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore)
+    public ThumbnailController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, 
+      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore, 
+      IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
+      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
     {
     }
 
@@ -272,7 +276,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       if (geofence == null)
       {
         return (Guid.Empty, new FileStreamResult(
-          new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png"));
+          new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), ContentTypeConstants.ImagePng));
       }
 
       Log.LogDebug($"Generating geofence tile for {geofence.GeofenceUID}");

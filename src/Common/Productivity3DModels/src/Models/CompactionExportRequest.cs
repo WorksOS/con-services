@@ -10,8 +10,14 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// The request representation used to request export data.
   /// </summary>
-  public class CompactionExportRequest : ProjectID
+  public class CompactionExportRequest 
   {
+    /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
+    public Guid ProjectUid { get; set; }
+
     /// <summary>
     /// The filter instance to be use in the request.
     /// </summary>
@@ -19,7 +25,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The value may be null.
     /// </remarks>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
+    public FilterResult Filter { get; set; }
 
     /// <summary>
     /// The name of the exported data file.
@@ -29,21 +35,13 @@ namespace VSS.Productivity3D.Models.Models
     /// </remarks>
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
     [ValidFilename(256)]
-    public string FileName { get; private set; }
+    public string FileName { get; set; }
 
-    /// <summary>
-    /// Sets the tolerance to calculate TIN surfaces.
-    /// </summary>
-    /// <remarks>
-    /// The value should be in meters.
-    /// </remarks>
-    [JsonProperty(PropertyName = "tolerance", Required = Required.Default)]
-    public double? Tolerance { get; private set; }
 
     /// <summary>
     /// Default private constructor.
     /// </summary>
-    private CompactionExportRequest()
+    public CompactionExportRequest()
     {
     }
 
@@ -52,36 +50,31 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="filter"></param>
-    /// <param name="tolerance"></param>
     /// <param name="fileName"></param>
     public CompactionExportRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
-      double tolerance,
       string fileName
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
-      Tolerance = tolerance;
       FileName = fileName;
     }
     
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public override void Validate()
+    public void Validate()
     {
-      base.Validate();
-
-      Filter?.Validate();
-
-      if (FileName == null)
+      if (ProjectUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "File name must be provided"));
+            "Invalid project UID."));
       }
+
+      Filter?.Validate();
     }
   }
 }

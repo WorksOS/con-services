@@ -44,7 +44,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)

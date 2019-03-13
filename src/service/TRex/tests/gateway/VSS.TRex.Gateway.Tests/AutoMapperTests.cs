@@ -72,7 +72,10 @@ namespace VSS.TRex.Gateway.Tests
       Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
       Assert.True(combinedFilter.AttributeFilter.HasElevationTypeFilter);
       Assert.Equal(Types.ElevationType.First, combinedFilter.AttributeFilter.ElevationType);
-      Assert.Null(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
+
+      Assert.NotNull(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
+      Assert.Empty(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
+
       Assert.NotNull(combinedFilter.SpatialFilter);
       Assert.False(combinedFilter.SpatialFilter.CoordsAreGrid);
       Assert.True(combinedFilter.SpatialFilter.IsSpatial);
@@ -95,7 +98,10 @@ namespace VSS.TRex.Gateway.Tests
       Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
       Assert.True(combinedFilter.AttributeFilter.HasElevationTypeFilter);
       Assert.Equal(Types.ElevationType.First, combinedFilter.AttributeFilter.ElevationType);
-      Assert.Null(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
+
+      Assert.NotNull(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
+      Assert.Empty(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
+
       Assert.NotNull(combinedFilter.SpatialFilter);
       Assert.False(combinedFilter.SpatialFilter.CoordsAreGrid);
       Assert.False(combinedFilter.SpatialFilter.IsSpatial);

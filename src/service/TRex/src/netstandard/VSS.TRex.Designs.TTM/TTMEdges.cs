@@ -14,9 +14,7 @@ namespace VSS.TRex.Designs.TTM
     {
       // Assume triangles have been numbered
       for (int i = 0; i < Count; i++)
-      {
         Utilities.WriteInteger(writer, this[i].Tag, header.TriangleNumberSize);
-      }
     }
 
     public void Read(BinaryReader reader, TTMHeader header, Triangles triangles)
@@ -29,22 +27,15 @@ namespace VSS.TRex.Designs.TTM
 
       for (int i = 0; i < header.NumberOfEdgeRecords; i++)
       {
-        try
-        {
-          long RecPos = reader.BaseStream.Position;
-          int TriangleIndex = Utilities.ReadInteger(reader, header.TriangleNumberSize);
+        long RecPos = reader.BaseStream.Position;
+        int TriangleIndex = Utilities.ReadInteger(reader, header.TriangleNumberSize);
 
-          Add(TriangleIndex < 1 || TriangleIndex > triangles.Count ? null : triangles[TriangleIndex - 1] as TTMTriangle);
+        Add(TriangleIndex < 1 || TriangleIndex > triangles.Count ? null : triangles[TriangleIndex - 1] as TTMTriangle);
 
-          //{$ifdef LoadTTMIndices}
-          //TriangleIndices[i] = TriangleIndex;
-          //{$endif}
-          reader.BaseStream.Position = RecPos + header.EdgeRecordSize;
-        }
-        catch (Exception E)
-        {
-          throw new Exception($"Failed to read edge {i + 1}", E);
-        }
+        //{$ifdef LoadTTMIndices}
+        //TriangleIndices[i] = TriangleIndex;
+        //{$endif}
+        reader.BaseStream.Position = RecPos + header.EdgeRecordSize;
       }
     }
 

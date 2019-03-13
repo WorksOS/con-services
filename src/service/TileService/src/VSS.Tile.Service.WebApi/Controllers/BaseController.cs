@@ -11,8 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -20,6 +22,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
+using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -31,11 +34,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
   {
     private readonly IPreferenceProxy prefProxy;
     private readonly IRaptorProxy raptorProxy;
-    private readonly IFileListProxy fileListProxy;
+    protected readonly IFileListProxy fileListProxy;
     private readonly IMapTileGenerator tileGenerator;
     protected readonly IGeofenceProxy geofenceProxy;
     private ILogger<T> logger;
     private IServiceExceptionHandler serviceExceptionHandler;
+    protected readonly IConfigurationStore configStore;
+    protected readonly IBoundingBoxHelper boundingBoxHelper;
+    protected readonly ITPaaSApplicationAuthentication authn;
 
     private readonly IMemoryCache tileCache;
     private readonly TimeSpan tileCacheExpiration;
@@ -59,8 +65,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
-      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore)
+    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, 
+      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore, 
+      IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
     {
       this.raptorProxy = raptorProxy;
       this.prefProxy = prefProxy;
@@ -69,6 +76,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
       this.geofenceProxy = geofenceProxy;
       tileCache = cache;
       tileCacheExpiration = GetCacheExpiration(configurationStore);
+      configStore = configurationStore;
+      this.boundingBoxHelper = boundingBoxHelper;
+      this.authn = authn;
     }
 
     /// <summary>
@@ -80,7 +90,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
       try
       {
         result = action.Invoke();
-        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+        if (Log.IsTraceEnabled())
+          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException)
       {
@@ -112,7 +123,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
       try
       {
         result = await action.Invoke();
-        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+        if (Log.IsTraceEnabled())
+          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
 
       }
       catch (ServiceException)
@@ -140,7 +152,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Get the generated tile for the request
     /// </summary>
     protected async Task<FileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, Guid? topUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, DisplayMode? mode, string language, bool adjustBoundingBox)
+      TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, DisplayMode? mode, string language, bool adjustBoundingBox, bool explicitFilters=false)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
@@ -193,14 +205,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var request = TileGenerationRequest.CreateTileGenerationRequest(filterUid, baseUid, topUid, 
         cutFillDesignUid, volumeCalcType, geofences, alignmentPoints, customFilterBoundary, 
         designFilterBoundary, alignmentFilterBoundary, designBoundary, dxfFiles, overlayTypes, 
-        width, height, mapType, mode, language, project, mapParameters, CustomHeaders, null);
+        width, height, mapType, mode, language, project, mapParameters, CustomHeaders, null, explicitFilters);
 
       request.Validate();
 
       var byteResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileGenerator.GetMapData(request));
 
-      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+      return new FileStreamResult(new MemoryStream(byteResult), ContentTypeConstants.ImagePng);
 
     }
 
@@ -233,7 +245,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
           tileGenerator.GetMapData(request));
       });
 
-      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+      return new FileStreamResult(new MemoryStream(byteResult), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>
@@ -258,7 +270,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var byteResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileGenerator.GetMapData(request));
 
-      return new FileStreamResult(new MemoryStream(byteResult), "image/png");
+      return new FileStreamResult(new MemoryStream(byteResult), ContentTypeConstants.ImagePng);
     }
 
     /// <summary>

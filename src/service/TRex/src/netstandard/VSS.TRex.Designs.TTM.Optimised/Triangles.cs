@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.Designs.TTM.Optimised.Exceptions;
-
-namespace VSS.TRex.Designs.TTM.Optimised
+﻿namespace VSS.TRex.Designs.TTM.Optimised
 {
   /// <summary>
   /// Defines the collection of triangles that make up this surface
@@ -75,6 +71,8 @@ namespace VSS.TRex.Designs.TTM.Optimised
         }
     */
 
+    /* Retain as reference implementation using the standard binary reader IO for comparison with
+       the optimised direct memory access implementation below.
     /// <summary>
     /// Reads the set of triangles in the model utilising the given reader
     /// </summary>
@@ -108,21 +106,15 @@ namespace VSS.TRex.Designs.TTM.Optimised
         //}
       }
 
-      try
+      int loopLimit = header.NumberOfTriangles;
+      for (int i = 0; i < loopLimit; i++)
       {
-        int loopLimit = header.NumberOfTriangles;
-        for (int i = 0; i < loopLimit; i++)
-        {
-          long RecPos = reader.BaseStream.Position;
-          Read(ref Items[i]);
-          reader.BaseStream.Position = RecPos + header.TriangleRecordSize;
-        }
-      }
-      catch (Exception E)
-      {
-        throw new TTMFileReadException($"Failed to read triangles", E);
+        long RecPos = reader.BaseStream.Position;
+        Read(ref Items[i]);
+        reader.BaseStream.Position = RecPos + header.TriangleRecordSize;
       }
     }
+    */
 
     /// <summary>
     /// Reads the set of triangles in the model utilising the given reader
@@ -135,39 +127,31 @@ namespace VSS.TRex.Designs.TTM.Optimised
       Items = new Triangle[header.NumberOfTriangles];
       bool readInt16s = header.VertexNumberSize == sizeof(short);
 
-      try
+      int loopLimit = header.NumberOfTriangles;
+      for (int i = 0; i < loopLimit; i++)
       {
-        int loopLimit = header.NumberOfTriangles;
-        for (int i = 0; i < loopLimit; i++)
+        if (readInt16s)
         {
-          if (readInt16s)
-          {
-            Items[i].Vertex0 = (bytes[bufPos] | bytes[bufPos + 1] << 8) - 1;
-            Items[i].Vertex1 = (bytes[bufPos + 2] | bytes[bufPos + 3] << 8) - 1;
-            Items[i].Vertex2 = (bytes[bufPos + 4] | bytes[bufPos + 5] << 8) - 1;
-          }
-          else
-          {
-            Items[i].Vertex0 = (bytes[bufPos] | bytes[bufPos + 1] << 8 | bytes[bufPos + 2] << 16 | bytes[bufPos + 3] << 24) - 1;
-            Items[i].Vertex1 = (bytes[bufPos + 4] | bytes[bufPos + 5] << 8 | bytes[bufPos + 6] << 16 | bytes[bufPos + 7] << 24) - 1;
-            Items[i].Vertex2 = (bytes[bufPos + 8] | bytes[bufPos + 9] << 8 | bytes[bufPos + 10] << 16 | bytes[bufPos + 11] << 24) - 1;
-          }
-
-          // This loop does not need to be executed since the reader repositions the reading location after each serialise in
-          //for (int i = 0; i < 3; i++)
-          //{
-          //  int NeighbourIndex = Utilities.ReadInteger(reader, header.TriangleNumberSize);
-          // SetNeighbour(i, (NeighbourIndex < 1 || NeighbourIndex > triangles.Items.Length) ? null : triangles.Items[NeighbourIndex - 1]);
-          //}
-
-          bufPos += header.TriangleRecordSize;
+          Items[i].Vertex0 = (bytes[bufPos] | bytes[bufPos + 1] << 8) - 1;
+          Items[i].Vertex1 = (bytes[bufPos + 2] | bytes[bufPos + 3] << 8) - 1;
+          Items[i].Vertex2 = (bytes[bufPos + 4] | bytes[bufPos + 5] << 8) - 1;
         }
-      }
-      catch (Exception E)
-      {
-        throw new Exception("Failed to read triangles", E);
+        else
+        {
+          Items[i].Vertex0 = (bytes[bufPos] | bytes[bufPos + 1] << 8 | bytes[bufPos + 2] << 16 | bytes[bufPos + 3] << 24) - 1;
+          Items[i].Vertex1 = (bytes[bufPos + 4] | bytes[bufPos + 5] << 8 | bytes[bufPos + 6] << 16 | bytes[bufPos + 7] << 24) - 1;
+          Items[i].Vertex2 = (bytes[bufPos + 8] | bytes[bufPos + 9] << 8 | bytes[bufPos + 10] << 16 | bytes[bufPos + 11] << 24) - 1;
+        }
+
+        // This loop does not need to be executed since the reader repositions the reading location after each serialise in
+        //for (int i = 0; i < 3; i++)
+        //{
+        //  int NeighbourIndex = Utilities.ReadInteger(reader, header.TriangleNumberSize);
+        // SetNeighbour(i, (NeighbourIndex < 1 || NeighbourIndex > triangles.Items.Length) ? null : triangles.Items[NeighbourIndex - 1]);
+        //}
+
+        bufPos += header.TriangleRecordSize;
       }
     }
-
   }
 }

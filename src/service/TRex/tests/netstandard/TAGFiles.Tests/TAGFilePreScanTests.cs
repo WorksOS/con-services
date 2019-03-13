@@ -42,7 +42,7 @@ namespace TAGFiles.Tests
       preScan.SeedLatitude.Should().Be(0.8551829920414814);
       preScan.SeedLongitude.Should().Be(-2.1377653549870974);
       preScan.SeedHeight.Should().Be(25.045071376845993);
-      preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("26/08/2014 5:40:39.355 PM"));
+      preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("2014-08-26T17:40:39.3550000", System.Globalization.NumberFormatInfo.InvariantInfo));
       preScan.RadioType.Should().Be("torch");
       preScan.RadioSerial.Should().Be("5411502448");
       preScan.MachineType.Should().Be(39);

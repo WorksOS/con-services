@@ -2,6 +2,8 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System;
+using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 
@@ -31,14 +33,6 @@ namespace VSS.TRex.GridFabric.Servers
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
         /// </summary>
         public string TRexNodeID = string.Empty;
-
-        /// <summary>
-        /// Default constructor for the TRex Ignite Server. This must be called in the base() constructor chain to ensure
-        /// the server operating environment is correctly configured before instantiation of the server inner workings
-        /// </summary>
-        public IgniteServer()
-        {
-        }
 
         /// <summary>
         /// Base configuration for the grid
@@ -88,40 +82,10 @@ namespace VSS.TRex.GridFabric.Servers
 
         public abstract ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
 
-        #region IDisposable Support
-        private bool disposedValue; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    if (mutableTRexGrid != null)
-                        Ignition.Stop(mutableTRexGrid.Name, false);
-
-                    if (immutableTRexGrid != null)
-                        Ignition.Stop(immutableTRexGrid.Name, false);
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        // Note: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~IgniteServer() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // Note: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
+          DIContext.Obtain<ITRexGridFactory>()?.StopGrids();
         }
-        #endregion
     }
 }

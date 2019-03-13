@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -52,7 +53,8 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(ProjectUID);
       writer.WriteGuid(AssetUID);
       writer.WriteString(FileName);
@@ -60,10 +62,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      int version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       AssetUID = reader.ReadGuid() ?? Guid.Empty;

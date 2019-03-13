@@ -17,7 +17,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
 
       var func = new DesignFilterSubGridMaskComputeFunc();
 
-      return _Compute.Apply(func, arg);
+      return Compute.Apply(func, arg);
     }
   }
 }

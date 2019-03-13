@@ -10,6 +10,17 @@ namespace VSS.TRex.Tests.SubGridTrees
   public class SubGridTreeLeafBitmapSubGridTests
   {
     [Fact]
+    public void Test_SubGridTreeLeafBitmapSubGrid_Creation_OwnerParentLevel()
+    {
+      var subGrid = new SubGridTreeLeafBitmapSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+
+      subGrid.Should().NotBeNull();
+      subGrid.Owner.Should().BeNull();
+      subGrid.Parent.Should().BeNull();
+      subGrid.Level.Should().Be(SubGridTreeConsts.SubGridTreeLevels - 1);
+    }
+
+    [Fact]
     public void Test_SubGridTreeLeafBitmapSubGrid_ReadWrite()
     {
       var leaf = new SubGridTreeLeafBitmapSubGrid();

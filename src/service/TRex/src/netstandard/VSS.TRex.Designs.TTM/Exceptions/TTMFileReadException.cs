@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Designs.TTM.Exceptions
 {

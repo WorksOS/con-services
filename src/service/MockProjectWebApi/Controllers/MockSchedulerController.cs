@@ -1,14 +1,25 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Scheduler.Models;
 
 namespace MockProjectWebApi.Controllers
 {
   public class MockSchedulerController : Controller
   {
+    [Route("/internal/v1/mock/runjob")]
+    [HttpPost]
+    public ScheduleJobResult MockRunJob([FromBody] JobRequest request)
+    {
+      Console.WriteLine($"{nameof(MockRunJob)}: {JsonConvert.SerializeObject(request)}");
+      return new ScheduleJobResult { JobId = "some job id" };
+    }
+
     [Route("/internal/v1/mock/export")]
     [HttpPost]
     public ScheduleJobResult StartMockExport([FromBody] ScheduleJobRequest request)

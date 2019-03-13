@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       return Read(r =>
       {
-        if (br.ReadBoolean() == true) // is null
+        if (!br.ReadBoolean()) // is null
           return null;
 
         var val = new bool[br.ReadInt32()];
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
 
     public byte[] ReadByteArray()
     {
-      return Read(r => r.ReadBoolean() == true ? null : br.ReadBytes(br.ReadInt32()), BinaryTypeId.ArrayByte);
+      return Read(r => r.ReadBoolean() ? br.ReadBytes(br.ReadInt32()) : null, BinaryTypeId.ArrayByte);
     }
 
     public short ReadShort(string fieldName)
@@ -141,7 +141,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       return Read(r =>
       {
-        if (br.ReadBoolean() == true) // is null
+        if (!br.ReadBoolean()) // is null
           return null;
 
         var val = new int[br.ReadInt32()];
@@ -171,7 +171,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       return Read(r =>
       {
-        if (br.ReadBoolean() == true) // is null
+        if (!br.ReadBoolean()) // is null
           return null;
 
         var val = new long[br.ReadInt32()];
@@ -223,7 +223,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       return Read(r =>
       {
-        if (br.ReadBoolean() == true) // is null
+        if (!br.ReadBoolean()) // is null
           return null;
 
         var val = new double[br.ReadInt32()];
@@ -288,7 +288,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
 
     public string ReadString()
     {
-      return Read(r => r.ReadBoolean() ? null : r.ReadString(), BinaryTypeId.String);
+      return Read(r => r.ReadBoolean() ? r.ReadString() : null, BinaryTypeId.String);
     }
 
     public string[] ReadStringArray(string fieldName)
@@ -313,8 +313,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     {
       return Read<Guid?>(r =>
       {
-        byte[] bytes = r.ReadBytes(16);
-        return new Guid(bytes);
+        if (r.ReadBoolean())
+        {
+          byte[] bytes = r.ReadBytes(16);
+          return new Guid(bytes);
+        }
+
+        return null;
       }, BinaryTypeId.Guid);
     }
 
@@ -351,12 +356,12 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       throw new NotImplementedException();
     }
 
-    public T ReadObject<T>(string fieldName)
+    public virtual T ReadObject<T>(string fieldName)
     {
       throw new NotImplementedException();
     }
 
-    public T ReadObject<T>()
+    public virtual T ReadObject<T>()
     {
       return Deserialize<T>();
     }

@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         int k = 0;
         // cycle through layer and update pass record (Cells[CellX, CellY].CellPasses[j])
-        for (int j = cellProfileFromContext.Layers[i].StartCellPassIdx; i <= cellProfileFromContext.Layers[i].EndCellPassIdx; j++)
+        for (int j = cellProfileFromContext.Layers[i].StartCellPassIdx; j <= cellProfileFromContext.Layers[i].EndCellPassIdx; j++)
         {
         //  if (j >= iTotalHalfPasses) // protect this from range check error that can bring down ps node
         //    continue;

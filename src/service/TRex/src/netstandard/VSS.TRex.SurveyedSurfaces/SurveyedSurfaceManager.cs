@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Exceptions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;

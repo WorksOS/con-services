@@ -5,7 +5,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models;
-using VSS.TRex.RequestStatistics;
+using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -222,7 +222,7 @@ namespace VSS.TRex.Volumes.Executors
                         RequiresSerialisation = true,
                         SiteModelID = SiteModelID,
                         //LiftBuildSettings := LiftBuildSettings;
-                        CellSize = siteModel.Grid.CellSize,
+                        CellSize = siteModel.CellSize,
                         VolumeType = VolumeType,
                         CutTolerance = CutTolerance,
                         FillTolerance = FillTolerance
@@ -265,12 +265,12 @@ namespace VSS.TRex.Volumes.Executors
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
-                        Log.LogInformation("Summary volume invalid PlanExtents. Possibly no data found");
-
                         if (Aggregator.CoverageArea == 0 && Aggregator.CutFillVolume.CutVolume == 0 && Aggregator.CutFillVolume.FillVolume == 0)
                             ResultStatus = RequestErrorStatus.NoProductionDataFound;
                         else
                             ResultStatus = RequestErrorStatus.InvalidPlanExtents;
+
+                        Log.LogInformation($"Summary volume invalid PlanExtents or no data found: {ResultStatus}");
 
                         return VolumesResult;
                     }

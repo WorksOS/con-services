@@ -1,4 +1,7 @@
 ﻿using System;
+using FluentAssertions;
+using Moq;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -36,8 +39,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(leafSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels);
             Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubGrid(), SubGridTreeConsts.SubGridTreeDimension);
 
-            Assert.Equal((uint)0, leafSubgrid.OriginX);
-            Assert.Equal((uint)0, leafSubgrid.OriginY);
+            Assert.Equal(0U, leafSubgrid.OriginX);
+            Assert.Equal(0U, leafSubgrid.OriginY);
             Assert.Equal("0:0", leafSubgrid.Moniker());
 
             // Does the dirty flag change?
@@ -86,6 +89,35 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact]
+        public void Test_SubGrid_SetOriginPosition_FailWithNoParent()
+        {
+          var leafSubgrid = new SubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels);
+ 
+          Action act = () => leafSubgrid.SetOriginPosition(10, 10);
+
+          act.Should().Throw<ArgumentException>().WithMessage("Cannot set origin position without parent");
+        }
+
+        [Fact]
+        public void Test_SubGrid_SetOriginPosition_FailWithInvalidCellCoordinateInSubgrid()
+        {
+          ISubGrid parentSubgrid = null;
+          ISubGrid leafSubgrid = null;
+
+          SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+          parentSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+
+          leafSubgrid.Parent = parentSubgrid;
+          leafSubgrid.SetOriginPosition(10, 10);
+
+          Action act = () => leafSubgrid.SetOriginPosition(SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension);
+
+          act.Should().Throw<ArgumentException>().WithMessage("Cell X, Y location is not in the valid cell address range for the sub grid");
+        }
+
+    [Fact]
         public void Test_SubGrid_Invalid_GetSubgrid()
         {
             ISubGrid subgrid = null;
@@ -249,21 +281,31 @@ namespace VSS.TRex.Tests.SubGridTrees
             // RemoveFromParent is part of that abstract workflow. At this level, we will test that no exception occurs
             // if the parent relationship is null
 
-            ISubGrid leafSubgrid = null;
-
             SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            var leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
-            try
-            {
-                leafSubgrid.RemoveFromParent();
-                // Good!
-            }
-            catch (Exception)
-            {
-                Assert.True(false,"RemoveFromParent failed with null parent refernec in subgrid");
-            }
+            leafSubgrid.RemoveFromParent();
+            leafSubgrid.Parent.Should().BeNull();
+            // Good!
+        }
+
+        [Fact]
+        public void Test_SubGrid_RemoveFromParent()
+        {
+          // This can't be tested fully as the entire Set/Get subgrid functionality is abstract at this point, and
+          // RemoveFromParent is part of that abstract workflow. At this level, we will test that no exception occurs
+          // if the parent relationship is null
+
+          SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+          var leafSubgrid = new LeafSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+
+          parentSubgrid.SetSubGrid(0, 0, leafSubgrid);
+
+          leafSubgrid.RemoveFromParent();
+          leafSubgrid.Parent.Should().BeNull();
         }
 
         [Fact]
@@ -364,5 +406,94 @@ namespace VSS.TRex.Tests.SubGridTrees
             }
         }
 
+        [Fact]
+        public void Test_SubGrid_SetAbsoluteLevel_FailWithNonNullParent()
+        {
+          SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var child = new NodeSubGrid(tree, null, 3); // create a node to be a child of the root node
+          var parent = new NodeSubGrid(tree, null, 2); // create a node to be a child of the root node
+                                                   // Test setting level for unattached subgrid (even though we set it in the constructor above
+          parent.SetSubGrid(0, 0, child);
+
+          Action act = () => child.SetAbsoluteLevel(3);
+
+          act.Should().Throw<TRexSubGridTreeException>().WithMessage("Nodes referencing parent nodes may not have their level modified");
+        }
+
+        [Fact]
+        public void Test_SubGrid_ToString()
+        {
+          SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+
+          var child = new NodeSubGrid(tree, null, 3); // create a node to be a child of the root node
+          var parent = new NodeSubGrid(tree, null, 2); // create a node to be a child of the root node
+
+          parent.SetSubGrid(0, 0, child);
+
+          child.ToString().Should().Be($"Level:{3}, OriginX:{child.OriginX}, OriginY:{child.OriginY}");
+        }
+
+        [Fact]
+        public void Test_SubGrid_GetOTGLeafSubGridCellIndex()
+        {
+             SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+          
+             var subGrid = new SubGrid(tree, null, 6); 
+          
+             subGrid.GetOTGLeafSubGridCellIndex(0, 0, out byte subGridX, out byte subGridY);
+             subGridX.Should().Be(0);
+             subGridY.Should().Be(0);
+          
+             subGrid.GetOTGLeafSubGridCellIndex(SubGridTreeConsts.SubGridTreeDimensionMinus1, SubGridTreeConsts.SubGridTreeDimensionMinus1, out subGridX, out subGridY);
+             subGridX.Should().Be(SubGridTreeConsts.SubGridTreeDimensionMinus1);
+             subGridY.Should().Be(SubGridTreeConsts.SubGridTreeDimensionMinus1);
+          
+             subGrid.GetOTGLeafSubGridCellIndex(SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension, out subGridX, out subGridY);
+             subGridX.Should().Be(0);
+             subGridY.Should().Be(0);
+        }
+
+        [Fact]
+        public void Test_ConstructPathToCell_WithThreadContention()
+        {
+          var mockSubGridFactory = new Mock<SubGridFactory<NodeSubGrid, LeafSubGrid>>();
+          mockSubGridFactory.Setup(x => x.GetSubGrid(It.IsAny<ISubGridTree>(), It.IsAny<byte>()))
+            .Returns((ISubGridTree tree, byte level) =>
+            {
+              if (level < tree.NumLevels)
+              {
+                var mockSubGrid = new Mock<NodeSubGrid>();
+                mockSubGrid.Object.Owner = tree;
+                mockSubGrid.Object.Level = level;
+
+                int numCalls = 0;
+                mockSubGrid
+                  .Setup(x => x.GetSubGridContainingCell(It.IsAny<uint>(), It.IsAny<uint>()))
+                  .Returns((uint cellX, uint cellY) =>
+                  {
+                    numCalls++;
+                    if (numCalls == 1) return null;
+                    if (numCalls >= 2) return new NodeSubGrid()
+                    {
+                      Owner = tree,
+                      Level = (byte)(level + 1) // Need to create the subgrid at the lower level
+                    }; ;
+
+                    return null; // Should never get here
+                  });
+
+                return mockSubGrid.Object;
+              }
+
+              // We are only creating the path to the leaf, so should not be asked to create a leaf sub grid
+              return null; 
+            });
+
+          // This test creates a tree then simulates thread contention in the ConstructPathToCell to test handling of this scenario
+          var _tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, mockSubGridFactory.Object);         
+          var subGrid = _tree.ConstructPathToCell(0, 0, SubGridPathConstructionType.CreatePathToLeaf);
+          subGrid.Should().NotBeNull();
+        }
     }
 }

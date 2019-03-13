@@ -1,6 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
-using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Draw = System.Drawing;
@@ -9,7 +7,7 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public abstract class ProductionPVMDisplayerBase
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProductionPVMDisplayerBase>();
+    //private static readonly ILogger Log = Logging.Logger.CreateLogger<ProductionPVMDisplayerBase>();
 
     private const int MAX_STEP_SIZE = 10000;
 
@@ -157,7 +155,7 @@ namespace VSS.TRex.Rendering.Displayers
       return true;
     }
 
-    protected virtual void DoRenderCell()
+    private void DoRenderCell()
     {
       Draw.Color colour = DoGetDisplayColour();
 
@@ -168,7 +166,7 @@ namespace VSS.TRex.Rendering.Displayers
 
     // SupportsCellStripRendering enables a displayer to advertise is it capable
     // of rendering cell information in strips
-    protected virtual bool SupportsCellStripRendering() => false;
+    protected abstract bool SupportsCellStripRendering();
 
     // DoGetDisplayColour queries the data at the current cell location and
     // determines the colour that should be displayed there. If there is no value
@@ -220,10 +218,7 @@ namespace VSS.TRex.Rendering.Displayers
 
     private void DoRenderStrip()
     {
-      if (!accumulatingScanLine)
-        return;
-
-      if (cellStripColour == Draw.Color.Empty)
+      if (!accumulatingScanLine || cellStripColour == Draw.Color.Empty)
         return;
 
       MapView.DrawRect(cellStripStartX - stepXIncrementOverTwo,

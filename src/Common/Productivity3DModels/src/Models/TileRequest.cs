@@ -136,6 +136,9 @@ namespace VSS.Productivity3D.Models.Models
     [Required]
     public ushort Height { get; protected set; }
 
+    [JsonIgnore]
+    public bool ExplicitFilters {get; set;}
+
     /// <summary>
     /// Default public constructor.
     /// </summary>
@@ -188,7 +191,8 @@ namespace VSS.Productivity3D.Models.Models
       uint representationalDisplayColor = 0,
       uint cmvDetailsColorNumber = 5,
       uint cmvPercentChangeColorNumber = 6,
-      bool setSummaryDataLayersVisibility = true)
+      bool setSummaryDataLayersVisibility = true,
+      bool explicitFilters = false)
     {
       ProjectId = projectId;
       ProjectUid = projectUid;
@@ -212,6 +216,7 @@ namespace VSS.Productivity3D.Models.Models
       p_cmvDetailsColorNumber = cmvDetailsColorNumber;
       p_cmvPercentChangeColorNumber = cmvPercentChangeColorNumber;
       SetSummaryDataLayersVisibility = setSummaryDataLayersVisibility;
+      ExplicitFilters = explicitFilters;
     }
 
     /// <summary>

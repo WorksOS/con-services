@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -132,6 +132,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       return true;
     }
 
+    public SubGridListener() { }
+
+
     /// <summary>
     /// Constructor accepting a rexTask to pass sub grids into
     /// </summary>
@@ -155,15 +158,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
     }
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      var version = reader.ReadByte();
-
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
     }
   }
 }

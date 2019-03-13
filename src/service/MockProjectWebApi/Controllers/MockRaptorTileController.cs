@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
@@ -34,7 +35,8 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DisplayMode mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] bool ExplicitFilters)
     {
       Console.WriteLine($"GetMockProductionDataTileRaw: {Request.QueryString}");
 
@@ -75,7 +77,7 @@ namespace MockProjectWebApi.Controllers
                   color = Rgba32.Teal;
                   break;
                 case VolumeCalcType.GroundToGround:
-                  color = Rgba32.Navy;
+                  color = ExplicitFilters ? Rgba32.Cornsilk : Rgba32.Navy;
                   break;
               }
               break;
@@ -99,15 +101,15 @@ namespace MockProjectWebApi.Controllers
               break;
           }
           var rect = new RectangleF(x, y, w, h);
-          bitmap.Mutate(ctx => ctx.Fill(color, rect));          
+          bitmap.Mutate(ctx => ctx.Fill(color, rect));
         }
         //else return Empty tile
- 
+
         var bitmapStream = new MemoryStream();
         bitmap.SaveAsPng(bitmapStream);
         //Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
         bitmapStream.Position = 0;
-        return new FileStreamResult(bitmapStream, "image/png");
+        return new FileStreamResult(bitmapStream, ContentTypeConstants.ImagePng);
       }
     }
 
@@ -209,7 +211,7 @@ namespace MockProjectWebApi.Controllers
               }
             }
           };
-        }       
+        }
       }
 
       return new PointsListResult();
@@ -325,7 +327,7 @@ namespace MockProjectWebApi.Controllers
     {
       //Not used at present
       Console.WriteLine($"GetMockAlignmentPoints: {Request.QueryString}");
-      return new AlignmentPointsResult{AlignmentPoints = null};
+      return new AlignmentPointsResult { AlignmentPoints = null };
     }
 
     [Route("api/v2/raptor/alignmentpointslist")]

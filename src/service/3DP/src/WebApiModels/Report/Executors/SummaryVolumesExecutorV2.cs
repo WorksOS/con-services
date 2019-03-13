@@ -11,6 +11,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.TopDesignDescriptor.FileUid,
             request.VolumeCalcType);
 
-          return trexCompactionDataProxy.SendSummaryVolumesRequest(summaryVolumesRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders).Result;
 #if RAPTOR
         }
 
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
         // #68799 - Temporarily revert v2 executor behaviour to match that of v1 by adjusting filter dates on Filter to Filter calculations.
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters && !request.ExplicitFilters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
         }
@@ -80,8 +81,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             baseDesignDescriptor,
             topFilter,
             topDesignDescriptor,
-            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter), (double) request.CutTolerance,
-            (double) request.FillTolerance,
+            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter), (double)request.CutTolerance,
+            (double)request.FillTolerance,
             RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
             out result);
         }

@@ -11,7 +11,7 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_Height : PVMDisplayerBase
   {
     /// <summary>
-    /// Renders Elevationy data as tiles. 
+    /// Renders Elevation data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>

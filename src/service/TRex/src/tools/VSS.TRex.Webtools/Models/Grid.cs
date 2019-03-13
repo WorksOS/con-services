@@ -16,12 +16,12 @@ namespace VSS.TRex.Webtools.Models
     {
       get
       {
-        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(Name);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(Name);
         return ignite != null ? ignite.GetCluster().IsActive() : false;
       }
       set
       {
-        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(Name);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(Name);
         ignite?.GetCluster().SetActive(value);
       }
     }

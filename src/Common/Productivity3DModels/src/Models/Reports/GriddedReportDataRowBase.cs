@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace VSS.Productivity3D.Models.Models.Reports
 {
@@ -64,23 +63,6 @@ namespace VSS.Productivity3D.Models.Models.Reports
       Mdp = reader.ReadInt16();
       PassCount = reader.ReadInt16();
       Temperature = reader.ReadInt16();
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ Northing.GetHashCode();
-        hashCode = (hashCode * 397) ^ Easting.GetHashCode();
-        hashCode = (hashCode * 397) ^ Elevation.GetHashCode();
-        hashCode = (hashCode * 397) ^ CutFill.GetHashCode();
-        hashCode = (hashCode * 397) ^ Cmv.GetHashCode();
-        hashCode = (hashCode * 397) ^ Mdp.GetHashCode();
-        hashCode = (hashCode * 397) ^ PassCount.GetHashCode();
-        hashCode = (hashCode * 397) ^ Temperature.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

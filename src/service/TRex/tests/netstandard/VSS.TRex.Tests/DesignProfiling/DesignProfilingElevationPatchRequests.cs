@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.DesignProfiling
   {
     private ISiteModel NewEmptyModel() => DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
-    private void AddDesignProfilerGridRouting() => DITAGFileAndSubGridRequestsWithIgniteFixture.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     [Fact]
@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       AddDesignProfilerGridRouting();
 
       var siteModel = NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm");
 
       // Get the cell location of the probe position. Note that the request will return the sub grid
       // that contains this cell, so the origin location of the sub grid may not be the same as the cell location
@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.DesignProfiling
         ProjectID = siteModel.ID,
         ReferenceDesignUID = designUid,
         Offset = 0,
-        CellSize = siteModel.Grid.CellSize,
+        CellSize = siteModel.CellSize,
         Filters = new FilterSet(new CombinedFilter()),
         OriginX = cellX,
         OriginY = cellY
@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       if (patchExists)
       {
-        response.Heights.CellSize.Should().Be(siteModel.Grid.CellSize);
+        response.Heights.CellSize.Should().Be(siteModel.CellSize);
         response.Heights.GridDataType.Should().Be(GridDataType.Height);
         response.Heights.Level.Should().Be(siteModel.Grid.NumLevels);
         response.Heights.OriginX.Should().Be((uint) (cellX & ~SubGridTreeConsts.SubGridLocalKeyMask));

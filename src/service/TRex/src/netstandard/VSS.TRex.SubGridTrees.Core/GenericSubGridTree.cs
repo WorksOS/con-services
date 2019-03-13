@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -61,15 +60,8 @@ namespace VSS.TRex.SubGridTrees
     {
       ISubGrid subGrid = ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf);
 
-      if (subGrid == null)
-      {
-        Debug.Assert(false, "Unable to create cell sub grid");
-      }
-      else
-      {
-        subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
-        ((S) subGrid).Items[subGridX, subGridY] = value;
-      }
+      subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
+      ((S) subGrid).Items[subGridX, subGridY] = value;
     }
 
     /// <summary>
@@ -79,19 +71,6 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     /// <returns></returns>
     public virtual T NullCellValue => default(T);
-
-    /// <summary>
-    /// Generic sub grid tree constructor. Accepts standard cell size, number of levels and the 
-    /// factory for creation of new node and leaf sub grids
-    /// </summary>
-    /// <param name="numLevels"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="subGridFactory"></param>
-    public GenericSubGridTree(byte numLevels,
-      double cellSize,
-      ISubGridFactory subGridFactory) : base(numLevels, cellSize, subGridFactory)
-    {
-    }
 
     /// <summary>
     /// Generic sub grid tree constructor. Accepts the standard cell size, number of levels; however,

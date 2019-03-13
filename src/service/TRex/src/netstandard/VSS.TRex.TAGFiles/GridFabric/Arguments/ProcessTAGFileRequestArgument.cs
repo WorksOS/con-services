@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
@@ -35,26 +35,32 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(ProjectID);
       writer.WriteGuid(AssetUID);
 
-      writer.WriteInt(TAGFiles.Count);
-      foreach (var tagFile in TAGFiles)
-        tagFile.ToBinary(writer);
+      writer.WriteInt(TAGFiles?.Count ?? 0);
+      if (TAGFiles != null)
+      {
+        foreach (var tagFile in TAGFiles)
+          tagFile.ToBinary(writer);
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte readVersionNumber = reader.ReadByte();
+      base.FromBinary(reader);
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      ProjectID = reader.ReadGuid() ?? Guid.Empty;
+      AssetUID = reader.ReadGuid() ?? Guid.Empty;
 
       for (int i = 0; i < reader.ReadInt(); i++)
-      {
         TAGFiles.Add(new ProcessTAGFileRequestFileItem(reader));
-      }
     }
   }
 }

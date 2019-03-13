@@ -18,18 +18,24 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Services;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Clients;
 using VSS.Productivity3D.Push.WebAPI;
+using VSS.Productivity3D.Scheduler.Abstractions;
+using VSS.Productivity3D.Scheduler.Proxy;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -107,6 +113,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IDataOceanClient, DataOceanClient>();
+      services.AddTransient<IPegasusClient, PegasusClient>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
       services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
@@ -129,6 +136,7 @@ namespace VSS.MasterData.Project.WebAPI
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
+      services.AddTransient<ImportedFileUpdateService>();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       serviceProvider = services.BuildServiceProvider();

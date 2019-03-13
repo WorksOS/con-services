@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -36,18 +35,12 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellSpatialFilter : CellSpatialFilterModel, ICellSpatialFilter
   {
- 
         /// <summary>
         ///  Spatial cell filter constructor
         /// </summary>
         public CellSpatialFilter()
         {
           Clear();
-        }
-
-        public CellSpatialFilter(IBinaryRawReader reader)
-        {
-            FromBinary(reader);
         }
 
         /// <summary>
@@ -149,26 +142,19 @@ namespace VSS.TRex.Filters
         /// <returns></returns>
         public bool IsCellInSelection(double CellCenterX, double CellCenterY)
         {
-            if (IsSpatial)
-            {
-                return Fence.IncludesPoint(CellCenterX, CellCenterY);
-            }
+          bool result = false;
 
-            if (IsPositional)
-            {
-                if (IsSquare)
-                {
-                    return !(CellCenterX < PositionX - PositionRadius ||
-                             CellCenterX > PositionX + PositionRadius ||
-                             CellCenterY < PositionY - PositionRadius ||
-                             CellCenterY > PositionY + PositionRadius);
-                }
+          if (IsSpatial)
+             result = Fence.IncludesPoint(CellCenterX, CellCenterY);
+          else if (IsPositional)
+          {
+              result = IsSquare
+                ? !(CellCenterX < PositionX - PositionRadius || CellCenterX > PositionX + PositionRadius ||
+                    CellCenterY < PositionY - PositionRadius || CellCenterY > PositionY + PositionRadius)
+                : MathUtilities.Hypot(CellCenterX - PositionX, CellCenterY - PositionY) < PositionRadius;
+          }
 
-                double Distance = MathUtilities.Hypot(CellCenterX - PositionX, CellCenterY - PositionY);
-                return Distance < PositionRadius;
-            }
-
-            return true;
+          return result;
         }
 
         /// <summary>

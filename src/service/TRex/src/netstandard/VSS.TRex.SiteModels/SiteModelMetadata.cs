@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -24,7 +25,9 @@ namespace VSS.TRex.SiteModels
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(VERSION_NUMBER);
+      base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ID);
       writer.WriteLong(CreationDate.ToBinary());
@@ -41,10 +44,9 @@ namespace VSS.TRex.SiteModels
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      byte readVersionNumber = reader.ReadByte();
+      base.FromBinary(reader);
 
-      if (readVersionNumber != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ID = reader.ReadGuid() ?? Guid.Empty;
       CreationDate = DateTime.FromBinary(reader.ReadLong());

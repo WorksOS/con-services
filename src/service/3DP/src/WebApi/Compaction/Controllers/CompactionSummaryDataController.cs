@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -35,8 +36,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionSummaryDataController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
-      : base(configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
+    public CompactionSummaryDataController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+      : base(configStore, fileListProxy, settingsManager, requestFactory)
     { }
 
     /// <summary>
@@ -66,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
               .Build<SummaryCMVExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
               .Process(request) as CMVSummaryResult;
@@ -129,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<SummaryMDPExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as MDPSummaryResult;
@@ -175,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         return Ok(new CompactionPassCountSummaryResult());
       }
-      
+
       var request = await GetPassCountRequest(projectUid, filterUid, filter, isSummary: true);
       request.Validate();
 
@@ -184,12 +185,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<SummaryPassCountsExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
+
         Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(passCountSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
@@ -247,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<SummaryTemperatureExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as TemperatureSummaryResult;
@@ -307,7 +309,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<SummarySpeedExecutor>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SpeedSummaryResult;
@@ -343,6 +345,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project uid.</param>
     /// <param name="baseUid">The uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The uid for the top surface, either a filter or design.</param>
+    /// <param name="explicitFilters">If true this turns off any implicit filter transformations for summary volumes</param>
     [ProjectVerifier]
     [Route("api/v2/volumes/summary")]
     [HttpGet]
@@ -350,7 +353,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] ISummaryDataHelper summaryDataHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid baseUid,
-      [FromQuery] Guid topUid)
+      [FromQuery] Guid topUid,
+      [FromQuery] bool explicitFilters = false)
     {
       Log.LogInformation("GetSummaryVolumes: " + Request.QueryString);
 
@@ -397,7 +401,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
       }
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType, explicitFilters);
 
       CompactionVolumesSummaryResult volumesSummaryResult;
 
@@ -406,7 +410,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory
                      .Build<SummaryVolumesExecutorV2>(LoggerFactory,
 #if RAPTOR
-            RaptorClient, 
+            RaptorClient,
 #endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SummaryVolumesResult;
@@ -429,7 +433,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         Log.LogInformation("GetSummaryVolumes returned: " + Response.StatusCode);
       }
 
-      Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(volumesSummaryResult));
+      if (Log.IsTraceEnabled())
+        Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(volumesSummaryResult));
 
       return Ok(volumesSummaryResult);
     }

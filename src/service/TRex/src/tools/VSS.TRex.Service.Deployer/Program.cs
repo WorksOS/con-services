@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -22,8 +21,7 @@ namespace VSS.TRex.Service.Deployer
     {
       DIBuilder.New()
         .AddLogging()
-        .Add(x => x.AddTransient<Func<string, IIgnite>>(factory => Ignition.TryGetIgnite))
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Build()
         .Add(x => x.AddSingleton(new MutableClientServer("ServiceDeployer")))
         .Add(x => x.AddSingleton(new ImmutableClientServer("ServiceDeployer")))

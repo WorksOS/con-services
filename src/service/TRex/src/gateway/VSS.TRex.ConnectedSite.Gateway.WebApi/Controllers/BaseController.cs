@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -56,8 +57,8 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
       try
       {
         result = action.Invoke();
-        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-
+        if (Log.IsTraceEnabled())
+          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException)
       {
@@ -84,8 +85,8 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
       try
       {
         result = await action.Invoke();
-        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-
+        if (Log.IsTraceEnabled())
+          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
       }
       catch (ServiceException)
       {

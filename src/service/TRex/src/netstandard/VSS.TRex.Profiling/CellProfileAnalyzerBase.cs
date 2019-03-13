@@ -148,13 +148,13 @@ namespace VSS.TRex.Profiling
       // Instantiate a single instance of the argument object for the surface elevation patch requests to obtain composite
       // elevation sub grids and populate it with the common elements for this set of sub grids being requested.
       SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
-      {
-        SiteModelID = SiteModel.ID,
-        CellSize = SiteModel.Grid.CellSize,
-        IncludedSurveyedSurfaces = FilteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0],
-        SurveyedSurfacePatchType = SurveyedSurfacePatchType.CompositeElevations,
-        ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
-      };
+      (siteModelID:  SiteModel.ID,
+       oTGCellBottomLeftX: uint.MaxValue,
+       oTGCellBottomLeftY: uint.MaxValue,
+       cellSize: SiteModel.CellSize,
+       includedSurveyedSurfaces: FilteredSurveyedSurfaces,
+       surveyedSurfacePatchType: SurveyedSurfacePatchType.CompositeElevations,
+       processingMap: new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));
 
       var _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
       var _context = _cache?.LocateOrCreateContext(SiteModel.ID, SurfaceElevationPatchArg.CacheFingerprint());

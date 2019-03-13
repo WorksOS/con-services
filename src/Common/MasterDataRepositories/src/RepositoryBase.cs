@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 
 namespace VSS.MasterData.Repositories
 {
@@ -53,7 +54,8 @@ namespace VSS.MasterData.Repositories
           using (var connection = new MySqlConnection(_connectionString))
           {
             connection.Open();
-            Log.LogTrace("Repository PollySync: db open (with connection reuse) was successfull");
+            if (Log.IsTraceEnabled())
+              Log.LogTrace("Repository PollySync: db open (with connection reuse) was successfull");
             result = body(connection);
             connection.Close();
             return result;
@@ -91,7 +93,8 @@ namespace VSS.MasterData.Repositories
           using (var connection = new MySqlConnection(_connectionString))
           {
             await connection.OpenAsync();
-            Log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successfull");
+            if (Log.IsTraceEnabled())
+              Log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successfull");
             result = await body(connection);
             connection.Close();
             return result;

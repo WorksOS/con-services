@@ -50,12 +50,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (useTrexGateway)
         {
 #endif
-        	var speedSummaryRequest = new SpeedSummaryRequest(
+          var speedSummaryRequest = new SpeedSummaryRequest(
             request.ProjectUid,
             request.Filter,
             request.LiftBuildSettings.MachineSpeedTarget);
 
-          return trexCompactionDataProxy.SendSpeedSummaryRequest(speedSummaryRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<SpeedSummaryResult, SpeedSummaryRequest>(speedSummaryRequest, "/speed/summary", customHeaders).Result;
 #if RAPTOR
         }
 

@@ -1,28 +1,57 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
   public static class PVMDisplayerFactory
   {
-    public static PVMDisplayerBase GetDisplayer(DisplayMode Mode /*, FICOptions*/)
+    public static PVMDisplayerBase GetDisplayer(DisplayMode mode /*, FICOptions*/)
     {
-      switch (Mode)
+      PVMDisplayerBase displayer = null;
+
+      switch (mode)
       {
-        case DisplayMode.Height: return new PVMDisplayer_Height();
-        case DisplayMode.MachineSpeed: return new PVMDisplayer_MachineSpeed();
-        case DisplayMode.TargetSpeedSummary: return new PVMDisplayer_MachineSpeedSummary();
-        case DisplayMode.CCV: return new PVMDisplayer_CMV();
-        case DisplayMode.MDP: return new PVMDisplayer_MDP();
-        case DisplayMode.PassCountSummary: return new PVMDisplayer_PassCountSummary();
-        case DisplayMode.TemperatureSummary: return new PVMDisplayer_TemperatureSummary();
-        case DisplayMode.CutFill: return new PVMDisplayer_CutFill();
+        case DisplayMode.Height:
+          displayer = new PVMDisplayer_Height();
+          break;
+        case DisplayMode.MachineSpeed:
+          displayer = new PVMDisplayer_MachineSpeed();
+          break;
+        case DisplayMode.TargetSpeedSummary:
+          displayer = new PVMDisplayer_MachineSpeedSummary();
+          break;
+        case DisplayMode.CCV:
+          displayer = new PVMDisplayer_CMV();
+          break;
+        case DisplayMode.MDP:
+          displayer = new PVMDisplayer_MDP();
+          break;
+        case DisplayMode.PassCountSummary:
+          displayer = new PVMDisplayer_PassCountSummary();
+          break;
+        case DisplayMode.TemperatureSummary:
+          displayer = new PVMDisplayer_TemperatureSummary();
+          break;
+        case DisplayMode.CutFill:
+          displayer = new PVMDisplayer_CutFill();
+          break;
         case DisplayMode.CCA:
-        case DisplayMode.CCASummary: return new PVMDisplayer_CCA(Mode);
+        case DisplayMode.CCASummary:
+          if (mode != DisplayMode.CCA && mode != DisplayMode.CCASummary)
+            throw new InvalidEnumArgumentException("Unsupported DisplayMode type for CCA Summary.");
+
+          displayer = new PVMDisplayer_CCA();
+          break;
+
         default:
-          Debug.Assert(false, $"Unknown display mode to create a displayer for: {Mode}");
-          return null;
+          throw new TRexException($"Unknown display mode to create a displayer for: {mode}");
       }
+
+      displayer.DisplayMode = mode;
+
+      return displayer;
 
       // Complete legacy implementation is below
       /*

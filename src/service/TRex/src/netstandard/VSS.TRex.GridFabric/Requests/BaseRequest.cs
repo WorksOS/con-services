@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using VSS.TRex.Exceptions;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Requests
@@ -7,15 +8,8 @@ namespace VSS.TRex.GridFabric.Requests
   /// <summary>
   /// The base class for requests. This provides common aspects such as the injected Ignite instance
   /// </summary>
-  public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>
+  public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass, IBaseRequest<TArgument, TResponse>, IBaseRequest
   {
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public BaseRequest()
-    {
-    }
-
     /// <summary>
     /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
     /// </summary>

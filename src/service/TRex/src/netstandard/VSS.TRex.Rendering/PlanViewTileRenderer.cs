@@ -137,6 +137,9 @@ namespace VSS.TRex.Rendering
         // Obtain the display responsible for rendering the thematic information for this mode
         Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
+        // Create and assign the colour pallete logic for this mode to the displayer
+        Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
+
         if (Displayer == null)
           return RequestErrorStatus.UnsupportedDisplayType;
 
@@ -145,10 +148,6 @@ namespace VSS.TRex.Rendering
         {
           SquareAspect = IsWhollyInTermsOfGridProjection
         };
-
-        // Create and assign the colour pallete logic for this mode to the displayer
-        IPlanViewPalette Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
-        Displayer.Palette = Palette;
 
         // Set the world coordinate bounds of the display surface to be rendered on
         Displayer.MapView.SetBounds(NPixelsX, NPixelsY);

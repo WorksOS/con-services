@@ -16,6 +16,8 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -31,9 +33,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #endif
     private UserPreferenceData userPreferences;
     private ProjectData projectDescriptor;
+    private string[] machineNameList = null;
 
     /// <summary>
-    /// Parameterless constructor is required to support factory create function in <see cref="WebApi"/> project.
+    /// Parameter-less constructor is required to support factory create function in <see cref="WebApi"/> project.
     /// </summary>
     public ExportRequestHelper()
     { }
@@ -64,6 +67,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return this;
     }
 
+    public string[] GetMachineNameList()
+    {
+      return machineNameList ?? new string[0];
+    }
+
     /// <summary>
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
@@ -79,14 +87,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
-#if !RAPTOR
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#else
+      // todo once the requirement for RAPTOR build to be able to call TRex endpoints is removed
+      //      this whole tangle can be unraveled
+#if RAPTOR
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
+      machineNameList = new string[0];
 
       if (exportType == ExportTypes.SurfaceExport)
       {
@@ -101,8 +109,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         {
           if (!string.IsNullOrEmpty(machineNames) && machineNames != "All")
           {
-            var machineNamesArray = machineNames.Split(',');
-            machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
+            machineNameList = machineNames.Split(',');
+            machineDetails = machineDetails.Where(machineDetail => machineNameList.Contains(machineDetail.Name)).ToArray();
           }
 
           machineList = machineDetails.Select(m => new TMachine { AssetID = m.ID, MachineName = m.Name, SerialNo = "" }).ToArray();
@@ -134,6 +142,38 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         outputType,
         RaptorConverters.convertMachines(machineList),
+        exportType == ExportTypes.SurfaceExport,
+        fileName,
+        exportType,
+        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));
+#else
+      if (exportType == ExportTypes.SurfaceExport)
+      {
+        if (!string.IsNullOrEmpty(machineNames) && machineNames != "All")
+        {
+          machineNameList = machineNames.Split(',');
+        }
+      }
+      return new ExportReport(
+        ProjectId,
+        ProjectUid,
+        null,
+        Filter,
+        -1,
+        null,
+        false,
+        null,
+        coordType,
+        startUtc ?? DateTime.MinValue,
+        endUtc ?? DateTime.MinValue,
+        tolerance,
+        false,
+        restrictSize,
+        rawData,
+        null,
+        false,
+        outputType,
+        null,
         exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
@@ -171,7 +211,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
 
       var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
-      
+
       if (languageIndex == -1)
       {
         languageIndex = (int)LanguageEnum.enUS;
@@ -194,6 +234,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
+#endif
 
     /// <summary>
     /// Converts a set user preferences in the common format.
@@ -232,7 +273,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         (int)userPref.TemperatureUnit.TemperatureUnitType(),
         Preferences.DefaultAssetLabelTypeId);
     }
-
-#endif
   }
 }

@@ -6,7 +6,7 @@ namespace VSS.TRex.Tests.Utility
         public class BitFlagHelperTests
     {
         [Fact]
-        public void Test_BitFlagHelperTests_BitOn()
+        public void Test_BitFlagHelperTests_BitOn_byte()
         {
             byte value = 0;
             value =  BitFlagHelper.BitOn(value, 0);
@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.Utility
         }
 
         [Fact]
-        public void Test_BitFlagHelperTests_BitOff()
+        public void Test_BitFlagHelperTests_BitOff_byte()
         {
             byte value = 1;
             value = BitFlagHelper.BitOff(value, 0);
@@ -24,6 +24,24 @@ namespace VSS.TRex.Tests.Utility
         }
 
         [Fact]
+        public void Test_BitFlagHelperTests_BitOn_ushort()
+        {
+          ushort value = 0;
+          value = BitFlagHelper.BitOn(value, 0);
+
+          Assert.Equal(1, value);
+        }
+
+        [Fact]
+        public void Test_BitFlagHelperTests_BitOff_ushort()
+        {
+          ushort value = 1;
+          value = BitFlagHelper.BitOff(value, 0);
+
+          Assert.Equal(0, value);
+        }
+
+    [Fact]
         public void Test_BitFlagHelperTests_IsBitOff()
         {
             byte value = 0;

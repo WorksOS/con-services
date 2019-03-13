@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
 #endif
           var responseData = trexCompactionDataProxy
-            .SendStationOffsetReportRequest(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), customHeaders).Result;
+            .SendDataPostRequestWithStreamResponse(AutoMapperUtility.Automapper.Map<CompactionReportStationOffsetTRexRequest>(request), "/report/stationoffset", customHeaders).Result;
 
           return responseData.Length > 0
             ? ConvertTRexStationOffsetResult(request, responseData)
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
         request.ProjectId ?? -1,
-        (int) CompactionReportType.StationOffset,
+        (int)CompactionReportType.StationOffset,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataReport),
         userPreferences,
@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.ReportMDP,
         request.ReportPassCount,
         request.ReportTemperature,
-        (int) GridReportOption.Unused,
+        (int)GridReportOption.Unused,
         0, 0, 0, 0, 0, 0, 0, // Northings, Eastings and Direction values are not used on Station Offset report.
         filterSettings,
         RaptorConverters.ConvertLift(request.LiftBuildSettings, filterSettings.LayerMethod),

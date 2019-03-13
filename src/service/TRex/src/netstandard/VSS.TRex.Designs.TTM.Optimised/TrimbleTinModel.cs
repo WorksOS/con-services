@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 
 namespace VSS.TRex.Designs.TTM.Optimised
@@ -9,12 +10,12 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// <summary>
     /// The full set of vertices that make up this TIN model
     /// </summary>
-    public TriVertices Vertices { get; set; } = new TriVertices();
+    public TriVertices Vertices { get; } = new TriVertices();
 
     /// <summary>
     /// The full set of triangles that make up this TIN model
     /// </summary>
-    public Triangles Triangles { get; set; } = new Triangles();
+    public Triangles Triangles { get; } = new Triangles();
 
     /// <summary>
     /// The set of triangles that comprise the edge of the TIN
@@ -32,10 +33,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
     public TTMHeader Header = TTMHeader.NewHeader();
 
     public string ModelName { get; set; }
-
-    public TrimbleTINModel()
-    {
-    }
 
     /// <summary>
     /// Reads a TrimbleTINModel using the provided reader
@@ -65,9 +62,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
           throw new TTMFileReadException($"TTM_Optimized.Read(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTM_MAJOR_VERSION}: {Consts.TTM_MINOR_VERSION}");
         }
 
-        // ModelName = (String)(InternalNameToANSIString(Header.DTMModelInternalName));
-        // Not handled for now
-        ModelName = "Reading not implemented";
+        ModelName = ASCIIEncoding.ASCII.GetString(Header.DTMModelInternalName).TrimEnd(new[] { '\0' });
 
         LoadErrMsg = "Error reading vertices";
         reader.BaseStream.Position = Header.StartOffsetOfVertices;
@@ -102,7 +97,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="bytes"></param>
-    public void LoadFromStream(Stream stream, byte [] bytes)
+    private void LoadFromStream(Stream stream, byte [] bytes)
     {
       using (BinaryReader reader = new BinaryReader(stream))
       {
@@ -130,9 +125,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       //}
 
       if (ModelName.Length == 0)
-      {
         ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
-      }
     }
   }
 }

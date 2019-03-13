@@ -26,7 +26,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
-    public VolumeComputationType VolumeType = VolumeComputationType.None;
+    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -57,7 +57,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteByte(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteByte((byte)ProfileStyle);
       writer.WriteByte((byte)ProfileTypeRequired);
@@ -69,8 +69,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
 
-      writer.WriteInt((int)VolumeType);
-
+      writer.WriteInt((int) VolumeType);
     }
 
     /// <summary>
@@ -81,9 +80,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
-      var version = reader.ReadByte();
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProfileStyle = (ProfileStyle) reader.ReadByte();
       ProfileTypeRequired = (GridDataType)reader.ReadByte();

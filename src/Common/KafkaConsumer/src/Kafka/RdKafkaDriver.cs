@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.Log4NetExtensions;
 
 namespace VSS.KafkaConsumer.Kafka
 {
@@ -42,7 +43,8 @@ namespace VSS.KafkaConsumer.Kafka
       }
 
       var committedOffsets = rdConsumer.Commit(lastValidResult);
-      log?.LogTrace($"Committed number of offsets {lastValidResult}");
+      if (log?.IsTraceEnabled() ?? false)
+        log?.LogTrace($"Committed number of offsets {lastValidResult}");
 
       return committedOffsets;
     }
@@ -60,12 +62,17 @@ namespace VSS.KafkaConsumer.Kafka
 
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
-        log?.LogTrace($"Polling with retries {protectionCounter}");
-        log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription[0]}");
+        if (log?.IsTraceEnabled() ?? false)
+        {
+          log?.LogTrace($"Polling with retries {protectionCounter}");
+          log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription[0]}");
+        }
+
         try
         {
           var result = rdConsumer.Consume(timeout);
-          log?.LogTrace($"Polled with the OK result {result?.Headers} and value {result?.Value?.Length}");
+          if (log?.IsTraceEnabled() ?? false)
+            log?.LogTrace($"Polled with the OK result {result?.Headers} and value {result?.Value?.Length}");
           if (result?.Value != null)
           {
             payloads.Add(result.Value);
@@ -74,7 +81,8 @@ namespace VSS.KafkaConsumer.Kafka
         }
         catch (ConsumeException e)
         {
-          log?.LogTrace($"Polled with the result {e.Message}");
+          if (log?.IsTraceEnabled() ?? false)
+            log?.LogTrace($"Polled with the result {e.Message}");
         }
         finally
         {
@@ -82,8 +90,9 @@ namespace VSS.KafkaConsumer.Kafka
         }
       }
 
-      log?.LogTrace(
-        $"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
+      if (log?.IsTraceEnabled() ?? false)
+        log?.LogTrace(
+          $"Returning {payloads.Count} records with offset {lastValidResult?.Offset ?? -1} and partition {lastValidResult?.Partition ?? -1}");
       return payloads.Count > 0
         ? new Message(payloads, Error.NO_ERROR, lastValidResult?.Offset ?? -1, lastValidResult?.Partition ?? -1)
         : new Message(payloads, Error.NO_DATA);
@@ -106,8 +115,9 @@ namespace VSS.KafkaConsumer.Kafka
       if (configurationStore.GetValueInt("KAFKA_REQUEST_TIMEOUT") > -1)
         requestTimeout = configurationStore.GetValueInt("KAFKA_REQUEST_TIMEOUT");
 
-      log?.LogTrace(
-        $"InitConsumer: KAFKA_GROUP_NAME:{ConsumerGroup}  KAFKA_AUTO_COMMIT: {EnableAutoCommit}  KAFKA_OFFSET: {OffsetReset}  KAFKA_URI: {Uri}  KAFKA_PORT: {Port} KAFKA_CONSUMER_SESSION_TIMEOUT:{sessionTimeout}  KAFKA_REQUEST_TIMEOUT: {requestTimeout}");
+      if (log?.IsTraceEnabled() ?? false)
+        log?.LogTrace(
+          $"InitConsumer: KAFKA_GROUP_NAME:{ConsumerGroup}  KAFKA_AUTO_COMMIT: {EnableAutoCommit}  KAFKA_OFFSET: {OffsetReset}  KAFKA_URI: {Uri}  KAFKA_PORT: {Port} KAFKA_CONSUMER_SESSION_TIMEOUT:{sessionTimeout}  KAFKA_REQUEST_TIMEOUT: {requestTimeout}");
 
       consumerConfig = new Dictionary<string, string>
       {
@@ -137,7 +147,8 @@ namespace VSS.KafkaConsumer.Kafka
       if (configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT") > -1)
         sessionTimeout = configurationStore.GetValueInt("KAFKA_PRODUCER_SESSION_TIMEOUT");
 
-      log?.LogTrace($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
+      if (log?.IsTraceEnabled() ?? false)
+        log?.LogTrace($"InitProducer: KAFKA_URI:{Uri}  KAFKA_PORT: {Port}  KAFKA_PRODUCER_SESSION_TIMEOUT: {sessionTimeout}");
 
       producerConfig = new Dictionary<string, string>
       {

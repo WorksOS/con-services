@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var pcDetailsRequest = new PassCountDetailsRequest(request.ProjectUid, request.Filter, request.passCountSettings.passCounts);
-          return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
+          return trexCompactionDataProxy.SendDataPostRequest<PassCountDetailedResult, PassCountDetailsRequest>(pcDetailsRequest, "/passcounts/details", customHeaders).Result;
 #if RAPTOR
         }
 
