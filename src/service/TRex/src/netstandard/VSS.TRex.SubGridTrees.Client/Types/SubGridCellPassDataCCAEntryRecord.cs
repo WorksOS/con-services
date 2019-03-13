@@ -29,8 +29,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// </summary>
     public bool IsDecoupled
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, CCA_DECOUPLED_BIT_FLAG); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, CCA_DECOUPLED_BIT_FLAG, value); }
+      get => BitFlagHelper.IsBitOn(CellPassFlags, CCA_DECOUPLED_BIT_FLAG); 
+      set => BitFlagHelper.SetBit(ref CellPassFlags, CCA_DECOUPLED_BIT_FLAG, value); 
     }
 
     /// <summary>
@@ -38,8 +38,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// </summary>
     public bool IsUndercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, CCA_UNDERCOMPACTED_BIT_FLAG); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, CCA_UNDERCOMPACTED_BIT_FLAG, value); }
+      get => BitFlagHelper.IsBitOn(CellPassFlags, CCA_UNDERCOMPACTED_BIT_FLAG); 
+      set => BitFlagHelper.SetBit(ref CellPassFlags, CCA_UNDERCOMPACTED_BIT_FLAG, value); 
     }
 
     /// <summary>
@@ -47,8 +47,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// </summary>
     public bool IsTooThick
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, CCA_TOO_THICK_BIT_FLAG); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, CCA_TOO_THICK_BIT_FLAG, value); }
+      get => BitFlagHelper.IsBitOn(CellPassFlags, CCA_TOO_THICK_BIT_FLAG); 
+      set => BitFlagHelper.SetBit(ref CellPassFlags, CCA_TOO_THICK_BIT_FLAG, value); 
     }
 
     /// <summary>
@@ -56,8 +56,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// </summary>
     public bool IsTopLayerTooThick
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, CCA_TOP_LAYER_TOO_THICK_BIT_FLAG); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, CCA_TOP_LAYER_TOO_THICK_BIT_FLAG, value); }
+      get => BitFlagHelper.IsBitOn(CellPassFlags, CCA_TOP_LAYER_TOO_THICK_BIT_FLAG); 
+      set => BitFlagHelper.SetBit(ref CellPassFlags, CCA_TOP_LAYER_TOO_THICK_BIT_FLAG, value); 
     }
 
     /// <summary>
@@ -65,8 +65,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// </summary>
     public bool IsTopLayerUndercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, CCA_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, CCA_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG, value); }
+      get => BitFlagHelper.IsBitOn(CellPassFlags, CCA_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG); 
+      set => BitFlagHelper.SetBit(ref CellPassFlags, CCA_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG, value); 
     }
 
     /// <summary>
@@ -74,8 +74,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// </summary>
     public bool IsOvercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, CCA_OVERCOMPACTED_BIT_FLAG); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, CCA_OVERCOMPACTED_BIT_FLAG, value); }
+      get => BitFlagHelper.IsBitOn(CellPassFlags, CCA_OVERCOMPACTED_BIT_FLAG); 
+      set => BitFlagHelper.SetBit(ref CellPassFlags, CCA_OVERCOMPACTED_BIT_FLAG, value); 
     }
     #endregion
 

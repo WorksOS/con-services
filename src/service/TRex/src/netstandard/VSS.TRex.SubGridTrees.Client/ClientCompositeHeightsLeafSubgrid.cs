@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientCompositeHeightsLeafSubgrid : GenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>
   {
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientCompositeHeightsLeafSubgrid()
     {
@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom su bgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientCompositeHeightsLeafSubgrid()
@@ -35,6 +35,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
     /// </summary>
@@ -48,6 +49,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     /// <summary>
     /// Determines if the height at the cell location is null or not.
@@ -151,26 +153,31 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Assign cell information from a previously cached result held in the general subgrid result cache
-    /// using the supplied map to control which cells from the caches subgrid should be copied into this
+    /// Assign cell information from a previously cached result held in the general sub grid result cache
+    /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
     public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
     {
-      // Composite height subgrids don't define a caching behaviour
+      // Composite height sub grids don't define a caching behaviour
     }
 
     /// <summary>
-    /// Assign cell information from a previously cached result held in the general subgrid result cache
-    /// using the supplied map to control which cells from the caches subgrid should be copied into this
+    /// Assign cell information from a previously cached result held in the general sub grid result cache
+    /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
     /// <param name="map"></param>
     public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
     {
-      // Composite height subgrids don't define a caching behaviour
+      // Composite height sub grids don't define a caching behaviour
+    }
+
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
+    {
+      // Composite height sub grids don't define a filter value assignment behaviour
     }
   }
 }

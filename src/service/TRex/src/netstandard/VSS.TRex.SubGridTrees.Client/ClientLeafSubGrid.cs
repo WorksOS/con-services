@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Events.Models;
@@ -21,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// retrieved from the server.
     /// </summary>
     public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriterBuffered
-  {
+    {
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
         /// </summary>
@@ -144,10 +143,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <param name="context"></param>
-        public virtual void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
-        {
-            Debug.Assert(false, "{0}.AssignFilteredValue may not be called directly. No need to assign value for entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
-        }
+        public abstract void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context);
 
         /// <summary>
         /// Determine if the value proposed for assignation to a cell in this client leaf sub grid is null with respect
