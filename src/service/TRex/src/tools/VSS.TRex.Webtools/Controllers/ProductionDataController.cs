@@ -12,6 +12,8 @@ using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Analytics.ElevationStatistics;
+using VSS.TRex.Analytics.ElevationStatistics.GridFabric;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.PassCountStatistics;
@@ -723,6 +725,68 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
+    /// Gets production data Cut/Fill statistics.
+    /// </summary>
+    /// <param name="siteModelID">Grid to return the data from.</param>
+    /// <returns></returns>
+    [HttpGet("elevationrange/{siteModelID}")]
+    public JsonResult GetElevationRange(string siteModelID)
+    {
+      string resultToReturn;
+
+      if (!Guid.TryParse(siteModelID, out Guid UID))
+        resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
+      else
+      {
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(UID, false);
+
+        if (siteModel == null)
+          resultToReturn = $"<b>Site model {UID} is unavailable</b>";
+        else
+        {
+          Stopwatch sw = new Stopwatch();
+          sw.Start();
+
+          try
+          {
+            var operation = new ElevationStatisticsOperation();
+            var result = operation.Execute(new ElevationStatisticsArgument()
+            {
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }
+            });
+
+            if (result != null)
+            {
+              var resultString = $"<b>Elevation Statistics Result (in {sw.Elapsed}) :</b><br/>";
+              resultString += "<b>================================================</b><br/>";
+              resultString += $"<b>Minimum Elevation:</b> {result.MinElevation}<br/>";
+              resultString += $"<b>Maximum Elevation:</b> {result.MaxElevation}<br/>";
+              resultString += $"<b>Coverage Area:</b> {result.CoverageArea}<br/>";
+              resultString += "<b>Bounding Extents:</b><br/>";
+              resultString += $"<b>Minimum X:</b> {result.BoundingExtents.MinX}<br/>";
+              resultString += $"<b>Minimum Y:</b> {result.BoundingExtents.MinY}<br/>";
+              resultString += $"<b>Minimum Z:</b> {result.BoundingExtents.MinZ}<br/>";
+              resultString += $"<b>Maximum X:</b> {result.BoundingExtents.MaxX}<br/>";
+              resultString += $"<b>Maximum Y:</b> {result.BoundingExtents.MaxY}<br/>";
+              resultString += $"<b>Maximum Z:</b> {result.BoundingExtents.MaxZ}<br/>";
+
+              resultToReturn = resultString;
+            }
+            else
+              resultToReturn = "<b>No result</b>";
+          }
+          finally
+          {
+            sw.Stop();
+          }
+        }
+      }
+
+      return new JsonResult(resultToReturn);
+    }
+
+    /// <summary>
     /// Retrieves the list of available production data request types.
     /// </summary>
     /// <returns></returns>
@@ -742,6 +806,7 @@ namespace VSS.TRex.Webtools.Controllers
           (DisplayMode.TemperatureSummary, "Temperature Summary"),
           (DisplayMode.TargetSpeedSummary, "Machine Speed Summary"),
           (DisplayMode.CutFill, "Cut/Fill Statistics"),
+          ((DisplayMode)Enum.GetNames(typeof(DisplayMode)).Length, "Elevation Range")
         });
     }
   }

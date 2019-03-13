@@ -87,7 +87,9 @@ namespace VSS.TRex.Analytics.ElevationStatistics.GridFabric
       writer.WriteInt(CellsUsed);
       writer.WriteInt(CellsScanned);
 
-      BoundingExtents.ToBinary(writer);
+      writer.WriteBoolean(BoundingExtents != null);
+
+      BoundingExtents?.ToBinary(writer);
     }
 
     /// <summary>
@@ -104,7 +106,11 @@ namespace VSS.TRex.Analytics.ElevationStatistics.GridFabric
       CellsUsed = reader.ReadInt();
       CellsScanned = reader.ReadInt();
 
-      BoundingExtents.FromBinary(reader);
+      if (reader.ReadBoolean())
+      {
+        BoundingExtents = new BoundingWorldExtent3D();
+        BoundingExtents.FromBinary(reader);
+      }
     }
 
     public ElevationStatisticsResult ConstructResult()

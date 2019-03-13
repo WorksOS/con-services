@@ -74,5 +74,7 @@ export var DisplayModeType;
     DisplayModeType[DisplayModeType["Terrain3D"] = 31] = "Terrain3D";
     // 3D design for map
     DisplayModeType[DisplayModeType["Design3D"] = 32] = "Design3D";
+    // Type Count
+    DisplayModeType[DisplayModeType["Count"] = 33] = "Count";
 })(DisplayModeType || (DisplayModeType = {}));
 //# sourceMappingURL=fetch-data-model.js.map
