@@ -20,13 +20,12 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!Enum.IsDefined(typeof(GPSMode), (byte)value))
-            {
-                return false;
-            }
+          bool result = Enum.IsDefined(typeof(GPSMode), (byte) value);
 
-            valueSink.SetGPSMode((GPSMode)value);
-            return true;
+          if (result)
+            valueSink.SetGPSMode((GPSMode) value);
+
+          return result;
         }
     }
 }
