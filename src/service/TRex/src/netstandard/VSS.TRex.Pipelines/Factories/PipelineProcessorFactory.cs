@@ -31,10 +31,8 @@ namespace VSS.TRex.Pipelines.Factories
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    /// <param name="siteModel"></param>
     public IPipelineProcessor NewInstance(Guid requestDescriptor,
       Guid dataModelID,
-      ISiteModel siteModel,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
@@ -47,7 +45,7 @@ namespace VSS.TRex.Pipelines.Factories
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       var pipelineProcessor = NewInstanceNoBuild
-        (requestDescriptor, dataModelID, siteModel, gridDataType, response, filters, cutFillDesignID, 
+        (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesignID, 
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction);
 
@@ -76,10 +74,8 @@ namespace VSS.TRex.Pipelines.Factories
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    /// <param name="siteModel"></param>
     public IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
       Guid dataModelID,
-      ISiteModel siteModel,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
@@ -92,7 +88,7 @@ namespace VSS.TRex.Pipelines.Factories
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       return new PipelineProcessor
-        (requestDescriptor, dataModelID, siteModel, gridDataType, response, filters, cutFillDesignID,
+        (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesignID,
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction);
     }

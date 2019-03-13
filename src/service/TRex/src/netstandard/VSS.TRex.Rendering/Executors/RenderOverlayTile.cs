@@ -507,7 +507,6 @@ namespace VSS.TRex.Rendering.Executors
         IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
-          siteModel: SiteModel,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
           response: new SubGridsPipelinedResponseBase(),
           cutFillDesignID: CutFillDesignID,
