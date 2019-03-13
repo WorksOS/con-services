@@ -6,7 +6,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Factories
@@ -52,7 +51,7 @@ namespace VSS.TRex.Pipelines.Factories
       if (!pipelineProcessor.Build())
       {
         Log.LogError($"Failed to build pipeline processor for request to model {dataModelID}");
-        return null;
+        pipelineProcessor = null;
       }
 
       return pipelineProcessor;
