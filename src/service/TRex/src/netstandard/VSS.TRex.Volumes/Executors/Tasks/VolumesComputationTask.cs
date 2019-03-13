@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -37,22 +38,27 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         {
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
-            if (!base.TransferResponse(response))
-                return false;
+            bool result = !base.TransferResponse(response);
 
-            if (Aggregator == null)
-                throw new ArgumentException("Aggregator not defined in SimpleVolumesComputationTask");
-
-            if (!(response is IClientLeafSubGrid[][]))
+            if (result)
             {
+              if (Aggregator == null)
+                throw new TRexException("Aggregator not defined in SimpleVolumesComputationTask");
+
+              if (!(response is IClientLeafSubGrid[][]))
+              {
                 Log.LogError($"Response is not a IClientLeafSubGrid[][], --> {response}");
-                return false;
+                result = false;
+              }
+
+              if (result)
+              {
+                // Include this sub grid result into the aggregated volumes result
+                Aggregator.ProcessSubGridResult(response as IClientLeafSubGrid[][]);
+              }
             }
 
-            // Include this sub grid result into the aggregated volumes result
-            Aggregator.ProcessSubGridResult(response as IClientLeafSubGrid[][]);
-
-            return true;
+            return result;
         }
     }
 }
