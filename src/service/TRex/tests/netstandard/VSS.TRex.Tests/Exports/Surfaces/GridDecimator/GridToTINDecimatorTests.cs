@@ -1,4 +1,7 @@
-﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
+﻿using System;
+using FluentAssertions;
+using VSS.TRex.Designs.TTM;
+using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
@@ -48,6 +51,11 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         bool result = decimator.BuildMesh();
 
         Assert.False(result, $"Failed to fail to build mesh from empty data store with fault code {decimator.BuildMeshFaultCode}");
+
+        decimator.GetTIN().Triangles.Count.Should().Be(0);
+        decimator.GetTIN().Vertices.Count.Should().Be(0);
+        decimator.GetTIN().Edges.Count.Should().Be(0);
+        decimator.GetTIN().StartPoints.Count.Should().Be(0);
       }
 
       [Fact]
@@ -140,33 +148,36 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       [Fact]
       public void GridToTINDecimatorTests_BuildMesh_GetTIN()
       {
-        DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
+        var dataStore = new DecimationElevationSubGridTree();
 
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + x, SubGridTreeConsts.DefaultIndexOriginOffset + y] = 100.0f);
+        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+        {
+            dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + x, SubGridTreeConsts.DefaultIndexOriginOffset + y] = 100f;
+        });
 
-        GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
+        var decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.True(result, $"Failed to build mesh from data store with a subgrid of points fault code {decimator.BuildMeshFaultCode}");
+        result.Should().BeTrue($"Failed to build mesh from data store with a sub grid of points fault code {decimator.BuildMeshFaultCode}");
 
-        Assert.NotNull(decimator.GetTIN());
+        decimator.GetTIN().Should().NotBeNull();
 
-//        string fileName = $@"C:\temp\UnitTestExportTTM({DateTime.Now.Ticks}).ttm";
-//        decimator.GetTIN().SaveToFile(fileName, true);  
+        //string fileName = $@"C:\temp\UnitTestExportTTM({DateTime.Now.Ticks}).ttm";
+        //decimator.GetTIN().SaveToFile(fileName, true);  
 
-//        TrimbleTINModel tin = new TrimbleTINModel();        
-//        tin.LoadFromFile(fileName);
+        //TrimbleTINModel tin = new TrimbleTINModel();        
+        //tin.LoadFromFile(fileName);
 
-        Assert.True(decimator.GetTIN().Triangles.Count == 3);
-        Assert.True(decimator.GetTIN().Triangles[0].Vertices[0].Z == 100f);
-        Assert.True(decimator.GetTIN().Triangles[0].Vertices[1].Z == 100f);
-        Assert.True(decimator.GetTIN().Triangles[0].Vertices[2].Z == 100f);
+        decimator.GetTIN().Triangles.Count.Should().Be(3);
+        decimator.GetTIN().Triangles[0].Vertices[0].Z.Should().Be(100f);
+        decimator.GetTIN().Triangles[0].Vertices[1].Z.Should().Be(100f);
+        decimator.GetTIN().Triangles[0].Vertices[2].Z.Should().Be(100f);
 
-        Assert.True(decimator.GetTIN().Vertices.Count == 5);
-        Assert.True(decimator.GetTIN().Vertices[0].Z == 100.0f);
-        Assert.True(decimator.GetTIN().Vertices[1].Z == 100.0f);
-        Assert.True(decimator.GetTIN().Vertices[2].Z == 100.0f);
+        decimator.GetTIN().Vertices.Count.Should().Be(5);
+        decimator.GetTIN().Vertices[0].Z.Should().Be(100.0f);
+        decimator.GetTIN().Vertices[1].Z.Should().Be(100.0f);
+        decimator.GetTIN().Vertices[2].Z.Should().Be(100.0f);
     }
   }
 }

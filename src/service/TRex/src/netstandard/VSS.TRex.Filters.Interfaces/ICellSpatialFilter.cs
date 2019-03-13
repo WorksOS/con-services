@@ -75,6 +75,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     /// <param name="Extents"></param>
     /// <returns></returns>
-    BoundingWorldExtent3D CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents);
+    void CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents);
   }
 }

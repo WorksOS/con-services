@@ -7,6 +7,7 @@ using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -101,7 +102,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       log.LogDebug($"{nameof(ProcessWithRaptor)}: About to call GetReportGrid");
 
       var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         (int)CompactionReportType.Grid,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataReport),

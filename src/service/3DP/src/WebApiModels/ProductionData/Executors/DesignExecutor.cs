@@ -8,6 +8,7 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
             bool result = raptorClient.GetDesignBoundary(
               DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
-                request.ProjectId ?? -1,
+                request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
                 fileDescriptor.DesignDescriptor(configStore, log, 0, 0),
                 DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
                 request.tolerance,

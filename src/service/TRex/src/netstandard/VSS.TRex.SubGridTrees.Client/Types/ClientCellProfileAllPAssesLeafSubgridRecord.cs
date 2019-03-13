@@ -27,10 +27,14 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     public void Read(BinaryReader reader)
     {
       TotalPasses = reader.ReadInt32();
-      CellPasses = new ClientCellProfileLeafSubgridRecord[TotalPasses];
 
-      for (int i = 0; i < TotalPasses; i++)
-        CellPasses[i].Read(reader);
+      if (TotalPasses > 0)
+      {
+        CellPasses = new ClientCellProfileLeafSubgridRecord[TotalPasses];
+
+        for (int i = 0; i < TotalPasses; i++)
+          CellPasses[i].Read(reader);
+      }
     }
 
     public void Write(BinaryWriter writer)

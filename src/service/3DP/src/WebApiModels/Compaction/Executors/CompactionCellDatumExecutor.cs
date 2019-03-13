@@ -8,6 +8,7 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -81,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       CheckForCoordinate(request.LLPoint);
       
       // Gett grid coordinates...
-      var pointList = GetGridCoordinates(request.ProjectId ?? -1, request.LLPoint);
+      var pointList = GetGridCoordinates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.LLPoint);
       
       _northing = pointList.Points.Coords[0].Y;
       _easting = pointList.Points.Coords[0].X;

@@ -39,7 +39,14 @@ namespace VSS.TRex.Caching
         }
         catch (Exception e)
         {
-          log.LogError(e, "Exception thrown during RemoveContextsMarkedForRemoval()");
+          try
+          {
+            log.LogError(e, "Exception thrown during RemoveContextsMarkedForRemoval()");
+          }
+          catch
+          {
+            return; // If logging is not working, just leave...
+          }
         }
 
         _waitHandle.WaitOne(_sleepTimeMS);

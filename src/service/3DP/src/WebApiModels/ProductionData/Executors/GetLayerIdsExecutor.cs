@@ -1,4 +1,5 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -11,7 +12,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       var request = CastRequestObjectTo<ProjectID>(item);
 
-      if (raptorClient.GetOnMachineLayers(request.ProjectId ?? -1, out var layerlist) >= 0 && layerlist != null)
+      if (raptorClient.GetOnMachineLayers(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, out var layerlist) >= 0 && layerlist != null)
       {
         return LayerIdsExecutionResult.CreateLayerIdsExecutionResult(layerlist);
       }

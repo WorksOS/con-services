@@ -2,6 +2,7 @@
 using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -29,15 +30,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         if (request.assetId == null) 
         {
-          designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1, -1);
-          layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1, -1);
+          designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, -1);
+          layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, -1);
             
         }
         else
         {
-          designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1,
+          designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
               request.assetId <= 0 ? -1 : (long)request.assetId);
-          layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1,
+          layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
               request.assetId <= 0 ? -1 : (long)request.assetId);
         }
 

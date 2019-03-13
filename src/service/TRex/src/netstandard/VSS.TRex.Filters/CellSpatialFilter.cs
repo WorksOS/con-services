@@ -170,24 +170,23 @@ namespace VSS.TRex.Filters
         /// </summary>
         /// <param name="Extents"></param>
         /// <returns></returns>
-        public BoundingWorldExtent3D CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents)
+        public void CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents)
         {
             if (IsSpatial) // Just a polygonal fence
             {
                 Fence.GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY);
-                return Extents.Intersect(MinX, MinY, MaxX, MaxY);
+                Extents.Intersect(MinX, MinY, MaxX, MaxY);
             }
 
             if (IsPositional) // Square or circle
             {
-                return Extents.Intersect(PositionX - PositionRadius,
+                Extents.Intersect(PositionX - PositionRadius,
                     PositionY - PositionRadius,
                     PositionX + PositionRadius,
                     PositionY + PositionRadius);
             }
 
             // no spatial restriction in the filter
-            return Extents;
         }
   }
 }

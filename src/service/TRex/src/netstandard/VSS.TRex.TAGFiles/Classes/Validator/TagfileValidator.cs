@@ -22,6 +22,7 @@ using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -102,7 +103,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
           return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
 
       // Business rule for device type conversion
-      int radioType = processor.RadioType == "torch" ? (int) DeviceType.SNM940 : (int) DeviceType.ManualDevice; // torch device set to type 6
+      DeviceType radioType = processor.RadioType == "torch" ? DeviceType.SNM940 : DeviceType.MANUALDEVICE; // torch device set to type 6
 
       if (processor.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && EC520SerialID == string.Empty)
       {
@@ -114,7 +115,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        radioType, processor.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
+        (int)radioType, processor.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
         MathUtilities.RadiansToDegrees(processor.LLHLat),
         MathUtilities.RadiansToDegrees(processor.LLHLon),
         processor.DataTime);

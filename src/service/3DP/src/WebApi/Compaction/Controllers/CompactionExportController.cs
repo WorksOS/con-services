@@ -441,8 +441,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Special case of project extents where start and end UTC not set in filter for Raptor performance.
         //But need to set here for export.
         var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
-        var result = ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
-          filter?.SurveyedSurfaceExclusionList?.ToList() ?? new List<long>(0), GetUserId(), CustomHeaders).Result;
+        var result = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId,
+          filter?.SurveyedSurfaceExclusionList?.ToList() ?? new List<long>(0), GetUserId(), CustomHeaders);
 
         var startUtc = filter?.StartUtc ?? result.startTime;
         var endUtc = filter?.EndUtc ?? result.endTime;
@@ -451,7 +451,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return (filter.StartUtc.Value, filter.EndUtc.Value);
 #else
-        // TRex determines this date range within the export API call
+// TRex determines this date range within the export API call
         return (DateTime.MinValue, DateTime.MinValue);
 #endif
     }

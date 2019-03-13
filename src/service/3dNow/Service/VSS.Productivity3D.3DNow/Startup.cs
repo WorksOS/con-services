@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.Common.ServiceDiscovery.Resolvers;
@@ -40,17 +39,20 @@ namespace VSS.Productivity3D.Now3D
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProjectListProxy, ProjectListProxy>();
+      services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
       services.AddTransient<IFileListProxy, FileListProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
 
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
+
+      services.AddServiceDiscovery();
 
       services.AddOpenTracing(builder =>
       {

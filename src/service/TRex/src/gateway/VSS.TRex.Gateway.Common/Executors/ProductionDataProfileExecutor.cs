@@ -66,7 +66,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      var svRequest = new ProfileRequest_ApplicationService<ProfileCell>();
+      var svRequest = new ProfileRequest_ApplicationService_ProfileCell();
 
       // var Response = svRequest.Execute(arg);
       ProfileRequestResponse<ProfileCell> response = svRequest.Execute(arg);

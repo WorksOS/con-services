@@ -326,13 +326,7 @@ namespace VSS.TRex.Tests.Filters
         MachineType = MachineType.Dozer
       }).ToArray());
 
-      var writer = new TestBinaryWriter();
-      info.ToBinary(writer);
-
-      var info2 = new FilteredMultiplePassInfo();
-      info2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
-
-      info.Should().BeEquivalentTo(info2);
+      TestBinarizable_ReaderWriterHelper.RoundTripSerialise(info);
     }
 
     [Fact]

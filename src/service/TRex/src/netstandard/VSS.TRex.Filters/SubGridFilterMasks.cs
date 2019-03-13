@@ -39,7 +39,7 @@ namespace VSS.TRex.Filters
 
             ICellSpatialFilter SpatialFilter = Filter.SpatialFilter;
 
-            // Attempt to satisfy the calculation below on the basis of the sub grid wholly resizing in the override and filter spatial restrictions
+            // Attempt to satisfy the calculation below on the basis of the sub grid wholly residing in the override and filter spatial restrictions
             if (SpatialFilter.Fence.IncludesExtent(new BoundingWorldExtent3D(OX, OY,
                                                                              OX + cellSize * SubGridTreeConsts.SubGridTreeDimension,
                                                                              OY + cellSize * SubGridTreeConsts.SubGridTreeDimension)))

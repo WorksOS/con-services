@@ -45,8 +45,8 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
 
                 SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
-                AggregatorBase Aggregator = ConstructAggregator(arg);
-                AnalyticsComputor Computor = ConstructComputor(arg, Aggregator);
+                var Aggregator = ConstructAggregator(arg);
+                var Computor = ConstructComputor(arg, Aggregator);
 
                 if (Computor.ComputeAnalytics(Response))
                 {

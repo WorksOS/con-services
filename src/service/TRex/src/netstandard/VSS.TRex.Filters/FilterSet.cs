@@ -15,6 +15,8 @@ namespace VSS.TRex.Filters
   {
     private const byte VERSION_NUMBER = 1;
 
+    public const int MAX_REASONABLE_NUMBER_OF_FILTERS = 10;
+
     /// <summary>
     /// The list of combined attribute and spatial filters to be used
     /// </summary>
@@ -94,8 +96,6 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      const int MAX_REASONABLE_NUMBER_OF_FILTERS = 100;
-
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       var filterCount = reader.ReadInt();

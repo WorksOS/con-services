@@ -1,9 +1,7 @@
 ﻿using VSS.TRex.Geometry;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.NetworkInformation;
+using FluentAssertions;
 using VSS.TRex.Common;
 using Xunit;
 
@@ -253,6 +251,80 @@ namespace VSS.TRex.Tests.Geometry
         }
 
         [Fact()]
+        public void Test_XYZTests_GetTriangleHeight_Pathological1()
+        {
+          var bottom = new XYZ(0, 0, 0);
+          var top = new XYZ(0, 0, 0);
+          var right = new XYZ(0, 0, 0);
+
+          XYZ.GetTriangleHeight(bottom, top, right, 0, 0).Should().Be(Consts.NullDouble);
+        }
+
+        [Theory]
+        [InlineData(-1, 0, Consts.NullDouble)]
+        [InlineData(0, -1, 0.0)]
+        [InlineData(0, 1, 0.0)]
+        [InlineData(10000, 0, Consts.NullDouble)]
+        public void Test_XYZTests_GetTriangleHeight_Pathological2(double probeX, double probeY, double result)
+        {
+          var one = new XYZ(0, 1, 0);
+          var two = new XYZ(0, -1, 0);
+          var three = new XYZ(10000, 0, 0);
+
+          XYZ.GetTriangleHeight(one, two, three, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(two, three, one, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(three, one, two, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(three, two, one, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(two, one, three, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(one, three, two, probeX, probeY).Should().Be(result);
+        }
+
+        [Fact()]
+        public void Test_XYZTests_GetTriangleHeightEx()
+        {
+          XYZ bottom = new XYZ(0, 0, 0);
+          XYZ top = new XYZ(0, 10, 0);
+          XYZ right = new XYZ(10, 10, 0);
+
+          Assert.Equal(0.0, XYZ.GetTriangleHeight(bottom, top, right, 1.0, 9.0));
+
+          bottom.Z = 10;
+          top.Z = 10;
+          right.Z = 10;
+
+          Assert.Equal(10.0, XYZ.GetTriangleHeight(bottom, top, right, 1.0, 9.0));
+        }
+
+        [Fact()]
+        public void Test_XYZTests_GetTriangleHeightEx_Pathological1()
+        {
+          var bottom = new XYZ(0, 0, 0);
+          var top = new XYZ(0, 0, 0);
+          var right = new XYZ(0, 0, 0);
+
+          XYZ.GetTriangleHeight(bottom, top, right, 0, 0).Should().Be(Consts.NullDouble);
+        }
+
+        [Theory]
+        [InlineData(-1, 0, Consts.NullDouble)]
+        [InlineData(0, -1, 0.0)]
+        [InlineData(0, 1, 0.0)]
+        [InlineData(10000, 0, Consts.NullDouble)]
+        public void Test_XYZTests_GetTriangleHeightEx_Pathological2(double probeX, double probeY, double result)
+        {
+          var one = new XYZ(0, 1, 0);
+          var two = new XYZ(0, -1, 0);
+          var three = new XYZ(10000, 0, 0);
+
+          XYZ.GetTriangleHeight(one, two, three, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(two, three, one, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(three, one, two, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(three, two, one, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(two, one, three, probeX, probeY).Should().Be(result);
+          XYZ.GetTriangleHeight(one, three, two, probeX, probeY).Should().Be(result);
+        }
+
+        [Fact()]
         public void Test_XYZTests_PointInTriangle()
         {
             XYZ bottom = new XYZ(0, 0, 0);
@@ -264,7 +336,7 @@ namespace VSS.TRex.Tests.Geometry
         }
 
         [Fact()]
-        public void Test_XYZTests_PointInTriangleInclusive()
+        public void Test_XYZTests_PointInTriangleInclusive_Clockwise()
         {
             XYZ bottom = new XYZ(0, 0, 0);
             XYZ top = new XYZ(0, 10, 0);
@@ -275,6 +347,20 @@ namespace VSS.TRex.Tests.Geometry
             Assert.True(XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 10.0), $"2, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 10.0)}" );
             Assert.True(XYZ.PointInTriangleInclusive(bottom, top, right, 10.0, 10.0), $"3, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 10.0, 10.0)}" );
             Assert.True(XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 5.0), $"4, Expected point in triangle inclusive == true, got { XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 5.0)}");
+        }
+
+        [Fact()]
+        public void Test_XYZTests_PointInTriangleInclusive_AntiClockwise()
+        {
+          XYZ bottom = new XYZ(0, 0, 0);
+          XYZ top = new XYZ(0, 10, 0);
+          XYZ right = new XYZ(10, 10, 0);
+
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 1.0, 9.0), $"0, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 1.0, 9.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 0.0, 0.0), $"1, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 0.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 0.0, 10.0), $"2, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 10.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 10.0, 10.0), $"3, Expected point in triangle inclusive == true, got {XYZ.PointInTriangleInclusive(bottom, top, right, 10.0, 10.0)}");
+          Assert.True(XYZ.PointInTriangleInclusive(right, top, bottom, 0.0, 5.0), $"4, Expected point in triangle inclusive == true, got { XYZ.PointInTriangleInclusive(bottom, top, right, 0.0, 5.0)}");
         }
 
         [Fact()]
@@ -293,3 +379,4 @@ namespace VSS.TRex.Tests.Geometry
         }
     }
 }
+

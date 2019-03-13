@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -10,6 +11,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
+  [Obsolete("Use ProjectV4ListServiceDiscoveryProxy instead")]
   public class ProjectListProxy : BaseProxy, IProjectListProxy
   {
     public ProjectListProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(configurationStore, logger, cache)

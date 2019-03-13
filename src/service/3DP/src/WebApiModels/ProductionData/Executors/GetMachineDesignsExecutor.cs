@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -14,7 +15,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
-      var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
+      var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID);
 
       if (raptorDesigns != null)
       {

@@ -14,13 +14,6 @@ namespace VSS.TRex.Logging
     private readonly ILogger _logger;
 
     /// <summary>
-    /// Initializes a new instance of the TRexIgniteLogger class.
-    /// </summary>
-    public TRexIgniteLogger() : this(Logging.Logger.CreateLogger<TRexIgniteLogger>())
-    {
-    }
-
-    /// <summary>
     /// Initializes a new instance of the TRexIgniteLogger class with the provided ILog interface
     /// </summary>
     /// <param name="logger"></param>

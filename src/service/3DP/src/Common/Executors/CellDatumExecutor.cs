@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Common.Executors
       var raptorFilter = RaptorConverters.ConvertFilter(request.Filter);
 
       return raptorClient.GetCellProductionData
-      (request.ProjectId ?? -1,
+      (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         (int)RaptorConverters.convertDisplayMode(request.DisplayMode),
         request.GridPoint?.x ?? 0,
         request.GridPoint?.y ?? 0,

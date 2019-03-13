@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.Common.Executors
       RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolumesType);
 
       var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtWMSTile),
         RaptorConverters.convertDisplayMode(request.Mode),

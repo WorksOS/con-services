@@ -572,7 +572,7 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(filter.MachinesList == null || filter.MachinesList.Length == 0, "Machine filter contains machines");
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact]
         public void Test_CellPassAttributeFilter_IsTimeRangeFilter()
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter();
@@ -601,16 +601,21 @@ namespace VSS.TRex.Tests.Filters
           short[] list2 = {1, 2};
           short[] list3 = {2, 3};
           short[] list4 = {2, 3};
-
+     
           CellPassAttributeFilter.MachineIDListsComparison(list1, list1).Should().Be(0);
           CellPassAttributeFilter.MachineIDListsComparison(list1, list2).Should().Be(0);
           CellPassAttributeFilter.MachineIDListsComparison(list2, list1).Should().Be(0);
-
+     
           CellPassAttributeFilter.MachineIDListsComparison(list2, list3).Should().Be(-1);
           CellPassAttributeFilter.MachineIDListsComparison(list3, list2).Should().Be(1);
           CellPassAttributeFilter.MachineIDListsComparison(list3, list4).Should().Be(1);
         }
         */
+
+        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Tests involving cell passes >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
     }
 }
 

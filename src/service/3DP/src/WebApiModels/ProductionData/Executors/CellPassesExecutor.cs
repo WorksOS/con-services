@@ -5,6 +5,7 @@ using SVOICFiltersDecls;
 using SVOICGridCell;
 using SVOICProfileCell;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var raptorFilter = RaptorConverters.ConvertFilter(request.filter, overrideAssetIds: new List<long>());
 
       int code = raptorClient.RequestCellProfile
-      (request.ProjectId ?? -1,
+      (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
         probeX, probeY,
         isGridCoord,
@@ -75,8 +76,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
                  profile.Station,
                  profile.TopLayerPassCount,
                  new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
-                 ConvertCellLayers(profile.Layers, ConvertFilteredPassData(profile.Passes))
-
+                 ConvertCellLayers(profile.Layers,
+#if RAPTOR
+                   ConvertFilteredPassData(profile.Passes)
+#else
+                   null
+#endif
+                   )
              );
     }
 
@@ -142,6 +148,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return result;
     }
 
+#if RAPTOR
     private CellPassesResult.CellEventsValue ConvertCellPassEvents(TICCellEventsValue events)
     {
       return new CellPassesResult.CellEventsValue
@@ -164,7 +171,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         positioningTech = RaptorConverters.convertPositioningTechType(events.PositioningTech)
       };
     }
-
+#endif
 
     private CellPassesResult.CellPassValue ConvertCellPass(TICCellPassValue pass)
     {

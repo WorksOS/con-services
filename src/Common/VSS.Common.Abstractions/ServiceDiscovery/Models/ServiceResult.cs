@@ -1,4 +1,6 @@
-﻿namespace VSS.Common.Abstractions.ServiceDiscovery.Models
+﻿using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+
+namespace VSS.Common.Abstractions.ServiceDiscovery.Models
 {
   public class ServiceResult
   {

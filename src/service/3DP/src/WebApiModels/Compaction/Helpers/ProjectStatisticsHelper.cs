@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -108,29 +109,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
         excludedSSs.Uids?.ToArray(), excludedSSs.Ids?.ToArray());
 
-      return
+      return await
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
 #if RAPTOR
             _raptorClient,
 #endif
             configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
-          .Process(request) as ProjectStatisticsResult;
+          .ProcessAsync(request) as ProjectStatisticsResult;
     }
 
     // special case for obsolete controllers
     // supported only on Raptor
-    public ProjectStatisticsResult GetProjectStatisticsWithExclusions(long projectId, long[] excludedSsIds)
+    public Task<ContractExecutionResult> GetProjectStatisticsWithExclusions(long projectId, long[] excludedSsIds)
     {
       var request = new ProjectStatisticsMultiRequest(null, projectId,
         new Guid[0], excludedSsIds);
 
-      return
-        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
+      return RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
 #if RAPTOR
             _raptorClient,
 #endif
             configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
-          .Process(request) as ProjectStatisticsResult;
+          .ProcessAsync(request);
     }
 
     public async Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, List<long> filterSSExclusionList, string userId, IDictionary<string, string> customHeaders)
@@ -144,13 +144,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
         excludedSSUids?.ToArray(), filterSSExclusionList?.ToArray());
 
-      return
+      return await
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
 #if RAPTOR
             _raptorClient,
 #endif
             configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
-          .Process(request) as ProjectStatisticsResult;
+          .ProcessAsync(request) as ProjectStatisticsResult;
     }
   }
 }

@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
 
     public void Clear()
     {
-      CellXOffset = 0;
+      CellXOffset = 0;                                                             
       CellYOffset = 0;
       LastPassTime = DateTime.MinValue;
       PassCount = 0;
@@ -107,9 +107,9 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       CellYOffset = reader.ReadSingle();
       LastPassTime = DateTime.FromBinary(reader.ReadInt64());
       PassCount = reader.ReadInt32();
-      InternalSiteModelMachineIndex = reader.ReadInt16();
       LastPassValidRadioLatency = reader.ReadInt32();
       EventDesignNameID = reader.ReadInt32();
+      InternalSiteModelMachineIndex = reader.ReadInt16();
       MachineSpeed = reader.ReadUInt16();
       LastPassValidGPSMode = (GPSMode) reader.ReadByte();
       GPSTolerance = reader.ReadUInt16();
@@ -145,9 +145,9 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       writer.Write(EventDesignNameID);
       writer.Write(InternalSiteModelMachineIndex);
       writer.Write(MachineSpeed);
-      writer.Write((byte) LastPassValidGPSMode);
+      writer.Write((byte)LastPassValidGPSMode);
       writer.Write(GPSTolerance);
-      writer.Write((byte) GPSAccuracy);
+      writer.Write((byte)GPSAccuracy);
       writer.Write(TargetPassCount);
       writer.Write(TotalWholePasses);
       writer.Write(LayersCount);
@@ -159,8 +159,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       writer.Write(LastPassValidFreq);
       writer.Write(LastPassValidAmp);
       writer.Write(TargetThickness);
-      writer.Write((byte) EventMachineGear);
-      writer.Write((byte) EventVibrationState);
+      writer.Write((byte)EventMachineGear);
+      writer.Write((byte)EventVibrationState);
       writer.Write(LastPassValidTemperature);
       writer.Write(Height);
       writer.Write(HalfPass);

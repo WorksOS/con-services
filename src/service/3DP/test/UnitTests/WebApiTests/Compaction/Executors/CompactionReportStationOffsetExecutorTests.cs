@@ -15,6 +15,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -76,7 +77,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
-        request.ProjectId ?? -1,
+        request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
         (int)CompactionReportType.StationOffset,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataReport),
