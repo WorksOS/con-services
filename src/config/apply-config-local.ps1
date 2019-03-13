@@ -54,6 +54,9 @@ function ProcessConfigFile {
         # Ignore comments.
         IF ($line.StartsWith("#")) { CONTINUE }
 
+        # Ignore blank lines or trailing whitespace in the file.
+        IF ([string]::IsNullOrWhiteSpace($line)) { CONTINUE }
+
         $key, $value = $line -split ':', 2
         $key = $key.Trim()
         $value = $value.Trim().Trim('"')
@@ -80,7 +83,12 @@ Write-Host "`nSetting environment variables specific to the caller"
 
 # Get the IP address from the network adaptor and set KAFKA_ADVERTISED_HOST_NAME. Doing so allows any containerized Kafka instance to correctly find the host.
 $ipV4 = ( Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null -and  $_.NetAdapter.Status -ne "Disconnected"}).IPv4Address.IPAddress
-(Get-Content docker-compose-local.env) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content docker-compose-local.env
+
+# Update the Docker-Compose file, if present.
+IF (Test-Path docker-compose-local.env) {
+    (Get-Content docker-compose-local.env) | Foreach-Object {$_ -replace "LOCALIPADDRESS", $ipV4} | Set-Content docker-compose-local.env
+}
+
 SetEnvironmentVariable "KAFKA_ADVERTISED_HOST_NAME" $ipV4
 
 Write-Host "`nFinished loading configuration settings" -ForegroundColor Green
