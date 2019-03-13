@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
+#if RAPTOR
+using SVOICDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
@@ -205,7 +207,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       /// <summary>
       /// The GCS machine control system is mapping minimum elevations; typically used by HEX (Hydraulic Excavator machines)
       /// </summary>
+#if RAPTOR
+      public TICMinElevMappingState EventMinElevMapping;
+#else
       public bool EventMinElevMapping;
+#endif
     }
 
     /// <summary>
@@ -229,373 +235,371 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       public CellTargetsValue targetsValue;
     }
 
+    /// <summary>
+    /// The collection of information that describe a material layer, as defined by the collection of cell passes that comprise it.
+    /// Values are revelant to the layer as a whole. In the case of cell pass attributes, event or target information they represent the latest known values
+    /// for those items as at the time of the last contributory cell pass in the layer that contained a known-value for the attribute in question.
+    /// </summary>
+    public class ProfileLayer
+    {
       /// <summary>
-      /// The collection of information that describe a material layer, as defined by the collection of cell passes that comprise it.
-      /// Values are revelant to the layer as a whole. In the case of cell pass attributes, event or target information they represent the latest known values
-      /// for those items as at the time of the last contributory cell pass in the layer that contained a known-value for the attribute in question.
+      /// Compaction vibratory drum amplitude. Value is expressed in 100ths of millimeters.
       /// </summary>
-      public class ProfileLayer
-      {
-          /// <summary>
-          /// Compaction vibratory drum amplitude. Value is expressed in 100ths of millimeters.
-          /// </summary>
-          public ushort amplitude;
-
-          /// <summary>
-          /// CCV value for the layer. Expressed in 10ths of units.
-          /// </summary>
-          public short cCV;
-
-          /// <summary>
-          /// Elevation of the cell pass that contributed the layer CCV value
-          /// </summary>
-          public float cCV_Elev;
-
-          /// <summary>
-          /// The ID of the machine that recorded the cell pass that contributed the CCV value
-          /// </summary>
-          public long cCV_MachineID;
-
-          /// <summary>
-          /// The time the cell pass was recorded that contributed the CCV value.
-          /// </summary>
-          public DateTime cCV_Time;
-
-          /// <summary>
-          /// The number of 'half passes' counted in the layer. A pass made by certain machine types (eg: CTCT GCS Quattro four wheel landfill sheepsfoot compactor) are counted as half passes 
-          /// (each axle contributes half of the compactive effort attributed to the machine. All other machine types contribute 'whole passes' (such as drum soil compactors).
-          /// </summary>
-          public int filteredHalfPassCount;
-
-          /// <summary>
-          /// The rounded whole pass count for the layer. Residual half pass counts are rouned up (eg: 3 half passes is rounded up to 2 whole passes)
-          /// </summary>
-          public int filteredPassCount;
-
-          /// <summary>
-          /// The elevation of the first cell pass recorded in the layer.
-          /// </summary>
-          public float firstPassHeight;
-
-          /// <summary>
-          /// The vibratory drum frequency. Value is expressed in 10ths of Hertz.
-          /// </summary>
-          public ushort frequency;
-
-          /// <summary>
-          /// The measured elevation of the last cell pass made in the layer. This represents the best known elevation of the top of the material layer at the location of the cell.
-          /// </summary>
-          public float height;
-
-          /// <summary>
-          /// The time at which the last cell pass ccntributed to this layer was recorded.
-          /// </summary>
-          public DateTime lastLayerPassTime;
-
-          /// <summary>
-          /// The elevation of the last cell pass contributed to the layer.
-          /// </summary>
-          public float lastPassHeight;
-
-          /// <summary>
-          /// The machine ID of the last cell pass contributed to the layer
-          /// </summary>
-          public long machineID;
-
-          /// <summary>
-          /// The material temperature (recorded by asphalt compactors).
-          /// </summary>
-          public ushort materialTemperature;
-
-          /// <summary>
-          /// Elevation of the cell pass that recorded the material temperature for the layer
-          /// </summary>
-          public float materialTemperature_Elev;
-
-          /// <summary>
-          /// The ID of the machine that recorded the material temperature for the layer
-          /// </summary>
-          public long materialTemperature_MachineID;
-
-          /// <summary>
-          /// The time the cell pass that contributed the material temperature value
-          /// </summary>
-          public DateTime materialTemperature_Time;
-
-          /// <summary>
-          /// The maximum elevation recorded across all cell passes contributed to the layer.
-          /// </summary>
-          public float maximumPassHeight;
-
-          /// <summary>
-          /// The maximum layer thickness recorded across all cell passes contributed to the layer.
-          /// </summary>
-          public float maxThickness;
-
-          /// <summary>
-          /// MDP value for the layer. Epressed in 10ths of units.
-          /// </summary>
-          public short mDP;
-
-          /// <summary>
-          /// Elevation of the cell pass that contributed the layer MDP value
-          /// </summary>
-          public float mDP_Elev;
-
-          /// <summary>
-          /// The ID of the machine that recorded the cell pass that contributed the MDP value
-          /// </summary>
-          public long mDP_MachineID;
-
-          /// <summary>
-          /// The time the cell pass was recorded that contributed the CCV value.
-          /// </summary>
-          public DateTime mDP_Time;
-
-          /// <summary>
-          /// The lowest elevation value recorded across all cell passes contributed to the layer.
-          /// </summary>
-          public float minimumPassHeight;
-
-          /// <summary>
-          /// The radio latency for the layer
-          /// </summary>
-          public byte radioLatency;
-
-          /// <summary>
-          /// The resonance meter value for the layer
-          /// </summary>
-          public short rMV;
-
-          /// <summary>
-          /// The target CCV value used for the layer
-          /// </summary>
-          public short targetCCV;
-
-          /// <summary>
-          /// The target MDP value used for the layer
-          /// </summary>
-          public short targetMDP;
-
-          /// <summary>
-          /// The target pass count value used for the layer
-          /// </summary>
-          public int targetPassCount;
-
-          /// <summary>
-          /// The target layer thickness value used for the layer
-          /// </summary>
-          public float targetThickness;
-
-          /// <summary>
-          /// The final recorded thickness for the layer once all cell passes have been contributed to it
-          /// </summary>
-          public float thickness;
-
-          /// <summary>
-          /// The collection of filtered cell pass data that comprise this cell. This includes cell pass attributes, target value information and temporal event information for each cell pass.
-          /// </summary>
-          public FilteredPassData[] filteredPassData;
-      }
+      public ushort amplitude;
 
       /// <summary>
-      /// The internal result code returned by the service for the request. Values documented elsewhere.
+      /// CCV value for the layer. Expressed in 10ths of units.
       /// </summary>
-      [JsonIgnore]
-      public int returnCode;
+      public short cCV;
 
       /// <summary>
-      /// CCV value
+      /// Elevation of the cell pass that contributed the layer CCV value
       /// </summary>
-      [JsonIgnore]
-      public short cellCCV;
+      public float cCV_Elev;
 
       /// <summary>
-      /// Elevation from cell pass that contributed the CCV
+      /// The ID of the machine that recorded the cell pass that contributed the CCV value
       /// </summary>
-      [JsonIgnore]
-      public float cellCCVElev;
+      public long cCV_MachineID;
 
       /// <summary>
-      /// First (in time) composite elevation recorded in the cell
+      /// The time the cell pass was recorded that contributed the CCV value.
       /// </summary>
-      [JsonIgnore]
-      public float cellFirstCompositeElev;
+      public DateTime cCV_Time;
 
       /// <summary>
-      /// First (in time) production data only elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellFirstElev;
-
-      /// <summary>
-      /// Highest composite elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellHighestCompositeElev;
-
-      /// <summary>
-      /// Highest production data elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellHighestElev;
-
-      /// <summary>
-      /// Last (in time) composite elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellLastCompositeElev;
-
-      /// <summary>
-      /// Last (in time) production data only elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellLastElev;
-
-      /// <summary>
-      /// Lowest composite elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellLowestCompositeElev;
-
-      /// <summary>
-      /// Lowest production data elevation recorded in the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellLowestElev;
-
-      /// <summary>
-      /// Material temperature for the cell
-      /// </summary>
-      [JsonIgnore]
-      public ushort cellMaterialTemperature;
-
-      /// <summary>
-      /// Elevation of the cell pass that recorded the material temperature for the cell
-      /// </summary>
-      [JsonIgnore]
-      public float cellMaterialTemperatureElev;
-
-      /// <summary>
-      /// Maximum material temperature warning for the cell
-      /// </summary>
-      [JsonIgnore]
-      public ushort cellMaterialTemperatureWarnMax;
-
-      /// <summary>
-      /// Minimum material temperature warning for the cell
-      /// </summary>
-      [JsonIgnore]
-      public ushort cellMaterialTemperatureWarnMin;
-
-      /// <summary>
-      /// Total filtered half pass count for the cell
-      /// A pass made by certain machine types (eg: CTCT GCS Quattro four wheel landfill sheepsfoot compactor) are counted as half passes 
+      /// The number of 'half passes' counted in the layer. A pass made by certain machine types (eg: CTCT GCS Quattro four wheel landfill sheepsfoot compactor) are counted as half passes 
       /// (each axle contributes half of the compactive effort attributed to the machine. All other machine types contribute 'whole passes' (such as drum soil compactors).
       /// </summary>
-      [JsonIgnore]
       public int filteredHalfPassCount;
 
       /// <summary>
-      /// Total whole pass count for the cell
+      /// The rounded whole pass count for the layer. Residual half pass counts are rouned up (eg: 3 half passes is rounded up to 2 whole passes)
       /// </summary>
-      [JsonIgnore]
       public int filteredPassCount;
 
       /// <summary>
-      /// Machine Drive Power value for the cell
+      /// The elevation of the first cell pass recorded in the layer.
       /// </summary>
-      [JsonIgnore]
-      public short cellMDP;
+      public float firstPassHeight;
 
       /// <summary>
-      /// Elevation of the cell pass that recorded the MDP value for the cell
+      /// The vibratory drum frequency. Value is expressed in 10ths of Hertz.
       /// </summary>
-      [JsonIgnore]
-      public float cellMDPElev;
+      public ushort frequency;
 
       /// <summary>
-      /// Target CCV value in force at the time of the last cell pass in the cell
+      /// The measured elevation of the last cell pass made in the layer. This represents the best known elevation of the top of the material layer at the location of the cell.
       /// </summary>
-      [JsonIgnore]
-      public short cellTargetCCV;
+      public float height;
 
       /// <summary>
-      /// Target MDP value in force at the time of the last cell pass in the cell
+      /// The time at which the last cell pass ccntributed to this layer was recorded.
       /// </summary>
-      [JsonIgnore]
-      public short cellTargetMDP;
+      public DateTime lastLayerPassTime;
 
       /// <summary>
-      /// Thickness of the top most layer in the cell.
+      /// The elevation of the last cell pass contributed to the layer.
       /// </summary>
-      [JsonIgnore]
-      public float cellTopLayerThickness;
+      public float lastPassHeight;
 
       /// <summary>
-      /// Elevation of the design at the location of the center point of the cell.
+      /// The machine ID of the last cell pass contributed to the layer
       /// </summary>
-      [JsonIgnore]
-      public float designElev;
+      public long machineID;
 
       /// <summary>
-      /// The elevation information in the cell includes elevations orginated from cell passes provided via production data source from machines.
+      /// The material temperature (recorded by asphalt compactors).
       /// </summary>
-      [JsonIgnore]
-      public bool includesProductionData;
+      public ushort materialTemperature;
 
       /// <summary>
-      /// The length of the portion of the profile line that intersects this cell. In the case of cell profile requests, there is no profile line as such, and this value is null.
+      /// Elevation of the cell pass that recorded the material temperature for the layer
       /// </summary>
-      [JsonIgnore]
-      public double interceptLength;
+      public float materialTemperature_Elev;
 
       /// <summary>
-      /// The On The Ground X ordinate of the cell in the cartesian cell address space relative to the coordinate system origin
+      /// The ID of the machine that recorded the material temperature for the layer
       /// </summary>
-      [JsonIgnore]
-      public int oTGCellX;
+      public long materialTemperature_MachineID;
 
       /// <summary>
-      /// The On The Ground X ordinate of the cell in the cartesian cell address space relative to the coordinate system origin
+      /// The time the cell pass that contributed the material temperature value
       /// </summary>
-      [JsonIgnore]
-      public int oTGCellY;
+      public DateTime materialTemperature_Time;
 
       /// <summary>
-      /// The station value, or distance from start of the profile line at which the profile line intersects this cell. In the case of cell profile requests, there is no profile line as such, and this value is null.
+      /// The maximum elevation recorded across all cell passes contributed to the layer.
       /// </summary>
-      [JsonIgnore]
-      public double station;
+      public float maximumPassHeight;
 
       /// <summary>
-      /// The number of cell passes recorded in the top most (latest) layer in the cell.
+      /// The maximum layer thickness recorded across all cell passes contributed to the layer.
       /// </summary>
-      [JsonIgnore]
-      public int topLayerPassCount;
+      public float maxThickness;
 
       /// <summary>
-      /// The target pass count value range at the time of the last cell pass contributed to the cell.
+      /// MDP value for the layer. Epressed in 10ths of units.
       /// </summary>
-      [JsonIgnore]
-      public TargetPassCountRange topLayerPassCountTargetRange;
-
- 
+      public short mDP;
 
       /// <summary>
-      /// THe set of layers the comprise this cell. Each layer comprises a unique set of cell passes from the filtered pass data and the information calculated from them.
+      /// Elevation of the cell pass that contributed the layer MDP value
       /// </summary>
-      public ProfileLayer[] layers;
+      public float mDP_Elev;
 
-           /// <summary>
-        /// Private constructor
-        /// </summary>
+      /// <summary>
+      /// The ID of the machine that recorded the cell pass that contributed the MDP value
+      /// </summary>
+      public long mDP_MachineID;
+
+      /// <summary>
+      /// The time the cell pass was recorded that contributed the CCV value.
+      /// </summary>
+      public DateTime mDP_Time;
+
+      /// <summary>
+      /// The lowest elevation value recorded across all cell passes contributed to the layer.
+      /// </summary>
+      public float minimumPassHeight;
+
+      /// <summary>
+      /// The radio latency for the layer
+      /// </summary>
+      public byte radioLatency;
+
+      /// <summary>
+      /// The resonance meter value for the layer
+      /// </summary>
+      public short rMV;
+
+      /// <summary>
+      /// The target CCV value used for the layer
+      /// </summary>
+      public short targetCCV;
+
+      /// <summary>
+      /// The target MDP value used for the layer
+      /// </summary>
+      public short targetMDP;
+
+      /// <summary>
+      /// The target pass count value used for the layer
+      /// </summary>
+      public int targetPassCount;
+
+      /// <summary>
+      /// The target layer thickness value used for the layer
+      /// </summary>
+      public float targetThickness;
+
+      /// <summary>
+      /// The final recorded thickness for the layer once all cell passes have been contributed to it
+      /// </summary>
+      public float thickness;
+
+      /// <summary>
+      /// The collection of filtered cell pass data that comprise this cell. This includes cell pass attributes, target value information and temporal event information for each cell pass.
+      /// </summary>
+      public FilteredPassData[] filteredPassData;
+    }
+
+    /// <summary>
+    /// The internal result code returned by the service for the request. Values documented elsewhere.
+    /// </summary>
+    [JsonIgnore]
+    public int returnCode;
+
+    /// <summary>
+    /// CCV value
+    /// </summary>
+    [JsonIgnore]
+    public short cellCCV;
+
+    /// <summary>
+    /// Elevation from cell pass that contributed the CCV
+    /// </summary>
+    [JsonIgnore]
+    public float cellCCVElev;
+
+    /// <summary>
+    /// First (in time) composite elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellFirstCompositeElev;
+
+    /// <summary>
+    /// First (in time) production data only elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellFirstElev;
+
+    /// <summary>
+    /// Highest composite elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellHighestCompositeElev;
+
+    /// <summary>
+    /// Highest production data elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellHighestElev;
+
+    /// <summary>
+    /// Last (in time) composite elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellLastCompositeElev;
+
+    /// <summary>
+    /// Last (in time) production data only elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellLastElev;
+
+    /// <summary>
+    /// Lowest composite elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellLowestCompositeElev;
+
+    /// <summary>
+    /// Lowest production data elevation recorded in the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellLowestElev;
+
+    /// <summary>
+    /// Material temperature for the cell
+    /// </summary>
+    [JsonIgnore]
+    public ushort cellMaterialTemperature;
+
+    /// <summary>
+    /// Elevation of the cell pass that recorded the material temperature for the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellMaterialTemperatureElev;
+
+    /// <summary>
+    /// Maximum material temperature warning for the cell
+    /// </summary>
+    [JsonIgnore]
+    public ushort cellMaterialTemperatureWarnMax;
+
+    /// <summary>
+    /// Minimum material temperature warning for the cell
+    /// </summary>
+    [JsonIgnore]
+    public ushort cellMaterialTemperatureWarnMin;
+
+    /// <summary>
+    /// Total filtered half pass count for the cell
+    /// A pass made by certain machine types (eg: CTCT GCS Quattro four wheel landfill sheepsfoot compactor) are counted as half passes 
+    /// (each axle contributes half of the compactive effort attributed to the machine. All other machine types contribute 'whole passes' (such as drum soil compactors).
+    /// </summary>
+    [JsonIgnore]
+    public int filteredHalfPassCount;
+
+    /// <summary>
+    /// Total whole pass count for the cell
+    /// </summary>
+    [JsonIgnore]
+    public int filteredPassCount;
+
+    /// <summary>
+    /// Machine Drive Power value for the cell
+    /// </summary>
+    [JsonIgnore]
+    public short cellMDP;
+
+    /// <summary>
+    /// Elevation of the cell pass that recorded the MDP value for the cell
+    /// </summary>
+    [JsonIgnore]
+    public float cellMDPElev;
+
+    /// <summary>
+    /// Target CCV value in force at the time of the last cell pass in the cell
+    /// </summary>
+    [JsonIgnore]
+    public short cellTargetCCV;
+
+    /// <summary>
+    /// Target MDP value in force at the time of the last cell pass in the cell
+    /// </summary>
+    [JsonIgnore]
+    public short cellTargetMDP;
+
+    /// <summary>
+    /// Thickness of the top most layer in the cell.
+    /// </summary>
+    [JsonIgnore]
+    public float cellTopLayerThickness;
+
+    /// <summary>
+    /// Elevation of the design at the location of the center point of the cell.
+    /// </summary>
+    [JsonIgnore]
+    public float designElev;
+
+    /// <summary>
+    /// The elevation information in the cell includes elevations orginated from cell passes provided via production data source from machines.
+    /// </summary>
+    [JsonIgnore]
+    public bool includesProductionData;
+
+    /// <summary>
+    /// The length of the portion of the profile line that intersects this cell. In the case of cell profile requests, there is no profile line as such, and this value is null.
+    /// </summary>
+    [JsonIgnore]
+    public double interceptLength;
+
+    /// <summary>
+    /// The On The Ground X ordinate of the cell in the cartesian cell address space relative to the coordinate system origin
+    /// </summary>
+    [JsonIgnore]
+    public int oTGCellX;
+
+    /// <summary>
+    /// The On The Ground X ordinate of the cell in the cartesian cell address space relative to the coordinate system origin
+    /// </summary>
+    [JsonIgnore]
+    public int oTGCellY;
+
+    /// <summary>
+    /// The station value, or distance from start of the profile line at which the profile line intersects this cell. In the case of cell profile requests, there is no profile line as such, and this value is null.
+    /// </summary>
+    [JsonIgnore]
+    public double station;
+
+    /// <summary>
+    /// The number of cell passes recorded in the top most (latest) layer in the cell.
+    /// </summary>
+    [JsonIgnore]
+    public int topLayerPassCount;
+
+    /// <summary>
+    /// The target pass count value range at the time of the last cell pass contributed to the cell.
+    /// </summary>
+    [JsonIgnore]
+    public TargetPassCountRange topLayerPassCountTargetRange;
+
+    /// <summary>
+    /// THe set of layers the comprise this cell. Each layer comprises a unique set of cell passes from the filtered pass data and the information calculated from them.
+    /// </summary>
+    public ProfileLayer[] layers;
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
     private CellPassesResult()
-        {}
+    { }
 
     public static CellPassesResult CreateCellPassesResult(
-      short cellCCV, 
-      float cellCCVElev, 
+      short cellCCV,
+      float cellCCVElev,
       float cellFirstCompositeElev,
       float cellFirstElev,
       float cellHighestCompositeElev,
