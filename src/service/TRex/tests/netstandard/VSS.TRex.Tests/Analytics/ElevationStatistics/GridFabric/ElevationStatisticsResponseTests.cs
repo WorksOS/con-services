@@ -8,7 +8,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
 {
-  public class ElevationStatisticsResponseTests : BaseTests
+  public class ElevationStatisticsResponseTests
   {
     private const double MIN_ELEVATION = 123;
     private const double MAX_ELEVATION = 56789;
@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
     private ElevationStatisticsResponse _response => new ElevationStatisticsResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
-      CellSize = CELL_SIZE,
+      CellSize = TestConsts.CELL_SIZE,
       MinElevation = MIN_ELEVATION,
       MaxElevation = MAX_ELEVATION,
       CellsUsed = CELLS_USED,
@@ -44,12 +44,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       Assert.True(Math.Abs(response.MaxElevation) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for MaxElevation.");
       Assert.True(response.CellsUsed == 0, "Invalid initial value for CellsUsed.");
       Assert.True(response.CellsScanned == 0, "Invalid initial value for CellsScanned.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinX) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MinX.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinY) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MinY.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinZ) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for BoundingExtents.MinZ.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxX) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MaxX.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxY) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MaxY.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxZ) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for BoundingExtents.MaxZ.");
+      Assert.True(response.BoundingExtents.IsValidPlanExtent, "Invalid plan extents.");
     }
 
     [Fact]
@@ -64,12 +59,9 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       Assert.True(Math.Abs(result.MinElevation - _response.MinElevation) < Consts.TOLERANCE_HEIGHT, "Invalid initial result value for MinElevation.");
       Assert.True(Math.Abs(result.MaxElevation - _response.MaxElevation) < Consts.TOLERANCE_HEIGHT, "Invalid initial result value for MaxElevation.");
       Assert.True(Math.Abs(result.CoverageArea - _response.CoverageArea) < Consts.TOLERANCE_AREA, "Invalid initial result value for CoverageArea.");
-      Assert.True(Math.Abs(result.BoundingExtents.MinX - _response.BoundingExtents.MinX) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for BoundingExtents.MinX.");
-      Assert.True(Math.Abs(result.BoundingExtents.MinY - _response.BoundingExtents.MinY) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for BoundingExtents.MinY.");
-      Assert.True(Math.Abs(result.BoundingExtents.MinZ - _response.BoundingExtents.MinZ) < Consts.TOLERANCE_HEIGHT, "Invalid initial result value for BoundingExtents.MinZ.");
-      Assert.True(Math.Abs(result.BoundingExtents.MaxX - _response.BoundingExtents.MaxX) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for BoundingExtents.MaxX.");
-      Assert.True(Math.Abs(result.BoundingExtents.MaxY - _response.BoundingExtents.MaxY) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for BoundingExtents.MaxY.");
-      Assert.True(Math.Abs(result.BoundingExtents.MaxZ - _response.BoundingExtents.MaxZ) < Consts.TOLERANCE_HEIGHT, "Invalid initial result value for BoundingExtents.MaxZ.");
+      Assert.True(result.BoundingExtents.IsValidPlanExtent, "Result invalid plan extents.");
+      Assert.True(_response.BoundingExtents.IsValidPlanExtent, "Response BoundingExtents should be inverted.");
+      Assert.True(result.BoundingExtents.Equals(_response.BoundingExtents), "Result and response BoundingExtents are not equal.");
     }
 
     [Fact]
@@ -93,12 +85,9 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       Assert.True(Math.Abs(response.MaxElevation - _response.MaxElevation) < Consts.TOLERANCE_HEIGHT, "Invalid aggregated value for MaxElevation.");
       Assert.True(response.CellsUsed == _response.CellsUsed * 2, "Invalid aggregated value for CellsUsed.");
       Assert.True(response.CellsScanned == _response.CellsScanned * 2, "Invalid aggregated value for CellsScanned.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinX - _response.BoundingExtents.MinX) < Consts.TOLERANCE_DIMENSION, "Invalid aggregated value for BoundingExtents.MinX.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinY - _response.BoundingExtents.MinY) < Consts.TOLERANCE_DIMENSION, "Invalid aggregated value for BoundingExtents.MinY.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinZ - _response.BoundingExtents.MinZ) < Consts.TOLERANCE_HEIGHT, "Invalid aggregated value for BoundingExtents.MinZ.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxX - _response.BoundingExtents.MaxX) < Consts.TOLERANCE_DIMENSION, "Invalid aggregated value for BoundingExtents.MaxX.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxY - _response.BoundingExtents.MaxY) < Consts.TOLERANCE_DIMENSION, "Invalid aggregated value for BoundingExtents.MaxY.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxZ - _response.BoundingExtents.MaxZ) < Consts.TOLERANCE_HEIGHT, "Invalid aggregated value for BoundingExtents.MaxZ.");
+      Assert.True(response.BoundingExtents.IsValidPlanExtent, "Response invalid plan extents.");
+      Assert.True(_response.BoundingExtents.IsValidPlanExtent, "_Response invalid plan extents.");
+      Assert.True(response.BoundingExtents.Equals(_response.BoundingExtents), "Response and _response BoundingExtents are not equal.");
     }
   }
 }

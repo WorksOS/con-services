@@ -46,16 +46,11 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
-      Assert.True(Math.Abs(aggregator.MinElevation - Consts.INITIAL_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for MinElevation.");
-      Assert.True(Math.Abs(aggregator.MaxElevation + Consts.INITIAL_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for MaxElevation.");
+      Assert.True(Math.Abs(aggregator.MinElevation - Consts.MAX_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for MinElevation.");
+      Assert.True(Math.Abs(aggregator.MaxElevation - Consts.MIN_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for MaxElevation.");
       Assert.True(aggregator.CellsUsed == 0, "Invalid aggregator value for CellsUsed.");
       Assert.True(aggregator.CellsScanned == 0, "Invalid aggregator value for CellsScanned.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MinX - Consts.MAX_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for BoundingExtents.MinX.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MinY - Consts.MAX_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for BoundingExtents.MinY.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MinZ - Consts.MAX_RANGE) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for BoundingExtents.MinZ.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MaxX - Consts.MIN_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for BoundingExtents.MaxX.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MaxY - Consts.MIN_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for BoundingExtents.MaxY.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MaxZ - Consts.MIN_RANGE) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for BoundingExtents.MaxZ.");
+      Assert.True(!aggregator.BoundingExtents.IsValidPlanExtent, "Aggregator BoundingExtents should be inverted.");
     }
 
     [Fact]
@@ -89,12 +84,9 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
       Assert.True(Math.Abs(response.MaxElevation - aggregator.MaxElevation) < Consts.TOLERANCE_HEIGHT, "Invalid read-out value for MaxElevation.");
       Assert.True(response.CellsUsed == aggregator.CellsUsed, "Invalid read-out value for CellsUsed.");
       Assert.True(response.CellsScanned == aggregator.CellsScanned, "Invalid read-out value for CellsScanned.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinX - aggregator.BoundingExtents.MinX) < Consts.TOLERANCE_DIMENSION, "Invalid read-out value for BoundingExtents.MinX.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinY - aggregator.BoundingExtents.MinY) < Consts.TOLERANCE_DIMENSION, "Invalid read-out value for BoundingExtents.MinY.");
-      Assert.True(Math.Abs(response.BoundingExtents.MinZ - aggregator.BoundingExtents.MinZ) < Consts.TOLERANCE_HEIGHT, "Invalid read-out value for BoundingExtents.MinZ.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxX - aggregator.BoundingExtents.MaxX) < Consts.TOLERANCE_DIMENSION, "Invalid read-out value for BoundingExtents.MaxX.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxY - aggregator.BoundingExtents.MaxY) < Consts.TOLERANCE_DIMENSION, "Invalid read-out value for BoundingExtents.MaxY.");
-      Assert.True(Math.Abs(response.BoundingExtents.MaxZ - aggregator.BoundingExtents.MaxZ) < Consts.TOLERANCE_HEIGHT, "Invalid read-out value for BoundingExtents.MaxZ.");
+      Assert.True(!response.BoundingExtents.IsValidPlanExtent, "Response BoundingExtents should be inverted.");
+      Assert.True(!aggregator.BoundingExtents.IsValidPlanExtent, "Aggregator BoundingExtents should be inverted.");
+      Assert.True(response.BoundingExtents.Equals(aggregator.BoundingExtents), "Aggregator and response BoundingExtents are not equal.");
     }
   }
 }

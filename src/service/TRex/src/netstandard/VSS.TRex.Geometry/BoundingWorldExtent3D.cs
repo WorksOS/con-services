@@ -11,6 +11,9 @@ namespace VSS.TRex.Geometry
   /// </summary>
   public class BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>
   {
+    private const double MIN_RANGE = -1E100;
+    private const double MAX_RANGE = 1E100;
+
     /// <summary>
     /// The Min/Max X/Y/Z values describing the 3D bounding extent
     /// </summary>
@@ -415,12 +418,12 @@ namespace VSS.TRex.Geometry
     /// </summary>
     public void SetInverted()
     {
-      MinX = Consts.MAX_RANGE;
-      MaxX = Consts.MIN_RANGE;
-      MinY = Consts.MAX_RANGE;
-      MaxY = Consts.MIN_RANGE;
-      MinZ = Consts.MAX_RANGE;
-      MaxZ = Consts.MIN_RANGE;
+      MinX = MAX_RANGE;
+      MaxX = MIN_RANGE;
+      MinY = MAX_RANGE;
+      MaxY = MIN_RANGE;
+      MinZ = MAX_RANGE;
+      MaxZ = MIN_RANGE;
     }
 
     /// <summary>
@@ -428,12 +431,12 @@ namespace VSS.TRex.Geometry
     /// </summary>
     public void SetMaximalCoverage()
     {
-      MinX = Consts.MIN_RANGE;
-      MaxX = Consts.MAX_RANGE;
-      MinY = Consts.MIN_RANGE;
-      MaxY = Consts.MAX_RANGE;
-      MinZ = Consts.MIN_RANGE;
-      MaxZ = Consts.MAX_RANGE;
+      MinX = MIN_RANGE;
+      MaxX = MAX_RANGE;
+      MinY = MIN_RANGE;
+      MaxY = MAX_RANGE;
+      MinZ = MIN_RANGE;
+      MaxZ = MAX_RANGE;
     }
 
     /// <summary>

@@ -69,8 +69,8 @@ namespace VSS.TRex.Analytics.ElevationStatistics
       CellsScanned = 0;
       CellsUsed = 0;
 
-      MinElevation = Consts.INITIAL_ELEVATION;
-      MaxElevation = -Consts.INITIAL_ELEVATION;
+      MinElevation = Consts.MAX_ELEVATION;
+      MaxElevation = Consts.MIN_ELEVATION;
 
       BoundingExtents.SetInverted();
 

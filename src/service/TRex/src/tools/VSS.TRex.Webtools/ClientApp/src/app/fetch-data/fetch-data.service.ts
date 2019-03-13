@@ -68,7 +68,7 @@ export class FetchDataService {
       case DisplayModeType.CutFill:
         requestTypeString = "cutfillstatistics";
         break;
-      case DisplayModeType.Count:
+      case DisplayModeType.ElevationRange:
         requestTypeString = "elevationrange";
     };
 

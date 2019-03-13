@@ -10,7 +10,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CCAStatistics
 {
-  public class CCAStatisticsAggregatorTests : BaseTests
+  public class CCAStatisticsAggregatorTests
   {
     [Fact]
     public void Test_CCAStatisticsAggregator_Creation()
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
       clientGrid.FillWithTestPattern();
 
       var dLength = clientGrid.Cells.Length;
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
       clientGrid.FillWithTestPattern();
 
       var dLength = clientGrid.Cells.Length;
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
@@ -70,7 +70,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics
       // Other aggregator...
       var otherAggregator = new CCAStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
 
 
       otherAggregator.ProcessSubGridResult(subGrids);

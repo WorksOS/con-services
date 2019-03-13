@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.TRex.Filters;
-using Xunit;
-using VSS.TRex.Tests.Analytics.Common;
-using VSS.TRex.Tests.BinarizableSerialization.Analytics;
-using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Exports.CSV.GridFabric;
+using VSS.TRex.Filters;
+using VSS.TRex.Tests.BinarizableSerialization.Analytics;
+using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Exports.Arguments
 
 {
-  public class ToFromBinary_CSVExportRequestArgument : BaseTests, IClassFixture<AnalyticsTestsDIFixture>
+  public class ToFromBinary_CSVExportRequestArgument : IClassFixture<AnalyticsTestsDIFixture>
   {
     [Fact]
     public void Test_CSVExportRequestArgument_Simple()

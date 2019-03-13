@@ -7,16 +7,16 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 {
-  public class PassCountStatisticsResponseTests : BaseTests
+  public class PassCountStatisticsResponseTests
   {
     private PassCountStatisticsResponse _response => new PassCountStatisticsResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
-      CellSize = CELL_SIZE,
-      CellsScannedOverTarget = CELLS_OVER_TARGET,
-      CellsScannedAtTarget = CELLS_AT_TARGET,
-      CellsScannedUnderTarget = CELLS_UNDER_TARGET,
-      SummaryCellsScanned = CELLS_OVER_TARGET + CELLS_AT_TARGET + CELLS_UNDER_TARGET,
+      CellSize = TestConsts.CELL_SIZE,
+      CellsScannedOverTarget = TestConsts.CELLS_OVER_TARGET,
+      CellsScannedAtTarget = TestConsts.CELLS_AT_TARGET,
+      CellsScannedUnderTarget = TestConsts.CELLS_UNDER_TARGET,
+      SummaryCellsScanned = TestConsts.CELLS_OVER_TARGET + TestConsts.CELLS_AT_TARGET + TestConsts.CELLS_UNDER_TARGET,
       IsTargetValueConstant = true,
       LastPassCountTargetRange = new PassCountRangeRecord(3, 10),
       Counts = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }

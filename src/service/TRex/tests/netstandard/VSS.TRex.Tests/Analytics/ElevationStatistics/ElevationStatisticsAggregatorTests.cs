@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.ElevationStatistics
 {
-  public class ElevationStatisticsAggregatorTests : BaseTests
+  public class ElevationStatisticsAggregatorTests
   {
     private const byte MAX_ELEVATION = 62;
 
@@ -20,16 +20,11 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
       Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
-      Assert.True(Math.Abs(aggregator.MinElevation - Consts.INITIAL_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for MinElevation.");
-      Assert.True(Math.Abs(aggregator.MaxElevation + Consts.INITIAL_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for MaxElevation.");
+      Assert.True(Math.Abs(aggregator.MinElevation - Consts.MAX_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for MinElevation.");
+      Assert.True(Math.Abs(aggregator.MaxElevation - Consts.MIN_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for MaxElevation.");
       Assert.True(aggregator.CellsUsed == 0, "Invalid initial value for CellsUsed.");
       Assert.True(aggregator.CellsScanned == 0, "Invalid initial value for CellsScanned.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MinX - Consts.MAX_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MinX.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MinY - Consts.MAX_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MinY.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MinZ - Consts.MAX_RANGE) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for BoundingExtents.MinZ.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MaxX - Consts.MIN_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MaxX.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MaxY - Consts.MIN_RANGE) < Consts.TOLERANCE_DIMENSION, "Invalid initial value for BoundingExtents.MaxY.");
-      Assert.True(Math.Abs(aggregator.BoundingExtents.MaxZ - Consts.MIN_RANGE) < Consts.TOLERANCE_HEIGHT, "Invalid initial value for BoundingExtents.MaxZ.");
+      Assert.True(!aggregator.BoundingExtents.IsValidPlanExtent, "Aggregator BoundingExtents should be inverted.");
     }
 
     [Fact]
@@ -42,7 +37,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
       clientGrid.FillWithTestPattern();
 
       var dLength = clientGrid.Cells.Length;
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
@@ -65,7 +60,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
       clientGrid.FillWithTestPattern();
 
       var dLength = clientGrid.Cells.Length;
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
@@ -74,7 +69,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
       // Other aggregator...
       var otherAggregator = new ElevationStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       
       otherAggregator.ProcessSubGridResult(subGrids);
 
