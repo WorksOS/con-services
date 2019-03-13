@@ -38,7 +38,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         {
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
-            bool result = !base.TransferResponse(response);
+            bool result = base.TransferResponse(response);
 
             if (result)
             {
