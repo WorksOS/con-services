@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.MasterData.Models.Models
@@ -23,6 +22,25 @@ namespace VSS.MasterData.Models.Models
     public long IconKey { get; set; }
     public long ModelYear { get; set; }
     
+    public AssetData()
+    { }
+
+    public AssetData(Guid customerUID, Guid assetUID, string assetName, long legacyAssetId,
+        string serialNumber, string makeCode, string model, string assetTypeName,
+        string equipmentVIN, long iconKey, long modelYear)
+    {
+      CustomerUID = customerUID;
+      AssetUID = assetUID;
+      LegacyAssetID = legacyAssetId;
+      SerialNumber = serialNumber;
+      MakeCode = makeCode;
+      Model = model;
+      AssetTypeName = assetTypeName;
+      EquipmentVIN = equipmentVIN;
+      IconKey = iconKey;
+      ModelYear = modelYear;
+    }
+
     public override bool Equals(object obj)
     {
       var otherAssetData = obj as AssetData;

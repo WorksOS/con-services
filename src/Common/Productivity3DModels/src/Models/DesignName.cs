@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Machine identifier that the design is on. Used for filtering in machine details end point only.
     /// </summary>
     [JsonIgnore]
-    public long MachineId { get; private set; }
+    public long MachineId { get; set; }
     /// <summary>
     /// Start date and time for the design on the machine. Used for filtering in machine details end point only.
     /// </summary>
@@ -35,18 +35,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Machine identifier that the design is on. Used for filtering in machine details end point only.
     /// </summary>
     [JsonIgnore]
-    public Guid? MachineUid { get; private set; }
+    public Guid? AssetUid { get; set; }
 
 
     public DesignName(string name, long id, long machineId, DateTime startDate, DateTime endDate,
-      Guid? machineUid = null)
+      Guid? assetUid = null)
     {
       Id = id;
       Name = name;
       MachineId = machineId;
       StartDate = startDate;
       EndDate = endDate;
-      MachineUid = machineUid;
+      AssetUid = assetUid;
     }
 
     #region Equality test

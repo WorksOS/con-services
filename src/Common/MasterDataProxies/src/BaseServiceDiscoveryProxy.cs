@@ -70,11 +70,12 @@ namespace VSS.MasterData.Proxies
 
     #region Protected Methods
 
-    protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders) 
+    protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
+        IDictionary<string, string> queryParameters = null) 
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
-        () => GetRequest<T>(customHeaders, route));
+        () => GetRequest<T>(customHeaders, route, queryParameters));
     }
 
     #endregion

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.AssetService.Proxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -22,7 +24,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
       ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
-      IDictionary<string, string> customHeaders = null)
+      IAssetServiceProxy assetProxy = null, IDictionary<string, string> customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -47,7 +49,9 @@ namespace VSS.Productivity3D.Common.Interfaces
         transferProxy,
         tRexTagFileProxy,
         trexCompactionDataProxy,
-        customHeaders);
+        assetProxy,
+        customHeaders,
+        customerUid);
       
       return executor;
     }

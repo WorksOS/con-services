@@ -62,14 +62,14 @@ namespace VSS.TRex.Tests.SiteModels
       machineDesigns[0].Id.Should().Be(design1.Id);
       machineDesigns[0].Name.Should().Be(design1.Name);
       machineDesigns[0].MachineId.Should().Be(Consts.LEGACY_ASSETID); 
-      machineDesigns[0].MachineUid.Should().Be(machine.ID);
+      machineDesigns[0].AssetUid.Should().Be(machine.ID);
       machineDesigns[0].StartDate.Should().Be(eventDate1);
       machineDesigns[0].EndDate.Should().Be(DateTime.MaxValue);
 
       machineDesigns[1].Id.Should().Be(design2.Id);
       machineDesigns[1].Name.Should().Be(design2.Name);
       machineDesigns[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[1].MachineUid.Should().Be(machine.ID);
+      machineDesigns[1].AssetUid.Should().Be(machine.ID);
       machineDesigns[1].StartDate.Should().Be(eventDate2);
       machineDesigns[1].EndDate.Should().Be(DateTime.MaxValue);
     }
@@ -96,14 +96,14 @@ namespace VSS.TRex.Tests.SiteModels
       machineDesigns[0].Id.Should().Be(design1.Id);
       machineDesigns[0].Name.Should().Be(design1.Name);
       machineDesigns[0].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[0].MachineUid.Should().Be(machine.ID);
+      machineDesigns[0].AssetUid.Should().Be(machine.ID);
       machineDesigns[0].StartDate.Should().Be(eventDate1);
       machineDesigns[0].EndDate.Should().Be(DateTime.MaxValue);
 
       machineDesigns[1].Id.Should().Be(design2.Id);
       machineDesigns[1].Name.Should().Be(design2.Name);
       machineDesigns[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[1].MachineUid.Should().Be(machine.ID);
+      machineDesigns[1].AssetUid.Should().Be(machine.ID);
       machineDesigns[1].StartDate.Should().Be(eventDate2);
       machineDesigns[1].EndDate.Should().Be(DateTime.MaxValue);
     }
@@ -143,28 +143,28 @@ namespace VSS.TRex.Tests.SiteModels
       machineDesigns[0].Id.Should().Be(design1.Id);
       machineDesigns[0].Name.Should().Be(design1.Name);
       machineDesigns[0].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[0].MachineUid.Should().Be(machine1.ID);
+      machineDesigns[0].AssetUid.Should().Be(machine1.ID);
       machineDesigns[0].StartDate.Should().Be(eventDate1);
       machineDesigns[0].EndDate.Should().Be(DateTime.MaxValue);
 
       machineDesigns[1].Id.Should().Be(design2.Id);
       machineDesigns[1].Name.Should().Be(design2.Name);
       machineDesigns[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[1].MachineUid.Should().Be(machine1.ID);
+      machineDesigns[1].AssetUid.Should().Be(machine1.ID);
       machineDesigns[1].StartDate.Should().Be(eventDate2);
       machineDesigns[1].EndDate.Should().Be(DateTime.MaxValue);
 
       machineDesigns[2].Id.Should().Be(design2.Id);
       machineDesigns[2].Name.Should().Be(design2.Name);
       machineDesigns[2].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[2].MachineUid.Should().Be(machine2.ID);
+      machineDesigns[2].AssetUid.Should().Be(machine2.ID);
       machineDesigns[2].StartDate.Should().Be(eventDate5);
       machineDesigns[2].EndDate.Should().Be(DateTime.MaxValue);
 
       machineDesigns[3].Id.Should().Be(design1.Id);
       machineDesigns[3].Name.Should().Be(design1.Name);
       machineDesigns[3].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[3].MachineUid.Should().Be(machine2.ID);
+      machineDesigns[3].AssetUid.Should().Be(machine2.ID);
       machineDesigns[3].StartDate.Should().Be(eventDate7);
       machineDesigns[3].EndDate.Should().Be(DateTime.MaxValue);
     }

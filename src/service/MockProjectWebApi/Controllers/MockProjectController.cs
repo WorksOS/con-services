@@ -41,6 +41,7 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     /// <returns>The list of mocked projects</returns>
     [HttpGet("api/v4/mockproject/{projectUid}")]
+    [HttpGet("api/v4/mock/project/{projectUid}")]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
       Console.WriteLine("GetMockProject");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -7,7 +8,6 @@ using Newtonsoft.Json;
 using VLPDDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -22,8 +22,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       log.LogInformation(
         $"GetLayerIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS")}");
 
-      var layers = new List<LayerIdDetails>();
-      bool haveIds = false;
+      List<LayerIdDetails> layers;
+      bool haveUids = true;
 
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS"))
@@ -39,7 +39,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           layers = layersResult.Layers;
         }
         else
+        {
+          log.LogError($"GetLayerIdsExecutor: No projectUid provided. ");
           throw CreateServiceException<GetLayerIdsExecutor>();
+        }
       }
 
 #if RAPTOR
@@ -47,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         if (request.ProjectId.HasValue && request.ProjectId >= 1)
         {
-          haveIds = true;
+          haveUids = false;
           TDesignLayer[] layerList = null;
           raptorClient.GetOnMachineLayers(request.ProjectId ?? -1, out layerList);
           if (layerList == null || layerList.Length == 0)
@@ -56,28 +59,43 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           layers = ConvertLayerList(layerList);
         }
         else
+        {
+          log.LogError($"GetLayerIdsExecutor: No projectId provided. ");
           throw CreateServiceException<GetLayerIdsExecutor>();
+        }
       }
 #endif
 
-      // todoJeannie pair machineUids
-      PairUpAssetIdentifiers(layers, haveIds);
+      PairUpAssetIdentifiersAsync(layers, haveUids);
       return new LayerIdsExecutionResult(layers);
     }
 
-    private void PairUpAssetIdentifiers(List<LayerIdDetails> layers, bool haveIds)
+    private async void PairUpAssetIdentifiersAsync(List<LayerIdDetails> layers, bool haveUids)
     {
       if (layers == null || layers.Count == 0)
         return;
 
-      // todoJeannie get assetList from AssetService and match e.g. longs with Uids
-
-      // note that new assets (since Gen3) will not have a valid legacyId. It will be null/-1/0. set to -1?
-      //if (haveIds)
-      // { }
-      //  else
-      // { }
-      return;
+      var assetsResult = await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      if (haveUids)
+      {
+        foreach (var layer in layers)
+        {
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == layer.AssetUid).Select(a => a.LegacyAssetID)
+            .FirstOrDefault();
+          layer.AssetId = legacyAssetId < 1 ? -1 : legacyAssetId;
+        }
+      }
+      else
+        foreach (var layer in layers)
+        {
+          if (layer.AssetId < 1)
+            layer.AssetUid = null;
+          else
+          {
+            layer.AssetUid = assetsResult.Where(a => a.LegacyAssetID == layer.AssetId).Select(a => a.AssetUID)
+              .FirstOrDefault();
+          }
+        }
     }
 
 #if RAPTOR
@@ -89,7 +107,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         layers.Add(new LayerIdDetails
         (
-          layerList[i].FAssetID, layerList[i].FDesignID, layerList[i].FLayerID, layerList[i].FStartTime, layerList[i].FEndTime, null
+          layerList[i].FAssetID, layerList[i].FDesignID, layerList[i].FLayerID, layerList[i].FStartTime,
+          layerList[i].FEndTime, null
         ));
       }
 

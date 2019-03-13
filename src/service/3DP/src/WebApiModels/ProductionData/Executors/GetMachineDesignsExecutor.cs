@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using VLPDDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -22,8 +21,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var request = CastRequestObjectTo<ProjectID>(item);
       log.LogInformation($"GetMachineDesignsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")}");
 
-      var designs = new List<DesignName>();
-      bool haveIds = false;
+      List<DesignName> designs;
+      bool haveUids = true;
 
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS"))
@@ -39,7 +38,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           designs = machineDesignsResult.Designs;
         }
         else
+        {
+          log.LogError($"GetMachineDesignsExecutor: No projectUid provided. ");
           throw CreateServiceException<GetMachineDesignsExecutor>();
+        }
       }
 
 #if RAPTOR
@@ -47,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         if (request.ProjectId.HasValue && request.ProjectId >= 1)
         {
-          haveIds = true;
+          haveUids = false;
           var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
 
           if (raptorDesigns == null)
@@ -56,28 +58,42 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           designs = ConvertDesignList(raptorDesigns);
         }
         else
+        {
+          log.LogError($"GetMachineDesignsExecutor: No projectId provided. ");
           throw CreateServiceException<GetMachineDesignsExecutor>();
+        }
       }
 #endif
 
-      // todoJeannie pair machineUids do this before the following call, to fill in Uids (which it uses)
-      PairUpAssetIdentifiers(designs, haveIds);
+      PairUpAssetIdentifiers(designs, haveUids);
       return CreateResultantListFromDesigns(designs);
     }
 
-    private void PairUpAssetIdentifiers(List<DesignName> designs, bool haveIds)
+    private async void PairUpAssetIdentifiers(List<DesignName> designs, bool haveUids)
     {
       if (designs == null || designs.Count == 0)
         return;
 
-      // todoJeannie get assetList from AssetService and match e.g. longs with Uids
-
-      // note that new assets (since Gen3) will not have a valid legacyId. It will be null/-1/0. set to -1?
-      //if (haveIds)
-      // { }
-      //  else
-      // { }
-      return;
+      var assetsResult = await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      if (haveUids)
+      {
+        foreach (var design in designs)
+        {
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == design.AssetUid).Select(a => a.LegacyAssetID).FirstOrDefault();
+          design.MachineId = legacyAssetId < 1 ? -1 : legacyAssetId;
+        }
+      }
+      else
+        foreach (var design in designs)
+        {
+          if (design.MachineId < 1)
+            design.AssetUid = null;
+          else
+          {
+            design.AssetUid = assetsResult.Where(a => a.LegacyAssetID == design.MachineId).Select(a => a.AssetUID)
+              .FirstOrDefault();
+          }
+        }
     }
 
 #if RAPTOR
@@ -106,11 +122,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       //For details, need to set the end dates so can test date range
       var designDetails = new List<DesignName>();
-      var machineUids = designs.Select(d => d.MachineUid).Distinct();
+      var assetUids = designs.Select(d => d.AssetUid).Distinct();
 
-      foreach (var machineUid in machineUids)
+      foreach (var assetUid in assetUids)
       {
-        var machineDesigns = designs.Where(d => d.MachineUid == machineUid).OrderBy(d => d.StartDate).ToList();
+        var machineDesigns = designs.Where(d => d.AssetUid == assetUid).OrderBy(d => d.StartDate).ToList();
         for (var i = 1; i < machineDesigns.Count; i++)
         {
           designDetails.Add(new DesignName(
@@ -119,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             machineDesigns[i - 1].MachineId,
             machineDesigns[i - 1].StartDate,
             machineDesigns[i].StartDate,
-            machineDesigns[i - 1].MachineUid
+            machineDesigns[i - 1].AssetUid
             ));
         }
 
@@ -129,7 +145,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           machineDesigns[machineDesigns.Count - 1].MachineId,
           machineDesigns[machineDesigns.Count - 1].StartDate,
           DateTime.UtcNow,
-          machineDesigns[machineDesigns.Count - 1].MachineUid));
+          machineDesigns[machineDesigns.Count - 1].AssetUid));
       }
 
       return new MachineDesignsExecutionResult(designDetails);

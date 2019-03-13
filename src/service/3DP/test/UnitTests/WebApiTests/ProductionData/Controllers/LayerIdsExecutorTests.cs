@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.AssetService.Proxy;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
@@ -45,8 +47,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     public async Task LayerIdsExecutor_TRex_Success()
     {
       var projectIds = new ProjectID() {ProjectUid = Guid.NewGuid()};
+      var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
-      var designUid = Guid.NewGuid();
+      var assetId = 777;
       long layerId = 444;
       var expectedResult = new LayerIdsExecutionResult
       (
@@ -61,18 +64,31 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(expectedResult);
 
+      var assets = new List<AssetData>(1)
+      {
+        new AssetData(customerUid, assetUid, "Asset Name", assetId,
+          "serial Number", "CAT", "D7", "Asset Type",
+          "", 1, 1977)
+      };
 
+      var assetProxy = new Mock<IAssetServiceProxy>();
+      assetProxy.Setup(x => x.GetAssetsV1(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(assets);
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("true");
 
       var executor = RequestExecutorContainerFactory
         .Build<GetLayerIdsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
+          trexCompactionDataProxy: tRexProxy.Object, assetProxy: assetProxy.Object,
+          customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as LayerIdsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.Layers.Count, "Wrong layer count");
-      Assert.AreEqual(expectedResult.Layers[0].AssetUid, result.Layers[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(expectedResult.Layers[0].AssetUid, result.Layers[0].AssetUid,
+        "Wrong machine Uid");
+      Assert.AreEqual(assets[0].LegacyAssetID, result.Layers[0].AssetId,
+        "Wrong legacyAssetId");
       Assert.AreEqual(expectedResult.Layers[0].DesignId, result.Layers[0].DesignId, "Wrong design Id");
       Assert.AreEqual(expectedResult.Layers[0].LayerId, result.Layers[0].LayerId, "Wrong layer id");
     }
@@ -101,14 +117,16 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     public async Task LayerIdsExecutor_Raptor_Success()
     {
       var projectIds = new ProjectID() {ProjectId = 999};
+      var customerUid = Guid.NewGuid();
       var assetId = 777;
+      var assetUid = Guid.NewGuid();
       var designId = 888;
       var layerId = 999;
       var expectedResult = new LayerIdsExecutionResult
       (
         new List<LayerIdDetails>(1)
         {
-          new LayerIdDetails(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40),null)
+          new LayerIdDetails(assetId, designId, layerId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40),assetUid)
         }
       );
 
@@ -129,20 +147,35 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .Setup(x => x.GetOnMachineLayers(projectIds.ProjectId.Value, out tLayers))
         .Returns(0);
 
+      var assets = new List<AssetData>(1)
+      {
+        new AssetData(customerUid, assetUid, "Asset Name", assetId,
+          "serial Number", "CAT", "D7", "Asset Type",
+          "", 1, 1977)
+      };
+
+      var assetProxy = new Mock<IAssetServiceProxy>();
+      assetProxy.Setup(x => x.GetAssetsV1(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(assets);
+
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_LAYERS")).Returns("false");
 
       var executor = RequestExecutorContainerFactory
-        .Build<GetLayerIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
+        .Build<GetLayerIdsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
+          assetProxy: assetProxy.Object,
+          customHeaders: _customHeaders, customerUid: customerUid.ToString());
       var result = await executor.ProcessAsync(projectIds) as LayerIdsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(1, result.Layers.Count, "Wrong layer count");
       Assert.AreEqual(expectedResult.Layers[0].AssetId, result.Layers[0].AssetId, "Wrong machine Id");
+      Assert.AreEqual(expectedResult.Layers[0].AssetUid, result.Layers[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assets[0].LegacyAssetID, result.Layers[0].AssetId, "Wrong legacyAssetId");
+
       Assert.AreEqual(expectedResult.Layers[0].DesignId, result.Layers[0].DesignId, "Wrong design Id");
       Assert.AreEqual(expectedResult.Layers[0].LayerId, result.Layers[0].LayerId, "Wrong layer Id");
       Assert.AreEqual(expectedResult.Layers[0].StartDate, result.Layers[0].StartDate, "Wrong startDate");
       Assert.AreEqual(expectedResult.Layers[0].EndDate, result.Layers[0].EndDate, "Wrong endDate");
-      Assert.IsNull(result.Layers[0].AssetUid, "Wrong machine Uid");
     }
 #endif
 
