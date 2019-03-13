@@ -19,6 +19,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Patches
 {
+  [UnitTestCoveredRequest(RequestType = typeof(PatchRequest))]
   public class PatchRequestTests: IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private ISiteModel NewEmptyModel()

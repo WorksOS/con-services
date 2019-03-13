@@ -158,7 +158,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       DecimationExtents = value;
 
-      Debug.Assert(DataStore != null, "Cannot set decimation exents without a datastore");
+      Debug.Assert(DataStore != null, "Cannot set decimation extents without a data store");
 
       // Convert the world coordinate range into the grid cell range that it covers
       DataStore?.CalculateRegionGridCoverage(value, out GridCalcExtents);
@@ -174,9 +174,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           ScanTri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
         }
 
-        //      {$IFDEF DEBUG}
-        //      Heap.CheckListConsistency();
-        //      {$ENDIF}
+        // Heap.CheckListConsistency();
       }
       else
       {
@@ -209,9 +207,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         Heap[ScanTri.HeapIndex].sy = Candidate.Y;
         Heap[ScanTri.HeapIndex].sz = Candidate.Z;
 
-        //      {$IFDEF DEBUG}
-        //      Heap.CheckListConsistency();
-        //      {$ENDIF}
+        // Heap.CheckListConsistency();
       }
     }
 
@@ -632,9 +628,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
         // Insert the seeds as new grid points into the relevant triangles
         if (NXSeedIntervals > 0 && NYSeedIntervals > 0)
-          for (int I = 0; I <= NXSeedIntervals + 1; I++)
+          for (int I = 0; I <= NXSeedIntervals; I++)
           {
-            for (int J = 0; J <= NYSeedIntervals + 1; J++)
+            for (int J = 0; J <= NYSeedIntervals; J++)
             {
               int _X1 = I * XSeedIntervalStep;
               int _Y1 = J * YSeedIntervalStep;
@@ -654,9 +650,16 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
               GetHeightForTriangleScan(_X4, _Y4, true, 1, _Z4);
 
               // Create both triangles across the panel keeping the vertex order as clockwise
-              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X1, _Y1, _Z1[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]));
+              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle
+                (Engine.TIN.Vertices.AddPoint(_X1, _Y1, _Z1[0]), 
+                 Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), 
+                 Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]));
               PerformTriangleAdditionToHeap();
-              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X4, _Y4, _Z4[0]));
+
+              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle
+                (Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]), 
+                 Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), 
+                 Engine.TIN.Vertices.AddPoint(_X4, _Y4, _Z4[0]));
               PerformTriangleAdditionToHeap();
             }
           }
@@ -677,7 +680,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       BuildMeshFaultCode = DecimationResult.NoError;
       DateTime StartTime = DateTime.Now;
 
-      Debug.Assert(DataStore != null, "No Datastor");
+      Debug.Assert(DataStore != null, "No Data store");
 
       if (DataStore == null)
       {
@@ -693,7 +696,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         return false;
       }
 
-      if (GridCalcExtents.Area() <= 0)
+      if (GridCalcExtents.Area() <= 1)
       {
         BuildMeshFaultCode = DecimationResult.NoData;
         return false;
@@ -719,9 +722,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       ConstructSeedTriangleMesh();
 
-      //  {$IFDEF DEBUG}
-      //  FTinningEngine.TIN.SaveToFile('C:\Temp\IC_GRIDToTIN_AfterInitialIntervalTesselation.ttm', True); {SKIP}
-      //  {$ENDIF}
+      // Engine.TIN.SaveToFile(@"C:\Temp\GRIDToTINDecimator_AfterInitialIntervalTesselation.ttm", true);
 
       // Add grid points into the triangle with the largest error (importance)
       // until there are no triangles whose error fall outside of the tolerance
@@ -771,8 +772,11 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 //  FTinningEngine.TIN.SaveToFile('C:\Temp\IC_GRIDToTIN_BeforeNullRemoval.ttm', True); {SKIP}
 //{$ENDIF}
 
-      // We have now constructed the surface - now remove all the vertices at elevation NullVertexHeight
+      // We have now constructed the surface - now remove all the vertices at elevation NullVertexHeight,
+      // as well as all initial edges and start points as these will now be invalid
       RemoveCornerAndNullTriangles();
+      Engine.TIN.Edges.Clear();
+      Engine.TIN.StartPoints.Clear();
 
       // Now convert all vertex coordinates to their true world positions
       // Calculate the vertex offset to take into account the local grid origin
@@ -804,15 +808,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       InitialiseTriangleVertexOrdering();
 
-      try
-      {
-        ValidTriangle = Zplane.Init(ScanTri.Vertices[0], ScanTri.Vertices[1], ScanTri.Vertices[2]);
-      }
-      catch (Exception E)
-      {
-        Log.LogError(E, $"Exception in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}");
-        ValidTriangle = false;
-      }
+      ValidTriangle = Zplane.Init(ScanTri.Vertices[0], ScanTri.Vertices[1], ScanTri.Vertices[2]);
 
       // ***** Check how many trivial triangles (one cell) make it here. These could be
       // pruned before ever being placed into the heap.....

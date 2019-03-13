@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.76" />
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.78" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">

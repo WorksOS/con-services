@@ -26,6 +26,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Rendering
 {
+  [UnitTestCoveredRequest(RequestType = typeof(TileRenderRequest))]
   public class TileRequestTests : IClassFixture<DIRenderingFixture>
   {
     private ISiteModel NewEmptyModel()

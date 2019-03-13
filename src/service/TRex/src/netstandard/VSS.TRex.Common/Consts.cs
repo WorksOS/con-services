@@ -56,7 +56,7 @@
 
 
     /// <summary>
-    /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references
+    /// The limit under which node subgrids are represented by sparse lists rather than a complete sub grid array of child sub grid references
     /// </summary>
     /// <returns></returns>
     public const int SUBGRIDTREENODE_CELLSPARCITYLIMIT = 10;        // override with:  SUBGRIDTREENODE_CELLSPARCITYLIMIT

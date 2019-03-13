@@ -142,15 +142,6 @@ namespace VSS.TRex.Designs.Storage
     }
 
     /// <summary>
-    /// Constructor accepting a Binary Reader instance from which to instantiate itself
-    /// </summary>
-    /// <param name="reader"></param>
-    public Design(BinaryReader reader)
-    {
-      Read(reader);
-    }
-
-    /// <summary>
     /// Constructor accepting full design state
     /// </summary>
     /// <param name="iD"></param>

@@ -19,6 +19,8 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
 {
+  [UnitTestCoveredRequest(RequestType = typeof(SimpleVolumesRequest_ApplicationService))]
+  [UnitTestCoveredRequest(RequestType = typeof(SimpleVolumesRequest_ClusterCompute))]
   public class SimpleVolumesRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]

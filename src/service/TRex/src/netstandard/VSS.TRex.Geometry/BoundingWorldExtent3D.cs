@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Geometry
 {
@@ -9,7 +10,7 @@ namespace VSS.TRex.Geometry
   /// rectangular area of the world in world coordinates, and a height range
   /// within that extent
   /// </summary>
-  public class BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>
+  public class BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>, IBinaryReaderWriter
   {
     /// <summary>
     /// The Min/Max X/Y/Z values describing the 3D bounding extent
@@ -528,5 +529,7 @@ namespace VSS.TRex.Geometry
       MaxX = maxX;
       MaxY = maxY;
     }
+
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

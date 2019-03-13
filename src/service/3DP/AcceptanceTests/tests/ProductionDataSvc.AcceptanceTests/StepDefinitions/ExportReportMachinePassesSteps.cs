@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using ProductionDataSvc.AcceptanceTests.Utils;
-using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -18,10 +18,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var expectedResult = Encoding.Default.GetString(HelperUtilities.Decompress(expectedResultAsBinary));
       var actualResult = Encoding.Default.GetString(HelperUtilities.Decompress(GetResponseHandler.ByteContent));
 
-      var expSorted = HelperUtilities.SortCsvFileIntoString(expectedResult);
-      var actSorted = HelperUtilities.SortCsvFileIntoString(actualResult);
+      var expSorted = HelperUtilities.SortCsvFile(expectedResult).ToList();
+      var actSorted = HelperUtilities.SortCsvFile(actualResult).ToList();
 
-      Assert.True(expSorted == actSorted, "Expected CSV file does not match actual");
+      HelperUtilities.CompareExportCsvFiles(actSorted, expSorted);
     }
   }
 }

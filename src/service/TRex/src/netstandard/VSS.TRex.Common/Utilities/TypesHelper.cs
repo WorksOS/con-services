@@ -49,7 +49,7 @@ namespace VSS.TRex.Common.Utilities
             derivedType.IsAssignableFrom(t)
           ).ToList();
       }
-      catch (System.Reflection.ReflectionTypeLoadException)
+      catch (ReflectionTypeLoadException)
       {
         // Ignore the exception and return an empty list
         return new List<Type>();
