@@ -21,9 +21,9 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         /// </summary>
         private IMessaging MsgGroup;
 
-        public string MessageTopicName { get; set; } = "SiteModelAttributesChangedEvents";
+        public string MessageTopicName { get; } = "SiteModelAttributesChangedEvents";
 
-        public string GridName { get; set; }
+        public string GridName { get; }
 
         public bool Invoke(Guid nodeId, ISiteModelAttributesChangedEvent message)
         {

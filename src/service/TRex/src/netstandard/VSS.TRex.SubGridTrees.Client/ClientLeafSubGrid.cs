@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
@@ -19,8 +20,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// map records which cells in the sub grid contain information that has been
     /// retrieved from the server.
     /// </summary>
-    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
-    {
+    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriterBuffered
+  {
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
         /// </summary>

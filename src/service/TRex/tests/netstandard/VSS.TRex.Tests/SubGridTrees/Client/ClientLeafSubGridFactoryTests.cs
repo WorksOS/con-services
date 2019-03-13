@@ -31,6 +31,15 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     }
 
     [Fact]
+    public void Test_ClientLeafSubGridFactoryTests_RegisterClientLeafSubGridType_FailWithInvalidDataType()
+    {
+      var factory = new ClientLeafSubGridFactory();
+
+      Action act = () => factory.RegisterClientLeafSubGridType((GridDataType)100, () => new ClientHeightLeafSubGrid());
+      act.Should().Throw<ArgumentException>().WithMessage("Unknown grid data type in RegisterClientLeafSubGridType*");
+    }
+
+    [Fact]
     public void Test_ClientLeafSubGridFactoryTests_GetSubGrid()
     {
       var factory = new ClientLeafSubGridFactory();

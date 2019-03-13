@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
@@ -97,7 +95,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// Fills the contents of the client leaf sub grid with a known, non-null test pattern of values
     /// </summary>
     public override void FillWithTestPattern()
     {

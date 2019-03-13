@@ -55,8 +55,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
 
     public override bool Equals(object obj)
     {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is ClientCellProfileAllPassesLeafSubgridRecord other && Equals(other);
+      return !ReferenceEquals(null, obj)
+        && (obj is ClientCellProfileAllPassesLeafSubgridRecord other && Equals(other));
     }
   }
 }
