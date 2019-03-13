@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines.Interfaces
 {
@@ -10,7 +11,7 @@ namespace VSS.TRex.Machines.Interfaces
     short InternalSiteModelMachineIndex { get; set; }
     string Name { get; set; }
     MachineType MachineType { get; set; }
-    int DeviceType { get; set; }
+    DeviceType DeviceType { get; set; }
     string MachineHardwareID { get; set; }
     bool IsJohnDoeMachine { get; set; }
     double LastKnownX { get; set; }
