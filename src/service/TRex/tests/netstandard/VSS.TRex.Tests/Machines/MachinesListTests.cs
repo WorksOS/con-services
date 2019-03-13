@@ -39,6 +39,19 @@ namespace VSS.TRex.Tests.Machines
     }
 
     [Fact]
+    public void CreateNew_Duplicate()
+    {
+      var newGuid = Guid.NewGuid();
+      var l = new MachinesList();
+      var m = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid);
+
+      // Create an identical machine - should return the first machine created
+      var m2 = l.CreateNew("Machine", "HardwareID", MachineType.Dozer, DeviceType.SNM940, false, newGuid);
+
+      m.Should().BeSameAs(m2);
+    }
+
+    [Fact]
     public void Add()
     {
       var l = new MachinesList();
