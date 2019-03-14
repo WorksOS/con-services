@@ -293,5 +293,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         public bool HasPassData() => PassData != null;
+
+        public bool IsImmutable() => false;
     } 
 }
