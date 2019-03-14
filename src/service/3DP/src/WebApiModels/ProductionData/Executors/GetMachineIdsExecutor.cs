@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -73,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       return new MachineExecutionResult(machines);
     }
 
-    private async void PairUpAssetIdentifiers(List<MachineStatus> machines, bool haveUids)
+    private void PairUpAssetIdentifiers(List<MachineStatus> machines, bool haveUids)
     {
       if (machines == null || machines.Count == 0)
         return;

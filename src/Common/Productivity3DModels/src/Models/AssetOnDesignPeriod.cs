@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Models.Models
 {
-  public class DesignName : IEquatable<DesignName>
+  public class AssetOnDesignPeriod : IEquatable<AssetOnDesignPeriod>
   {
     /// <summary>
     ///The name of the design.
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Models.Models
     public Guid? AssetUid { get; set; }
 
 
-    public DesignName(string name, long id, long machineId, DateTime startDate, DateTime endDate,
+    public AssetOnDesignPeriod(string name, long id, long machineId, DateTime startDate, DateTime endDate,
       Guid? assetUid = null)
     {
       Id = id;
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Models.Models
     }
 
     #region Equality test
-    public bool Equals(DesignName other)
+    public bool Equals(AssetOnDesignPeriod other)
     {
       if (other == null)
         return false;
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Models.Models
              this.Name == other.Name;
     }
 
-    public static bool operator ==(DesignName a, DesignName b)
+    public static bool operator ==(AssetOnDesignPeriod a, AssetOnDesignPeriod b)
     {
       if ((object)a == null || (object)b == null)
         return Object.Equals(a, b);
@@ -68,14 +68,14 @@ namespace VSS.Productivity3D.Models.Models
       return a.Equals(b);
     }
 
-    public static bool operator !=(DesignName a, DesignName b)
+    public static bool operator !=(AssetOnDesignPeriod a, AssetOnDesignPeriod b)
     {
       return !(a == b);
     }
 
     public override bool Equals(object obj)
     {
-      return obj is DesignName && this == (DesignName)obj;
+      return obj is AssetOnDesignPeriod && this == (AssetOnDesignPeriod)obj;
     }
 
     public override int GetHashCode()

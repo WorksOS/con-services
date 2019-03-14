@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machines")]
     [HttpGet]
-    public async Task<MachineExecutionResult> Get([FromRoute] long projectId)
+    public async Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] long projectId)
     {
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
       var projectIds = new ProjectID(projectId, projectUid);
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machines")]
     [HttpGet]
-    public async Task<MachineExecutionResult> Get([FromRoute] Guid projectUid)
+    public async Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v1/projects/{projectId}/machines/{machineId}")]
     [HttpGet]
 
-    public async Task<ContractExecutionResult> Get([FromRoute] long projectId, [FromRoute] long machineId)
+    public async Task<ContractExecutionResult> GetMachineOnProject([FromRoute] long projectId, [FromRoute] long machineId)
     {
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
       var projectIds = new ProjectID(projectId, projectUid);
@@ -152,7 +152,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machines/{machineId}")]
     [HttpGet]
-    public async Task<ContractExecutionResult> Get([FromRoute] Guid projectUid, [FromRoute] long machineId)
+    public async Task<ContractExecutionResult> GetMachineOnProject([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v3/projects/{projectUid}/machines/{machineId}")]
     [HttpGet]
-    public async Task<ContractExecutionResult> Get([FromRoute] Guid projectUid, [FromRoute] Guid machineUid)
+    public async Task<ContractExecutionResult> GetMachineOnProject([FromRoute] Guid projectUid, [FromRoute] Guid machineUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
@@ -196,13 +196,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return result;
     }
 
-    // GET: api/Machines/Designs
+    // GET: api/Machines/AssetOnDesignPeriods
     /// <summary>
-    /// Gets On Machine designs for the selected datamodel
+    /// Gets On Machine assetOnDesigns for the selected datamodel
     /// </summary>
     /// <param name="projectId">The project identifier.</param>
-    /// <returns>List with all available OnMachine designs in the selected datamodel as reported to Raptor via tag files.</returns>
-    /// <executor>GetMachineDesignsExecutor</executor> 
+    /// <returns>List with all available OnMachine assetOnDesigns in the selected datamodel as reported to Raptor via tag files.</returns>
+    /// <executor>GetAssetOnDesignPeriodsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
@@ -212,23 +212,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
 
-      var result = await RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
+      var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
-      return CreateUniqueDesignList(result);
+      return CreateUniqueMachineDesignList(result);
     }
 
-    // GET: api/Machines/Designs
+    // GET: api/Machines/AssetOnDesignPeriods
     /// <summary>
-    /// Gets On Machine designs for the selected datamodel with a unique identifier
+    /// Gets On Machine assetOnDesigns for the selected datamodel with a unique identifier
     /// </summary>
     /// <param name="projectUid">The project unique identifier.</param>
-    /// <returns>List with all available OnMachine designs in the selected datamodel as reported to Raptor via tag files.</returns>
-    /// <executor>GetMachineDesignsExecutor</executor> 
+    /// <returns>List with all available OnMachine assetOnDesigns in the selected datamodel as reported to Raptor via tag files.</returns>
+    /// <executor>GetAssetOnDesignPeriodsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigns")]
     [HttpGet]
@@ -238,45 +238,45 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
 
-      var result = await RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
+      var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
-      return CreateUniqueDesignList(result);
+      return CreateUniqueMachineDesignList(result);
     }
 
     /// <summary>
-    /// Creates a unique list of all designs for all machines
+    /// Creates a unique list of all assetOnDesigns for all machines
     /// </summary>
-    private MachineDesignsExecutionResult CreateUniqueDesignList(MachineDesignsExecutionResult result)
+    private MachineDesignsExecutionResult CreateUniqueMachineDesignList(MachineDesignsExecutionResult result)
     {
-      return new MachineDesignsExecutionResult(RemoveDuplicateDesigns(result.Designs));
+      return new MachineDesignsExecutionResult(RemoveDuplicateMachineDesigns(result.AssetOnDesignPeriods));
     }
 
     /// <summary>
-    /// Filters out duplicate designs where the trex/raptor internal Id and name match
+    /// Filters out duplicate assetOnDesigns where the tRex/raptor internal Id and name match
     ///     NOTE that there is no way to match a machine design (which comes from a tag file)
     ///         with an imported design,
-    ///         Therefore this id is unique to trex OR raptor.
-    ///         I don't believe there will/can be any attempt to sync these, so don't mix/match Trex/Raptor calls.
+    ///         Therefore this id is unique to tRex OR raptor.
+    ///         I don't believe there will/can be any attempt to sync these, so don't mix/match tRex/Raptor calls.
     /// </summary>
-    private List<DesignName> RemoveDuplicateDesigns(List<DesignName> designNames)
+    private List<AssetOnDesignPeriod> RemoveDuplicateMachineDesigns(List<AssetOnDesignPeriod> assetsOnDesignPeriods)
     {
-      // order by Uid. Gen3 designs won't have LegacyId
-      return designNames.Distinct().OrderBy(d => d.Id).ToList();
+      // order by Uid. Gen3 assetsOnDesignPeriods won't have LegacyId
+      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.Id).ToList();
     }
 
     /// <summary>
-    /// Gets On Machine designs by machine and date range for the selected project
+    /// Gets On Machine assetOnDesigns by machine and date range for the selected project
     /// </summary>
     /// <param name="projectUid">The project unique identifier.</param>
     /// <param name="startUtc">The start date/time in UTC.</param>
     /// <param name="endUtc">The end date/time in UTC.</param>
-    /// <returns>List with all available OnMachine designs in the selected project as reported to Raptor via tag files.</returns>
-    /// <executor>GetMachineDesignsExecutor</executor> 
+    /// <returns>List with all available OnMachine assetOnDesigns in the selected project as reported to Raptor via tag files.</returns>
+    /// <executor>GetAssetOnDesignPeriodsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigndetails")]
     [HttpGet]
@@ -289,7 +289,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
 
-      var designsResult = await RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(_logger,
+      var designsResult = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
@@ -313,7 +313,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         foreach (var machine in machineResult.MachineStatuses)
         {
           var filteredDesigns =
-            designsResult.Designs.Where(
+            designsResult.AssetOnDesignPeriods.Where(
               design =>
                 (design.AssetUid.HasValue
                   ? design.AssetUid == machine.AssetUid
@@ -325,7 +325,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           {
             designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(
               machine.AssetId, machine.MachineName, machine.IsJohnDoe,
-              RemoveDuplicateDesigns(filteredDesigns).ToArray(), machine.AssetUid));
+              RemoveDuplicateMachineDesigns(filteredDesigns).ToArray(), machine.AssetUid));
           }
         }
 
@@ -337,47 +337,47 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectId">The project identifier.</param>
     /// <returns>List with all available OnMachine layer ids in the selected datamodel.</returns>
-    /// <executor>GetLayerIdsExecutor</executor> 
+    /// <executor>GetAssetOnDesignLayerPeriodsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/liftids")]
     [HttpGet]
-    public async Task<LayerIdsExecutionResult> GetMachineLayerIds([FromRoute] long projectId)
+    public async Task<AssetOnDesignLayerPeriodsExecutionResult> GetMachineOnDesignLayerPeriods([FromRoute] long projectId)
     {
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
 
-      return await RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
+      return await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as LayerIdsExecutionResult;
+        .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
     }
 
     /// <summary>
-    /// Gets On Machine liftids for all machines for the selected datamodel with a unique identifier
+    /// Gets On Machine lift ids for all machines for the selected datamodel with a unique identifier
     /// </summary>
     /// <param name="projectUid">The project unique identifier.</param>
-    /// <returns>List with all available OnMachine layerids in the selected datamodel.</returns>
-    /// <executor>GetLayerIdsExecutor</executor> 
+    /// <returns>List with all available OnMachine layer ids in the selected datamodel.</returns>
+    /// <executor>GetAssetOnDesignLayerPeriodsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/liftids")]
     [HttpGet]
-    public async Task<LayerIdsExecutionResult> GetMachineLayerIds([FromRoute] Guid projectUid)
+    public async Task<AssetOnDesignLayerPeriodsExecutionResult> GetMachineOnDesignLayerPeriods([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
 
-      return await RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
+      return await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as LayerIdsExecutionResult;
+        .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
     }
 
     /// <summary>
@@ -387,7 +387,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="startUtc">The start date/time in UTC.</param>
     /// <param name="endUtc">The end date/time in UTC.</param>
     /// <returns>List with all available lift ids for each machine in the selected datamodel as reported to Raptor via tag files.</returns>
-    /// <executor>GetLayerIdsExecutor</executor> 
+    /// <executor>GetAssetOnDesignLayerPeriodsExecutor</executor> 
     /// <executor>GetMachineIdsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinelifts")]
@@ -403,13 +403,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     }
 
     /// <summary>
-    /// Gets On Machine liftids for each machine for the selected datamodel with a unique identifier for the specified date range.
+    /// Gets On Machine lift ids for each machine for the selected datamodel with a unique identifier for the specified date range.
     /// </summary>
     /// <param name="projectUid">The project unique identifier.</param>
     /// <param name="startUtc">The start date/time in UTC.</param>
     /// <param name="endUtc">The end date/time in UTC.</param>
-    /// <returns>List with all available liftids for each machine in the selected datamodel as reported to Raptor via tag files.</returns>
-    /// <executor>GetLayerIdsExecutor</executor> 
+    /// <returns>List with all available lift ids for each machine in the selected datamodel as reported to Raptor via tag files.</returns>
+    /// <executor>GetAssetOnDesignLayerPeriodsExecutor</executor> 
     /// <executor>GetMachineIdsExecutor</executor> 
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinelifts")]
@@ -432,13 +432,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //and IsoDateTimeConverter but that didn't fix the problem.
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
 
-      var layerIdsResult = await RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(_logger,
+      var layerIdsResult = await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
-        .ProcessAsync(projectIds) as LayerIdsExecutionResult;
+        .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
 
       var machineResult = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
@@ -452,7 +452,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       foreach (var machine in machineResult.MachineStatuses)
       {
         var filteredLayers =
-          layerIdsResult.Layers.Where(
+          layerIdsResult.AssetOnDesignLayerPeriods.Where(
             layer => (layer.AssetUid.HasValue ? layer.AssetUid == machine.AssetUid : layer.AssetId == machine.AssetId
                      ) &&
                      IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();

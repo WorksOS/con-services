@@ -7,20 +7,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   public class MachineDesignDetails : MachineDetails
   {
-    [JsonProperty(PropertyName = "designs")]
-    public DesignName[] Designs { get; private set; }
+    [JsonProperty(PropertyName = "assetOnDesignPeriods")]
+    public AssetOnDesignPeriod[] AssetOnDesignPeriods { get; private set; }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static MachineDesignDetails CreateMachineDesignDetails(long assetId, string machineName, bool isJohnDoe, DesignName[] designs, Guid? assetUid = null )
+    public static MachineDesignDetails CreateMachineDesignDetails(long assetId, string machineName, bool isJohnDoe, AssetOnDesignPeriod[] assetOnDesignPeriods, Guid? assetUid = null )
     {
       return new MachineDesignDetails
       {
         AssetId = assetId,
         MachineName = machineName,
         IsJohnDoe = isJohnDoe,
-        Designs = designs,
+        AssetOnDesignPeriods = assetOnDesignPeriods,
         AssetUid = assetUid
       };
     }

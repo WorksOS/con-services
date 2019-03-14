@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
     [TestMethod]
     [Ignore] // todo resolve once Merino AssetService is available
-    public async Task MachineDesignsExecutor_TRex_Success()
+    public async Task GetAssetOnDesignPeriodsExecutor_TRex_Success()
     {
       var projectIds = new ProjectID(){ProjectUid = Guid.NewGuid() };
       var customerUid = Guid.NewGuid();
@@ -53,9 +53,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var assetId = 777;
       var expectedResult =  new MachineDesignsExecutionResult
       (
-        new List<DesignName>
+        new List<AssetOnDesignPeriod>
         {
-          new DesignName("The NameOf Design1", 1, assetId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40), assetUid )
+          new AssetOnDesignPeriod("The NameOf Design1", 1, assetId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40), assetUid )
         }
       );
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
@@ -78,25 +78,25 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns("true");
 
       var executor = RequestExecutorContainerFactory
-        .Build<GetMachineDesignsExecutor>(logger, configStore: configStore.Object,
+        .Build<GetAssetOnDesignPeriodsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, assetProxy: assetProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual(1, result.Designs.Count, "Wrong design count");
-      Assert.AreEqual(expectedResult.Designs[0].AssetUid, result.Designs[0].AssetUid, "Wrong asset Uid");
-      Assert.AreEqual(assets[0].LegacyAssetID, result.Designs[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[0].MachineId, result.Designs[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[0].StartDate, result.Designs[0].StartDate, "Wrong StartDate");
+      Assert.AreEqual(1, result.AssetOnDesignPeriods.Count, "Wrong design count");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].AssetUid, result.AssetOnDesignPeriods[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assets[0].LegacyAssetID, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].MachineId, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate, "Wrong StartDate");
 
       // there's some funny giggery-pokery in the executor to join up any dis-jointed periods
-      Assert.IsTrue(result.Designs[0].EndDate > expectedResult.Designs[0].EndDate, "Wrong EndDate");
+      Assert.IsTrue(result.AssetOnDesignPeriods[0].EndDate > expectedResult.AssetOnDesignPeriods[0].EndDate, "Wrong EndDate");
     }
 
     [TestMethod]
     [Ignore] // todo resolve once Merino AssetService is available
-    public async Task MachineDesignsExecutor_TRex_Success_2designs()
+    public async Task GetAssetOnDesignPeriodsExecutor_TRex_Success_2designs()
     {
       var projectIds = new ProjectID() { ProjectUid = Guid.NewGuid() };
       var customerUid = Guid.NewGuid();
@@ -104,10 +104,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var assetId = 777;
       var expectedResult = new MachineDesignsExecutionResult
       (
-        new List<DesignName>
+        new List<AssetOnDesignPeriod>
         {
-          new DesignName("The NameOf Design1", 1, assetId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40), assetUid ),
-          new DesignName("The NameOf Design2", 2, assetId, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-1), assetUid )
+          new AssetOnDesignPeriod("The NameOf Design1", 1, assetId, DateTime.UtcNow.AddDays(-50), DateTime.UtcNow.AddDays(-40), assetUid ),
+          new AssetOnDesignPeriod("The NameOf Design2", 2, assetId, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-1), assetUid )
         }
       );
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
@@ -130,31 +130,31 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns("true");
 
       var executor = RequestExecutorContainerFactory
-        .Build<GetMachineDesignsExecutor>(logger, configStore: configStore.Object,
+        .Build<GetAssetOnDesignPeriodsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, assetProxy: assetProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual(2, result.Designs.Count, "Wrong design count");
-      Assert.AreEqual(expectedResult.Designs[0].AssetUid, result.Designs[0].AssetUid, "Wrong asset Uid");
-      Assert.AreEqual(assets[0].LegacyAssetID, result.Designs[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[0].MachineId, result.Designs[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[0].Id, result.Designs[0].Id, "Wrong DesignId");
-      Assert.AreEqual(expectedResult.Designs[0].StartDate, result.Designs[0].StartDate, "Wrong StartDate");
-      Assert.AreEqual(expectedResult.Designs[1].StartDate, result.Designs[0].EndDate, "Wrong EndDate");
+      Assert.AreEqual(2, result.AssetOnDesignPeriods.Count, "Wrong design count");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].AssetUid, result.AssetOnDesignPeriods[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assets[0].LegacyAssetID, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].MachineId, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].Id, result.AssetOnDesignPeriods[0].Id, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate, "Wrong StartDate");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].StartDate, result.AssetOnDesignPeriods[0].EndDate, "Wrong EndDate");
 
-      Assert.AreEqual(expectedResult.Designs[1].AssetUid, result.Designs[1].AssetUid, "Wrong asset Uid");
-      Assert.AreEqual(assets[0].LegacyAssetID, result.Designs[1].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[1].MachineId, result.Designs[1].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[1].Id, result.Designs[1].Id, "Wrong DesignId");
-      Assert.AreEqual(expectedResult.Designs[1].StartDate, result.Designs[1].StartDate, "Wrong StartDate");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].AssetUid, result.AssetOnDesignPeriods[1].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assets[0].LegacyAssetID, result.AssetOnDesignPeriods[1].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].MachineId, result.AssetOnDesignPeriods[1].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].Id, result.AssetOnDesignPeriods[1].Id, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].StartDate, result.AssetOnDesignPeriods[1].StartDate, "Wrong StartDate");
       // the final design change is considered current
-      Assert.IsTrue(result.Designs[1].EndDate > expectedResult.Designs[1].EndDate, "Wrong EndDate");
+      Assert.IsTrue(result.AssetOnDesignPeriods[1].EndDate > expectedResult.AssetOnDesignPeriods[1].EndDate, "Wrong EndDate");
     }
 
     [TestMethod]
-    public void MachineDesignsExecutor_TRex_NoProjectUid()
+    public void GetAssetOnDesignPeriodsExecutor_TRex_NoProjectUid()
     {
       var projectIds = new ProjectID();
       
@@ -163,18 +163,18 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns("true");
 
       var executor = RequestExecutorContainerFactory
-        .Build<GetMachineDesignsExecutor>(logger, configStore: configStore.Object,
+        .Build<GetAssetOnDesignPeriodsExecutor>(logger, configStore: configStore.Object,
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
       var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectIds)).Result;
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
-      Assert.AreEqual("Failed to get/update data requested by GetMachineDesignsExecutor", ex.GetResult.Message);
+      Assert.AreEqual("Failed to get/update data requested by GetAssetOnDesignPeriodsExecutor", ex.GetResult.Message);
     }
 
 #if RAPTOR
     [TestMethod]
     [Ignore] // todo resolve once Merino AssetService is available
-    public async Task MachineDesignsExecutor_Raptor_Success()
+    public async Task GetAssetOnDesignPeriodsExecutor_Raptor_Success()
     {
       var projectIds = new ProjectID() { ProjectId = 999 };
       var customerUid = Guid.NewGuid();
@@ -183,25 +183,25 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var designId = 888;
       var expectedResult = new MachineDesignsExecutionResult
       (
-        new List<DesignName>
+        new List<AssetOnDesignPeriod>
         {
-          new DesignName("The NameOf Design", designId, assetId, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-1), assetUid )
+          new AssetOnDesignPeriod("The NameOf Design", designId, assetId, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-1), assetUid )
         }
       );
 
-      TDesignName[] designs = new TDesignName[1]{new TDesignName
+      TDesignName[] assetOnDesigns = new TDesignName[1]{new TDesignName
       {
-        FID = (int) expectedResult.Designs[0].Id,
-        FName = expectedResult.Designs[0].Name,
-        FStartDate = expectedResult.Designs[0].StartDate,
-        FEndDate = expectedResult.Designs[0].EndDate,
-        FMachineID = expectedResult.Designs[0].MachineId
+        FID = (int) expectedResult.AssetOnDesignPeriods[0].Id,
+        FName = expectedResult.AssetOnDesignPeriods[0].Name,
+        FStartDate = expectedResult.AssetOnDesignPeriods[0].StartDate,
+        FEndDate = expectedResult.AssetOnDesignPeriods[0].EndDate,
+        FMachineID = expectedResult.AssetOnDesignPeriods[0].MachineId
       }};
 
       var raptorClient = new Mock<IASNodeClient>();
       raptorClient
         .Setup(x => x.GetOnMachineDesignEvents(projectIds.ProjectId.Value))
-        .Returns(designs);
+        .Returns(assetOnDesigns);
 
       var assets = new List<AssetData>(1)
       {
@@ -218,21 +218,21 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns("false");
 
       var executor = RequestExecutorContainerFactory
-        .Build<GetMachineDesignsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
+        .Build<GetAssetOnDesignPeriodsExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
           assetProxy: assetProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.AreEqual(1, result.Designs.Count, "Wrong design count");
-      Assert.AreEqual(expectedResult.Designs[0].AssetUid, result.Designs[0].AssetUid, "Wrong asset Uid");
-      Assert.AreEqual(assets[0].LegacyAssetID, result.Designs[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[0].MachineId, result.Designs[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.Designs[0].Id, result.Designs[0].Id, "Wrong DesignId");
-      Assert.AreEqual(expectedResult.Designs[0].StartDate, result.Designs[0].StartDate, "Wrong StartDate");
+      Assert.AreEqual(1, result.AssetOnDesignPeriods.Count, "Wrong design count");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].AssetUid, result.AssetOnDesignPeriods[0].AssetUid, "Wrong asset Uid");
+      Assert.AreEqual(assets[0].LegacyAssetID, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].MachineId, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].Id, result.AssetOnDesignPeriods[0].Id, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate, "Wrong StartDate");
 
       // the final design change is considered current
-      Assert.IsTrue(result.Designs[0].EndDate > expectedResult.Designs[0].EndDate, "Wrong EndDate");
+      Assert.IsTrue(result.AssetOnDesignPeriods[0].EndDate > expectedResult.AssetOnDesignPeriods[0].EndDate, "Wrong EndDate");
     }
 #endif
 

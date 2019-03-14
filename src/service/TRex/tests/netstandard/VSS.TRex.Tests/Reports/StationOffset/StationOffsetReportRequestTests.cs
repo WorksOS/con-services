@@ -74,15 +74,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel));
 
       response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      response.ReportType.Should().Be(ReportType.StationOffset);
-      response.StationOffsetReportDataRowList.Should().NotBeNull();
-      response.StationOffsetReportDataRowList.Count.Should().Be(1);
-      response.StationOffsetReportDataRowList[0].Station.Should().Be(1);
-      response.StationOffsetReportDataRowList[0].Offsets.Count.Should().Be(3);
-      response.StationOffsetReportDataRowList[0].Offsets[0].Offset.Should().Be(-1);
-      response.StationOffsetReportDataRowList[0].Offsets[0].Northing.Should().Be(804645);
-      response.StationOffsetReportDataRowList[0].Offsets[0].Easting.Should().Be(388062);
+      response.ResultStatus.Should().Be(RequestErrorStatus.NoProductionDataFound);
     }
   }
 }

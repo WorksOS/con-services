@@ -128,17 +128,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         }
       });
 
-      if (points.Count == 0)
-      {
-        // uses data locations from tagFileSubmission for Project6 siteModel "f13f2458-6666-424f-a995-4426a00771ae"
-        return new List<StationOffsetPoint>()
-        {
-          new StationOffsetPoint(1, -1, 804645, 388062),
-          new StationOffsetPoint(1, -0, 804650, 388050),
-          new StationOffsetPoint(1, 1, 804664, 388048)
-        };
-      }
-
       return points;
     }
   }

@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// The list of the on-machine designs available for the project.
     /// </summary>
     [JsonProperty(PropertyName = "designs")]
-    public List<DesignName> Designs { get; private set; }
+    public List<AssetOnDesignPeriod> AssetOnDesignPeriods { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -19,9 +19,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
     private MachineDesignsExecutionResult()
     { }
 
-    public MachineDesignsExecutionResult(List<DesignName> designNames)
+    public MachineDesignsExecutionResult(List<AssetOnDesignPeriod> assetOnDesignPeriods)
     {
-      Designs = designNames;
+      AssetOnDesignPeriods = assetOnDesignPeriods;
     }
   }
 }

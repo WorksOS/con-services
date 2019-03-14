@@ -11,40 +11,40 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SiteModels
 {
-  public class SiteModelMachineDesignTests : IClassFixture<DITagFileFixture>
+  public class SiteModelGetAssetOnDesignPeriodsTests : IClassFixture<DITagFileFixture>
   {
     [Fact]
-    public void GetMachineDesigns_NoMachineNoDesignsNoEvents()
+    public void GetAssetOnDesignPeriods_NoMachineNoDesignsNoEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
-      var machineDesigns = siteModel.GetMachineDesigns();
-      machineDesigns.Count.Should().Be(0);
+      var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
+      assetOnDesignPeriods.Count.Should().Be(0);
     }
 
     [Fact]
-    public void GetMachineDesigns_OneMachineNoDesignsNoEvents()
+    public void GetAssetOnDesignPeriods_OneMachineNoDesignsNoEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
-      var machineDesigns = siteModel.GetMachineDesigns();
+      var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
       IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      machineDesigns.Count.Should().Be(0);
+      assetOnDesignPeriods.Count.Should().Be(0);
     }
 
     [Fact]
-    public void GetMachineDesigns_OneMachineOneDesignsNoEvents()
+    public void GetAssetOnDesignPeriods_OneMachineOneDesignsNoEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       
-      var machineDesigns = siteModel.GetMachineDesigns();
-      machineDesigns.Count.Should().Be(0);
+      var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
+      assetOnDesignPeriods.Count.Should().Be(0);
     }
 
     [Fact]
-    public void GetMachineDesigns_OneMachineTwoDesignsSimpleEvents()
+    public void GetAssetOnDesignPeriods_OneMachineTwoDesignsSimpleEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
@@ -58,25 +58,25 @@ namespace VSS.TRex.Tests.SiteModels
       siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.PutValueAtDate(eventDate2, design2.Id);
       siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.Count().Should().Be(2);
       
-      var machineDesigns = siteModel.GetMachineDesigns();
-      machineDesigns.Count.Should().Be(2);
-      machineDesigns[0].Id.Should().Be(design1.Id);
-      machineDesigns[0].Name.Should().Be(design1.Name);
-      machineDesigns[0].MachineId.Should().Be(Consts.LEGACY_ASSETID); 
-      machineDesigns[0].AssetUid.Should().Be(machine.ID);
-      machineDesigns[0].StartDate.Should().Be(eventDate1);
-      machineDesigns[0].EndDate.Should().Be(DateTime.MaxValue);
+      var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
+      assetOnDesignPeriods.Count.Should().Be(2);
+      assetOnDesignPeriods[0].Id.Should().Be(design1.Id);
+      assetOnDesignPeriods[0].Name.Should().Be(design1.Name);
+      assetOnDesignPeriods[0].MachineId.Should().Be(Consts.LEGACY_ASSETID); 
+      assetOnDesignPeriods[0].AssetUid.Should().Be(machine.ID);
+      assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
+      assetOnDesignPeriods[0].EndDate.Should().Be(DateTime.MaxValue);
 
-      machineDesigns[1].Id.Should().Be(design2.Id);
-      machineDesigns[1].Name.Should().Be(design2.Name);
-      machineDesigns[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[1].AssetUid.Should().Be(machine.ID);
-      machineDesigns[1].StartDate.Should().Be(eventDate2);
-      machineDesigns[1].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[1].Id.Should().Be(design2.Id);
+      assetOnDesignPeriods[1].Name.Should().Be(design2.Name);
+      assetOnDesignPeriods[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[1].AssetUid.Should().Be(machine.ID);
+      assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
+      assetOnDesignPeriods[1].EndDate.Should().Be(DateTime.MaxValue);
     }
 
     [Fact]
-    public void GetMachineDesigns_OneMachineTwoDesignsDuplicateEvents()
+    public void GetAssetOnDesignPeriods_OneMachineTwoDesignsDuplicateEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
@@ -92,25 +92,25 @@ namespace VSS.TRex.Tests.SiteModels
       siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.PutValueAtDate(eventDate3, design2.Id);
       siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.Count().Should().Be(3);
 
-      var machineDesigns = siteModel.GetMachineDesigns();
-      machineDesigns.Count.Should().Be(2);
-      machineDesigns[0].Id.Should().Be(design1.Id);
-      machineDesigns[0].Name.Should().Be(design1.Name);
-      machineDesigns[0].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[0].AssetUid.Should().Be(machine.ID);
-      machineDesigns[0].StartDate.Should().Be(eventDate1);
-      machineDesigns[0].EndDate.Should().Be(DateTime.MaxValue);
+      var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
+      assetOnDesignPeriods.Count.Should().Be(2);
+      assetOnDesignPeriods[0].Id.Should().Be(design1.Id);
+      assetOnDesignPeriods[0].Name.Should().Be(design1.Name);
+      assetOnDesignPeriods[0].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[0].AssetUid.Should().Be(machine.ID);
+      assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
+      assetOnDesignPeriods[0].EndDate.Should().Be(DateTime.MaxValue);
 
-      machineDesigns[1].Id.Should().Be(design2.Id);
-      machineDesigns[1].Name.Should().Be(design2.Name);
-      machineDesigns[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[1].AssetUid.Should().Be(machine.ID);
-      machineDesigns[1].StartDate.Should().Be(eventDate2);
-      machineDesigns[1].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[1].Id.Should().Be(design2.Id);
+      assetOnDesignPeriods[1].Name.Should().Be(design2.Name);
+      assetOnDesignPeriods[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[1].AssetUid.Should().Be(machine.ID);
+      assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
+      assetOnDesignPeriods[1].EndDate.Should().Be(DateTime.MaxValue);
     }
 
     [Fact]
-    public void GetMachineDesigns_TwoMachinesTwoDesignsDuplicateEvents()
+    public void GetAssetOnDesignPeriods_TwoMachinesTwoDesignsDuplicateEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
@@ -139,35 +139,35 @@ namespace VSS.TRex.Tests.SiteModels
       siteModel.MachinesTargetValues[machine2.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.Count().Should().Be(3);
 
 
-      var machineDesigns = siteModel.GetMachineDesigns();
-      machineDesigns.Count.Should().Be(4);
-      machineDesigns[0].Id.Should().Be(design1.Id);
-      machineDesigns[0].Name.Should().Be(design1.Name);
-      machineDesigns[0].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[0].AssetUid.Should().Be(machine1.ID);
-      machineDesigns[0].StartDate.Should().Be(eventDate1);
-      machineDesigns[0].EndDate.Should().Be(DateTime.MaxValue);
+      var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
+      assetOnDesignPeriods.Count.Should().Be(4);
+      assetOnDesignPeriods[0].Id.Should().Be(design1.Id);
+      assetOnDesignPeriods[0].Name.Should().Be(design1.Name);
+      assetOnDesignPeriods[0].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[0].AssetUid.Should().Be(machine1.ID);
+      assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
+      assetOnDesignPeriods[0].EndDate.Should().Be(DateTime.MaxValue);
 
-      machineDesigns[1].Id.Should().Be(design2.Id);
-      machineDesigns[1].Name.Should().Be(design2.Name);
-      machineDesigns[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[1].AssetUid.Should().Be(machine1.ID);
-      machineDesigns[1].StartDate.Should().Be(eventDate2);
-      machineDesigns[1].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[1].Id.Should().Be(design2.Id);
+      assetOnDesignPeriods[1].Name.Should().Be(design2.Name);
+      assetOnDesignPeriods[1].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[1].AssetUid.Should().Be(machine1.ID);
+      assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
+      assetOnDesignPeriods[1].EndDate.Should().Be(DateTime.MaxValue);
 
-      machineDesigns[2].Id.Should().Be(design2.Id);
-      machineDesigns[2].Name.Should().Be(design2.Name);
-      machineDesigns[2].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[2].AssetUid.Should().Be(machine2.ID);
-      machineDesigns[2].StartDate.Should().Be(eventDate5);
-      machineDesigns[2].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[2].Id.Should().Be(design2.Id);
+      assetOnDesignPeriods[2].Name.Should().Be(design2.Name);
+      assetOnDesignPeriods[2].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[2].AssetUid.Should().Be(machine2.ID);
+      assetOnDesignPeriods[2].StartDate.Should().Be(eventDate5);
+      assetOnDesignPeriods[2].EndDate.Should().Be(DateTime.MaxValue);
 
-      machineDesigns[3].Id.Should().Be(design1.Id);
-      machineDesigns[3].Name.Should().Be(design1.Name);
-      machineDesigns[3].MachineId.Should().Be(Consts.LEGACY_ASSETID);
-      machineDesigns[3].AssetUid.Should().Be(machine2.ID);
-      machineDesigns[3].StartDate.Should().Be(eventDate7);
-      machineDesigns[3].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[3].Id.Should().Be(design1.Id);
+      assetOnDesignPeriods[3].Name.Should().Be(design1.Name);
+      assetOnDesignPeriods[3].MachineId.Should().Be(Consts.LEGACY_ASSETID);
+      assetOnDesignPeriods[3].AssetUid.Should().Be(machine2.ID);
+      assetOnDesignPeriods[3].StartDate.Should().Be(eventDate7);
+      assetOnDesignPeriods[3].EndDate.Should().Be(DateTime.MaxValue);
     }
   }
 }

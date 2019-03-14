@@ -718,14 +718,14 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// GetMachineDesigns returns design changes for each machine.
+    /// GetAssetOnDesignPeriods returns design changes for each machine.
     ///    We remove any duplicates (occurs at start, where a period of time is missing between tag files)
     /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\VLPD\PS\PSNode.MachineDesigns.RPC.Execute.pas
     /// </summary>
     /// <returns></returns>
-    public List<DesignName> GetMachineDesigns()
+    public List<AssetOnDesignPeriod> GetAssetOnDesignPeriods()
     {
-      var designSlices = new List<DesignName>();
+      var assetOnDesignPeriods = new List<AssetOnDesignPeriod>();
 
       foreach (var machine in Machines)
       {
@@ -738,14 +738,14 @@ namespace VSS.TRex.SiteModels
           events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
           if (machineDesignId < 0)
           {
-            Log.LogError($"{nameof(GetMachineDesigns)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
+            Log.LogError($"{nameof(GetAssetOnDesignPeriods)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
             continue;
           }
 
           if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
-            designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
+            assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
               priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
           }
 
@@ -760,25 +760,25 @@ namespace VSS.TRex.SiteModels
         if (priorMachineDesignId != int.MinValue)
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
-          designSlices.Add(new DesignName(machineDesign?.Name ?? "unknown",
+          assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
             priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
         }
       }
 
-      return designSlices;
+      return assetOnDesignPeriods;
     }
 
     /// <summary>
-    /// GetMachineLayers returns the designs and layers used by specific machines.
+    /// GetAssetOnDesignLayerPeriods returns the designs and layers used by specific machines.
     /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\SVO\ProductionServer\SVOICSiteModels.pas
     /// As per Raymond: it is guaranteed that start/stop will occur as pairs to form a reportingPeriod,
     ///                 AND there will be NO events outside of these pairs
     ///                 AND at startEnd, status of all event types will be recited e.g. last on layer1 and designA
     /// </summary>
     /// <returns></returns>
-    public List<LayerIdDetails> GetMachineLayers()
+    public List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods()
     {
-      var layerDetails = new List<LayerIdDetails>();
+      var assetOnDesignLayerPeriods = new List<AssetOnDesignLayerPeriod>();
       foreach (var machine in Machines)
       {
         var startStopEvents = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
@@ -807,7 +807,7 @@ namespace VSS.TRex.SiteModels
             MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetStateAtIndex(layerStateChangeIndex, out thisLayerChangeTime, out ushort nextLayerId);
 
             if (priorLayerId != ushort.MaxValue)
-              layerDetails.Add(new LayerIdDetails(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+              assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
               thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID));
 
             priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(thisLayerChangeTime, out int _, Consts.kNoDesignNameID);
@@ -817,12 +817,12 @@ namespace VSS.TRex.SiteModels
 
           // event earlier in report period, this covers to end of period
           if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
-            layerDetails.Add(new LayerIdDetails(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+            assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
               endReportingPeriod, machine.ID));
         }
       }
 
-      return new List<LayerIdDetails>(layerDetails);
+      return new List<AssetOnDesignLayerPeriod>(assetOnDesignLayerPeriods);
     }
 
     /// <summary>

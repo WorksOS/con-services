@@ -15,7 +15,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
   public class CoordinateServiceUtility : ICoordinateServiceUtility
   {
     /// <summary>
-    /// 
+    /// Converts XYZ to LLH
     /// </summary>
     public int PatchLLH(string CSIB, List<MachineStatus> machines)
     {

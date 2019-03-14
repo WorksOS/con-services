@@ -15,14 +15,14 @@ using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
-  public class GetMachineDesignsExecutor : RequestExecutorContainer
+  public class GetAssetOnDesignPeriodsExecutor : RequestExecutorContainer
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
-      log.LogInformation($"GetMachineDesignsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")}");
+      log.LogInformation($"GetAssetOnDesignPeriodsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")}");
 
-      List<DesignName> designs;
+      List<AssetOnDesignPeriod> assetOnDesignPeriods;
       bool haveUids = true;
 
 #if RAPTOR
@@ -36,12 +36,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           var machineDesignsResult = await trexCompactionDataProxy
             .SendDataGetRequest<MachineDesignsExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machinedesigns",
               customHeaders);
-          designs = machineDesignsResult.Designs;
+          assetOnDesignPeriods = machineDesignsResult.AssetOnDesignPeriods;
         }
         else
         {
-          log.LogError($"GetMachineDesignsExecutor: No projectUid provided. ");
-          throw CreateServiceException<GetMachineDesignsExecutor>();
+          log.LogError($"GetAssetOnDesignPeriodsExecutor: No projectUid provided. ");
+          throw CreateServiceException<GetAssetOnDesignPeriodsExecutor>();
         }
       }
 
@@ -54,58 +54,58 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
 
           if (raptorDesigns == null)
-            return new MachineDesignsExecutionResult(new List<DesignName>());
+            return new MachineDesignsExecutionResult(new List<AssetOnDesignPeriod>());
 
-          designs = ConvertDesignList(raptorDesigns);
+          assetOnDesignPeriods = ConvertDesignList(raptorDesigns);
         }
         else
         {
-          log.LogError($"GetMachineDesignsExecutor: No projectId provided. ");
-          throw CreateServiceException<GetMachineDesignsExecutor>();
+          log.LogError($"GetAssetOnDesignPeriodsExecutor: No projectId provided. ");
+          throw CreateServiceException<GetAssetOnDesignPeriodsExecutor>();
         }
       }
 #endif
 
-      PairUpAssetIdentifiers(designs, haveUids);
-      return CreateResultantListFromDesigns(designs);
+      PairUpAssetIdentifiers(assetOnDesignPeriods, haveUids);
+      return CreateResultantListFromDesigns(assetOnDesignPeriods);
     }
 
-    private async void PairUpAssetIdentifiers(List<DesignName> designs, bool haveUids)
+    private void PairUpAssetIdentifiers(List<AssetOnDesignPeriod> assetOnDesignPeriods, bool haveUids)
     {
-      if (designs == null || designs.Count == 0)
+      if (assetOnDesignPeriods == null || assetOnDesignPeriods.Count == 0)
         return;
 
       // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
       var assetsResult = new List<AssetData>(0);
       if (haveUids)
       {
-        foreach (var design in designs)
+        foreach (var assetOnDesignPeriod in assetOnDesignPeriods)
         {
-          var legacyAssetId = assetsResult.Where(a => a.AssetUID == design.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
-          design.MachineId = legacyAssetId < 1 ? -1 : legacyAssetId;
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == assetOnDesignPeriod.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
+          assetOnDesignPeriod.MachineId = legacyAssetId < 1 ? -1 : legacyAssetId;
         }
       }
       else
-        foreach (var design in designs)
+        foreach (var assetOnDesignPeriod in assetOnDesignPeriods)
         {
-          if (design.MachineId < 1)
-            design.AssetUid = null;
+          if (assetOnDesignPeriod.MachineId < 1)
+            assetOnDesignPeriod.AssetUid = null;
           else
           {
-            design.AssetUid = assetsResult.Where(a => a.LegacyAssetID == design.MachineId).Select(a => a.AssetUID).FirstOrDefault();
-            design.AssetUid = design.AssetUid == Guid.Empty ? null : design.AssetUid;
+            assetOnDesignPeriod.AssetUid = assetsResult.Where(a => a.LegacyAssetID == assetOnDesignPeriod.MachineId).Select(a => a.AssetUID).FirstOrDefault();
+            assetOnDesignPeriod.AssetUid = assetOnDesignPeriod.AssetUid == Guid.Empty ? null : assetOnDesignPeriod.AssetUid;
           }
         }
     }
 
 #if RAPTOR
-    private List<DesignName> ConvertDesignList(TDesignName[] designList)
+    private List<AssetOnDesignPeriod> ConvertDesignList(TDesignName[] designList)
     {
-      var designs = new List<DesignName>(designList.Length);
+      var assetOnDesignPeriods = new List<AssetOnDesignPeriod>(designList.Length);
 
       for (var i = 0; i < designList.Length; i++)
       {
-        designs.Add(new DesignName
+        assetOnDesignPeriods.Add(new AssetOnDesignPeriod
         (
           designList[i].FName,
           designList[i].FID,
@@ -116,22 +116,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         ));
       }
 
-      return designs;
+      return assetOnDesignPeriods;
     }
 #endif
 
-    private MachineDesignsExecutionResult CreateResultantListFromDesigns(List<DesignName> designs)
+    private MachineDesignsExecutionResult CreateResultantListFromDesigns(List<AssetOnDesignPeriod> assetOnDesignPeriods)
     {
       //For details, need to set the end dates so can test date range
-      var designDetails = new List<DesignName>();
-      var assetUids = designs.Select(d => d.AssetUid).Distinct();
+      var assetOnDesignPeriodsResult = new List<AssetOnDesignPeriod>();
+      var assetUids = assetOnDesignPeriods.Select(d => d.AssetUid).Distinct();
 
       foreach (var assetUid in assetUids)
       {
-        var machineDesigns = designs.Where(d => d.AssetUid == assetUid).OrderBy(d => d.StartDate).ToList();
+        var machineDesigns = assetOnDesignPeriods.Where(d => d.AssetUid == assetUid).OrderBy(d => d.StartDate).ToList();
         for (var i = 1; i < machineDesigns.Count; i++)
         {
-          designDetails.Add(new DesignName(
+          assetOnDesignPeriodsResult.Add(new AssetOnDesignPeriod(
             machineDesigns[i - 1].Name,
             machineDesigns[i - 1].Id,
             machineDesigns[i - 1].MachineId,
@@ -141,7 +141,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             ));
         }
 
-        designDetails.Add(new DesignName(
+        assetOnDesignPeriodsResult.Add(new AssetOnDesignPeriod(
           machineDesigns[machineDesigns.Count - 1].Name,
           machineDesigns[machineDesigns.Count - 1].Id,
           machineDesigns[machineDesigns.Count - 1].MachineId,
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           machineDesigns[machineDesigns.Count - 1].AssetUid));
       }
 
-      return new MachineDesignsExecutionResult(designDetails);
+      return new MachineDesignsExecutionResult(assetOnDesignPeriodsResult);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

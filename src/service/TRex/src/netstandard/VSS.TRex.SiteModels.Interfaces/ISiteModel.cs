@@ -121,16 +121,16 @@ namespace VSS.TRex.SiteModels.Interfaces
     (DateTime startUtc, DateTime endUtc) GetDateRange();
 
     /// <summary>
-    /// GetMachineDesigns returns the chronological slices where each machine was on a design.    /// </summary>
+    /// GetAssetOnDesignPeriods returns the chronological slices where each machine was on a design.    /// </summary>
     /// <returns></returns>
-    List<DesignName> GetMachineDesigns();
+    List<AssetOnDesignPeriod> GetAssetOnDesignPeriods();
 
 
     /// <summary>
-    /// GetMachineLayers returns the designs and layers used by specific machines.
+    /// GetAssetOnDesignLayerPeriods returns the designs and layers used by specific machines.
     /// </summary>
     /// <returns></returns>
-    List<LayerIdDetails> GetMachineLayers();
+    List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods();
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,16 +9,11 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Common.Utilities;
-using VSS.TRex.CoordinateSystems;
-using VSS.TRex.DI;
 using VSS.TRex.Executors;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.WebApi.ActionServices;
-using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -128,49 +122,19 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return result;
     }
 
-    //private int PatchLatLongs(string CSIB, List<MachineStatus> machines)
-    //{
-    //  var NEECoords = new XYZ[machines.Count];
-    //  machines.ForEach(machine =>
-    //  {
-    //    if (machine.lastKnownX != null && machine.lastKnownY != null) NEECoords.Append(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value));
-    //  });
-
-    //  (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords);
-    //  if (errorCode == RequestErrorStatus.OK)
-    //  {
-    //    var retrieveCoordCount = 0;
-    //    machines.ForEach(machine =>
-    //    {
-    //      if (machine.lastKnownX != null && machine.lastKnownY != null)
-    //      {
-    //        machine.lastKnownLatitude = MathUtilities.RadiansToDegrees(LLHCoords[retrieveCoordCount].Y);
-    //        machine.lastKnownLongitude = MathUtilities.RadiansToDegrees(LLHCoords[retrieveCoordCount].X);
-    //        retrieveCoordCount++;
-    //      }        });
-    //  }
-    //  else
-    //  {
-    //    Log.LogInformation($"{nameof(PatchLatLongs)}: PatchLatLongs failure, could not convert machine coordinates. Error: {errorCode.ToString()}");
-    //    return ContractExecutionStatesEnum.InternalProcessingError;
-    //  }
-
-    //  return ContractExecutionStatesEnum.ExecutedSuccessfully;
-    //}
-
     /// <summary>
     /// Returns list of design/machines which have contributed to a site model.
     /// </summary>
     /// <param name="siteModelID">Site model identifier.</param>
     /// <returns></returns>
     [HttpGet("{siteModelID}/machinedesigns")]
-    public MachineDesignsExecutionResult GetMachineDesigns(string siteModelID)
+    public MachineDesignsExecutionResult GetAssetOnDesignPeriods(string siteModelID)
     {
-      Log.LogInformation($"{nameof(GetMachineDesigns)}: siteModelID: {siteModelID}");
+      Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: siteModelID: {siteModelID}");
 
       ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(siteModelID);
 
-      return new MachineDesignsExecutionResult(siteModel.GetMachineDesigns());
+      return new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
     }
 
     /// <summary>
@@ -179,13 +143,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="siteModelID">Site model identifier.</param>
     /// <returns></returns>
     [HttpGet("{siteModelID}/machinelayers")]
-    public LayerIdsExecutionResult GetMachineLayers(string siteModelID)
+    public AssetOnDesignLayerPeriodsExecutionResult GetMachineLayers(string siteModelID)
     {
       Log.LogInformation($"{nameof(GetMachineLayers)}: siteModelID: {siteModelID}");
 
       ISiteModel siteModel = GatewayHelper.EnsureSiteModelExists(siteModelID);
 
-      return new LayerIdsExecutionResult(siteModel.GetMachineLayers());
+      return new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
     }
 
   }

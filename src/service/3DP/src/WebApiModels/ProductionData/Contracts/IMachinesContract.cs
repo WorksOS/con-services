@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
 {
         public interface IMachinesContract
         {
-            Task<MachineExecutionResult> Get([FromRoute] long projectId);
-            Task<ContractExecutionResult> Get([FromRoute]long projectId, [FromRoute]long machineId);
+            Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] long projectId);
+            Task<ContractExecutionResult> GetMachineOnProject([FromRoute]long projectId, [FromRoute]long machineId);
         }
 }
