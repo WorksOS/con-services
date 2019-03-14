@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CCAStatistics
 {
-  public class CCACoordinatorTests : BaseCoordinatorTests
+  public class CCAStatisticsCoordinatorTests : BaseCoordinatorTests
   {
     private CCAStatisticsArgument Arg => new CCAStatisticsArgument()
     {

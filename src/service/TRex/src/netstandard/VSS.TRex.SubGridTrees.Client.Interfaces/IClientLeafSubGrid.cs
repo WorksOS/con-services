@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
+using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -51,5 +52,11 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// Existence map of cells matching current filter settings
     /// </summary>
     SubGridTreeBitmapSubGridBits FilterMap { get; set; }
+
+    /// <summary>
+    /// World extent of the client leaf subgrid map of cells
+    /// </summary>
+    /// <returns></returns>
+    BoundingWorldExtent3D WorldExtents();
   }
 }

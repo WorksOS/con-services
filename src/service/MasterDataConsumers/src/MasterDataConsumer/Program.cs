@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       loggerFactory.AddProvider(new Log4NetProvider());
-      loggerFactory.AddConsole(configStore.GetLoggingConfig());
+      //loggerFactory.AddConsole(configStore.GetLoggingConfig());
       loggerFactory.AddDebug();
 
      _log = loggerFactory.CreateLogger(loggerRepoName);

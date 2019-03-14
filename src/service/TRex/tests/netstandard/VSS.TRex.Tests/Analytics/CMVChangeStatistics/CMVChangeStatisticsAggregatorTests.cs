@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 {
-  public class CMVChangeStatisticsAggregatorTests : BaseTests
+  public class CMVChangeStatisticsAggregatorTests
   {
     [Fact]
     public void Test_CMVStatisticsAggregator_Creation()
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 
       clientGrid.FillWithTestPattern();
 
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.CMVChangeDetailsDataValues = new[] { -100.0, 0.0, 100.0 };
       aggregator.Counts = new long[aggregator.CMVChangeDetailsDataValues.Length];
 
@@ -63,7 +63,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
 
       clientGrid.FillWithTestPattern();
 
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.CMVChangeDetailsDataValues = new[] { -100.0, 0.0, 100.0 };
       aggregator.Counts = new long[aggregator.CMVChangeDetailsDataValues.Length];
 
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics
       // Other aggregator...
       var otherAggregator = new CMVChangeStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.CMVChangeDetailsDataValues = new[] { -100.0, 0.0, 100.0 };
       otherAggregator.Counts = new long[aggregator.CMVChangeDetailsDataValues.Length];
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
@@ -10,6 +9,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ApplicationService))]
   [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ClusterCompute))]
-  public class PassCountStatisticsRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class PassCountStatisticsRequestTests : BaseTests<PassCountStatisticsArgument, PassCountStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private ISiteModel NewEmptyModel()
     {
@@ -27,10 +27,6 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
-
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<IComputeFunc<PassCountStatisticsArgument, PassCountStatisticsResponse>, PassCountStatisticsArgument, PassCountStatisticsResponse>();
-
-    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<IComputeFunc<PassCountStatisticsArgument, PassCountStatisticsResponse>, PassCountStatisticsArgument, PassCountStatisticsResponse>();
 
     private PassCountStatisticsArgument SimplePassCountStatisticsArgument(ISiteModel siteModel, ushort targetMin, ushort targetMax)
     {
