@@ -1,14 +1,13 @@
 ﻿using System;
 using VSS.TRex.Filters;
-using Xunit;
-using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
+using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
 
 {
-  public class ToFromBinary_StationOffsetReportRequestArgument_ApplicationService : BaseTests, IClassFixture<AnalyticsTestsDIFixture>
+  public class ToFromBinary_StationOffsetReportRequestArgument_ApplicationService : IClassFixture<AnalyticsTestsDIFixture>
   {
     [Fact]
     public void Test_StationOffsetReportRequestArgument_ApplicationService_Simple()

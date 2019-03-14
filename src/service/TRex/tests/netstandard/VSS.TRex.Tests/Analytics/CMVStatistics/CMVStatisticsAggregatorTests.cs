@@ -1,17 +1,16 @@
 ﻿using System;
-using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.CMVStatistics;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics
 {
-  public class CMVStatisticsAggregatorTests : BaseTests
+  public class CMVStatisticsAggregatorTests
   {
     [Fact]
     public void Test_CMVStatisticsAggregator_Creation()
@@ -43,7 +42,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       clientGrid.FillWithTestPattern();
 
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -66,7 +65,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideMachineCMV = true;
       aggregator.OverridingMachineCMV = (short)(length - 1);
       aggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);
@@ -91,7 +90,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       clientGrid.FillWithTestPattern();
 
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -102,7 +101,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       // Other aggregator...
       var otherAggregator = new CMVStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       otherAggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -125,7 +124,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideMachineCMV = true;
       aggregator.OverridingMachineCMV = (short)(length - 1);
       aggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);
@@ -137,7 +136,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       // Other aggregator...
       var otherAggregator = new CMVStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.OverrideMachineCMV = true;
       otherAggregator.OverridingMachineCMV = (short)(length - 1);
       otherAggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);

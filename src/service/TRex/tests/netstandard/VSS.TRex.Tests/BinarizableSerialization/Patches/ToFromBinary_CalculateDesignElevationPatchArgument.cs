@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -8,7 +7,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Patches
 {
-  public class ToFromBinary_CalculateDesignElevationPatchArgument : BaseTests, IClassFixture<AnalyticsTestsDIFixture>
+  public class ToFromBinary_CalculateDesignElevationPatchArgument : IClassFixture<AnalyticsTestsDIFixture>
   {
     [Fact]
     public void Test_CalculateDesignElevationPatchArgument_Simple()
@@ -23,7 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Patches
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        CellSize = CELL_SIZE,
+        CellSize = TestConsts.CELL_SIZE,
         ReferenceDesignUID = Guid.Empty,
         Offset = 0.0,
         OriginX = 12345,
