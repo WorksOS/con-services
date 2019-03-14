@@ -50,6 +50,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to MDP.
     /// </summary>
@@ -62,6 +63,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     /// <summary>
     /// Determine if a filtered MDP is valid (not null)

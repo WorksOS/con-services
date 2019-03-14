@@ -17,16 +17,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            // Value is a minimum temperature warning level value...
+            bool result = false;
 
-            if (valueType.Type != TAGDataType.t12bitUInt)
+            // Value is a minimum temperature warning level value...
+            if (valueType.Type == TAGDataType.t12bitUInt)
             {
-                return false;
+              valueSink.ICTempWarningLevelMaxValue = (ushort) (value * CellPassConsts.MaterialTempValueRatio);
+              result = true;
             }
 
-            valueSink.ICTempWarningLevelMaxValue = (ushort)(value * CellPassConsts.MaterialTempValueRatio);
-
-            return true;
+            return result;
         }
     }
 }

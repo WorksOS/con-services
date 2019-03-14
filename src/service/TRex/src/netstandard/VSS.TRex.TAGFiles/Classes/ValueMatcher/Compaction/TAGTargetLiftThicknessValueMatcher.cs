@@ -4,7 +4,7 @@ using VSS.TRex.TAGFiles.Types;
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 {
     /// <summary>
-    /// Handles Target Thinkness vlaues set on the machine by an operator
+    /// Handles Target Thickness values set on the machine by an operator
     /// </summary>
     public class TAGTargetLiftThicknessValueMatcher : TAGValueMatcher
     {

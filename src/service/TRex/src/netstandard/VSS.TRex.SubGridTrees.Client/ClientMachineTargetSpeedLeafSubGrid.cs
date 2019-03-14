@@ -33,6 +33,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
 	  }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to MachineSpeedTarget.
     /// </summary>
@@ -45,6 +46,7 @@ namespace VSS.TRex.SubGridTrees.Client
 		{
 			Initialise();
 		}
+    */
 
 	  /// <summary>
 	  /// Speed target subgrids require lift processing...

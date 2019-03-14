@@ -98,7 +98,6 @@ namespace VSS.TRex.Exports.Patches.Executors
 
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
-          siteModel: null,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
           response: PatchSubGridsResponse,
           filters: Filters,

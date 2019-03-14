@@ -118,8 +118,8 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
+        /// Assign cell information from a previously cached result held in the general sub grid result cache
+        /// using the supplied map to control which cells from the caches sub grid should be copied into this
         /// client leaf sub grid
         /// </summary>
         /// <param name="source"></param>
@@ -136,7 +136,7 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
     /// <summary>
-    /// Dumps the contents of this client leaf subgrid into the log in a human readable form
+    /// Dumps the contents of this client leaf sub grid into the log in a human readable form
     /// </summary>
     public override void DumpToLog(string title)
         {
