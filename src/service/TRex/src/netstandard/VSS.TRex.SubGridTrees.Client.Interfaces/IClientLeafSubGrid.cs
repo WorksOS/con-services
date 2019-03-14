@@ -58,5 +58,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// </summary>
     /// <returns></returns>
     BoundingWorldExtent3D WorldExtents();
+
+    void DumpToLog();
   }
 }

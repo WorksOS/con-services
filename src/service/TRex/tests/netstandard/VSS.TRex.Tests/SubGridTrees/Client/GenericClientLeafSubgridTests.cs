@@ -192,5 +192,18 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       // If we get here it's all good!
       Assert.True(true, "");
     }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Implements_DumpToLog(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid.DumpToLog();
+
+      // If we get here it's all good!
+      Assert.True(true, "");
+    }
+
   }
 }
