@@ -1,18 +1,16 @@
 ﻿using System;
-using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.SpeedStatistics;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Tests.Analytics.SpeedStatistics
 {
-  public class SpeedAggregatorTests : BaseTests
+  public class SpeedAggregatorTests
   {
     [Fact]
     public void Test_SpeedAggregator_Creation()
@@ -42,7 +40,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
@@ -67,7 +65,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
@@ -77,7 +75,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
       // Other aggregator...
       var otherAggregator = new SpeedStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));
 
       otherAggregator.ProcessSubGridResult(subGrids);

@@ -60,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void RemovePass(uint X, uint Y, int position)
         {
            _mutationHook?.RemovePass(X, Y, position);
-           throw new NotImplementedException("Removal of cell passes is not yet supported");
+           //throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
         public CellPass ExtractCellPass(uint X, uint Y, uint passNumber)
@@ -128,10 +128,12 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
+        /*
         private void Read(uint X, uint Y, uint passNumber, BinaryReader reader)
         {
             PassData[X, Y].Passes[passNumber].Read(reader);
         }
+        */
 
         /// <summary>
         /// Calculate the total number of passes from all the cells present in this sub grid segment
@@ -234,10 +236,12 @@ namespace VSS.TRex.SubGridTrees.Server
             });
         }
 
+      /*
         private void Write(uint X, uint Y, uint passNumber, BinaryWriter writer)
         {
             PassData[X, Y].Passes[passNumber].Write(writer);
         }
+        */
 
         private void Write(uint X, uint Y, BinaryWriter writer)
         {
@@ -289,5 +293,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         public bool HasPassData() => PassData != null;
+
+        public bool IsImmutable() => false;
     } 
 }

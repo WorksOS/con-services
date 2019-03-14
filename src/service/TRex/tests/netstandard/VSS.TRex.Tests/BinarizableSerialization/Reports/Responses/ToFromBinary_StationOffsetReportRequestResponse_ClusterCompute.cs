@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using VSS.Productivity3D.Models.Models.Reports;
-using Xunit;
-using VSS.TRex.Tests.Analytics.Common;
-using VSS.TRex.Types;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
+using VSS.TRex.Types;
+using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Responses
 {
-  public class ToFromBinary_StationOffsetReportRequestResponse_ClusterCompute : BaseTests
+  public class ToFromBinary_StationOffsetReportRequestResponse_ClusterCompute
   {
     [Fact]
     public void Test_StationOffsetReportRequestResponse_ClusterCompute_Simple()

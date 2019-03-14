@@ -1,8 +1,7 @@
-﻿using System.IO;
-using FluentAssertions;
-using VSS.TRex.SubGridTrees.Client;
+﻿using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.Tests.BinaryReaderWriter;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -50,15 +49,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
         }
       };
 
-      var writer = new BinaryWriter(new MemoryStream());
-      clientGrid.Write(writer, null);
-
-      (writer.BaseStream as MemoryStream).Position = 0;
-      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
-
-      clientGrid2.Read(new BinaryReader(writer.BaseStream as MemoryStream), null);
-
-      clientGrid.Should().BeEquivalentTo(clientGrid2, options => options.ComparingByMembers<ClientCellProfileAllPassesLeafSubgridRecord>());
+      TestBinary_ReaderWriterBufferedHelper.RoundTripSerialise(clientGrid);
     }
   }
 }

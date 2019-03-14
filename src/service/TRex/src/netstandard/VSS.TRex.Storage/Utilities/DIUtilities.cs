@@ -40,10 +40,5 @@ namespace VSS.TRex.Storage.Utilities
     {
       DIBuilder.Continue(services).Add(x => AddDIEntries());
     }
-
-    public static void AddProxyCacheFactoriesToDI()
-    {
-      AddDIEntries();
-    }
   }
 }

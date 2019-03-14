@@ -107,5 +107,8 @@ export enum DisplayModeType {
   Terrain3D,
 
   // 3D design for map
-  Design3D
+  Design3D,
+
+  // Elevation Range
+  ElevationRange
 }

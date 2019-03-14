@@ -12,18 +12,24 @@ namespace VSS.TRex.Common
       writer.WriteByte(version);
     }
 
-    public static void CheckVersionByte(IBinaryRawReader reader, byte expectedVersion)
+    public static byte CheckVersionByte(IBinaryRawReader reader, byte expectedVersion)
     {
       byte encounteredVersion = reader.ReadByte();
+
       if (encounteredVersion != expectedVersion)
         throw new TRexSerializationVersionException(expectedVersion, encounteredVersion);
+
+      return encounteredVersion;
     }
 
-    public static void CheckVersionsByte(IBinaryRawReader reader, byte[] expectedVersions)
+    public static byte CheckVersionsByte(IBinaryRawReader reader, byte[] expectedVersions)
     {
       byte encounteredVersion = reader.ReadByte();
+
       if (!expectedVersions.Contains(encounteredVersion))
         throw new TRexSerializationVersionException(expectedVersions, encounteredVersion);
+
+      return encounteredVersion;
     }
 
     public static void EmitVersionByte(BinaryWriter writer, byte version)
@@ -31,18 +37,24 @@ namespace VSS.TRex.Common
       writer.Write(version);
     }
 
-    public static void CheckVersionByte(BinaryReader reader, byte expectedVersion)
+    public static byte CheckVersionByte(BinaryReader reader, byte expectedVersion)
     {
       byte encounteredVersion = reader.ReadByte();
+
       if (encounteredVersion != expectedVersion)
         throw new TRexSerializationVersionException(expectedVersion, encounteredVersion);
+
+      return encounteredVersion;
     }
 
-    public static void CheckVersionsByte(BinaryReader reader, byte[] expectedVersions)
+    public static byte CheckVersionsByte(BinaryReader reader, byte[] expectedVersions)
     {
       byte encounteredVersion = reader.ReadByte();
+
       if (!expectedVersions.Contains(encounteredVersion))
         throw new TRexSerializationVersionException(expectedVersions, encounteredVersion);
+
+      return encounteredVersion;
     }
   }
 }

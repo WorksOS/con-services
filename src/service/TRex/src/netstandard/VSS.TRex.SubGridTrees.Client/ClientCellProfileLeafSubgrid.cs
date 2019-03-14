@@ -51,6 +51,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to CellProfile.
     /// </summary>
@@ -63,6 +64,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue)
     {
@@ -76,7 +78,7 @@ namespace VSS.TRex.SubGridTrees.Client
         case DisplayMode.MDPPercent:
         case DisplayMode.MDPSummary:
         case DisplayMode.MDPPercentSummary:
-          return filteredValue.FilteredPass.CCV == CellPassConsts.NullMDP;
+          return filteredValue.FilteredPass.MDP == CellPassConsts.NullMDP;
 
         default:
           return filteredValue.FilteredPass.Time == DateTime.MinValue;

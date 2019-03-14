@@ -44,6 +44,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to Pass Count.
     /// </summary>
@@ -56,6 +57,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     /// <summary>
     /// Determines if the Pass Count at the cell location is null or not.

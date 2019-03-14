@@ -14,10 +14,7 @@ namespace VSS.TRex.Storage
     {
         private readonly ICache<TK, TV> Cache;
       
-        public string Name
-        {
-            get => Cache.Name;
-        }
+        public string Name => Cache.Name;
 
         public virtual void Commit()
         {
@@ -26,7 +23,7 @@ namespace VSS.TRex.Storage
 
         public virtual void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
-            throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour"); ;
+           throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour"); ;
         }
 
         public virtual void Clear()
@@ -44,29 +41,14 @@ namespace VSS.TRex.Storage
             Cache = cache;
         }
 
-        public virtual TV Get(TK key)
-        {
-            return Cache.Get(key);
-        }
+        public virtual TV Get(TK key) => Cache.Get(key);
 
-        public virtual bool Remove(TK key)
-        {
-            return Cache.Remove(key);
-        }
+        public virtual bool Remove(TK key) => Cache.Remove(key);
 
-        public virtual void RemoveAll(IEnumerable<TK> keys)
-        {
-            Cache.RemoveAll(keys);
-        }
+        public virtual void RemoveAll(IEnumerable<TK> keys) => Cache.RemoveAll(keys);
 
-        public virtual void Put(TK key, TV value)
-        {
-            Cache.Put(key, value);
-        }
+        public virtual void Put(TK key, TV value) => Cache.Put(key, value);
 
-        public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
-        {
-            Cache.PutAll(values);
-        }
+        public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => Cache.PutAll(values);
     }
 }

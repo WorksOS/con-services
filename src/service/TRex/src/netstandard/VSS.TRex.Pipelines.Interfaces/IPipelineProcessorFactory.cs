@@ -26,10 +26,8 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    /// <param name="siteModel"></param>
     IPipelineProcessor NewInstance(Guid requestDescriptor,
       Guid dataModelID,
-      ISiteModel siteModel,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,
@@ -57,10 +55,8 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    /// <param name="siteModel"></param>
     IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
       Guid dataModelID,
-      ISiteModel siteModel,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
       IFilterSet filters,

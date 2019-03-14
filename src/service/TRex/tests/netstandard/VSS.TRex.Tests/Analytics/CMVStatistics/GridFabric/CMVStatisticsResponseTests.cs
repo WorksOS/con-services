@@ -7,16 +7,16 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 {
-  public class CMVStatisticsResponseTests : BaseTests
+  public class CMVStatisticsResponseTests
   {
     private CMVStatisticsResponse _response => new CMVStatisticsResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
-      CellSize = CELL_SIZE,
-      CellsScannedOverTarget = CELLS_OVER_TARGET,
-      CellsScannedAtTarget = CELLS_AT_TARGET,
-      CellsScannedUnderTarget = CELLS_UNDER_TARGET,
-      SummaryCellsScanned = CELLS_OVER_TARGET + CELLS_AT_TARGET + CELLS_UNDER_TARGET,
+      CellSize = TestConsts.CELL_SIZE,
+      CellsScannedOverTarget = TestConsts.CELLS_OVER_TARGET,
+      CellsScannedAtTarget = TestConsts.CELLS_AT_TARGET,
+      CellsScannedUnderTarget = TestConsts.CELLS_UNDER_TARGET,
+      SummaryCellsScanned = TestConsts.CELLS_OVER_TARGET + TestConsts.CELLS_AT_TARGET + TestConsts.CELLS_UNDER_TARGET,
       IsTargetValueConstant = true,
       LastTargetCMV = 70,
       Counts = new long[] { 10, 50, 100, 150, 200, 250, 300, 350, 400 }

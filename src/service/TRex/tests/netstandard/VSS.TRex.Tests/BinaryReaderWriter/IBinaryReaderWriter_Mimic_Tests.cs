@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -22,6 +23,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
     {
       return !x.IsInterface && 
              !x.Implements(typeof(IBinaryReaderWriter)) &&
+             !x.Implements(typeof(INonBinaryReaderWriterMimicable)) &&             
              HasMethod(x, "Write", new[] { typeof(BinaryWriter) }, true) &&
              HasMethod(x, "Read", new[] { typeof(BinaryReader) }, true);
     }
@@ -93,7 +95,7 @@ namespace VSS.TRex.Tests.BinaryReaderWriter
       var instance2 = Activator.CreateInstance(type);
 
       instance2.GetType().InvokeMember("Read", BindingFlags.InvokeMethod, null, instance2, new[] { br });
-      instance.Should(). BeEquivalentTo(instance2, options => options.RespectingRuntimeTypes().IgnoringCyclicReferences());
+      instance.Should().BeEquivalentTo(instance2, options => options.RespectingRuntimeTypes().IgnoringCyclicReferences());
     }
 
     private void TestBufferedWrite(Type type)

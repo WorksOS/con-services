@@ -1,15 +1,14 @@
 ﻿using System;
-using VSS.TRex.Filters;
-using Xunit;
-using VSS.TRex.Tests.Analytics.Common;
-using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Filters;
+using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
+using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
 
 {
-  public class ToFromBinary_GriddedReportRequestArgument : BaseTests, IClassFixture<AnalyticsTestsDIFixture>
+  public class ToFromBinary_GriddedReportRequestArgument : IClassFixture<AnalyticsTestsDIFixture>
   {
     [Fact]
     public void Test_GriddedReportRequestArgument_Simple()

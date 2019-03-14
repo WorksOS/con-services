@@ -36,8 +36,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (useMutableSpatialData)
         result = new SubGridCellLatestPassDataWrapper_NonStatic();
-      else if (compressImmutableSpatialData)
-        result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
       else // Note: Static and Static-Compressed are the same for the latest pass information
         result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
 

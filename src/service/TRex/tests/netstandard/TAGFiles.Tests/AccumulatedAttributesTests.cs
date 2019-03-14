@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
 using VSS.TRex.Types;
 using Xunit;
@@ -60,6 +61,14 @@ namespace TAGFiles.Tests
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 2), 2);
 
             Assert.Equal(2, (int)(attrs.GetLatest()));
+        }
+
+        [Fact()]
+        public void Test_AccumulatedAttributes_GetValueAtDateTime_Empty()
+        {
+          AccumulatedAttributes attrs = new AccumulatedAttributes();
+
+          attrs.GetValueAtDateTime(DateTime.UtcNow, out _).Should().BeFalse();
         }
 
         [Fact()]
