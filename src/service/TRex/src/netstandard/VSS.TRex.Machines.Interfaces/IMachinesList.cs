@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines.Interfaces
 {
@@ -57,7 +58,7 @@ namespace VSS.TRex.Machines.Interfaces
 
     IMachine CreateNew(string name, string machineHardwareID,
       MachineType machineType,
-      int deviceType,
+      DeviceType deviceType,
       bool isJohnDoeMachine,
       Guid machineID);
 

@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Reports.Gridded;
-using Xunit;
 using VSS.TRex.Reports.Gridded.GridFabric;
-using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
+using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Responses
 {
-  public class ToFromBinary_GriddedReportRequestResponse : BaseTests
+  public class ToFromBinary_GriddedReportRequestResponse
   {
     [Fact] 
     public void Test_GriddedReportRequestResponse_Simple()

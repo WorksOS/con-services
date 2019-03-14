@@ -36,6 +36,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to MachineSpeed.
     /// </summary>
@@ -48,6 +49,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     /// <summary>
     /// Determine if a filtered machine speed is valid (not null)

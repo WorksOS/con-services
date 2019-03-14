@@ -12,7 +12,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set;  }
 
     void AllocateGlobalLatestCells();
-    void DeAllocateGlobalLatestCells();
     void CreateDefaultSegment();
     void Clear();
     void Write(BinaryWriter writer);

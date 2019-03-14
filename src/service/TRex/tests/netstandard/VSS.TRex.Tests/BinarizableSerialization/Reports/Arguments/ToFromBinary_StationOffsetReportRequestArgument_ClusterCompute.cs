@@ -1,16 +1,15 @@
 ﻿using System;
-using VSS.TRex.Filters;
-using Xunit;
-using VSS.TRex.Common.Types;
-using VSS.TRex.Tests.Analytics.Common;
-using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using System.Collections.Generic;
+using VSS.TRex.Common.Types;
+using VSS.TRex.Filters;
+using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
+using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
 
 {
-  public class ToFromBinary_StationOffsetReportRequestArgument_ClusterCompute : BaseTests, IClassFixture<AnalyticsTestsDIFixture>
+  public class ToFromBinary_StationOffsetReportRequestArgument_ClusterCompute : IClassFixture<AnalyticsTestsDIFixture>
   {
     [Fact]
     public void Test_StationOffsetReportRequestArgument_ClusterCompute_Simple()

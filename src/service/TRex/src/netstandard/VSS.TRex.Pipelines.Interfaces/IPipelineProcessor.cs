@@ -12,7 +12,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <summary>
     /// Reference to the site model involved in the request
     /// </summary>
-    ISiteModel SiteModel { get; set; }
+    ISiteModel SiteModel { get; }
 
     /// <summary>
     /// Records if the pipeline was aborted before completing operations
@@ -22,27 +22,27 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <summary>
     /// The task to be fitted to the pipeline to mediate sub grid retrieval and processing
     /// </summary>
-    ITRexTask Task { get; set; }
+    ITRexTask Task { get; }
 
     /// <summary>
     /// The pipe line used to retrieve sub grids from the cluster compute layer
     /// </summary>
-    ISubGridPipelineBase Pipeline { get; set; }
+    ISubGridPipelineBase Pipeline { get; }
 
     /// <summary>
     /// The request analyser used to determine the sub grids to be sent to the cluster compute layer
     /// </summary>
-    IRequestAnalyser RequestAnalyser { get; set; }
+    IRequestAnalyser RequestAnalyser { get; }
 
     /// <summary>
     /// The response supplied to the pipeline processor
     /// </summary>
-    ISubGridsPipelinedReponseBase Response { get; set; }
+    ISubGridsPipelinedReponseBase Response { get; }
 
     /// <summary>
     /// Indicates if the pipeline was aborted due to a TTL timeout
     /// </summary>
-    bool AbortedDueToTimeout { get; set; }
+    bool AbortedDueToTimeout { get; }
 
     /// <summary>
     /// Indicates if the pipeline requests require the inclusion of surveyed surface information

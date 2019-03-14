@@ -5,7 +5,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Responses
 {
-  public class ToFromBinary_MDPStatisticsResponse : BaseTests
+  public class ToFromBinary_MDPStatisticsResponse
   {
     [Fact]
     public void Test_MDPStatisticsResponse_Simple()
@@ -19,13 +19,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Responses
       var response = new MDPStatisticsResponse()
       {
         ResultStatus = RequestErrorStatus.OK,
-        CellSize = CELL_SIZE,
-        CellsScannedOverTarget = CELLS_OVER_TARGET,
-        CellsScannedAtTarget = CELLS_AT_TARGET,
-        CellsScannedUnderTarget = CELLS_UNDER_TARGET,
-        SummaryCellsScanned = CELLS_OVER_TARGET + CELLS_AT_TARGET + CELLS_UNDER_TARGET,
+        CellSize = TestConsts.CELL_SIZE,
+        CellsScannedOverTarget = TestConsts.CELLS_OVER_TARGET,
+        CellsScannedAtTarget = TestConsts.CELLS_AT_TARGET,
+        CellsScannedUnderTarget = TestConsts.CELLS_UNDER_TARGET,
+        SummaryCellsScanned = TestConsts.CELLS_OVER_TARGET + TestConsts.CELLS_AT_TARGET + TestConsts.CELLS_UNDER_TARGET,
         IsTargetValueConstant = true,
-        Counts = CountsArray,
+        Counts = TestConsts.CountsArray,
         MissingTargetValue = false,
         LastTargetMDP = 500
       };

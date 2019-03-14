@@ -10,7 +10,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 {
-  public class PassCountStatisticsAggregatorTests : BaseTests
+  public class PassCountStatisticsAggregatorTests
   {
     [Fact]
     public void Test_PassCountStatisticsAggregator_Creation()
@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -70,7 +70,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideTargetPassCount = true;
       aggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
 
@@ -96,7 +96,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       // Other aggregator...
       var otherAggregator = new PassCountStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
       otherAggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -131,7 +131,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideTargetPassCount = true;
       aggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
 
@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       // Other aggregator...
       var otherAggregator = new PassCountStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.OverrideTargetPassCount = true;
       otherAggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
 

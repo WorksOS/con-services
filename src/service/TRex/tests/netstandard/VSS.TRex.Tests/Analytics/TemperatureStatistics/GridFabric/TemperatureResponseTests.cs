@@ -7,16 +7,16 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 {
-	public class TemperatureResponseTests : BaseTests
+	public class TemperatureResponseTests
   {
 	  private TemperatureStatisticsResponse _response => new TemperatureStatisticsResponse()
 	  {
 	    ResultStatus = RequestErrorStatus.OK,
-	    CellSize = CELL_SIZE,
-	    CellsScannedOverTarget = CELLS_OVER_TARGET,
-	    CellsScannedAtTarget = CELLS_AT_TARGET,
-	    CellsScannedUnderTarget = CELLS_UNDER_TARGET,
-	    SummaryCellsScanned = CELLS_OVER_TARGET + CELLS_AT_TARGET + CELLS_UNDER_TARGET,
+	    CellSize = TestConsts.CELL_SIZE,
+	    CellsScannedOverTarget = TestConsts.CELLS_OVER_TARGET,
+	    CellsScannedAtTarget = TestConsts.CELLS_AT_TARGET,
+	    CellsScannedUnderTarget = TestConsts.CELLS_UNDER_TARGET,
+	    SummaryCellsScanned = TestConsts.CELLS_OVER_TARGET + TestConsts.CELLS_AT_TARGET + TestConsts.CELLS_UNDER_TARGET,
 	    IsTargetValueConstant = true,
 	    LastTempRangeMax = 150,
 	    LastTempRangeMin = 10

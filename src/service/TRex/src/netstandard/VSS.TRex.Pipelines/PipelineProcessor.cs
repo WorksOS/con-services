@@ -104,7 +104,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Reference to the site model involved in the request
     /// </summary>
-    public ISiteModel SiteModel { get; set; }
+    public ISiteModel SiteModel { get; private set; }
 
     /// <summary>
     /// Indicates if the pipeline was aborted due to a TTL timeout
@@ -144,10 +144,8 @@ namespace VSS.TRex.Pipelines
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    /// <param name="siteModel"></param>
     public PipelineProcessor(Guid requestDescriptor,
                              Guid dataModelID,
-                             ISiteModel siteModel,
                              GridDataType gridDataType,
                              ISubGridsPipelinedReponseBase response,
                              IFilterSet filters,
@@ -161,7 +159,6 @@ namespace VSS.TRex.Pipelines
     {
       RequestDescriptor = requestDescriptor;
       DataModelID = dataModelID;
-      SiteModel = siteModel;
       GridDataType = gridDataType;
       Response = response;
       Filters = filters;
@@ -198,15 +195,12 @@ namespace VSS.TRex.Pipelines
         }
       }
 
+      // Get the SiteModel for the request
+      SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
       if (SiteModel == null)
       {
-        // Get the SiteModel for the request
-        SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
-        if (SiteModel == null)
-        {
-          Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
-          return false;
-        }
+        Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
+        return false;
       }
 
       SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
@@ -389,13 +383,11 @@ namespace VSS.TRex.Pipelines
       {
         if (Pipeline.Initiate())
         {
-          Pipeline.WaitForCompletion().ContinueWith(x =>
-          {
-            if (x.Result)
-              Log.LogInformation("WaitForCompletion successful");
-            else // No signal was received, the wait timed out...            
-              Log.LogInformation($"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
-          }).Wait();
+          Pipeline.WaitForCompletion()
+            .ContinueWith(x =>
+            {
+              Log.LogInformation(x.Result ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
+            }).Wait();
         }
 
         PipelineAborted = Pipeline.Aborted;

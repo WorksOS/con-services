@@ -8,6 +8,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.SiteModels
@@ -27,7 +28,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineLayers_OneMachineNoRecordingPeriodNoLayersNoDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
 
       var machineLayers = siteModel.GetMachineLayers();
       machineLayers.Count.Should().Be(0);
@@ -37,7 +38,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineLayers_LateLayerNoDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
 
       DateTime referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
@@ -56,7 +57,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineLayers_TwoLayersNoDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
 
       DateTime referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
@@ -83,7 +84,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineLayers_TwoLayersOneDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
 
       DateTime referenceDate = DateTime.UtcNow;
@@ -112,7 +113,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineLayers_MultiLayersDesignsReportPeriods()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       var design2 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
 
@@ -170,7 +171,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineLayers_FirstLayerWithinReportPeriod()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
 
       DateTime referenceDate = DateTime.UtcNow;

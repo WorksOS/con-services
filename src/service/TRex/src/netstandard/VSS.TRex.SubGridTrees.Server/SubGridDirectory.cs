@@ -33,11 +33,6 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void DeAllocateGlobalLatestCells()
-        {
-            GlobalLatestCells = null;
-        }
-
         public SubGridDirectory()
         {
         }
@@ -70,7 +65,9 @@ namespace VSS.TRex.SubGridTrees.Server
             GlobalLatestCells.Write(writer, new byte[10000]);
 
             // Write out the directory of segments
-            Debug.Assert(SegmentDirectory.Count > 0, "Writing a segment directory with no segments");
+            if (SegmentDirectory.Count == 0)
+              throw new TRexSubGridIOException("Writing a segment directory with no segments");
+
             writer.Write(SegmentDirectory.Count);
 
             foreach (var Segment in SegmentDirectory)

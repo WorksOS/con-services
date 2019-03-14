@@ -4,7 +4,7 @@ using VSS.TRex.TAGFiles.Types;
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.PassCount
 {
     /// <summary>
-    /// Handles Target CCV vlaues set on the machine by an operator
+    /// Handles Target CCV values set on the machine by an operator
     /// </summary>
     public class TAGTargetPassCountValueMatcher : TAGValueMatcher
     {

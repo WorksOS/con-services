@@ -49,7 +49,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       var extents = siteModel.SiteModelExtent;
       if (extents != null)
         return BoundingBox3DGrid.CreatBoundingBox3DGrid(
-
           extents.MinX,
           extents.MinY,
           extents.MinZ,

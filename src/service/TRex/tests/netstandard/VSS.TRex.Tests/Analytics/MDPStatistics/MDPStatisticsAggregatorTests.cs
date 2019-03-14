@@ -1,18 +1,16 @@
 ﻿using System;
 using VSS.TRex.Analytics.MDPStatistics;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.MDPStatistics
 {
-  public class MDPStatisticsAggregatorTests : BaseTests
+  public class MDPStatisticsAggregatorTests
   {
     [Fact]
     public void Test_MDPAggregator_Creation()
@@ -46,7 +44,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -70,7 +68,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideMachineMDP = true;
       aggregator.OverridingMachineMDP = (short)(length - 1);
       aggregator.MDPPercentageRange = new MDPRangePercentageRecord(100, 100);
@@ -97,7 +95,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -108,7 +106,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       // Other aggregator...
       var otherAggregator = new MDPStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       otherAggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -132,7 +130,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideMachineMDP = true;
       aggregator.OverridingMachineMDP = (short)(length - 1);
       aggregator.MDPPercentageRange = new MDPRangePercentageRecord(100, 100);
@@ -144,7 +142,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       // Other aggregator...
       var otherAggregator = new MDPStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.OverrideMachineMDP = true;
       otherAggregator.OverridingMachineMDP = (short)(length - 1);
       otherAggregator.MDPPercentageRange = new MDPRangePercentageRecord(100, 100);

@@ -55,7 +55,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            // Value is abosulte temperature value
+            // Value is absolute temperature value
             state.HaveSeenAnAbsoluteTemperature = true;
 
             if (valueType.Type != TAGDataType.t12bitUInt)

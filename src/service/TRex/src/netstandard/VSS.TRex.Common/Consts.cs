@@ -5,7 +5,11 @@
     public const double TOLERANCE_PERCENTAGE = 0.00001;
     public const double TOLERANCE_DIMENSION = 0.00001;
     public const double TOLERANCE_TEMPERATURE = 0.00001;
+    public const double TOLERANCE_HEIGHT = 0.00001;
+    public const double TOLERANCE_AREA = 0.00001;
     public const double TOLERANCE_DECIMAL_DEGREE = 1e-10;
+    public const double MIN_ELEVATION = -1e10;
+    public const double MAX_ELEVATION = 1e10;
 
     public const double NullReal = 1E308;
 

@@ -69,7 +69,6 @@ namespace VSS.TRex.Analytics.Foundation
           IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
              (requestDescriptor: RequestDescriptor,
               dataModelID: SiteModel.ID,
-              siteModel: SiteModel,
               gridDataType: RequestedGridDataType,
               response: response,
               filters: Filters,

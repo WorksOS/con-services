@@ -6,6 +6,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.SiteModels
@@ -27,7 +28,7 @@ namespace VSS.TRex.Tests.SiteModels
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       var machineDesigns = siteModel.GetMachineDesigns();
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       machineDesigns.Count.Should().Be(0);
     }
 
@@ -35,7 +36,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineDesigns_OneMachineOneDesignsNoEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       
       var machineDesigns = siteModel.GetMachineDesigns();
@@ -46,7 +47,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineDesigns_OneMachineTwoDesignsSimpleEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       var design2 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
 
@@ -78,7 +79,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetMachineDesigns_OneMachineTwoDesignsDuplicateEvents()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       var design2 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
 
@@ -115,8 +116,8 @@ namespace VSS.TRex.Tests.SiteModels
 
       // a little gotcha is that machines must be added before any events
       //    to do with adding event should 'normally' generate a NewMachine event which trigger a whole series of events to the siteModel.
-      IMachine machine1 = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, 1, false, Guid.NewGuid());
-      IMachine machine2 = siteModel.Machines.CreateNew("Test Machine Source 2", "", MachineType.WheelLoader, 2, false, Guid.NewGuid());
+      IMachine machine1 = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine2 = siteModel.Machines.CreateNew("Test Machine Source 2", "", MachineType.WheelLoader, DeviceType.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       var design2 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
 

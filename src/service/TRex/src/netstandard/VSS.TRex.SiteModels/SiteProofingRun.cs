@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Cells;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 
@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteProofingRun : IEquatable<string>, ISiteProofingRun
   {
-    private const int VERSION_NUMBER = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public short MachineID { get; set; }
 
@@ -61,9 +61,7 @@ namespace VSS.TRex.SiteModels
 
     public void Read(BinaryReader reader)
     {
-      byte version = reader.ReadByte();
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Name = reader.ReadString();
       MachineID = reader.ReadInt16();
@@ -84,7 +82,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.Write(Name);
       writer.Write(MachineID);

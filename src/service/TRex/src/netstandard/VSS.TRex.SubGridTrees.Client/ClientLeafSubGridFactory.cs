@@ -76,12 +76,12 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       var result = GetSubGrid(gridDataType);
 
-      if (result == null)
-        return null;
-
-      result.CellSize = cellSize;
-      result.SetAbsoluteLevel(level);
-      result.SetAbsoluteOriginPosition(originX, originY);
+      if (result != null)
+      {
+        result.CellSize = cellSize;
+        result.SetAbsoluteLevel(level);
+        result.SetAbsoluteOriginPosition(originX, originY);
+      }
 
       return result;
     }

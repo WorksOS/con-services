@@ -1,19 +1,16 @@
 ﻿using System;
-using VSS.TRex.Analytics.SpeedStatistics;
-using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 {
-  public class TemperatureAggregatorTests : BaseTests
+  public class TemperatureAggregatorTests
   {
 		[Fact]
 		public void Test_TemperatureAggregator_Creation()
@@ -46,7 +43,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideTemperatureWarningLevels = true;
       aggregator.OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord((ushort)(length - 1), (ushort)(length - 1));
 
@@ -72,7 +69,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
-      aggregator.CellSize = CELL_SIZE;
+      aggregator.CellSize = TestConsts.CELL_SIZE;
       aggregator.OverrideTemperatureWarningLevels = true;
       aggregator.OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord((ushort)(length - 1), (ushort)(length - 1));
 
@@ -84,7 +81,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
       // Other aggregator...
       var otherAggregator = new TemperatureStatisticsAggregator();
 
-      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.CellSize = TestConsts.CELL_SIZE;
       otherAggregator.OverrideTemperatureWarningLevels = true;
       otherAggregator.OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord((ushort)(length - 1), (ushort)(length - 1));
 
