@@ -36,25 +36,30 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       };
     }
 
-    private void BuildModelForSingleCellElevation(out ISiteModel siteModel, float elevationIncrement)
+    private void BuildModelForCellsElevation(out ISiteModel siteModel, float elevationIncrement, int numberOfCells)
     {
       var baseTime = DateTime.UtcNow;
-      byte baseElevation = 1;
+      var baseElevation = 1.0f;
 
       siteModel = NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
-      var cellPasses = Enumerable.Range(0, 10).Select(x =>
-        new CellPass
-        {
-          InternalSiteModelMachineIndex = bulldozerMachineIndex,
-          Time = baseTime.AddMinutes(x),
-          Height = (byte)(baseElevation + x * elevationIncrement),
-          PassType = PassType.Front
-        }).ToArray();
+      for (int i = 1; i <= numberOfCells; i++)
+      {
+        var cellPasses = Enumerable.Range(0, 10).Select(x =>
+          new CellPass
+          {
+            InternalSiteModelMachineIndex = bulldozerMachineIndex,
+            Time = baseTime.AddMinutes(x),
+            Height = baseElevation + x * elevationIncrement + i - 1,
+            PassType = PassType.Front
+          }).ToArray();
 
-      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
-        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+        DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
+          (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + (uint)(i - 1), SubGridTreeConsts.DefaultIndexOriginOffset + (uint)(i - 1), cellPasses, i, cellPasses.Length);
+
+        baseElevation = cellPasses[cellPasses.Length - 1].Height;
+      }
     }
 
     [Fact]
@@ -86,17 +91,38 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      BuildModelForSingleCellElevation(out var siteModel, 1);
+      BuildModelForCellsElevation(out var siteModel, 1, 1);
       var operation = new ElevationStatisticsOperation();
 
       var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
 
       elevationStatisticsResult.Should().NotBeNull();
       elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      elevationStatisticsResult.MinElevation.Should().Be(10);
-      elevationStatisticsResult.MaxElevation.Should().Be(10);
+      elevationStatisticsResult.MinElevation.Should().Be(10.0);
+      elevationStatisticsResult.MaxElevation.Should().Be(10.0);
       elevationStatisticsResult.CoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
       elevationStatisticsResult.BoundingExtents.IsValidPlanExtent.Should().Be(true);
     }
+
+    [Fact]
+    public void Test_SummaryElevationStatistics_SiteModelWithMultipleCells_FullExtents()
+    {
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+
+      BuildModelForCellsElevation(out var siteModel, 1, 2);
+
+      var operation = new ElevationStatisticsOperation();
+
+      var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));
+
+      elevationStatisticsResult.Should().NotBeNull();
+      elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      elevationStatisticsResult.MinElevation.Should().Be(10.0);
+      elevationStatisticsResult.MaxElevation.Should().Be(20.0);
+      elevationStatisticsResult.CoverageArea.Should().BeApproximately(2 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      elevationStatisticsResult.BoundingExtents.IsValidPlanExtent.Should().Be(true);
+    }
+
   }
 }
