@@ -20,7 +20,7 @@ namespace VSS.TRex.Executors
         {
             ISiteModel SiteModel = GenericApplicationServiceServer.PerformAction(() => DIContext.Obtain<ISiteModels>().GetSiteModel(ID, false));
 
-            return SiteModel?.SiteModelExtent ?? BoundingWorldExtent3D.Inverted();
+            return new BoundingWorldExtent3D(SiteModel?.SiteModelExtent ?? BoundingWorldExtent3D.Inverted());
         }
 
         /// <summary>

@@ -4,7 +4,6 @@ using System.Net;
 using Gherkin.Ast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
 using Xunit.Gherkin.Quick;

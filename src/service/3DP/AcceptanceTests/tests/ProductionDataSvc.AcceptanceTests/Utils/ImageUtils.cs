@@ -4,7 +4,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using XnaFan.ImageComparison.Netcore;
 
-namespace ProductionDataSvc.AcceptanceTests.Helpers
+namespace ProductionDataSvc.AcceptanceTests.Utils
 {
   public class ImageUtils
   {

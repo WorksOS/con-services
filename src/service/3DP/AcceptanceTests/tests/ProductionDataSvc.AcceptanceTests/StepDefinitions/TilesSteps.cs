@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
-using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
+using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
 using Xunit.Gherkin.Quick;
 
