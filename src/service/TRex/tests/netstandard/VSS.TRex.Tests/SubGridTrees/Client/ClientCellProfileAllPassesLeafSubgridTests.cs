@@ -2,12 +2,13 @@
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.BinaryReaderWriter;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class ClientCellProfileAllPassesLeafSubgridTests
+  public class ClientCellProfileAllPassesLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_NullCells()

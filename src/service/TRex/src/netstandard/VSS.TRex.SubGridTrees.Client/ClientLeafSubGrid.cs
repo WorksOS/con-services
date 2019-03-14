@@ -306,5 +306,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Facades the OriginY property of this sub grid for use in the spatial caching implementation
     /// </summary>
     public uint CacheOriginY => OriginY;
+
+    public void DumpToLog()
+    {
+    }
   }
 }

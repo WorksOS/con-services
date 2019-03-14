@@ -204,6 +204,5 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       // If we get here it's all good!
       Assert.True(true, "");
     }
-
   }
 }

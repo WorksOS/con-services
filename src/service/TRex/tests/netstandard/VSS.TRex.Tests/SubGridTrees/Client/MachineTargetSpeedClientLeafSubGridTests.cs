@@ -37,6 +37,5 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
       clientGrid.DumpToLog(clientGrid.ToString());
     }
-
   }
 }
