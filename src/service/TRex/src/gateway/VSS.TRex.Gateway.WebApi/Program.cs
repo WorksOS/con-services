@@ -37,7 +37,6 @@ namespace VSS.TRex.Gateway.WebApi
         {
           var env = hostingContext.HostingEnvironment;
           env.ConfigureLog4Net(repoName: Startup.LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
-
         })
         .UsePrometheus()
         .UseStartup<Startup>()
