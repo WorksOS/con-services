@@ -95,10 +95,7 @@ namespace VSS.TRex.Analytics.ElevationStatistics
       CellsUsed += other.CellsUsed;
       CellsScanned += other.CellsScanned;
 
-      lock (this)
-      {
-        BoundingExtents.Include(other.BoundingExtents);
-      }
+      BoundingExtents.Include(other.BoundingExtents);
 
       return this;
     }

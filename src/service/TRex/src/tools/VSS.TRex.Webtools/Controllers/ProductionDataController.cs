@@ -51,7 +51,7 @@ namespace VSS.TRex.Webtools.Controllers
       else
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(UID, false);
-        var cmvBands = new[] {50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 1000, 1200};
+        var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 1000, 1200 };
 
         if (siteModel == null)
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
@@ -59,45 +59,39 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            CMVStatisticsOperation operation = new CMVStatisticsOperation();
-            CMVStatisticsResult result = operation.Execute(
-              new CMVStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() {Filters = new[] {new CombinedFilter()}},
-                CMVDetailValues = cmvBands
-              }
-            );
 
-            if (result != null)
+          CMVStatisticsOperation operation = new CMVStatisticsOperation();
+          CMVStatisticsResult result = operation.Execute(
+            new CMVStatisticsArgument()
             {
-              string resultString = $"<b>CMV Details Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-
-              var anyTwoDigitsNumber = cmvBands.ToList().Find(s => (s / CMV_DENOMINATOR) >= TWO_DIGITS_NUMBER);
-              var anyThreeDigitsNumber = cmvBands.ToList().Find(s => (s / CMV_DENOMINATOR) >= THREE_DIGITS_NUMBER);
-
-              for (int i = 0; i < cmvBands.Length; i++)
-              {
-                string space = anyThreeDigitsNumber > 0 && cmvBands[i] / CMV_DENOMINATOR < THREE_DIGITS_NUMBER ? "&nbsp;&nbsp;" : string.Empty;
-
-                if (anyTwoDigitsNumber > 0 && cmvBands[i] / CMV_DENOMINATOR < TWO_DIGITS_NUMBER)
-                  space += "&nbsp;&nbsp;";
-
-                resultString += $"<b>{space}{cmvBands[i] / CMV_DENOMINATOR}</b> - {result.Percents[i]:##0.#0}%<br/>";
-              }
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              CMVDetailValues = cmvBands
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>CMV Details Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+
+            var anyTwoDigitsNumber = cmvBands.ToList().Find(s => (s / CMV_DENOMINATOR) >= TWO_DIGITS_NUMBER);
+            var anyThreeDigitsNumber = cmvBands.ToList().Find(s => (s / CMV_DENOMINATOR) >= THREE_DIGITS_NUMBER);
+
+            for (int i = 0; i < cmvBands.Length; i++)
+            {
+              string space = anyThreeDigitsNumber > 0 && cmvBands[i] / CMV_DENOMINATOR < THREE_DIGITS_NUMBER ? "&nbsp;&nbsp;" : string.Empty;
+
+              if (anyTwoDigitsNumber > 0 && cmvBands[i] / CMV_DENOMINATOR < TWO_DIGITS_NUMBER)
+                space += "&nbsp;&nbsp;";
+
+              resultString += $"<b>{space}{cmvBands[i] / CMV_DENOMINATOR}</b> - {result.Percents[i]:##0.#0}%<br/>";
+            }
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -126,39 +120,33 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            CMVStatisticsOperation operation = new CMVStatisticsOperation();
 
-            CMVStatisticsResult result = operation.Execute(
-              new CMVStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet(new CombinedFilter()),
-                CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
-                OverrideMachineCMV = false,
-                OverridingMachineCMV = 50
-              }
-            );
+          CMVStatisticsOperation operation = new CMVStatisticsOperation();
 
-            if (result != null)
+          CMVStatisticsResult result = operation.Execute(
+            new CMVStatisticsArgument()
             {
-              string resultString = $"<b>CMV Summary Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Above CMV Percentage:</b> {result.AboveTargetPercent}<br/>";
-              resultString += $"<b>Within CMV Percentage Range:</b> {result.WithinTargetPercent}<br/>";
-              resultString += $"<b>Below CMV Percentage:</b> {result.BelowTargetPercent}<br/>";
-              resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet(new CombinedFilter()),
+              CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
+              OverrideMachineCMV = false,
+              OverridingMachineCMV = 50
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>CMV Summary Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Above CMV Percentage:</b> {result.AboveTargetPercent}<br/>";
+            resultString += $"<b>Within CMV Percentage Range:</b> {result.WithinTargetPercent}<br/>";
+            resultString += $"<b>Below CMV Percentage:</b> {result.BelowTargetPercent}<br/>";
+            resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -188,48 +176,42 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
-            CMVChangeStatisticsResult result = operation.Execute(
-              new CMVChangeStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                CMVChangeDetailsDataValues = cmvPercentBands
-              }
-            );
 
-            if (result != null)
+          CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
+          CMVChangeStatisticsResult result = operation.Execute(
+            new CMVChangeStatisticsArgument()
             {
-              string resultString = $"<b>CMV Percent Change Details Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-
-              var anyNegativeNumber = cmvPercentBands.ToList().Find(s => s < 0);
-              var anyTwoDigitsNumber = cmvPercentBands.ToList().Find(s => Math.Abs(s) >= TWO_DIGITS_NUMBER);
-
-              for (int i = 0; i < cmvPercentBands.Length; i++)
-              {
-                string space = anyNegativeNumber < 0 && cmvPercentBands[i] >= 0 ? "&nbsp;&nbsp;" : string.Empty;
-
-                if (Math.Abs(anyTwoDigitsNumber) > 0 && Math.Abs(cmvPercentBands[i]) >= 0 && Math.Abs(cmvPercentBands[i]) < TWO_DIGITS_NUMBER)
-                  space += "&nbsp;&nbsp;";
-
-                resultString += $"<b>{space}{cmvPercentBands[i]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
-              }
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              CMVChangeDetailsDataValues = cmvPercentBands
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>CMV Percent Change Details Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+
+            var anyNegativeNumber = cmvPercentBands.ToList().Find(s => s < 0);
+            var anyTwoDigitsNumber = cmvPercentBands.ToList().Find(s => Math.Abs(s) >= TWO_DIGITS_NUMBER);
+
+            for (int i = 0; i < cmvPercentBands.Length; i++)
+            {
+              string space = anyNegativeNumber < 0 && cmvPercentBands[i] >= 0 ? "&nbsp;&nbsp;" : string.Empty;
+
+              if (Math.Abs(anyTwoDigitsNumber) > 0 && Math.Abs(cmvPercentBands[i]) >= 0 && Math.Abs(cmvPercentBands[i]) < TWO_DIGITS_NUMBER)
+                space += "&nbsp;&nbsp;";
+
+              resultString += $"<b>{space}{cmvPercentBands[i]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
+            }
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
-      
+
       return new JsonResult(resultToReturn);
     }
 
@@ -255,38 +237,32 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            MDPStatisticsOperation operation = new MDPStatisticsOperation();
-            MDPStatisticsResult result = operation.Execute(
-              new MDPStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
-                OverrideMachineMDP = false,
-                OverridingMachineMDP = 1000
-              }
-            );
 
-            if (result != null)
+          MDPStatisticsOperation operation = new MDPStatisticsOperation();
+          MDPStatisticsResult result = operation.Execute(
+            new MDPStatisticsArgument()
             {
-              string resultString = $"<b>MDP Summary Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Above MDP Percentage:</b> {result.AboveTargetPercent}<br/>";
-              resultString += $"<b>Within MDP Percentage Range:</b> {result.WithinTargetPercent}<br/>";
-              resultString += $"<b>Below MDP Percentage:</b> {result.BelowTargetPercent}<br/>";
-              resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
+              OverrideMachineMDP = false,
+              OverridingMachineMDP = 1000
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>MDP Summary Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Above MDP Percentage:</b> {result.AboveTargetPercent}<br/>";
+            resultString += $"<b>Within MDP Percentage Range:</b> {result.WithinTargetPercent}<br/>";
+            resultString += $"<b>Below MDP Percentage:</b> {result.BelowTargetPercent}<br/>";
+            resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -316,39 +292,33 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-            PassCountStatisticsResult result = operation.Execute(
-              new PassCountStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                PassCountDetailValues = passCountBands
-              }
-            );
 
-            if (result != null)
+          PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
+          PassCountStatisticsResult result = operation.Execute(
+            new PassCountStatisticsArgument()
             {
-              string resultString = $"<b>Pass Count Details Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-
-              var anyTwoDigitsNumber = passCountBands.ToList().Find(s => s >= TWO_DIGITS_NUMBER);
-              for (int i = 0; i < passCountBands.Length; i++)
-              {
-                string space = anyTwoDigitsNumber > 0 && passCountBands[i] < TWO_DIGITS_NUMBER ? "&nbsp;&nbsp;" : string.Empty;
-                resultString += $"<b>{space}{passCountBands[i]}</b> - {result.Percents[i]:##0.#0}%<br/>";
-              }
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              PassCountDetailValues = passCountBands
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>Pass Count Details Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+
+            var anyTwoDigitsNumber = passCountBands.ToList().Find(s => s >= TWO_DIGITS_NUMBER);
+            for (int i = 0; i < passCountBands.Length; i++)
+            {
+              string space = anyTwoDigitsNumber > 0 && passCountBands[i] < TWO_DIGITS_NUMBER ? "&nbsp;&nbsp;" : string.Empty;
+              resultString += $"<b>{space}{passCountBands[i]}</b> - {result.Percents[i]:##0.#0}%<br/>";
+            }
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -377,37 +347,31 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-            PassCountStatisticsResult result = operation.Execute(
-              new PassCountStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
-                OverrideTargetPassCount = false
-              }
-            );
 
-            if (result != null)
+          PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
+          PassCountStatisticsResult result = operation.Execute(
+            new PassCountStatisticsArgument()
             {
-              string resultString = $"<b>Pass Count Summary Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Above Pass Count Percentage:</b> {result.AboveTargetPercent}<br/>";
-              resultString += $"<b>Within Pass Count Percentage Range:</b> {result.WithinTargetPercent}<br/>";
-              resultString += $"<b>Below Pass Count Percentage:</b> {result.BelowTargetPercent}<br/>";
-              resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+              OverrideTargetPassCount = false
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>Pass Count Summary Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Above Pass Count Percentage:</b> {result.AboveTargetPercent}<br/>";
+            resultString += $"<b>Within Pass Count Percentage Range:</b> {result.WithinTargetPercent}<br/>";
+            resultString += $"<b>Below Pass Count Percentage:</b> {result.BelowTargetPercent}<br/>";
+            resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -436,35 +400,29 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            CCAStatisticsOperation operation = new CCAStatisticsOperation();
-            CCAStatisticsResult result = operation.Execute(
-              new CCAStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } }
-              }
-            );
 
-            if (result != null)
+          CCAStatisticsOperation operation = new CCAStatisticsOperation();
+          CCAStatisticsResult result = operation.Execute(
+            new CCAStatisticsArgument()
             {
-              string resultString = $"<b>CCA Summary Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Above CCA Percentage:</b> {result.AboveTargetPercent}<br/>";
-              resultString += $"<b>Within CCA Percentage Range:</b> {result.WithinTargetPercent}<br/>";
-              resultString += $"<b>Below CCA Percentage:</b> {result.BelowTargetPercent}<br/>";
-              resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } }
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>CCA Summary Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Above CCA Percentage:</b> {result.AboveTargetPercent}<br/>";
+            resultString += $"<b>Within CCA Percentage Range:</b> {result.WithinTargetPercent}<br/>";
+            resultString += $"<b>Below CCA Percentage:</b> {result.BelowTargetPercent}<br/>";
+            resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -495,45 +453,39 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-            TemperatureStatisticsResult result = operation.Execute(
-              new TemperatureStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                TemperatureDetailValues = temperatureBands
-              }
-            );
 
-            if (result != null)
+          TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+          TemperatureStatisticsResult result = operation.Execute(
+            new TemperatureStatisticsArgument()
             {
-              string resultString = $"<b>Temperature Details Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-
-              var anyTwoDigitsNumber = temperatureBands.ToList().Find(s => (s / TEMP_DENOMINATOR) >= TWO_DIGITS_NUMBER && (s / TEMP_DENOMINATOR) < THREE_DIGITS_NUMBER);
-              var anyThreeDigitsNumber = temperatureBands.ToList().Find(s => (s / TEMP_DENOMINATOR) >= THREE_DIGITS_NUMBER);
-
-              for (int i = 0; i < temperatureBands.Length; i++)
-              {
-                string space = anyThreeDigitsNumber > 0 && temperatureBands[i] / TEMP_DENOMINATOR < THREE_DIGITS_NUMBER ? "&nbsp;&nbsp;" : string.Empty;
-
-                if (anyTwoDigitsNumber > 0 && temperatureBands[i] / TEMP_DENOMINATOR < TWO_DIGITS_NUMBER)
-                  space += "&nbsp;&nbsp;";
-
-                resultString += $"<b>{space}{(temperatureBands[i] / TEMP_DENOMINATOR):##0.0}</b> - {result.Percents[i]:##0.#0}%<br/>";
-              }
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              TemperatureDetailValues = temperatureBands
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>Temperature Details Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+
+            var anyTwoDigitsNumber = temperatureBands.ToList().Find(s => (s / TEMP_DENOMINATOR) >= TWO_DIGITS_NUMBER && (s / TEMP_DENOMINATOR) < THREE_DIGITS_NUMBER);
+            var anyThreeDigitsNumber = temperatureBands.ToList().Find(s => (s / TEMP_DENOMINATOR) >= THREE_DIGITS_NUMBER);
+
+            for (int i = 0; i < temperatureBands.Length; i++)
+            {
+              string space = anyThreeDigitsNumber > 0 && temperatureBands[i] / TEMP_DENOMINATOR < THREE_DIGITS_NUMBER ? "&nbsp;&nbsp;" : string.Empty;
+
+              if (anyTwoDigitsNumber > 0 && temperatureBands[i] / TEMP_DENOMINATOR < TWO_DIGITS_NUMBER)
+                space += "&nbsp;&nbsp;";
+
+              resultString += $"<b>{space}{(temperatureBands[i] / TEMP_DENOMINATOR):##0.0}</b> - {result.Percents[i]:##0.#0}%<br/>";
+            }
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -562,37 +514,31 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-            TemperatureStatisticsResult result = operation.Execute(
-              new TemperatureStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                OverrideTemperatureWarningLevels = true,
-                OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
-              }
-            );
 
-            if (result != null)
+          TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+          TemperatureStatisticsResult result = operation.Execute(
+            new TemperatureStatisticsArgument()
             {
-              string resultString = $"<b>Temperature Summary Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Above Temperature Percentage:</b> {result.AboveTargetPercent}<br/>";
-              resultString += $"<b>Within Temperature Percentage Range:</b> {result.WithinTargetPercent}<br/>";
-              resultString += $"<b>Below Temperature Percentage:</b> {result.BelowTargetPercent}<br/>";
-              resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              OverrideTemperatureWarningLevels = true,
+              OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>Temperature Summary Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Above Temperature Percentage:</b> {result.AboveTargetPercent}<br/>";
+            resultString += $"<b>Within Temperature Percentage Range:</b> {result.WithinTargetPercent}<br/>";
+            resultString += $"<b>Below Temperature Percentage:</b> {result.BelowTargetPercent}<br/>";
+            resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -621,42 +567,36 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
-          {
-            SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
-            SpeedStatisticsResult result = operation.Execute(
-              new SpeedStatisticsArgument()
-              {
-                ProjectID = siteModel.ID,
-                Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-                TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
-              }
-            );
 
-            if (result != null)
+          SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
+          SpeedStatisticsResult result = operation.Execute(
+            new SpeedStatisticsArgument()
             {
-              string resultString = $"<b>Machine Speed Summary Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Above Machine Speed Percentage:</b> {result.AboveTargetPercent}<br/>";
-              resultString += $"<b>Within Machine Speed Percentage Range:</b> {result.WithinTargetPercent}<br/>";
-              resultString += $"<b>Below Machine Speed Percentage:</b> {result.BelowTargetPercent}<br/>";
-              resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
-
-              resultToReturn = resultString;
+              ProjectID = siteModel.ID,
+              Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+              TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
             }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          );
+
+          if (result != null)
           {
-            sw.Stop();
+            string resultString = $"<b>Machine Speed Summary Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Above Machine Speed Percentage:</b> {result.AboveTargetPercent}<br/>";
+            resultString += $"<b>Within Machine Speed Percentage Range:</b> {result.WithinTargetPercent}<br/>";
+            resultString += $"<b>Below Machine Speed Percentage:</b> {result.BelowTargetPercent}<br/>";
+            resultString += $"<b>Total Area Covered in Sq Meters:</b> {result.TotalAreaCoveredSqMeters}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
       return new JsonResult(resultToReturn);
     }
-    
+
     /// <summary>
     /// Gets production data Cut/Fill statistics.
     /// </summary>
@@ -680,44 +620,38 @@ namespace VSS.TRex.Webtools.Controllers
         {
           Stopwatch sw = new Stopwatch();
           sw.Start();
-          try
+
+          CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
+          CutFillStatisticsResult result = operation.Execute(new CutFillStatisticsArgument()
           {
-            CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
-            CutFillStatisticsResult result = operation.Execute(new CutFillStatisticsArgument()
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
+            DesignID = Guid.Empty, // TODO (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
+            Offsets = offsets
+          });
+
+          if (result != null)
+          {
+            string resultString = $"<b>Cut/Fill statistics Results (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+
+            var anyNegativeNumber = offsets.ToList().Find(s => s < 0);
+            var anyTwoDigitsNumber = offsets.ToList().Find(s => Math.Abs(s) >= TWO_DIGITS_NUMBER);
+
+            for (int i = 0; i < offsets.Length; i++)
             {
-              ProjectID = siteModel.ID,
-              Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
-              DesignID = Guid.Empty, // TODO (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
-              Offsets = offsets
-            });
+              string space = anyNegativeNumber < 0 && offsets[i] >= 0 ? "&nbsp;&nbsp;" : string.Empty;
 
-            if (result != null)
-            {
-              string resultString = $"<b>Cut/Fill statistics Results (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
+              if (Math.Abs(anyTwoDigitsNumber) > 0 && Math.Abs(offsets[i]) >= 0 && Math.Abs(offsets[i]) < TWO_DIGITS_NUMBER)
+                space += "&nbsp;&nbsp;";
 
-              var anyNegativeNumber = offsets.ToList().Find(s => s < 0);
-              var anyTwoDigitsNumber = offsets.ToList().Find(s => Math.Abs(s) >= TWO_DIGITS_NUMBER);
-
-              for (int i = 0; i < offsets.Length; i++)
-              {
-                string space = anyNegativeNumber < 0 && offsets[i] >= 0 ? "&nbsp;&nbsp;" : string.Empty;
-
-                if (Math.Abs(anyTwoDigitsNumber) > 0 && Math.Abs(offsets[i]) >= 0 && Math.Abs(offsets[i]) < TWO_DIGITS_NUMBER)
-                  space += "&nbsp;&nbsp;";
-
-                resultString += $"<b>{space}{offsets[i]:##0.0}</b> - {result.Percents[i]:##0.#0}%<br/>";
-                }
-
-              resultToReturn = resultString;
+              resultString += $"<b>{space}{offsets[i]:##0.0}</b> - {result.Percents[i]:##0.#0}%<br/>";
             }
-            else
-              resultToReturn = "<b>No result</b>";
+
+            resultToReturn = resultString;
           }
-          finally
-          {
-            sw.Stop();
-          }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
@@ -747,39 +681,32 @@ namespace VSS.TRex.Webtools.Controllers
           Stopwatch sw = new Stopwatch();
           sw.Start();
 
-          try
+          var operation = new ElevationStatisticsOperation();
+          var result = operation.Execute(new ElevationStatisticsArgument()
           {
-            var operation = new ElevationStatisticsOperation();
-            var result = operation.Execute(new ElevationStatisticsArgument()
-            {
-              ProjectID = siteModel.ID,
-              Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }
-            });
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }
+          });
 
-            if (result != null)
-            {
-              var resultString = $"<b>Elevation Statistics Result (in {sw.Elapsed}) :</b><br/>";
-              resultString += "<b>================================================</b><br/>";
-              resultString += $"<b>Minimum Elevation:</b> {result.MinElevation}<br/>";
-              resultString += $"<b>Maximum Elevation:</b> {result.MaxElevation}<br/>";
-              resultString += $"<b>Coverage Area:</b> {result.CoverageArea}<br/>";
-              resultString += "<b>Bounding Extents:</b><br/>";
-              resultString += $"<b>Minimum X:</b> {result.BoundingExtents.MinX}<br/>";
-              resultString += $"<b>Minimum Y:</b> {result.BoundingExtents.MinY}<br/>";
-              resultString += $"<b>Minimum Z:</b> {result.BoundingExtents.MinZ}<br/>";
-              resultString += $"<b>Maximum X:</b> {result.BoundingExtents.MaxX}<br/>";
-              resultString += $"<b>Maximum Y:</b> {result.BoundingExtents.MaxY}<br/>";
-              resultString += $"<b>Maximum Z:</b> {result.BoundingExtents.MaxZ}<br/>";
-
-              resultToReturn = resultString;
-            }
-            else
-              resultToReturn = "<b>No result</b>";
-          }
-          finally
+          if (result != null)
           {
-            sw.Stop();
+            var resultString = $"<b>Elevation Statistics Result (in {sw.Elapsed}) :</b><br/>";
+            resultString += "<b>================================================</b><br/>";
+            resultString += $"<b>Minimum Elevation:</b> {result.MinElevation}<br/>";
+            resultString += $"<b>Maximum Elevation:</b> {result.MaxElevation}<br/>";
+            resultString += $"<b>Coverage Area:</b> {result.CoverageArea}<br/>";
+            resultString += "<b>Bounding Extents:</b><br/>";
+            resultString += $"<b>Minimum X:</b> {result.BoundingExtents.MinX}<br/>";
+            resultString += $"<b>Minimum Y:</b> {result.BoundingExtents.MinY}<br/>";
+            resultString += $"<b>Minimum Z:</b> {result.BoundingExtents.MinZ}<br/>";
+            resultString += $"<b>Maximum X:</b> {result.BoundingExtents.MaxX}<br/>";
+            resultString += $"<b>Maximum Y:</b> {result.BoundingExtents.MaxY}<br/>";
+            resultString += $"<b>Maximum Z:</b> {result.BoundingExtents.MaxZ}<br/>";
+
+            resultToReturn = resultString;
           }
+          else
+            resultToReturn = "<b>No result</b>";
         }
       }
 
