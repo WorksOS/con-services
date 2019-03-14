@@ -10,12 +10,12 @@ namespace VSS.TRex.Caching
   /// that are marked for removal and removes them. This is done in a single mutually exclusive lock
   /// within the main cache.
   /// </summary>
-  public class TRexSpatialMemoryCacheContextRemover
+  public class TRexSpatialMemoryCacheContextRemover : IDisposable
   {
     private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCacheContextRemover>();
 
     private readonly ITRexSpatialMemoryCache _cache;
-    private readonly Thread _removalThread;
+    private Thread _removalThread;
     private readonly int _sleepTimeMS;
     private readonly int _removalWaitTimeSeconds;
     private bool _cancelled;
@@ -32,24 +32,13 @@ namespace VSS.TRex.Caching
           // Wait a time period minutes to remove items marked for removal
           _cache.RemoveContextsMarkedForRemoval(_removalWaitTimeSeconds);
         }
-        catch (ThreadAbortException)
-        {
-          // Time to leave...
-          return;
-        }
         catch (Exception e)
         {
-          try
-          {
-            log.LogError(e, "Exception thrown during RemoveContextsMarkedForRemoval()");
-          }
-          catch
-          {
-            return; // If logging is not working, just leave...
-          }
+          log.LogError(e, "Exception thrown during RemoveContextsMarkedForRemoval()");
         }
 
-        _waitHandle.WaitOne(_sleepTimeMS);
+        if (!_cancelled)
+          _waitHandle.WaitOne(_sleepTimeMS);
       }
     }
 
@@ -57,6 +46,13 @@ namespace VSS.TRex.Caching
     {
       _cancelled = true;
       _waitHandle.Set();
+    }
+
+    public void Dispose()
+    {
+      _cancelled = true;
+      _waitHandle.Set();
+      _removalThread = null;
     }
 
     public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, int sleepTimeSeconds, int removalWaitTimeSeconds)

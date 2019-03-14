@@ -363,10 +363,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void AllocateSegment(ISubGridCellPassesDataSegmentInfo segmentInfo)
         {
             if (segmentInfo.Segment != null)
-            {
-                Log.LogCritical("Cannot allocate a segment that is already allocate");
-                return;
-            }
+              throw new TRexSubGridTreeException("Cannot allocate a segment that is already allocated");
 
             Cells.PassesData.AddNewSegment(this, segmentInfo);
 
@@ -485,9 +482,7 @@ namespace VSS.TRex.SubGridTrees.Server
             ISubGridCellLatestPassDataWrapper _LatestPasses = Segment.LatestPasses;
 
             if (_LatestPasses == null)
-            {
-                Debug.Assert(false, "Cell latest pass store not instantiated");
-            }
+              throw new TRexSubGridTreeException("Cell latest pass store not instantiated");
 
             _GlobalLatestCells.Clear();
             _GlobalLatestCells.Assign(_LatestPasses);
@@ -627,8 +622,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
             SubGridStreamHeader Header = new SubGridStreamHeader
             {
-                MajorVersion = SubGridStreamHeader.kSubGridMajorVersion,
-                MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
                 Identifier = SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker,
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridDirectoryFile,
                 StartTime = LeafStartTime,
@@ -656,9 +649,7 @@ namespace VSS.TRex.SubGridTrees.Server
               FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
-            {
               Log.LogWarning($"Call to WriteSpatialStreamToPersistentStore failed. Filename:{FileName}");
-            }
 
             return Result;
         }
@@ -705,22 +696,10 @@ namespace VSS.TRex.SubGridTrees.Server
             // more concrete case for not doing this is made.
             Directory.AllocateGlobalLatestCells();
 
-            if (Header.MajorVersion == 2)
-            {
-                switch (Header.MinorVersion)
-                {
-                    case 0:
-                        Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
-                        break;
-                    default:
-                        Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
-                        break;
-                }
-            }
+            if (Header.Version == 1)
+                Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
             else
-            {
-              Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
-            }
+              Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
 
             return true;
         }
@@ -756,7 +735,8 @@ namespace VSS.TRex.SubGridTrees.Server
                               ISubGridSegmentIterator Iterator,
                               bool IntegratingIntoIntermediaryGrid)
         {
-            Debug.Assert(Source != null, "Source sub grid not defined in ServerSubGridTreeLeaf.Integrate");
+            if (Source == null)
+              throw new TRexSubGridTreeException("Source sub grid not defined in ServerSubGridTreeLeaf.Integrate");
 
             if (Source.Cells.PassesData.Count == 0)
             {

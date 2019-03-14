@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -102,20 +103,13 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool SavePayloadToStream(BinaryWriter writer)
     {
       if (!(HasAllPasses && HasLatestData && PassesData != null && LatestPasses != null))
-      {
-        Debug.Assert(false,
-          "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
-        //return false;
-      }
+        throw new TRexSubGridIOException("Leaf sub grids being written to persistent store must be fully populated with pass stacks and latest pass grid");
 
       int CellStacksOffset = -1;
 
       // Write the cell pass information (latest and historic cell pass stacks)
       long CellStacksOffsetOffset = writer.BaseStream.Position;
       writer.Write(CellStacksOffset);
-
-      Debug.Assert(HasAllPasses && HasLatestData && PassesData != null && LatestPasses != null,
-        "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
 
       LatestPasses.Write(writer, new byte[10000]);
 
@@ -173,37 +167,22 @@ namespace VSS.TRex.SubGridTrees.Server
       // Read the version etc from the stream
       if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridLeafFileMoniker))
       {
-        Log.LogError($"Subgrid segment file moniker (expected {SubGridStreamHeader.kICServerSubGridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+        Log.LogError($"Sub grid segment file moniker (expected {SubGridStreamHeader.kICServerSubGridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
         return false;
       }
 
       if (!Header.IsSubGridSegmentFile)
       {
-        Log.LogCritical("Subgrid grid segment file does not identify itself as such in extended header flags");
+        Log.LogCritical("Sub grid grid segment file does not identify itself as such in extended header flags");
         return false;
       }
 
       bool Result = false;
 
-      if (Header.MajorVersion == 2)
-      {
-        switch (Header.MinorVersion)
-        {
-          case 0:
-            Result = LoadPayloadFromStream_v2p0(reader, loadLatestData, loadAllPasses);
-            break;
-
-          default:
-            Log.LogError(
-              $"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
-            break;
-        }
-      }
+      if (Header.Version == 1)
+        Result = LoadPayloadFromStream_v2p0(reader, loadLatestData, loadAllPasses);
       else
-      {
-        Log.LogError(
-          $"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
-      }
+        Log.LogError($"Sub grid segment file version mismatch (expected {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
 
       return Result;
     }
@@ -213,8 +192,6 @@ namespace VSS.TRex.SubGridTrees.Server
       // Write the version to the stream
       SubGridStreamHeader Header = new SubGridStreamHeader()
       {
-        MajorVersion = SubGridStreamHeader.kSubGridMajorVersion,
-        MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
         Identifier = SubGridStreamHeader.kICServerSubGridLeafFileMoniker,
         Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridSegmentFile,
         StartTime = SegmentInfo?.StartTime ?? StartTime,
@@ -262,20 +239,22 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
         {
-          if (!Write(writer))
-            return false;
+          Result = Write(writer);
         }
 
-        FSError = storage.WriteSpatialStreamToPersistentStore(
-          Owner.Owner.ID,
-          FileName,
-          Owner.OriginX, Owner.OriginY,
-          FileName,
-          FileSystemStreamType.SubGridSegment,
-          MStream,
-          this);
+        if (Result)
+        {
+          FSError = storage.WriteSpatialStreamToPersistentStore(
+            Owner.Owner.ID,
+            FileName,
+            Owner.OriginX, Owner.OriginY,
+            FileName,
+            FileSystemStreamType.SubGridSegment,
+            MStream,
+            this);
 
-        Result = FSError == FileSystemErrorStatus.OK;
+          Result = FSError == FileSystemErrorStatus.OK;
+        }
       }
 
       return Result;

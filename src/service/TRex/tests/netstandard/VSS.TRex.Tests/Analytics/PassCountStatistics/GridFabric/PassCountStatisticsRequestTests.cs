@@ -15,7 +15,7 @@ using VSS.TRex.Types;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
-namespace VSS.TRex.Tests.Analytics.PassCountStatistics
+namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ApplicationService))]
   [UnitTestCoveredRequest(RequestType = typeof(PassCountStatisticsRequest_ClusterCompute))]
