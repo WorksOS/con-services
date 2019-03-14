@@ -12,6 +12,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
@@ -23,7 +24,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
     private ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
 
@@ -95,6 +96,14 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       ccaStatisticsResult.Should().NotBeNull();
       ccaStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
       ccaStatisticsResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
+      ccaStatisticsResult.BelowTargetPercent.Should().Be(0);
+      ccaStatisticsResult.AboveTargetPercent.Should().Be(0);
+      ccaStatisticsResult.WithinTargetPercent.Should().Be(100);
+      ccaStatisticsResult.TotalAreaCoveredSqMeters.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      ccaStatisticsResult.ConstantTargetCCA.Should().Be(0);
+      ccaStatisticsResult.IsTargetCCAConstant.Should().BeTrue();
+      ccaStatisticsResult.Counts.Should().BeNull();
+      ccaStatisticsResult.Percents.Should().BeNull();
     }
   }
 }

@@ -11,6 +11,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
@@ -22,7 +23,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
     private ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, 1, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
 
@@ -92,6 +93,10 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
 
       elevationStatisticsResult.Should().NotBeNull();
       elevationStatisticsResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      elevationStatisticsResult.MinElevation.Should().Be(10);
+      elevationStatisticsResult.MaxElevation.Should().Be(10);
+      elevationStatisticsResult.CoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      elevationStatisticsResult.BoundingExtents.IsValidPlanExtent.Should().Be(true);
     }
   }
 }
