@@ -668,24 +668,24 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
     {
-      if (SurveyedSurfaces == null || SurveyedSurfaces.Count == 0)
-        return SiteModelExtent;
-
       // Start with the data model extents
       BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
-      // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
-      if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
+      if ((SurveyedSurfaces?.Count ?? 0) > 0)
       {
-        foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
-          SpatialExtents.Include(surveyedSurface.Extents);
-      }
-      else
-      {
-        foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+        // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
+        if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
         {
-          if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
+          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
             SpatialExtents.Include(surveyedSurface.Extents);
+        }
+        else
+        {
+          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+          {
+            if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
+              SpatialExtents.Include(surveyedSurface.Extents);
+          }
         }
       }
 
@@ -736,7 +736,7 @@ namespace VSS.TRex.SiteModels
         ID = ID,
         CreationDate = CreationDate,
         LastModifiedDate = LastModifiedDate,
-        SiteModelExtent = SiteModelExtent,
+        SiteModelExtent = new BoundingWorldExtent3D(SiteModelExtent),
         MachineCount = Machines?.Count ?? 0,
         DesignCount = Designs?.Count ?? 0,
         SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0,

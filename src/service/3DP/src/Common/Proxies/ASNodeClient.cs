@@ -519,5 +519,11 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       return client.GetBoundariesFromLinework(args, out lineworkBoundaries);
     }
+
+    /// <inheritdoc />
+    public TASNodeErrorStatus GetCSIBFile(long legacyProjectId, out MemoryStream csibFile)
+    {
+      return client.GetCSIBFile(legacyProjectId, out csibFile);
+    }
   }
 }
