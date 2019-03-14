@@ -283,6 +283,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     bool GetDesignFilterBoundaryAsPolygon(TDesignProfilerServiceRPCVerb_ComputeDesignFilterBoundary_Args args,
       out TWGS84Point[] fence);
+
     /// <summary>
     /// Gets a grid report of the production data from Raptor.
     /// </summary>
@@ -300,5 +301,10 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Gets all boundaries in a given linework file as lat/lon.
     /// </summary>
     TASNodeErrorStatus GetBoundariesFromLinework(TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args args, out TWGS84LineworkBoundary[] lineworkBoundaries);
+
+    /// <summary>
+    /// Get the CSIB file for a given project.
+    /// </summary>
+    TASNodeErrorStatus GetCSIBFile(long legacyProjectId, out MemoryStream csibFile);
   }
 }
