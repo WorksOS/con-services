@@ -129,20 +129,6 @@ namespace VSS.TRex.Pipelines
         }
 
         /// <summary>
-        /// Advises that a single sub grid has been processed and can be removed from the tally of
-        /// sub grids awaiting results. 
-        /// This is typically used by progressive queries where a SubGridListener
-        /// is responsible for receiving and coordinating handling of sub grid results
-        /// </summary>
-        public void SubGridProcessed()
-        {
-            if (Interlocked.Decrement(ref subGridsRemainingToProcess) <= 0)
-            {
-                AllSubgridsProcessed();
-            }
-        }
-
-        /// <summary>
         /// Advises that a group of sub grids has been processed and can be removed from the tally of
         /// sub grids awaiting results.
         /// This is typically used by aggregative queries where the cache compute cluster aggregates

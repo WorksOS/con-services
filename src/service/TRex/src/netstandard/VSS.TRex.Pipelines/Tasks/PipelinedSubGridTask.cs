@@ -48,27 +48,25 @@ namespace VSS.TRex.Pipelines.Tasks
         /// </summary>
         public override void Cancel()
         {
-            if (PipeLine == null)
-            {
-                return;
-            }
-
+          if (PipeLine != null)
+          {
             try
             {
-                Log.LogDebug("WARNING: Aborting pipeline due to cancellation");
-                PipeLine.Abort();
+              Log.LogDebug("WARNING: Aborting pipeline due to cancellation");
+              PipeLine.Abort();
             }
             catch
             {
-                // Just in case the pipeline commits suicide before other related tasks are
-                // cancelled (and so also inform the pipeline that it is cancelled), swallow
-                // any exception generated for the abort request.
+              // Just in case the pipeline commits suicide before other related tasks are
+              // cancelled (and so also inform the pipeline that it is cancelled), swallow
+              // any exception generated for the abort request.
             }
             finally
             {
-                Log.LogInformation("Nulling pipeline reference");
-                PipeLine = null;
+              Log.LogInformation("Nulling pipeline reference");
+              PipeLine = null;
             }
+          }
         }
 
         /// <summary>

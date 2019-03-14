@@ -114,14 +114,14 @@ namespace VSS.TRex.SubGridTrees.Client
         {
           var layer = layers[i];
 
-          if (layer.FilteredPassCount == 0)
-            continue;
-
-          if ((layer.Status & LayerStatus.Undercompacted) != 0)
+          if (layer.FilteredPassCount > 0)
+          {
+            if ((layer.Status & LayerStatus.Undercompacted) != 0)
               Cells[cellX, cellY].IsUndercompacted = true;
 
-          if ((layer.Status & LayerStatus.Overcompacted) != 0)
-            Cells[cellX, cellY].IsOvercompacted = true;
+            if ((layer.Status & LayerStatus.Overcompacted) != 0)
+              Cells[cellX, cellY].IsOvercompacted = true;
+          }
         }
       }
     }

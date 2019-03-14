@@ -1,4 +1,6 @@
 ﻿using System;
+using FluentAssertions;
+using Force.DeepCloner;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -27,7 +29,43 @@ namespace VSS.TRex.Tests.Pipelines
     {
       RequestAnalyser analyser = new RequestAnalyser();
 
-      Assert.Throws<ArgumentException>(() => analyser.Execute());
+      Action act = () => analyser.Execute();
+      act.Should().Throw<ArgumentException>().WithMessage("*No owning pipeline*");
+    }
+
+    [Fact]
+    public void Test_RequestAnalyser_WithPipelineAndNoFilters_Execute_Fails()
+    {
+      var pipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
+      {
+        FilterSet = null
+      };
+
+      RequestAnalyser analyser = new RequestAnalyser
+      {
+        Pipeline = pipeLine
+      };
+
+      Action act = () => analyser.Execute();
+      act.Should().Throw<ArgumentException>().WithMessage("*No filters in pipeline*");
+    }
+
+    [Fact]
+    public void Test_RequestAnalyser_WithPipelineAndNoProductionDataExistanceMap_Execute_Fails()
+    {
+      var pipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
+      {
+        FilterSet = new FilterSet(new CombinedFilter()),
+        ProdDataExistenceMap = null
+      };
+
+      RequestAnalyser analyser = new RequestAnalyser
+      {
+        Pipeline = pipeLine
+      };
+
+      Action act = () => analyser.Execute();
+      act.Should().Throw<ArgumentException>().WithMessage("*Production Data Existence Map should have been specified*");
     }
 
     [Fact]

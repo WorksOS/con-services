@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -275,9 +275,7 @@ namespace VSS.TRex.SubGridTrees.Client
       base.Read(reader, buffer);
 
       if ((GridDataType)reader.ReadInt32() != GridDataType)
-      {
-        Debug.Assert(false, "GridDataType in stream does not match GridDataType of local sub grid instance");
-      }
+        throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
       CellSize = reader.ReadDouble();
       IndexOriginOffset = reader.ReadUInt32();

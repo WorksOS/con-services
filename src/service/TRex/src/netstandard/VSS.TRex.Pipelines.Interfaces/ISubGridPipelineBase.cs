@@ -63,11 +63,6 @@ namespace VSS.TRex.Pipelines.Interfaces
         Guid DataModelID { get; set; }
 
         /// <summary>
-        /// Advise the client of the pipeline that a single sub grid has been processed
-        /// </summary>
-        void SubGridProcessed();
-
-        /// <summary>
         /// Advise the client of the pipeline that a group of numProcessed sub grids has been processed
         /// </summary>
         void SubGridsProcessed(long numProcessed);

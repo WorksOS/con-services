@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
@@ -73,10 +74,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
       if (context.CellProfile == null)
-      {
-        Log.LogError($"{nameof(AssignFilteredValue)}: Error=CellProfile not assigned.");
-        return;
-      }
+        throw new TRexSubGridProcessingException($"{nameof(AssignFilteredValue)}: Error=CellProfile not assigned.");
 
       IProfileCell cellProfileFromContext = context.CellProfile as IProfileCell;
 
