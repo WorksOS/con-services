@@ -73,14 +73,17 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         Log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}");
         if (argClusterCompute.Points.Count == 0)
         {
-          return new StationOffsetReportRequestResponse_ApplicationService() {ReturnCode = ReportReturnCode.NoData};
+          return new StationOffsetReportRequestResponse_ApplicationService() {ReturnCode = ReportReturnCode.NoData, ResultStatus = RequestErrorStatus.NoProductionDataFound};
         }
 
         var request = new StationOffsetReportRequest_ClusterCompute();
-        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService();
         var clusterComputeResponse = request.Execute(argClusterCompute);
 
         // Return the core package to the caller
+        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService()
+          { ReturnCode = clusterComputeResponse.ReturnCode,
+            ResultStatus = clusterComputeResponse.ResultStatus
+          };
         applicationResponse.LoadStationOffsets(clusterComputeResponse.StationOffsetRows);
         Log.LogInformation($"End {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}: ReturnCode {applicationResponse.ReturnCode}.");
         return applicationResponse;

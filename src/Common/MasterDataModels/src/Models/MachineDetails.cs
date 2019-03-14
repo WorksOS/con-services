@@ -25,16 +25,6 @@ namespace VSS.MasterData.Models.Models
     public long AssetId { get; set; }
 
     /// <summary>
-    /// The Uid of the machine/asset. This is the unique identifier, used by TRex.
-    /// </summary>
-    /// <remarks>
-    /// This Uid usually comes from UnitedFleet and is the AssetUid returned via TFA when processing tag files.
-    /// If a John doe, then the Uid is a Guid.Empty?
-    /// </remarks>
-    [JsonProperty(PropertyName = "assetUid", Required = Required.Default)]
-    public Guid? AssetUid { get; set; }
-
-    /// <summary>
     /// The textual name of the machine. This is the human readable machine name from the machine control display, and written in tagfiles.
     /// </summary>
     [MaxLength(MAX_MACHINE_NAME)]
@@ -47,6 +37,16 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "isJohnDoe", Required = Required.Always)]
     public bool IsJohnDoe { get; protected set; }
+
+    /// <summary>
+    /// The Uid of the machine/asset. This is the unique identifier, used by TRex.
+    /// </summary>
+    /// <remarks>
+    /// This Uid usually comes from UnitedFleet and is the AssetUid returned via TFA when processing tag files.
+    /// If a John doe, then the Uid is a Guid.Empty?
+    /// </remarks>
+    [JsonProperty(PropertyName = "assetUid", Required = Required.Default)]
+    public Guid? AssetUid { get; set; } = null;
 
     /// <summary>
     /// Private constructor

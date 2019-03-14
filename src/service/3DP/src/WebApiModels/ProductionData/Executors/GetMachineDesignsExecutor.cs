@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -74,12 +75,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (designs == null || designs.Count == 0)
         return;
 
-      var assetsResult = await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      var assetsResult = new List<AssetData>(0);
       if (haveUids)
       {
         foreach (var design in designs)
         {
-          var legacyAssetId = assetsResult.Where(a => a.AssetUID == design.AssetUid).Select(a => a.LegacyAssetID).FirstOrDefault();
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == design.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
           design.MachineId = legacyAssetId < 1 ? -1 : legacyAssetId;
         }
       }
@@ -90,8 +92,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             design.AssetUid = null;
           else
           {
-            design.AssetUid = assetsResult.Where(a => a.LegacyAssetID == design.MachineId).Select(a => a.AssetUID)
-              .FirstOrDefault();
+            design.AssetUid = assetsResult.Where(a => a.LegacyAssetID == design.MachineId).Select(a => a.AssetUID).FirstOrDefault();
+            design.AssetUid = design.AssetUid == Guid.Empty ? null : design.AssetUid;
           }
         }
     }

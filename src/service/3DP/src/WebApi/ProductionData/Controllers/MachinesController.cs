@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     private readonly IAssetServiceProxy _assetProxy;
 
-    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
 
     private string CustomerUid => ((RaptorPrincipal) Request.HttpContext.User).CustomerUid;
 
@@ -78,12 +78,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
 
+      // todoJeannie
+      IDictionary<string, string> tempCustomHeaders = Request.Headers.GetCustomHeaders(true);
+
       return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
-          customHeaders: CustomHeaders, customerUid: CustomerUid)
+          customHeaders: tempCustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
     }
 

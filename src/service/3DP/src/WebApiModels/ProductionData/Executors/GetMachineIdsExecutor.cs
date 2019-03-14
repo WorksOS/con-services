@@ -78,12 +78,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (machines == null || machines.Count == 0)
         return;
 
-      var assetsResult = await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      var assetsResult = new List<AssetData>(0); 
       if (haveUids)
       {
         foreach (var machine in machines)
         {
-          var legacyAssetId = assetsResult.Where(a => a.AssetUID == machine.AssetUid).Select(a => a.LegacyAssetID).FirstOrDefault();
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == machine.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
           machine.AssetId = legacyAssetId < 1 ? -1 : legacyAssetId;
         }
       }
@@ -94,8 +95,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             machine.AssetUid = null;
           else
           {
-            machine.AssetUid = assetsResult.Where(a => a.LegacyAssetID == machine.AssetId).Select(a => a.AssetUID)
-              .FirstOrDefault();
+            machine.AssetUid = assetsResult.Where(a => a.LegacyAssetID == machine.AssetId).Select(a => a.AssetUID).FirstOrDefault();
+            machine.AssetUid = machine.AssetUid == Guid.Empty ? null : machine.AssetUid;
           }
         }
     }

@@ -58,7 +58,8 @@ namespace VSS.Productivity3D.WebApi
 #endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
-      services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+      services.AddTransient<IProjectListProxy, ProjectListProxy>();
+      //todoJeannie wait on Stephen to complete serviceDiscovery: services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();

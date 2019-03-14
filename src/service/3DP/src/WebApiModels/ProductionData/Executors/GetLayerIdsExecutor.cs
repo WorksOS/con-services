@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -75,13 +76,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (layers == null || layers.Count == 0)
         return;
 
-      var assetsResult = await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      var assetsResult = new List<AssetData>(0);
       if (haveUids)
       {
         foreach (var layer in layers)
         {
-          var legacyAssetId = assetsResult.Where(a => a.AssetUID == layer.AssetUid).Select(a => a.LegacyAssetID)
-            .FirstOrDefault();
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == layer.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
           layer.AssetId = legacyAssetId < 1 ? -1 : legacyAssetId;
         }
       }
@@ -92,8 +93,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             layer.AssetUid = null;
           else
           {
-            layer.AssetUid = assetsResult.Where(a => a.LegacyAssetID == layer.AssetId).Select(a => a.AssetUID)
-              .FirstOrDefault();
+            layer.AssetUid = assetsResult.Where(a => a.LegacyAssetID == layer.AssetId).Select(a => a.AssetUID).FirstOrDefault();
+            layer.AssetUid = layer.AssetUid == Guid.Empty ? null : layer.AssetUid;
           }
         }
     }
