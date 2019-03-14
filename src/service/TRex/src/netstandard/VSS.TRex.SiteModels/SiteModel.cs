@@ -191,13 +191,13 @@ namespace VSS.TRex.SiteModels
         {
           lock (siteModelDesignsLockObject)
           {
-            if (_siteModelDesigns != null)
-              return _siteModelDesigns;
+            if (_siteModelDesigns == null)
+            {
+              _siteModelDesigns = new SiteModelDesignList();
 
-            _siteModelDesigns = new SiteModelDesignList();
-
-            if (!IsTransient)
-              _siteModelDesigns.LoadFromPersistentStore(ID);
+              if (!IsTransient)
+                _siteModelDesigns.LoadFromPersistentStore(ID);
+            }
           }
         }
 
@@ -252,13 +252,13 @@ namespace VSS.TRex.SiteModels
         {
           lock (siteProofingRunLockObject)
           {
-            if (siteProofingRuns != null)
-              return siteProofingRuns;
+            if (siteProofingRuns == null)
+            {
+              siteProofingRuns = new SiteProofingRunList {DataModelID = ID};
 
-            siteProofingRuns = new SiteProofingRunList { DataModelID = ID };
-
-            if (!IsTransient)
-              siteProofingRuns.LoadFromPersistentStore();
+              if (!IsTransient)
+                siteProofingRuns.LoadFromPersistentStore();
+            }
           }
         }
 
@@ -281,16 +281,16 @@ namespace VSS.TRex.SiteModels
         {
           lock (siteModelMachineDesignsLockObject)
           {
-            if (siteModelMachineDesigns != null)
-              return siteModelMachineDesigns;
-
-            siteModelMachineDesigns = new SiteModelMachineDesignList
+            if (siteModelMachineDesigns == null)
             {
-              DataModelID = ID
-            };
+              siteModelMachineDesigns = new SiteModelMachineDesignList
+              {
+                DataModelID = ID
+              };
 
-            if (!IsTransient)
-              siteModelMachineDesigns.LoadFromPersistentStore();
+              if (!IsTransient)
+                siteModelMachineDesigns.LoadFromPersistentStore();
+            }
           }
         }
 
@@ -314,17 +314,17 @@ namespace VSS.TRex.SiteModels
         {
           lock (machineLoadLockObject)
           {
-            if (machines != null)
-              return machines;
-
-            machines = new MachinesList
+            if (machines == null)
             {
-              DataModelID = ID
-            };
+              machines = new MachinesList
+              {
+                DataModelID = ID
+              };
 
-            if (!IsTransient)
-            {
-              machines.LoadFromPersistentStore();
+              if (!IsTransient)
+              {
+                machines.LoadFromPersistentStore();
+              }
             }
           }
         }
@@ -606,10 +606,7 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     private ISubGridTreeBitMask GetProductionDataExistenceMap()
     {
-      if (existenceMap == null)
-        return LoadProductionDataExistenceMapFromStorage() == FileSystemErrorStatus.OK ? existenceMap : null;
-
-      return existenceMap;
+        return existenceMap ?? (LoadProductionDataExistenceMapFromStorage() == FileSystemErrorStatus.OK ? existenceMap : null);
     }
 
     /// <summary>
@@ -618,10 +615,10 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     private FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
     {
-      if (existenceMap == null)
-        return FileSystemErrorStatus.OK;
+      var result = FileSystemErrorStatus.OK;
 
-      storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
+      if (existenceMap != null)
+        storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
 
       return FileSystemErrorStatus.OK;
     }

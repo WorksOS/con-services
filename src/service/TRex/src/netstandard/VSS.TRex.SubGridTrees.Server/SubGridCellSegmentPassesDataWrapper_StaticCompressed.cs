@@ -784,7 +784,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public override bool IsImmutable() => true;
 
         /// <summary>
-        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
