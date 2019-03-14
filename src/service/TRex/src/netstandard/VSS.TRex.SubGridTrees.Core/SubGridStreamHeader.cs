@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// Defines the header written at the start of a stream containing sub grid information, either sub grid directory or sub grid segment.
     /// </summary>
-    public class SubGridStreamHeader
-    {
+    public class SubGridStreamHeader : INonBinaryReaderWriterMimicable
+  {
         public const byte VERSION_NUMBER = 1;
 
         public const int kSubGridHeaderFlag_IsSubGridDirectoryFile = 0x1;
