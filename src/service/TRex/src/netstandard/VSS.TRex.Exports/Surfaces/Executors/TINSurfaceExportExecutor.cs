@@ -122,7 +122,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
-          siteModel: null,
           gridDataType: GridDataFromModeConverter.Convert(DisplayMode.Height),
           response: SurfaceSubGridsResponse,
           filters: Filters,

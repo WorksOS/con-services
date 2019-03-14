@@ -74,6 +74,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to CCV.
     /// </summary>
@@ -86,6 +87,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     /// <summary>
     /// Determine if a filtered CMV is valid (not null)

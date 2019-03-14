@@ -146,21 +146,21 @@ namespace VSS.TRex.Geometry
         return false;
 
       bool result = false;
-      var a = Points.Last();
-      foreach (var b in Points)
+      var pt1 = Points.Last();
+      foreach (var pt2 in Points)
       {
-        if (b.X == x && b.Y == y)
+        if (pt2.X == x && pt2.Y == y)
           return true;
 
-        if (b.Y == a.Y && y == a.Y && a.X <= x && x <= b.X)
+        if (pt2.Y == pt1.Y && y == pt1.Y && pt1.X <= x && x <= pt2.X)
           return true;
 
-        if ((b.Y < y) && (a.Y >= y) || (a.Y < y) && (b.Y >= y))
+        if ((pt2.Y < y) && (pt1.Y >= y) || (pt1.Y < y) && (pt2.Y >= y))
         {
-          if (b.X + (y - b.Y) / (a.Y - b.Y) * (a.X - b.X) <= x)
+          if (pt2.X + (y - pt2.Y) / (pt1.Y - pt2.Y) * (pt1.X - pt2.X) <= x)
             result = !result;
         }
-        a = b;
+        pt1 = pt2;
       }
       return result;     
     }

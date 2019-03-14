@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     /// Tests the assignation of a height and time leaf sub grid to a height sub grid
     /// </summary>
     [Fact]
-    public void Test_HeightClientLeafSubGridTests_Assign()
+    public void Test_HeightClientLeafSubGridTests_Assign_FromHeightAndTime()
     {
       var clientGridHeight = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
       var clientGridHeightAndTime = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
@@ -50,6 +50,26 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       });
 
       clientGridHeight.Assign(clientGridHeightAndTime);
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGridHeight.Cells[x, y].Should().Be(x + y);
+      });
+    }
+
+    [Fact]
+    public void Test_HeightClientLeafSubGridTests_Assign_FromHeight()
+    {
+      var clientGridHeight = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      var clientGridHeight2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      // Fill in the height and time grid
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGridHeight.Cells[x, y] = x + y;
+      });
+
+      clientGridHeight.Assign(clientGridHeight);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {

@@ -9,6 +9,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines
 {
@@ -43,7 +44,7 @@ namespace VSS.TRex.Machines
 
     public IMachine CreateNew(string name, string machineHardwareID,
       MachineType machineType,
-      int deviceType,
+      DeviceType deviceType,
       bool isJohnDoeMachine,
       Guid machineID)
     {
@@ -61,7 +62,7 @@ namespace VSS.TRex.Machines
 
       short internalMachineID = (short) Count;
 
-      Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
+      Machine Result = new Machine(name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
 
       // Add it to the list
       Add(Result);

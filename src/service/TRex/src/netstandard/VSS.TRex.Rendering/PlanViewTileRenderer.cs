@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Drawing;
-using System.Reflection;
+﻿using System.Drawing;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
@@ -10,7 +7,6 @@ using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
-using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -21,7 +17,7 @@ namespace VSS.TRex.Rendering
   /// </summary>
   public class PlanViewTileRenderer
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    //private static readonly ILogger Log = Logging.Logger.CreateLogger<PlanViewTileRenderer>();
 
     public double OriginX;
     public double OriginY;
@@ -132,8 +128,6 @@ namespace VSS.TRex.Rendering
     /// <returns></returns>
     public RequestErrorStatus PerformRender( DisplayMode mode, IPipelineProcessor processor)
     {
-      try
-      {
         // Obtain the display responsible for rendering the thematic information for this mode
         Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
@@ -192,13 +186,6 @@ namespace VSS.TRex.Rendering
         }
 
         return processor.Response.ResultStatus;
-      }
-      catch (Exception E)
-      {
-        Log.LogError(E, "ExecutePipeline raised Exception:");
-      }
-
-      return RequestErrorStatus.Unknown;
     }
 
     /// <summary>

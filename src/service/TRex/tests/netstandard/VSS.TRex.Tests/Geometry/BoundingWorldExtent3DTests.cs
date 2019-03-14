@@ -4,6 +4,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.Tests.BinarizableSerialization;
+using VSS.TRex.Tests.BinaryReaderWriter;
 using Xunit;
 
 namespace VSS.TRex.Tests.Geometry
@@ -357,7 +358,6 @@ namespace VSS.TRex.Tests.Geometry
     public void FromToBinary()
     {
       var cp1 = new BoundingWorldExtent3D(1, 2, 3, 4, 5, 6);
-
       var writer = new TestBinaryWriter();
       cp1.ToBinary(writer);
 
@@ -372,14 +372,7 @@ namespace VSS.TRex.Tests.Geometry
     {
       var cp1 = new BoundingWorldExtent3D(1, 2, 3, 4, 5, 6);
 
-      var writer = new BinaryWriter(new MemoryStream());
-      cp1.Write(writer);
-
-      var cp2 = new BoundingWorldExtent3D();
-      (writer.BaseStream as MemoryStream).Position = 0;
-      cp2.Read(new BinaryReader(writer.BaseStream as MemoryStream));
-
-      cp1.Should().BeEquivalentTo(cp2);
+      TestBinary_ReaderWriterHelper.RoundTripSerialise(cp1);
     }
 
     [Fact]

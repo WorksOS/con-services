@@ -178,11 +178,8 @@ namespace VSS.TRex.Volumes
 
         public abstract bool ComputeVolumeInformation();
 
-        private void ConfigurePipeline(SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine,
-                                       out BoundingIntegerExtent2D CellExtents)
+        private void ConfigurePipeline(SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine)
         {
-            CellExtents = BoundingIntegerExtent2D.Inverted();
-
             //PipeLine.TimeToLiveSeconds := VLPDSvcLocations.VLPDPSNode_VolumePipelineTTLSeconds;
             PipeLine.RequestDescriptor = RequestDescriptor;
             //PipeLine.ExternalDescriptor := FExternalDescriptor;
@@ -320,7 +317,7 @@ namespace VSS.TRex.Volumes
                         PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse>(/*0, */ PipelinedTask);
                         PipelinedTask.PipeLine = PipeLine;
 
-                        ConfigurePipeline(PipeLine, out BoundingIntegerExtent2D CellExtents);
+                        ConfigurePipeline(PipeLine);
 
                         if (PipeLine.Initiate())
                         {

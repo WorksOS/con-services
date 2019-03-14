@@ -124,9 +124,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Indicates whether to use the TRex Gateway instead of calling to the Raptor client.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     protected bool UseTRexGateway(string key) => bool.TryParse(ConfigStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected BaseController(IConfigurationStore configStore)
+    {
+      ConfigStore = configStore;
+    }
 
     /// <summary>
     /// Default constructor.

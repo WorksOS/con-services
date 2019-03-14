@@ -22,6 +22,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.SiteModels
@@ -60,9 +61,7 @@ namespace VSS.TRex.SiteModels
     private const string kSiteModelXMLFileName = "ProductionDataModel.XML";
     private const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
 
-    private const int kMajorVersion = 1;
-    private const int kMinorVersion = 0;
-    private const int kMinorVersionLatest = 0;
+    private const byte VERSION_NUMBER = 1;
 
     public Guid ID { get; set; } = Guid.Empty;
 
@@ -168,7 +167,6 @@ namespace VSS.TRex.SiteModels
       // Any requests holding references to events lists will continue to do so as the lists themselves
       // wont be garbage collected until all request references to them are relinquished
       get => machinesTargetValues ?? (machinesTargetValues = new MachinesProductionEventLists(this, Machines.Count));
-      //private set => machinesTargetValues = value;
     }
 
     public bool MachineTargetValuesLoaded => machinesTargetValues != null;
@@ -460,8 +458,8 @@ namespace VSS.TRex.SiteModels
     public void Write(BinaryWriter writer)
     {
       // Write the SiteModel attributes
-      writer.Write(kMajorVersion);
-      writer.Write(kMinorVersionLatest);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.Write(ID.ToByteArray());
       writer.Write(CreationDate.ToBinary());
 
@@ -479,14 +477,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       // Read the SiteModel attributes
-      var MajorVersion = reader.ReadInt32();
-      var MinorVersion = reader.ReadInt32();
 
-      if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
-      {
-        Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
-        throw new TRexSiteModelException($"Unknown version number {MajorVersion}:{MinorVersion} in {nameof(SiteModel)}.{nameof(Read)}");
-      }
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       // Read the ID of the data model from the stream.
       // If the site model already has an assigned ID then
@@ -668,24 +660,24 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
     {
-      if (SurveyedSurfaces == null || SurveyedSurfaces.Count == 0)
-        return SiteModelExtent;
-
       // Start with the data model extents
       BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
-      // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
-      if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
+      if ((SurveyedSurfaces?.Count ?? 0) > 0)
       {
-        foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
-          SpatialExtents.Include(surveyedSurface.Extents);
-      }
-      else
-      {
-        foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+        // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
+        if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
         {
-          if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
+          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
             SpatialExtents.Include(surveyedSurface.Extents);
+        }
+        else
+        {
+          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+          {
+            if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
+              SpatialExtents.Include(surveyedSurface.Extents);
+          }
         }
       }
 
@@ -736,7 +728,7 @@ namespace VSS.TRex.SiteModels
         ID = ID,
         CreationDate = CreationDate,
         LastModifiedDate = LastModifiedDate,
-        SiteModelExtent = SiteModelExtent,
+        SiteModelExtent = new BoundingWorldExtent3D(SiteModelExtent),
         MachineCount = Machines?.Count ?? 0,
         DesignCount = Designs?.Count ?? 0,
         SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0,

@@ -63,7 +63,6 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
           dataModelID: _griddedReportRequestArgument.ProjectID,
-          siteModel: null,
           gridDataType: GridDataType.CellProfile,
           response: GriddedReportRequestResponse,
           filters: _griddedReportRequestArgument.Filters,

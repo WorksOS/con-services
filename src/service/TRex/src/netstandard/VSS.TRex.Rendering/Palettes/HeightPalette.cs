@@ -50,7 +50,7 @@ namespace VSS.TRex.Rendering.Palettes
             if (value != Consts.NullDouble)
             {
               int index = (int) Math.Floor((value - MinElevation) / ElevationPerBand);
-              return Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : Draw.Color.Black; // Color.Empty;
+              color = Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : Draw.Color.Black; // Color.Empty;
             }
 
             return color;

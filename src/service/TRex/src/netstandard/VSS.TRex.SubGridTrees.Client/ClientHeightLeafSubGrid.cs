@@ -146,6 +146,7 @@ namespace VSS.TRex.SubGridTrees.Client
       SurveyedSurfaceMap.Clear();
     }
 
+    /*
     /// <summary>
     /// Dumps elevations from sub grid to the log
     /// </summary>
@@ -153,28 +154,28 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void DumpToLog(string title)
     {
       base.DumpToLog(title);
-      /*
-       * var
-        I, J : Integer;
-        S : String;
-      begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of height map for sub grid %s', [Moniker]) , slmcDebug);
-
-        for I := 0 to kSubGridTreeDimension - 1 do
-          begin
-            S := Format('%2d:', [I]);
-
-            for J := 0 to kSubGridTreeDimension - 1 do
-              if CellHasValue(I, J) then
-                S := S + Format('%9.3f', [Cells[I, J]])
-              else
-                S := S + '     Null';
-
-            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
-          end;
-      end;
-      */
+       
+     // var
+     //   I, J : Integer;
+     //   S : String;
+     // begin
+     //   SIGLogMessage.PublishNoODS(Nil, Format('Dump of height map for sub grid %s', [Moniker]) , slmcDebug);
+     //
+     //   for I := 0 to kSubGridTreeDimension - 1 do
+     //     begin
+     //       S := Format('%2d:', [I]);
+     //
+     //       for J := 0 to kSubGridTreeDimension - 1 do
+     //         if CellHasValue(I, J) then
+     //           S := S + Format('%9.3f', [Cells[I, J]])
+     //         else
+     //           S := S + '     Null';
+     //
+     //       SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+     //     end;
+     // end;
     }
+    */
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer

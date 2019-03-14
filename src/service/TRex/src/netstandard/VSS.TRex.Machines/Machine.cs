@@ -1,23 +1,22 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines
 {
   /// <summary>
   /// Defines all the metadata relating to a machine that has contributed in some way to a site model. These machine instances
-  /// are relevant to individual sitemodels. There will be a machine instance within each site model that the machine has
+  /// are relevant to individual site models. There will be a machine instance within each site model that the machine has
   /// contributed to.
   /// </summary>
-  public class Machine : IMachine
+  public class Machine : IMachine, IBinaryReaderWriter
   {
     private const byte VERSION_NUMBER = 1;
-
-    public MachinesList Owner;
 
     public Guid ID { get; set; }
 
@@ -25,9 +24,9 @@ namespace VSS.TRex.Machines
 
     public string Name { get; set; } = "";
 
-    public MachineType MachineType { get; set; } = (MachineType)byte.MaxValue;
+    public MachineType MachineType { get; set; } = MachineType.Unknown;
 
-    public int DeviceType { get; set; } = int.MaxValue;
+    public DeviceType DeviceType { get; set; } = DeviceType.MANUALDEVICE;
 
     public string MachineHardwareID { get; set; } = "";
 
@@ -80,19 +79,13 @@ namespace VSS.TRex.Machines
     {
     }
 
-    public Machine(MachinesList owner) : this()
-    {
-      Owner = owner;
-    }
-
-    public Machine(MachinesList owner,
-                   string name,
+    public Machine(string name,
                    string machineHardwareID,
                    MachineType machineType,
-                   int deviceType,
+                   DeviceType deviceType,
                    Guid machineID,
                    short internalSiteModelMachineIndex,
-                   bool isJohnDoeMachine) : this(owner)
+                   bool isJohnDoeMachine) : this()
     {
       Name = name;
       MachineHardwareID = machineHardwareID;
@@ -106,6 +99,8 @@ namespace VSS.TRex.Machines
 
     public void Assign(IMachine source)
     {
+      ID = source.ID;
+      InternalSiteModelMachineIndex = source.InternalSiteModelMachineIndex;
       Name = source.Name;
       MachineHardwareID = source.MachineHardwareID;
       CompactionSensorType = source.CompactionSensorType;
@@ -129,13 +124,13 @@ namespace VSS.TRex.Machines
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.Write(ID.ToByteArray());
       writer.Write(InternalSiteModelMachineIndex);
       writer.Write(Name);
       writer.Write((byte)MachineType);
-      writer.Write(DeviceType);
+      writer.Write((int)DeviceType);
       writer.Write(MachineHardwareID);
       writer.Write(IsJohnDoeMachine);
       writer.Write(LastKnownX);
@@ -153,24 +148,24 @@ namespace VSS.TRex.Machines
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      byte version = reader.ReadByte();
-      if (version != VERSION_NUMBER)
-        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ID = reader.ReadGuid();
       InternalSiteModelMachineIndex = reader.ReadInt16();
       Name = reader.ReadString();
       MachineType = (MachineType)reader.ReadByte();
-      DeviceType = reader.ReadInt32();
+      DeviceType = (DeviceType)reader.ReadInt32();
       MachineHardwareID = reader.ReadString();
       IsJohnDoeMachine = reader.ReadBoolean();
       LastKnownX = reader.ReadDouble();
       LastKnownY = reader.ReadDouble();
-      LastKnownPositionTimeStamp = new DateTime(reader.ReadInt64());
+      LastKnownPositionTimeStamp = DateTime.FromBinary(reader.ReadInt64());
       LastKnownDesignName = reader.ReadString();
       LastKnownLayerId = reader.ReadUInt16();
       CompactionDataReported = reader.ReadBoolean();
       CompactionSensorType = (CompactionSensorType)reader.ReadInt32();
     }
+
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }

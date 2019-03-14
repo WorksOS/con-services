@@ -56,6 +56,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to CCA.
     /// </summary>
@@ -68,6 +69,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     /// <summary>
     /// Determine if a filtered CCA is valid (not null)

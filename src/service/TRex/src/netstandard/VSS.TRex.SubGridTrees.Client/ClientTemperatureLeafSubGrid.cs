@@ -42,6 +42,7 @@ namespace VSS.TRex.SubGridTrees.Client
           SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataTemperatureEntryRecord.NullValue);
         } 
 
+        /*
         /// <summary>
         /// Constructor. Set the grid to Temperature.
         /// </summary>
@@ -54,6 +55,7 @@ namespace VSS.TRex.SubGridTrees.Client
         {
            Initialise();
         }
+        */
 
         /// <summary>
         /// Determine if a filtered machine speed is valid (not null)

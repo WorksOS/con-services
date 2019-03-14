@@ -18,19 +18,17 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
         {
-            bool result = true;
+            bool result = false;
 
             if (valueType.Name == TAGValueNames.kTagFileLeftWheelTag)
             {
                 state.WheelSide = TAGValueSide.Left;
+                result = true;
             }
             else if (valueType.Name == TAGValueNames.kTagFileRightWheelTag)
             {
                 state.WheelSide = TAGValueSide.Right;
-            }
-            else
-            {
-                result = false;
+                result = true;
             }
 
             return result;

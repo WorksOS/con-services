@@ -56,7 +56,6 @@ namespace VSS.TRex.Exports.CSV.Executors
 
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
           dataModelID: _CSVExportRequestArgument.ProjectID,
-          siteModel: null,
           gridDataType: gridDataType,
           response: new SubGridsPipelinedResponseBase(),
           filters: _CSVExportRequestArgument.Filters,

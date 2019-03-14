@@ -4,6 +4,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Types;
 
@@ -13,7 +14,7 @@ namespace VSS.TRex.Filters.Models
   /// FilteredMultiplePassInfo records all the information that a filtering operation
   ///   selected from an IC grid cell containing all the recorded machine passes.
   /// </summary>
-  public class FilteredMultiplePassInfo
+  public class FilteredMultiplePassInfo : IFromToBinary
   {
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list

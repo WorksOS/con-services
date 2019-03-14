@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Client
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientCellProfileLeafSubgrid>();
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientCellProfileAllPassesLeafSubgrid()
     {
@@ -47,6 +47,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Initialise();
     }
 
+    /*
     /// <summary>
     /// Constructor. Set the grid to CellProfile.
     /// </summary>
@@ -59,6 +60,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
+    */
 
     public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Time == DateTime.MinValue;
 

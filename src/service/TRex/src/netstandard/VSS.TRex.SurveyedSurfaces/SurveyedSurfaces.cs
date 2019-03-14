@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -9,13 +10,13 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
   public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, ISurveyedSurfaces
   {
-    private const byte kMajorVersion = 1;
-    private const byte kMinorVersion = 3;
+    private const byte VERSION_NUMBER = 1;
 
     private bool FSorted;
     private bool SortDescending;
@@ -43,8 +44,8 @@ namespace VSS.TRex.SurveyedSurfaces
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(kMajorVersion);
-      writer.Write(kMinorVersion);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.Write(Count);
 
       foreach (ISurveyedSurface ss in this)
@@ -55,17 +56,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
     public void Read(BinaryReader reader)
     {
-      ReadVersionFromStream(reader, out byte MajorVersion, out byte MinorVersion);
-
-      if (MajorVersion != kMajorVersion)
-      {
-        throw new FormatException("Major version incorrect");
-      }
-
-      if (MinorVersion != kMinorVersion)
-      {
-        throw new FormatException("Minor version incorrect");
-      }
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       int theCount = reader.ReadInt32();
       for (int i = 0; i < theCount; i++)
@@ -74,13 +65,6 @@ namespace VSS.TRex.SurveyedSurfaces
         surveyedSurface.Read(reader);
         Add(surveyedSurface);
       }
-    }
-
-    private void ReadVersionFromStream(BinaryReader reader, out byte MajorVersion, out byte MinorVersion)
-    {
-      // Load file version info
-      MajorVersion = reader.ReadByte();
-      MinorVersion = reader.ReadByte();
     }
 
     /// <summary>

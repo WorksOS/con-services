@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 

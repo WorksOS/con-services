@@ -12,14 +12,23 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <returns></returns>
         public static GridDataType IntermediaryICGridDataTypeForDataType(GridDataType DataType, bool IncludeSurveyedSurfacesInResult)
         {
+            var result = DataType;
+
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (DataType)
             {
-                case GridDataType.Height: return IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
-                case GridDataType.SimpleVolumeOverlay: return IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
-                case GridDataType.CutFill: return GridDataType.Height;
-                default:
-                    return DataType;
+                case GridDataType.Height:
+                  result = IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
+                  break;
+                case GridDataType.SimpleVolumeOverlay:
+                  result = IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
+                  break;
+                case GridDataType.CutFill:
+                  result = GridDataType.Height;
+                  break;
             }
+
+            return result;
         }
 
       /// <summary>
