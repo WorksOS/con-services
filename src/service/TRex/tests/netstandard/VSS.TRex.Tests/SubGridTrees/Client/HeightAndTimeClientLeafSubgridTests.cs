@@ -31,5 +31,12 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       clientGrid.Cells[0, 0] = clientGrid.NullCell();
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");
     }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
   }
 }

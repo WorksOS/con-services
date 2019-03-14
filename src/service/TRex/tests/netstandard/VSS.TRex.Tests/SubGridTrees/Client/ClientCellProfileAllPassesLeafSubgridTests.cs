@@ -51,5 +51,12 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       TestBinary_ReaderWriterBufferedHelper.RoundTripSerialise(clientGrid);
     }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
   }
 }
