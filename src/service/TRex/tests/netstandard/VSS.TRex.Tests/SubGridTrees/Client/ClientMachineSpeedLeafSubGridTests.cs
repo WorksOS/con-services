@@ -37,6 +37,13 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       int actualSize = clientGrid.IndicativeSizeInBytes();
 
       Assert.True(actualSize == expectedSize, $"IndicativeSize() incorrect, = {clientGrid.IndicativeSizeInBytes()}, expected = {expectedSize}");
-    }    
+    }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
   }
 }

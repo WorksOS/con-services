@@ -135,12 +135,17 @@ namespace VSS.TRex.SubGridTrees.Client
           }
         }
 
-    /// <summary>
-    /// Dumps the contents of this client leaf sub grid into the log in a human readable form
-    /// </summary>
-    public override void DumpToLog(string title)
+        /// <summary>
+        /// Dumps the contents of this client leaf sub grid into the log in a human readable form
+        /// </summary>
+        public override void DumpToLog(string title)
         {
           Log.LogDebug($"Sub grid {Moniker()}: {title}");
+        }
+
+        public void DumoToLog()
+        {
+          DumpToLog("");
         }
     }
 }
