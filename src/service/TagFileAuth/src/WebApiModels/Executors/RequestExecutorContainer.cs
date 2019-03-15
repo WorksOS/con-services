@@ -18,9 +18,9 @@ using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
-  ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
+  ///   Represents abstract container for all request executors. Uses abstract factory pattern to separate executor logic
   ///   from
-  ///   controller logic for testability and possible executor versioning.
+  ///   controller logic for testability and possible executor version.
   /// </summary>
   public abstract class RequestExecutorContainer
   {

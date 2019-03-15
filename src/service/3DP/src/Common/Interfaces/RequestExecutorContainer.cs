@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AssetService.Proxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -75,7 +76,11 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
+    protected IAssetServiceProxy assetProxy;
+
     protected IDictionary<string, string> customHeaders;
+
+    protected string customerUid;
 
 
     /// <summary>
@@ -166,7 +171,8 @@ namespace VSS.Productivity3D.Common.Interfaces
       ITagProcessor tagProcessor,
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
-      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy, IDictionary<string, string> customHeaders)
+      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
+      IAssetServiceProxy assetProxy, IDictionary<string, string> customHeaders, string customerUid)
     {
       log = logger;
 #if RAPTOR
@@ -181,7 +187,9 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.transferProxy = transferProxy;
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+      this.assetProxy = assetProxy;
       this.customHeaders = customHeaders;
+      this.customerUid = customerUid;
     }
     
     /// <summary>

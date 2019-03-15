@@ -1,48 +1,137 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+#if RAPTOR
 using VLPDDecls;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   public class GetMachineIdsExecutor : RequestExecutorContainer
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<ProjectID>(item);
-      TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID);
+      log.LogInformation(
+        $"GetMachineIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
+      
+      List<MachineStatus> machines;
+      bool haveUids = true;
 
-      if (machines != null)
+#if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES"))
+#endif
       {
-        return MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
+        if (request.ProjectUid.HasValue && request.ProjectUid != Guid.Empty)
+        {
+          var siteModelId = request.ProjectUid.ToString();
+
+          var machinesResult = await trexCompactionDataProxy
+            .SendDataGetRequest<MachineExecutionResult>(siteModelId, $"/sitemodels/{siteModelId}/machines",
+              customHeaders);
+          machines = machinesResult.MachineStatuses;
+        }
+        else
+        {
+          log.LogError($"GetMachineIdsExecutor: No projectUid provided. ");
+          throw CreateServiceException<GetMachineIdsExecutor>();
+        }
       }
 
-      throw CreateServiceException<GetMachineIdsExecutor>();
+#if RAPTOR
+      else
+      {
+        if (request.ProjectId.HasValue && request.ProjectId >= 1)
+        {
+          haveUids = false;
+          TMachineDetail[] tMachines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
+
+          if (tMachines == null || tMachines.Length == 0)
+            return new MachineExecutionResult(new List<MachineStatus>());
+
+          machines = ConvertMachineStatus(tMachines);
+        }
+        else
+        {
+          log.LogError($"GetMachineIdsExecutor: No projectId provided. ");
+          throw CreateServiceException<GetMachineIdsExecutor>();
+        }
+      }
+#endif
+
+      PairUpAssetIdentifiers(machines, haveUids);
+      return new MachineExecutionResult(machines);
     }
 
-    private IEnumerable<MachineStatus> convertMachineStatus(TMachineDetail[] machines)
+    private void PairUpAssetIdentifiers(List<MachineStatus> machines, bool haveUids)
     {
-      foreach (TMachineDetail machineDetail in machines)
-        yield return
-            MachineStatus.CreateMachineStatus(
-            machineDetail.ID,
-            machineDetail.Name,
-            machineDetail.IsJohnDoeMachine,
-            string.IsNullOrEmpty(machineDetail.LastKnownDesignName) ? null : machineDetail.LastKnownDesignName,
-            machineDetail.LastKnownLayerId == 0 ? (ushort?)null : machineDetail.LastKnownLayerId,
-            machineDetail.LastKnownTimeStamp.ToDateTime() == ConversionConstants.PDS_MIN_DATE ? (DateTime?)null : machineDetail.LastKnownTimeStamp.ToDateTime(),
-            machineDetail.LastKnownLat == 0 ? (double?)null : machineDetail.LastKnownLat,
-            machineDetail.LastKnownLon == 0 ? (double?)null : machineDetail.LastKnownLon,
-            machineDetail.LastKnownX == 0 ? (double?)null : machineDetail.LastKnownX,
-            machineDetail.LastKnownY == 0 ? (double?)null : machineDetail.LastKnownY
-            );
+      if (machines == null || machines.Count == 0)
+        return;
+
+      // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
+      var assetsResult = new List<AssetData>(0); 
+      if (haveUids)
+      {
+        foreach (var machine in machines)
+        {
+          var legacyAssetId = assetsResult.Where(a => a.AssetUID == machine.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
+          machine.AssetId = legacyAssetId < 1 ? -1 : legacyAssetId;
+        }
+      }
+      else
+        foreach (var machine in machines)
+        {
+          if (machine.AssetId < 1)
+            machine.AssetUid = null;
+          else
+          {
+            machine.AssetUid = assetsResult.Where(a => a.LegacyAssetID == machine.AssetId).Select(a => a.AssetUID).FirstOrDefault();
+            machine.AssetUid = machine.AssetUid == Guid.Empty ? null : machine.AssetUid;
+          }
+        }
+    }
+
+#if RAPTOR
+    private List<MachineStatus> ConvertMachineStatus(TMachineDetail[] tMachines)
+    {
+      var machines = new List<MachineStatus>(tMachines.Length);
+
+      for (var i = 0; i < tMachines.Length; i++)
+      {
+        machines.Add(new MachineStatus
+        (
+          tMachines[i].ID,
+          tMachines[i].Name,
+          tMachines[i].IsJohnDoeMachine,
+          string.IsNullOrEmpty(tMachines[i].LastKnownDesignName) ? null : tMachines[i].LastKnownDesignName,
+          tMachines[i].LastKnownLayerId == 0 ? (ushort?) null : tMachines[i].LastKnownLayerId,
+          tMachines[i].LastKnownTimeStamp.ToDateTime() == ConversionConstants.PDS_MIN_DATE
+            ? (DateTime?) null
+            : tMachines[i].LastKnownTimeStamp.ToDateTime(),
+          tMachines[i].LastKnownLat == 0 ? (double?) null : tMachines[i].LastKnownLat,
+          tMachines[i].LastKnownLon == 0 ? (double?) null : tMachines[i].LastKnownLon,
+          tMachines[i].LastKnownX == 0 ? (double?) null : tMachines[i].LastKnownX,
+          tMachines[i].LastKnownY == 0 ? (double?) null : tMachines[i].LastKnownY,
+          null
+        ));
+      }
+
+      return machines;
+    }
+#endif
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

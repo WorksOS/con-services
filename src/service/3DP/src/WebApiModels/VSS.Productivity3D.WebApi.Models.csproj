@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\ExternalServices\AssetService\VSS.AssetService.Proxy\VSS.AssetService.Proxy.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
@@ -63,9 +64,6 @@
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\GetMachineDesignsExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\GetMachineIdsExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\GetLayerIdsExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />

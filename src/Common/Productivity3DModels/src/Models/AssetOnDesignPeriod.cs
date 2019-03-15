@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
+namespace VSS.Productivity3D.Models.Models
 {
-  public class DesignName : IEquatable<DesignName>
+  public class AssetOnDesignPeriod : IEquatable<AssetOnDesignPeriod>
   {
     /// <summary>
     ///The name of the design.
@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// Machine identifier that the design is on. Used for filtering in machine details end point only.
     /// </summary>
     [JsonIgnore]
-    public long MachineId { get; private set; }
+    public long MachineId { get; set; }
     /// <summary>
     /// Start date and time for the design on the machine. Used for filtering in machine details end point only.
     /// </summary>
@@ -31,20 +31,26 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [JsonIgnore]
     public DateTime EndDate { get; private set; }
 
-    public static DesignName CreateDesignNames(string name, long id, long machineId, DateTime startDate, DateTime endDate)
+    /// <summary>
+    /// Machine identifier that the design is on. Used for filtering in machine details end point only.
+    /// </summary>
+    [JsonIgnore]
+    public Guid? AssetUid { get; set; }
+
+
+    public AssetOnDesignPeriod(string name, long id, long machineId, DateTime startDate, DateTime endDate,
+      Guid? assetUid = null)
     {
-        return new DesignName
-        {
-          Id = id,
-          Name = name,
-          MachineId = machineId,
-          StartDate = startDate,
-          EndDate = endDate
-        };
+      Id = id;
+      Name = name;
+      MachineId = machineId;
+      StartDate = startDate;
+      EndDate = endDate;
+      AssetUid = assetUid;
     }
 
     #region Equality test
-    public bool Equals(DesignName other)
+    public bool Equals(AssetOnDesignPeriod other)
     {
       if (other == null)
         return false;
@@ -54,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
              this.Name == other.Name;
     }
 
-    public static bool operator ==(DesignName a, DesignName b)
+    public static bool operator ==(AssetOnDesignPeriod a, AssetOnDesignPeriod b)
     {
       if ((object)a == null || (object)b == null)
         return Object.Equals(a, b);
@@ -62,14 +68,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       return a.Equals(b);
     }
 
-    public static bool operator !=(DesignName a, DesignName b)
+    public static bool operator !=(AssetOnDesignPeriod a, AssetOnDesignPeriod b)
     {
       return !(a == b);
     }
 
     public override bool Equals(object obj)
     {
-      return obj is DesignName && this == (DesignName)obj;
+      return obj is AssetOnDesignPeriod && this == (AssetOnDesignPeriod)obj;
     }
 
     public override int GetHashCode()

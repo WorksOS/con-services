@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using VSS.AssetService.Proxy;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
@@ -58,6 +59,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+      //todoJeannie wait on Stephen to complete serviceDiscovery: services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
@@ -77,6 +79,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
       services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
       services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
+      services.AddScoped<IAssetServiceProxy, AssetV1ServiceDiscoveryProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
