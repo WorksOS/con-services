@@ -142,10 +142,5 @@ namespace VSS.TRex.SubGridTrees.Client
         {
           Log.LogDebug($"Sub grid {Moniker()}: {title}");
         }
-
-        public void DumoToLog()
-        {
-          DumpToLog("");
-        }
     }
 }

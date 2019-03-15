@@ -149,7 +149,6 @@ namespace VSS.TRex.SiteModels
       }
     }
 
-
     /// <summary>
     /// Gets the loaded state of the CSIB. This permits testing if a CSIB is loaded without forcing
     /// the CSIB to be loaded via the CSIB property

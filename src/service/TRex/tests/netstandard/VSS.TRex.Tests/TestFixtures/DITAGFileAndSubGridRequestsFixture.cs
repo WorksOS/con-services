@@ -176,14 +176,18 @@ namespace VSS.TRex.Tests.TestFixtures
       // Ensure the pass data existence map records the existence of a non null value in the cell
       leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
 
-      // Count the number of non-null elevation cells to verify a correct setup
-      long totalCells = 0;
-      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x => {
-        totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
-        return true;
-      });
+      if (expectedCellCount != -1)
+      {
+        // Count the number of non-null elevation cells to verify a correct setup
+        long totalCells = 0;
+        siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x =>
+        {
+          totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
+          return true;
+        });
 
-      totalCells.Should().Be(expectedCellCount);
+        totalCells.Should().Be(expectedCellCount);
+      }
 
       var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
