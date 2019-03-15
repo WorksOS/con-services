@@ -17,6 +17,14 @@ namespace VSS.TRex.SiteModels
     private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>
+    /// There will be at least 1 designName in list
+    /// </summary>
+    public SiteModelMachineDesignList()
+    {
+      CreateNew(Consts.kNoDesignName);
+    }
+
+    /// <summary>
     /// The identifier of the site model owning this list of machine design names
     /// </summary>
     public Guid DataModelID { get; set; }
@@ -73,6 +81,8 @@ namespace VSS.TRex.SiteModels
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
+      this.Clear();
+
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       int count = reader.ReadInt32();

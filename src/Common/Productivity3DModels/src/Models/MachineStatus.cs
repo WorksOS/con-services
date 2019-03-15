@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
+namespace VSS.Productivity3D.Models.Models
 {
   public class MachineStatus : MachineDetails
   {
@@ -23,12 +23,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// The last reported position of the machine in radians.
     /// </summary>
-    public double? lastKnownLatitude { get; private set; }
+    public double? lastKnownLatitude { get; set; }
 
     /// <summary>
     /// The last reported position of the machine in radians.
     /// </summary>
-    public double? lastKnownLongitude { get; private set; }
+    public double? lastKnownLongitude { get; set; }
 
     /// <summary>
     /// The last reported position of the machine in grid coordinates.
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// Create instance of MachineStatus
     /// </summary>
-    public static MachineStatus CreateMachineStatus(
+    public MachineStatus(
         long assetID,
         string machineName,
         bool isJohnDoe,
@@ -59,22 +59,21 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         double? lastKnownLatitude,
         double? lastKnownLongitude,
         double? lastKnownX,
-        double? lastKnownY
+        double? lastKnownY,
+        Guid? assetUid = null
         )
     {
-      return new MachineStatus
-      {
-        AssetId = assetID,
-        MachineName = machineName,
-        IsJohnDoe = isJohnDoe,
-        lastKnownDesignName = lastKnownDesignName,
-        lastKnownLayerId = lastKnownLayerId,
-        lastKnownTimeStamp = lastKnownTimeStamp,
-        lastKnownLatitude = lastKnownLatitude,
-        lastKnownLongitude = lastKnownLongitude,
-        lastKnownX = lastKnownX,
-        lastKnownY = lastKnownY
-      };
+      this.AssetId = assetID;
+      this.MachineName = machineName;
+      this.IsJohnDoe = isJohnDoe;
+      this.lastKnownDesignName = lastKnownDesignName;
+      this.lastKnownLayerId = lastKnownLayerId;
+      this.lastKnownTimeStamp = lastKnownTimeStamp;
+      this.lastKnownLatitude = lastKnownLatitude;
+      this.lastKnownLongitude = lastKnownLongitude;
+      this.lastKnownX = lastKnownX;
+      this.lastKnownY = lastKnownY;
+      this.AssetUid = assetUid;
     }
   }
 }

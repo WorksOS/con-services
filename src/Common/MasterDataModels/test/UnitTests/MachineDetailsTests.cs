@@ -13,7 +13,7 @@ namespace VSS.MasterData.Models.UnitTests
       var machineDetails = MachineDetails.Create(123, "machine name", isJohnDoe: false);
       var jsonResult = JsonConvert.SerializeObject(machineDetails);
 
-      Assert.AreEqual("{\"assetID\":\"123\",\"machineName\":\"machine name\",\"isJohnDoe\":false}", jsonResult);
+      Assert.AreEqual("{\"assetID\":\"123\",\"machineName\":\"machine name\",\"isJohnDoe\":false,\"assetUid\":null}", jsonResult);
     }
 
 

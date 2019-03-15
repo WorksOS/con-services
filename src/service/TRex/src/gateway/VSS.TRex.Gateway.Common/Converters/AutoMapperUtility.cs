@@ -50,6 +50,7 @@ namespace VSS.TRex.Gateway.Common.Converters
           cfg.AddProfile<DesignResultProfile>();
           cfg.AddProfile<ReportingProfile>();
           cfg.AddProfile<ExportingProfile>();
+          cfg.AddProfile<MachineProfile>();
         }
       );
 

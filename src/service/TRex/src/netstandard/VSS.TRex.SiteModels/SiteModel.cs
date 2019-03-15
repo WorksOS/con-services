@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -24,6 +26,7 @@ using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.SiteModels
 {
@@ -711,6 +714,114 @@ namespace VSS.TRex.SiteModels
       }
 
       return (minDate, maxDate);
+    }
+
+    /// <summary>
+    /// GetAssetOnDesignPeriods returns design changes for each machine.
+    ///    We remove any duplicates (occurs at start, where a period of time is missing between tag files)
+    /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\VLPD\PS\PSNode.MachineDesigns.RPC.Execute.pas
+    /// </summary>
+    /// <returns></returns>
+    public List<AssetOnDesignPeriod> GetAssetOnDesignPeriods()
+    {
+      var assetOnDesignPeriods = new List<AssetOnDesignPeriod>();
+
+      foreach (var machine in Machines)
+      {
+        var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
+
+        int priorMachineDesignId = int.MinValue;
+        DateTime priorDateTime = DateTime.MinValue;
+        for (int i = 0; i < events.Count(); i++)
+        {
+          events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
+          if (machineDesignId < 0)
+          {
+            Log.LogError($"{nameof(GetAssetOnDesignPeriods)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
+            continue;
+          }
+
+          if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
+          {
+            var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+            assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
+              priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+          }
+
+          // where multi events for same design -  want to retain startDate of first
+          if (priorMachineDesignId != machineDesignId)
+          {
+            priorMachineDesignId = machineDesignId;
+            priorDateTime = dateTime;
+          }
+        }
+
+        if (priorMachineDesignId != int.MinValue)
+        {
+          var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
+          assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
+            priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+        }
+      }
+
+      return assetOnDesignPeriods;
+    }
+
+    /// <summary>
+    /// GetAssetOnDesignLayerPeriods returns the designs and layers used by specific machines.
+    /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\SVO\ProductionServer\SVOICSiteModels.pas
+    /// As per Raymond: it is guaranteed that start/stop will occur as pairs to form a reportingPeriod,
+    ///                 AND there will be NO events outside of these pairs
+    ///                 AND at startEnd, status of all event types will be recited e.g. last on layer1 and designA
+    /// </summary>
+    /// <returns></returns>
+    public List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods()
+    {
+      var assetOnDesignLayerPeriods = new List<AssetOnDesignLayerPeriod>();
+      foreach (var machine in Machines)
+      {
+        var startStopEvents = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+        var layerEventCount = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.Count();
+        if (layerEventCount == 0 || MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents.Count() == 0)
+          continue;
+
+        for (int startStopEventIndex = 1; startStopEventIndex < startStopEvents.Count(); startStopEventIndex += 2)
+        {
+          startStopEvents.GetStateAtIndex(startStopEventIndex - 1, out DateTime startReportingPeriod, out ProductionEventType startStateType);
+          startStopEvents.GetStateAtIndex(startStopEventIndex, out DateTime endReportingPeriod, out ProductionEventType endStateType);
+
+          // identify layer changes within a report period which will likely overlap reporting periods.
+          int layerStateChangeIndex = 0;
+          var priorLayerId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetValueAtDate(startReportingPeriod, out layerStateChangeIndex, ushort.MaxValue);
+          var priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(startReportingPeriod, out int _, Consts.kNoDesignNameID );
+          if (priorLayerId == ushort.MaxValue || layerStateChangeIndex < 0)
+            layerStateChangeIndex = 0; // no layer events found at or before startReportingPeriod
+          else
+            layerStateChangeIndex += 1;
+
+          var priorLayerChangeTime = startReportingPeriod;
+          var thisLayerChangeTime = startReportingPeriod;
+          for (; thisLayerChangeTime < endReportingPeriod && layerStateChangeIndex < layerEventCount; layerStateChangeIndex++)
+          {
+            MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetStateAtIndex(layerStateChangeIndex, out thisLayerChangeTime, out ushort nextLayerId);
+
+            if (priorLayerId != ushort.MaxValue)
+              assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+              thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID));
+
+            priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(thisLayerChangeTime, out int _, Consts.kNoDesignNameID);
+            priorLayerChangeTime = thisLayerChangeTime;
+            priorLayerId = nextLayerId;
+          }
+
+          // event earlier in report period, this covers to end of period
+          if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
+            assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+              endReportingPeriod, machine.ID));
+        }
+      }
+
+      return new List<AssetOnDesignLayerPeriod>(assetOnDesignLayerPeriods);
     }
 
     /// <summary>

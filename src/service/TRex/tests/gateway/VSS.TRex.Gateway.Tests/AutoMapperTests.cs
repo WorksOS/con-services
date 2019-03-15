@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Castle.Core.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
+using VSS.TRex.Machines;
+using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Gateway.Tests
@@ -106,6 +112,57 @@ namespace VSS.TRex.Gateway.Tests
       Assert.False(combinedFilter.SpatialFilter.CoordsAreGrid);
       Assert.False(combinedFilter.SpatialFilter.IsSpatial);
       Assert.Null(combinedFilter.SpatialFilter.Fence);
+    }
+
+    [Fact]
+    public void MapMachineToMachineStatus()
+    {
+      var machineUid1 = Guid.NewGuid();
+      var machineUid2 = Guid.NewGuid();
+      var machineUid3 = Guid.Empty;
+      var machines = new MachinesList { DataModelID = Guid.NewGuid() };
+      machines.CreateNew("MachineName1", "hardwareID444", MachineType.ConcretePaver, DeviceType.SNM940, false, machineUid1);
+      machines[0].InternalSiteModelMachineIndex = 0;
+      machines[0].LastKnownX = 34.34;
+      machines[0].LastKnownY = 77.77;
+      machines[0].LastKnownPositionTimeStamp = DateTime.UtcNow.AddMonths(-2);
+      machines[0].LastKnownDesignName = "design1";
+      machines[0].LastKnownLayerId = 11;
+
+      machines.CreateNew("MachineName2", "hardwareID555", MachineType.AsphaltCompactor, DeviceType.SNM940, false, machineUid2);
+      machines.CreateNew("MachineName3", "hardwareID666", MachineType.Generic, DeviceType.MANUALDEVICE, true, machineUid3);
+
+      var machineStatuses = machines.Select(machine =>
+          AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();
+      machineStatuses.Length.Equals(3);
+      machineStatuses[0].AssetUid.HasValue.Equals(true);
+      machineStatuses[0].AssetUid?.Equals(machines[0].ID);
+      machineStatuses[0].AssetId.Equals(-1);
+      machineStatuses[0].MachineName.IsNullOrEmpty().Equals(false);
+      machineStatuses[0].MachineName.Equals(machines[0].Name);
+      machineStatuses[0].IsJohnDoe.Equals(machines[0].IsJohnDoeMachine);
+      machineStatuses[0].lastKnownDesignName.IsNullOrEmpty().Equals(false);
+      machineStatuses[0].lastKnownDesignName.Equals(machines[0].LastKnownDesignName);
+      machineStatuses[0].lastKnownLayerId.HasValue.Equals(true);
+      machineStatuses[0].lastKnownLayerId?.Equals(machines[0].LastKnownLayerId);
+      machineStatuses[0].lastKnownTimeStamp.HasValue.Equals(true);
+      machineStatuses[0].lastKnownTimeStamp?.Equals(machines[0].LastKnownPositionTimeStamp);
+      machineStatuses[0].lastKnownLatitude.HasValue.Equals(true);
+      machineStatuses[0].lastKnownLatitude?.Equals(Double.MaxValue); 
+      machineStatuses[0].lastKnownLongitude.HasValue.Equals(true);
+      machineStatuses[0].lastKnownLongitude?.Equals(Double.MaxValue); 
+      machineStatuses[0].lastKnownX.HasValue.Equals(true);
+      machineStatuses[0].lastKnownX?.Equals(machines[0].LastKnownX);
+      machineStatuses[0].lastKnownY.HasValue.Equals(true);
+      machineStatuses[0].lastKnownY?.Equals(machines[0].LastKnownY);
+
+      machineStatuses[1].AssetUid.HasValue.Equals(true);
+      machineStatuses[1].AssetUid?.Equals(machineUid2);
+      machineStatuses[1].lastKnownX.HasValue.Equals(false);
+      machineStatuses[1].lastKnownY.HasValue.Equals(false);
+
+      machineStatuses[2].AssetUid.HasValue.Equals(true);
+      machineStatuses[2].AssetUid?.Equals(machineUid3);
     }
   }
 }

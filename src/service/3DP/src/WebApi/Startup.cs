@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.ServiceDiscovery;
 using VSS.Log4NetExtensions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -71,6 +74,9 @@ namespace VSS.Productivity3D.WebApi
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
 
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      services.AddServiceDiscovery();
+
       /*services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
@@ -83,7 +89,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddJaeger(SERVICE_TITLE);
 
       services.AddOpenTracing();*/
- 
+
       ConfigureApplicationServices(services);
     }
 
@@ -138,7 +144,10 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CS") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PATCHES") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CELL_DATUM") != "true" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") != "true")
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PROJECTSTATISTICS") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MACHINES") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MACHINEDESIGNS") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_LAYERS") != "true" )
         ConfigureRaptor();
     }
 

@@ -1,113 +1,62 @@
 ﻿using System;
-using System.Net;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+using System.Collections.Generic;
+using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
-using VSS.MasterData.Models.FIlters;
+using VSS.TRex.Exports.CSV.GridFabric;
+using VSS.TRex.Filters;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Types;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
-  public class CSVExportRequestTests : IClassFixture<DITagFileFixture>
+  [UnitTestCoveredRequest(RequestType = typeof(CSVExportRequest))]
+  public class CSVExportRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    [Theory]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "gotAFilename.csv", 
-      CoordType.LatLon, OutputTypes.VedaAllPasses, null)]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "gotAFilename.csv",
-      CoordType.Northeast, OutputTypes.VedaFinalPass, new string[] { "GoodMachineName", "another one" })]
-    public void VetaExportRequest_Successful(
-      Guid projectUid, FilterResult filter, string fileName,
-      CoordType coordType, OutputTypes outputType, string[] machineNames)
+    [Fact]
+    public void Test_CSVExportRequest_Creation()
     {
-      var userPreferences = new UserPreferences();
-      var request = new CompactionVetaExportRequest(
-        projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
-      request.Validate();
+      var request = new CSVExportRequest();
+      request.Should().NotBeNull();
+    }
+    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CSVExportRequestComputeFunc, CSVExportRequestArgument, CSVExportRequestResponse>();
+    
+    private ISiteModel NewEmptyModel()
+    {
+      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      return siteModel;
     }
 
-    [Theory]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "",
-      CoordType.LatLon, OutputTypes.VedaAllPasses, null)]
-    public void VetaExportRequest_FilenameUnSuccessful(
-      Guid projectUid, FilterResult filter, string fileName,
-      CoordType coordType, OutputTypes outputType, string[] machineNames)
+    private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid)
     {
-      var userPreferences = new UserPreferences();
-      var request = new  CompactionVetaExportRequest(
-        projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
-
-      var validate = new ValidFilenameAttribute(256);
-      var result = validate.IsValid(request.FileName);
-      Assert.False(result);
+      return new CSVExportRequestArgument
+      { 
+        FileName = "the file name",
+        Filters = new FilterSet(new CombinedFilter()),
+        CoordType = CoordType.Northeast,
+        OutputType = OutputTypes.PassCountLastPass,
+        UserPreferences = new CSVExportUserPreferences(),
+        MappedMachines = new List<CSVExportMappedMachine>(),
+        RestrictOutputSize = false,
+        RawDataAsDBase = false,
+        TRexNodeID = "'Test_CSVExportRequest_Execute_EmptySiteModel",
+        ProjectID = projectUid
+      };
     }
 
-    [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", null, "somefilename",
-      CoordType.LatLon, OutputTypes.VedaAllPasses, null,
-      "Invalid project UID.")]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "somefilename",
-      CoordType.LatLon, OutputTypes.PassCountAllPasses, null,
-      "Invalid output type for veta export")]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "somefilename",
-      CoordType.LatLon, OutputTypes.VedaAllPasses, new string[] { "" },
-      "Invalid machineNames")]
-    public void VetaExportRequest_UnSuccessful(
-      Guid projectUid, FilterResult filter, string fileName,
-      CoordType coordType, OutputTypes outputType, string[] machineNames,
-      string errorMessage)
+    [Fact]
+    public void Test_CSVExportRequest_Execute_EmptySiteModel()
     {
-      var userPreferences = new UserPreferences();
-      var request = new CompactionVetaExportRequest(
-        projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+      AddApplicationGridRouting();
+      var siteModel = NewEmptyModel();
+      var request = new CSVExportRequest();
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
 
-      var ex = Assert.Throws<ServiceException>(() => request.Validate());
-      Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
-      Assert.Equal(ContractExecutionStatesEnum.ValidationError, ex.GetResult.Code);
-      Assert.Equal(errorMessage, ex.GetResult.Message);
-    }
-
-    [Theory]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "gotAFilename",
-     CoordType.LatLon, OutputTypes.PassCountAllPasses, true, true)]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "gotAFilename",
-     CoordType.Northeast, OutputTypes.PassCountLastPass, false, false)]
-    public void PassCountExportRequest_Successful(
-     Guid projectUid, FilterResult filter, string fileName,
-     CoordType coordType, OutputTypes outputType, bool restrictOutputSize, bool rawDataAsDBase)
-    {
-      var userPreferences = new UserPreferences();
-      var request = new CompactionPassCountExportRequest(
-        projectUid, filter, fileName,
-        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
-      request.Validate();
-    }
-   
-    [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", null, "somefilename",
-      CoordType.LatLon, OutputTypes.PassCountAllPasses, false, false,
-      "Invalid project UID.")]
-    [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "somefilename",
-      CoordType.LatLon, OutputTypes.VedaAllPasses, false, false,
-      "Invalid output type for pass count export")]
-    public void PassCountExportRequest_UnSuccessful(
-      Guid projectUid, FilterResult filter, string fileName,
-      CoordType coordType, OutputTypes outputType, bool restrictOutputSize, bool rawDataAsDBase,
-      string errorMessage)
-    {
-      var userPreferences = new UserPreferences();
-      var request = new CompactionPassCountExportRequest(
-        projectUid, filter, fileName,
-        coordType, outputType, userPreferences, restrictOutputSize, rawDataAsDBase);
-
-      var ex = Assert.Throws<ServiceException>(() => request.Validate());
-      Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
-      Assert.Equal(ContractExecutionStatesEnum.ValidationError, ex.GetResult.Code);
-      Assert.Equal(errorMessage, ex.GetResult.Message);
+      response.Should().NotBeNull();
     }
   }
 }
