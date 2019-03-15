@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   public class MachineDesignDetails : MachineDetails
   {
-    [JsonProperty(PropertyName = "assetOnDesignPeriods")]
+    [JsonProperty(PropertyName = "designs")]
     public AssetOnDesignPeriod[] AssetOnDesignPeriods { get; private set; }
 
     /// <summary>

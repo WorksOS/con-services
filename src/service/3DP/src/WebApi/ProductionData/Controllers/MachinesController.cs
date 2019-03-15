@@ -280,7 +280,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigndetails")]
     [HttpGet]
-    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid,
+    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignByDateRangeDetails([FromRoute] Guid projectUid,
       [FromQuery] string startUtc, [FromQuery] string endUtc)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
@@ -392,7 +392,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinelifts")]
     [HttpGet]
-    public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] long projectId,
+    public async Task<MachineLayerIdsExecutionResult> GetMachineLiftsByDateRange([FromRoute] long projectId,
       [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
       var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
@@ -414,7 +414,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinelifts")]
     [HttpGet]
-    public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] Guid projectUid,
+    public async Task<MachineLayerIdsExecutionResult> GetMachineLiftsByDateRange([FromRoute] Guid projectUid,
       [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
