@@ -21,6 +21,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -190,6 +191,47 @@ namespace VSS.TRex.Tests.TestFixtures
       }
 
       var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
+      siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
+
+      // Save the site model metadata to preserve the site model extent information across a site model change notification event
+      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+    }
+
+    public static void AddSingleSubGridWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass>[,] passes)
+    {
+      // Construct the sub grid to hold the cell being tested
+      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      leaf.Should().NotBeNull();
+
+      leaf.AllocateLeafFullPassStacks();
+      leaf.CreateDefaultSegment();
+      leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());
+      leaf.AllocateLeafLatestPassGrid();
+
+      // Add the leaf to the site model existence map
+      siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+
+      siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(1);
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        CellPass[] _passes = passes[x,y].ToArray();
+
+        byte subGridX = (byte) ((cellX + x) & SubGridTreeConsts.SubGridLocalKeyMask);
+        byte subGridY = (byte) ((cellY + y) & SubGridTreeConsts.SubGridLocalKeyMask);
+
+        foreach (var pass in _passes)
+          leaf.AddPass(subGridX, subGridY, pass);
+
+        // Assign global latest cell pass to the appropriate pass
+        leaf.Directory.GlobalLatestCells[subGridX, subGridY] = _passes.Last();
+
+        // Ensure the pass data existence map records the existence of a non null value in the cell
+        leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
+      });
+
+      var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
+      siteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX + SubGridTreeConsts.SubGridTreeDimension, cellY + SubGridTreeConsts.SubGridTreeDimension));
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
 
       // Save the site model metadata to preserve the site model extent information across a site model change notification event

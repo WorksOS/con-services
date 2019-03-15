@@ -80,9 +80,12 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var _siteModel = siteModel;
+
+      CellPass[,][] cellPasses = new CellPass[32,32][];
+
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        var cellPasses = Enumerable.Range(0, 1).Select(p =>
+        cellPasses[x, y] = Enumerable.Range(0, 1).Select(p =>
           new CellPass
           {
             InternalSiteModelMachineIndex = bulldozerMachineIndex,
@@ -90,10 +93,10 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
             Height = baseHeight + (x + y) * heightIncrement, // incrementally increase height across the sub grid
             PassType = PassType.Front
           }).ToArray();
-
-        DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
-          (_siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + x, SubGridTreeConsts.DefaultIndexOriginOffset + y, cellPasses, -1, cellPasses.Length);
       });
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses
+        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
     }
 
     [Fact]
