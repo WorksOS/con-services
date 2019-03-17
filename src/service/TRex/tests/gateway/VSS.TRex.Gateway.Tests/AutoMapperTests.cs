@@ -121,7 +121,7 @@ namespace VSS.TRex.Gateway.Tests
       var machineUid2 = Guid.NewGuid();
       var machineUid3 = Guid.Empty;
       var machines = new MachinesList { DataModelID = Guid.NewGuid() };
-      machines.CreateNew("MachineName1", "hardwareID444", MachineType.ConcretePaver, DeviceType.SNM940, false, machineUid1);
+      machines.CreateNew("MachineName1", "hardwareID444", MachineType.ConcretePaver, DeviceTypeEnum.SNM940, false, machineUid1);
       machines[0].InternalSiteModelMachineIndex = 0;
       machines[0].LastKnownX = 34.34;
       machines[0].LastKnownY = 77.77;
@@ -129,8 +129,8 @@ namespace VSS.TRex.Gateway.Tests
       machines[0].LastKnownDesignName = "design1";
       machines[0].LastKnownLayerId = 11;
 
-      machines.CreateNew("MachineName2", "hardwareID555", MachineType.AsphaltCompactor, DeviceType.SNM940, false, machineUid2);
-      machines.CreateNew("MachineName3", "hardwareID666", MachineType.Generic, DeviceType.MANUALDEVICE, true, machineUid3);
+      machines.CreateNew("MachineName2", "hardwareID555", MachineType.AsphaltCompactor, DeviceTypeEnum.SNM940, false, machineUid2);
+      machines.CreateNew("MachineName3", "hardwareID666", MachineType.Generic, DeviceTypeEnum.MANUALDEVICE, true, machineUid3);
 
       var machineStatuses = machines.Select(machine =>
           AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();

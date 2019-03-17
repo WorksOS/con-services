@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines.Interfaces
 {
@@ -58,7 +58,7 @@ namespace VSS.TRex.Machines.Interfaces
 
     IMachine CreateNew(string name, string machineHardwareID,
       MachineType machineType,
-      DeviceType deviceType,
+      DeviceTypeEnum deviceType,
       bool isJohnDoeMachine,
       Guid machineID);
 

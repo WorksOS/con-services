@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -8,7 +8,6 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.SiteModels
@@ -28,7 +27,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetAssetOnDesignLayerPeriods_OneMachineNoRecordingPeriodNoLayersNoDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(0);
@@ -38,7 +37,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetAssetOnDesignLayerPeriods_LateLayerNoDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       DateTime referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
@@ -57,7 +56,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetAssetOnDesignLayerPeriods_TwoLayersNoDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       DateTime referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
@@ -84,7 +83,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetAssetOnDesignLayerPeriods_TwoLayersOneDesign()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
 
       DateTime referenceDate = DateTime.UtcNow;
@@ -113,7 +112,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetAssetOnDesignLayerPeriods_MultiLayersDesignsReportPeriods()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       var design2 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
 
@@ -171,7 +170,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void GetAssetOnDesignLayerPeriods_FirstLayerWithinReportPeriod()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
 
       DateTime referenceDate = DateTime.UtcNow;

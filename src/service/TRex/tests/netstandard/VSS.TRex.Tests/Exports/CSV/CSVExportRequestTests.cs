@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
@@ -9,7 +10,6 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     private ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
 
