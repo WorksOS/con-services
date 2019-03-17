@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -15,7 +16,6 @@ using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
@@ -161,7 +161,7 @@ namespace VSS.TRex.Tests.Volumes
     public ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
 

@@ -4,12 +4,12 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -28,7 +28,6 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -109,7 +108,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
@@ -11,7 +12,6 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Tests.Requests.LoggingMode
 {
@@ -21,8 +21,8 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
-      _ = siteModel.Machines.CreateNew("Excavator", "", MachineType.Excavator, DeviceType.SNM940, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Excavator", "", MachineType.Excavator, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       return siteModel;
     }

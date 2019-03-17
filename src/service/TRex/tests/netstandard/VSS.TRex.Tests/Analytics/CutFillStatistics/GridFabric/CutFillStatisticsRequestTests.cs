@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Cells;
@@ -17,7 +18,6 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
     private ISiteModel NewEmptyModel()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
 
@@ -77,8 +77,6 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       siteModel = NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
-
-      var _siteModel = siteModel;
 
       CellPass[,][] cellPasses = new CellPass[32,32][];
 

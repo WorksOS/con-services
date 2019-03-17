@@ -125,8 +125,8 @@ namespace TAGFiles.Tests
     {
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceType.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
-      var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int) DeviceType.MANUALDEVICE, "success");
+      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
+      var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int) DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;

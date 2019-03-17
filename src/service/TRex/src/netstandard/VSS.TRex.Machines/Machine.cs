@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Machines
 {
@@ -26,7 +26,7 @@ namespace VSS.TRex.Machines
 
     public MachineType MachineType { get; set; } = MachineType.Unknown;
 
-    public DeviceType DeviceType { get; set; } = DeviceType.MANUALDEVICE;
+    public DeviceTypeEnum DeviceType { get; set; } = DeviceTypeEnum.MANUALDEVICE;
 
     public string MachineHardwareID { get; set; } = "";
 
@@ -82,7 +82,7 @@ namespace VSS.TRex.Machines
     public Machine(string name,
                    string machineHardwareID,
                    MachineType machineType,
-                   DeviceType deviceType,
+                   DeviceTypeEnum deviceType,
                    Guid machineID,
                    short internalSiteModelMachineIndex,
                    bool isJohnDoeMachine) : this()
@@ -154,7 +154,7 @@ namespace VSS.TRex.Machines
       InternalSiteModelMachineIndex = reader.ReadInt16();
       Name = reader.ReadString();
       MachineType = (MachineType)reader.ReadByte();
-      DeviceType = (DeviceType)reader.ReadInt32();
+      DeviceType = (DeviceTypeEnum)reader.ReadInt32();
       MachineHardwareID = reader.ReadString();
       IsJohnDoeMachine = reader.ReadBoolean();
       LastKnownX = reader.ReadDouble();
