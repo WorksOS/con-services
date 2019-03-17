@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public ISubGridTree Grid { get; set; }
         public BoundingIntegerExtent2D Extent;
-        public int ScanLevel { get; set; }
+        public uint ScanLevel { get; set; }
         public bool RequestRepresentativeGrids { get; set; }
 
         public LeafSubgridRequestType RequestType { get; set; } = LeafSubgridRequestType.FullFromServer;
@@ -36,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public SubGridTreeScannerBase(ISubGridTree grid,
             BoundingIntegerExtent2D extent,
-            int scanLevel,
+            uint scanLevel,
             bool requestRepresentativeGrids) : this()
         {
             Grid = grid;
@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public SubGridTreeScannerBase(ISubGridTree grid,
             BoundingWorldExtent3D extent,
-            int scanLevel,
+            uint scanLevel,
             bool requestRepresentativeGrids) : this(grid, new BoundingIntegerExtent2D(), scanLevel, requestRepresentativeGrids)
         {
             grid.CalculateRegionGridCoverage(extent, out Extent);
@@ -55,8 +55,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public virtual void OnStartScan(ISubGrid subGrid)
         {
-            Debug.Assert(ScanLevel > 0, "Scan level must be > 0 in scanner");
-
             scanActive = true;
             Aborted = false;
             firstScanLevel = subGrid.Level;

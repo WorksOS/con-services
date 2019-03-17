@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -296,7 +297,8 @@ namespace VSS.TRex.SubGridTrees.Server
             Log.LogError($"ProductionEvent mutable stream length is too short. Expected greater than: {MinEventStreamLength} retrieved {mutableStream.Length}");
             return false;
           }
-          mutableStream.Position = 8;
+
+          mutableStream.Position = 1; // Skip the version to get the event list type
 
           var eventType = reader.ReadInt32();
           if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
@@ -310,7 +312,7 @@ namespace VSS.TRex.SubGridTrees.Server
           mutableStream.Position = 0;
           events.ReadEvents(reader);
 
-          mutableStream.Position = 8;
+          mutableStream.Position = 1; // Skip the version to get the event list type
           immutableStream = events.GetImmutableStream();
         }
 

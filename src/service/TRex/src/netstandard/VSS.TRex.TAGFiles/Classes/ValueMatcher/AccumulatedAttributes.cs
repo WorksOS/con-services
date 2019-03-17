@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
@@ -18,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// remove the need to resize the attributes list frequently when all but the latest attributes are
         /// discarded.
         /// </summary>
-        private List<AccumulatedAttribute> list = new List<AccumulatedAttribute>();
+        private readonly List<AccumulatedAttribute> list = new List<AccumulatedAttribute>();
 
         public AccumulatedAttributes()
         {
@@ -62,9 +61,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         // GetLatest simply returns the last value in the list
         public object GetLatest()
         {
-            Debug.Assert(NumAttrs > 0, "NumAttrs is zero in GetLatest");
-
-            return list[NumAttrs - 1].value;
+            return NumAttrs > 0 ? list[NumAttrs - 1].value : null;
         }
 
         // GetValueAtDateTime locates the value appropriate for the given datetime

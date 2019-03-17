@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Common.Utilities;
@@ -152,9 +153,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
         public void SetCellCoordinatesInSubgrid(byte _cellX, byte _cellY)
         {
-            Debug.Assert(Range.InRange(_cellX, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
-                         Range.InRange(_cellY, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1),
-                "Cell coordinates out of range in SetCellCoordinatesInSubGrid");
+            if (_cellX > SubGridTreeConsts.SubGridTreeDimensionMinus1 || _cellY > SubGridTreeConsts.SubGridTreeDimensionMinus1)
+              throw new TRexSubGridProcessingException($"Cell coordinates out of range in {nameof(SetCellCoordinatesInSubgrid)}");
 
             cellX = _cellX;
             cellY = _cellY;
@@ -209,9 +209,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             if (SegmentIterator.CurrentSubGridSegment == null)
                 return false; // No more cells to process
 
-            Debug.Assert(Range.InRange(cellX, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
-                         Range.InRange(cellY, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1),
-                "Cell coordinates out of range in GetNextCellPass");
+            if (cellX > SubGridTreeConsts.SubGridTreeDimensionMinus1 || cellY > SubGridTreeConsts.SubGridTreeDimensionMinus1)
+              throw new TRexSubGridProcessingException($"Cell coordinates out of range in {nameof(GetNextCellPass)}");
 
             do
             {
@@ -230,8 +229,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 CellPass = ExtractCellPass();
                 CellPassTime = CellPass.Time;
 
-                Debug.Assert(CellPassTime > DateTime.MinValue,
-                    "Cell pass with null time returned from SubGridSegmentCellPassIterator.GetNextCellPass");
+                if (CellPassTime == DateTime.MinValue)
+                  throw new TRexSubGridProcessingException($"Cell pass with null time returned from {nameof(GetNextCellPass)}");
 
                 if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
                 {

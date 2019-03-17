@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Caching
     {
       ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null);
 
-      Assert.True(context.ContextTokens != null, "No index subgrid tree created");
+      Assert.True(context.ContextTokens != null, "No index sub grid tree created");
       Assert.True(context.MRUList == null);
       Assert.True(context.OwnerMemoryCache == null);
       Assert.False(context.MarkedForRemoval);

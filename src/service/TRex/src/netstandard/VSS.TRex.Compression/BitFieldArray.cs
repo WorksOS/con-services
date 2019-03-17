@@ -294,7 +294,8 @@ namespace VSS.TRex.Compression
 
         public void StreamWriteEnd()
         {
-            Debug.Assert(StreamWriteBitPos == NumBits, $"BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={StreamWriteBitPos}, FNumBits={NumBits})");
+          if (StreamWriteBitPos != NumBits)
+            throw new TRexException($"BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={StreamWriteBitPos}, FNumBits={NumBits})");
         }
 
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace VSS.TRex.Volumes
+﻿namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// Tracks cut and fill volume information...
@@ -47,16 +45,14 @@ namespace VSS.TRex.Volumes
 
         public void AddCutVolume(double Volume)
         {
-            Debug.Assert(Volume >= 0);
-
-            _CutVolume = _CutVolume.HasValue ? _CutVolume + Volume : Volume;
+            if (Volume > 0)
+              _CutVolume = _CutVolume.HasValue ? _CutVolume + Volume : Volume;
         }
 
         public void AddFillVolume(double Volume)
         {
-            Debug.Assert(Volume >= 0);
-
-            _FillVolume = _FillVolume.HasValue ? _FillVolume + Volume : Volume;
+            if (Volume > 0)
+              _FillVolume = _FillVolume.HasValue ? _FillVolume + Volume : Volume;
         }
 
         public void AddVolume(CutFillVolume volume)
