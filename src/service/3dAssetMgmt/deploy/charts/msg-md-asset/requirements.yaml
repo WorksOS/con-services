@@ -1,0 +1,5 @@
+dependencies:
+  - name: vss-processor-base
+    version: "1.0.17104"
+    repository: http://chartmuseum.eks.vspengg.com
+    alias: msg-md-asset

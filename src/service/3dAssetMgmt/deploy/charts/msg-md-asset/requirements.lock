@@ -1,0 +1,6 @@
+dependencies:
+- name: vss-processor-base
+  repository: http://chartmuseum.k8s.vspengg.com
+  version: 1.0.8
+digest: sha256:4812bc4287984392ebb40b19866a4cf88c5faa0bea503f7f45197e1246cd96bd
+generated: 2018-11-30T13:55:04.914536-07:00

@@ -1,0 +1,4 @@
+apiVersion: v1
+description: VSS Messaging MasterData Asset Processor
+name: msg-md-asset-__Branch__
+version: __MajorVersion__.__MinorVersion__.__BuildId__
