@@ -3,8 +3,8 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CutFillStatistics
 {
-    public class CutFillResultTests
-    {
+    public class CutFillStatisticsResultTests
+  {
 /*
         [Fact]
         public void Test_CutFillResult_Population_Successful()

@@ -1,4 +1,8 @@
-﻿using VSS.TRex.SubGridTrees.Client;
+﻿using FluentAssertions;
+using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Filters.Models;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -36,6 +40,27 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
       clientGrid.DumpToLog(clientGrid.ToString());
+    }
+
+
+    [Fact]
+    public void AssignableFilteredValueIsNull()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
+
+      var passData = new FilteredPassData
+      {
+        FilteredPass = new CellPass
+        {
+          MachineSpeed = CellPassConsts.NullMachineSpeed
+        }
+      };
+
+      clientGrid.AssignableFilteredValueIsNull(ref passData).Should().BeTrue();
+
+      passData.FilteredPass.MachineSpeed = 100;
+
+      clientGrid.AssignableFilteredValueIsNull(ref passData).Should().BeFalse();
     }
   }
 }

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
-using Microsoft.WindowsAzure.Storage;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Cells;
@@ -141,7 +140,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       result.ResultStatus.Should().Be(RequestErrorStatus.NoDesignProvided);
     }
 
-    private Guid ConstructSingleFlatTriangleDesignAboutOrigin(ISiteModel siteModel, float elevation)
+    private Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
     {
       // Make the mutable TIN containing the triangle and register it to the site model
       VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
@@ -165,7 +164,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddDesignProfilerGridRouting();
 
       BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
-      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(siteModel, 1.0f);
+      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);
@@ -187,7 +186,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddDesignProfilerGridRouting();
 
       BuildModelForSingleSubGridCutFill(out var siteModel, 0.1f);
-      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(siteModel, 2.0f);
+      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 2.0f);
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);

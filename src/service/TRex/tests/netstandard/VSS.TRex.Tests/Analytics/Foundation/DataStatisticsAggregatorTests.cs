@@ -1,9 +1,17 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.Foundation
 {
+  public class TestDataStatisticsAggregator : DataStatisticsAggregator
+  {
+    public void IncrementCountOfTransition(double value) => base.IncrementCountOfTransition(value);
+
+    public long GetMaximumValue() => base.GetMaximumValue();
+  }
+
   public class DataStatisticsAggregatorTests
   {
     private const double Epsilon = 0.00001;
@@ -28,7 +36,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
     }
 
     [Fact]
-    public void Test_DataStatisticsAggregator_Creation()
+    public void Creation()
     {
       DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
 
@@ -36,7 +44,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
     }
 
     [Fact]
-    public void Test_DataStatisticsAggregator_WithAggregation()
+    public void WithAggregation()
     {
       // Test base level aggregation
       DataStatisticsAggregator aggregator1 = new DataStatisticsAggregator();
@@ -78,7 +86,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
     }
 
     [Fact]
-    public void Test_DataStatisticsAggregator_Finalise()
+    public void Finalise()
     {
       DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
 
@@ -88,7 +96,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
     }
 
     [Fact]
-    public void Test_DataStatisticsAggregator_Initialise()
+    public void Initialise()
     {
       DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
 
@@ -98,7 +106,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
     }
 
     [Fact]
-    public void Test_DataStatisticsAggregator_ProcessNullSubGridResult()
+    public void ProcessNullSubGridResult()
     {
       DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
 
@@ -107,6 +115,75 @@ namespace VSS.TRex.Tests.Analytics.Foundation
       aggregator.Finalise();
 
       Assert.True(AggregatorStateIsDefault(aggregator), "Unexpected finalisation state");
+    }
+
+    [Fact]
+    public void AggregateWith_SamePassCountTargets()
+    {
+      var aggregator = new DataStatisticsAggregator
+      {
+        IsTargetValueConstant = true,
+        SummaryCellsScanned = 1
+      };
+
+      var otheraggregator = new DataStatisticsAggregator
+      {
+        IsTargetValueConstant = true,
+        SummaryCellsScanned = 1
+      };
+
+      aggregator.IsTargetValueConstant.Should().BeTrue();
+      otheraggregator.IsTargetValueConstant.Should().BeTrue();
+
+      aggregator.AggregateWith(otheraggregator);
+      aggregator.IsTargetValueConstant.Should().BeTrue();
+    }
+
+    [Fact]
+    public void AggregateWith_DifferingPassCountTargets()
+    {
+      var aggregator = new DataStatisticsAggregator
+      {
+        IsTargetValueConstant = true,
+        SummaryCellsScanned = 1
+      };
+
+      var otheraggregator = new DataStatisticsAggregator
+      {
+        IsTargetValueConstant = false,
+        SummaryCellsScanned = 1
+      };
+
+      aggregator.IsTargetValueConstant.Should().BeTrue();
+      otheraggregator.IsTargetValueConstant.Should().BeFalse();
+
+      aggregator.AggregateWith(otheraggregator);
+      aggregator.IsTargetValueConstant.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IncrementCountoFTransition()
+    {
+      var aggregator = new TestDataStatisticsAggregator
+      {
+        Counts = new long[3],
+        DetailsDataValues = new [] {0, 5, 10}
+      };
+
+      aggregator.IncrementCountOfTransition(1.0);
+      aggregator.Counts[0].Should().Be(1);
+    }
+
+    [Fact]
+    public void GetMaximumValue()
+    {
+      var aggregator = new TestDataStatisticsAggregator
+      {
+        Counts = new long[3],
+        DetailsDataValues = new[] { 0, 5, 10 }
+      };
+
+      aggregator.GetMaximumValue().Should().Be(0, "because the base statistics aggregator has no GetMaximumValue() implementation");
     }
   }
 }
