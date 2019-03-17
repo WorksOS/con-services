@@ -7,7 +7,7 @@ namespace VSS.TRex.SubGridTrees.Client
 {
     public abstract class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
     {
-        private static ILogger Log = Logging.Logger.CreateLogger("GenericClientLeafSubGrid");
+        private static ILogger Log = Logging.Logger.CreateLogger<GenericClientLeafSubGrid<T>>();
 
         /// <summary>
         /// The array of cell values this sub grid client class maintains

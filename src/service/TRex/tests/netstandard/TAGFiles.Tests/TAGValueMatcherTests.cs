@@ -541,6 +541,9 @@ namespace TAGFiles.Tests
               1000), // supplied as millimeters
           "Matcher process function returned false");
       Assert.Equal(1.0, sink.ICTargetLiftThickness); // Presented as meters
+
+      // Test empty value is supported
+      matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.tEmptyType, 0)).Should().BeTrue();
     }
 
     [Fact()]
@@ -671,11 +674,9 @@ namespace TAGFiles.Tests
           "Matcher process function returned false");
     }
 
-
     [Fact()]
     public void Test_TAGValueMatcher_UTMZone()
     {
-
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGUTMZoneValueMatcher(sink, state);
 
@@ -683,6 +684,8 @@ namespace TAGFiles.Tests
               50),
           "Matcher process function returned false");
       Assert.Equal(50, sink.UTMZone);
+
+      sink.UTMZoneAtFirstPosition.Should().Be(50);
     }
 
     [Fact()]
@@ -767,6 +770,33 @@ namespace TAGFiles.Tests
       Assert.True(matcher.ProcessDoubleValue(new TAGDictionaryItem("", TAGDataType.tEmptyType, 0), 100.0),
           "Matcher process function returned false");
       Assert.Equal(100.0, sink.LLHLat);
+    }
+
+    [Fact()]
+    public void Test_TAGValueMatcher_LLH()
+    {
+      InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
+
+      var matcherTime = new TAGTimeValueMatcher(sink, state);
+      matcherTime.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, TAGDataType.t32bitUInt, 0), 10000000);
+      matcherTime.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileWeekTag, TAGDataType.t16bitUInt, 0), 2000);
+
+      var matcherLat = new TAGLatitudeValueMatcher(sink, state);
+      matcherLat.ProcessDoubleValue(new TAGDictionaryItem("", TAGDataType.tEmptyType, 0), 100.0);
+      
+      var matcherLon = new TAGLongitudeValueMatcher(sink, state);
+      matcherLon.ProcessDoubleValue(new TAGDictionaryItem("", TAGDataType.tEmptyType, 0), 101.0);
+
+      var matcherHeight = new TAGHeightValueMatcher(sink, state);
+      matcherHeight.ProcessDoubleValue(new TAGDictionaryItem("", TAGDataType.tEmptyType, 0), 102.0);
+
+      sink.LLHReceived.Should().BeTrue();
+      sink.LLHLat.Should().Be(100);
+      sink.LLHLon.Should().Be(101);
+      sink.LLHHeight.Should().Be(102);
+
+      sink.LLHHeightRecordedTime.Should().Be(GPS.GPSOriginTimeToDateTime(2000, 10000000));
+      sink.LLHLonRecordedTime.Should().Be(GPS.GPSOriginTimeToDateTime(2000, 10000000));
     }
 
     [Fact()]
@@ -1122,7 +1152,6 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_TAGValueMatcher_LeftRightRear()
     {
-
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGLeftRightRearValueMatcher(sink, state);
 
@@ -1201,6 +1230,8 @@ namespace TAGFiles.Tests
 
       state.TrackSide = TAGValueSide.Left;
 
+      sink.HaveFirstTrackEpoch.Should().BeFalse();
+
       TAGDictionaryItem absoluteItem =
           new TAGDictionaryItem(TAGValueNames.kTagFileEastingTrackTag, TAGDataType.tIEEEDouble, 0);
       TAGDictionaryItem offsetItem =
@@ -1243,12 +1274,13 @@ namespace TAGFiles.Tests
 
       Assert.True(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
       Assert.False(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
+
+      sink.HaveFirstTrackEpoch.Should().BeFalse();
     }
 
     [Fact()]
     public void Test_TAGValueMatcher_WheelOrdinateValue()
     {
-
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGWheelOrdinateValueMatcher(sink, state);
 
@@ -1351,20 +1383,23 @@ namespace TAGFiles.Tests
       Assert.False(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
     }
 
-    [Fact()]
-    public void Test_TAGValueMatcher_GPSAccuracy()
+    [Theory()]
+    [InlineData(GPSAccuracy.Coarse)]
+    [InlineData(GPSAccuracy.Fine)]
+    [InlineData(GPSAccuracy.Medium)]
+    [InlineData(GPSAccuracy.Unknown)]
+    public void Test_TAGValueMatcher_GPSAccuracy(GPSAccuracy accuracy)
     {
-
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGGPSAccuracyValueMatcher(sink, state);
 
       // Set GPS accuracy word to be Medium accuracy with a 100mm error limit
-      ushort GPSAccuracyWord = (0x1 << 14) | 100;
+      ushort GPSAccuracyWord = (ushort)(((int)accuracy << 14) | 100);
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t16bitUInt, 0),
               GPSAccuracyWord),
           "Matcher process function returned false");
-      Assert.True(sink.GPSAccuracy == GPSAccuracy.Medium && sink.GPSAccuracyErrorLimit == 100,
+      Assert.True(sink.GPSAccuracy == accuracy && sink.GPSAccuracyErrorLimit == 100,
           "Incorrect value after assignment");
     }
 

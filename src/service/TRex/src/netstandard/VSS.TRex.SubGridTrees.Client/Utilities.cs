@@ -20,9 +20,12 @@ namespace VSS.TRex.SubGridTrees.Client
                 case GridDataType.Height:
                   result = IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
                   break;
-                case GridDataType.SimpleVolumeOverlay:
-                  result = IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
-                  break;
+
+                // SimpleVolumeOverlay not supported yet in TRex
+                // case GridDataType.SimpleVolumeOverlay:
+                //   result = IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
+                //   break;
+
                 case GridDataType.CutFill:
                   result = GridDataType.Height;
                   break;

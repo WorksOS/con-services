@@ -51,38 +51,34 @@ namespace VSS.TRex.Analytics.Foundation
 
         public IFilterSet Filters { get; set; }
 
-        public bool AbortedDueToTimeout { get; set; } = false;
-
         public bool IncludeSurveyedSurfaces { get; set; }
 
-      /// <summary>
-      /// Primary method called to begin analytics computation
-      /// </summary>
-      /// <returns></returns>
-      public bool ComputeAnalytics(BaseAnalyticsResponse response)
-      {
-        try
+        /// <summary>
+        /// Primary method called to begin analytics computation
+        /// </summary>
+        /// <returns></returns>
+        public bool ComputeAnalytics(BaseAnalyticsResponse response)
         {
-        // TODO: add when lift build setting supported
-        // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
+          // TODO: add when lift build setting supported
+          // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
 
           IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
-             (requestDescriptor: RequestDescriptor,
-              dataModelID: SiteModel.ID,
-              gridDataType: RequestedGridDataType,
-              response: response,
-              filters: Filters,
-              cutFillDesignID: CutFillDesignID,
-              task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
-              pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
-              requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-              requestRequiresAccessToDesignFileExistenceMap: CutFillDesignID != Guid.Empty,
-              requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
-              overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
-            );
+          (requestDescriptor: RequestDescriptor,
+            dataModelID: SiteModel.ID,
+            gridDataType: RequestedGridDataType,
+            response: response,
+            filters: Filters,
+            cutFillDesignID: CutFillDesignID,
+            task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
+            pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
+            requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+            requestRequiresAccessToDesignFileExistenceMap: CutFillDesignID != Guid.Empty,
+            requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
+            overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+          );
 
           // Assign the provided aggregator into the pipelined sub grid task
-          ((IAggregatedPipelinedSubGridTask)processor.Task).Aggregator = Aggregator;
+          ((IAggregatedPipelinedSubGridTask) processor.Task).Aggregator = Aggregator;
 
           if (!processor.Build())
           {
@@ -94,12 +90,5 @@ namespace VSS.TRex.Analytics.Foundation
 
           return response.ResultStatus == RequestErrorStatus.OK;
         }
-        catch (Exception E)
-        {
-          Log.LogError(E, "ExecutePipeline raised exception:");
-        }
-
-        return false;
-      }
     }
 }
