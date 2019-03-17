@@ -92,8 +92,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
           MachineSide machineSide);
 
 
-        public bool BaseProductionDataSupportedByMachine => true; // Need to wire this into subscriptions
-        public bool CompactionDataSupportedByMachine => true; // Need to wire this into subscriptions
+        public bool BaseProductionDataSupportedByMachine => true; // Todo: Need to wire this into subscriptions
+        public bool CompactionDataSupportedByMachine => true; // Todo: Need to wire this into subscriptions
 
         public SwatherBase(TAGProcessorBase processor,
                            IProductionEventLists machineTargetValueChanges,

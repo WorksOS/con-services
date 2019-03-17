@@ -10,12 +10,12 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.Profiling
 {
   /// <summary>
-  /// Contains core logic for determining masks for applying to subgrids to effect various restrictions
+  /// Contains core logic for determining masks for applying to sub grids to effect various restrictions
   /// imposed on the request by a filter
   /// </summary>
   public static class ProfileFilterMask
   {
-    private static ILogger Log = Logging.Logger.CreateLogger("ProfileFilterMask");
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("ProfileFilterMask");
 
     /// <summary>
     /// Constructs a mask using polygonal and positional spatial filtering aspects of a filter.

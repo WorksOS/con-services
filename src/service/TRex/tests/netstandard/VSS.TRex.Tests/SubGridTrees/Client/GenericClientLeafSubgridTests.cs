@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
@@ -203,6 +205,63 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       // If we get here it's all good!
       Assert.True(true, "");
+    }
+
+    [Fact]
+    public void Clone2DArray()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      clientGrid.ForEach((x, y) => clientGrid.Cells[x, y] = (float)(x + y));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => clientGrid.Cells[x, y] = (float) (x + y));
+
+      var clone = clientGrid.Clone2DArray();
+
+      clientGrid.Cells.Should().BeEquivalentTo(clone);
+      clientGrid.Cells.Should().NotBeSameAs(clone);
+    }
+
+    [Fact]
+    public void ForEach_Action()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      clientGrid.ForEach((x, y, value) => clientGrid.Cells[x, y] = value + (float)(x + y));
+
+      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => clientGrid2.Cells[x, y] = (float)(x + y));
+    }
+
+    [Fact]
+    public void ForEach_Func()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      double sum1 = 0;
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGrid.Cells[x, y] = (float) (x + y);
+        sum1 += x + y;
+      });
+
+      double sum2 = 0;
+
+      // Iterate over all elements
+      clientGrid.ForEach(value =>
+      {
+        sum2 += value;
+        return true;
+      });
+
+      sum1.Should().Be(sum2);
+
+      // Iterate ove only the first
+      clientGrid.ForEach(value =>
+      {
+        sum2 = value;
+        return false;
+      });
+
+      sum2.Should().Be(clientGrid.Cells[0, 0]);
     }
   }
 }

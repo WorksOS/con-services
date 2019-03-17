@@ -74,7 +74,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private int _ControlStateTilt = MachineControlStateFlags.NullGCSControlState;
     private int _ControlStateSideShift = MachineControlStateFlags.NullGCSControlState;
 
-    // FAutomaticsMode records the machine automatic control state as defined by
+    // _AutomaticsMode records the machine automatic control state as defined by
     // the 5 GCS900 control state flag sets. It is currently defined as a simple
     // on/off switch. The UpdateAutomaticsMode method examines the individual
     // control states and sets the value of this accordingly.
@@ -107,13 +107,13 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     private bool GetLLHReceived() => LLHLat != Consts.NullDouble && LLHLon != Consts.NullDouble && LLHHeight != Consts.NullDouble;
 
-    private bool GetGPSBaseLLHReceived => (GPSBaseLat != Consts.NullDouble) && (GPSBaseLon != Consts.NullDouble) && (GPSBaseHeight != Consts.NullDouble);
+    private bool GetGPSBaseLLHReceived() => (GPSBaseLat != Consts.NullDouble) && (GPSBaseLon != Consts.NullDouble) && (GPSBaseHeight != Consts.NullDouble);
 
     ///////////////////////////////////////// Protected properties
-    protected bool HaveFirstEpoch { get; set; }
-    protected bool HaveFirstRearEpoch { get; set; }
-    protected bool HaveFirstTrackEpoch { get; set; }
-    protected bool HaveFirstWheelEpoch { get; set; }
+    public bool HaveFirstEpoch { get; set; }
+    public bool HaveFirstRearEpoch { get; set; }
+    public bool HaveFirstTrackEpoch { get; set; }
+    public bool HaveFirstWheelEpoch { get; set; }
 
     // FWorkerID is the ID of this instance of a ST processor. It is used when
     // running multiple processors on different threads. It defaults to -1
@@ -463,8 +463,6 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     public DateTime StartProofingDataTime { get { return _StartProofingDataTime; } set { SetStartProofingDataTime(value); } }
 
-    public bool HaveSeenAProofingStart { get; set; }
-
     public float ICTargetLiftThickness { get { return _ICTargetLiftThickness; } set { SetICTargetLiftThickness(value); } }
 
     public BoundingWorldExtent3D ProofingRunExtent = BoundingWorldExtent3D.Inverted();
@@ -525,7 +523,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public DateTime? LLHHeightRecordedTime { get; set; } = null;
 
 
-    public bool LLHReceived { get; set; } = false;
+    public bool LLHReceived => GetLLHReceived();
 
     public byte UTMZone { get { return _UTMZone; } set { SetUTMZone(value); } }
     public CoordinateSystemType CSType { get { return _CSType; } set { SetCSType(value); } }
@@ -537,7 +535,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public bool IsCSIBCoordSystemTypeOnly { get; set; } = true;
     public byte UTMZoneAtFirstPosition { get; set; }
 
-    public bool GPSBaseLLHReceived { get { return GetGPSBaseLLHReceived; } }
+    public bool GPSBaseLLHReceived => GetGPSBaseLLHReceived(); 
 
     public bool OnGroundFlagSet { get; set; }
 

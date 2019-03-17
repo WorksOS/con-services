@@ -20,20 +20,20 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
 
     protected override void IncrementCountOfTransition(double value)
     {
-      if (CMVChangeDetailsDataValues == null || Counts == null)
-        return;
-
-      Debug.Assert(CMVChangeDetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
-
-      for (int i = 0; i < CMVChangeDetailsDataValues.Length; i++)
+      if (CMVChangeDetailsDataValues != null && Counts != null)
       {
-        var startTransitionValue = CMVChangeDetailsDataValues[i];
-        var endTransitionValue = i < CMVChangeDetailsDataValues.Length - 1 ? CMVChangeDetailsDataValues[i + 1] : CellPassConsts.NullCCV;
+        Debug.Assert(CMVChangeDetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
 
-        if (value >= startTransitionValue && value < endTransitionValue)
+        for (int i = 0; i < CMVChangeDetailsDataValues.Length; i++)
         {
-          Counts[i]++;
-          break;
+          var startTransitionValue = CMVChangeDetailsDataValues[i];
+          var endTransitionValue = i < CMVChangeDetailsDataValues.Length - 1 ? CMVChangeDetailsDataValues[i + 1] : CellPassConsts.NullCCV;
+
+          if (value >= startTransitionValue && value < endTransitionValue)
+          {
+            Counts[i]++;
+            break;
+          }
         }
       }
     }

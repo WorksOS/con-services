@@ -105,12 +105,13 @@ namespace VSS.TRex.Tests.TestFixtures
       IgniteMock.ResetDynamicMockedIgniteContent();
     }
 
-    public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName)
+    public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
+      bool constructIndexFilesOnLoad)
     {
       var filePathAndName = Path.Combine(filePath, fileName);
 
       TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-      var designLoadResult = ttm.LoadFromFile(filePathAndName, false); 
+      var designLoadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad); 
       designLoadResult.Should().Be(DesignLoadResult.Success);
 
       BoundingWorldExtent3D extents = new BoundingWorldExtent3D();

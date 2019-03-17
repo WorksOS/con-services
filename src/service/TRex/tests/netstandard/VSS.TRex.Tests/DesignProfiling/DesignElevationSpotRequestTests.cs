@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       AddDesignProfilerGridRouting();
 
       var siteModel = NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm");
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
 
       var request = new DesignElevationSpotRequest();
       var response = request.Execute(new CalculateDesignElevationSpotArgument

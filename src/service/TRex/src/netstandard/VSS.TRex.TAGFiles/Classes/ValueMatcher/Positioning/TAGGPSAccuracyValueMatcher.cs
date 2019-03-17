@@ -5,7 +5,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 {
     /// <summary>
-    /// Handles the GPS accuracy aggregate message from the mamchine
+    /// Handles the GPS accuracy aggregate message from the machine
     /// </summary>
     public class TAGGPSAccuracyValueMatcher : TAGValueMatcher
     {

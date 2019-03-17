@@ -29,9 +29,11 @@ namespace VSS.TRex.Logging
     public static ILogger CreateLogger(string categoryName) => Factory?.CreateLogger(categoryName);
 
     /// <summary>
-    /// Provides for injection of a logger factory from a DI builder context
+    /// Provides for injection of a logger factory from a DI builder context.
+    /// Note: If a factory is already injected, subsequent factory injections will be ignored as
+    /// large numbers of static logger contexts may already depend on the original factory injection.
     /// </summary>
     /// <param name="factory"></param>
-    public static void Inject(ILoggerFactory factory) => Factory = factory;
+    public static void Inject(ILoggerFactory factory) => Factory = Factory ?? factory;
   }
 }
