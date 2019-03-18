@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {

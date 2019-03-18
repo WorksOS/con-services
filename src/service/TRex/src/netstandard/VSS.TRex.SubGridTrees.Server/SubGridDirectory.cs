@@ -39,13 +39,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void CreateDefaultSegment()
         {
-            if (SegmentDirectory.Count != 0)
-            {
-                Log.LogCritical("Cannot create default segment if there are already segments in the list");
-                return;
-            }
-
-            SegmentDirectory.Add(new SubGridCellPassesDataSegmentInfo());
+            if (SegmentDirectory.Count == 0)
+              SegmentDirectory.Add(new SubGridCellPassesDataSegmentInfo());
         }
 
         public void Clear()

@@ -171,7 +171,7 @@ namespace VSS.TRex.SubGridTrees.Server
             if (Cells == null)
             {
                 //                Include(FLeafStorageClasses, icsscAllPasses);
-                Cells = new SubGridCellPassesDataWrapper()
+                Cells = new SubGridCellPassesDataWrapper
                 {
                     Owner = this
                 };
