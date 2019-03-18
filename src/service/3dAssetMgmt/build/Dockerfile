@@ -32,4 +32,4 @@ EXPOSE 80
 
 COPY --from=builder /build/artifacts/WebApi .
 
-ENTRYPOINT ["dotnet", "VSS.Productivity3D.3DAssetMgmt.dll"]
+ENTRYPOINT ["dotnet", "VSS.Productivity3D.AssetMgmt3D.dll"]
