@@ -18,8 +18,6 @@ namespace VSS.TRex.Tests.DesignProfiling
   [UnitTestCoveredRequest(RequestType = typeof(DesignElevationPatchRequest))]
   public class DesignProfilingElevationPatchRequests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel() => DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
@@ -43,7 +41,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     {
       AddDesignProfilerGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
 
       // Get the cell location of the probe position. Note that the request will return the sub grid

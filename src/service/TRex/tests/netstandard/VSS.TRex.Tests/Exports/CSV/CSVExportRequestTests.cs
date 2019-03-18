@@ -24,13 +24,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CSVExportRequestComputeFunc, CSVExportRequestArgument, CSVExportRequestResponse>();
     
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid)
     {
       return new CSVExportRequestArgument
@@ -52,7 +45,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void Test_CSVExportRequest_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
 

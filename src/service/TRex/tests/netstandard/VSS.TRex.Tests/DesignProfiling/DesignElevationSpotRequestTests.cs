@@ -13,8 +13,6 @@ namespace VSS.TRex.Tests.DesignProfiling
   [UnitTestCoveredRequest(RequestType = typeof(DesignElevationSpotRequest))]
   public class DesignElevationSpotRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel() => DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, double>();
 
@@ -38,7 +36,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     {
       AddDesignProfilerGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
 
       var request = new DesignElevationSpotRequest();

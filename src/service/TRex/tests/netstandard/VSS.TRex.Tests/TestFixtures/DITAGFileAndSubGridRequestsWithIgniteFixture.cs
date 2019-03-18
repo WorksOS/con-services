@@ -3,6 +3,7 @@ using System.IO;
 using Apache.Ignite.Core;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
@@ -28,6 +29,7 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -149,6 +151,13 @@ namespace VSS.TRex.Tests.TestFixtures
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
 
       return designUid;
+    }
+
+    public static ISiteModel NewEmptyModel()
+    {
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      return siteModel;
     }
 
     public new void Dispose()
