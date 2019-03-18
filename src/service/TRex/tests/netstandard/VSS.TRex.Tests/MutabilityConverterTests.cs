@@ -253,7 +253,7 @@ namespace VSS.TRex.Tests
         .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
         .Complete();
 
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, true);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime ReferenceTime = DateTime.UtcNow;
@@ -289,7 +289,7 @@ namespace VSS.TRex.Tests
           return events;
         }
 
-        stream.Position = 8;
+        stream.Position = 1; // Skip the version to get the event list type
 
         var eventType = reader.ReadInt32();
         if (!Enum.IsDefined(typeof(ProductionEventType), eventType))

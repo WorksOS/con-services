@@ -310,7 +310,6 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_TAGValueMatcher_PassCount()
     {
-
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGTargetPassCountValueMatcher(sink, state);
 
@@ -321,6 +320,8 @@ namespace TAGFiles.Tests
           "Matcher process function returned false");
 
       Assert.Equal(100, sink.ICPassTargetValue);
+
+      matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.tEmptyType, 0)).Should().BeTrue();
     }
 
     [Fact()]

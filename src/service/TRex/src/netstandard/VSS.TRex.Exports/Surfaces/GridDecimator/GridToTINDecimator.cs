@@ -158,10 +158,10 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       DecimationExtents = value;
 
-      Debug.Assert(DataStore != null, "Cannot set decimation extents without a data store");
+      //Debug.Assert(DataStore != null, "Cannot set decimation extents without a data store");
 
       // Convert the world coordinate range into the grid cell range that it covers
-      DataStore?.CalculateRegionGridCoverage(value, out GridCalcExtents);
+      DataStore.CalculateRegionGridCoverage(value, out GridCalcExtents);
     }
 
     private void AddCandidateToHeap()

@@ -53,7 +53,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       DIBuilder.New(services)
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
 

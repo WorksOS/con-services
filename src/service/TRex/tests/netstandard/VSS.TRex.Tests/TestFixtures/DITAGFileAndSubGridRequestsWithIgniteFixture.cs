@@ -126,6 +126,13 @@ namespace VSS.TRex.Tests.TestFixtures
         new DesignDescriptor(designUid, filePath, fileName, 0), extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
 
+      // Tell the sitemodels collection the site model has changed 
+      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(siteModel.ID, 
+        new SiteModelAttributesChangedEvent
+        {
+          DesignsModified = true
+        });
+
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
 

@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -122,7 +123,8 @@ namespace VSS.TRex.SubGridTrees.Server
         // Loading contents into a dirty sub grid (which should happen only on the mutable nodes), or
         // when there is already content in the segment directory are strictly forbidden and break immutability
         // rules for sub grids
-        Debug.Assert(!SubGrid.Dirty, "Leaf sub grid directory loads may not be performed while the sub grid is dirty. The information should be taken from the cache instead.");
+        if (SubGrid.Dirty)
+          throw new TRexSubGridIOException("Leaf sub grid directory loads may not be performed while the sub grid is dirty. The information should be taken from the cache instead.");
 
         // Load the cells into it from its file
         // Briefly lock this sub grid just for the period required to read its contents

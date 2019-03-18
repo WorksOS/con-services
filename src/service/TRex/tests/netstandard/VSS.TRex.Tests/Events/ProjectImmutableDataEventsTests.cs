@@ -151,7 +151,7 @@ namespace VSS.TRex.Tests.Events
         {
           return null;
         }
-        stream.Position = 8;
+        stream.Position = 1;
 
         var eventType = reader.ReadInt32();
         if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
