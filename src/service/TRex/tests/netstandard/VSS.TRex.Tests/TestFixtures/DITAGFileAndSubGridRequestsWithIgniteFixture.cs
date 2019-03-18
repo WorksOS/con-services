@@ -131,9 +131,9 @@ namespace VSS.TRex.Tests.TestFixtures
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
 
       // Tell the sitemodels collection the site model has changed 
-      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(siteModel.ID, 
-        new SiteModelAttributesChangedEvent
+      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(new SiteModelAttributesChangedEvent
         {
+          SiteModelID = siteModel.ID,
           DesignsModified = true
         });
 
