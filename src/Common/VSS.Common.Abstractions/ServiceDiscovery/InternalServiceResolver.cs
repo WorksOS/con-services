@@ -81,6 +81,10 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           return Constants.ServiceNameConstants.PRODUCTIVITY_3D_SERVICE;
         case ApiService.Scheduler:
           return Constants.ServiceNameConstants.SCHEDULER_SERVICE;
+        case ApiService.Push:
+          return Constants.ServiceNameConstants.PUSH_SERVICE;
+        case ApiService.Tile:
+          return Constants.ServiceNameConstants.TILE_SERVICE;
         default:
           // There are unit tests to ensure this does not happen 
           throw new ArgumentOutOfRangeException(nameof(service), service, null);

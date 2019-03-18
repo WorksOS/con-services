@@ -9,6 +9,8 @@
     Project,
     Filter,
     Productivity3D,
-    Scheduler
+    Scheduler,
+    Push,
+    Tile
   }
 }
