@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -105,15 +104,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Existence map of where we know Prod Data exists 
     /// </summary>
-    public SubGridTreeBitmapSubGridBits ProdDataMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public SubGridTreeBitmapSubGridBits ProdDataMap { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
     /// Existence map of cells matching current filter settings
     /// </summary>
-    public SubGridTreeBitmapSubGridBits FilterMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public SubGridTreeBitmapSubGridBits FilterMap { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// World extent of the client leaf subgrid map of cells
+    /// World extent of the client leaf sub grid map of cells
     /// </summary>
     /// <returns></returns>
     public BoundingWorldExtent3D WorldExtents()
@@ -243,10 +242,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Dumps the contents of this client leaf sub grid into the log in a human readable form
     /// </summary>
     /// <param name="title"></param>
-    public virtual void DumpToLog(string title)
-    {
-      throw new NotImplementedException("TICSubGridTreeLeafSubGridBase.DumpToLog not implemented in " + GetType().Name);
-    }
+    public abstract void DumpToLog(string title);
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer

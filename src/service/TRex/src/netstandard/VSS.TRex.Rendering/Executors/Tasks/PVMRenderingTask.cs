@@ -15,7 +15,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// The tile renderer responsible for processing subgrid information into tile based thematic rendering
+        /// The tile renderer responsible for processing sub grid information into tile based thematic rendering
         /// </summary>
         public PlanViewTileRenderer TileRenderer { get; set; }
 
@@ -23,7 +23,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         { }
 
         /// <summary>
-        /// Constructs the PVM rendering task to accept subgrids returning from the processing engine
+        /// Constructs the PVM rendering task to accept sub grids returning from the processing engine
         /// </summary>
         /// <param name="requestDescriptor"></param>
         /// <param name="tRexNodeId"></param>

@@ -91,16 +91,33 @@ namespace VSS.TRex.TAGFiles.Classes.States
     // CalculateMachineSpeed calculates the speed of the machine in meters per second
     private double CalculateMachineSpeed()
     {
-      if (LeftPoint.IsNull || RightPoint.IsNull || DataLeft.IsNull || DataRight.IsNull)
+      XYZ CentrePointFrom;
+      XYZ CentrePointTo;
+
+      if (!LeftPoint.IsNull && !RightPoint.IsNull && !DataLeft.IsNull && !DataRight.IsNull)
+      {
+        CentrePointFrom = (LeftPoint + RightPoint) * 0.5;
+        CentrePointTo = (DataLeft + DataRight) * 0.5;
+      }
+      else
+      if (!LeftTrackPoint.IsNull && !RightTrackPoint.IsNull && !DataTrackLeft.IsNull && !DataTrackRight.IsNull)
+      {
+        CentrePointFrom = (LeftTrackPoint + RightTrackPoint) * 0.5;
+        CentrePointTo = (DataTrackLeft + DataTrackRight) * 0.5;
+      }
+      else
+      if (!LeftWheelPoint.IsNull && !RightWheelPoint.IsNull && !DataWheelLeft.IsNull && !DataWheelRight.IsNull)
+      {
+        CentrePointFrom = (LeftWheelPoint + RightWheelPoint) * 0.5;
+        CentrePointTo = (DataWheelLeft + DataWheelRight) * 0.5;
+      }
+      else
       {
         return Consts.NullDouble;
       }
 
-      XYZ CentrePointFrom = (LeftPoint + RightPoint) * 0.5;
-      XYZ CentrePointTo = (DataLeft + DataRight) * 0.5;
-
       double DistanceTraveled = XYZ.Get3DLength(CentrePointFrom, CentrePointTo); // meters converted to kilometers...
-      double TravelTime = (DataTime - FirstDataTime).TotalMilliseconds / 1000;   // milliseconds converted to seconds...
+      double TravelTime = (double)((DataTime - DataTimePrevious).TotalMilliseconds / 1000);   // milliseconds converted to seconds...
 
       return TravelTime > 0 ? DistanceTraveled / TravelTime : 0.0;
     }
@@ -359,11 +376,6 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public int ProcessedCellPassesCount { get; set; }
     public int VisitedEpochCount { get; set; }
 
-    public double OriginX { get; set; } = Consts.NullDouble;
-    public double OriginY { get; set; } = Consts.NullDouble;
-    public double OriginZ { get; set; } = Consts.NullDouble;
-    public DateTime OriginTime { get; set; } = DateTime.MinValue;
-
     public short GPSWeekNumber { get; set; }
     public uint GPSWeekTime { get; set; }
 
@@ -404,8 +416,6 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
     public MachineType MachineType { get; set; } = CellPassConsts.MachineTypeNull;
-
-    public DateTime UserTimeOffset { get; set; } = DateTime.MinValue;
 
     public string Design { get { return _Design; } set { SetDesign(value); } }
 

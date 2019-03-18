@@ -1,5 +1,4 @@
-﻿using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;

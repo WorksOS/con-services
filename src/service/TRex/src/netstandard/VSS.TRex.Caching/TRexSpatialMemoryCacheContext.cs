@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -214,7 +214,8 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void MarkForRemoval(DateTime markedForRemovalAtUtc)
     {
-      Debug.Assert(markedForRemovalAtUtc.Kind == DateTimeKind.Utc, "MarkForRemoval is not a UTC date");
+      if (markedForRemovalAtUtc.Kind != DateTimeKind.Utc)
+        throw new TRexException("MarkForRemoval is not a UTC date");
 
       MarkedForRemovalAtUtc = markedForRemovalAtUtc;
       MarkedForRemoval = true;

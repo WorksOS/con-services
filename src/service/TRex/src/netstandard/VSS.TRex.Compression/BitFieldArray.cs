@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common.Exceptions;
 
@@ -295,7 +294,7 @@ namespace VSS.TRex.Compression
         public void StreamWriteEnd()
         {
           if (StreamWriteBitPos != NumBits)
-            throw new TRexException($"BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={StreamWriteBitPos}, FNumBits={NumBits})");
+            throw new TRexException($"{nameof(StreamWriteEnd)}: Stream bit position is not after last bit in storage (StreamWriteBitPos={StreamWriteBitPos}), NumBits={NumBits})");
         }
 
         /// <summary>

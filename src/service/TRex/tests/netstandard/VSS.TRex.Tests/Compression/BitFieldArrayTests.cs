@@ -518,5 +518,20 @@ namespace VSS.TRex.Tests.Compression
                 Assert.Equal(bitAddress, (i + 1) * 11);
             }
         }
+
+        [Fact]
+        public void Test_BitFieldArray_StreamWriteEnd_FailWithImproperStreamEndPosition()
+        {
+          BitFieldArray bfa = new BitFieldArray();
+          bfa.Initialise(1, 1);
+
+          // Write a '1' to the bfa
+          bfa.StreamWriteStart();
+          bfa.StreamWrite(1, 1);
+          bfa.StreamWriteStart(); // Set bit pos back to 0
+
+          Action act = () => bfa.StreamWriteEnd(); // throw exception
+          act.Should().Throw<TRexException>().WithMessage("*Stream bit position is not after last bit in storage*");
+        }
     }
 }
