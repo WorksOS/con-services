@@ -4,5 +4,5 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/src/WebApi/VSS.Productivity3D.TagFileAuth.WebAPI.csproj -o /build/artifacts/WebApi -f netcoreapp2.1 -c Docker
+RUN dotnet publish ./$SERVICE_PATH/Service/VSS.Productivity3D.3DAssetMgmt/VSS.Productivity3D.3DAssetMgmt.csproj -o /build/artifacts/WebApi -f netcoreapp2.1
 
