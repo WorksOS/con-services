@@ -9,6 +9,7 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -30,6 +31,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
+using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -158,6 +160,22 @@ namespace VSS.TRex.Tests.TestFixtures
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       return siteModel;
+    }
+
+    public static Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
+    {
+      // Make a mutable TIN containing a single triangle and as below and register it to the site model
+      VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
+      tin.Vertices.InitPointSearch(-100, -100, 100, 100, 3);
+      tin.Triangles.AddTriangle(tin.Vertices.AddPoint(-25, -25, elevation),
+        tin.Vertices.AddPoint(25, -25, elevation),
+        tin.Vertices.AddPoint(0, 25, elevation));
+
+      var tempFileName = Path.GetTempFileName() + ".ttm";
+      tin.SaveToFile(tempFileName, true);
+
+      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel
+        (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
 
     public new void Dispose()

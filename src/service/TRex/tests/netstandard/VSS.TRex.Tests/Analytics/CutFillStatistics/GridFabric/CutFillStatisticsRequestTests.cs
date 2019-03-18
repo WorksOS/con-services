@@ -26,13 +26,6 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CutFillStatisticsRequest_ClusterCompute))]
   public class CutFillStatisticsRequestTests : BaseTests<CutFillStatisticsArgument, CutFillStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private void AddDesignProfilerGridRouting()
     {
       IgniteMock.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
@@ -54,7 +47,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -75,7 +68,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       CellPass[,][] cellPasses = new CellPass[32,32][];
@@ -112,7 +105,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CutFillStatisticsOperation();
 
       var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid());
@@ -162,7 +155,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddDesignProfilerGridRouting();
 
       BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
-      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);
