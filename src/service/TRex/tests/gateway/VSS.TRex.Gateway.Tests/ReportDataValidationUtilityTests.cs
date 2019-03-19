@@ -30,7 +30,6 @@ namespace VSS.TRex.Gateway.Tests
       mockDesignManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockDesigns.Object);
       mockDesigns.Setup(x => x.Locate(It.IsAny<Guid>())).Returns(mockDesign.Object);
 
-      var mockAlignment = new Mock<IAlignment>();
       var mockAlignments = new Mock<IAlignments>();
       var mockAlignmentManager = new Mock<IAlignmentManager>();
       mockAlignmentManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockAlignments.Object);
@@ -45,7 +44,7 @@ namespace VSS.TRex.Gateway.Tests
         .Add(x => x.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>())
         .Complete();
 
-      var request = CompactionReportGridTRexRequest.CreateRequest(
+      var request = new CompactionReportGridTRexRequest(
         projectUid, null,
         true, true, true, true, true, true,
         cutFillDesignUid, 
@@ -64,7 +63,6 @@ namespace VSS.TRex.Gateway.Tests
       var mockSiteModels = new Mock<ISiteModels>();
       mockSiteModels.Setup(x => x.GetSiteModel(It.IsAny<Guid>(), It.IsAny<bool>())).Returns(mockSiteModel.Object);
 
-      var mockDesign = new Mock<IDesign>();
       var mockDesigns = new Mock<IDesigns>();
       var mockDesignManager = new Mock<IDesignManager>();
       mockDesignManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockDesigns.Object);
@@ -138,7 +136,6 @@ namespace VSS.TRex.Gateway.Tests
     [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7", "27e6bd66-54d8-4651-8907-88b15d81b2d7", null)]
     public void ValidateReportData_GriddedNoSiteModel_Fail(Guid projectUid, Guid cutFillDesignUid, Guid? alignmentDesignUid)
     {
-      var mockSiteModel = new Mock<ISiteModel>();
       var mockSiteModels = new Mock<ISiteModels>();
       mockSiteModels.Setup(x => x.GetSiteModel(It.IsAny<Guid>(), It.IsAny<bool>())).Returns((ISiteModel) null);
 
@@ -148,7 +145,6 @@ namespace VSS.TRex.Gateway.Tests
       mockDesignManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockDesigns.Object);
       mockDesigns.Setup(x => x.Locate(It.IsAny<Guid>())).Returns(mockDesign.Object);
 
-      var mockAlignment = new Mock<IAlignment>();
       var mockAlignments = new Mock<IAlignments>();
       var mockAlignmentManager = new Mock<IAlignmentManager>();
       mockAlignmentManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockAlignments.Object);
@@ -163,7 +159,7 @@ namespace VSS.TRex.Gateway.Tests
         .Add(x => x.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>())
         .Complete();
 
-      var request = CompactionReportGridTRexRequest.CreateRequest(
+      var request = new CompactionReportGridTRexRequest(
         projectUid, null,
         true, true, true, true, true, true,
         cutFillDesignUid,
@@ -184,13 +180,11 @@ namespace VSS.TRex.Gateway.Tests
       var mockSiteModels = new Mock<ISiteModels>();
       mockSiteModels.Setup(x => x.GetSiteModel(It.IsAny<Guid>(), It.IsAny<bool>())).Returns(mockSiteModel.Object);
 
-      var mockDesign = new Mock<IDesign>();
       var mockDesigns = new Mock<IDesigns>();
       var mockDesignManager = new Mock<IDesignManager>();
       mockDesignManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockDesigns.Object);
       mockDesigns.Setup(x => x.Locate(It.IsAny<Guid>())).Returns((IDesign) null);
 
-      var mockAlignment = new Mock<IAlignment>();
       var mockAlignments = new Mock<IAlignments>();
       var mockAlignmentManager = new Mock<IAlignmentManager>();
       mockAlignmentManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockAlignments.Object);
@@ -205,7 +199,7 @@ namespace VSS.TRex.Gateway.Tests
         .Add(x => x.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>())
         .Complete();
 
-      var request = CompactionReportGridTRexRequest.CreateRequest(
+      var request = new CompactionReportGridTRexRequest(
         projectUid, null,
         true, true, true, true, true, true,
         cutFillDesignUid,
@@ -226,13 +220,11 @@ namespace VSS.TRex.Gateway.Tests
       var mockSiteModels = new Mock<ISiteModels>();
       mockSiteModels.Setup(x => x.GetSiteModel(It.IsAny<Guid>(), It.IsAny<bool>())).Returns(mockSiteModel.Object);
 
-      var mockDesign = new Mock<IDesign>();
       var mockDesigns = new Mock<IDesigns>();
       var mockDesignManager = new Mock<IDesignManager>();
       mockDesignManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockDesigns.Object);
       mockDesigns.Setup(x => x.Locate(It.IsAny<Guid>())).Returns((IDesign)null);
 
-      var mockAlignment = new Mock<IAlignment>();
       var mockAlignments = new Mock<IAlignments>();
       var mockAlignmentManager = new Mock<IAlignmentManager>();
       mockAlignmentManager.Setup(x => x.List(It.IsAny<Guid>())).Returns(mockAlignments.Object);
