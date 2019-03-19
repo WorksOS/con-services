@@ -25,6 +25,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void PassCountLastPassNotDbase()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument);
 
@@ -38,6 +44,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact(Skip = "Importing a DC file is currently being implemented")]
     public void PassCountLastPassNotDbaseWithLatLong()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument);
 
@@ -51,6 +63,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void PassCountLastPassDBase()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, true,
         out CSVExportRequestArgument requestArgument);
 
@@ -64,6 +82,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void VetaFinalPass()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument);
 
@@ -78,6 +102,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void PassCountAllPassesNotDBase()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument);
 
