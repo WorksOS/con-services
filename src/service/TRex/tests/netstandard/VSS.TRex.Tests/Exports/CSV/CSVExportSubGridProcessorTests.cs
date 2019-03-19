@@ -101,12 +101,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
-      var fixtureConfigStore = DIContext.Obtain<IConfigurationStore>();
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(maxExportRows);
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(moqConfiguration.Object))
-        .Complete();
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
@@ -114,10 +113,6 @@ namespace VSS.TRex.Tests.Exports.CSV
         rows.Count.Should().Be(maxExportRows);
       else
         rows.Count.Should().BeLessOrEqualTo(maxExportRows);
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(fixtureConfigStore))
-        .Complete();
     }
 
     [Theory]
@@ -133,12 +128,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       //the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
-      var fixtureConfigStore = DIContext.Obtain<IConfigurationStore>();
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(maxExportRows);
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(moqConfiguration.Object))
-        .Complete();
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = new List<string>();
@@ -151,10 +145,6 @@ namespace VSS.TRex.Tests.Exports.CSV
         rows.Count.Should().Be(maxExportRows);
       else
         rows.Count.Should().BeLessOrEqualTo(maxExportRows);
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(fixtureConfigStore))
-        .Complete();
     }
 
 
@@ -171,12 +161,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
-      var fixtureConfigStore = DIContext.Obtain<IConfigurationStore>();
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(maxExportRows);
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(moqConfiguration.Object))
-        .Complete();
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
@@ -184,10 +173,6 @@ namespace VSS.TRex.Tests.Exports.CSV
         rows.Count.Should().Be(maxExportRows);
       else
         rows.Count.Should().BeLessOrEqualTo(maxExportRows);
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(fixtureConfigStore))
-        .Complete();
     }
 
 

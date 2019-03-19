@@ -235,9 +235,7 @@ namespace VSS.TRex.Tests
     public void Test_MutabilityConverterTests_ConvertEventListTest()
     {
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build();
 
