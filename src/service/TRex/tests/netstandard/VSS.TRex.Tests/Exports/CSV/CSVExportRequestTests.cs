@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Moq;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
-using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using VSS.TRex.Exports.CSV.GridFabric;
@@ -84,7 +81,6 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       DITAGFileAndSubGridRequestsWithIgniteFixture.AddSingleCellWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
-      //DIContext.Obtain<Mock<IConfigurationStore>>().Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");
 
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
 
