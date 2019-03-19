@@ -21,9 +21,9 @@ spec:
         tty: true
         envFrom:
         - configMapRef:
-            name: {{ $configName }}
-        - configMapRef:
             name: {{ .Values.globalConfig }}
+        - configMapRef:
+            name: {{ $configName }}
         - secretRef:
             name: {{ .Values.globalConfig }}-secret
       containers:
