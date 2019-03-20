@@ -4,6 +4,8 @@ metadata:
   name: 3dapp-alpha
   namespace: alpha
 data: 
+# Kubernetes Cluster Info - This must match the namespace (including case) that the pods will run in
+  kubernetesNamespace: alpha
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: ua9bc5eaf-583a-44d3-b33b-24c035946ae2
