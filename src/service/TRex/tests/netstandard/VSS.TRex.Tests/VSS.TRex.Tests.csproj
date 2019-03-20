@@ -145,6 +145,9 @@
     <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0247J009YU--TNZ 323F GS520--190115002735.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-Stream.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

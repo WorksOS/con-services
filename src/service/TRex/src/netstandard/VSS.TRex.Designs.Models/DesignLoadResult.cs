@@ -6,6 +6,7 @@
     UnknownFailure,
     NoAlignmentsFound,
     UnableToLoadSubgridIndex,
-    UnableToLoadSpatialIndex
+    UnableToLoadSpatialIndex,
+    DesignDoesNotExist
   }
 }

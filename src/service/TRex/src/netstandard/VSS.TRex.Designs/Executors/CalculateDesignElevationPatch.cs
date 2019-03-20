@@ -45,7 +45,11 @@ namespace VSS.TRex.Designs.Executors
             if (Design == null)
             {
                 Log.LogWarning($"Failed to read design file for design {referenceDesignUID}");
-                CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
+
+                CalcResult = LockResult == DesignLoadResult.DesignDoesNotExist 
+                ? DesignProfilerRequestResult.DesignDoesNotExist
+                : DesignProfilerRequestResult.FailedToLoadDesignFile;
+
                 return null;
             }
 
