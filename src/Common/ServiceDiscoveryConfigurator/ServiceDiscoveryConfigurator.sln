@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDiscoveryConfigurator", "ServiceDiscoveryConfigurator\ServiceDiscoveryConfigurator.csproj", "{B1895231-951F-4272-AE98-3EA9C424C406}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{A91E923C-4DD2-49C1-AE14-11CB80CCC8EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{7F08C944-4179-4EED-95E5-F1C2354DAD6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{F71C3672-C186-40FE-89B7-250AFBD1947C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{012362E5-AADD-4957-BD63-2CD970DF79E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{7FC5D60B-A6A0-43B0-813F-2C276C2F71E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1895231-951F-4272-AE98-3EA9C424C406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1895231-951F-4272-AE98-3EA9C424C406}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1895231-951F-4272-AE98-3EA9C424C406}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1895231-951F-4272-AE98-3EA9C424C406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A91E923C-4DD2-49C1-AE14-11CB80CCC8EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91E923C-4DD2-49C1-AE14-11CB80CCC8EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A91E923C-4DD2-49C1-AE14-11CB80CCC8EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A91E923C-4DD2-49C1-AE14-11CB80CCC8EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F08C944-4179-4EED-95E5-F1C2354DAD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F08C944-4179-4EED-95E5-F1C2354DAD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F08C944-4179-4EED-95E5-F1C2354DAD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F08C944-4179-4EED-95E5-F1C2354DAD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F71C3672-C186-40FE-89B7-250AFBD1947C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F71C3672-C186-40FE-89B7-250AFBD1947C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F71C3672-C186-40FE-89B7-250AFBD1947C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F71C3672-C186-40FE-89B7-250AFBD1947C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{012362E5-AADD-4957-BD63-2CD970DF79E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{012362E5-AADD-4957-BD63-2CD970DF79E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{012362E5-AADD-4957-BD63-2CD970DF79E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{012362E5-AADD-4957-BD63-2CD970DF79E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FC5D60B-A6A0-43B0-813F-2C276C2F71E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FC5D60B-A6A0-43B0-813F-2C276C2F71E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FC5D60B-A6A0-43B0-813F-2C276C2F71E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FC5D60B-A6A0-43B0-813F-2C276C2F71E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E31B8799-3657-4203-BCC8-9351FC95B134}
+	EndGlobalSection
+EndGlobal

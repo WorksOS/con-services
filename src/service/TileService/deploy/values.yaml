@@ -7,6 +7,9 @@ rootDomain: k8s.vspengg.com
 
 globalConfig: 3dapp-alpha
 
+# Must match the const in VSS.Common.Abstractions.ServiceDiscovery.Constants.ServiceNameConstants
+serviceName: tile-service
+
 replicaCount: 1
 
 image:

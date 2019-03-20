@@ -221,12 +221,12 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     }
 
     [TestMethod]
-    public void TestKubernetesReturnsServiceWithHttp()
+    public void TestKubernetesReturnsServiceWithPort80()
     {
-      const string expectedUrl = "http://my-host:1234";
+      const string expectedUrl = "http://my-host:80";
       const string serviceName = "my-service-non-standard-port";
       // Define 3 services
-      // one has the wrong port type defined (needs HTTP)
+      // one has the wrong port defined, needs 80
       // one has the right port, but no ClusterIP (we only support them at the moment)
       // the last one is correct
       var clusterResult = new V1ServiceList()
@@ -260,7 +260,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
               LoadBalancerIP = "my-host",
               Ports = new List<V1ServicePort>()
               {
-                new V1ServicePort(1234, "http"),
+                new V1ServicePort(80, "tcp"),
               }
             }
           },
@@ -277,7 +277,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
               {
                 
                 new V1ServicePort(22, "ssh"), // we shouldn't use this port
-                new V1ServicePort(1234, "http"),
+                new V1ServicePort(80, "tcp"),
               }
             }
           }
@@ -297,7 +297,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     }
 
     [TestMethod]
-    public void TestKubernetesReturnsNoServiceWithoutHttp()
+    public void TestKubernetesReturnsNoServiceWithoutPort80()
     {
       const string serviceName = "my-service-but-no-http";
 
@@ -316,7 +316,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
               ClusterIP = "127.0.0.1",
               Ports = new List<V1ServicePort>()
               {
-                new V1ServicePort(80, "tcp") // this isn't an http port, so it wont be returned
+                new V1ServicePort(81, "tcp") // this isn't an http port, so it wont be returned
               }
             }
           }

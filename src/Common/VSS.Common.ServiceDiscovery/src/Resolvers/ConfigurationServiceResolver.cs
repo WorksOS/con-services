@@ -12,7 +12,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
   /// </summary>
   public class ConfigurationServiceResolver : IServiceResolver
   {
-    private const int DEFAULT_PRIORITY = 10;
+    private const int DEFAULT_PRIORITY = 100;
 
     private readonly ILogger<ConfigurationServiceResolver> logger;
     private readonly IConfigurationStore configuration;
