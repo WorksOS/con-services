@@ -26,6 +26,9 @@ spec:
             name: {{ $configName }}
         - secretRef:
             name: {{ .Values.globalConfig }}-secret
+        env:
+        - name: KAFKA_OFFSET
+        - value: "earliest"
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
