@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -19,6 +18,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   {
     private string DxfUnits;
     private string MaxBoundariesToProcess;
+    private string ConvertLineStringCoordsToPolygon;
     private Stream dxfFileStream;
     private Stream dcFileStream;
 
@@ -45,6 +45,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void AndWithPropertyMaxBoundariesToProcessWithValue(string parameterValue)
     {
       MaxBoundariesToProcess = parameterValue;
+    }
+    
+    [And(@"with property ConvertLineStringCoordsToPolygon with value ""(.*)""")]
+    public void AndWithPropertyConvertLineStringCoordsToPolygonWithValue(string parameterValue)
+    {
+      ConvertLineStringCoordsToPolygon = parameterValue;
     }
 
     [And(@"with property DxfFile with value ""(.*)""")]
@@ -91,6 +97,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       if (int.Parse(DxfUnits) >= 0) { formContent.Add(new StringContent(DxfUnits), "DxfUnits"); }
       formContent.Add(new StringContent(MaxBoundariesToProcess), "MaxBoundariesToProcess");
+      if (!string.IsNullOrEmpty(ConvertLineStringCoordsToPolygon)) { formContent.Add(new StringContent(ConvertLineStringCoordsToPolygon), "ConvertLineStringCoordsToPolygon"); }
       formContent.Add(new StreamContent(dxfFileStream), "DxfFile", "dxfFile.dxf");
       formContent.Add(new StreamContent(dcFileStream), "CoordinateSystemFile", "coordinateSystemFile.dc");
 
