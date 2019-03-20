@@ -20,13 +20,6 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(ElevationStatisticsRequest_ClusterCompute))]
   public class ElevationStatisticsRequestTests : BaseTests<ElevationStatisticsArgument, ElevationStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private ElevationStatisticsArgument SimpleElevationStatisticsArgument(ISiteModel siteModel)
     {
       return new ElevationStatisticsArgument
@@ -41,7 +34,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       var baseTime = DateTime.UtcNow;
       byte baseElevation = 1;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -71,7 +64,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new ElevationStatisticsOperation();
 
       var elevationStatisticsResult = operation.Execute(SimpleElevationStatisticsArgument(siteModel));

@@ -4,17 +4,16 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.CoordinateSystem
 {
-  public class CoordinatesAPIClientTestDIFixture : IDisposable
+  public class CoordinatesAPIClientTestDIFixture : DILoggingFixture, IDisposable
   {
     public CoordinatesAPIClientTestDIFixture()
     {
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
         .Complete();
     }

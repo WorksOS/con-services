@@ -23,13 +23,6 @@ namespace VSS.TRex.Tests.Reports.Gridded
     }
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<GriddedReportRequestComputeFunc, GriddedReportRequestArgument, GriddedReportRequestResponse>();
     
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private GriddedReportRequestArgument SimpleGriddedReportRequestArgument(Guid projectUid)
     {
       return new GriddedReportRequestArgument
@@ -51,7 +44,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
     public void Test_GriddedReportRequest_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new GriddedReportRequest();
       var response = request.Execute(SimpleGriddedReportRequestArgument(siteModel.ID));
 

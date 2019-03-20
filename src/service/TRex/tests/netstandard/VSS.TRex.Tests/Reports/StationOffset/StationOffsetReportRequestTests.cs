@@ -23,12 +23,6 @@ namespace VSS.TRex.Tests.Reports.StationOffset
   // Note: further compute tests in: StationOffsetClusterComputeTests
   public class StationOffsetReportRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
     <IComputeFunc<StationOffsetReportRequestArgument_ApplicationService,
         StationOffsetReportRequestResponse_ApplicationService>, 
@@ -72,7 +66,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new StationOffsetReportRequest_ApplicationService();
 
       var response = request.Execute(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel));
@@ -108,7 +102,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var baseTime = DateTime.UtcNow;
       byte baseElevation = 1;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
       // vibrationState is needed to get cmv values
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(baseTime, VibrationState.On);

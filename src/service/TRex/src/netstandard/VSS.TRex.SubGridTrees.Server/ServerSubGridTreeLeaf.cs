@@ -171,7 +171,7 @@ namespace VSS.TRex.SubGridTrees.Server
             if (Cells == null)
             {
                 //                Include(FLeafStorageClasses, icsscAllPasses);
-                Cells = new SubGridCellPassesDataWrapper()
+                Cells = new SubGridCellPassesDataWrapper
                 {
                     Owner = this
                 };
@@ -331,7 +331,8 @@ namespace VSS.TRex.SubGridTrees.Server
                                                          out bool MDPFromLatestCellPass,
                                                          out bool CCAFromLatestCellPass)
         {
-            Debug.Assert(CellPasses.Length > 0, "CalculateLatestPassDataForPassStack called with a cell pass stack containing no passes");
+            if (CellPasses.Length == 0)
+              throw new ArgumentException($"{nameof(CalculateLatestPassDataForPassStack)} called with a cell pass stack containing no passes");
 
             int LastPassIndex = CellPasses.Length - 1;
 

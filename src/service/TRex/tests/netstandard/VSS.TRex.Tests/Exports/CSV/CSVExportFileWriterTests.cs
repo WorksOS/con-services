@@ -7,13 +7,13 @@ using Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using Moq;
+using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
-  public class CSVExportFileWriterTests : IDisposable
+  public class CSVExportFileWriterTests : IClassFixture<DILoggingFixture>
   {
 
     [Fact]
@@ -34,13 +34,9 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
-      var mockConfig = new Mock<IConfigurationStore>();
-      mockConfig.Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns("vss-exports-stg");
 
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton(mockConfig.Object))
+        .Continue()
         .Add(x => x.AddSingleton(mockTransferProxy.Object))
         .Complete();
 
@@ -49,11 +45,6 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       s3FullPath.Should().NotBeNull();
       s3FullPath.Should().Be($"project/{requestArgument.ProjectID}/TRexExport/{requestArgument.FileName}__{requestArgument.TRexNodeID}.zip");
-    }
-
-    public void Dispose()
-    {
-      DIBuilder.Eject();
     }
   }
 }

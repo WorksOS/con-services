@@ -21,28 +21,21 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Constructor accepting an aggregator and defaulting all other internal Task state
-        /// </summary>
-        /// <param name="aggregator"></param>
-        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : this()
-        {
-            Aggregator = aggregator;
-        }
-
-        /// <summary>
         /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
         public override bool TransferResponse(object response)
         {
+            bool result = false;
+
             if (base.TransferResponse(response))
             {
                 Aggregator.ProcessSubGridResult(response as IClientLeafSubGrid[][]);
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
     }
 }

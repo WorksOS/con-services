@@ -5,27 +5,12 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubgridCellAddressTestsFixture : IDisposable
-  {
-    public SubgridCellAddressTestsFixture()
-    {
-      DIBuilder.New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Complete();
-    }
-
-    public void Dispose()
-    {
-      DIBuilder.Eject();
-    }
-  }
-
-  public class SubgridCellAddressTests : IClassFixture<SubgridCellAddressTestsFixture>
+  public class SubgridCellAddressTests : IClassFixture<DILoggingFixture>
     {
         [Fact]
         public void Test_SubgridCellAddress_Creation()

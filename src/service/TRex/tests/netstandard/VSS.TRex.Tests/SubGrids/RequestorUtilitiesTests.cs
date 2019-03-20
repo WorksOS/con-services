@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
@@ -22,11 +21,12 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.SubGrids
 {
-  public class RequestorUtilitiesTestsLoggingFixture : IDisposable
+  public class RequestorUtilitiesTestsLoggingFixture : DILoggingFixture, IDisposable
   {
     public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
     public static ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
@@ -47,9 +47,7 @@ namespace VSS.TRex.Tests.SubGrids
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
 
       DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Continue()
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
@@ -68,7 +66,6 @@ namespace VSS.TRex.Tests.SubGrids
 
     public void Dispose()
     {
-      DIBuilder.Eject();
       SurfaceElevationPatchRequest = null;
       TRexSpatialMemoryCacheContext = null;
     }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -140,6 +142,17 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     [Theory]
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Read_FailWithCorruptData(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      byte[] bytes = new byte[100]; // 100 zeros, which will cause the FromBytes call to fail with a TRexSubGridIOException on the grid data type
+      Action act = () => clientGrid.FromBytes(bytes);
+      act.Should().Throw<TRexSubGridIOException>().WithMessage("GridDataType in stream does not match GridDataType of local sub grid instance");
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_CellHasValue_True_Ex(GridDataType gridDataType)
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
@@ -173,11 +186,35 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     [Theory]
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
-    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid(GridDataType gridDataType)
+    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid_FullMap(GridDataType gridDataType)
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
 
-      clientGrid.AssignFromCachedPreProcessedClientSubgrid(clientGrid, clientGrid.FilterMap);
+      clientGrid.FillWithTestPattern();
+
+      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid2.AssignFromCachedPreProcessedClientSubgrid(clientGrid, new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));
+
+      clientGrid.Should().BeEquivalentTo(clientGrid2);
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid_PartialMap(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid.FillWithTestPattern();
+
+      var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      var filterMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled)
+      {
+        [0, 0] = true
+      };
+
+      clientGrid2.AssignFromCachedPreProcessedClientSubgrid(clientGrid, filterMap);
 
       // If we get here it's all good!
       Assert.True(true, "");
