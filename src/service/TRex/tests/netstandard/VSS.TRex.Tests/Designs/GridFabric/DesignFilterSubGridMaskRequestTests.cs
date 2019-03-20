@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
-      response.Bits.CountBits().Should().Be(SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
+      response.Bits.CountBits().Should().Be(903);
     }
 
     [Fact]
