@@ -4,6 +4,8 @@ metadata:
   name: 3dapp-prod
   namespace: prod
 data: 
+# Kubernetes Cluster Info - This must match the namespace (including case) that the pods will run in
+  kubernetesNamespace: prod
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
