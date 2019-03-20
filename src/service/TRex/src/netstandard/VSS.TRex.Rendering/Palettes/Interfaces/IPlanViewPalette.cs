@@ -1,4 +1,4 @@
-﻿using Draw = System.Drawing;
+﻿using System.Drawing;
 
 namespace VSS.TRex.Rendering.Palettes.Interfaces
 {
@@ -12,6 +12,6 @@ namespace VSS.TRex.Rendering.Palettes.Interfaces
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    Draw.Color ChooseColour(double value);
+    Color ChooseColour(double value);
     }
 }

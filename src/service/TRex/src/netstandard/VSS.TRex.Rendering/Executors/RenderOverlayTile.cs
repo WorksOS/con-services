@@ -17,7 +17,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
-using Draw = System.Drawing;
+using System.Drawing;
 
 namespace VSS.TRex.Rendering.Executors
 {
@@ -65,7 +65,7 @@ namespace VSS.TRex.Rendering.Executors
     // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
     // FColourPalettes: TColourPalettes;
     // ICOptions ICOptions = new ICOptions();
-    private Draw.Color RepresentColor;
+    private Color RepresentColor;
 
     /// <summary>
     /// Constructor for the renderer
@@ -94,7 +94,7 @@ namespace VSS.TRex.Rendering.Executors
                              //AReferenceVolumeType : TComputeICVolumesType;
                              //AColourPalettes: TColourPalettes;
                              //AICOptions: TSVOICOptions;
-      Draw.Color ARepresentColor,
+      Color ARepresentColor,
       string requestingTRexNodeId
     )
     {
