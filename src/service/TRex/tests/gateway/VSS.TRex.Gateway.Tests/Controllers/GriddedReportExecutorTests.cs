@@ -23,7 +23,7 @@ using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.SiteModels.Interfaces;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests
+namespace VSS.TRex.Gateway.Tests.Controllers
 {
   public class GriddedReportExecutorTests : IDisposable
   {

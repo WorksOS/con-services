@@ -12,7 +12,7 @@ using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.SiteModels.Interfaces;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests
+namespace VSS.TRex.Gateway.Tests.ActionServices
 {
   public class ReportDataValidationUtilityTests : IDisposable
   {

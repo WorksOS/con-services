@@ -12,7 +12,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests
+namespace VSS.TRex.Gateway.Tests.ActionServices
 {
   public class CoordinateServiceUtilityTests : IDisposable
   {

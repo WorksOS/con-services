@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
 #if RAPTOR
 using VLPDDecls;
 #endif
@@ -66,36 +65,39 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
 #endif
 
-      PairUpAssetIdentifiers(assetOnDesignPeriods, haveUids);
+      await PairUpAssetIdentifiers(assetOnDesignPeriods, haveUids);
       return CreateResultantListFromDesigns(assetOnDesignPeriods);
     }
 
-    private void PairUpAssetIdentifiers(List<AssetOnDesignPeriod> assetOnDesignPeriods, bool haveUids)
+    private async Task PairUpAssetIdentifiers(List<AssetOnDesignPeriod> assetOnDesignPeriods, bool haveUids)
     {
       if (assetOnDesignPeriods == null || assetOnDesignPeriods.Count == 0)
         return;
 
-      // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
-      var assetsResult = new List<AssetData>(0);
       if (haveUids)
       {
-        foreach (var assetOnDesignPeriod in assetOnDesignPeriods)
+        // assetMatch will return rows if Uids found, however the legacyAssetIds may be invalid
+        var assetUids = new List<Guid>(assetOnDesignPeriods.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty).Select(a => a.AssetUid.Value).Distinct());
+        var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders)).ToList();
+        foreach (var assetMatch in assetMatchingResult)
         {
-          var legacyAssetId = assetsResult.Where(a => a.AssetUID == assetOnDesignPeriod.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
-          assetOnDesignPeriod.MachineId = legacyAssetId < 1 ? -1 : legacyAssetId;
+          if (assetMatch.Value > 0)
+            foreach (var assetOnDesignPeriod in assetOnDesignPeriods.FindAll(x => x.AssetUid == assetMatch.Key))
+              assetOnDesignPeriod.MachineId = assetMatch.Value;
         }
       }
       else
-        foreach (var assetOnDesignPeriod in assetOnDesignPeriods)
+      {
+        // assetMatch will only return rows if Uids found for the legacyAssetIds
+        var assetIds = new List<long>(assetOnDesignPeriods.Where(a => a.MachineId > 0).Select(a => a.MachineId).Distinct());
+        var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders)).ToList();
+        foreach (var assetMatch in assetMatchingResult)
         {
-          if (assetOnDesignPeriod.MachineId < 1)
-            assetOnDesignPeriod.AssetUid = null;
-          else
-          {
-            assetOnDesignPeriod.AssetUid = assetsResult.Where(a => a.LegacyAssetID == assetOnDesignPeriod.MachineId).Select(a => a.AssetUID).FirstOrDefault();
-            assetOnDesignPeriod.AssetUid = assetOnDesignPeriod.AssetUid == Guid.Empty ? null : assetOnDesignPeriod.AssetUid;
-          }
+          if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid
+            foreach (var assetOnDesignPeriod in assetOnDesignPeriods.FindAll(x => x.MachineId == assetMatch.Value))
+              assetOnDesignPeriod.AssetUid = assetMatch.Key;
         }
+      }
     }
 
 #if RAPTOR

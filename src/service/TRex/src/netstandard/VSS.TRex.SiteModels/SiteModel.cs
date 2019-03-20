@@ -26,7 +26,6 @@ using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common;
 
 namespace VSS.TRex.SiteModels
 {
@@ -745,7 +744,7 @@ namespace VSS.TRex.SiteModels
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-              priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+              priorMachineDesignId,Consts.LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
           }
 
           // where multi events for same design -  want to retain startDate of first
@@ -760,7 +759,7 @@ namespace VSS.TRex.SiteModels
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
           assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-            priorMachineDesignId, -1, priorDateTime, DateTime.MaxValue, machine.ID));
+            priorMachineDesignId, Consts.LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
         }
       }
 

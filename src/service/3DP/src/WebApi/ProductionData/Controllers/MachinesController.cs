@@ -6,12 +6,12 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.AssetService.Proxy;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     private readonly ITRexCompactionDataProxy _trexCompactionDataProxy;
 
-    private readonly IAssetServiceProxy _assetProxy;
+    private readonly IAssetResolverProxy _assetResolverProxy;
 
     private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
 
@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient,
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy, IAssetServiceProxy assetProxy 
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy, IAssetResolverProxy assetResolverProxy
       )
     {
 #if RAPTOR
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       _logger = logger;
       _configStore = configStore;
       _trexCompactionDataProxy = trexCompactionDataProxy;
-      _assetProxy = assetProxy;
+      _assetResolverProxy = assetResolverProxy;
     }
 
     /// <summary>
@@ -78,15 +78,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectIds = new ProjectID(projectId, projectUid);
       projectIds.Validate();
 
-      // todoJeannie
-      IDictionary<string, string> tempCustomHeaders = Request.Headers.GetCustomHeaders(true);
-
       return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
-          customHeaders: tempCustomHeaders, customerUid: CustomerUid)
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
+          customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
     }
 
@@ -107,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
     }
@@ -134,7 +131,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
@@ -162,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
       result.FilterByMachineId(machineId);
@@ -189,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
       result.FilterByMachineUid(machineUid);
@@ -216,7 +213,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       return CreateUniqueMachineDesignList(result);
@@ -242,7 +239,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       return CreateUniqueMachineDesignList(result);
@@ -293,7 +290,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
 
@@ -301,7 +298,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
@@ -351,7 +348,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
     }
@@ -375,7 +372,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
     }
@@ -436,7 +433,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy,
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
 
@@ -444,7 +441,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           _raptorClient,
 #endif
-          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetProxy: _assetProxy, 
+          configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 

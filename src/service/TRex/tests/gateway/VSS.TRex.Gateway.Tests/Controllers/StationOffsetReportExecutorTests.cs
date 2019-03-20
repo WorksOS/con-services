@@ -17,7 +17,7 @@ using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests
+namespace VSS.TRex.Gateway.Tests.Controllers
 {
   public class StationOffsetReportExecutorTests : IDisposable
   {

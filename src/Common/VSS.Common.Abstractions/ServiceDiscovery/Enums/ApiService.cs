@@ -9,6 +9,7 @@
     Project,
     Filter,
     Productivity3D,
-    Scheduler
+    Scheduler,
+    AssetMgmt3D
   }
 }

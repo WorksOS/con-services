@@ -6,6 +6,6 @@
     public const string PRODUCTIVITY_3D_SERVICE = "productivity-3d-service";
     public const string PROJECT_SERVICE = "project-service";
     public const string SCHEDULER_SERVICE = "scheduler-service";
-
+    public const string ASSETMGMT3D_SERVICE = "assetmgmet3d-service";
   }
 }
