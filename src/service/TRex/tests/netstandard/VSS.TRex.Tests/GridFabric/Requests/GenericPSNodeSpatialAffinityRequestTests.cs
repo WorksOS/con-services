@@ -38,6 +38,7 @@ namespace VSS.TRex.Tests.GridFabric.Requests
   {
   }
 
+  [UnitTestCoveredRequest(RequestType = typeof(TestRequest))]
   public class GenericPSNodeSpatialAffinityRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]

@@ -498,22 +498,19 @@ namespace VSS.TRex.Designs
       bool hasValues = false;
       TriangleSubGridCellExtents triangleCellExtent = new TriangleSubGridCellExtents();
 
-      try
+      double HalfCellSize = CellSize / 2;
+      double halfCellSizeMinusEpsilon = HalfCellSize - 0.0001;
+      double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
+      double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
+
+      // Search in the sub grid triangle list for this sub grid from the spatial index
+      // All cells in this sub grid will be contained in the same triangle list from the spatial index
+      SpatialIndexOptimised.CalculateIndexOfCellContainingPosition(OriginXPlusHalfCellSize, OriginYPlusHalfCellSize, out uint CellX, out uint CellY);
+      TriangleArrayReference arrayReference = SpatialIndexOptimised[CellX, CellY];
+      int triangleCount = arrayReference.Count;
+
+      if (triangleCount >= 0) // There are triangles that can satisfy the query (leaf cell is non-empty)
       {
-        double HalfCellSize = CellSize / 2;
-        double halfCellSizeMinusEpsilon = HalfCellSize - 0.0001;
-        double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
-        double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
-
-        // Search in the sub grid triangle list for this sub grid from the spatial index
-        // All cells in this sub grid will be contained in the same triangle list from the spatial index
-        SpatialIndexOptimised.CalculateIndexOfCellContainingPosition(OriginXPlusHalfCellSize, OriginYPlusHalfCellSize, out uint CellX, out uint CellY);
-        TriangleArrayReference arrayReference = SpatialIndexOptimised[CellX, CellY];
-        int triangleCount = arrayReference.Count;
-
-        if (triangleCount == 0) // There are no triangles that can satisfy the query (leaf cell is empty)
-          return false;
-
         double leafCellSize = SpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
         BoundingWorldExtent3D cellWorldExtent = SpatialIndexOptimised.GetCellExtents(CellX, CellY);
 
@@ -552,7 +549,7 @@ namespace VSS.TRex.Designs
 
           triangleCellExtents[i] = triangleCellExtent;
         }
-        
+
         // Initialise Patch to null height values
         Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
@@ -587,14 +584,9 @@ namespace VSS.TRex.Designs
 
           X += CellSize;
         }
+      }
 
-        return hasValues;
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception occurred in TTMDesign.InterpolateHeights");
-        return false;
-      }
+      return hasValues;
     }
 
     /// <summary>

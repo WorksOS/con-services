@@ -38,13 +38,13 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         Log.LogInformation("Executing request.Execute()");
 
         if (!request.Execute())
-          Log.LogError($"Request execution failed");
+          Log.LogError("Request execution failed");
         
         return request.CSVExportRequestResponse;
       }
       finally
       {
-        Log.LogInformation("Exiting CSVExportComputeFunc.Invoke()");
+        Log.LogInformation($"Out {nameof(Invoke)}");
       }
     }
   }

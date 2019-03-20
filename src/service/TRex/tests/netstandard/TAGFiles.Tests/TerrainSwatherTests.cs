@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
@@ -149,8 +150,6 @@ namespace TAGFiles.Tests
           var fence = new Fence(new BoundingWorldExtent3D(0, 0, 10000, 2));
           var swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
 
-          Assert.True(swather != null, "TerrainSwather not created as expected");
-
           CreateSwathContext(0, 0, 0,
             10000, 0, 0,
             0, 2, 0,
@@ -165,5 +164,5 @@ namespace TAGFiles.Tests
           processor.ProcessedEpochCount.Should().Be(0);
           processor.ProcessedCellPassesCount.Should().Be(0);
         }
-  }
+    }
 }

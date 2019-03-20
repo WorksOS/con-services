@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi
         .Build();
 
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-      Console.WriteLine("Productivity3D service starting");
+
       log.LogInformation("Productivity3D service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
       

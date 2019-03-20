@@ -3637,5 +3637,77 @@
     "lineworkBoundaries": null,
     "Code": 74,
     "Message": "Failed to get/update data requested by LineworkFileExecutor with error: No boundaries in linework file"
+  },
+  "1LineStringDXF": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              [
+                -114.9500876854631,
+                36.232212964451932
+              ],
+              [
+                -114.94802355821081,
+                36.232206559728908
+              ],
+              [
+                -114.94801730539699,
+                36.230023861081548
+              ],
+              [
+                -114.95006079285315,
+                36.230018369314813
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "name": "MHSTUDENT1"
+        }
+      }
+    ]
+  },
+  "1LineStringToPolygonDXF": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -114.9500876854631,
+                36.232212964451932
+              ],
+              [
+                -114.94802355821081,
+                36.232206559728908
+              ],
+              [
+                -114.94801730539699,
+                36.230023861081548
+              ],
+              [
+                -114.95006079285315,
+                36.230018369314813
+              ],
+              [
+                -114.9500876854631,
+                36.232212964451932
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "name": "MHSTUDENT1"
+        }
+      }
+    ]
   }
 }

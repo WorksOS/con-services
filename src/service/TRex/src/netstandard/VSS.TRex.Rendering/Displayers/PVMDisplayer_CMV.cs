@@ -2,7 +2,7 @@
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
-using Draw = System.Drawing;
+using System.Drawing;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -14,7 +14,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// The default colour that is used to display decoupled CMV data.
     /// </summary>
-    private Draw.Color DefaultDecoupledCMVColour = Draw.Color.Black;
+    private Color DefaultDecoupledCMVColour = Color.Black;
 
     /// <summary>
     /// The flag is to indicate whether or not the machine CMV target to be user overrides.
@@ -37,21 +37,15 @@ namespace VSS.TRex.Rendering.Displayers
     }
 
     /// <summary>
-    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
-    /// </summary>
-    /// <returns></returns>
-    protected override bool SupportsCellStripRendering() => true;
-
-    /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Draw.Color DoGetDisplayColour()
+    protected override Color DoGetDisplayColour()
     {
       var cellValue = ((ClientCMVLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       if (cellValue.MeasuredCMV == CellPassConsts.NullCCV)
-        return Draw.Color.Empty;
+        return Color.Empty;
 
       var decoupled = cellValue.IsDecoupled && ((CMVPalette) Palette).DisplayDecoupledColourInPVM;
 

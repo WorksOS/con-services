@@ -47,8 +47,6 @@ namespace VSS.TRex.Exports.CSV.Executors
 
       try
       {
-        ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
-
         Guid requestDescriptor = Guid.NewGuid();
         var gridDataType = _CSVExportRequestArgument.OutputType == OutputTypes.PassCountLastPass || _CSVExportRequestArgument.OutputType == OutputTypes.VedaFinalPass
           ? GridDataType.CellProfile
@@ -78,6 +76,7 @@ namespace VSS.TRex.Exports.CSV.Executors
         if (!processor.Build())
         {
           Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
+          CSVExportRequestResponse.ResultStatus = processor.Response.ResultStatus;
           return false;
         }
 
@@ -86,6 +85,7 @@ namespace VSS.TRex.Exports.CSV.Executors
         if (processor.Response.ResultStatus != RequestErrorStatus.OK)
         {
           Log.LogError($"Failed to obtain data for CSV Export, for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}. response: {processor.Response.ResultStatus.ToString()}.");
+          CSVExportRequestResponse.ResultStatus = processor.Response.ResultStatus;
           return false;
         }
 

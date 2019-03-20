@@ -75,7 +75,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
       Assert.NotNull(combinedFilter.AttributeFilter);
       Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
-      Assert.True(combinedFilter.AttributeFilter.HasElevationTypeFilter);
       Assert.Equal(Types.ElevationType.First, combinedFilter.AttributeFilter.ElevationType);
 
       Assert.NotNull(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
@@ -101,7 +100,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
       Assert.NotNull(combinedFilter.AttributeFilter);
       Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
-      Assert.True(combinedFilter.AttributeFilter.HasElevationTypeFilter);
       Assert.Equal(Types.ElevationType.First, combinedFilter.AttributeFilter.ElevationType);
 
       Assert.NotNull(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);

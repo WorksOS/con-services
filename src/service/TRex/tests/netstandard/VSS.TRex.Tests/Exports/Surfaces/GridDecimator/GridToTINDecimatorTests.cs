@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Geometry;
@@ -170,14 +171,10 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         //tin.LoadFromFile(fileName);
 
         decimator.GetTIN().Triangles.Count.Should().Be(3);
-        decimator.GetTIN().Triangles[0].Vertices[0].Z.Should().Be(100f);
-        decimator.GetTIN().Triangles[0].Vertices[1].Z.Should().Be(100f);
-        decimator.GetTIN().Triangles[0].Vertices[2].Z.Should().Be(100f);
+        decimator.GetTIN().Triangles[0].Vertices.ForEach(x => x.Z.Should().Be(100f));
 
         decimator.GetTIN().Vertices.Count.Should().Be(5);
-        decimator.GetTIN().Vertices[0].Z.Should().Be(100.0f);
-        decimator.GetTIN().Vertices[1].Z.Should().Be(100.0f);
-        decimator.GetTIN().Vertices[2].Z.Should().Be(100.0f);
+        decimator.GetTIN().Vertices.ForEach(x => x.Z.Should().Be(100.0f));
     }
   }
 }

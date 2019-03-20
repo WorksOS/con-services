@@ -1,4 +1,4 @@
-﻿using Draw = System.Drawing;
+﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
@@ -6,18 +6,18 @@ namespace VSS.TRex.Rendering.Palettes
 {
   public class SpeedSummaryPalette : PaletteBase
   {
-    private Draw.Color OverSpeedRangeColour = Draw.Color.Purple;
-    private Draw.Color WithinSpeedRangeColour = Draw.Color.Lime;
-    private Draw.Color LowerSpeedRangeColour = Draw.Color.Aqua;
+    private Color OverSpeedRangeColour = Color.Red;
+    private Color WithinSpeedRangeColour = Color.YellowGreen;
+    private Color LowerSpeedRangeColour = Color.DodgerBlue;
 
     public SpeedSummaryPalette() : base(null)
     {
       // ...
     }
 
-    public Draw.Color ChooseColour(MachineSpeedExtendedRecord measuredSpeed, MachineSpeedExtendedRecord targetSpeed)
+    public Color ChooseColour(MachineSpeedExtendedRecord measuredSpeed, MachineSpeedExtendedRecord targetSpeed)
     {
-      var color = Draw.Color.Empty;
+      var color = Color.Empty;
 
       if (targetSpeed.Max != CellPassConsts.NullMachineSpeed)
       {

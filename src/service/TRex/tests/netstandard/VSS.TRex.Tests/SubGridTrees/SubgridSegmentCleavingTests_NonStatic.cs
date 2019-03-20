@@ -215,14 +215,10 @@ namespace VSS.TRex.Tests.SubGridTrees
 
     private void SetupDITfa(int vlpdSubGridSegmentPassCountLimit = Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT)
     {
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(vlpdSubGridSegmentPassCountLimit);
 
-      DIBuilder
-        .New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
-        .Complete();
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
     }
 
     [Fact()]
@@ -326,6 +322,5 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       Assert.False(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Modified invalid segment passes bounds test");
     }
-
   }
 }

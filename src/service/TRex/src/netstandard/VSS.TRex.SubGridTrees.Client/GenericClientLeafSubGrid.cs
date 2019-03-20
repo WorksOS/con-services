@@ -7,12 +7,12 @@ namespace VSS.TRex.SubGridTrees.Client
 {
     public abstract class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
     {
-        private static ILogger Log = Logging.Logger.CreateLogger<GenericClientLeafSubGrid<T>>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericClientLeafSubGrid<T>>();
 
         /// <summary>
         /// The array of cell values this sub grid client class maintains
         /// </summary>
-        public T[,] Cells { get; set; } = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+        public T[,] Cells { get; } = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// The array of null values to be used to set all cell values to their client grid respective value

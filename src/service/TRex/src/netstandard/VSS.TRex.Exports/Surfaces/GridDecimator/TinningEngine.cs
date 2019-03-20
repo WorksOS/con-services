@@ -159,7 +159,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             coord2.X == coord3.X && coord2.Y == coord3.Y ||
             coord3.X == coord1.X && coord3.Y == coord1.Y)
         {
-          TIN.SaveToFile(@"C:\Temp\TINStateBeforeCoordNonUniquenessException.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINStateBeforeCoordNonUniquenessException({DateTime.Now.Ticks}).ttm", false);
 
           throw new TRexTINException($"Coordinates for new triangle are not unique {string.Concat(new object[]{coord1, coord2, coord3})}");
         }
@@ -549,7 +549,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       TIN.Triangles.NumberTriangles();
     }
 
-    //private static int IndexCount = 0;
+    // private static int IndexCount;
 
     /// <summary>
     /// The triangles in the affected list form a polygon about the coord being
@@ -584,7 +584,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
         if (AffectedIdx >= numAffected)
         {
-          //TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeAddingTriangle.ttm", false);
 
           // the last one or two triangles will be new, rather than updated 
           if (succLastTriangle == null)
@@ -597,14 +597,14 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
-          //TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterAddingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-AfterAddingTriangle.ttm", false);
 
           succLastTriangle = succSuccLastTriangle;
           succSuccLastTriangle = null;
         }
         else
         {
-          //TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-BeforeModifyingTriangle.ttm", false);
 
           //  update affectedPtr^.tri triangle 
           makeUpdatedTriangle(affectedList[AffectedIdx].Tri,
@@ -615,7 +615,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             lastSide,
             affSideList[sidePtr].side);
 
-          //TIN.SaveToFile($@"C:\Temp\TINState{IndexCount:D4}-AfterModifyingTriangle.ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINState{++IndexCount:D4}-AfterModifyingTriangle.ttm", false);
 
           lastSide = affectedList[AffectedIdx].Tri;
           AffectedIdx++;
@@ -723,7 +723,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       currentTri = LocateTriangle2(theCoord, currentTri, false);
       if (currentTri == null)
       {
-        TIN.SaveToFile(@"c:\TinProgress.ttm", true);
+        // TIN.SaveToFile(@"c:\TinProgress.ttm", true);
         return false;
       }
 
@@ -769,6 +769,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     public bool IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
     {
+      // Noisy logging - reinclude as necessary
+      //Log.LogDebug($"Incorporating vertex {theCoord} into triangle {tri}");
+
       AddCoordToModel(theCoord, tri);
 
       if (succLastTriangle != null)

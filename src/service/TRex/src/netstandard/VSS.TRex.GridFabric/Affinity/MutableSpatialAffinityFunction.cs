@@ -17,13 +17,13 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <returns></returns>
     public override int GetPartition(object key)
     {
-      // Pull the subgrid origin location for the subgrid or segment represented in the cache key and calculate the 
+      // Pull the sub grid origin location for the sub grid or segment represented in the cache key and calculate the 
       // spatial processing division descriptor to use as the partition affinity key
 
       if (key is IProjectAffinity value)
       {
         // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-        return Math.Abs(GuidHashCode.Hash(value.ProjectUID)) % NumPartitions;
+        return Math.Abs(GuidHashCode.Hash(value.ProjectUID)) % (int)NumPartitions;
       }
 
       Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: {key}");

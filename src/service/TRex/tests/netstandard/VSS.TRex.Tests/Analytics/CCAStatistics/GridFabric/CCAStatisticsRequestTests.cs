@@ -7,7 +7,6 @@ using VSS.TRex.Analytics.CCAStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
@@ -21,13 +20,6 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CCAStatisticsRequest_ClusterCompute))]
   public class CCAStatisticsRequestTests : BaseTests<CCAStatisticsArgument, CCAStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private CCAStatisticsArgument SimpleCCAStatisticsArgument(ISiteModel siteModel)
     {
       return new CCAStatisticsArgument
@@ -35,7 +27,6 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter())
       };
-
     }
 
     private void BuildModelForSingleCellCCA(out ISiteModel siteModel, byte ccaIncrement)
@@ -43,7 +34,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       var baseTime = DateTime.UtcNow;
       byte baseCCA = 1;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -73,7 +64,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CCAStatisticsOperation();
 
       var ccaStatisticsResult = operation.Execute(SimpleCCAStatisticsArgument(siteModel));

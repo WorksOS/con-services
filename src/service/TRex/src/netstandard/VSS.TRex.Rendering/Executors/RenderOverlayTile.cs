@@ -17,7 +17,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
-using Draw = System.Drawing;
+using System.Drawing;
 
 namespace VSS.TRex.Rendering.Executors
 {
@@ -65,7 +65,7 @@ namespace VSS.TRex.Rendering.Executors
     // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
     // FColourPalettes: TColourPalettes;
     // ICOptions ICOptions = new ICOptions();
-    private Draw.Color RepresentColor;
+    private Color RepresentColor;
 
     /// <summary>
     /// Constructor for the renderer
@@ -94,7 +94,7 @@ namespace VSS.TRex.Rendering.Executors
                              //AReferenceVolumeType : TComputeICVolumesType;
                              //AColourPalettes: TColourPalettes;
                              //AICOptions: TSVOICOptions;
-      Draw.Color ARepresentColor,
+      Color ARepresentColor,
       string requestingTRexNodeId
     )
     {
@@ -115,7 +115,7 @@ namespace VSS.TRex.Rendering.Executors
       RequestingTRexNodeID = requestingTRexNodeId;
     }
 
-//        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+    //        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
     private BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
 
@@ -413,6 +413,7 @@ namespace VSS.TRex.Rendering.Executors
       // given the project's coordinate system. If there is no coordinate system then exit.
 
       ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+      Log.LogInformation($"Got Site model {DataModelID}, extents are {SiteModel.SiteModelExtent}");
 
       LLHCoords = new[]
       {
@@ -421,6 +422,7 @@ namespace VSS.TRex.Rendering.Executors
         new XYZ(BLPoint.X, TRPoint.Y),
         new XYZ(TRPoint.X, BLPoint.Y)
       };
+      Log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
       if (CoordsAreGrid)
       {
@@ -440,6 +442,7 @@ namespace VSS.TRex.Rendering.Executors
 
         NEECoords = conversionResult.NEECoordinates;
       }
+      Log.LogInformation($"After conversion NEECoords are {string.Concat(NEECoords)}");
 
       WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
       WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
@@ -453,22 +456,18 @@ namespace VSS.TRex.Rendering.Executors
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
 
 
-      /* TODO Readd when logging available
-   {$IFDEF DEBUG}
-    SIGLogMessage.PublishNoODS(Self,
-                              Format('(%d) Tile render executing across tile: [Rotation:%.3fdeg] [BL:%.3f, %.3f, TL:%.3f, %.3f, TR:%.3f, %.3f, BR:%.3f, %.3f](%.3f x %.3f), Lat/Lon = [%.8f, %.8f, %.8f, %.8f](%.8f x %.8f)',
-                                     [FDataModelID,
-                                      TileRotation * (180/PI),
-                                      NEECoords[0].X, NEECoords[0].Y,
-                                      NEECoords[2].X, NEECoords[2].Y,
-                                      NEECoords[1].X, NEECoords[1].Y,
-                                      NEECoords[3].X, NEECoords[3].Y,
-                                      NEECoords[1].X - NEECoords[0].X, NEECoords[1].Y - NEECoords[0].Y,
-                                      FBLPoint.Lon* (180/PI), FBLPoint.Lat* (180/PI), FTRPoint.Lon* (180/PI), FTRPoint.Lat* (180/PI),
-                                      (FTRPoint.Lon - FBLPoint.Lon) * (180/PI), (FTRPoint.Lat - FBLPoint.Lat) * (180/PI)]),
-                              slmcDebug);
-   {$ENDIF}
-*/
+      Log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}] " +
+        $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
+        $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
+        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}" );
+                                        
+                                       // , ,
+                                       // , ,
+                                       // , ,
+                                       // , ,
+                                       // NEECoords[1].X - NEECoords[0].X, NEECoords[1].Y - NEECoords[0].Y,
+                                       //);
+
 
       // Construct the renderer, configure it, and set it on its way
       //  WorkingColourPalette = Nil;
@@ -480,11 +479,13 @@ namespace VSS.TRex.Rendering.Executors
           return null;
 
         // Intersect the site model extents with the extents requested by the caller
+        Log.LogInformation($"Calculating intersection of bbox and site model {DataModelID}:{SiteModel.SiteModelExtent}");
         RotatedTileBoundingExtents.Intersect(SiteModel.SiteModelExtent);
         if (!RotatedTileBoundingExtents.IsValidPlanExtent)
         {
           ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-            
+          Log.LogInformation($"Site model extents {SiteModel.SiteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
+
           //RenderTransparentTile();
           return Renderer.Displayer?.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
         }
@@ -500,7 +501,7 @@ namespace VSS.TRex.Rendering.Executors
           RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
           out uint CellExtents_MaxX, out uint CellExtents_MaxY);
 
-        BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);
+        BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int)CellExtents_MinX, (int)CellExtents_MinY, (int)CellExtents_MaxX, (int)CellExtents_MaxY);
         CellExtents.Expand(1);
 
         // Construct PipelineProcessor

@@ -16,17 +16,13 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
         public TAGProcessorPreScanACSState()
         {
-
         }
 
         public override bool ProcessEpochContext()
         {
             BladePositions.Add(new UTMCoordPointPair(DataLeft, DataRight, UTMZone));
-
             RearAxlePositions.Add(new UTMCoordPointPair(DataRearLeft, DataRearRight, UTMZone));
-
             TrackPositions.Add(new UTMCoordPointPair(DataTrackLeft, DataTrackRight, UTMZone));
-
             WheelPositions.Add(new UTMCoordPointPair(DataWheelLeft, DataWheelRight, UTMZone));
 
             ProcessedEpochCount++;

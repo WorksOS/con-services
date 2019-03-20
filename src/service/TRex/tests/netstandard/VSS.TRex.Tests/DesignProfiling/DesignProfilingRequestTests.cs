@@ -20,13 +20,6 @@ namespace VSS.TRex.Tests.DesignProfiling
   [UnitTestCoveredRequest(RequestType = typeof(DesignProfileRequest))]
   public class DesignProfilingRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignProfileComputeFunc, CalculateDesignProfileArgument, CalculateDesignProfileResponse>();
 
@@ -61,7 +54,7 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       AddDesignProfilerGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
 
       var request = new DesignProfileRequest();

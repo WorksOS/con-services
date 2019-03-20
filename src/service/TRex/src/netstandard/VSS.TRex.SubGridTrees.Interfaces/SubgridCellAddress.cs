@@ -45,7 +45,7 @@ namespace VSS.TRex.SubGridTrees
       set => BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); 
     }
 
-    private static readonly uint NumPartitionsPerDataCache = (uint) DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.NUMPARTITIONS_PERDATACACHE);
+    private static readonly uint NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueUint("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
     
     public SubGridCellAddress(uint AX, uint AY) 
     {

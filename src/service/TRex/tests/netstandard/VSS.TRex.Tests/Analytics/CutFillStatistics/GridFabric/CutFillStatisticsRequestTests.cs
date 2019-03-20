@@ -3,14 +3,12 @@ using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.TTM;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -26,13 +24,6 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CutFillStatisticsRequest_ClusterCompute))]
   public class CutFillStatisticsRequestTests : BaseTests<CutFillStatisticsArgument, CutFillStatisticsResponse>, IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private void AddDesignProfilerGridRouting()
     {
       IgniteMock.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
@@ -54,7 +45,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -75,7 +66,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       CellPass[,][] cellPasses = new CellPass[32,32][];
@@ -112,7 +103,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = NewEmptyModel();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CutFillStatisticsOperation();
 
       var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid());
@@ -162,7 +153,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddDesignProfilerGridRouting();
 
       BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
-      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);
@@ -188,7 +179,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);
-      argument.Offsets = new[] { 1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0 };
+      argument.Offsets = new[] {1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0};
 
       var result = operation.Execute(argument);
 
@@ -197,16 +188,16 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       result.Counts[0].Should().Be(693);
       result.Counts[1].Should().Be(105);
-      result.Counts[2].Should().Be(27 );
-      result.Counts[3].Should().Be(33 );
-      result.Counts[4].Should().Be(24 );
-      result.Counts[5].Should().Be(20 );
+      result.Counts[2].Should().Be(27);
+      result.Counts[3].Should().Be(33);
+      result.Counts[4].Should().Be(24);
+      result.Counts[5].Should().Be(20);
       result.Counts[6].Should().Be(1);
 
       long sum = result.Counts.Sum();
 
       for (int i = 0; i < result.Counts.Length; i++)
-        result.Percents[i].Should().Be((double)result.Counts[i] / sum * 100);
+        result.Percents[i].Should().Be((double) result.Counts[i] / sum * 100);
     }
   }
 }

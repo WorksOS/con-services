@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using VSS.TRex.Common;
 
@@ -8,6 +9,7 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Provides a spatial index for triangles in a surface to provide rapid location and scanning from a spatial perspective
     /// </summary>
+    [ExcludeFromCodeCoverage] // Not used...
     public abstract class TriangleQuadTree
     {
         /// <summary>

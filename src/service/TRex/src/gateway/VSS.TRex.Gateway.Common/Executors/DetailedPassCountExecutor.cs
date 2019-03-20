@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -47,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        PassCountDetailValues = request.PassCounts
+        PassCountDetailValues = UpdatePassCounts(request.PassCounts)
       });
 
       if (passCountDetailsResult != null)
@@ -66,6 +68,18 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       throw CreateServiceException<DetailedPassCountExecutor>();
+    }
+
+    private int[] UpdatePassCounts(int[] passCounts)
+    {
+      var passCountList = new List<int>();
+
+      passCountList.AddRange(passCounts);
+      passCountList.Insert(0, 0);
+      passCountList.Add(passCountList.Last() + 1);
+
+      return passCountList.ToArray();
+
     }
   }
 }

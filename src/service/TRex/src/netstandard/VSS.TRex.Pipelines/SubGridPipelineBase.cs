@@ -192,30 +192,22 @@ namespace VSS.TRex.Pipelines
         /// <returns></returns>
         public bool Initiate()
         {
-            // First analyze the request to determine the set of sub grids that will need to be requested
-            if (!RequestAnalyser.Execute())
-            {
-                // Leave gracefully...
-                return false;
-            }
+          bool result = false;
 
+          // First analyze the request to determine the set of sub grids that will need to be requested
+          if (RequestAnalyser.Execute())
+          {
+            result = true;
             subGridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
 
             Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids to be requested, compared to {OverallExistenceMap.CountBits()} sub grids in production existence map");
-
-            if (RequestAnalyser.TotalNumberOfSubGridsToRequest == 0)
-            {
-                // There are no sub grids to be requested, leave quietly
-                Log.LogInformation("No sub grids analyzed from request to be submitted to processing engine");
-
-                return false;
-            }
-
             Log.LogInformation($"START: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
 
             // Send the sub grid request mask to the grid fabric layer for processing
-            var requestor = new TSubGridRequestor
+            if (RequestAnalyser.TotalNumberOfSubGridsToRequest > 0)
             {
+              var requestor = new TSubGridRequestor
+              {
                 TRexTask = PipelineTask,
                 SiteModelID = DataModelID,
                 RequestID = RequestDescriptor,
@@ -227,13 +219,16 @@ namespace VSS.TRex.Pipelines
                 Filters = FilterSet,
                 ReferenceDesignID = ReferenceDesignID,
                 AreaControlSet = AreaControlSet
-            };
+              };
 
-            var Response = requestor.Execute();
+              var Response = requestor.Execute();
+              result = Response.ResponseCode == SubGridRequestsResponseResult.OK;
+            }
 
             Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+          }
 
-            return Response.ResponseCode == SubGridRequestsResponseResult.OK;
+          return result;
         }
 
         /// <summary>
