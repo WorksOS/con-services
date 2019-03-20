@@ -31,8 +31,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// </summary>
     public TINSurfaceRequestResponse SurfaceSubGridsResponse { get; set; } = new TINSurfaceRequestResponse();
 
-    // FExternalDescriptor :TASNodeRequestDescriptor;
-
     /// <summary>
     /// The TRex application service node performing the request
     /// </summary>
@@ -55,21 +53,19 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <param name="tolerance"></param>
     /// <param name="requestingTRexNodeId"></param>
     public TINSurfaceExportExecutor(Guid dataModelID,
-      //AExternalDescriptor :TASNodeRequestDescriptor;
       IFilterSet filters,
       double tolerance,
       string requestingTRexNodeId
     )
     {
       DataModelID = dataModelID;
-      // ExternalDescriptor = AExternalDescriptor
       Filters = filters;
       Tolerance = tolerance;
       RequestingTRexNodeID = requestingTRexNodeId;
     }
 
     /// <summary>
-    /// Computes a tight bounding extent around the elevation values stored in the subgrid tree
+    /// Computes a tight bounding extent around the elevation values stored in the sub grid tree
     /// </summary>
     /// <param name="dataStore"></param>
     /// <returns></returns>
@@ -92,12 +88,12 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       if (ComputedGridExtent.IsValidPlanExtent)
         ComputedGridExtent.Offset(-(int)SubGridTreeConsts.DefaultIndexOriginOffset, -(int)SubGridTreeConsts.DefaultIndexOriginOffset);
 
-      // Convert the grid rectangle to a world rectangle, padding out the 3D bound by a small margin to avoid edge effects in calcualations
+      // Convert the grid rectangle to a world rectangle, padding out the 3D bound by a small margin to avoid edge effects in calculations
       BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
-       ((ComputedGridExtent.MinX - 0.01) * dataStore.CellSize,
-        (ComputedGridExtent.MinY - 0.01) * dataStore.CellSize,
-        (ComputedGridExtent.MaxX + 1 + 0.01) * dataStore.CellSize,
-        (ComputedGridExtent.MaxY + 1 + 0.01) * dataStore.CellSize,
+       ((ComputedGridExtent.MinX - 1.01) * dataStore.CellSize,
+        (ComputedGridExtent.MinY - 1.01) * dataStore.CellSize,
+        (ComputedGridExtent.MaxX + 1.01) * dataStore.CellSize,
+        (ComputedGridExtent.MaxY + 1.01) * dataStore.CellSize,
         ComputedGridExtent.MinZ - 0.01, ComputedGridExtent.MaxZ + 0.01);
 
       return ComputedWorldExtent;
@@ -117,7 +113,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
         Guid RequestDescriptor = Guid.NewGuid();
 
-        // Provide the processor with a customised request analyser configured to return a set of subgrids. These subgrids
+        // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids
         // are the feed stock for the generated TIN surface
         processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor: RequestDescriptor,
@@ -148,7 +144,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
         if (SurfaceSubGridsResponse.ResultStatus != RequestErrorStatus.OK)
         {
-          Log.LogError($"Subgrids response status not OK: {SurfaceSubGridsResponse.ResultStatus}");
+          Log.LogError($"Sub grids response status not OK: {SurfaceSubGridsResponse.ResultStatus}");
           return false;
         }
 
@@ -156,25 +152,25 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
         if (SiteModel == null)
         {
-          Log.LogError($"Failed to obtain sitemodel for {DataModelID}");
+          Log.LogError($"Failed to obtain site model for {DataModelID}");
           return false;
         }
 
-        // Create the TIN decimator and populate it with the retrieve subgrids
+        // Create the TIN decimator and populate it with the retrieve sub grids
         GenericSubGridTree_Float datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.CellSize);
-        foreach (var subgrid in ((SurfaceTask)processor.Task).SurfaceSubgrids)
+        foreach (var subGrid in ((SurfaceTask)processor.Task).SurfaceSubgrids)
         {
-          INodeSubGrid newGridNode = datastore.ConstructPathToCell(subgrid.OriginX, subgrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;
+          INodeSubGrid newGridNode = datastore.ConstructPathToCell(subGrid.OriginX, subGrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;
 
           if (newGridNode == null)
           {
-            Log.LogError($"Result from datastore.ConstructPathToCell({subgrid.OriginX}, {subgrid.OriginY}) was null. Aborting...");
+            Log.LogError($"Result from data store ConstructPathToCell({subGrid.OriginX}, {subGrid.OriginY}) was null. Aborting...");
             return false;
           }
 
-          subgrid.Owner = datastore;
-          newGridNode.GetSubGridCellIndex(subgrid.OriginX, subgrid.OriginY, out byte subGridIndexX, out byte subGridIndexY);
-          newGridNode.SetSubGrid(subGridIndexX, subGridIndexY, subgrid);
+          subGrid.Owner = datastore;
+          newGridNode.GetSubGridCellIndex(subGrid.OriginX, subGrid.OriginY, out byte subGridIndexX, out byte subGridIndexY);
+          newGridNode.SetSubGrid(subGridIndexX, subGridIndexY, subGrid);
         }
 
         // Decimate the elevations into a grid
@@ -202,5 +198,4 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       return true;
     }
   }
-
 }

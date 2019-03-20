@@ -286,7 +286,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Determines if the leaf content of this su bgrid is equal to 'other'
+    /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>

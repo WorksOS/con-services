@@ -121,7 +121,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var lines = File.ReadAllLines(extractedFileName);
 
-      lines.Length.Should().Be(1);
+      lines.Length.Should().Be(2);
     }
 
     [Fact]
