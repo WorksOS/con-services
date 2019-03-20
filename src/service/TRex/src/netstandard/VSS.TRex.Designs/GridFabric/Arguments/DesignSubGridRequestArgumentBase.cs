@@ -26,7 +26,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="referenceDesignUID"></param>
-    public DesignSubGridRequestArgumentBase(Guid siteModelID,
+    /// <param name="offset"></param>
+    protected DesignSubGridRequestArgumentBase(Guid siteModelID,
                                      Guid referenceDesignUID,
                                      double offset) : this()
     {

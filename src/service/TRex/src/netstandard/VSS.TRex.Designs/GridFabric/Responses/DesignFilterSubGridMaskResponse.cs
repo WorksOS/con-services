@@ -17,11 +17,16 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      int[] buffer = new int[SubGridTreeConsts.SubGridTreeDimension];
-      for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
-        buffer[i] = unchecked((int) Bits.Bits[i]);
+      writer.WriteBoolean(Bits != null);
 
-      writer.WriteIntArray(buffer);
+      if (Bits != null)
+      {
+        int[] buffer = new int[SubGridTreeConsts.SubGridTreeDimension];
+        for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+          buffer[i] = unchecked((int) Bits.Bits[i]);
+
+        writer.WriteIntArray(buffer);
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -30,9 +35,12 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      int[] buffer = reader.ReadIntArray();
-      for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
-        Bits.Bits[i] = unchecked((uint)buffer[i]);
+      if (reader.ReadBoolean())
+      {
+        int[] buffer = reader.ReadIntArray();
+        for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+          Bits.Bits[i] = unchecked((uint) buffer[i]);
+      }
     }
   }
 }

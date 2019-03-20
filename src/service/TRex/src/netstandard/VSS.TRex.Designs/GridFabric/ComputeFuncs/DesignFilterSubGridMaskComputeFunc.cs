@@ -24,9 +24,19 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
         var patch = Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.CellSize, args.OriginX, args.OriginY, 0, out var calcResult);
 
         if (patch == null)
-          return null; // This may seem harsh, but callers should not ask for patches that do not exist
+        {
+          return new DesignFilterSubGridMaskResponse
+          {
+            RequestResult = calcResult,
+            Bits = null // This may seem harsh, but callers should not ask for patches that do not exist
+          };
+        }
 
-        var result = new DesignFilterSubGridMaskResponse();
+        var result = new DesignFilterSubGridMaskResponse
+        {
+          RequestResult = calcResult
+        };
+
         var patchCells = patch.Cells;
         for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
         {
@@ -35,7 +45,6 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
             result.Bits[i, j] = patchCells[i, j].Equals(Common.Consts.NullHeight);
           }
         }
-
         return result;
       }
       catch (Exception E)
