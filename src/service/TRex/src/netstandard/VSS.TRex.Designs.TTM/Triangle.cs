@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using Amazon.S3.Model;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
