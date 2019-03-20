@@ -12,10 +12,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
   {
     public override DesignFilterSubGridMaskResponse Execute(DesignSubGridFilterMaskArgument arg)
     {
-      // Construct the function to be used
-      /*IComputeFunc<CalculateDesignElevationPatchArgument, SubGridTreeLeafBitmapSubGrid> */
-
-      var func = new DesignFilterSubGridMaskComputeFunc();
+     var func = new DesignFilterSubGridMaskComputeFunc();
 
       return Compute.Apply(func, arg);
     }
