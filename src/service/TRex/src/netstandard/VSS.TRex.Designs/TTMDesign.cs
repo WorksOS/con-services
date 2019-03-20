@@ -509,7 +509,7 @@ namespace VSS.TRex.Designs
       TriangleArrayReference arrayReference = SpatialIndexOptimised[CellX, CellY];
       int triangleCount = arrayReference.Count;
 
-      if (triangleCount >= 0) // There are no triangles that can satisfy the query (leaf cell is empty)
+      if (triangleCount >= 0) // There are triangles that can satisfy the query (leaf cell is non-empty)
       {
         double leafCellSize = SpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
         BoundingWorldExtent3D cellWorldExtent = SpatialIndexOptimised.GetCellExtents(CellX, CellY);

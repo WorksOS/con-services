@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Linq;
+using Amazon.S3.Model;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
@@ -156,6 +158,11 @@ namespace VSS.TRex.Designs.TTM
       else if (V == Vertices[2]) result = 2;
 
       return result;
+    }
+
+    public override string ToString()
+    {
+      return $"Vertices: {Vertices[0]},{Vertices[1]},{Vertices[2]}, Neighbours: {Neighbours[0]?.Tag ?? -1},{Neighbours[1]?.Tag ?? -1},{Neighbours[2]?.Tag ?? -1}";
     }
 
     /* Re-include if required, and add unit tests for them at that time.
