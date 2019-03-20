@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.DesignDoesNotExist);
-      response.Bits.CountBits().Should().Be(0);
+      response.Bits.Should().BeNull();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.NoElevationsInRequestedPatch);
-      response.Bits.CountBits().Should().Be(0);
+      response.Bits.Should().BeNull();
     }
   }
 }
