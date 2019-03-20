@@ -5,7 +5,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
-using Draw = System.Drawing;
+using System.Drawing;
 
 namespace VSS.TRex.Tests.Rendering
 {
@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.Rendering
         100, // PixelsY
         null, // Filters
         Guid.Empty, // DesignDescriptor.Null(),
-        Draw.Color.Black,
+        Color.Black,
         string.Empty);
 
       render.Should().NotBeNull();

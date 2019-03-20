@@ -13,6 +13,12 @@ namespace VSS.TRex.Rendering.Displayers
     //        public DisplayPaletteBase Palette { get { return palette; } set { SetPalette(value); } }
     //        private virtual void SetPalette(DisplayPaletteBase value) => Palette = value;
 
+    /// <summary>
+    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
+    protected override bool SupportsCellStripRendering() => true;
+
     public PVMDisplayerBase()
     {
     }
