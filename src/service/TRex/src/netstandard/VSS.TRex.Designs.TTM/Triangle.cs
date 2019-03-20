@@ -158,6 +158,11 @@ namespace VSS.TRex.Designs.TTM
       return result;
     }
 
+    public override string ToString()
+    {
+      return $"Vertices: {Vertices[0]},{Vertices[1]},{Vertices[2]}, Neighbours: {Neighbours[0]?.Tag ?? -1},{Neighbours[1]?.Tag ?? -1},{Neighbours[2]?.Tag ?? -1}";
+    }
+
     /* Re-include if required, and add unit tests for them at that time.
 
     public void GetMinMaxSides(out int ShortestSide, out int LongestSide,

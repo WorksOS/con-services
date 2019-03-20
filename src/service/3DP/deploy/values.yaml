@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 environment: alpha
 
-rootDomain: k8s.vspengg.com
+rootDomain: eks.vspengg.com
 
 globalConfig: 3dapp-alpha
 

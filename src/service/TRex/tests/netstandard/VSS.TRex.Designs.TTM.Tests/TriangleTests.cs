@@ -151,5 +151,17 @@ namespace VSS.TRex.Designs.TTM.Tests
 
       ttm.Triangles[0].Should().BeNull();
     }
+
+    [Fact]
+    public void Test_Triangle_ToString()
+    {
+      var v1 = new TriVertex(0, 0, 0);
+      var v2 = new TriVertex(0, 1, 0);
+      var v3 = new TriVertex(1, 1, 0);
+
+      var tri = new Triangle(v1, v2, v3);
+
+      tri.ToString().Should().ContainAll(new[] { "Vertices:", "Neighbours:"});
+    }
   }
 }
