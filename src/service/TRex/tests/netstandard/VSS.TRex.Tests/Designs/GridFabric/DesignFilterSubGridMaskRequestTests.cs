@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public void SimpleSurface_EmptySiteModel_NoDesign_AtOrigin_DefaultCellSize_FullExtent_ZeroOffset()
+    public void SimpleSurface_EmptySiteModel_NoDesign_AtOrigin_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
 
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public void SimpleSurface_EmptySiteModel_AtOrigin_DefaultCellSize_FullExtent_ZeroOffset()
+    public void SimpleSurface_EmptySiteModel_AtOrigin_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public void SimpleSurface_EmptySiteModel_AwayFromDesignCoverage_DefaultCellSize_FullExtent_ZeroOffset()
+    public void SimpleSurface_EmptySiteModel_AwayFromDesignCoverage_DefaultCellSize_FullExtent()
     {
       AddDesignProfilerGridRouting();
 
