@@ -20,7 +20,6 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         return new CellPassAttributeFilter
         {
           ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
-          HasElevationTypeFilter = true,
           ElevationType = returnEarliestFilteredCellPass ? Types.ElevationType.First : Types.ElevationType.Last
         };
       }

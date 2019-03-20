@@ -44,8 +44,8 @@ data:
   SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.alpha.eks.vspengg.com/internal/v1/background
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.alpha.eks.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0/export/veta
-  TREX_TAGFILE_API_URL: http://trex.mutable.alpha.k8s.vspengg.com/api/v2/tagfiles
-  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.alpha.k8s.vspengg.com/api/v1/design
+  TREX_TAGFILE_API_URL: http://trex.mutable.alpha.eks.vspengg.com/api/v2/tagfiles
+  TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.alpha.eks.vspengg.com/api/v1/design
   TILE_INTERNAL_BASE_URL: http://tile.alpha.eks.vspengg.com/internal/v1
 #TPaaS
   TPAAS_APP_TOKENKEYS: MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh
@@ -77,6 +77,7 @@ data:
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
   ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
   ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
+  ENABLE_TREX_GATEWAY_PROJECTSTATISTICS: "false"
   ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
   ENABLE_TREX_GATEWAY_SURFACE: "false"
   ENABLE_TREX_GATEWAY_VETA: "false"
@@ -124,3 +125,4 @@ data:
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-alpha"
   SLACK_USERNAME: vss-jobs-alpha
+  ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: false

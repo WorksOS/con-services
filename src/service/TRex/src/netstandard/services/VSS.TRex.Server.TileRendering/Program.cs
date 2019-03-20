@@ -5,9 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.TRex.HttpClients.Clients;
-using VSS.TRex.HttpClients.RequestHandlers;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -17,6 +16,8 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.HttpClients.Clients;
+using VSS.TRex.HttpClients.RequestHandlers;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -148,6 +149,7 @@ namespace VSS.TRex.Server.TileRendering
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

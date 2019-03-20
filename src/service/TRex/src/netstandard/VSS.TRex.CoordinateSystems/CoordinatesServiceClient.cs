@@ -45,7 +45,7 @@ namespace VSS.TRex.CoordinateSystems
                     $"?Type=ReferenceGlobal&Latitude={coordinates.Latitude}&Longitude={coordinates.Longitude}&Height={coordinates.Height}" +
                     $"&fromCoordinateSystemId={id}";
 
-        var response = serviceHttpClient.SendRequest(route, HttpMethod.Get).Result;
+        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Get);
 
         if (response.IsSuccessStatusCode)
         {
@@ -77,7 +77,7 @@ namespace VSS.TRex.CoordinateSystems
         var route = $"/coordinates/nee/Orientated/fromLLH?fromCoordinateSystemId={id}&fromType=ReferenceGlobal";
 
         var requestObj = JsonConvert.SerializeObject(coordinates);
-        var response = serviceHttpClient.SendRequest(route, HttpMethod.Post, MediaTypes.JSON, requestObj).Result;
+        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Post, MediaTypes.JSON, requestObj);
 
         if (response.IsSuccessStatusCode)
         {
@@ -106,7 +106,7 @@ namespace VSS.TRex.CoordinateSystems
                     $"?from.type=Orientated&from.northing={coordinates.North}&from.easting={coordinates.East}&from.elevation={coordinates.Elevation}" +
                     $"&fromCoordinateSystemId={id}";
 
-        var response = serviceHttpClient.SendRequest(route, HttpMethod.Get).Result;
+        var response =  await serviceHttpClient.SendRequest(route, HttpMethod.Get);
 
         if (response.IsSuccessStatusCode)
         {
@@ -138,7 +138,7 @@ namespace VSS.TRex.CoordinateSystems
         var route = $"/coordinates/llh/ReferenceGlobal/fromNEE?fromCoordinateSystemId={id}&fromType=Orientated";
 
         var requestObj = JsonConvert.SerializeObject(coordinates);
-        var response = serviceHttpClient.SendRequest(route, HttpMethod.Post, MediaTypes.JSON, requestObj).Result;
+        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Post, MediaTypes.JSON, requestObj);
 
         if (response.IsSuccessStatusCode)
         {
@@ -184,7 +184,7 @@ namespace VSS.TRex.CoordinateSystems
         {
           content.Add(new StreamContent(new MemoryStream(fileContent)), "DC", Path.GetFileName(filePath));
 
-          var response = serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content).Result;
+          var response = await serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content);
           if (!response.IsSuccessStatusCode)
           {
             throw new Exception(response.ToString());
@@ -223,7 +223,7 @@ namespace VSS.TRex.CoordinateSystems
       {
         using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
-          var response = serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get).Result;
+          var response = await serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get);
           if (!response.IsSuccessStatusCode)
           {
             throw new Exception(response.ToString());
