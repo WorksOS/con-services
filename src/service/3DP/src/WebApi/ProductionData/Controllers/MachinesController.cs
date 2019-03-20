@@ -306,15 +306,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //  otherwise there will be a mismatch of Id v.s. Uid.
       // For Gen3 assets, there will be no valid LegacyId. 
       var designDetailsList = new List<MachineDesignDetails>();
-      if (machineResult != null)
+      if (machineResult != null && designsResult != null)
         foreach (var machine in machineResult.MachineStatuses)
         {
           var filteredDesigns =
             designsResult.AssetOnDesignPeriods.Where(
               design =>
-                (design.AssetUid.HasValue
-                  ? design.AssetUid == machine.AssetUid
-                  : design.MachineId == machine.AssetId
+                (
+                  design.MachineId == machine.AssetId
+                  // this test should eventually test Uids as follows,
+                  //     once tRex Guid and raptor Ids have been synchronized in test db
+                  //design.AssetUid.HasValue
+                  //  ? design.AssetUid == machine.AssetUid
+                  //  : design.MachineId == machine.AssetId
                 ) &&
                 IsDateRangeOverlapping(design.StartDate, design.EndDate, beginUtc, finishUtc)).ToList();
 

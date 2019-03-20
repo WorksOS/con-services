@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
@@ -36,36 +37,66 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
     public override ApiType Type => ApiType.Private;
     public override string CacheLifeKey => "ASSETMGMT_CACHE_LIFE";
 
-    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets (List<Guid> assetUids, IDictionary<string, string> customHeaders = null)
+    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<Guid> assetUids,
+      IDictionary<string, string> customHeaders = null)
     {
-      var queryParams = new Dictionary<string, string>();
-      queryParams.Add("assetUid", JsonConvert.SerializeObject(assetUids));
-      var result = await GetMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets", null, null, customHeaders, queryParams);
+      if (assetUids.Count == 0)
+        return new List<KeyValuePair<Guid, long>>();
+
+      var payload = SetStringPayload(assetUids);
+      var result =
+        await PostMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets/assetuids", null, null, customHeaders,
+          payload: payload);
       if (result.Code == 0)
       {
         return result.assetIdentifiers;
       }
-      else
-      {
-        log.LogDebug($"Failed to get list of assets (Guid list): {result.Code}, {result.Message}");
-        return null;
-      }
+
+      log.LogDebug($"Failed to get list of assets (Guid list): {result.Code}, {result.Message}");
+      return null;
     }
 
-    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<long> assetIds, IDictionary<string, string> customHeaders = null)
+    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<long> assetIds,
+      IDictionary<string, string> customHeaders = null)
     {
-      var queryParams = new Dictionary<string, string>();
-      queryParams.Add("assetIds", JsonConvert.SerializeObject(assetIds));
-      var result = await GetMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets", null, null, customHeaders, queryParams);
+      if (assetIds.Count == 0)
+        return new List<KeyValuePair<Guid, long>>();
+
+      var payload = SetStringPayload(assetIds);
+      var result =
+        await PostMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets/assetids", null, null, customHeaders,
+          payload: payload);
       if (result.Code == 0)
       {
         return result.assetIdentifiers;
       }
-      else
-      {
-        log.LogDebug($"Failed to get list of assets (long list): {result.Code}, {result.Message}");
+
+      log.LogDebug($"Failed to get list of assets (long list): {result.Code}, {result.Message}");
+      return null;
+    }
+
+    private Stream SetStringPayload(List<long> assetIds)
+    {
+      if (assetIds.Count == 0)
         return null;
-      }
+
+      var sb = new StringBuilder("[");
+      foreach (var assetId in assetIds)
+        sb.Append($"{assetId},");
+      string payloadString = sb.ToString().TrimEnd(',') + ("]");
+      return new MemoryStream(Encoding.UTF8.GetBytes(payloadString));
+    }
+
+    private Stream SetStringPayload(List<Guid> assetUids)
+    {
+      if (assetUids.Count == 0)
+        return null;
+
+      var sb = new StringBuilder("[");
+      foreach (var assetUid in assetUids)
+        sb.Append($"\"{assetUid}\",");
+      string payloadString = sb.ToString().TrimEnd(',') + ("]");
+      return new MemoryStream(Encoding.UTF8.GetBytes(payloadString));
     }
 
     public void ClearCacheItem(string uid, string userId = null)
