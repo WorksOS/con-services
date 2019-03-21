@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
@@ -80,10 +81,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       if (assetIds.Count == 0)
         return null;
 
-      var sb = new StringBuilder("[");
-      foreach (var assetId in assetIds)
-        sb.Append($"{assetId},");
-      string payloadString = sb.ToString().TrimEnd(',') + ("]");
+      var payloadString = JsonConvert.SerializeObject(assetIds);
       return new MemoryStream(Encoding.UTF8.GetBytes(payloadString));
     }
 
@@ -92,10 +90,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       if (assetUids.Count == 0)
         return null;
 
-      var sb = new StringBuilder("[");
-      foreach (var assetUid in assetUids)
-        sb.Append($"\"{assetUid}\",");
-      string payloadString = sb.ToString().TrimEnd(',') + ("]");
+      var payloadString = JsonConvert.SerializeObject(assetUids);
       return new MemoryStream(Encoding.UTF8.GetBytes(payloadString));
     }
 
