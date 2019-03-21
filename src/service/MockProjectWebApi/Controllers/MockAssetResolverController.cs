@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using MockProjectWebApi.Utils;
 using VSS.Productivity3D.AssetMgmt3D.Models;
-using VSS.VisionLink.Interfaces.Events.Commands.A5N2;
 
 namespace MockProjectWebApi.Controllers
 {

@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <response code="403">Invalid access token provided</response>
     [HttpPost("api/v1/assets/assetuids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
-    public async Task<IActionResult> GetMatchingAssets([FromQuery] List<Guid> assetUids)
+    public async Task<IActionResult> GetMatchingAssets([FromBody] List<Guid> assetUids)
     {
       var results = (await assetRepository.GetAssets(assetUids)).Select(asset =>
         {
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <response code="403">Invalid access token provided</response>
     [HttpPost("api/v1/assets/assetids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
-    public async Task<IActionResult> GetMatchingAssets([FromQuery] List<long> assetIds)
+    public async Task<IActionResult> GetMatchingAssets([FromBody] List<long> assetIds)
     {
       var results = (await assetRepository.GetAssets(assetIds)).Select(asset =>
       {
