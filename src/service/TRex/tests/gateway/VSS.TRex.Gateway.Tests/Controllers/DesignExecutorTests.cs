@@ -17,7 +17,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests
+namespace VSS.TRex.Gateway.Tests.Controllers
 {
   public class DesignExecutorTests : IDisposable
   {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -10,15 +12,14 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
-using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.SiteModels.Interfaces;
 using Xunit;
 
-namespace VSS.TRex.Tests.Reports.StationOffset
+namespace VSS.TRex.Gateway.Tests.Controllers
 {
-  public class StationOffsetReportExecutorTests : IClassFixture<DITagFileFixture>
+  public class StationOffsetReportExecutorTests : IDisposable
   {
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
@@ -163,6 +164,18 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     [Fact]
     public void StationOffsetReportExecutor_SiteModelNotFound()
     {
+      Mock<IConfigurationStore> mockConfigStore = new Mock<IConfigurationStore>();
+      Mock<IServiceExceptionHandler> mockServiceExceptionHandler = new Mock<IServiceExceptionHandler>();
+      var mockSiteModels = new Mock<ISiteModels>();
+
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore>(mockConfigStore.Object))
+        .Add(x => x.AddSingleton<IServiceExceptionHandler>(mockServiceExceptionHandler.Object))
+        .Add(x => x.AddSingleton<ISiteModels>(mockSiteModels.Object))
+        .Complete();
+
       Guid projectUid = Guid.NewGuid(); // use NewSiteModelGuid to get mocked siteModel
       FilterResult filter = null;
       bool reportElevation = true;
@@ -187,14 +200,18 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       var executor = RequestExecutorContainer
         .Build<StationOffsetReportExecutor>(DIContext.Obtain<IConfigurationStore>(),
-          TRex.DI.DIContext.Obtain<ILoggerFactory>(),
+          DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain <IServiceExceptionHandler>());
       var result = Assert.Throws<ServiceException>(() => executor.Process(request));
       Assert.Equal(HttpStatusCode.BadRequest, result.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
       Assert.Equal($"Site model {projectUid} is unavailable", result.GetResult.Message);
     }
-   
+
+    public void Dispose()
+    {
+      DIBuilder.Eject();
+    }
   }
 }
 

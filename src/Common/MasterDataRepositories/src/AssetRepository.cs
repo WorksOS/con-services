@@ -21,6 +21,7 @@ namespace VSS.MasterData.Repositories
 
     #region store
 
+
     public async Task<int> StoreEvent(IAssetEvent evt)
     {
       var upsertedCount = 0;
@@ -295,6 +296,31 @@ namespace VSS.MasterData.Repositories
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0"
+      )).ToList();
+    }
+
+
+    public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<Guid> assetUids)
+    {
+      var assetsArray = assetUids.ToArray();
+      return (await QueryWithAsyncPolicy<Asset>
+      (@"SELECT 
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        LastActionedUTC AS LastActionedUtc
+                      FROM Asset
+                      WHERE IsDeleted = 0 AND AssetUID IN @assetsArray"
+      )).ToList();
+    }
+
+    public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds)
+    {
+      var assetsArray = assetIds.ToArray();
+      return (await QueryWithAsyncPolicy<Asset>
+      (@"SELECT 
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        LastActionedUTC AS LastActionedUtc
+                      FROM Asset
+                      WHERE IsDeleted = 0 AND LegacyAssetId IN @assetsArray"
       )).ToList();
     }
 

@@ -56,7 +56,7 @@
     /// ID a placeholder for LegacyAssetId as not available in TRex
     /// </summary>
     /// <returns></returns>
-    public const long LEGACY_ASSETID = -1;
+    public const long NULL_LEGACY_ASSETID = -1;
 
 
     /// <summary>

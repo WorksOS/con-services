@@ -11,7 +11,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
@@ -68,36 +67,39 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
 #endif
 
-      PairUpAssetIdentifiers(machines, haveUids);
+      await PairUpAssetIdentifiers(machines, haveUids);
       return new MachineExecutionResult(machines);
     }
 
-    private void PairUpAssetIdentifiers(List<MachineStatus> machines, bool haveUids)
+    private async Task PairUpAssetIdentifiers(List<MachineStatus> machines, bool haveUids)
     {
       if (machines == null || machines.Count == 0)
         return;
 
-      // todo await assetProxy.GetAssetsV1(customerUid, customHeaders);
-      var assetsResult = new List<AssetData>(0); 
       if (haveUids)
       {
-        foreach (var machine in machines)
+        // assetMatch will return rows if Uids found, however the legacyAssetIds may be invalid
+        var assetUids = new List<Guid>(machines.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty).Select(a => a.AssetUid.Value).Distinct());
+        var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders)).ToList();
+        foreach (var assetMatch in assetMatchingResult)
         {
-          var legacyAssetId = assetsResult.Where(a => a.AssetUID == machine.AssetUid).Select(a => a.LegacyAssetID).DefaultIfEmpty(-1).First();
-          machine.AssetId = legacyAssetId < 1 ? -1 : legacyAssetId;
+          if (assetMatch.Value > 0)
+            foreach (var assetOnDesignPeriod in machines.FindAll(x => x.AssetUid == assetMatch.Key))
+              assetOnDesignPeriod.AssetId = assetMatch.Value;
         }
       }
       else
-        foreach (var machine in machines)
+      {
+        // assetMatch will only return rows if Uids found for the legacyAssetIds
+        var assetIds = new List<long>(machines.Where(a => a.AssetId > 0).Select(a => a.AssetId).Distinct());
+        var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders)).ToList();
+        foreach (var assetMatch in assetMatchingResult)
         {
-          if (machine.AssetId < 1)
-            machine.AssetUid = null;
-          else
-          {
-            machine.AssetUid = assetsResult.Where(a => a.LegacyAssetID == machine.AssetId).Select(a => a.AssetUID).FirstOrDefault();
-            machine.AssetUid = machine.AssetUid == Guid.Empty ? null : machine.AssetUid;
-          }
+          if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid
+            foreach (var assetOnDesignPeriod in machines.FindAll(x => x.AssetId == assetMatch.Value))
+              assetOnDesignPeriod.AssetUid = assetMatch.Key;
         }
+      }
     }
 
 #if RAPTOR

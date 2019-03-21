@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using VSS.AssetService.Proxy;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
@@ -11,6 +10,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
       services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
       services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
-      services.AddScoped<IAssetServiceProxy, AssetV1ServiceDiscoveryProxy>();
+      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
