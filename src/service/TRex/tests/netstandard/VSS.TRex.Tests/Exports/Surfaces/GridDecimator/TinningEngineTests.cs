@@ -1,10 +1,12 @@
-﻿using VSS.TRex.Designs.TTM;
+﻿using FluentAssertions;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.GridDecimator;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
-    public class TinningEngineTests
+    public class TinningEngineTests: IClassFixture<DILoggingFixture>
     {
       [Fact]
       public void TinningEngineTetss_Creation()
@@ -13,7 +15,6 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
         Assert.NotNull(engine);
         Assert.NotNull(engine.TIN);
-        //Assert.NotNull(engine.Decimator);
       }
 
       [Fact]
@@ -48,6 +49,26 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
         Assert.True(engine.TIN.Triangles.Count == 1);
         Assert.True(engine.TIN.Triangles[0] == t);
+      }
+
+      [Fact]
+      public void BuldTINMesh()
+      {
+        // Build a very simple TIN from three vertices describing a right hand triangle in the 
+        // positive NE quadrant at the origin
+
+        TinningEngine engine = new TinningEngine();
+        engine.TIN.Vertices.InitPointSearch(-10, -10, 20, 20, 3);
+
+        var vertex0 = engine.TIN.Vertices.AddPoint(0, 0, 0);
+        var vertex1 = engine.TIN.Vertices.AddPoint(0, 10, 0);
+        var vertex2 = engine.TIN.Vertices.AddPoint(10, 0, 0);
+
+        engine.BuildTINMesh().Should().BeTrue();
+
+        engine.TIN.Vertices.Count.Should().Be(3);
+        engine.TIN.Triangles.Count.Should().Be(1);
+      //  engine.TIN.Triangles[0].Vertices.Should().Contain(new [] {vertex0, vertex1, vertex2});
       }
   }
 }

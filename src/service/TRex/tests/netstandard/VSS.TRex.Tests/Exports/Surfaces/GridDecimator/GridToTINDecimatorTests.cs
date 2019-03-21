@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.GridDecimator;
@@ -46,13 +47,34 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       }
 
       [Fact]
+      public void GridToTINDecimatorTests_BuildMesh_NoDataSource()
+      {
+        Action act = () =>
+        {
+          var decimator = new GridToTINDecimator(null);
+        };
+
+        act.Should().Throw<TRexTINException>().WithMessage("No data store provided to decimator");
+      }
+
+      [Fact]
+      public void GridToTINDecimatorTests_BuildMesh_NonEmptyDestinationTIN()
+      {
+        GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
+        decimator.GridCalcExtents = new BoundingIntegerExtent2D(0, 0, 100, 100);
+        decimator.GetTIN().Triangles.AddTriangle(new TriVertex(0, 0, 0), new TriVertex(1, 1, 1), new TriVertex(0, 0, 1));
+
+        decimator.BuildMesh().Should().BeFalse();
+        decimator.BuildMeshFaultCode.Should().Be(DecimationResult.DestinationTINNotEmpty);
+      }
+
+      [Fact]
       public void GridToTINDecimatorTests_BuildMesh_EmptyDataSource()
       {
         GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
-        bool result = decimator.BuildMesh();
-
-        Assert.False(result, $"Failed to fail to build mesh from empty data store with fault code {decimator.BuildMeshFaultCode}");
-
+        decimator.BuildMesh().Should().BeFalse();
+        decimator.BuildMeshFaultCode.Should().Be(DecimationResult.NoData);
+        
         decimator.GetTIN().Triangles.Count.Should().Be(0);
         decimator.GetTIN().Vertices.Count.Should().Be(0);
         decimator.GetTIN().Edges.Count.Should().Be(0);
@@ -144,6 +166,21 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         bool result = decimator.BuildMesh();
 
         Assert.True(result, $"Failed to build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
+      }
+
+      [Fact]
+      public void GridToTINDecimatorTests_BuildMesh_ExceedPointLimit()
+      {
+        DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 100, SubGridTreeConsts.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 101, SubGridTreeConsts.DefaultIndexOriginOffset + 101] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 101, SubGridTreeConsts.DefaultIndexOriginOffset + 100] = 100.0f;
+
+        GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
+        decimator.PointLimit = 2;
+        decimator.SetDecimationExtents(DataStoreExtents(dataStore));
+        decimator.BuildMesh().Should().BeFalse();
+        decimator.BuildMeshFaultCode.Should().Be(DecimationResult.VerticesExceeded);
       }
 
       [Fact]
