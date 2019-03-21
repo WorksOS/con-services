@@ -116,8 +116,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
         // Convert the grid rectangle to a world rectangle
         BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
-         (ComputedGridExtent.MinX - 0.01 * dataStore.CellSize,
-          ComputedGridExtent.MinY - 0.01 * dataStore.CellSize,
+         ((ComputedGridExtent.MinX - 0.01) * dataStore.CellSize,
+          (ComputedGridExtent.MinY - 0.01) * dataStore.CellSize,
           (ComputedGridExtent.MaxX + 1 + 0.01) * dataStore.CellSize,
           (ComputedGridExtent.MaxY + 1 + 0.01) * dataStore.CellSize,
           ComputedGridExtent.MinZ, ComputedGridExtent.MaxZ);
