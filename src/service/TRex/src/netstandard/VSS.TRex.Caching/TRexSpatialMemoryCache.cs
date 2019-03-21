@@ -312,7 +312,7 @@ namespace VSS.TRex.Caching
       lock (Contexts)
       {
         // Construct a list of candidates to work through so there are not issues with modifying a collection being enumerated
-        var candidates = Contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAtUtc < removalDateUtc).ToList();
+        var candidates = Contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAtUtc <= removalDateUtc).ToList();
         foreach (var context in candidates)
         {
           if (context.TokenCount != 0)
