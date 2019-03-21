@@ -17,16 +17,6 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Primary task constructor
-        /// </summary>
-        /// <param name="requestDescriptor"></param>
-        /// <param name="tRexNodeID"></param>
-        /// <param name="gridDataType"></param>
-        public PipelinedSubGridTask(Guid requestDescriptor, string tRexNodeID, GridDataType gridDataType) : base(requestDescriptor, tRexNodeID, gridDataType)
-        {
-        }
-
-        /// <summary>
         /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
         /// <param name="response"></param>
@@ -53,8 +43,9 @@ namespace VSS.TRex.Pipelines.Tasks
               Log.LogDebug("WARNING: Aborting pipeline due to cancellation");
               PipeLine.Abort();
             }
-            catch
+            catch (Exception e)
             {
+              Log.LogError(e, "Exception occurred during pipeline cancellation");
               // Just in case the pipeline commits suicide before other related tasks are
               // cancelled (and so also inform the pipeline that it is cancelled), swallow
               // any exception generated for the abort request.

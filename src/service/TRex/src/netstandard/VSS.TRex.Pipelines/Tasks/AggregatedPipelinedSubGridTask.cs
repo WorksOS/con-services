@@ -16,7 +16,7 @@ namespace VSS.TRex.Pipelines.Tasks
         /// </summary>
         public ISubGridRequestsAggregator Aggregator { get; set; }
       
-        public AggregatedPipelinedSubGridTask() : base(Guid.NewGuid(), "", Types.GridDataType.All)
+        public AggregatedPipelinedSubGridTask()
         {
         }
 
