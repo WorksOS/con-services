@@ -1,18 +1,37 @@
-﻿using VSS.TRex.GridFabric.Grids;
+﻿using System.Linq;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Requests;
 
 namespace VSS.TRex.Exports.Patches.GridFabric
 {
   /// <summary>
-  /// Sends a request to the grid for a patch of subgrids
+  /// Sends a request to the grid for a patch of sub grids
   /// </summary>
   public class PatchRequest : GenericASNodeRequest<PatchRequestArgument, PatchRequestComputeFunc, PatchRequestResponse>
-  // Declare class like this to delegate the request to the cluster compute layer
-  //    public class PatchRequest : GenericPSNodeBroadcastRequest<TileRenderRequestArgument, TileRenderRequestComputeFunc, TileRenderResponse>
   {
     public PatchRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
     {
+    }
+
+    public PatchResult ExecuteAndConvertToResult(PatchRequestArgument argument)
+    {
+      PatchRequestResponse response = base.Execute(argument);
+
+      PatchResult result = new PatchResult
+      {
+        TotalNumberOfPagesToCoverFilteredData = response.TotalNumberOfPagesToCoverFilteredData,
+        MaxPatchSize = argument.DataPatchSize,
+        PatchNumber = argument.DataPatchNumber,
+        Patch = response?.SubGrids?.Select(x =>
+        {
+          SubgridDataPatchRecord_ElevationAndTime s = new SubgridDataPatchRecord_ElevationAndTime();
+          s.Populate(x);
+          return s;
+        }).ToArray()
+      };
+
+      return result;
     }
   }
 }

@@ -88,7 +88,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// <returns></returns>
     public bool Execute()
     {
-      Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
+      Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}, RequestingNodeID={RequestingTRexNodeID}");
 
       ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
 
