@@ -44,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var griddedReportRequestArgument = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
       griddedReportRequestArgument.Filters = new FilterSet(filter);
 
-      GriddedReportRequestResponse response = tRexRequest.Execute(griddedReportRequestArgument);
+      var response = tRexRequest.Execute(griddedReportRequestArgument);
 
       var result = new GriddedReportResult()
       {

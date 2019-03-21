@@ -26,6 +26,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\Common\ITask\src\VSS.ITask.csproj", "{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Asset Resolver Service", "Asset Resolver Service", "{E0957385-5E41-46F3-B6AB-14B8F35A8E11}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Abstractions", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj", "{76E41D13-D459-4977-A109-4FE5764A11F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,9 +84,16 @@ Global
 		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76E41D13-D459-4977-A109-4FE5764A11F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76E41D13-D459-4977-A109-4FE5764A11F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76E41D13-D459-4977-A109-4FE5764A11F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76E41D13-D459-4977-A109-4FE5764A11F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{76E41D13-D459-4977-A109-4FE5764A11F8} = {E0957385-5E41-46F3-B6AB-14B8F35A8E11}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6524D83-9E29-4F62-8C9A-E01BA4C38D05}

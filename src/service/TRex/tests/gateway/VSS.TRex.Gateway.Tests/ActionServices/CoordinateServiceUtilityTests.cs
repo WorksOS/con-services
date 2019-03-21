@@ -13,7 +13,7 @@ using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests
+namespace VSS.TRex.Gateway.Tests.ActionServices
 {
   public class CoordinateServiceUtilityTests : IClassFixture<DILoggingFixture>, IDisposable
   {
@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Tests
     {
       var CSIB = DIMENSIONS_2012_DC_CSIB;
       var machines = new List<MachineStatus>() {new MachineStatus
-        (Consts.LEGACY_ASSETID, "", false, "", null, null,
+        (Consts.NULL_LEGACY_ASSETID, "", false, "", null, null,
           lastKnownLatitude: null, lastKnownLongitude: null,
           lastKnownX: 2313, lastKnownY: 1204)
       };
@@ -59,11 +59,11 @@ namespace VSS.TRex.Gateway.Tests
     {
       var CSIB = DIMENSIONS_2012_DC_CSIB;
       var machines = new List<MachineStatus>() {new MachineStatus
-        (Consts.LEGACY_ASSETID, "machine1", false, "", null, null,
+        (Consts.NULL_LEGACY_ASSETID, "machine1", false, "", null, null,
           lastKnownLatitude: null, lastKnownLongitude: null,
           lastKnownX: 2313, lastKnownY: 1204),
         new MachineStatus
-        (Consts.LEGACY_ASSETID, "machine2", false, "", null, null,
+        (Consts.NULL_LEGACY_ASSETID, "machine2", false, "", null, null,
           lastKnownLatitude: null, lastKnownLongitude: null,
           lastKnownX: 2314, lastKnownY: 1205)
       };

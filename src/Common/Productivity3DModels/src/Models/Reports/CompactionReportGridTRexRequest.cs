@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     protected CompactionReportGridTRexRequest()
     { }
 
-    public static CompactionReportGridTRexRequest CreateRequest(
+    public CompactionReportGridTRexRequest(
       Guid projectUid,
       FilterResult filter,
       bool reportElevation,
@@ -79,25 +79,22 @@ namespace VSS.Productivity3D.Models.Models.Reports
       double endEasting,
       double azimuth)
     {
-      return new CompactionReportGridTRexRequest
-      {
-        ProjectUid = projectUid,
-        Filter = filter,
-        ReportElevation = reportElevation,
-        ReportCmv = reportCmv,
-        ReportMdp = reportMdp,
-        ReportPassCount = reportPassCount,
-        ReportTemperature = reportTemperature,
-        ReportCutFill = reportCutFill,
-        CutFillDesignUid = cutFillDesignUid,
-        GridInterval = gridInterval ?? ValidationConstants3D.DEFAULT_SPACING_INTERVAL,
-        GridReportOption = gridReportOption,
-        StartNorthing = startNorthing,
-        StartEasting = startEasting,
-        EndNorthing = endNorthing,
-        EndEasting = endEasting,
-        Azimuth = azimuth
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      ReportElevation = reportElevation;
+      ReportCmv = reportCmv;
+      ReportMdp = reportMdp;
+      ReportPassCount = reportPassCount;
+      ReportTemperature = reportTemperature;
+      ReportCutFill = reportCutFill;
+      CutFillDesignUid = cutFillDesignUid;
+      GridInterval = gridInterval ?? ValidationConstants3D.DEFAULT_SPACING_INTERVAL;
+      GridReportOption = gridReportOption;
+      StartNorthing = startNorthing;
+      StartEasting = startEasting;
+      EndNorthing = endNorthing;
+      EndEasting = endEasting;
+      Azimuth = azimuth;
     }
 
     /// <summary>
