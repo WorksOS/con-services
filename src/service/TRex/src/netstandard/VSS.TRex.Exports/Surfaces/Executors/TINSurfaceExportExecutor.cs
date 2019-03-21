@@ -29,7 +29,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
     /// </summary>
-    public TINSurfaceRequestResponse SurfaceSubGridsResponse { get; set; } = new TINSurfaceRequestResponse();
+    public TINSurfaceRequestResponse SurfaceSubGridsResponse { get; } = new TINSurfaceRequestResponse();
 
     /// <summary>
     /// The TRex application service node performing the request

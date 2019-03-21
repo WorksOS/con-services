@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Reports.Gridded.Executors.Tasks
 {
@@ -21,16 +20,6 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     public Action<ClientCellProfileLeafSubgrid> ProcessorDelegate { get; set; }
   
     public GriddedReportTask()
-    {
-    }
-
-    /// <summary>
-    /// Constructs the grid task
-    /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="tRexNodeId"></param>
-    /// <param name="gridDataType"></param>
-    public GriddedReportTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
     }
 

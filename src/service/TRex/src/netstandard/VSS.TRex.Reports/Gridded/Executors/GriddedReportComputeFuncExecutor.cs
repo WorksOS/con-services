@@ -36,6 +36,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
     public GriddedReportRequestResponse GriddedReportRequestResponse { get; } = new GriddedReportRequestResponse();
 
     private readonly GriddedReportRequestArgument _griddedReportRequestArgument;
+    private readonly ISiteModel _siteModel;
 
     /// <summary>
     /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
@@ -45,7 +46,11 @@ namespace VSS.TRex.Reports.Gridded.Executors
     /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
-    public GriddedReportComputeFuncExecutor(GriddedReportRequestArgument arg) => _griddedReportRequestArgument = arg;
+    public GriddedReportComputeFuncExecutor(GriddedReportRequestArgument arg)
+    {
+      _griddedReportRequestArgument = arg;
+      _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+    }
 
     /// <summary>
     /// Executor that implements requesting and rendering grid information to create the grid rows
@@ -55,76 +60,67 @@ namespace VSS.TRex.Reports.Gridded.Executors
     {
       Log.LogInformation($"Performing Execute for DataModel:{_griddedReportRequestArgument.ProjectID}");
 
-      try
+      ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
+
+      Guid requestDescriptor = Guid.NewGuid();
+
+      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
+        dataModelID: _griddedReportRequestArgument.ProjectID,
+        gridDataType: GridDataType.CellProfile,
+        response: GriddedReportRequestResponse,
+        filters: _griddedReportRequestArgument.Filters,
+        cutFillDesignID: _griddedReportRequestArgument.ReferenceDesignUID,
+        task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport),
+        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+        requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
+        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty,
+        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+      );
+
+      // Set the grid TRexTask parameters for progressive processing
+      processor.Task.RequestDescriptor = requestDescriptor;
+      processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
+      processor.Task.GridDataType = GridDataType.CellProfile;
+
+      ((GriddedReportTask) processor.Task).ProcessorDelegate =
+        subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
+          .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
+
+      // report options 0=direction,1=endpoint,2=automatic
+      if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
       {
-        ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
-
-        Guid requestDescriptor = Guid.NewGuid();
-
-        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
-          dataModelID: _griddedReportRequestArgument.ProjectID,
-          gridDataType: GridDataType.CellProfile,
-          response: GriddedReportRequestResponse,
-          filters: _griddedReportRequestArgument.Filters,
-          cutFillDesignID: _griddedReportRequestArgument.ReferenceDesignUID,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
-          requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty,
-          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
-          );
-
-        // Set the grid TRexTask parameters for progressive processing
-        processor.Task.RequestDescriptor = requestDescriptor;
-        processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
-        processor.Task.GridDataType = GridDataType.CellProfile;
-
-        ((GriddedReportTask)processor.Task).ProcessorDelegate = 
-          subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
-            .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
-
-
-        // report options 0=direction,1=endpoint,2=automatic
-        if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
+        // Compute the bearing between the two points as a survey (north azimuth, clockwise increasing)
+        _griddedReportRequestArgument.Azimuth = Math.Atan2(_griddedReportRequestArgument.EndNorthing - _griddedReportRequestArgument.StartNorthing, _griddedReportRequestArgument.EndEasting - _griddedReportRequestArgument.StartEasting);
+      }
+      else
+      {
+        if (_griddedReportRequestArgument.GridReportOption == GridReportOption.Automatic)
         {
-          // Compute the bearing between the two points as a survey (north azimuth, clockwise increasing)
-          _griddedReportRequestArgument.Azimuth = Math.Atan2(_griddedReportRequestArgument.EndNorthing - _griddedReportRequestArgument.StartNorthing, _griddedReportRequestArgument.EndEasting - _griddedReportRequestArgument.StartEasting);
-        }
-        else
-        {
-          if (_griddedReportRequestArgument.GridReportOption == GridReportOption.Automatic)
-          {
-            // automatic
-            _griddedReportRequestArgument.Azimuth = 0;
-            _griddedReportRequestArgument.StartNorthing = 0;
-            _griddedReportRequestArgument.StartEasting = 0;
-          }
-        }
-
-        // Interval will be >= 0.1m and <= 100.0m
-        processor.Pipeline.AreaControlSet =
-          new AreaControlSet(false, _griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
-            _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
-            _griddedReportRequestArgument.Azimuth);
-
-        if (!processor.Build())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
-          return false;
-        }
-        
-        processor.Process();
-
-        if (GriddedReportRequestResponse.ResultStatus != RequestErrorStatus.OK)
-        {
-          throw new ArgumentException($"Unable to obtain data for Gridded report. GriddedReportRequestResponse: {GriddedReportRequestResponse.ResultStatus.ToString()}.");
+          // automatic
+          _griddedReportRequestArgument.Azimuth = 0;
+          _griddedReportRequestArgument.StartNorthing = 0;
+          _griddedReportRequestArgument.StartEasting = 0;
         }
       }
-      catch (Exception e)
+
+      // Interval will be >= 0.1m and <= 100.0m
+      processor.Pipeline.AreaControlSet =
+        new AreaControlSet(false, _griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
+          _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
+          _griddedReportRequestArgument.Azimuth);
+
+      if (!processor.Build())
       {
-        Log.LogError(e, "ExecutePipeline raised exception");
+        Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
         return false;
+      }
+
+      processor.Process();
+
+      if (GriddedReportRequestResponse.ResultStatus != RequestErrorStatus.OK)
+      {
+        throw new ArgumentException($"Unable to obtain data for Gridded report. GriddedReportRequestResponse: {GriddedReportRequestResponse.ResultStatus.ToString()}.");
       }
 
       return true;
@@ -137,7 +133,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
       if (_griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty)
       {
-        IDesign cutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
+        IDesign cutFillDesign = _siteModel.Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
         if (cutFillDesign == null)
         {
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
@@ -175,8 +171,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
           Easting = cell.CellXOffset + subGridWorldOriginX,
           Northing = cell.CellYOffset + subGridWorldOriginY,
           Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
-          CutFill = (griddedReportRequestArgument.ReportCutFill && designHeights != null &&
-                     designHeights.Cells[x, y] != Consts.NullHeight)
+          CutFill = griddedReportRequestArgument.ReportCutFill && designHeights != null && designHeights.Cells[x, y] != Consts.NullHeight
             ? cell.Height - designHeights.Cells[x, y]
             : Consts.NullHeight,
 

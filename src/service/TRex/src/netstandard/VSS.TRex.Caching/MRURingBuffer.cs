@@ -1,5 +1,6 @@
 ﻿// Currently not used in caching implementation - ignore for now
 using System;
+using System.Diagnostics.CodeAnalysis;
 using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
@@ -8,6 +9,7 @@ namespace VSS.TRex.Caching
   /// Stores a buffer of elements in a ring and provides semantics to add elements to the 'head' of the buffer and to remove elements at any point in the buffer
   /// Elements stored in the ring buffer are defined by the generic type T
   /// </summary>
+  [ExcludeFromCodeCoverage] // Early implementation of buffer containing cached elements
   public class MRURingBuffer<T> : IMRURingBuffer<T> where T : ITRexMemoryCacheItem
   {
     public const long MAX_SUPPORTED_SLOTS = 1000000000;

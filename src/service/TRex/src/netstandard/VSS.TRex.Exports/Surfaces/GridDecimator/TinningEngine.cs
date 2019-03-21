@@ -48,9 +48,10 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       TIN = new TrimbleTINModel();
 
-      affSideList = new AffSideNode[1000];
-      candidateList = new TriListNode[1000];
-      affectedList = new TriListNode[1000];
+      // Set sizes of all lists to be 1 to force list lengthening logic to be exercised as a matter of course.
+      affSideList = new AffSideNode[1];
+      candidateList = new TriListNode[1];
+      affectedList = new TriListNode[1];
     }
 
     /// <summary>
@@ -382,6 +383,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     protected bool Influenced(Triangle theTri, TriVertex theCoord)
     {
+      var result = false;
+
       double cotan = TinningUtils.Cotangent(theTri.Vertices[2], theTri.Vertices[0], theTri.Vertices[1]);
       if (cotan > -1E20)
       {
@@ -393,10 +396,10 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
                        cotan;
         double radSq = Math.Pow(cNorth - theTri.Vertices[0].Y, 2) + Math.Pow(cEast - theTri.Vertices[0].X, 2);
 
-        return Math.Pow(theCoord.X - cEast, 2) + Math.Pow(theCoord.Y - cNorth, 2) < radSq;
+        result = Math.Pow(theCoord.X - cEast, 2) + Math.Pow(theCoord.Y - cNorth, 2) < radSq;
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>

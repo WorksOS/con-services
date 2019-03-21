@@ -9,6 +9,7 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -25,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
-      return BoundingBox3DGrid.CreatBoundingBox3DGrid(
+      return new BoundingBox3DGrid(
               extents.MinX,
               extents.MinY,
               extents.MinZ,
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private ElevationStatisticsResult ConvertResult(TASNodeElevationStatisticsResult result)
     {
-      return ElevationStatisticsResult.CreateElevationStatisticsResult
+      return new ElevationStatisticsResult
       (
           ConvertExtents(result.BoundingExtents),
           result.MinElevation,

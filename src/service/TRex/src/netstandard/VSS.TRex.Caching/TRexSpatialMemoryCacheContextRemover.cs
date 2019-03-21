@@ -45,13 +45,12 @@ namespace VSS.TRex.Caching
     public void StopRemovalOperations()
     {
       _cancelled = true;
-      _waitHandle.Set();
+      _waitHandle?.Set();
     }
 
     public void Dispose()
     {
-      _cancelled = true;
-      _waitHandle.Set();
+      StopRemovalOperations();
       _removalThread = null;
     }
 

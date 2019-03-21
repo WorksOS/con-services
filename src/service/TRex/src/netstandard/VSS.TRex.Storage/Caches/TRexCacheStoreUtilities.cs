@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace VSS.TRex.Storage.Caches
@@ -6,6 +7,7 @@ namespace VSS.TRex.Storage.Caches
     /// <summary>
     /// Implements the Ignite ICacheStore interface
     /// </summary>
+    [ExcludeFromCodeCoverage] // Not currently used...
     public class TRexCacheStoreUtilities 
     {
         /// <summary>

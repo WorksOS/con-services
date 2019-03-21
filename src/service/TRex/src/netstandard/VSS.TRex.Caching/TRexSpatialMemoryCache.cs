@@ -340,7 +340,7 @@ namespace VSS.TRex.Caching
 
     public void Dispose()
     {
-      ContextRemover.StopRemovalOperations();
+      ContextRemover.Dispose();
     }
   }
 }

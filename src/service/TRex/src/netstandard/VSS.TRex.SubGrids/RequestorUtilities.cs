@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public class RequestorUtilities : IRequestorUtilities
   {
-    private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
+    private readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     private ITRexSpatialMemoryCache _subGridCache;
 

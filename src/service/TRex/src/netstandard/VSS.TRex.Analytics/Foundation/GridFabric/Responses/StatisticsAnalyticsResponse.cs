@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
@@ -10,6 +11,8 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
   /// </summary>
   public class StatisticsAnalyticsResponse : BaseAnalyticsResponse, IAggregateWith<StatisticsAnalyticsResponse>
   {
+    private static byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// An array values representing the counts of cells within each of the details bands defined in the request.
     /// The array's size is the same as the number of the data details bands. For Cut/Fill data it is always 7.
@@ -58,7 +61,9 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
-      
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteLongArray(Counts);
       writer.WriteDouble(CellSize);
       writer.WriteInt(SummaryCellsScanned);
@@ -76,6 +81,8 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Counts = reader.ReadLongArray();
       CellSize = reader.ReadDouble();
