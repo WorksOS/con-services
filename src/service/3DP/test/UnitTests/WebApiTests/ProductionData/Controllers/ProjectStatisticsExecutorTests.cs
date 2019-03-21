@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         endTime = DateTime.UtcNow.AddDays(-1),
         cellSize = 32.5,
         indexOriginOffset = 10,
-        extents = BoundingBox3DGrid.CreatBoundingBox3DGrid(10, 500, 0, 20, 510, 0)
+        extents = new BoundingBox3DGrid(10, 500, 0, 20, 510, 0)
       };
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(It.IsAny<ProjectStatisticsTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))

@@ -42,7 +42,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var extents = siteModel.SiteModelExtent;
       if (extents != null)
-        return BoundingBox3DGrid.CreatBoundingBox3DGrid(
+        return new BoundingBox3DGrid(
           extents.MinX,
           extents.MinY,
           extents.MinZ,
@@ -71,7 +71,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var result = new ProjectStatisticsResult();
       if (extents != null)
-        result.extents = BoundingBox3DGrid.CreatBoundingBox3DGrid(
+        result.extents = new BoundingBox3DGrid(
           extents.MinX, extents.MinY, extents.MinZ,
           extents.MaxX, extents.MaxY, extents.MaxZ
         );

@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
     private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
-      return BoundingBox3DGrid.CreatBoundingBox3DGrid(
+      return new BoundingBox3DGrid(
         extents.MinX,
         extents.MinY,
         extents.MinZ,
