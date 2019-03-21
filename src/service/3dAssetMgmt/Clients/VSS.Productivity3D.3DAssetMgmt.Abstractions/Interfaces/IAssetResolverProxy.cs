@@ -7,7 +7,10 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions
 {
   public interface IAssetResolverProxy : ICacheProxy
   {
-    Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<Guid> assetUid,
+    Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<Guid> assetUids,
+      IDictionary<string, string> customHeaders = null);
+
+    Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<long> assetIds,
       IDictionary<string, string> customHeaders = null);
   }
 }

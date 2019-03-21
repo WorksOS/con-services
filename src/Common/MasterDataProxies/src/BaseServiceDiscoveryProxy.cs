@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -70,11 +71,20 @@ namespace VSS.MasterData.Proxies
 
     #region Protected Methods
 
-    protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders) 
+    protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null)
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
-        () => GetRequest<T>(customHeaders, route));
+        () => RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters));
+    }
+
+    protected Task<T> PostMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
+      IDictionary<string, string> queryParameters = null, Stream payload = null)
+      where T : class, IMasterDataModel
+    {
+      return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
+        () => RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload));
     }
 
     #endregion
@@ -94,15 +104,15 @@ namespace VSS.MasterData.Proxies
         : serviceResolution.ResolveRemoteServiceEndpoint(ExternalServiceName, Type, Version, route, queryParameters));
     }
 
-    private async Task<TResult> GetRequest<TResult>(IDictionary<string, string> customHeaders,
-      string route = null, IDictionary<string, string> queryParameters = null)  where TResult : class, IMasterDataModel
+    private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
+      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
     {
       var url = await GetUrl(route, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<TResult>(url, customHeaders: customHeaders, method: HttpMethod.Get);
+      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method);
       log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
 
       return result;
