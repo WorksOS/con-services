@@ -20,7 +20,6 @@ namespace VSS.Productivity3D.AssetMgmt3D.Models
     {
       return assetIdentifiers?
                .Select(a => a.Key.ToString())
-               .Distinct()
                .ToList()
              ?? new List<string>();
     }

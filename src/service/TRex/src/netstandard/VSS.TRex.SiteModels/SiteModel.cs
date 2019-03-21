@@ -744,7 +744,7 @@ namespace VSS.TRex.SiteModels
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-              priorMachineDesignId,Consts.LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
+              priorMachineDesignId,Consts.NULL_LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
           }
 
           // where multi events for same design -  want to retain startDate of first
@@ -759,7 +759,7 @@ namespace VSS.TRex.SiteModels
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
           assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-            priorMachineDesignId, Consts.LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
+            priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
         }
       }
 
@@ -805,7 +805,7 @@ namespace VSS.TRex.SiteModels
             MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetStateAtIndex(layerStateChangeIndex, out thisLayerChangeTime, out ushort nextLayerId);
 
             if (priorLayerId != ushort.MaxValue)
-              assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+              assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
               thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID));
 
             priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(thisLayerChangeTime, out int _, Consts.kNoDesignNameID);
@@ -815,7 +815,7 @@ namespace VSS.TRex.SiteModels
 
           // event earlier in report period, this covers to end of period
           if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
-            assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
+            assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID, priorDesignNameId, priorLayerId, priorLayerChangeTime,
               endReportingPeriod, machine.ID));
         }
       }

@@ -23,9 +23,9 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     }
 
     /// <summary>
-    /// Get a list of customers, projects and files for me
+    /// Get a list of asset Uid/Id matches for Uids supplied
     /// </summary>
-    /// <response code="200">A list of customers you can currently access.</response>
+    /// <response code="200">A list of matched assets.</response>
     /// <response code="403">Invalid access token provided</response>
     [HttpPost("api/v1/assets/assetuids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
@@ -40,9 +40,9 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     }
 
     /// <summary>
-    /// Get a list of customers, projects and files for me
+    /// Get a list of asset Uid/Id matches for Ids supplied
     /// </summary>
-    /// <response code="200">A list of customers you can currently access.</response>
+    /// <response code="200">A list of matched assets.</response>
     /// <response code="403">Invalid access token provided</response>
     [HttpPost("api/v1/assets/assetids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
