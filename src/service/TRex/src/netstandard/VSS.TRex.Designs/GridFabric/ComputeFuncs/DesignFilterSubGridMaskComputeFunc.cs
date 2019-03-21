@@ -23,26 +23,23 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         var patch = Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.CellSize, args.OriginX, args.OriginY, 0, out var calcResult);
 
+        var result = new DesignFilterSubGridMaskResponse();
+
         if (patch == null)
         {
-          return new DesignFilterSubGridMaskResponse
-          {
-            RequestResult = calcResult,
-            Bits = null // This may seem harsh, but callers should not ask for patches that do not exist
-          };
+          result.Bits = null; // Requestors should not ask for sub grids that son;t exist in the design..
+          result.RequestResult = calcResult;
+          return result;
         }
 
-        var result = new DesignFilterSubGridMaskResponse
-        {
-          RequestResult = calcResult
-        };
+        result.RequestResult = calcResult;
 
         var patchCells = patch.Cells;
         for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
         {
           for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
           {
-            result.Bits[i, j] = patchCells[i, j].Equals(Common.Consts.NullHeight);
+            result.Bits[i, j] = !patchCells[i, j].Equals(Common.Consts.NullHeight);
           }
         }
         return result;

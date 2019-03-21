@@ -3,12 +3,10 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.DI;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Tests.DesignProfiling
+namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(DesignElevationSpotRequest))]
   public class DesignElevationSpotRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>

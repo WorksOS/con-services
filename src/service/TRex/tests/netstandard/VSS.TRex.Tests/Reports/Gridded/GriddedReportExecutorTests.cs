@@ -11,7 +11,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;

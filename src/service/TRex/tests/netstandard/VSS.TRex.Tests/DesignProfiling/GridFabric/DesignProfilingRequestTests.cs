@@ -1,21 +1,16 @@
-﻿using System;
-using FluentAssertions;
-using VSS.MasterData.Models.Models;
+﻿using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.Tests.DesignProfiling
+namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(DesignProfileRequest))]
   public class DesignProfilingRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>

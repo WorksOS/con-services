@@ -52,7 +52,7 @@ namespace VSS.TRex.Caching
     /// Determine what external stimuli elements in this cache are sensitive to with respect to
     /// invalidation and eviction of elements contained in the cache.
     /// </summary>
-    public TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; set; } = TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest;
+    public TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; } = TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest;
 
     /// <summary>
     /// Constructs a new cache context for the given owning cache and MRU list. Time base expiry is defaulted to 'never'.
@@ -192,21 +192,19 @@ namespace VSS.TRex.Caching
     /// <param name="subGridPresentForInvalidation"></param>
     public void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
     {
+      subGridPresentForInvalidation = false;
+
       uint x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       uint y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       var contextToken = ContextTokens[x, y];
 
-      if (contextToken == 0)
+      if (contextToken != 0)
       {
-        // Nothing to do
-        subGridPresentForInvalidation = false;
-        return;
+        // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
+        MRUList.Invalidate(contextToken - 1);
+        subGridPresentForInvalidation = true;
       }
-
-      // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
-      MRUList.Invalidate(contextToken - 1);
-      subGridPresentForInvalidation = true;
     }
 
     /// <summary>

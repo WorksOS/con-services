@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
@@ -12,6 +13,8 @@ namespace VSS.TRex.Analytics.ElevationStatistics.GridFabric
   /// </summary>
   public class ElevationStatisticsResponse : BaseAnalyticsResponse, IAggregateWith<ElevationStatisticsResponse>, IAnalyticsOperationResponseResultConversion<ElevationStatisticsResult>
   {
+    private static byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The cell size of the site model the aggregation is being performed over.
     /// </summary>
@@ -81,6 +84,8 @@ namespace VSS.TRex.Analytics.ElevationStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteDouble(CellSize);
       writer.WriteDouble(MinElevation);
       writer.WriteDouble(MaxElevation);
@@ -99,6 +104,8 @@ namespace VSS.TRex.Analytics.ElevationStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       CellSize = reader.ReadDouble();
       MinElevation = reader.ReadDouble();

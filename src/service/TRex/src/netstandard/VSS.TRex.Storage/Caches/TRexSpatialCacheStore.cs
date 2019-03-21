@@ -1,10 +1,12 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Storage.Caches
 {
+    [ExcludeFromCodeCoverage] // Not currently used...
     public class TRexSpatialCacheStore : CacheStoreAdapter<ISubGridSpatialAffinityKey, MemoryStream>
     {
         private readonly TRexCacheStoreUtilities Utilities;

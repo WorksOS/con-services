@@ -5,18 +5,16 @@ using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.Tests.DesignProfiling
+namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(DesignElevationPatchRequest))]
-  public class DesignProfilingElevationPatchRequests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class DesignProfilingElevationPatchRequestsTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();

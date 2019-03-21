@@ -15,8 +15,6 @@ namespace VSS.TRex.Common
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexHeartBeatLogger>();
 
-    private static readonly int kDefaultIntervalInMilliseconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("HEARTBEAT_LOGGER_INTERVAL", Consts.HEARTBEAT_LOGGER_INTERVAL);
-
     private readonly List<object> loggingContexts;
 
     private readonly Thread contextRunner;
@@ -58,7 +56,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// Creates a new heartbeat logger with the default interval between heart beat epochs
     /// </summary>
-    public TRexHeartBeatLogger() : this(kDefaultIntervalInMilliseconds)
+    public TRexHeartBeatLogger() : this(DIContext.Obtain<IConfigurationStore>().GetValueInt("HEARTBEAT_LOGGER_INTERVAL", Consts.HEARTBEAT_LOGGER_INTERVAL))
     {
     }
 

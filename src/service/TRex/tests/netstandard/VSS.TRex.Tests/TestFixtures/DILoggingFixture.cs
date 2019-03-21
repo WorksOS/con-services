@@ -25,13 +25,13 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
-          config.Setup(c => c.GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", It.IsAny<bool>())).Returns(Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
+          config.Setup(c => c.GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", It.IsAny<bool>())).Returns(true /*Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG*/);
           config.Setup(c => c.GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", It.IsAny<bool>())).Returns(Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
           config.Setup(c => c.GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", It.IsAny<bool>())).Returns(Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS);
 
           config.Setup(c => c.GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", It.IsAny<int>())).Returns(Consts.VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
 
-          config.Setup(c => c.GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", It.IsAny<bool>())).Returns(Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
+          config.Setup(c => c.GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", It.IsAny<bool>())).Returns(true /*Consts.ADVISEOTHERSERVICES_OFMODELCHANGES*/);
 
           config.Setup(c => c.GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", It.IsAny<int>())).Returns(Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
 
@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", It.IsAny<bool>())).Returns(Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
           config.Setup(c => c.GetValueBool("ENABLE_TAGFILE_ARCHIVING", It.IsAny<bool>())).Returns(Consts.ENABLE_TAGFILE_ARCHIVING);
 
-          config.Setup(c => c.GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", It.IsAny<bool>())).Returns(Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
+          config.Setup(c => c.GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", It.IsAny<bool>())).Returns(true /*Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING*/);
           config.Setup(c => c.GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", It.IsAny<bool>())).Returns(Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
 
           config.Setup(c => c.GetValueInt("MAX_EXPORT_ROWS")).Returns(Consts.DEFAULT_MAX_EXPORT_ROWS);

@@ -9,7 +9,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Tests.Designs.GridFabric
+namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(DesignFilterSubGridMaskRequest))]
   public class DesignFilterSubGridMaskRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Reports.Gridded.Executors;
