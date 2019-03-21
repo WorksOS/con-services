@@ -13,6 +13,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -125,8 +126,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #endif
                 configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
               .Process(projectExtentsRequest) as ProjectExtentsResult;
-          result = ElevationStatisticsResult.CreateElevationStatisticsResult(
-            BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
+          result = new ElevationStatisticsResult(
+            new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
               extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
               extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0);
         }
@@ -135,9 +136,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           log.LogDebug(
             $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
 
-          LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+          var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-          ElevationStatisticsRequest statsRequest =
+          var statsRequest =
             ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
               liftSettings);
           statsRequest.Validate();

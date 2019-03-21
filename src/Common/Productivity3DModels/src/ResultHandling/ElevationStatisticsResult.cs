@@ -1,7 +1,7 @@
 ﻿using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Common.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// Represents result returned by levation Statistics request
@@ -45,18 +45,17 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// </summary>
     public double TotalCoverageArea { get; private set; }
 
-    public static ElevationStatisticsResult CreateElevationStatisticsResult(BoundingBox3DGrid convertExtents, double minElevation,
+    public ElevationStatisticsResult(BoundingBox3DGrid convertExtents, double minElevation,
             double maxElevation, double totalCoverageArea)
     {
-      return new ElevationStatisticsResult
-      {
-        BoundingExtents = convertExtents,
-        MinElevation = minElevation,
-        MaxElevation = maxElevation,
-        TotalCoverageArea = totalCoverageArea,
-        Message = convertExtents == null ? "No elevation range" : DefaultMessage,
-        Code = convertExtents == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ExecutedSuccessfully
-      };
+      BoundingExtents = convertExtents;
+      MinElevation = minElevation;
+      MaxElevation = maxElevation;
+      TotalCoverageArea = totalCoverageArea;
+      Message = convertExtents == null ? "No elevation range" : DefaultMessage;
+      Code = convertExtents == null
+        ? ContractExecutionStatesEnum.FailedToGetResults
+        : ContractExecutionStatesEnum.ExecutedSuccessfully;
     }
   }
 }
