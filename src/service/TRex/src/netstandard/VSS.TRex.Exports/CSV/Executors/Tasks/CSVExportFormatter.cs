@@ -134,16 +134,12 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     public string FormatRadioLatency(int value)
     {
-      if (value == CellPassConsts.NullRadioLatency)
-        return nullString;
-      return value.ToString();
+      return value == CellPassConsts.NullRadioLatency ? nullString : value.ToString();
     }
 
     public string FormatSpeed(int value)
     {
-      if (value == Consts.NullMachineSpeed)
-        return nullString;
-      return FormatDisplayVelocity(value/100.00, -1);
+      return value == Consts.NullMachineSpeed ? nullString : FormatDisplayVelocity(value/100.00, -1);
     }
 
     public string FormatGPSMode(GPSMode value)
@@ -184,9 +180,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     // As CCV/MDP/RMV are reported in 10th, no units...
     public string FormatCompactionCCVTypes(short value)
     {
-      if (value == CellPassConsts.NullCCV)
-        return nullString;
-      return $"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1)}"; 
+      return value == CellPassConsts.NullCCV ? nullString : $"{DoubleToStrF(value / CellPassConsts.CCVvalueRatio, 18, true, 1)}"; 
     }
 
     public string FormatFrequency(ushort value)
@@ -322,10 +316,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     // Converts a value(in meters) to a string in the current distance units 
     private string DistanceDoubleToStrF(double value, int precision, bool isFormattingRequired, int dp )
     {
-      if (value.Equals(Consts.NullHeight))
-        return nullString;
-
-      return (DoubleToStrF(value / distanceConversionFactor, precision, isFormattingRequired, dp));
+      return value.Equals(Consts.NullHeight) ? nullString : DoubleToStrF(value / distanceConversionFactor, precision, isFormattingRequired, dp);
     }
 
     private string DoubleToStrF(double value, int precision, bool isFormattingRequired, int dp)
