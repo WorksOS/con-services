@@ -112,5 +112,12 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       Assert.Equal((uint) NumEqualZero, SubGridTreeConsts.CellsPerSubGrid);
     }
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
   }
 }

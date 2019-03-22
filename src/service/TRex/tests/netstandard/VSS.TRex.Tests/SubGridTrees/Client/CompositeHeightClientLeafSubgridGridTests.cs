@@ -1,4 +1,9 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -75,6 +80,72 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var clientGrid = TestSubGrid();
 
       TestBinary_ReaderWriterBufferedHelper.RoundTripSerialise(clientGrid);
+    }
+
+    [Fact]
+    public void AssignableFilteredValueIsNull()
+    {
+      var clientGrid = TestSubGrid();
+      var passData = new FilteredPassData
+      {
+        FilteredPass = new CellPass
+        {
+          Height = CellPassConsts.NullHeight
+        }
+      };
+
+      clientGrid.AssignableFilteredValueIsNull(ref passData).Should().BeTrue();
+
+      passData.FilteredPass.Height = 10.0f;
+
+      clientGrid.AssignableFilteredValueIsNull(ref passData).Should().BeFalse();
+    }
+
+    [Fact]
+    public void AssignFilteredValue_FailAsNotSupported()
+    {
+      var clientGrid = TestSubGrid();
+      var context = new FilteredValueAssignmentContext
+      {
+        FilteredValue = new FilteredSinglePassInfo
+        {
+          FilteredPassData = new FilteredPassData
+          {
+            FilteredPass = new CellPass
+            {
+              Height = 123.4f
+            }
+          }
+        }
+      };
+
+      Action act = () => clientGrid.AssignFilteredValue(0, 0, context);
+      act.Should().Throw<TRexSubGridProcessingException>().WithMessage("Composite height sub grids don't define a filter value assignment behaviour");
+    }
+
+    [Fact]
+    public void SetHeightsToNull()
+    {
+      var clientGrid = TestSubGrid();
+      var nonNullValue = new SubGridCellCompositeHeightsRecord
+      {
+        LastHeight = 12.3f,
+        HighestHeight = 23.4f,
+        LowestHeight = 34.5f,
+        FirstHeight = 45.6f
+      };
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => clientGrid.Cells[x, y] = nonNullValue);
+
+      clientGrid.SetHeightsToNull();
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        clientGrid.Cells[x, y].LastHeight = CellPassConsts.NullHeight;
+        clientGrid.Cells[x, y].HighestHeight = CellPassConsts.NullHeight;
+        clientGrid.Cells[x, y].LowestHeight = CellPassConsts.NullHeight;
+        clientGrid.Cells[x, y].FirstHeight = CellPassConsts.NullHeight;
+      });
     }
   }
 }

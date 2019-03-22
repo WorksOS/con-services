@@ -21,6 +21,10 @@ namespace VSS.Common.ServiceDiscovery
       // We could use reflection if adding them manually gets annoying
       services.AddSingleton<IServiceResolver, ConfigurationServiceResolver>();
 
+#if DEBUG
+      services.AddSingleton<IServiceResolver, DevelopmentServiceResolver>(); 
+#endif
+
       services.AddSingleton<IServiceResolution, InternalServiceResolver>();
       return services;
     }

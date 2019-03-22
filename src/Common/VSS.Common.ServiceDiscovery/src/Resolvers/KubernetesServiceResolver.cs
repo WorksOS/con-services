@@ -2,10 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using k8s;
-using k8s.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Interfaces;
@@ -23,9 +20,9 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     /// <summary>
     /// We are specifically looking for HTTP only services, we currently do not (or need) support other types (e.g https, binary)
     /// </summary>
-    private const string PORT_NAME = "http";
+    private const int PORT_NUMBER = 80;
 
-    private const int DEFAULT_PRIORITY = 100;
+    private const int DEFAULT_PRIORITY = 10;
 
     private readonly ILogger<KubernetesServiceResolver> logger;
     
@@ -78,11 +75,11 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
         var httpPort = item
           .Spec
           .Ports
-          .FirstOrDefault(p => string.Compare(PORT_NAME, p.Name, StringComparison.OrdinalIgnoreCase) == 0);
+          .FirstOrDefault(p => p.Port == PORT_NUMBER);
 
         if (httpPort == null)
         {
-          logger.LogWarning($"Could not find an {PORT_NAME} Port for the service `{item.Metadata?.Name}` - ignoring");
+          logger.LogWarning($"Could not find Port {PORT_NUMBER} for the service `{item.Metadata?.Name}` - ignoring");
         }
         else if (string.IsNullOrEmpty(item.Spec.ClusterIP))
         {
@@ -91,7 +88,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
         else
         {
           // First one found that matches
-          var url = $"{httpPort.Name}://{spec.ClusterIP}:{httpPort.Port}";
+          var url = $"http://{spec.ClusterIP}:{httpPort.Port}";
           logger.LogInformation($"Found `{url}` for the service name `{serviceName}` from kubernetes");
           return Task.FromResult(url);
         }

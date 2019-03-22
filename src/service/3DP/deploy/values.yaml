@@ -3,9 +3,12 @@
 # Declare variables to be passed into your templates.
 environment: alpha
 
-rootDomain: k8s.vspengg.com
+rootDomain: eks.vspengg.com
 
 globalConfig: 3dapp-alpha
+
+# Must match the const in VSS.Common.Abstractions.ServiceDiscovery.Constants.ServiceNameConstants
+serviceName: productivity-3d-service
 
 replicaCount: 1
 

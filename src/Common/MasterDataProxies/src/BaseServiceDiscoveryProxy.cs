@@ -72,7 +72,7 @@ namespace VSS.MasterData.Proxies
     #region Protected Methods
 
     protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
-      IDictionary<string, string> queryParameters = null)
+        IDictionary<string, string> queryParameters = null) 
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
@@ -105,7 +105,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
+     HttpMethod method, string route = null, IDictionary<string, string> queryParameters = null, System.IO.Stream payload = null)  where TResult : class, IMasterDataModel
     {
       var url = await GetUrl(route, queryParameters);
 

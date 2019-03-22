@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 
@@ -12,6 +13,8 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   public class CMVStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<CMVStatisticsResponse>, 
     IAnalyticsOperationResponseResultConversion<CMVStatisticsResult>
   {
+    private static byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// Holds last known good target CMV value.
     /// </summary>
@@ -25,6 +28,8 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteShort(LastTargetCMV);
     }
 
@@ -35,6 +40,8 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       LastTargetCMV = reader.ReadShort();
     }

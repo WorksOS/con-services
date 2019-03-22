@@ -39,6 +39,7 @@
     /// <summary>
     /// Null ID for a design reference descriptor ID
     /// </summary>
+    public const string kNoDesignName = "'<No Design>";
     public const int kNoDesignNameID = 0;
 
     /// <summary>
@@ -50,6 +51,13 @@
     /// Largest GPS accuracy error value
     /// </summary>
     public const ushort kMaxGPSAccuracyErrorLimit = 0x3FFF;
+
+    /// <summary>
+    /// ID a placeholder for LegacyAssetId as not available in TRex
+    /// </summary>
+    /// <returns></returns>
+    public const long NULL_LEGACY_ASSETID = -1;
+
 
     /// <summary>
     /// The limit under which node subgrids are represented by sparse lists rather than a complete sub grid array of child sub grid references

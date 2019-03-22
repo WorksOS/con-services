@@ -15,7 +15,6 @@ using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
-
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>

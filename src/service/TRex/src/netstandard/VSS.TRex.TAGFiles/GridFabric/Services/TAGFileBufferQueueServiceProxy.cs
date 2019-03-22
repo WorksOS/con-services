@@ -64,7 +64,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             {
                 Log.LogInformation("Deploying new service");
 
-                services.Deploy(new ServiceConfiguration()
+                services.Deploy(new ServiceConfiguration
                 {
                     Name = ServiceName,
                     Service = new TAGFileBufferQueueService(),

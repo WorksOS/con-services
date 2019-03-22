@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
-using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
+﻿using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.Coordinators;
@@ -15,8 +13,6 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
   /// </summary>
   public class CMVChangeStatisticsCoordinator : BaseAnalyticsCoordinator<CMVChangeStatisticsArgument, CMVChangeStatisticsResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
-
     public override AggregatorBase ConstructAggregator(CMVChangeStatisticsArgument argument) => new CMVChangeStatisticsAggregator
     {
       RequiresSerialisation = true,

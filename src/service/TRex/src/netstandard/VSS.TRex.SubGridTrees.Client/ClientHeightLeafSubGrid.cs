@@ -226,5 +226,10 @@ namespace VSS.TRex.SubGridTrees.Client
              SurveyedSurfaceMap.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
     }
+
+    public void DumpToLog()
+    {
+      base.DumpToLog();
+    }
   }
 }

@@ -47,12 +47,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization
 
     public static bool TypeIsInteresting(Type x)
     {
-      const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+      const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;// | BindingFlags.DeclaredOnly | BindingFlags.Instance;
 
       return (typeof(BaseRequestArgument).IsAssignableFrom(x) || typeof(BaseRequestResponse).IsAssignableFrom(x)) &&
              x.Implements(typeof(IBinarizable)) &&
              x.Implements(typeof(IFromToBinary)) &&
              !x.Implements(typeof(INonBinarizable)) &&
+             !x.ContainsGenericParameters &&
              x.EnumerateFields(flags, VERSION_NUMBER).Any();
     }
 
@@ -161,7 +162,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       // an IFromToBinary based serialization implementing Ignite IBinarizable serialization).
       // For each of the latter we should find the inherited member that implement the version 
       // number and perform the same check against the base class serialization (ie: So the the base
-      // serialization is exercised through the type instance
+      // serialization is exercised through the type instance)
 
       var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
       var field = type.GetTypeInfo().GetField(VERSION_NUMBER, flags);

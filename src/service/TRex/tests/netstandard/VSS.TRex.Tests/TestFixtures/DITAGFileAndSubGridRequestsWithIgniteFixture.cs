@@ -3,11 +3,13 @@ using System.IO;
 using Apache.Ignite.Core;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -28,6 +30,8 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
+using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -105,12 +109,13 @@ namespace VSS.TRex.Tests.TestFixtures
       IgniteMock.ResetDynamicMockedIgniteContent();
     }
 
-    public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName)
+    public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
+      bool constructIndexFilesOnLoad)
     {
       var filePathAndName = Path.Combine(filePath, fileName);
 
       TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-      var designLoadResult = ttm.LoadFromFile(filePathAndName, false); 
+      var designLoadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad); 
       designLoadResult.Should().Be(DesignLoadResult.Success);
 
       BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
@@ -124,6 +129,13 @@ namespace VSS.TRex.Tests.TestFixtures
       var designSurface = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
         new DesignDescriptor(designUid, filePath, fileName, 0), extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
+
+      // Tell the sitemodels collection the site model has changed 
+      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(new SiteModelAttributesChangedEvent
+        {
+          SiteModelID = siteModel.ID,
+          DesignsModified = true
+        });
 
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
@@ -141,6 +153,29 @@ namespace VSS.TRex.Tests.TestFixtures
                 destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
 
       return designUid;
+    }
+
+    public static ISiteModel NewEmptyModel()
+    {
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      return siteModel;
+    }
+
+    public static Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
+    {
+      // Make a mutable TIN containing a single triangle and as below and register it to the site model
+      VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
+      tin.Vertices.InitPointSearch(-100, -100, 100, 100, 3);
+      tin.Triangles.AddTriangle(tin.Vertices.AddPoint(-25, -25, elevation),
+        tin.Vertices.AddPoint(25, -25, elevation),
+        tin.Vertices.AddPoint(0, 25, elevation));
+
+      var tempFileName = Path.GetTempFileName() + ".ttm";
+      tin.SaveToFile(tempFileName, true);
+
+      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel
+        (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
 
     public new void Dispose()

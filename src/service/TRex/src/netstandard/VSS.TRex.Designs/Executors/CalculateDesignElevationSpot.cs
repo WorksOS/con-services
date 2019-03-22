@@ -11,9 +11,7 @@ namespace VSS.TRex.Designs.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationSpot>();
 
-    private static IDesignFiles designs = null;
-
-    private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
+    private readonly IDesignFiles designs = DIContext.Obtain<IDesignFiles>();
 
     /// <summary>
     /// Default no-args constructor
@@ -31,9 +29,9 @@ namespace VSS.TRex.Designs.Executors
     {
       CalcResult = DesignProfilerRequestResult.UnknownError;
 
-      IDesignBase Design = Designs.Lock(referenceDesignUID, projectUID, SubGridTreeConsts.DefaultCellSize, out DesignLoadResult LockResult);
+      var design = designs.Lock(referenceDesignUID, projectUID, SubGridTreeConsts.DefaultCellSize, out DesignLoadResult LockResult);
 
-      if (Design == null)
+      if (design == null)
       {
         Log.LogWarning($"Failed to read design file for design {referenceDesignUID}");
         CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
@@ -43,7 +41,7 @@ namespace VSS.TRex.Designs.Executors
       try
       {
         int Hint = -1;
-        if (Design.InterpolateHeight(ref Hint, spotX, spotY, offset, out double Z))
+        if (design.InterpolateHeight(ref Hint, spotX, spotY, offset, out double Z))
         {
           CalcResult = DesignProfilerRequestResult.OK;
         }
@@ -57,7 +55,7 @@ namespace VSS.TRex.Designs.Executors
       }
       finally
       {
-        Designs.UnLock(referenceDesignUID, Design);
+        designs.UnLock(referenceDesignUID, design);
       }
     }
 

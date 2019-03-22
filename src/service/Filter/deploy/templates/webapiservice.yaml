@@ -3,6 +3,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ $name }}
+  labels:
+    service-name: {{ .Values.serviceName }}
 spec:
   selector:
     app: {{ $name }}

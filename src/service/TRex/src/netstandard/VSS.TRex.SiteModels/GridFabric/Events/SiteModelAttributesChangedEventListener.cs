@@ -40,7 +40,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       var siteModels = DIContext.Obtain<ISiteModels>();
       if (siteModels != null)
       {
-        siteModels.SiteModelAttributesHaveChanged(message.SiteModelID, message);
+        siteModels.SiteModelAttributesHaveChanged(message);
       }
       else
       {

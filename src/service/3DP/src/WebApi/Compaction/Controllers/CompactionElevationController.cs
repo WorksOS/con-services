@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         if (result == null)
         {
           //Ideally want to return an error code and message only here
-          result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
+          result = new ElevationStatisticsResult(null, 0, 0, 0);
         }
 
         Log.LogInformation($"{nameof(GetElevationRange)} result: {JsonConvert.SerializeObject(result)}");

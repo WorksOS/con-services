@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.DI;
+﻿using VSS.TRex.DI;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
@@ -13,15 +12,7 @@ namespace VSS.TRex.Storage
   {
     public static IStorageProxy Instance(StorageMutability mutability)
     {
-      var Factory = DIContext.Obtain<IStorageProxyFactory>();
-
-      switch (mutability)
-      {
-        case StorageMutability.Mutable: return Factory?.Storage(StorageMutability.Mutable);
-        case StorageMutability.Immutable: return Factory?.Storage(StorageMutability.Immutable); 
-        default:
-          throw new ArgumentException($"{mutability} is an unknown mutability type");
-      }
+      return DIContext.Obtain<IStorageProxyFactory>()?.Storage(mutability);
     }
   }
 }

@@ -20,7 +20,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
     public CoordType CoordType { get; set; }
 
-    public OutputTypes OutputType { get; private set; }
+    public OutputTypes OutputType { get; set; }
 
 
     public CSVExportUserPreferences UserPreferences { get; set; }
@@ -29,8 +29,8 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     public List<CSVExportMappedMachine> MappedMachines { get; set; }
 
     // RestrictOutputSize and RawDataAsDBase are for pass count export only
-    public bool RestrictOutputSize { get; private set; }
-    public bool RawDataAsDBase { get; private set; }
+    public bool RestrictOutputSize { get; set; }
+    public bool RawDataAsDBase { get; set; }
 
 
     public CSVExportRequestArgument()

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Designs.TTM;
 
 namespace VSS.TRex.Designs
 {
+    [ExcludeFromCodeCoverage] // Not currently used...
     public class TTMQuadTree : TriangleQuadTree
     {
         public TrimbleTINModel TTM { get; set; }

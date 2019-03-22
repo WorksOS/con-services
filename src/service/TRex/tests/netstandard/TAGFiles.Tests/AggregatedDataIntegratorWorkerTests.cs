@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Machines.Interfaces;
@@ -12,7 +13,6 @@ using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace TAGFiles.Tests
@@ -36,7 +36,7 @@ namespace TAGFiles.Tests
       // Create the site model and machine etc to aggregate the processed TAG file into
       //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       converter.Machine.ID = targetMachine.ID;
 
@@ -66,7 +66,7 @@ namespace TAGFiles.Tests
       // Create the site model and machine etc to aggregate the processed TAG file into
       //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       converter1.Machine.ID = targetMachine.ID;
       converter2.Machine.ID = targetMachine.ID;
@@ -108,7 +108,7 @@ namespace TAGFiles.Tests
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
@@ -150,28 +150,28 @@ namespace TAGFiles.Tests
       */
       EventIntegrator eventIntegrator = new EventIntegrator();
       var sourceSiteModel = new SiteModel();
-      sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
-      sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
+      var design4 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
+      var design2 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       var sourceEventList = new ProductionEventLists(sourceSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 1);
-      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 0);
+      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), design2.Id);
+      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), design4.Id);
       Assert.Equal(2, sourceEventList.MachineDesignNameIDStateEvents.Count());
 
       var targetSiteModel = new SiteModel();
       var targetEventList = new ProductionEventLists(targetSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       eventIntegrator.IntegrateMachineEvents(sourceEventList, targetEventList, false, sourceSiteModel, targetSiteModel);
-      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
+      Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Count);
 
       // integration re-orders the event lists so cannot locate orig by []
-      Assert.Equal(0, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
-      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
+      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
+      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
 
       sourceEventList.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out DateTime _, out int state);
-      Assert.Equal(0, state);
+      Assert.Equal(design4.Id, state);
 
       sourceEventList.MachineDesignNameIDStateEvents.GetStateAtIndex(1, out DateTime _, out state);
-      Assert.Equal(1, state);
+      Assert.Equal(design2.Id, state);
     }
 
     [Fact]
@@ -189,28 +189,28 @@ namespace TAGFiles.Tests
       */
       EventIntegrator eventIntegrator = new EventIntegrator();
       var sourceSiteModel = new SiteModel();
-      sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
-      sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
+      var design3 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
+      var design4 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       var sourceEventList = new ProductionEventLists(sourceSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 0);
-      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
+      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), design3.Id);
+      sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), design4.Id);
       Assert.Equal(2, sourceEventList.MachineDesignNameIDStateEvents.Count()); 
 
       var targetSiteModel = new SiteModel();
-      targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName5");
-      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Count);
+      var design5 = targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName5");
+      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
 
       var targetEventList = new ProductionEventLists(targetSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      targetEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-32), 0);
+      targetEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-32), design5.Id);
       Assert.Equal(1, targetEventList.MachineDesignNameIDStateEvents.Count());
 
       eventIntegrator.IntegrateMachineEvents(sourceEventList, targetEventList, false, sourceSiteModel, targetSiteModel);
-      Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Count);
+      Assert.Equal(4, targetSiteModel.SiteModelMachineDesigns.Count);
 
       // integration re-orders the event lists so cannot locate orig by []
-      Assert.Equal(0, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName5").Id);
-      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
-      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
+      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName5").Id);
+      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
+      Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
     }
 
     [Fact]
@@ -237,16 +237,16 @@ namespace TAGFiles.Tests
 
       var targetSiteModel = new SiteModel();
       targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
-      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Count);
+      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
 
       var targetEventList = new ProductionEventLists(targetSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       eventIntegrator.IntegrateMachineEvents(sourceEventList, targetEventList, false, sourceSiteModel, targetSiteModel);
-      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
+      Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Count);
 
       // integration re-orders the event lists so cannot locate orig by []
-      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
-      Assert.Equal(0, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
+      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
+      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
     }
 
     [Fact]
@@ -275,16 +275,16 @@ namespace TAGFiles.Tests
       var targetSiteModel = new SiteModel();
       targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
-      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
+      Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Count);
 
       var targetEventList = new ProductionEventLists(targetSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       eventIntegrator.IntegrateMachineEvents(sourceEventList, targetEventList, false, sourceSiteModel, targetSiteModel);
-      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
+      Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Count);
 
       // integration re-orders the event lists so cannot locate orig by []
-      Assert.Equal(0, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
-      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
+      Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
+      Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
     }
   }
 }

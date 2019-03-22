@@ -30,6 +30,8 @@ namespace VSS.Tile.Service.Common.Authentication
       this.projectListProxy = projectListProxy;
     }
 
+    protected override List<string> IgnoredPaths => new List<string> { "/swagger/", "/testtile/" };
+
     /// <summary>
     /// Create 3dpm principal
     /// </summary>

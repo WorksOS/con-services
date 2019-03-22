@@ -10,6 +10,8 @@
     Filter,
     Productivity3D,
     Scheduler,
-    AssetMgmt3D
+    AssetMgmt3D,
+    Push,
+    Tile
   }
 }

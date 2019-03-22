@@ -4,6 +4,8 @@ metadata:
   name: 3dapp-prod
   namespace: prod
 data: 
+# Kubernetes Cluster Info - This must match the namespace (including case) that the pods will run in
+  kubernetesNamespace: prod
 # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
@@ -86,6 +88,7 @@ data:
   GEOFENCE_CACHE_LIFE: 00:15:00
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
+  ASSETMGMT_CACHE_LIFE: 00:30:00
   PROJECT_SETTINGS_CACHE_LIFE: 00:15:00
   TILE_RENDER_JOB_TIMEOUT: 00:00:10
   DEFAULT_CONNECTION_LIMIT: "64"

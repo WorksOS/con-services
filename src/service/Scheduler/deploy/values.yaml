@@ -7,6 +7,9 @@ globalConfig: 3dapp-alpha
 
 rootDomain: k8s.vspengg.com
 
+# Must match the const in VSS.Common.Abstractions.ServiceDiscovery.Constants.ServiceNameConstants
+serviceName: scheduler-service
+
 replicaCount: 1
 
 image:

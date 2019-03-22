@@ -76,8 +76,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
                 // Check if the returned sub grid is null
                 if (reader.ReadBoolean())
                   clientGrids[i][j].Read(reader, buffer);
-                else
-                  Log.LogWarning($"Sub grid at position [{i},{j}] in sub grid response array is null");
+               // else  - Remove to reduce unwanted log traffic
+               //   Log.LogWarning($"Sub grid at position [{i},{j}] in sub grid response array is null");
               }
             }
 

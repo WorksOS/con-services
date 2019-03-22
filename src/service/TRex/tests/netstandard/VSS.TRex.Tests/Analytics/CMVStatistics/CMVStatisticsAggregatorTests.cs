@@ -1,5 +1,7 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;

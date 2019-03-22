@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       {
         DetailedData = new PassCountDetailsData
         {
-          Percents = result.Percents.Skip(1).ToArray(), //don't return the pass count 0 value (see PassCountSettings)
+          Percents = result.Percents.Skip(1).ToArray(), //don't return the pass count 0 value (see PassCountSettings),
           PassCountTarget = new PassCountTargetData
           {
             MinPassCountMachineTarget = result.ConstantTargetPassCountRange.Min,

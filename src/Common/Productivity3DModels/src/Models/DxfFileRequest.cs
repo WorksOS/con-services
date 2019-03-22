@@ -16,16 +16,18 @@ namespace VSS.Productivity3D.Models.Models
       set => _dxfUnits = value;
     }
 
-    public int MaxBoundariesToProcess { get;set; }
+    public int MaxBoundariesToProcess { get; set; }
+    public bool ConvertLineStringCoordsToPolygon { get; set; }
 
     public override string ToString()
     {
       return $"{nameof(DxfFileRequest)}: " +
              $"{nameof(DxfUnits)}='{DxfUnits}', " +
-             $"{nameof(MaxBoundariesToProcess)}='{MaxBoundariesToProcess}'";
+             $"{nameof(MaxBoundariesToProcess)}='{MaxBoundariesToProcess}', " +
+             $"{nameof(ConvertLineStringCoordsToPolygon)}='{ConvertLineStringCoordsToPolygon}'";
     }
 
-    public byte[] GetFileAsByteArray(IFormFile file) 
+    public byte[] GetFileAsByteArray(IFormFile file)
     {
       if (file == null || file.Length <= 0) { return null; }
 

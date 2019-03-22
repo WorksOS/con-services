@@ -104,7 +104,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             try
             {
                 // Construct the function to be used
-                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
+                var func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
                 taskResult = Compute.BroadcastAsync(func, arg);
                 taskResult.Wait(30000);

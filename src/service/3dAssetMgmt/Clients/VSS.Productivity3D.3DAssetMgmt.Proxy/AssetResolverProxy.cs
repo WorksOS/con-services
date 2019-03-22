@@ -39,15 +39,14 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
     public override string CacheLifeKey => "ASSETMGMT_CACHE_LIFE";
 
     public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<Guid> assetUids,
-        IDictionary<string, string> customHeaders = null)
+      IDictionary<string, string> customHeaders = null)
     {
       if (assetUids.Count == 0)
         return new List<KeyValuePair<Guid, long>>();
-
-      var payload = SetStringPayload(assetUids);
+      
       var result =
         await PostMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets/assetuids", null, null, customHeaders,
-          payload: payload);
+          payload: new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetUids))));
       if (result.Code == 0)
       {
         return result.assetIdentifiers;
@@ -63,10 +62,9 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       if (assetIds.Count == 0)
         return new List<KeyValuePair<Guid, long>>();
 
-      var payload = SetStringPayload(assetIds);
       var result =
         await PostMasterDataItemServiceDiscovery<AssetDisplayModel>("/assets/assetids", null, null, customHeaders,
-          payload: payload);
+          payload: new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(assetIds))));
       if (result.Code == 0)
       {
         return result.assetIdentifiers;
@@ -75,25 +73,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       log.LogDebug($"Failed to get list of assets (long list): {result.Code}, {result.Message}");
       return null;
     }
-
-    private Stream SetStringPayload(List<long> assetIds)
-    {
-      if (assetIds.Count == 0)
-        return null;
-
-      var payloadString = JsonConvert.SerializeObject(assetIds);
-      return new MemoryStream(Encoding.UTF8.GetBytes(payloadString));
-    }
-
-    private Stream SetStringPayload(List<Guid> assetUids)
-    {
-      if (assetUids.Count == 0)
-        return null;
-
-      var payloadString = JsonConvert.SerializeObject(assetUids);
-      return new MemoryStream(Encoding.UTF8.GetBytes(payloadString));
-    }
-
+    
     public void ClearCacheItem(string uid, string userId = null)
     {
       throw new NotImplementedException();

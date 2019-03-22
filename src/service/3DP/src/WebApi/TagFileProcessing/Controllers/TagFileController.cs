@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           raptorClient, 
           tagProcessor, 
 #endif
-          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
         .ProcessAsync(request).ContinueWith((task) =>
         {
           if (task.IsFaulted)
@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           raptorClient, 
           tagProcessor, 
 #endif
-          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
         .ProcessAsync(requestExt).ConfigureAwait(false);
 
       // when we disable Raptor, allowing Trex response to return to harvester,
@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           raptorClient, 
           tagProcessor, 
 #endif
-          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+          configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders: customHeaders)
         .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)

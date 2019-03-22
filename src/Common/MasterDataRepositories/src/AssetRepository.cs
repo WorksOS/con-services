@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -308,8 +309,32 @@ namespace VSS.MasterData.Repositories
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE IsDeleted = 0 AND AssetUID IN @assetsArray"
-      )).ToList();
+                      WHERE IsDeleted = 0 AND AssetUID IN @assets"
+      , new { assets = assetsArray} )).ToList();
+    }
+
+    public async Task<MatchingAssets> GetMatching3D2DAssets(Guid assetUid)
+    {
+      return (await QueryWithAsyncPolicy<MatchingAssets>
+      (@"Select
+                a.AssetUID
+                ,a2.AssetUID MatchingAssetUID
+                ,a.Name
+                ,a.SerialNumber
+                ,a.MakeCode
+                ,a.Model
+                ,c.Name CustomerName
+                ,a2.SerialNumber MatchingSerialNumber
+                ,a2.MakeCode MatchingMakeCode
+                from
+	                Asset a
+                    inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID = @asset
+	                inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 13 and sp.EndDate  >= Utc_Timestamp()
+                    inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
+                    left join Asset a2 on a2.SerialNumber = left(a.SerialNumber,locate('-',concat(replace(a.SerialNumber,' ','-'),'-'))-1)
+                where
+	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
+        , new {asset = assetUid})).FirstOrDefault();
     }
 
     public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds)
@@ -320,8 +345,8 @@ namespace VSS.MasterData.Repositories
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE IsDeleted = 0 AND LegacyAssetId IN @assetsArray"
-      )).ToList();
+                      WHERE IsDeleted = 0 AND LegacyAssetId IN @assets"
+      , new { assets = assetsArray })).ToList();
     }
 
     /// <summary>

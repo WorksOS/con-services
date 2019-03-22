@@ -1,4 +1,4 @@
-﻿using Draw = System.Drawing;
+﻿using System.Drawing;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 
 namespace VSS.TRex.Rendering.Abstractions
@@ -7,8 +7,8 @@ namespace VSS.TRex.Rendering.Abstractions
   {
     IBitmap CreateBitmap(int x, int y);
     IGraphics CreateGraphics(IBitmap bitmap);
-    IPen CreatePen(Draw.Color color);
-    IBrush CreateBrush(Draw.Color color);
+    IPen CreatePen(Color color);
+    IBrush CreateBrush(Color color);
 
     ITileRenderResponse CreateTileRenderResponse(object bmp);
   }

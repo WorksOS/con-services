@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       Code = (int)code;
     }
 
-    public GeoJson ConvertToGeoJson()
+    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon)
     {
       if (LineworkBoundaries == null) return null;
 
@@ -43,25 +43,35 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
         {
           Type = GeoJson.FeatureType.FEATURE,
           Properties = new Properties { Name = boundary.BoundaryName },
-          Geometry = new Geometry
-          {
-            Type = Geometry.Types.POLYGON,
-            Coordinates = GetCoordinatesFromFencePoints(boundary)
-          }
+          Geometry = GetCoordinatesFromFencePoints(boundary, convertLineStringCoordsToPolygon)
         });
       }
 
       return geoJson;
     }
 
-    private static List<List<double[]>> GetCoordinatesFromFencePoints(TWGS84LineworkBoundary boundary)
+    private static Geometry GetCoordinatesFromFencePoints(TWGS84LineworkBoundary boundary, bool convertLineStringCoordsToPolygon)
     {
-      var result = new List<List<double[]>>();
-      var boundaries = boundary.Boundary.FencePoints.Select(point => new[] {point.Lon, point.Lat}).ToList(); // GeoJSON is lon/lat.
+      var boundaries = boundary.Boundary.FencePoints.Select(point => new[] { point.Lon, point.Lat }).ToList(); // GeoJSON is lon/lat.
+      var boundaryType = Geometry.Types.POLYGON;
 
-      result.Add(boundaries);
+      if (boundaries.First()[0] != boundaries.Last()[0] && boundaries.First()[1] != boundaries.Last()[1])
+      {
+        if (convertLineStringCoordsToPolygon)
+        {
+          boundaries.Add(boundaries.First());
+        }
+        else
+        {
+          boundaryType = Geometry.Types.LINESTRING;
+        }
+      }
 
-      return result;
+      return new Geometry
+      {
+        Type = boundaryType,
+        Coordinates = new List<List<double[]>> { boundaries }
+      };
     }
   }
 }

@@ -4,12 +4,12 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -21,13 +21,13 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceType.SNM940, false, Guid.NewGuid());
+      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
@@ -143,7 +143,59 @@ namespace VSS.TRex.Tests.TestFixtures
       return targetSiteModel;
     }
 
-    public static void AddSingleCellWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass> passes, int expectedCellCount, int expectedPasssCount)
+    public static void AddSingleCellWithPasses(ISiteModel siteModel, uint cellX, uint cellY, 
+      IEnumerable<CellPass> passes, int expectedCellCount = -1, int expectedPasssCount = -1)
+    {
+      // Construct the sub grid to hold the cell being tested
+      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      leaf.Should().NotBeNull();
+
+      leaf.AllocateLeafFullPassStacks();
+      leaf.CreateDefaultSegment();
+      leaf.AllocateFullPassStacks(leaf.Directory.SegmentDirectory.First());
+      leaf.AllocateLeafLatestPassGrid();
+
+      // Add the leaf to the site model existence map
+      siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+
+      CellPass[] _passes = passes.ToArray();
+
+      byte subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
+      byte subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+
+      foreach (var pass in _passes)
+        leaf.AddPass(subGridX, subGridY, pass);
+
+      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY);
+      if (expectedPasssCount > -1)
+        cellPasses.Length.Should().Be(expectedPasssCount);
+
+      // Assign global latest cell pass to the appropriate pass
+      leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
+
+      // Ensure the pass data existence map records the existence of a non null value in the cell
+      leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
+
+      if (expectedCellCount > -1)
+      {
+        // Count the number of non-null elevation cells to verify a correct setup
+        long totalCells = 0;
+        siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x =>
+        {
+          totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
+          return true;
+        });
+
+        totalCells.Should().Be(expectedCellCount);
+      }
+
+      siteModel.SiteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX, cellY));
+
+      // Save the site model metadata to preserve the site model extent information across a site model change notification event
+      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+    }
+
+    public static void AddSingleSubGridWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass>[,] passes)
     {
       // Construct the sub grid to hold the cell being tested
       IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
@@ -159,33 +211,25 @@ namespace VSS.TRex.Tests.TestFixtures
 
       siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(1);
 
-      CellPass[] _passes = passes.ToArray();
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        CellPass[] _passes = passes[x,y].ToArray();
 
-      byte subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
-      byte subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+        byte subGridX = (byte) ((cellX + x) & SubGridTreeConsts.SubGridLocalKeyMask);
+        byte subGridY = (byte) ((cellY + y) & SubGridTreeConsts.SubGridLocalKeyMask);
 
-      foreach (var pass in _passes)
-        leaf.AddPass(subGridX, subGridY, pass);
+        foreach (var pass in _passes)
+          leaf.AddPass(subGridX, subGridY, pass);
 
-      var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY);
-      cellPasses.Length.Should().Be(expectedPasssCount);
+        // Assign global latest cell pass to the appropriate pass
+        leaf.Directory.GlobalLatestCells[subGridX, subGridY] = _passes.Last();
 
-      // Assign global latest cell pass to the appropriate pass
-      leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
-
-      // Ensure the pass data existence map records the existence of a non null value in the cell
-      leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
-
-      // Count the number of non-null elevation cells to verify a correct setup
-      long totalCells = 0;
-      siteModel.Grid.Root.ScanSubGrids(siteModel.Grid.FullCellExtent(), x => {
-        totalCells += leaf.Directory.GlobalLatestCells.PassDataExistenceMap.CountBits();
-        return true;
+        // Ensure the pass data existence map records the existence of a non null value in the cell
+        leaf.Directory.GlobalLatestCells.PassDataExistenceMap[subGridX, subGridY] = true;
       });
 
-      totalCells.Should().Be(expectedCellCount);
-
       var siteModelExtent = siteModel.Grid.GetCellExtents(cellX, cellY);
+      siteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX + SubGridTreeConsts.SubGridTreeDimension, cellY + SubGridTreeConsts.SubGridTreeDimension));
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
 
       // Save the site model metadata to preserve the site model extent information across a site model change notification event

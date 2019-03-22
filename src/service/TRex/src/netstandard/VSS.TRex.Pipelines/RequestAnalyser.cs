@@ -20,7 +20,7 @@ namespace VSS.TRex.Pipelines
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<RequestAnalyser>();
 
-    private IExistenceMaps existenceMaps = null;
+    private IExistenceMaps existenceMaps;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
     /// <summary>
@@ -248,31 +248,31 @@ namespace VSS.TRex.Pipelines
             bool SubGridSatisfiesFilter = true;
             foreach (ICombinedFilter filter in Pipeline.FilterSet.Filters)
             {
-              if (filter == null)
-                continue;
-
-              ICellSpatialFilter spatialFilter = filter.SpatialFilter;
-
-              if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
+              if (filter != null)
               {
-                SubGridSatisfiesFilter =
-                  spatialFilter.Fence.IntersectsExtent(
-                    CastSubGrid.Owner.GetCellExtents(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J));
-              }
-              else
-              {
-                if (spatialFilter.IsPositional)
+                ICellSpatialFilter spatialFilter = filter.SpatialFilter;
+
+                if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
                 {
-                  CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J,
-                    out double centerX, out double centerY);
-
-                  SubGridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
-                    spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2;
+                  SubGridSatisfiesFilter =
+                    spatialFilter.Fence.IntersectsExtent(
+                      CastSubGrid.Owner.GetCellExtents(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J));
                 }
-              }
+                else
+                {
+                  if (spatialFilter.IsPositional)
+                  {
+                    CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J,
+                      out double centerX, out double centerY);
 
-              if (!SubGridSatisfiesFilter)
-                break;
+                    SubGridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
+                                             spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2;
+                  }
+                }
+
+                if (!SubGridSatisfiesFilter)
+                  break;
+              }
             }
 
             if (SubGridSatisfiesFilter)

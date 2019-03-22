@@ -15,8 +15,6 @@ namespace VSS.TRex.SubGrids.Executors
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
-    // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Aggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
-
     /// <summary>
     /// The Task responsible for handling further processing of sub grid query responses
     /// </summary>

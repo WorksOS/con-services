@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 
@@ -12,6 +13,8 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
   public class CCAStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<CCAStatisticsResponse>,
     IAnalyticsOperationResponseResultConversion<CCAStatisticsResult>
   {
+    private static byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// Holds last known good target CCA value.
     /// </summary>
@@ -25,6 +28,8 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteByte(LastTargetCCA);
     }
 
@@ -35,6 +40,8 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       LastTargetCCA = reader.ReadByte();
     }

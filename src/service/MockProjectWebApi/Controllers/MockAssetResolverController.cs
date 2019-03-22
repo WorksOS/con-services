@@ -12,7 +12,7 @@ namespace MockProjectWebApi.Controllers
     public IActionResult GetMatchingAssets([FromBody] List<Guid> assetUids)
     {
       Console.WriteLine($@"Get MockAssetResolverList for supplied Guids: {assetUids}");
-      return Json(new AssetDisplayModel { assetIdentifiers = new List<KeyValuePair<Guid, long>>() });
+      return Json(new AssetDisplayModel {assetIdentifiers = new List<KeyValuePair<Guid, long>>()});
     }
 
     [HttpPost("api/v1/assets/assetids")]

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
@@ -9,7 +10,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
-  /// A client subgrid storing composite height information for each cell in the subgrid.
+  /// A client sub grid storing composite height information for each cell in the sub grid.
   /// </summary>
   public class ClientCompositeHeightsLeafSubgrid : GenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>
   {
@@ -27,7 +28,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom su bgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     public ClientCompositeHeightsLeafSubgrid()
@@ -177,7 +178,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      // Composite height sub grids don't define a filter value assignment behaviour
+      throw new TRexSubGridProcessingException("Composite height sub grids don't define a filter value assignment behaviour");
     }
   }
 }

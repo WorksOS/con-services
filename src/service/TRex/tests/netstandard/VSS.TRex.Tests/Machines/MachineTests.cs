@@ -1,10 +1,10 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Machines;
 using VSS.TRex.Tests.BinaryReaderWriter;
 using VSS.TRex.Types;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Machines
@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.Machines
       var l = new MachinesList();
       Guid newGuid = Guid.NewGuid();
 
-      var m = new Machine("Machine", "HardwareID", MachineType.AsphaltPaver, DeviceType.SNM940, newGuid, 12, true);
+      var m = new Machine("Machine", "HardwareID", MachineType.AsphaltPaver, DeviceTypeEnum.SNM940, newGuid, 12, true);
       m.LastKnownLayerId = 10;
       m.LastKnownDesignName = "layer";
       m.LastKnownPositionTimeStamp = DateTime.UtcNow;
@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.Machines
 
       m.CompactionDataReported.Should().BeFalse();
       m.CompactionSensorType.Should().Be(CompactionSensorType.NoSensor);
-      m.DeviceType.Should().Be(DeviceType.MANUALDEVICE);
+      m.DeviceType.Should().Be(DeviceTypeEnum.MANUALDEVICE);
       m.ID.Should().Be(Guid.Empty);
       m.InternalSiteModelMachineIndex.Should().Be(0);
       m.IsJohnDoeMachine.Should().BeFalse();
@@ -54,13 +54,13 @@ namespace VSS.TRex.Tests.Machines
       Guid newGuid = Guid.NewGuid();
 
       var l = new MachinesList();
-      var m = new Machine("Machine", "HardwareID", MachineType.AsphaltPaver, DeviceType.SNM940, newGuid, 12, true);
+      var m = new Machine("Machine", "HardwareID", MachineType.AsphaltPaver, DeviceTypeEnum.SNM940, newGuid, 12, true);
 
       m.ID.Should().Be(newGuid);
       m.Name.Should().Be("Machine");
       m.MachineHardwareID.Should().Be("HardwareID");
       m.MachineType.Should().Be(MachineType.AsphaltPaver);
-      m.DeviceType.Should().Be((int) DeviceType.SNM940);
+      m.DeviceType.Should().Be((int) DeviceTypeEnum.SNM940);
       m.InternalSiteModelMachineIndex.Should().Be(12);
       m.IsJohnDoeMachine.Should().BeTrue();
     }

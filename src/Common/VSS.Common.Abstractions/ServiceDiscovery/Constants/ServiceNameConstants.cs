@@ -7,5 +7,7 @@
     public const string PROJECT_SERVICE = "project-service";
     public const string SCHEDULER_SERVICE = "scheduler-service";
     public const string ASSETMGMT3D_SERVICE = "assetmgmet3d-service";
+    public const string PUSH_SERVICE = "push-service";
+    public const string TILE_SERVICE = "tile-service";
   }
 }

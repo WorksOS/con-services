@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Geometry;
+﻿using VSS.TRex.Common.Utilities;
+using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.CoordinateSystems.Models
@@ -18,9 +19,9 @@ namespace VSS.TRex.CoordinateSystems.Models
 
       for (int i = 0; i < LLHs.Length; i++)
       {
-        requestArray[i, 0] = LLHs[i].Longitude;
-        requestArray[i, 1] = LLHs[i].Latitude;
-        requestArray[i, 2] = LLHs[i].Height;
+        requestArray[i, 0] = MathUtilities.RadiansToDegrees(LLHs[i].Longitude);
+        requestArray[i, 1] = MathUtilities.RadiansToDegrees(LLHs[i].Latitude);
+        requestArray[i, 2] = MathUtilities.RadiansToDegrees(LLHs[i].Height);
       }
 
       return requestArray;
@@ -76,8 +77,8 @@ namespace VSS.TRex.CoordinateSystems.Models
       {
         result[i] = new NEE
         {
-          North = arrayData[i, 0],
-          East = arrayData[i, 1],
+          North = arrayData[i, 1],
+          East = arrayData[i, 0],
           Elevation = arrayData[i, 2]
         };
       }
@@ -144,9 +145,9 @@ namespace VSS.TRex.CoordinateSystems.Models
 
       for (int i = 0; i < arrayData.Length; i++)
       {
-        requestArray[i, 0] = arrayData[i].X;
-        requestArray[i, 1] = arrayData[i].Y;
-        requestArray[i, 2] = arrayData[i].Z;
+        requestArray[i, 0] = MathUtilities.RadiansToDegrees(arrayData[i].X);
+        requestArray[i, 1] = MathUtilities.RadiansToDegrees(arrayData[i].Y);
+        requestArray[i, 2] = MathUtilities.RadiansToDegrees(arrayData[i].Z);
       }
 
       return requestArray;

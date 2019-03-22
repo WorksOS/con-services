@@ -88,10 +88,16 @@ end;
 
       if (design == null)
       {
+        IDesign designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID).Designs.Locate(designUid);
+
+        if (designRef == null)
+        {
+          LoadResult = DesignLoadResult.DesignDoesNotExist;
+          return null;
+        }
+
         // Load the design into the cache (in this case just TTM files)
         design = new TTMDesign(ACellSize);
-
-        IDesign designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID).Designs.Locate(designUid);
 
         string designFilePathAndName = Path.Combine(FilePathHelper.GetTempFolderForProject(DataModelID),
           designRef.Get_DesignDescriptor().FileName);

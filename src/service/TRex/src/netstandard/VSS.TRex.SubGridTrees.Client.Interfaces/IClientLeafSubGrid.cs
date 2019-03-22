@@ -8,7 +8,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.SubGridTrees.Client.Interfaces
 {
   /// <summary>
-  /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid
+  /// Interface for ClientLeafSubGrid derivations based on ClientLeafSubGrid
   /// </summary>
   public interface IClientLeafSubGrid : ILeafSubGrid, ITRexMemoryCacheItem
   {
@@ -46,17 +46,19 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
 
     void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
-    SubGridTreeBitmapSubGridBits ProdDataMap { get; set; }
+    SubGridTreeBitmapSubGridBits ProdDataMap { get; }
 
     /// <summary>
     /// Existence map of cells matching current filter settings
     /// </summary>
-    SubGridTreeBitmapSubGridBits FilterMap { get; set; }
+    SubGridTreeBitmapSubGridBits FilterMap { get; }
 
     /// <summary>
     /// World extent of the client leaf subgrid map of cells
     /// </summary>
     /// <returns></returns>
     BoundingWorldExtent3D WorldExtents();
+
+    void DumpToLog();
   }
 }

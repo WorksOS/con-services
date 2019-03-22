@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
         Data = compactionTagFileRequest.Data,
         OrgId = compactionTagFileRequest.OrgId,
         ProjectId = compactionTagFileRequest.ProjectId,
+        ProjectUid = compactionTagFileRequest.ProjectUid,        
         Boundary = boundary,
         includeTrexIfConfigured = includeTrexIfConfigured
       };

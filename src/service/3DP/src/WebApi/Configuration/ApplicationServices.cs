@@ -10,6 +10,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -58,6 +60,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+      //todoJeannie wait on Stephen to complete serviceDiscovery: services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
@@ -77,6 +80,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
       services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
       services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
+      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();

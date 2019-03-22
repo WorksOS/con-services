@@ -1,4 +1,4 @@
-﻿using Draw = System.Drawing;
+﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
@@ -32,21 +32,15 @@ namespace VSS.TRex.Rendering.Displayers
     }
 
     /// <summary>
-    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
-    /// </summary>
-    /// <returns></returns>
-    protected override bool SupportsCellStripRendering() => true;
-
-    /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Draw.Color DoGetDisplayColour()
+    protected override Color DoGetDisplayColour()
     {
       var cellValue = ((ClientMDPLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       if (cellValue.MeasuredMDP == CellPassConsts.NullMDP)
-        return Draw.Color.Empty;
+        return Color.Empty;
 
       var targetMDPValue = cellValue.TargetMDP;
 

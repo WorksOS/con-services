@@ -1,9 +1,11 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace VSS.TRex.Storage.Caches
 {
+    [ExcludeFromCodeCoverage] // Not currently used...
     public class TRexNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
     {
         private readonly TRexCacheStoreUtilities Utilities;

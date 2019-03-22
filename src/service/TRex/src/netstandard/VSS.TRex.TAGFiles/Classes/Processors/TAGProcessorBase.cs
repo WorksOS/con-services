@@ -254,7 +254,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             EndProofingName = "";
 
             StartProofingDataTime = DateTime.MinValue;
-            HaveSeenAProofingStart = false;
         }
 
         /// <summary>

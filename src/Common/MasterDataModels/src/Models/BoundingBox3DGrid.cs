@@ -57,19 +57,16 @@ namespace VSS.MasterData.Models.Models
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static BoundingBox3DGrid CreatBoundingBox3DGrid(double minx, double miny, double minz, double maxx, double maxy, double maxz)
+    public BoundingBox3DGrid(double minx, double miny, double minz, double maxx, double maxy, double maxz)
     {
-      return new BoundingBox3DGrid
-      {
-        MinX = minx,
-        MinY = miny,
-        MinZ = minz,
-        MaxX = maxx,
-        MaxY = maxy,
-        MaxZ = maxz,
-      };
+      MinX = minx;
+      MinY = miny;
+      MinZ = minz;
+      MaxX = maxx;
+      MaxY = maxy;
+      MaxZ = maxz;
     }
 
     /// <summary>

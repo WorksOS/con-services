@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Http;
-using VSS.ConfigurationStore;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.CoordinateSystemFileDescriptor.Path, executorRequestObj.CoordinateSystemFileDescriptor.FileName));
 
       return result.Code == 0
-        ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson())
+        ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson(requestDto.ConvertLineStringCoordsToPolygon))
         : StatusCode((int)HttpStatusCode.BadRequest, result);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,

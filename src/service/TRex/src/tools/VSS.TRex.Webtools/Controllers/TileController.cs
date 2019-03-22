@@ -67,6 +67,8 @@ namespace VSS.TRex.Webtools.Controllers
       {
         (DisplayMode.Height, "Height"),
         (DisplayMode.CCV, "CCV"),
+        (DisplayMode.PassCount, "Pass Count"),
+        (DisplayMode.PassCountSummary, "Pass Count Summary"),
         (DisplayMode.MDP, "MDP"),
         (DisplayMode.CutFill, "Cut/Fill"),
         (DisplayMode.MachineSpeed, "Speed"),

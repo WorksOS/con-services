@@ -2,14 +2,12 @@
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
-using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
-using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -26,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public bool IgnoresNullValueForLastCMV { get; set; }
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientCMVLeafSubGrid()
     {
@@ -34,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// CMV subgrids require lift processing...
+    /// CMV sub grids require lift processing...
     /// </summary>
     /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
@@ -61,7 +59,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
     /// <param name="wantsPreviousCCVValue"></param>
@@ -179,7 +177,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// Fills the contents of the client leaf sub grid with a known, non-null test pattern of values
     /// </summary>
     public override void FillWithTestPattern()
     {
@@ -218,18 +216,10 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => _gridDataType == GridDataType.CCVPercentChange || Cells[cellX, cellY].MeasuredCMV != CellPassConsts.NullCCV;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in this client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf sub grid
     /// </summary>
     /// <returns></returns>
     public override SubGridCellPassDataCMVEntryRecord NullCell() => SubGridCellPassDataCMVEntryRecord.NullValue;
-
-    /// <summary>
-    /// Sets all cell CMVs to null and clears the first pass and surveyed surface pass maps
-    /// </summary>
-    public override void Clear()
-    {
-      base.Clear();
-    }
 
     public void RestoreInitialSettings()
     {
@@ -238,7 +228,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Dumps elevations from subgrid to the log
+    /// Dumps elevations from sub grid to the log
     /// </summary>
     /// <param name="title"></param>
     public override void DumpToLog(string title)
@@ -249,7 +239,7 @@ namespace VSS.TRex.SubGridTrees.Client
           I, J : Integer;
           S : String;
         begin
-          SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
+          SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for sub grid %s', [Moniker]) , ...);
 
           for I := 0 to kSubGridTreeDimension - 1 do
             begin
@@ -296,7 +286,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>

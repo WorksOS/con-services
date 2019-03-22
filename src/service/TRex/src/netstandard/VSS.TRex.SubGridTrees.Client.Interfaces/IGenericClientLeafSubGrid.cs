@@ -9,6 +9,6 @@
     /// <summary>
     /// The 2 dimensional array of cell values in this generic leaf sub grid
     /// </summary>
-    T[,] Cells { get; set; }
+    T[,] Cells { get; }
   }
 }

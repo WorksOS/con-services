@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TCCFileAccess;
 
@@ -75,7 +76,11 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
+    protected IAssetResolverProxy assetResolverProxy;
+
     protected IDictionary<string, string> customHeaders;
+
+    protected string customerUid;
 
 
     /// <summary>
@@ -166,7 +171,8 @@ namespace VSS.Productivity3D.Common.Interfaces
       ITagProcessor tagProcessor,
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
-      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy, IDictionary<string, string> customHeaders)
+      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
+      IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders, string customerUid)
     {
       log = logger;
 #if RAPTOR
@@ -181,7 +187,9 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.transferProxy = transferProxy;
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+      this.assetResolverProxy = assetResolverProxy;
       this.customHeaders = customHeaders;
+      this.customerUid = customerUid;
     }
     
     /// <summary>

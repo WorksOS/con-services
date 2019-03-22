@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{47F4364F-5368-4932-8900-3387AC04AFB1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\..\..\service\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{47F4364F-5368-4932-8900-3387AC04AFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47F4364F-5368-4932-8900-3387AC04AFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47F4364F-5368-4932-8900-3387AC04AFB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5579F54-70DE-40B6-88F2-8CF05B1E0C47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

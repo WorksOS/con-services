@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -55,13 +55,14 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
             try
             {
-                Debug.Assert(forSubGridTree != null, "Sub grid tree null in LocateSubGridContaining");
+                if (forSubGridTree == null)
+                  throw new TRexSubGridProcessingException($"Sub grid tree null in {nameof(LocateSubGridContaining)}");
 
                 // Note: Sub grid tree specific interlocks are no longer used. The tree now internally
                 // manages fine grained locks across structurally mutating activities such as node/leaf
                 // sub grid addition and reading content from the persistent store.
 
-              // First check to see if the requested cell is present in a leaf sub grid
+                // First check to see if the requested cell is present in a leaf sub grid
                 ISubGrid subGrid = forSubGridTree.LocateClosestSubGridContaining(cellX, cellY, level);
 
                 if (subGrid == null) // Something bad happened

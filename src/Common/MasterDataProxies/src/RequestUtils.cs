@@ -37,27 +37,17 @@ namespace VSS.MasterData.Proxies
 
     public static void StripHeaders(this IDictionary<string, string> headers, bool isInternal)
     {
-      var keys = new List<string>
-      {
-        HeaderConstants.X_VISION_LINK_CUSTOMER_UID , 
-        HeaderConstants.X_VISION_LINK_USER_UID, 
-        HeaderConstants.X_VISION_LINK_CLEAR_CACHE, 
-        HeaderConstants.AUTHORIZATION, 
-        HeaderConstants.X_REQUEST_ID, 
-        HeaderConstants.REQUEST_ID, 
-        HeaderConstants.X_VSS_REQUEST_ID, 
-      };
-      if(isInternal)
-        keys.Add(HeaderConstants.X_JWT_ASSERTION);
+      // Depending of if we are internal, or external, we need different headers to persist or be removed
+      var keysToKeep = isInternal 
+        ? HeaderConstants.InternalHeaders 
+        : HeaderConstants.ExternalHeaders;
 
-      var dictKeys = headers.Keys.ToList();
-
-      foreach (var dictKey in dictKeys)
+      foreach (var headerKey in  headers.Keys)
       {
-        if(keys.Any(k => k.Equals(dictKey, StringComparison.OrdinalIgnoreCase)))
+        if(keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
           continue;
 
-        headers.Remove(dictKey);
+        headers.Remove(headerKey);
       }
     }
   }

@@ -119,12 +119,6 @@ namespace VSS.TRex.Events
 
             MachinesValuesTrackingState[_MachineID] = TrackingState;
 
-            if (TrackingState.MachineTargetValues == null)
-            {
-              Log.LogWarning($"Warning MachineTargetValues not assigned on lookup. MachineID:{_MachineID}");
-              break;
-            }
-
             /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold ie: Is it really a single value per machine configuration...
             if (TrackingState.MachineTargetValues.Machine != null)
             with TICMachine(MachineTargetValues.Machine) do
