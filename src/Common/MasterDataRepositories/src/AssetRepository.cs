@@ -315,8 +315,9 @@ namespace VSS.MasterData.Repositories
 
     public async Task<MatchingAssets> GetMatching3D2DAssets(Guid assetUid)
     {
-      return (await QueryWithAsyncPolicy<MatchingAssets>
-      (@"Select
+     var asset = (await QueryWithAsyncPolicy<MatchingAssets>
+                 //3d to 2d
+                 (@"Select
                 a.AssetUID
                 ,a2.AssetUID MatchingAssetUID
                 ,a.Name
@@ -334,7 +335,28 @@ namespace VSS.MasterData.Repositories
                     left join Asset a2 on a2.SerialNumber = left(a.SerialNumber,locate('-',concat(replace(a.SerialNumber,' ','-'),'-'))-1)
                 where
 	                a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
-        , new {asset = assetUid})).FirstOrDefault();
+                   , new {asset = assetUid})).FirstOrDefault() ?? (await QueryWithAsyncPolicy<MatchingAssets>
+                 //2d to 3d
+                 (@" Select
+            a.AssetUID
+            ,a2.AssetUID MatchingAssetUID
+            ,a.Name
+            ,a.SerialNumber
+            ,a.MakeCode
+            ,a.Model
+            ,c.Name CustomerName
+            ,a2.SerialNumber MatchingSerialNumber
+            ,a2.MakeCode MatchingMakeCode
+            from
+	            Asset a
+                inner join AssetSubscription asu on asu.fk_AssetUID=a.AssetUID and asu.fk_AssetUID=@asset
+	            inner join Subscription sp on asu.fk_SubscriptionUID = sp.SubscriptionUID and sp.fk_ServiceTypeID = 1
+                inner join Customer c on c.CustomerUID = sp.fk_CustomerUID and fk_CustomertypeID=1
+                left join Asset a2 on a.SerialNumber = left(a2.SerialNumber,locate('-',concat(replace(a2.SerialNumber,' ','-'),'-'))-1)
+            where
+	            a.SerialNumber <> a2.SerialNumber and a.AssetUID <> a2.AssetUID "
+                   , new { asset = assetUid })).FirstOrDefault();
+      return asset;
     }
 
     public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds)
