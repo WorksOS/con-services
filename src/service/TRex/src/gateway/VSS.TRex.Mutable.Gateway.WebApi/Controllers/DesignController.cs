@@ -51,7 +51,13 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, true);
+      if (siteModel == null)
+      {
+        Log.LogError($"{nameof(CreateDesign)}: SiteModel: {designRequest.ProjectUid} not found and unable to be created");
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+          $"SiteModel: {designRequest.ProjectUid} not found and unable to be created"));
+      }
 
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
@@ -88,7 +94,13 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, true);
+      if (siteModel == null)
+      {
+        Log.LogError($"{nameof(UpdateDesign)}: SiteModel: {designRequest.ProjectUid} not found and unable to be created");
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+          $"SiteModel: {designRequest.ProjectUid} not found and unable to be created"));
+      }
 
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
@@ -115,7 +127,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
 
     /// <summary>
-    /// Deletes a design from a sitemodel.
+    /// Deletes a design from a site model.
     ///    Files are left on S3 (as per Dmitry)
     ///    Local copies in temp are removed
     /// </summary>
@@ -126,7 +138,13 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, true);
+      if (siteModel == null)
+      {
+        Log.LogError($"{nameof(DeleteDesign)}: SiteModel: {designRequest.ProjectUid} not found and unable to be created");
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+          $"SiteModel: {designRequest.ProjectUid} not found and unable to be created"));
+      }
 
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
