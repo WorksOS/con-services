@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -101,14 +102,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="filter">Compaction filter</param>
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, Guid projectUid, FilterResult filter,
+    public async Task<ElevationStatisticsResult> GetElevationRange(long projectId, Guid projectUid, FilterResult filter,
       CompactionProjectSettings projectSettings, IDictionary<string, string> customHeaders)
     {
+      const double NO_ELEVATION = 10000000000.0;
+
       var cacheKey = ElevationCacheKey(projectId, filter);
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
       var opts = new MemoryCacheEntryOptions().GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
 
-      return elevationExtentsCache.GetOrCreate(cacheKey, entry =>
+      return await elevationExtentsCache.GetOrCreate(cacheKey, async entry =>
       {
         ElevationStatisticsResult result;
         entry.SetOptions(opts);
@@ -126,6 +129,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #endif
                 configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
               .Process(projectExtentsRequest) as ProjectExtentsResult;
+
           result = new ElevationStatisticsResult(
             new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
               extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
@@ -142,17 +146,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
               liftSettings);
           statsRequest.Validate();
-#if RAPTOR
+
           result =
-            RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient)
-              .Process(statsRequest) as ElevationStatisticsResult;
-#else
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+            await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+#if RAPTOR
+              raptorClient,
 #endif
+              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
+              .ProcessAsync(statsRequest) as ElevationStatisticsResult;
         }
         //Check for 'No elevation range' result
-        const double NO_ELEVATION = 10000000000.0;
         if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 &&
             Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
         {

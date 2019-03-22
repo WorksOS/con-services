@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         await Task.WhenAll(projectSettingsTask, filterTask, projectIdTask);
 
-        var result = elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
+        var result = await elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
 
         if (result == null)
         {

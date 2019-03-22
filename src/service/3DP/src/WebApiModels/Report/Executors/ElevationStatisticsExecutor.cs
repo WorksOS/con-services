@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
+#if RAPTOR
 using ASNode.ElevationStatistics.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using SVOICOptionsDecls;
+#endif
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
@@ -23,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       ProcessErrorCodes();
     }
-
+#if RAPTOR
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return new BoundingBox3DGrid(
@@ -46,11 +49,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           result.CoverageArea
       );
     }
+#endif
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<ElevationStatisticsRequest>(item);
-
+#if RAPTOR
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY_ELEVATION") || UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
+#endif
+        return await trexCompactionDataProxy.SendDataPostRequest<ElevationStatisticsResult, ElevationStatisticsRequest>(request, "/elevationstatistics", customHeaders);
+#if RAPTOR
       //new TASNodeElevationStatisticsResult();
 
       var Filter = RaptorConverters.ConvertFilter(request.Filter);
@@ -66,11 +74,19 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         return ConvertResult(result);
 
       throw CreateServiceException<ElevationStatisticsExecutor>((int)raptorResult);
+#endif
     }
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
+    }
+
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }
