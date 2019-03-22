@@ -12,6 +12,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 
 namespace VSS.Productivity3D.AssetMgmt3D.Proxy
@@ -73,7 +74,22 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
       log.LogDebug($"Failed to get list of assets (long list): {result.Code}, {result.Message}");
       return null;
     }
-    
+
+    public async Task<MatchingAssetsDisplayModel> GetMatching3D2DAssets(Guid assetUid, IDictionary<string, string> customHeaders = null)
+    {
+      var result =
+        await GetMasterDataItemServiceDiscovery<MatchingAssetsDisplayModel>($"/assets/matchasset/{assetUid.ToString()}",
+          null, null, customHeaders);
+      if (result.Code == 0)
+      {
+        return result;
+      }
+
+      log.LogDebug($"Failed to get list of matching assets: {result.Code}, {result.Message}");
+      return null;
+
+    }
+
     public void ClearCacheItem(string uid, string userId = null)
     {
       throw new NotImplementedException();
