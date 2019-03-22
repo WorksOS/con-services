@@ -421,14 +421,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-#if RAPTOR
+
       return
-        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger, raptorClient).Process(request)
-          as ElevationStatisticsResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+#if RAPTOR
+            raptorClient,
 #endif
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request)
+          as ElevationStatisticsResult;
     }
 
     /// <summary>

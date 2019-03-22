@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
           var statsRequest =
-            ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,
+              new ElevationStatisticsRequest(projectId, projectUid, null, filter, 0,
               liftSettings);
           statsRequest.Validate();
 

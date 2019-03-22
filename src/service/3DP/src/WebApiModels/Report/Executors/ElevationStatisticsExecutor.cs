@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
@@ -56,18 +57,21 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       var request = CastRequestObjectTo<ElevationStatisticsRequest>(item);
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_ELEVATION") || UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
+      {
 #endif
-        return await trexCompactionDataProxy.SendDataPostRequest<ElevationStatisticsResult, ElevationStatisticsRequest>(request, "/elevationstatistics", customHeaders);
+        var elevationStatisticsRequest = new ElevationDataRequest(request.ProjectUid, request.Filter);
+        return await trexCompactionDataProxy.SendDataPostRequest<ElevationStatisticsResult, ElevationDataRequest>(elevationStatisticsRequest, "/elevationstatistics", customHeaders);
 #if RAPTOR
+      }
       //new TASNodeElevationStatisticsResult();
 
       var Filter = RaptorConverters.ConvertFilter(request.Filter);
 
       var raptorResult = raptorClient.GetElevationStatistics(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-                           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+                           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
                              TASNodeCancellationDescriptorType.cdtElevationStatistics),
                           Filter,
-                          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
+                          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
                           out var result);
 
       if (raptorResult == TASNodeErrorStatus.asneOK)
