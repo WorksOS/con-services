@@ -10,6 +10,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(TinningEngine));
 
+    public const int MAX_TRIANGLE_LOCATION_STEPS = 10_000;
+
     public TrimbleTINModel TIN { get; set; }
 
     /// <summary>
@@ -44,7 +46,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
     private long surfaceWalkOverflowCount;
 
-    public uint MaxTriangleLocationSteps { get; set; } = 10000;
+    public uint MaxTriangleLocationSteps { get; set; } = MAX_TRIANGLE_LOCATION_STEPS;
 
     public TinningEngine()
     {

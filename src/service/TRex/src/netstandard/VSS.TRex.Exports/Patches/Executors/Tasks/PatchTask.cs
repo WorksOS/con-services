@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Pipelines.Tasks;
@@ -39,11 +40,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
         return false;
       }
 
-      foreach (var subGrid in subGridResponses)
-      {
-        if (subGrid != null)
-           PatchSubGrids.Add(subGrid);
-      }
+      PatchSubGrids.AddRange(subGridResponses.Where(s => s != null));
 
       return true;
     }
