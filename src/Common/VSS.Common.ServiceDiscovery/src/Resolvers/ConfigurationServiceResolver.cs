@@ -41,5 +41,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
     public ServiceResultType ServiceType => ServiceResultType.Configuration;
     public int Priority { get; }
+
+    public bool IsEnabled => true;
   }
 }

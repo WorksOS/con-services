@@ -15,7 +15,8 @@ namespace VSS.Common.Abstractions.Http
       X_REQUEST_ID, 
       REQUEST_ID, 
       X_VSS_REQUEST_ID, 
-      X_JWT_ASSERTION
+      X_JWT_ASSERTION,
+      AUTHORIZATION // Can be removed once we are using service discovery everywhere
     };
 
     /// <summary>
