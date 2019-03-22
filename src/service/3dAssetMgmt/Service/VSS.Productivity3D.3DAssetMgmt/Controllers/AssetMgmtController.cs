@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <response code="403">Invalid access token provided</response>
     [HttpGet("api/v1/assets/matchasset/{assetUid}")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
-    public async Task<IActionResult> GetMatching3D2DAssets([FromQuery] Guid assetUid)
+    public async Task<IActionResult> GetMatching3D2DAssets([FromRoute] Guid assetUid)
     {
       var result = await assetRepository.GetMatching3D2DAssets(assetUid);
       return Json(new MatchingAssetsDisplayModel
