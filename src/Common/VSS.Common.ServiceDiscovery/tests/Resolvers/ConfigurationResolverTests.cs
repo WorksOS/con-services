@@ -54,6 +54,15 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     }
 
     [TestMethod]
+    public void TestServiceResolverIsEnabled()
+    {
+      var resolver = GetResolver();
+      Assert.IsNotNull(resolver);
+      
+      Assert.IsTrue(resolver.IsEnabled);
+    }
+
+    [TestMethod]
     public void TestPriority()
     {
       const int expectedPriority = 12345;

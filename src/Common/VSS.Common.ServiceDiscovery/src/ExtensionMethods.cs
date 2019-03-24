@@ -21,9 +21,8 @@ namespace VSS.Common.ServiceDiscovery
       // We could use reflection if adding them manually gets annoying
       services.AddSingleton<IServiceResolver, ConfigurationServiceResolver>();
 
-#if DEBUG
+      // Uses a development file found in %appsettings%, if it's not there it won't resolve any services
       services.AddSingleton<IServiceResolver, DevelopmentServiceResolver>(); 
-#endif
 
       services.AddSingleton<IServiceResolution, InternalServiceResolver>();
       return services;

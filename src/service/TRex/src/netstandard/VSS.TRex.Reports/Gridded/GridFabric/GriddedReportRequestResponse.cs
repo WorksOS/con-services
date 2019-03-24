@@ -7,7 +7,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
 {
   /// <summary>
   /// The response returned from the Grid request executor that contains the response code and the set of
-  /// subgrids extracted for the grid report in question
+  /// sub grids extracted for the grid report in question
   /// </summary>
   public class GriddedReportRequestResponse : SubGridsPipelinedResponseBase
   {

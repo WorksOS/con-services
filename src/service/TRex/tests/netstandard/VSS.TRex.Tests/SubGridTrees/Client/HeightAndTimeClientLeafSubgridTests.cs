@@ -2,15 +2,16 @@
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// Includes tests not covered in GenericClientLeafSubGridTests
   /// </summary>
-  public class HeightAndTimeClientLeafSubgridTests
+  public class HeightAndTimeClientLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_NullCells()

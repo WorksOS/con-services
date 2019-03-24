@@ -1,6 +1,4 @@
-﻿#if DEBUG
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,11 +17,25 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     public DevelopmentServiceResolver(ILogger<DevelopmentServiceResolver> logger)
     {
       this.logger = logger;
-      Priority = 0; // Top priority
+      Priority = 0; // Top priority ( if we have a file )
 
-      settings = File.Exists(DevelopmentSettings.Filename) 
-        ? JsonConvert.DeserializeObject<DevelopmentSettings>(File.ReadAllText(DevelopmentSettings.Filename)) 
-        : null;
+      try
+      {
+        settings = File.Exists(DevelopmentSettings.Filename)
+          ? JsonConvert.DeserializeObject<DevelopmentSettings>(File.ReadAllText(DevelopmentSettings.Filename))
+          : null;
+      }
+      catch (JsonException e)
+      {
+        logger.LogError(e, $"Failed to process Settings File at {DevelopmentSettings.Filename}");
+        settings = null;
+      }
+
+      if (settings == null)
+      {
+        Priority = int.MaxValue;
+        logger.LogInformation("No settings file found, decreasing discovery priority.");
+      }
     }
 
     public Task<string> ResolveService(string serviceName)
@@ -41,6 +53,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     public ServiceResultType ServiceType => ServiceResultType.Development;
 
     public int Priority { get; private set; }
+
+    public bool IsEnabled => settings != null;
   }
 }
-#endif

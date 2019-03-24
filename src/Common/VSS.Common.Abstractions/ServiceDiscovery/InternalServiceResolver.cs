@@ -39,6 +39,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         logger.LogInformation($"\t{serviceResolver.GetType().Name}");
         logger.LogInformation($"\t\tPriority: {serviceResolver.Priority}");
         logger.LogInformation($"\t\tService Type: {serviceResolver.ServiceType}");
+        logger.LogInformation($"\t\tEnabled: {serviceResolver.IsEnabled}");
       }
       logger.LogInformation("-----");
     }
@@ -51,14 +52,24 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     {
       foreach (var serviceResolver in Resolvers)
       {
-        var endPoint = await serviceResolver.ResolveService(serviceName);
-        if (!string.IsNullOrEmpty(endPoint))
+        if (!serviceResolver.IsEnabled)
+          continue;
+        try
         {
-          return new ServiceResult
+          var endPoint = await serviceResolver.ResolveService(serviceName);
+          if (!string.IsNullOrEmpty(endPoint))
           {
-            Endpoint = endPoint,
-            Type = serviceResolver.ServiceType
-          };
+            return new ServiceResult
+            {
+              Endpoint = endPoint,
+              Type = serviceResolver.ServiceType
+            };
+          }
+        }
+        catch (Exception e)
+        {
+          // We don't know what exceptions the resolve may throw
+          logger.LogWarning(e, $"Failed to resolve service '{serviceName}' due to error");
         }
       }
       return null;
@@ -81,6 +92,8 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           return Constants.ServiceNameConstants.PRODUCTIVITY_3D_SERVICE;
         case ApiService.Scheduler:
           return Constants.ServiceNameConstants.SCHEDULER_SERVICE;
+        case ApiService.AssetMgmt3D:
+          return Constants.ServiceNameConstants.ASSETMGMT3D_SERVICE;
         case ApiService.Push:
           return Constants.ServiceNameConstants.PUSH_SERVICE;
         case ApiService.Tile:

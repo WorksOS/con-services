@@ -54,11 +54,11 @@ namespace VSS.TRex.Tests.Exports.CSV
       var request = new CSVExportRequest();
       request.Should().NotBeNull();
     }
-    
+
     private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid)
     {
       return new CSVExportRequestArgument
-      { 
+      {
         FileName = "the file name",
         Filters = new FilterSet(new CombinedFilter()),
         CoordType = CoordType.Northeast,
@@ -97,7 +97,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var request = new CSVExportRequest();
 
       var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
-      var cellPasses = new []
+      var cellPasses = new[]
       {
         new CellPass
         {
@@ -135,7 +135,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var request = new CSVExportRequest();
       var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
 
-      var cellPasses = new CellPass[32,32][];
+      var cellPasses = new CellPass[32, 32][];
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         cellPasses[x, y] = new[]

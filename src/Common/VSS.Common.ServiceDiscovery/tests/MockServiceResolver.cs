@@ -25,5 +25,6 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
 
     public ServiceResultType ServiceType { get; private set; }
     public int Priority { get; private set; }
+    public bool IsEnabled => true;
   }
 }

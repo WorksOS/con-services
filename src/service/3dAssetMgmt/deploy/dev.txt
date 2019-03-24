@@ -1,0 +1,5 @@
+MYSQL_DATABASE_NAME: VSS-AssetMgmt3D-Dev
+KAFKA_GROUP_NAME: AssetMgmt3D-Datafeed
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IAssetEvent
+CUSTOM_INIT_SCRIPT: zookeeper_check.sh
+JAEGER_SERVICE_NAME: Dev AssetMgmt3D Service API 
