@@ -51,14 +51,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, true);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(CreateDesign)}: SiteModel: {designRequest.ProjectUid} not found and unable to be created");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {designRequest.ProjectUid} not found and unable to be created"));
-      }
-
+      GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, nameof(CreateDesign), true);
+     
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
@@ -94,14 +88,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, true);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(UpdateDesign)}: SiteModel: {designRequest.ProjectUid} not found and unable to be created");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {designRequest.ProjectUid} not found and unable to be created"));
-      }
-
+      GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, nameof(UpdateDesign), true);
+      
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
@@ -138,14 +126,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, true);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(DeleteDesign)}: SiteModel: {designRequest.ProjectUid} not found and unable to be created");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {designRequest.ProjectUid} not found and unable to be created"));
-      }
-
+      GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, nameof(DeleteDesign),true);
+     
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete.");

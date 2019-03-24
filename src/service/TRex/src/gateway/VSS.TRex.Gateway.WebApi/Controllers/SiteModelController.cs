@@ -15,7 +15,6 @@ using VSS.TRex.Executors;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.WebApi.ActionServices;
-using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -25,7 +24,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   [Route("api/v1/sitemodels")]
   public class SiteModelController : BaseController
   {
-    public SiteModelController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore) 
+    public SiteModelController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<SiteModelController>(), serviceExceptionHandler, configStore)
     {
     }
@@ -40,15 +39,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetExtents)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(GetExtents)}: SiteModel: {siteModelID} not found");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {siteModelID} not found and unable to be created"));
-      }
-
-      var extents = siteModel.SiteModelExtent;
+      var extents = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetExtents)).SiteModelExtent;
       if (extents != null)
         return new BoundingBox3DGrid(
           extents.MinX,
@@ -68,20 +59,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="projectStatisticsTRexRequest"></param>
     /// <returns></returns>
     [HttpPost("statistics")]
-    public ProjectStatisticsResult GetStatistics([FromBody]ProjectStatisticsTRexRequest projectStatisticsTRexRequest)
+    public ProjectStatisticsResult GetStatistics([FromBody] ProjectStatisticsTRexRequest projectStatisticsTRexRequest)
     {
       Log.LogInformation($"{nameof(GetStatistics)}: projectStatisticsTRexRequest: {JsonConvert.SerializeObject(projectStatisticsTRexRequest)}");
       projectStatisticsTRexRequest.Validate();
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectStatisticsTRexRequest.ProjectUid);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(GetStatistics)}: SiteModel: {projectStatisticsTRexRequest.ProjectUid} not found");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {projectStatisticsTRexRequest.ProjectUid} not found and unable to be created"));
-      }
-
-    var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid, projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectStatisticsTRexRequest.ProjectUid, nameof(GetStatistics));
+      var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid, projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
 
       var result = new ProjectStatisticsResult();
       if (extents != null)
@@ -89,7 +73,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           extents.MinX, extents.MinY, extents.MinZ,
           extents.MaxX, extents.MaxY, extents.MaxZ
         );
-     
+
       var startEndDates = siteModel.GetDateRange();
       result.startTime = startEndDates.startUtc;
       result.endTime = startEndDates.endUtc;
@@ -111,19 +95,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(GetMachines)}: SiteModel: {siteModelID} not found");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {siteModelID} not found and unable to be created"));
-      }
-
-      // todoJeannie is this a failure situation, or should I just not fill lat/longs?
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachines));
       if (string.IsNullOrEmpty(siteModel.CSIB()))
       {
         Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
-        return (MachineExecutionResult)new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
+        return (MachineExecutionResult) new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
       }
 
       var machines = siteModel.Machines.ToList();
@@ -136,7 +112,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
           result.MachineStatuses = resultMachines;
         else
-          return (MachineExecutionResult)new ContractExecutionResult(response);
+          return (MachineExecutionResult) new ContractExecutionResult(response);
       }
 
       return result;
@@ -152,14 +128,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(GetAssetOnDesignPeriods)}: SiteModel: {siteModelID} not found");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {siteModelID} not found and unable to be created"));
-      }
-
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetAssetOnDesignPeriods));
       return new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
     }
 
@@ -173,14 +142,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetMachineLayers)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID);
-      if (siteModel == null)
-      {
-        Log.LogError($"{nameof(GetMachineLayers)}: SiteModel: {siteModelID} not found");
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"SiteModel: {siteModelID} not found and unable to be created"));
-      }
-
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachineLayers));
       return new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
     }
 
