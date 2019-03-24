@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Executors
 
       var result = await executor.ProcessAsync(request);
 
-      Assert.IsNull(result);
+      Assert.IsNull(result, "Result should be null");
     }
 #if RAPTOR
     [TestMethod]
