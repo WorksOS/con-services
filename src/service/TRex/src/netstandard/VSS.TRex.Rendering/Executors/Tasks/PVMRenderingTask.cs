@@ -22,21 +22,6 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         public PVMRenderingTask()
         { }
 
-        /// <summary>
-        /// Constructs the PVM rendering task to accept sub grids returning from the processing engine
-        /// </summary>
-        /// <param name="requestDescriptor"></param>
-        /// <param name="tRexNodeId"></param>
-        /// <param name="gridDataType"></param>
-        /// <param name="tileRenderer"></param>
-        public PVMRenderingTask(Guid requestDescriptor, 
-                                string tRexNodeId, 
-                                GridDataType gridDataType, 
-                                PlanViewTileRenderer tileRenderer) : base(requestDescriptor, tRexNodeId, gridDataType)
-        {
-            TileRenderer = tileRenderer;
-        }
-
         public override bool TransferResponse(object response)
         {
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());

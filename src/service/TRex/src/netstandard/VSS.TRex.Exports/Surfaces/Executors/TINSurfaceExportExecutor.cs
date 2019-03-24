@@ -109,8 +109,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
       try
       {
-//        ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
-
         Guid RequestDescriptor = Guid.NewGuid();
 
         // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids

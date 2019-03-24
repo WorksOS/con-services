@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client;
@@ -12,7 +11,7 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
   /// </summary>
   public class GriddedReportTask : PipelinedSubGridTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GriddedReportTask>();
 
     /// <summary>
     /// The action (via a delegate) this task will perform on each of the sub grids transferred to it

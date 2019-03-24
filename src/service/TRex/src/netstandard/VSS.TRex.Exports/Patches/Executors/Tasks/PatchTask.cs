@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.Executors.Tasks
 {
@@ -24,16 +23,6 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     { }
 
     /// <summary>
-    /// Constructs the patch task
-    /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="tRexNodeId"></param>
-    /// <param name="gridDataType"></param>
-    public PatchTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
-    {
-    }
-
-    /// <summary>
     /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
     /// <param name="response"></param>
@@ -51,13 +40,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
         return false;
       }
 
-      foreach (var subGrid in subGridResponses)
-      {
-        if (subGrid == null)
-          continue;
-
-        PatchSubGrids.Add(subGrid);
-      }
+      PatchSubGrids.AddRange(subGridResponses.Where(s => s != null));
 
       return true;
     }

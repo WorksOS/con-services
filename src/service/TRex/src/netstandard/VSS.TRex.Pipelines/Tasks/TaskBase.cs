@@ -41,19 +41,6 @@ namespace VSS.TRex.Pipelines.Tasks
         }
 
         /// <summary>
-        /// Constructor accepting a request descriptor identifying the overall request this task is associated with
-        /// </summary>
-        /// <param name="requestDescriptor"></param>
-        /// <param name="tRexNodeId"></param>
-        /// <param name="gridDataType"></param>
-        public TaskBase(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType)
-        {
-            RequestDescriptor = requestDescriptor;
-            TRexNodeID = tRexNodeId;
-            GridDataType = gridDataType;
-        }
-
-        /// <summary>
         /// TransferResponse is the sink for responses received from the processing layers.
         /// </summary>
         /// <param name="response"></param>

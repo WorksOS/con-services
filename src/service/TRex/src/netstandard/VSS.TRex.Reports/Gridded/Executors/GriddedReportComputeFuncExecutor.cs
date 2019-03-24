@@ -49,7 +49,8 @@ namespace VSS.TRex.Reports.Gridded.Executors
     public GriddedReportComputeFuncExecutor(GriddedReportRequestArgument arg)
     {
       _griddedReportRequestArgument = arg;
-      _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+      if (arg != null)
+        _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
     }
 
     /// <summary>
@@ -64,13 +65,15 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
       Guid requestDescriptor = Guid.NewGuid();
 
+      var task = DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport) as GriddedReportTask;
+
       processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
         dataModelID: _griddedReportRequestArgument.ProjectID,
         gridDataType: GridDataType.CellProfile,
         response: GriddedReportRequestResponse,
         filters: _griddedReportRequestArgument.Filters,
         cutFillDesignID: _griddedReportRequestArgument.ReferenceDesignUID,
-        task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport),
+        task: task,
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
         requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
@@ -83,7 +86,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
       processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
       processor.Task.GridDataType = GridDataType.CellProfile;
 
-      ((GriddedReportTask) processor.Task).ProcessorDelegate =
+      task.ProcessorDelegate =
         subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
           .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
 

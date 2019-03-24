@@ -2,7 +2,7 @@
 {
   public class GridToTINHeapNode
   {
-    public static int NOT_IN_HEAP = -12345;
+    public const int NOT_IN_HEAP = -12345;
 
     /// <summary>
     /// Import is a measure of how important this item is. In the context

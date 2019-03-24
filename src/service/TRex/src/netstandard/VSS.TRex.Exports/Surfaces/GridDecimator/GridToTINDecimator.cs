@@ -479,9 +479,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       bool Result = NumImportUpdates > 0;
       if (Result && NumImportUpdates == 1)
       {
-        // Check that the triangle is not flat (null) and the 'Import' value is not the null value
-        if (v0.Z == NullVertexHeight && v0.Z == v1.Z && v1.Z == v2.Z && Candidate.Import == Math.Abs(NullVertexHeight))
-          Result = false; // Yes it is, discard this triangle
+        // Check that the triangle is not flat (null) and the 'Import' value is not the null value.
+        // If it is, discard this triangle
+        Result = !(v0.Z == NullVertexHeight && v0.Z == v1.Z && v1.Z == v2.Z && Candidate.Import == Math.Abs(NullVertexHeight));
       }
 
       return Result;
@@ -518,19 +518,23 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <summary>
     /// GreedyInsert pulls the triangle with the greatest error from the top of the
     /// heap and insert the grid position within that triangle that represents
-    /// that error into the triangle.
+    /// that error into the triangle. If there are no more triangles on the heap
+    /// to select then return false.
     /// </summary>
     /// <returns></returns>
     private bool GreedyInsert()
     {
       GridToTINHeapNode HeapNode = Heap.Extract();
 
-      if (HeapNode == null)
-        return false;
+      var result = false;
 
-      Select(HeapNode.sx, HeapNode.sy, HeapNode.sz, HeapNode.Tri);
+      if (HeapNode != null)
+      {
+        Select(HeapNode.sx, HeapNode.sy, HeapNode.sz, HeapNode.Tri);
+        result = true;
+      }
 
-      return true;
+      return result;
     }
 
     /// <summary>
@@ -538,8 +542,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// </summary>
     private void Select(int sx, int sy, double sz, GridToTINTriangle T)
     {
-      if (IsUsed[(uint)sx, (uint)sy])
-        throw new TRexTINException($"Reusing vertex at {sx},{sy}");
+      //if (IsUsed[(uint)sx, (uint)sy])
+      //  throw new TRexTINException($"Reusing vertex at {sx},{sy}");
 
       // Noisy logging - reinclude as necessary
       // Log.LogDebug($"Setting IsUSed[{sx},{sy}] to true");
@@ -582,7 +586,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
     public GridToTINDecimator(GenericSubGridTree<float, GenericLeafSubGrid_Float> dataStore)
     {
-      DataStore = dataStore;
+      DataStore = dataStore ?? throw new TRexTINException("No data store provided to decimator");
 
       CreateDecimationState();
     }
@@ -691,13 +695,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       BuildMeshFaultCode = DecimationResult.NoError;
       DateTime StartTime = DateTime.Now;
 
-      if (DataStore == null)
-      {
-        BuildMeshFaultCode = DecimationResult.NoDataStore;
-        return false;
-      }
-
-      if (Engine.TIN.Vertices.Count != 0)
+      if (Engine.TIN.Vertices.Count > 0 || Engine.TIN.Triangles.Count > 0)
       {
         BuildMeshFaultCode = DecimationResult.DestinationTINNotEmpty;
         return false;
@@ -734,16 +732,13 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       // Add grid points into the triangle with the largest error (importance)
       // until there are no triangles whose error falls outside of the tolerance
 
-      while (MaxError() > Tolerance && Engine.TIN.Vertices.Count < PointLimit && !Aborted)
+      bool finished = false;
+      while (MaxError() > Tolerance && Engine.TIN.Vertices.Count < PointLimit && !Aborted && !finished)
       {
         // This logging is very noisy, uncomment out as needed...
         // Log.LogDebug($"GreedyInsert: Tolerance = {Tolerance}, Triangle count = {Engine.TIN.Triangles.Count}, Vertex count = {Engine.TIN.Vertices.Count}");
 
-        if (!GreedyInsert()) // Some error has occurred
-        {
-          BuildMeshFaultCode = DecimationResult.Unknown;
-          return false;
-        }
+        finished = !GreedyInsert();
 
         /* This logging is very noisy, uncomment out as needed...
         Log.LogDebug($"Mesh size = {Engine.TIN.Triangles.Count} tris. Heap size = {Heap.Count}. Max error = {MaxError()}");
@@ -763,7 +758,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       if (Engine.TIN.Vertices.Count >= PointLimit)
       {
         Log.LogInformation($"TIN construction aborted after adding a maximum of {Engine.TIN.Vertices.Count} vertices to the surface being constructed.");
-        BuildMeshFaultCode = DecimationResult.TrianglesExceeded;
+        BuildMeshFaultCode = DecimationResult.VerticesExceeded;
         return false;
       }
 
@@ -809,27 +804,26 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       bool ValidTriangle;
 
-      if (DontScanTriangles && !force)
-        return;
-
-      ScanTriangleInvocations++;
-
-      Candidate = new Candidate(int.MinValue);
-
-      InitialiseTriangleVertexOrdering();
-
-      ValidTriangle = Zplane.Init(ScanTri.Vertices[0], ScanTri.Vertices[1], ScanTri.Vertices[2]);
-
-      // ***** Check how many trivial triangles (one cell) make it here. These could be
-      // pruned before ever being placed into the heap.....
-
-      if (ValidTriangle && ScanWholeTriangleGeometry())
-        // We have now found the appropriate candidate point.
-        AddCandidateToHeap();
-      else if (ScanTri.HeapIndex != GridToTINHeapNode.NOT_IN_HEAP)
+      if (!DontScanTriangles || force)
       {
-        Heap.Kill(ScanTri.HeapIndex);
-        ScanTri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
+        ScanTriangleInvocations++;
+        Candidate = new Candidate(int.MinValue);
+
+        InitialiseTriangleVertexOrdering();
+
+        ValidTriangle = Zplane.Init(ScanTri.Vertices[0], ScanTri.Vertices[1], ScanTri.Vertices[2]);
+
+        // ***** Check how many trivial triangles (one cell) make it here. These could be
+        // pruned before ever being placed into the heap.....
+
+        if (ValidTriangle && ScanWholeTriangleGeometry())
+          // We have now found the appropriate candidate point.
+          AddCandidateToHeap();
+        else if (ScanTri.HeapIndex != GridToTINHeapNode.NOT_IN_HEAP)
+        {
+          Heap.Kill(ScanTri.HeapIndex);
+          ScanTri.HeapIndex = GridToTINHeapNode.NOT_IN_HEAP;
+        }
       }
     }
 

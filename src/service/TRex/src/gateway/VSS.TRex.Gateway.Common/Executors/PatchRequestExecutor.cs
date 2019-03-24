@@ -7,7 +7,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Exports.Patches;
 using VSS.TRex.Exports.Patches.GridFabric;
-using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 
@@ -39,9 +38,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter1 = ConvertFilter(request?.Filter1, siteModel);
       var filter2 = ConvertFilter(request?.Filter2, siteModel);
       
-      PatchRequestServer server = new PatchRequestServer();
+      PatchRequest req = new PatchRequest();
 
-      PatchResult result = server.Execute(new PatchRequestArgument()
+      PatchResult result = req.ExecuteAndConvertToResult(new PatchRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new[] { filter1, filter2 }),

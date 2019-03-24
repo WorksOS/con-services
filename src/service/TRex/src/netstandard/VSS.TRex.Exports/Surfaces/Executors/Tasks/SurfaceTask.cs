@@ -26,16 +26,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     { }
 
     /// <summary>
-    /// Constructs the patch task
-    /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="tRexNodeId"></param>
-    /// <param name="gridDataType"></param>
-    public SurfaceTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
-    {
-    }
-
-    /// <summary>
     /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
     /// <param name="response"></param>
@@ -45,10 +35,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
       if (!base.TransferResponse(response))
-      {
-        Log.LogWarning($"Base {nameof(TransferResponse)} returned false");
         return false;
-      }
 
       if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
       {
@@ -60,20 +47,20 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 
       foreach (var subGrid in subGridResponses)
       {
-        if (subGrid == null)
-          continue;
-
-        ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
-
-        GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+        if (subGrid != null)
         {
-          OriginX = originSubGrid.OriginX,
-          OriginY = originSubGrid.OriginY,
-          Items = originSubGrid.Clone2DArray(),
-          Level = originSubGrid.Level
-        };
+          ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
 
-        SurfaceSubgrids.Add(leaf);
+          GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+          {
+            OriginX = originSubGrid.OriginX,
+            OriginY = originSubGrid.OriginY,
+            Items = originSubGrid.Clone2DArray(),
+            Level = originSubGrid.Level
+          };
+
+          SurfaceSubgrids.Add(leaf);
+        }
       }
 
       return true;

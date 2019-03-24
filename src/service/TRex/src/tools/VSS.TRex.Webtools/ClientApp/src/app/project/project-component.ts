@@ -225,7 +225,7 @@ constructor(
 
     this.projectService.getProjectDateRange(this.projectUid).subscribe(dateRange => {
       this.projectStartDate = dateRange.item1;
-      this.projectEndDate = dateRange.item1;
+      this.projectEndDate = dateRange.item2;
     });
   }
 

@@ -29,6 +29,9 @@ namespace VSS.TRex.Tests.Caching
         Assert.Equal(0, cache.CurrentSizeInBytes);
         Assert.Equal(50, cache.MruNonUpdateableSlotCount);
         Assert.Equal(100, cache.MaxNumElements);
+
+        cache.ProjectCount.Should().Be(0);
+        cache.ContextRemovalCount.Should().Be(0);
       }
     }
 
@@ -77,6 +80,8 @@ namespace VSS.TRex.Tests.Caching
           Assert.True(context.OwnerMemoryCache == cache, "Context does not have owner reference");
           Assert.True(context.TokenCount == 0, "New context has non-zero number of tokens");
         }
+
+        cache.ProjectCount.Should().Be(1);
       }
     }
 
@@ -229,6 +234,9 @@ namespace VSS.TRex.Tests.Caching
 
           Assert.True(contexts[i].TokenCount == 0, "Token count not zero after removing only token in context");
         }
+
+        cache.RemoveContextsMarkedForRemoval(0);
+        cache.ContextRemovalCount.Should().Be(numContexts);
       }
     }
 

@@ -2,11 +2,10 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
-using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
+using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
@@ -127,6 +126,40 @@ namespace VSS.TRex.Tests.Exports.Patches
       response.SubGrids[0].CountNonNullCells().Should().Be(1);
       response.SubGrids[0].Should().BeOfType<ClientHeightAndTimeLeafSubGrid>();
       ((ClientHeightAndTimeLeafSubGrid)response.SubGrids[0]).Cells[0, 0].Should().BeApproximately(5.5f, 0.000001f);
+    }
+
+    [Fact]
+    public void ExecuteAndConvertToResult()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      BuildModelForSingleCellPatch(out var siteModel, 0.5f);
+
+      var request = new PatchRequest();
+      var result = request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
+
+      result.Should().NotBeNull();
+      result.Patch.Should().NotBeNull();
+      result.Patch.Length.Should().Be(1);
+
+      result.Patch[0].ElevationOrigin.Should().Be(5.5f);
+      result.Patch[0].Data[0, 0].ElevationOffset.Should().Be(0);
+    }
+
+    [Fact]
+    public void PatchResult_ConstructResultData()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      BuildModelForSingleCellPatch(out var siteModel, 0.5f);
+
+      var request = new PatchRequest();
+      var result = request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
+
+      var bytes = result.ConstructResultData();
+      bytes.Should().NotBeNull();
     }
   }
 }
