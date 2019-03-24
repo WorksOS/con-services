@@ -2,37 +2,38 @@
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Helpers
 {
-  public class GatewayHelper
+  public static class GatewayHelper
   {
-    public static ISiteModel EnsureSiteModelExists(Guid projectUid)
-    {
-      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false);
-      if (sm == null)
-      {
-        sm = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, true);
-        if (!sm.SaveMetadataToPersistentStore(DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()))
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Unable to local siteModel"));
-        }
-      }
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("GatewayHelper");
 
-      return sm;
-    }
-
-    public static ISiteModel EnsureSiteModelExists(string projectUid)
+    public static ISiteModel ValidateAndGetSiteModel(Guid projectUid, string method, bool createIfNotExists = false)
     {
-      if (string.IsNullOrEmpty(projectUid) || Guid.Parse(projectUid) == Guid.Empty)
+      if (projectUid == Guid.Empty)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "siteModel ID format is invalid"));
 
-      var sm = EnsureSiteModelExists(Guid.Parse(projectUid));
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, createIfNotExists);
+      if (siteModel == null)
+      {
+        var message = $"{method}: SiteModel: {projectUid} not found {(createIfNotExists ? " and unable to be created" : "")}";
+        Log.LogError(message);
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, message));
+      }
 
-      return sm;
+      return siteModel;
+    }
+
+    public static ISiteModel ValidateAndGetSiteModel(string projectUid, string method, bool createIfNotExists = false)
+    {
+      if (string.IsNullOrEmpty(projectUid))
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "siteModel ID format is invalid"));
+
+      return ValidateAndGetSiteModel(Guid.Parse(projectUid), method, createIfNotExists);
     }
   }
 }
