@@ -416,18 +416,18 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/statistics/elevation")]
     [HttpPost]
-    public ElevationStatisticsResult PostExportElevationStatistics([FromBody] ElevationStatisticsRequest request)
+    public async Task<ElevationStatisticsResult> PostExportElevationStatistics([FromBody] ElevationStatisticsRequest request)
     {
       log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 
       return
-        RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+        await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
 #if RAPTOR
             raptorClient,
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request)
           as ElevationStatisticsResult;
     }
 
