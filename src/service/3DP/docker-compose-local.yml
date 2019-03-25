@@ -6,6 +6,8 @@ services:
       - "80:80"
     env_file:
       - docker-compose-local.env
+    volumes:
+      - .\artifacts\webapi\logs:c:\app\logs
     depends_on:
       - mockprojectwebapi
   mockprojectwebapi:
