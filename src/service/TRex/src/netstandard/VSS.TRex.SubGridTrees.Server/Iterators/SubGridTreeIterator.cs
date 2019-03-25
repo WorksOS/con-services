@@ -20,10 +20,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     // the grid will be taken from the supplied scanner
     public ISubGridTree Grid { get; set; }
 
-    // Scanner is the scanning delegate through which additional control may be exercised
-    // over pruning of the nodes and leaves that will be scanned
-    public SubGridTreeScannerBase Scanner { get; set; } = null;
-
     // CurrentSubGrid is a reference to the current sub grid that the iterator is currently
     // up to in the sub grid tree scan. By definition, this sub grid is locked for
     // the period that FCurrent references it.
@@ -33,11 +29,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     // the sub grid tree which marks the progress of the iteration
     private readonly SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTreeConsts.SubGridTreeLevels];
 
-    private readonly IStorageProxy StorageProxy; //IStorageProxy[] SpatialStorageProxy = null;
-
-    // StorageClasses controls the storage classes that will be retrieved from the database
-    // for each sub grid in the iteration
-    //   FStorageClasses : TICSubGridCellStorageClasses;
+    private readonly IStorageProxy StorageProxy;
 
     // SubGridsInServerDiskStore indicates that the sub grid tree we are iterating
     // over is persistently stored on disk. In this case we must use the server
@@ -60,30 +52,21 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
       for (int I = 1; I < SubGridTreeConsts.SubGridTreeLevels; I++)
         iterationState[I].Initialise();
 
-      if (Scanner != null)
-        iterationState[1].SubGrid = Scanner.Grid.Root;
-      else
-        iterationState[1].SubGrid = Grid?.Root ?? throw new TRexSubGridProcessingException("Sub grid iterators require either a scanner or a grid to work from");
+      iterationState[1].SubGrid = Grid?.Root ?? throw new TRexSubGridProcessingException("Sub grid iterators require either a scanner or a grid to work from");
     }
-
-    //        protected virtual ISubGrid GetCurrentSubGrid() => CurrentSubGrid;
 
     public SubGridTreeIterator(IStorageProxy storageProxy,
                                bool subGridsInServerDiskStore)
     {
       // FDataStoreCache = ADataStoreCache;
-      // FStorageClasses = [icsscAllPasses];
 
       SubGridsInServerDiskStore = subGridsInServerDiskStore;
       StorageProxy = storageProxy;
     }
 
-    //        public void CurrentSubgridDestroyed() => CurrentSubGrid = null;
-
     protected ISubGrid LocateNextSubGridInIteration()
     {
       int LevelIdx = 1;
-      SubGridTreeBitmapSubGridBits DummyExistenceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       if (iterationState[1].SubGrid == null)
         throw new TRexSubGridProcessingException("No root sub grid node assigned to iteration state");
@@ -103,87 +86,41 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         while (iterationState[LevelIdx].NextCell()) // do
         {
           ISubGrid SubGrid;
-          if (LevelIdx == SubGridTreeConsts.SubGridTreeLevels - 1)
+          if (LevelIdx == SubGridTreeConsts.SubGridTreeLevels - 1 && SubGridsInServerDiskStore)
           {
-            // It's a leaf sub grid we are looking for - check the existence map
-            if (SubGridsInServerDiskStore)
+            // It's a leaf sub grid we are looking for
+            if (returnCachedItemsOnly)
             {
-              if (returnCachedItemsOnly)
-              {
-                SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte)iterationState[LevelIdx].XIdx, (byte)iterationState[LevelIdx].YIdx);
-              }
-              else
-              {
-                uint CellX = (uint)(iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension);
-                uint CellY = (uint)(iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension);
-
-                SubGrid = Utilities.SubGridUtilities.LocateSubGridContaining
-                           (StorageProxy,
-                            iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
-                            //null, //FDataStoreCache,
-                            CellX, CellY,
-                            SubGridTreeConsts.SubGridTreeLevels,
-                            false, false);
-              }
+              SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte) iterationState[LevelIdx].XIdx, (byte) iterationState[LevelIdx].YIdx);
             }
             else
             {
-              SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte)iterationState[LevelIdx].XIdx, (byte)iterationState[LevelIdx].YIdx);
+              uint CellX = (uint) (iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension);
+              uint CellY = (uint) (iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension);
+
+              SubGrid = Utilities.SubGridUtilities.LocateSubGridContaining
+              (StorageProxy,
+                iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
+                //null, //FDataStoreCache,
+                CellX, CellY,
+                SubGridTreeConsts.SubGridTreeLevels,
+                false, false);
             }
           }
           else
           {
-            SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte)iterationState[LevelIdx].XIdx, (byte)iterationState[LevelIdx].YIdx);
+            SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte) iterationState[LevelIdx].XIdx, (byte) iterationState[LevelIdx].YIdx);
           }
 
           if (SubGrid != null)
           {
-            bool allowedToUseSubGrid = false;
-
             // Are we allowed to do anything with it?
-            if (SubGrid.IsLeafSubGrid())
-            {
-              allowedToUseSubGrid = Scanner == null || Scanner.OnProcessLeafSubgrid(SubGrid);
-            }
-            else
-            {
-              if (Scanner != null)
-              {
-                switch (Scanner.OnProcessNodeSubgrid(SubGrid, DummyExistenceMap))
-                {
-                  case Types.SubGridProcessNodeSubGridResult.OK:
-                    allowedToUseSubGrid = true;
-                    break;
-
-                  case Types.SubGridProcessNodeSubGridResult.DontDescendFurther:
-                    break;
-
-                  case Types.SubGridProcessNodeSubGridResult.TerminateProcessing:
-                    Scanner.Abort();
-                    return null;
-                }
-              }
-              else
-              {
-                allowedToUseSubGrid = true;
-              }
-            }
-
-            if (!allowedToUseSubGrid)
-            {
-              continue;
-            }
-
-            if (SubGrid.IsLeafSubGrid())
-            {
-              // It's a leaf sub grid - so use it
+            if (SubGrid.IsLeafSubGrid()) // It's a leaf sub grid - so use it            
               return SubGrid;
-            }
 
             // It's a node sub grid that contains other node sub grids or leaf sub grids - descend into it
             LevelIdx++;
             iterationState[LevelIdx].SubGrid = SubGrid;
-
           }
         }
 
@@ -206,33 +143,10 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     // MoveToNextSubGrid moves to the next sub grid in the tree that satisfies the scanner
     public bool MoveToNextSubGrid()
     {
-      ISubGrid SubGrid;
-
-      bool Result;
-
       if (!ReturnedFirstItemInIteration)
-      {
         return MoveToFirstSubGrid() && CurrentSubGrid != null;
-      }
 
-      do
-      {
-        SubGrid = LocateNextSubGridInIteration();
-
-        if (SubGrid == null) // We are at the end of the iteration
-        {
-          CurrentSubGrid = null;
-          return false;
-        }
-
-        Result = Scanner == null || (Scanner.OnProcessLeafSubgrid(SubGrid) && !Scanner.Aborted);
-      } while (!Result && !(Scanner != null && Scanner.Aborted));
-
-      CurrentSubGrid = Result ? SubGrid : null;
-
-      return Result;
+      return (CurrentSubGrid = LocateNextSubGridInIteration()) != null;
     }
-
-    public void Reset() => ReturnedFirstItemInIteration = false;
   }
 }
