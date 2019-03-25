@@ -1,5 +1,5 @@
 ﻿using VSS.MasterData.Models.Models;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace TCCToDataOcean.DatabaseAgent
 {

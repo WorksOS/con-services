@@ -1,9 +1,9 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Linq;
-using LiteDB;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace TCCToDataOcean.DatabaseAgent
 {

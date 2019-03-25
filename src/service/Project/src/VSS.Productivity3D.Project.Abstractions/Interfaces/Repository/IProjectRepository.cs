@@ -18,6 +18,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
     Task<Models.DatabaseModels.Project> GetProject(string projectUid);
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate);
     Task<Models.DatabaseModels.Project> GetProjectBySubcription(string subscriptionUid);
+    Task<IEnumerable<Abstractions.Models.DatabaseModels.Project>> GetActiveProjects();
     Task<Models.DatabaseModels.Project> GetProjectOnly(string projectUid);
     Task<ProjectSettings> GetProjectSettings(string projectUid, string userId, ProjectSettingsType projectSettingsType);
     Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId);

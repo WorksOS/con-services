@@ -1,5 +1,5 @@
-﻿using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Repositories.DBModels;
+﻿using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace TCCToDataOcean.Interfaces
 {
