@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         }
 
         /// <summary>
-        /// Creates the subgrid listener on the MessageTopic defined in the argument to be sent to the cache cluster
+        /// Creates the sub grid listener on the MessageTopic defined in the argument to be sent to the cache cluster
         /// </summary>
         private void CreateSubGridListener()
         {
@@ -69,7 +69,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         {
             // De-register the listener from the message group
             MsgGroup?.StopLocalListen(Listener);
-
             MsgGroup = null;
         }
 
@@ -142,36 +141,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
               });
         }
 
-        #region IDisposable Support
-        private bool disposedValue; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    StopListening();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        // Note: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~SubGridRequestsProgressive() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // Note: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
+            StopListening();
         }
-        #endregion
     }
 }

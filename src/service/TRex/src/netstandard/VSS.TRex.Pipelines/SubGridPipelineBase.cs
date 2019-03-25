@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Types;
@@ -19,13 +18,13 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Derived from SVO SubGridPipelineBase
     /// </summary>
-    public class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
+    public abstract class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
-        where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new() 
+        where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable, new() 
     {
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor>>();
 
         /// <summary>
         /// The event used to signal that the pipeline processing has completed, or aborted
@@ -206,7 +205,7 @@ namespace VSS.TRex.Pipelines
             // Send the sub grid request mask to the grid fabric layer for processing
             if (RequestAnalyser.TotalNumberOfSubGridsToRequest > 0)
             {
-              var requestor = new TSubGridRequestor
+              using (var requestor = new TSubGridRequestor
               {
                 TRexTask = PipelineTask,
                 SiteModelID = DataModelID,
@@ -219,10 +218,11 @@ namespace VSS.TRex.Pipelines
                 Filters = FilterSet,
                 ReferenceDesignID = ReferenceDesignID,
                 AreaControlSet = AreaControlSet
-              };
-
-              var Response = requestor.Execute();
-              result = Response.ResponseCode == SubGridRequestsResponseResult.OK;
+              })
+              {
+                var Response = requestor.Execute();
+                result = Response.ResponseCode == SubGridRequestsResponseResult.OK;
+              }
             }
 
             Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
