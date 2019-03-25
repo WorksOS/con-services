@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -23,7 +22,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 {
-  public class  SurfaceExportProxy : DITAGFileAndSubGridRequestsWithIgniteFixture, IDisposable
+  public class SurfaceExportProxy : DITAGFileAndSubGridRequestsWithIgniteFixture, IDisposable
   {
     public SurfaceExportProxy()
     {

@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
   public class ServerSubGridTree : SubGridTree, IServerSubGridTree 
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTree>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTree>();
 
     /// <summary>
     /// Controls emission of sub grid reading activities into the log.
@@ -136,20 +136,20 @@ namespace VSS.TRex.SubGridTrees.Server
           // Debug.Assert(SubGrid.Directory?.SegmentDirectory?.Count == 0, "Loading a leaf sub grid directory when there are already segments present within it.");
 
           // Check this thread is the winner of the lock to be able to load the contents
-          if (SubGrid.Directory?.SegmentDirectory?.Count != 0)
-            return true; // The load has occurred on another thread, leave quietly...
+          if (SubGrid.Directory?.SegmentDirectory?.Count == 0)
+          {
+            // Ensure the appropriate storage is allocated
+            if (loadAllPasses)
+              SubGrid.AllocateLeafFullPassStacks();
 
-          // Ensure the appropriate storage is allocated
-          if (loadAllPasses)
-            SubGrid.AllocateLeafFullPassStacks();
+            if (loadLatestPasses)
+              SubGrid.AllocateLeafLatestPassGrid();
 
-          if (loadLatestPasses)
-            SubGrid.AllocateLeafLatestPassGrid();
+            FullFileName = GetLeafSubGridFullFileName(CellAddress);
 
-          FullFileName = GetLeafSubGridFullFileName(CellAddress);
-
-          // Briefly lock this sub grid just for the period required to read its contents
-          Result = SubGrid.LoadDirectoryFromFile(storageProxy, FullFileName);
+            // Briefly lock this sub grid just for the period required to read its contents
+            Result = SubGrid.LoadDirectoryFromFile(storageProxy, FullFileName);
+          }
         }
       }
       finally
