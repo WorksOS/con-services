@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -26,13 +27,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public int Add(ISubGridCellPassesDataSegment item)
     {
-      //{$IFDEF DEBUG}
-      //Counter: integer;
-      //{$ENDIF}
-
       int Index = Count - 1;
 
-      while ((Index >= 0) && (item.SegmentInfo.StartTime < Items[Index].SegmentInfo.StartTime))
+      while (Index >= 0 && item.SegmentInfo.StartTime < Items[Index].SegmentInfo.StartTime)
       {
         Index--;
       }
@@ -72,16 +69,10 @@ namespace VSS.TRex.SubGridTrees.Server
       ISubGridCellPassesDataSegmentInfo segmentInfo)
     {
       if (segmentInfo == null)
-      {
-        Log.LogCritical($"Null segment info passed to AddNewSegment for sub grid {subGrid.Moniker()}");
-        return null;
-      }
+        throw new TRexSubGridProcessingException($"Null segment info passed to AddNewSegment for sub grid {subGrid.Moniker()}");
 
       if (segmentInfo.Segment != null)
-      {
-        Log.LogCritical($"'Segment info passed to AddNewSegment for sub grid {subGrid.Moniker()} already contains an allocated segment");
-        return null;
-      }
+        throw new TRexSubGridProcessingException($"Segment info passed to AddNewSegment for sub grid {subGrid.Moniker()} already contains an allocated segment");
 
       SubGridCellPassesDataSegment Result = new SubGridCellPassesDataSegment
       {
@@ -105,16 +96,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (_performSegmentAdditionIntegrityChecks)
             {
-              int Counter = 0;
               for (int J = 0; J < Count - 1; J++)
                 if (Items[J].SegmentInfo.StartTime >= Items[J + 1].SegmentInfo.StartTime)
                 {
-                  Log.LogCritical($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
-                  Counter++;
+                  Log.LogError($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
+                  DumpSegmentsToLog();
+                  throw new TRexSubGridProcessingException($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
                 }
-
-              if (Counter > 0)
-                DumpSegmentsToLog();
             }
 
             return Result;

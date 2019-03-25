@@ -315,5 +315,13 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(storage.TokenCount == 0, $"Element count incorrect after double invalidation (= {storage.TokenCount})");
     }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheStorageTests_EvictOneLRUItemWithLock_EmptyCache()
+    {
+      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
+
+      storage.EvictOneLRUItemWithLock();
+    }
   }
 }

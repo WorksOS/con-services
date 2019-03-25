@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// Performs sub grid requests where the processing result is aggregated and returned as one of set of partitioned responses
     /// from the cache compute cluster
     /// </summary>
-    public class SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> 
+    public class SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
@@ -26,6 +27,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         {
         }
 
+        public void Dispose()
+        {
+        }
+     
         /// <summary>
         /// Overrides the base Execute() semantics to add a listener available for aggregated processing of sub grids in the request engine.
         /// </summary>

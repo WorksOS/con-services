@@ -11,10 +11,11 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   /// <typeparam name="TSubGridsRequestArgument"></typeparam>
   /// <typeparam name="TSubGridRequestsResponse"></typeparam>
-  public class SubGridPipelineProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : 
+  public class SubGridPipelineProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> :
     SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>
     where TSubGridsRequestArgument : SubGridsRequestArgument, new()
     where TSubGridRequestsResponse : SubGridRequestsResponse, IAggregateWith<TSubGridRequestsResponse>, new()
+
   {
     /// <summary>
     /// Default no-arg constructor

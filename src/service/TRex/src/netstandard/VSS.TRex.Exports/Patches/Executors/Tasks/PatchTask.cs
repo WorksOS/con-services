@@ -31,18 +31,22 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     {
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
-      if (!base.TransferResponse(response))
-        return false;
+      bool result = false;
 
-      if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+      if (base.TransferResponse(response))
       {
-        Log.LogWarning("No sub grid responses returned");
-        return false;
+        if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+        {
+          Log.LogWarning("No sub grid responses returned");
+        }
+        else
+        {
+          PatchSubGrids.AddRange(subGridResponses.Where(s => s != null));
+          result = true;
+        }
       }
 
-      PatchSubGrids.AddRange(subGridResponses.Where(s => s != null));
-
-      return true;
+      return result;
     }
   }
 }

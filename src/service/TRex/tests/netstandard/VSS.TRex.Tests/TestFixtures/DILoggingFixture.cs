@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", It.IsAny<int>())).Returns(Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
           config.Setup(c => c.GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", It.IsAny<bool>())).Returns(true /*Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG*/);
           config.Setup(c => c.GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", It.IsAny<bool>())).Returns(Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
-          config.Setup(c => c.GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", It.IsAny<bool>())).Returns(Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS);
+          config.Setup(c => c.GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", It.IsAny<bool>())).Returns(true /*Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS*/);
 
           config.Setup(c => c.GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", It.IsAny<int>())).Returns(Consts.VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
 
