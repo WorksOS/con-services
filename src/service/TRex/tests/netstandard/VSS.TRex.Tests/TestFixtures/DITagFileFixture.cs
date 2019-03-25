@@ -110,7 +110,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))

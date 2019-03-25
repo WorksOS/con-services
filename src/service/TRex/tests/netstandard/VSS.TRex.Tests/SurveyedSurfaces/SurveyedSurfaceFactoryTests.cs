@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var instance = factory.NewInstance(Guid.NewGuid(), DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
 
       instance.Should().NotBeNull();
-      instance.Should().BeOfType<ISurveyedSurface>();
+      instance.Should().BeAssignableTo<ISurveyedSurface>();
     }
   }
 }

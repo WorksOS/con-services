@@ -12,7 +12,7 @@ namespace VSS.TRex.SurveyedSurfaces
   /// <summary>
   /// Defines all the state information describing a surveyed surface based on a design descriptor
   /// </summary>
-  public class SurveyedSurface : IEquatable<ISurveyedSurface>, IBinaryReaderWriter, ISurveyedSurface
+  public class SurveyedSurface : IBinaryReaderWriter, ISurveyedSurface
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -24,7 +24,7 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Readonly property exposing the design descriptor for the underlying topology surface
     /// </summary>
-    public DesignDescriptor DesignDescriptor;
+    public DesignDescriptor DesignDescriptor { get; private set; }
 
     /// <summary>
     /// Readonly attribute for AsAtData
@@ -34,7 +34,7 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
     /// </summary>
-    BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+    private BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
 
     /// <summary>
     /// Serialises state to a binary writer
@@ -129,8 +129,6 @@ namespace VSS.TRex.SurveyedSurfaces
         $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{extents}]";
     }
 
-    public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
-
     /// <summary>
     /// Determine if two surveyed surfaces are equal
     /// </summary>
@@ -138,10 +136,10 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     public bool Equals(ISurveyedSurface other)
     {
-      return (ID == other.ID) &&
-             DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
-             (AsAtDate == other.AsAtDate) &&
-             (extents.Equals(other.Extents));
+      return ID == other.ID &&
+             DesignDescriptor.Equals(other.DesignDescriptor) &&
+             AsAtDate == other.AsAtDate &&
+             Extents.Equals(other.Extents);
     }
   }
 }

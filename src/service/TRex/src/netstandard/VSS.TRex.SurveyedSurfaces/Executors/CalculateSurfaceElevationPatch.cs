@@ -107,11 +107,11 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             ISurveyedSurface ThisSurveyedSurface = siteModel.SurveyedSurfaces.Locate(Args.IncludedSurveyedSurfaces[i]);
 
             // Lock & load the design
-            Design = Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor().DesignID, Args.SiteModelID, Args.CellSize, out _);
+            Design = Designs.Lock(ThisSurveyedSurface.DesignDescriptor.DesignID, Args.SiteModelID, Args.CellSize, out _);
 
             if (Design == null)
             {
-              Log.LogError($"Failed to read design file {ThisSurveyedSurface.Get_DesignDescriptor()} in {nameof(CalculateSurfaceElevationPatch)}");
+              Log.LogError($"Failed to read design file {ThisSurveyedSurface.DesignDescriptor} in {nameof(CalculateSurfaceElevationPatch)}");
               CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
               return null;
             }
@@ -127,7 +127,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                   continue;
 
                 long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
-                double Offset = ThisSurveyedSurface.Get_DesignDescriptor().Offset;
+                double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
 
                 // Walk across the sub grid checking for a design elevation for each appropriate cell
                 // based on the processing bit mask passed in
@@ -204,7 +204,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             }
             finally
             {
-              Designs.UnLock(ThisSurveyedSurface.Get_DesignDescriptor().DesignID, Design);
+              Designs.UnLock(ThisSurveyedSurface.DesignDescriptor.DesignID, Design);
             }
           }
 

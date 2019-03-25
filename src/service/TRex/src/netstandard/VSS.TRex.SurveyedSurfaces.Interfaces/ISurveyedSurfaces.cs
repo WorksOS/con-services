@@ -18,7 +18,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
 
     void Assign(ISurveyedSurfaces surveyedSurfaces);
 
-    void SortChronologically(bool Descending = true);
+    void SortChronologically(bool Descending);
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime

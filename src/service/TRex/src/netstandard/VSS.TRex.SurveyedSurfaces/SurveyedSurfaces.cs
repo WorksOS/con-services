@@ -68,17 +68,15 @@ namespace VSS.TRex.SurveyedSurfaces
       DateTime asAtDate,
       BoundingWorldExtent3D extents)
     {
-      ISurveyedSurface match = Find(x => x.ID == surveyedSurfaceUid);
+      var ss = Find(x => x.ID == surveyedSurfaceUid);
 
-      if (match != null)
+      if (ss == null) // No existing surveyed surface
       {
-        return match;
+        ss = new SurveyedSurface(surveyedSurfaceUid, designDescriptor, asAtDate, extents);
+        Add(ss);
+
+        Sort();
       }
-
-      ISurveyedSurface ss = new SurveyedSurface(surveyedSurfaceUid, designDescriptor, asAtDate, extents);
-      Add(ss);
-
-      Sort();
 
       return ss;
     }
@@ -121,7 +119,7 @@ namespace VSS.TRex.SurveyedSurfaces
       }
     }
 
-    public void SortChronologically(bool Descending = true)
+    public void SortChronologically(bool Descending)
     {
       SortDescending = Descending;
 
@@ -141,15 +139,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     public bool HasSurfaceLaterThan(DateTime timeStamp)
     {
+      bool result = false;
+
       for (int i = Count - 1; i >= 0; i--)
       {
         if (this[i].AsAtDate.CompareTo(timeStamp) > 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -162,15 +163,18 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       DateTime _TimeStamp = DateTime.FromBinary(timeStamp);
 
+      bool result = false;
+
       for (int i = Count - 1; i >= 0; i--)
       {
         if (this[i].AsAtDate.CompareTo(_TimeStamp) > 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -181,15 +185,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     public bool HasSurfaceEarlierThan(DateTime timeStamp)
     {
+      bool result = false;
+
       for (int i = 0; i < Count; i++)
       {
         if (this[i].AsAtDate.CompareTo(timeStamp) < 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -202,38 +209,18 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       DateTime _TimeStamp = DateTime.FromBinary(timeStamp);
 
+      bool result = false;
+
       for (int i = 0; i < Count; i++)
       {
         if (this[i].AsAtDate.CompareTo(_TimeStamp) < 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
-    }
-
-    /// <summary>
-    /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    public bool IsSameAs(SurveyedSurfaces other)
-    {
-      if (Count != other.Count)
-      {
-        return false;
-      }
-
-      for (int I = 0; I < Count; I++)
-      {
-        if (this[I].ID != other[I].ID)
-        {
-          return false;
-        }
-      }
-
-      return true;
+      return result;
     }
 
     /// <summary>
