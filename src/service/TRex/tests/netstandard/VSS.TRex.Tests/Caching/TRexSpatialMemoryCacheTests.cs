@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Caching;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -553,6 +554,16 @@ namespace VSS.TRex.Tests.Caching
         var _ = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
         cache.ContextCount.Should().Be(1);
+      }
+    }
+
+    [Fact]
+    public void ItemRemovedFromContext_FailWithExceptionOnNegativeResult()
+    {
+      using (var cache = new TRexSpatialMemoryCache(10, 1000000, 0.5))
+      {
+        Action act = () => cache.ItemRemovedFromContext(100);
+        act.Should().Throw<TRexException>().WithMessage("CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
       }
     }
   }

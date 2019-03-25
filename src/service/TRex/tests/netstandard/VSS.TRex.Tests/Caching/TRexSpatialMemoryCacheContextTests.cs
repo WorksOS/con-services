@@ -1,6 +1,8 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -186,6 +188,34 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.False(context.MarkedForRemoval, "Marking context for removal did not set state");
       Assert.True(context.MarkedForRemovalAtUtc == DateTime.MinValue, "Marking context for removal did not set date");
+    }
+
+    [Fact]
+    public void MarkForRemoval_FailOnNonUTCDate()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      Action act = () => context.MarkForRemoval(DateTime.Now);
+      act.Should().Throw<TRexException>().WithMessage("MarkForRemoval is not a UTC date");
+    }
+
+    [Fact]
+    public void InvalidateSubGridNoLock()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+       context.InvalidateSubgridNoLock(0, 0, out bool present);
+       present.Should().BeFalse();
+
+       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+       context.Add(element);
+
+       context.InvalidateSubgridNoLock(2000, 3000, out present);
+       present.Should().BeTrue();
     }
   }
 }
