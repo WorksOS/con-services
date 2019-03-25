@@ -14,14 +14,11 @@ using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
-  public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, ISurveyedSurfaces
+  public class SurveyedSurfaces : List<ISurveyedSurface>, ISurveyedSurfaces
   {
     private const byte VERSION_NUMBER = 1;
 
-    private bool FSorted;
     private bool SortDescending;
-
-    public bool Sorted => FSorted;
 
     private IExistenceMaps existenceMaps;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
@@ -31,15 +28,6 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public SurveyedSurfaces()
     {
-    }
-
-    /// <summary>
-    /// Constructor accepting a Binary Reader instance from which to instantiate itself
-    /// </summary>
-    /// <param name="reader"></param>
-    public SurveyedSurfaces(BinaryReader reader)
-    {
-      Read(reader);
     }
 
     public void Write(BinaryWriter writer)
@@ -138,8 +126,6 @@ namespace VSS.TRex.SurveyedSurfaces
       SortDescending = Descending;
 
       Sort();
-
-      FSorted = true;
     }
 
     private new void Sort()
@@ -290,11 +276,6 @@ namespace VSS.TRex.SurveyedSurfaces
             FilteredSurveyedSurfaceDetails.Add(ss); // Formerly ss.Clone
         }
       }
-    }
-
-    public int CompareTo(ISurveyedSurface other)
-    {
-      throw new NotImplementedException();
     }
 
     public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);

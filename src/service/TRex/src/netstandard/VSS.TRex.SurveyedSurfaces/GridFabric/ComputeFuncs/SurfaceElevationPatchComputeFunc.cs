@@ -14,14 +14,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchComputeFunc>();
 
     /// <summary>
-    /// Local reference to the client sub grid factory
-    /// </summary>
-    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
-
-    private IClientLeafSubGridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
-
-    /// <summary>
     /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to
     /// </summary>
     /// <param name="arg"></param>
@@ -45,7 +37,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
         }
         finally
         {
-          ClientLeafSubGridFactory.ReturnClientSubGrid(ref result);
+          DIContext.Obtain<IClientLeafSubGridFactory>().ReturnClientSubGrid(ref result);
         }
       }
       catch (Exception E)

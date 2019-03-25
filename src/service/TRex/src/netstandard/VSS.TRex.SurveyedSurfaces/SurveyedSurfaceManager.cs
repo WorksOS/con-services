@@ -37,7 +37,7 @@ namespace VSS.TRex.SurveyedSurfaces
     }
 
     /// <summary>
-    /// Loads the set of surveyed surfaces for a sitemodel. If none exist and empty list is returned.
+    /// Loads the set of surveyed surfaces for a site model. If none exist and empty list is returned.
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <returns></returns>
@@ -83,7 +83,7 @@ namespace VSS.TRex.SurveyedSurfaces
         _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, surveyedSurfaces.ToStream(), this);
         _writeStorageProxy.Commit();
 
-        // Notify the  grid listeners that attributes of this sitemodel have changed.
+        // Notify the  grid listeners that attributes of this site model have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelUid, surveyedSurfacesChanged: true);
       }
@@ -94,7 +94,7 @@ namespace VSS.TRex.SurveyedSurfaces
     }
     
     /// <summary>
-    /// Add a new surveyed surface to a sitemodel
+    /// Add a new surveyed surface to a sit emodel
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>

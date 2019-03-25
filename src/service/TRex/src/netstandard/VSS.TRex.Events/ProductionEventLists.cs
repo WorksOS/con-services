@@ -204,7 +204,7 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Retrieves the requested event list for this machine in this sitemodel
+    /// Retrieves the requested event list for this machine in this site model
     /// Event lists are lazy loaded at the point they are requested.
     /// </summary>
     /// <param name="eventType"></param>
@@ -263,9 +263,7 @@ namespace VSS.TRex.Events
     public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
     {
       if (SiteModel.IsTransient)
-      {
-        throw new TRexPersistencyException($"Sitemodel {SiteModel.ID} is a transient site model. Transient sitemodels may not save events to the persistent store.");
-      }
+        throw new TRexPersistencyException($"Site model {SiteModel.ID} is a transient site model. Transient site models may not save events to the persistent store.");
 
       foreach (var list in allEventsForMachine)
       {

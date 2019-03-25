@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
@@ -25,15 +24,12 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
-    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
-
-    private IClientLeafSubGridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
+    private IClientLeafSubGridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
     /// <summary>
     /// Private reference to the arguments provided to the executor
     /// </summary>
-    private ISurfaceElevationPatchArgument Args { get; set; }
+    private ISurfaceElevationPatchArgument Args { get; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -69,8 +65,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.DataModelID, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
         // InterlockedIncrement64(DesignProfilerRequestStats.NumSurfacePatchesComputed);
 
-        try
-        {
+        //try
+        //{
           IClientLeafSubGrid Patch = ClientLeafSubGridFactory.GetSubGrid(
             Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations
               ? GridDataType.CompositeHeights
@@ -215,12 +211,12 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           CalcResult = DesignProfilerRequestResult.OK;
 
           return Patch;
-        }
-        finally
-        {
+       // }
+       // finally
+       // {
           //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
           //Log.LogInformation($"Out {nameof(CalculateSurfaceElevationPatch)}.Execute");
-        }
+       // }
       }
       catch (Exception E)
       {
@@ -239,8 +235,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       try
       {
         // Perform the design profile calculation
-        try
-        {
+        //try
+        //{
           // Calculate the patch of elevations and return it
           IClientLeafSubGrid result = Calc(out DesignProfilerRequestResult CalcResult);
 
@@ -250,12 +246,12 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           }
 
           return result;
-        }
-        finally
-        {
+        //}
+        //finally
+        //{
           //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
           // Log.LogInformation($"#Out# {nameof(CalculateSurfaceElevationPatch)}.Execute #Result# {CalcResult}");
-        }
+        //}
       }
       catch (Exception E)
       {

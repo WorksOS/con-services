@@ -96,18 +96,9 @@ namespace VSS.TRex.SurveyedSurfaces
     }
 
     /// <summary>
-    /// Constructor accepting a Binary Reader instance from which to instantiate itself
-    /// </summary>
-    /// <param name="reader"></param>
-    public SurveyedSurface(BinaryReader reader)
-    {
-      Read(reader);
-    }
-
-    /// <summary>
     /// Constructor accepting full surveyed surface state
     /// </summary>
-    /// <param name="iD">The unque identifier for the surveted surface in this site model</param>
+    /// <param name="iD">The unique identifier for the surveyed surface in this site model</param>
     /// <param name="designDescriptor"></param>
     /// <param name="asAtDate"></param>
     /// <param name="extents"></param>

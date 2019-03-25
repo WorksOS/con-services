@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace VSS.TRex.Common.Utilities
 {
@@ -14,6 +15,7 @@ namespace VSS.TRex.Common.Utilities
     /// </summary>
     /// <param name="g"></param>
     /// <returns></returns>
+    [ExcludeFromCodeCoverage]
     public static int Hash_Old(Guid g)
     {
       byte[] bytes = g.ToByteArray();

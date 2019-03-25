@@ -33,9 +33,9 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         private readonly IClientLeafSubGridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
         /// <summary>
-        /// The static compute function used for surface elevation patch requests
+        /// The compute function used for surface elevation patch requests
         /// </summary>
-        private static readonly IComputeFunc<ISurfaceElevationPatchArgument, byte[]> _computeFunc = new SurfaceElevationPatchComputeFunc();
+        private readonly IComputeFunc<ISurfaceElevationPatchArgument, byte[]> _computeFunc = new SurfaceElevationPatchComputeFunc();
 
         /// <summary>
         /// Default no-arg constructor
@@ -95,11 +95,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
                 _cache?.Add(_context, clientResult);
 
             return clientResult;
-
-            //  Task<ClientHeightAndTimeLeafSubGrid> taskResult = compute.ApplyAsync(func, arg);
-
-            // Send the appropriate response to the caller
-            // return taskResult.Result;
         }
     }
 }
