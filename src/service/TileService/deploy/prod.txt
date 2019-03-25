@@ -22,3 +22,4 @@ NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notificatio
 PUSH_NO_AUTHENTICATION_HEADER: "true"
 TPAAS_APP_TOKENKEYS: Q1VrR3pGbzhfd2xzcElhbWtNSkozODF1R1RzYTpwOWxjU0phbVFFQ2lXYkhpdTJiMUhUSFM3S1Fh
 TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
+USE_DATA_OCEAN: "false"

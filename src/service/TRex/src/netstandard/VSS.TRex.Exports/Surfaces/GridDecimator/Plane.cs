@@ -10,11 +10,6 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     public Plane()
     { }
 
-    public Plane(TriVertex v1, TriVertex v2, TriVertex v3)
-    {
-      Init(v1, v2, v3);
-    }
-
     public bool Init(TriVertex v1, TriVertex v2, TriVertex v3) => Init(v1.X, v1.Y, v1.Z, v2.X, v2.Y, v2.Z, v3.X, v3.Y, v3.Z);
   }
 }

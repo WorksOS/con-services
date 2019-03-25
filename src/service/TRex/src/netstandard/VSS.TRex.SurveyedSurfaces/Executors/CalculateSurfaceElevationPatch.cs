@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -189,8 +190,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                       }
 
                       default:
-                        Debug.Assert(false, $"Unknown SurveyedSurfacePatchType: {Args.SurveyedSurfacePatchType}");
-                        break;
+                        throw new TRexException($"Unknown SurveyedSurfacePatchType: {Args.SurveyedSurfacePatchType}");
                     }
 
                     // Only clear the processing bit if earliest or latest information is wanted from the surveyed surfaces

@@ -373,8 +373,8 @@ namespace VSS.TRex.SubGrids
           // Determine if there is an elevation mapping mode that may require searching through cell passes. If so, the last pass grid can
           // only be used if the machine that recorded that last pass is not an excavator with an elevation mode set to MinimumHeight.
           // This only applies if there is not an elevation mapping mode filter selecting cells with LatestPass mapping mode
-          if ((_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
-              && !(_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.LatestElevation))
+          if (_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
+             
           {
             var internalMachineIndex = _globalLatestCells.ReadInternalMachineIndex(StripeIndex, J);
             var machine = _siteModel.Machines[internalMachineIndex]; 

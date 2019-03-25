@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Common;
@@ -55,7 +56,9 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics.GridFabric
 			Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for BelowTemperaturePercent.");
 			Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for TotalAreaCoveredSqMeters.");
 			Assert.True(result.IsTargetTemperatureConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetValueConstant.");
-		}
+
+      result.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
+    }
 
 	  [Fact]
 	  public void Test_TemperatureResponse_AgregateWith_Successful()

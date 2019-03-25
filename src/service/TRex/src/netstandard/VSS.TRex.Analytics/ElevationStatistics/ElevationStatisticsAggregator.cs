@@ -103,11 +103,11 @@ namespace VSS.TRex.Analytics.ElevationStatistics
 
     public override void Initialise(AggregatorBase state)
     {
-      if (state == null)
-        return;
-
-      SiteModelID = state.SiteModelID;
-      CellSize = state.CellSize;
+      if (state != null)
+      {
+        SiteModelID = state.SiteModelID;
+        CellSize = state.CellSize;
+      }
     }
 
     public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)

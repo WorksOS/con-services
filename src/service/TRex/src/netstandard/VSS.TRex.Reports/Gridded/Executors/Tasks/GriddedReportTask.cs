@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Reports.Gridded.Executors.Tasks
 {
@@ -13,7 +11,7 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
   /// </summary>
   public class GriddedReportTask : PipelinedSubGridTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GriddedReportTask>();
 
     /// <summary>
     /// The action (via a delegate) this task will perform on each of the sub grids transferred to it
@@ -21,16 +19,6 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     public Action<ClientCellProfileLeafSubgrid> ProcessorDelegate { get; set; }
   
     public GriddedReportTask()
-    {
-    }
-
-    /// <summary>
-    /// Constructs the grid task
-    /// </summary>
-    /// <param name="requestDescriptor"></param>
-    /// <param name="tRexNodeId"></param>
-    /// <param name="gridDataType"></param>
-    public GriddedReportTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
     }
 

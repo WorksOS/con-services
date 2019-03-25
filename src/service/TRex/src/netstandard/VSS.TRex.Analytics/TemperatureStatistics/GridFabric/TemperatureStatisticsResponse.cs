@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 
@@ -12,6 +13,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	public class TemperatureStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, 
 	  IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>
   {
+    private static byte VERSION_NUMBER = 1;
+
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
 		/// </summary>
@@ -30,6 +33,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteShort((short)LastTempRangeMin);
       writer.WriteShort((short)LastTempRangeMax);
     }
@@ -41,6 +46,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       LastTempRangeMin = (ushort)reader.ReadShort();
       LastTempRangeMax = (ushort)reader.ReadShort();

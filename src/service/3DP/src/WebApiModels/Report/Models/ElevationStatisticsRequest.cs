@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
   public class ElevationStatisticsRequest : ProjectID, IValidatable
   {
     /// <summary>
-    /// Prevents a default instance of the <see cref="SummaryVolumesRequest"/> class from being created.
+    /// Prevents a default instance of the <see cref="ElevationStatisticsRequest"/> class from being created.
     /// </summary>
     private ElevationStatisticsRequest()
     {
@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// An identifying string from the caller
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; protected set; }
+    public Guid? CallId { get; protected set; }
 
     /// <summary>
     /// The filter to be used for the request
@@ -39,35 +39,34 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; protected set; }
+    public LiftBuildSettings LiftBuildSettings { get; protected set; }
 
     public override void Validate()
     {
-      if (this.liftBuildSettings != null)
-        this.liftBuildSettings.Validate();
+      base.Validate();
 
-      if (this.Filter != null)
-        this.Filter.Validate();
+      LiftBuildSettings?.Validate();
+
+      Filter?.Validate();
     }
 
     /// <summary>
-    /// Create instance of ElevationStatisticsRequest
+    /// Override constructor with parameters. Create instance of ElevationStatisticsRequest.
     /// </summary>
-    public static ElevationStatisticsRequest CreateElevationStatisticsRequest(
+    public ElevationStatisticsRequest(
       long projectId,
+      Guid? projectUid,
       Guid? callId,
       FilterResult filter,
       long filterId,
       LiftBuildSettings liftBuildSettings)
     {
-      return new ElevationStatisticsRequest
-      {
-        ProjectId = projectId,
-        callId = callId,
-        Filter = filter,
-        FilterID = filterId,
-        liftBuildSettings = liftBuildSettings
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      CallId = callId;
+      Filter = filter;
+      FilterID = filterId;
+      LiftBuildSettings = liftBuildSettings;
     }
   }
 }

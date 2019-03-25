@@ -5,8 +5,6 @@ services:
     restart: always
     deploy:
       replicas: 1
-    logging:
-      driver: json-file      
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=10.97.96.150
@@ -46,6 +44,7 @@ services:
      - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
      - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project
      - PROJECT_CACHE_LIFE=00:15:00
+     - ASSETMGMT_CACHE_LIFE=00:15:00
      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4
      - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
      - SCHEDULED_JOB_TIMEOUT=900000

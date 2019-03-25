@@ -104,7 +104,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredTemperature != CellPassConsts.NullMaterialTemperatureValue;
 
         /// <summary>
-        /// Provides a copy of the null value defined for cells in this client leaf subgrid
+        /// Provides a copy of the null value defined for cells in this client leaf sub grid
         /// </summary>
         /// <returns></returns>
         public override SubGridCellPassDataTemperatureEntryRecord NullCell() => SubGridCellPassDataTemperatureEntryRecord.NullValue;

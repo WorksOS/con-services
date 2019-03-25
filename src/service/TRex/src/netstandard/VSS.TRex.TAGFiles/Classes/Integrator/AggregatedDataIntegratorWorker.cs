@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -339,8 +339,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
               if (retirementQueue == null)
               {
-                Log.LogCritical("No registered segment retirement queue in DI context");
-                Debug.Assert(false, "No registered segment retirement queue in DI context");
+                throw new TRexTAGFileProcessingException("No registered segment retirement queue in DI context");
               }
 
               DateTime insertUTC = DateTime.UtcNow;

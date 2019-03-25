@@ -37,6 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     internal class Types
     {
+      public const string LINESTRING = "LineString";
       public const string POLYGON = "Polygon";
       public const string MULTI_LINE_STRING = "MultiLineString";
     }

@@ -1,4 +1,6 @@
 ﻿using System;
+using FluentAssertions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
@@ -6,6 +8,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Processors;
+using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -139,6 +142,15 @@ namespace TAGFiles.Tests
             Assert.True(processor.DoEpochPreProcessAction(), "EpochPreProcessAction returned false in default TAGProcessor state");
 
             // Current PreProcessAction activity is limited to handling proofing runs. This will be handled by proofing run tests elsewhere
+        }
+
+        [Fact()]
+        public void Test_TAGProcessor_DoEpochStateEvent()
+        {
+          var processor = new TAGProcessor();
+      
+          Action act = () => processor.DoEpochStateEvent(EpochStateEvent.Unknown);
+          act.Should().Throw<TRexTAGFileProcessingException>().WithMessage("*Unknown epoch state event type*");
         }
     }
 }

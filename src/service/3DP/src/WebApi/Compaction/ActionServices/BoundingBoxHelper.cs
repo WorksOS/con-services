@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Invalid bounding box"));
         }
+
         num = num * Math.PI / 180.0; //convert decimal degrees to radians
         //Latitude Must be in range -pi/2 to pi/2 and longitude in the range -pi to pi
         if (count == 0 || count == 2)

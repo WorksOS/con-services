@@ -5,5 +5,6 @@
     Unknown,
     InternalKubernetes,
     Configuration,
+    Development
   }
 }

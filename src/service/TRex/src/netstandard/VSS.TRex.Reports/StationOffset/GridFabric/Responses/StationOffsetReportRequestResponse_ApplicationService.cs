@@ -12,6 +12,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
   /// </summary>
   public class StationOffsetReportRequestResponse_ApplicationService : SubGridsPipelinedResponseBase
   {
+    private static byte VERSION_NUMBER = 1;
+
     public ReportReturnCode ReturnCode;  // == TRaptorReportReturnCode
     public ReportType ReportType;        // == TRaptorReportType
     public List<StationOffsetReportDataRow_ApplicationService> StationOffsetReportDataRowList;
@@ -50,6 +52,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt((int)ReturnCode);
       writer.WriteInt((int)ReportType);
       writer.WriteInt(StationOffsetReportDataRowList.Count);
@@ -66,6 +71,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+    
       ReturnCode = (ReportReturnCode)reader.ReadInt();
       ReportType = (ReportType)reader.ReadInt();
       var stationOffsetRowsCount = reader.ReadInt();

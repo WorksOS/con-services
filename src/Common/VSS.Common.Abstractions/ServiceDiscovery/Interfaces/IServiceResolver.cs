@@ -20,5 +20,10 @@ namespace VSS.Common.Abstractions.ServiceDiscovery.Interfaces
     /// Priority of the service resolution, where lower is high priority
     /// </summary>
     int Priority { get; }
+
+    /// <summary>
+    /// Is the Service Resolver Enabled? I.e does it have the resources needed to handle requests
+    /// </summary>
+    bool IsEnabled { get; }
   }
 }

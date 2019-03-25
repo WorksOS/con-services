@@ -17,60 +17,58 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {
             // Position value is integer number of millimeters offset from the current position
+            bool result = false;
 
-            if (!state.HaveSeenAnAbsoluteRearPosition)
+            if (state.HaveSeenAnAbsoluteRearPosition)
             {
-                return false;
-            }
-
-            if (valueType.Name == TAGValueNames.kTagFileEastingRearTag)
-            {
+              if (valueType.Name == TAGValueNames.kTagFileEastingRearTag)
+              {
                 if (state.RearSide == TAGValueSide.Left)
                 {
-                    valueSink.DataRearLeft.X += (double)value / 1000;
+                  valueSink.DataRearLeft.X += (double) value / 1000;
                 }
                 else
                 {
-                    valueSink.DataRearRight.X += (double)value / 1000;
+                  valueSink.DataRearRight.X += (double) value / 1000;
                 }
 
-                return true;
-            }
-
-            if (valueType.Name == TAGValueNames.kTagFileNorthingRearTag)
-            {
+                result = true;
+              }
+              else if (valueType.Name == TAGValueNames.kTagFileNorthingRearTag)
+              {
                 if (state.RearSide == TAGValueSide.Left)
                 {
-                    valueSink.DataRearLeft.Y += (double)value / 1000;
+                  valueSink.DataRearLeft.Y += (double) value / 1000;
                 }
                 else
                 {
-                    valueSink.DataRearRight.Y += (double)value / 1000;
+                  valueSink.DataRearRight.Y += (double) value / 1000;
                 }
 
-                return true;
-            }
-
-            if (valueType.Name == TAGValueNames.kTagFileElevationRearTag)
-            {
+                result = true;
+              }
+              else if (valueType.Name == TAGValueNames.kTagFileElevationRearTag)
+              {
                 if (state.RearSide == TAGValueSide.Left)
                 {
-                    valueSink.DataRearLeft.Z += (double)value / 1000;
+                  valueSink.DataRearLeft.Z += (double) value / 1000;
                 }
                 else
                 {
-                    valueSink.DataRearRight.Z += (double)value / 1000;
+                  valueSink.DataRearRight.Z += (double) value / 1000;
                 }
 
-                return true;
+                result = true;
+              }
             }
 
-            return false;
+            return result;
         }
 
         public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
         {
             state.HaveSeenAnAbsoluteRearPosition = true;
+            bool result = false;
 
             if (valueType.Name == TAGValueNames.kTagFileEastingRearTag)
             {
@@ -83,10 +81,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
                     valueSink.DataRearRight.X = value;
                 }
 
-                return true;
+                result = true;
             }
-
-            if (valueType.Name == TAGValueNames.kTagFileNorthingRearTag)
+            else if (valueType.Name == TAGValueNames.kTagFileNorthingRearTag)
             {
                 if (state.RearSide == TAGValueSide.Left)
                 {
@@ -97,10 +94,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
                     valueSink.DataRearRight.Y = value;
                 }
 
-                return true;
+                result = true;
             }
-
-            if (valueType.Name == TAGValueNames.kTagFileElevationRearTag)
+            else if (valueType.Name == TAGValueNames.kTagFileElevationRearTag)
             {
                 if (state.RearSide == TAGValueSide.Left)
                 {
@@ -111,10 +107,10 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
                     valueSink.DataRearRight.Z = value;
                 }
 
-                return true;
+                result = true;
             }
 
-            return false;
+            return result;
         }
 
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)

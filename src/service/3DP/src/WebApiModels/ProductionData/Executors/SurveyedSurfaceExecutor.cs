@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             surveyedSurface.DesignDescriptor.FileName),
           surveyedSurface.DesignDescriptor.Offset),
         asAtDate: surveyedSurface.AsAtDate,
-        extents: BoundingBox3DGrid.CreatBoundingBox3DGrid(
+        extents: new BoundingBox3DGrid(
           surveyedSurface.Extents.MinX,
           surveyedSurface.Extents.MinY,
           surveyedSurface.Extents.MinZ,

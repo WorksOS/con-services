@@ -9,18 +9,20 @@ namespace VSS.TRex.Exports.Patches.GridFabric
 {
   /// <summary>
   /// The response returned from the Patches request executor that contains the response code and the set of
-  /// subgrids extracted for the patch in question
+  /// sub grids extracted for the patch in question
   /// </summary>
   public class PatchRequestResponse : SubGridsPipelinedResponseBase
   {
+    private static byte VERSION_NUMBER = 1;
+
     /// <summary>
-    /// The total number of pages of subgrids required to contain the maximum number of subgrids'
+    /// The total number of pages of sub grids required to contain the maximum number of sub grids
     /// that may be returned for the query
     /// </summary>
     public int TotalNumberOfPagesToCoverFilteredData { get; set; }
   
     /// <summary>
-    /// The set of subgrids matching the filters and patch page requested
+    /// The set of sub grids matching the filters and patch page requested
     /// </summary>
     public List<IClientLeafSubGrid> SubGrids { get; set; }
 
@@ -31,6 +33,8 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt(TotalNumberOfPagesToCoverFilteredData);
 
@@ -54,6 +58,8 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       TotalNumberOfPagesToCoverFilteredData = reader.ReadInt();
 

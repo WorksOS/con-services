@@ -8,7 +8,7 @@ using Xunit;
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// Includes tests not covered in GenericClientLeafSubGridTests
   /// </summary>
   public class MDPClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
@@ -30,5 +30,14 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       clientGrid.Cells[0, 0] = clientGrid.NullCell();
       Assert.False(clientGrid.CellHasValue(0, 0), "Cell not set to correct null value");
     }
+
+
+    [Fact]
+    public void DumpToLog()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+      clientGrid.DumpToLog(clientGrid.ToString());
+    }
+
   }
 }

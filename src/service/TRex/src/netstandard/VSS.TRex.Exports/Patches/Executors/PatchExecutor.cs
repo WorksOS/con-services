@@ -24,14 +24,14 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
     /// </summary>
-    public PatchRequestResponse PatchSubGridsResponse { get; set; } = new PatchRequestResponse();
+    public PatchRequestResponse PatchSubGridsResponse { get; } = new PatchRequestResponse();
 
     // FExternalDescriptor :TASNodeRequestDescriptor;
 
     /// <summary>
     /// The TRex application service node performing the request
     /// </summary>
-    private string RequestingTRexNodeID { get; set; }
+    private string RequestingTRexNodeID { get; }
 
     private Guid DataModelID;
     private DisplayMode Mode;
@@ -88,55 +88,46 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// <returns></returns>
     public bool Execute()
     {
-      Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
+      Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}, RequestingNodeID={RequestingTRexNodeID}");
 
-      try
+      ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
+
+      Guid RequestDescriptor = Guid.NewGuid();
+
+      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: RequestDescriptor,
+        dataModelID: DataModelID,
+        gridDataType: GridDataFromModeConverter.Convert(Mode),
+        response: PatchSubGridsResponse,
+        filters: Filters,
+        cutFillDesignID: CutFillDesignID,
+        task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
+        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+        requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
+                                           && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+        requestRequiresAccessToDesignFileExistenceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
+
+      // Configure the request analyser to return a single page of results.
+      processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;
+      processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
+      processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
+
+      if (!processor.Build())
       {
-        ApplicationServiceRequestStatistics.Instance.NumSubgridPageRequests.Increment();
-
-        Guid RequestDescriptor = Guid.NewGuid();
-
-        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: RequestDescriptor,
-          dataModelID: DataModelID,
-          gridDataType: GridDataFromModeConverter.Convert(Mode),
-          response: PatchSubGridsResponse,
-          filters: Filters,
-          cutFillDesignID: CutFillDesignID,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PatchExport),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
-                                             && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistenceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
-          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
-
-        // Configure the request analyser to return a single page of results.
-        processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;
-        processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
-        processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
-
-        if (!processor.Build())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
-          return false;
-        }
-
-        // If this is the first page requested then count the total number of patches required for all sub grids to be returned
-        if (DataPatchPageNumber == 0)
-          PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
-            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubGridsThatWillBeSubmitted() / (double)DataPatchPageSize));
-
-        processor.Process();
-
-        if (PatchSubGridsResponse.ResultStatus == RequestErrorStatus.OK)
-          PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubGrids;
-      }
-      catch (Exception E)
-      {
-        PatchSubGridsResponse.ResultStatus = RequestErrorStatus.Exception;
-        Log.LogError(E, "ExecutePipeline raised Exception:");
+        Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
         return false;
       }
+
+      // If this is the first page requested then count the total number of patches required for all sub grids to be returned
+      if (DataPatchPageNumber == 0)
+        PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
+          (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubGridsThatWillBeSubmitted() / (double) DataPatchPageSize));
+
+      processor.Process();
+
+      if (PatchSubGridsResponse.ResultStatus == RequestErrorStatus.OK)
+        PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubGrids;
 
       return true;
     }

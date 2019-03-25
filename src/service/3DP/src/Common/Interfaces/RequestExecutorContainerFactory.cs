@@ -4,6 +4,7 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
       ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
-      IDictionary<string, string> customHeaders = null)
+      IAssetResolverProxy assetResolverProxy = null, IDictionary<string, string> customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -47,7 +48,9 @@ namespace VSS.Productivity3D.Common.Interfaces
         transferProxy,
         tRexTagFileProxy,
         trexCompactionDataProxy,
-        customHeaders);
+        assetResolverProxy,
+        customHeaders,
+        customerUid);
       
       return executor;
     }

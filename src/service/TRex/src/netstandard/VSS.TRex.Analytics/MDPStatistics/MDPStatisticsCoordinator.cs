@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
-using VSS.TRex.Analytics.Foundation;
+﻿using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
@@ -14,8 +12,6 @@ namespace VSS.TRex.Analytics.MDPStatistics
   /// </summary>
   public class MDPStatisticsCoordinator : BaseAnalyticsCoordinator<MDPStatisticsArgument, MDPStatisticsResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
-
     /// <summary>
     /// Constructs the aggregator from the supplied argument to be used for the MDP statistics analytics request
     /// Create the aggregator to collect and reduce the results.

@@ -11,6 +11,8 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
   /// </summary>
   public class ProfileRequestResponse<T> : SubGridsPipelinedResponseBase, IAggregateWith<ProfileRequestResponse<T>> where T : class, IProfileCellBase, new()
   {
+    private static byte VERSION_NUMBER = 1;
+
     public double GridDistanceBetweenProfilePoints { get; set; }
 
     public List<T> ProfileCells { get; set; } = new List<T>();
@@ -37,6 +39,8 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     {
       base.ToBinary(writer);
 
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteDouble(GridDistanceBetweenProfilePoints);
 
       writer.WriteBoolean(ProfileCells != null);
@@ -57,10 +61,14 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     {
       base.FromBinary(reader);
 
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       GridDistanceBetweenProfilePoints = reader.ReadDouble();
 
       if (reader.ReadBoolean())
       {
+        ProfileCells = new List<T>();
+
         var numberOfProfileCells = reader.ReadInt();
 
         if (numberOfProfileCells > 0)

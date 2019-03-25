@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using VSS.Productivity3D.Models.Enums;
+﻿using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -28,6 +26,9 @@ namespace VSS.TRex.Rendering.Displayers
         case DisplayMode.MDP:
           displayer = new PVMDisplayer_MDP();
           break;
+        case DisplayMode.PassCount:
+          displayer = new PVMDisplayer_PassCount();
+          break;
         case DisplayMode.PassCountSummary:
           displayer = new PVMDisplayer_PassCountSummary();
           break;
@@ -39,9 +40,6 @@ namespace VSS.TRex.Rendering.Displayers
           break;
         case DisplayMode.CCA:
         case DisplayMode.CCASummary:
-          if (mode != DisplayMode.CCA && mode != DisplayMode.CCASummary)
-            throw new InvalidEnumArgumentException("Unsupported DisplayMode type for CCA Summary.");
-
           displayer = new PVMDisplayer_CCA();
           break;
 

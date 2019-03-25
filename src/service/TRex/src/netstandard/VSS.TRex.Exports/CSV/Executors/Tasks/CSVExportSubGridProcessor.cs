@@ -358,12 +358,12 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       }
       return result.LLHCoordinates;
     }
+
     private string FormatCoordinate(double northing, double easting, int runningIndexLLHCoords)
     {
-      if (requestArgument.CoordType == CoordType.Northeast)
-        return $"{csvExportFormatter.FormatCellPos(northing)},{csvExportFormatter.FormatCellPos(easting)}";
-
-      return $"{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}";
+      return requestArgument.CoordType == CoordType.Northeast
+       ? $"{csvExportFormatter.FormatCellPos(northing)},{csvExportFormatter.FormatCellPos(easting)}"
+       : $"{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}";
     }
 
     private string FormatDesignNameID(int designNameId)
@@ -371,24 +371,22 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (designNameId > Consts.kNoDesignNameID)
       {
         var design = siteModel.SiteModelMachineDesigns.Locate(designNameId);
-        if (design != null)
-          return $"{design.Name}";
-        return $"{designNameId}";
+        return design != null ? $"{design.Name}" : $"{designNameId}";
       }
 
-      return  csvExportFormatter.nullString;
+      return csvExportFormatter.nullString;
     }
 
     private string FormatMachineName(int machineId)
     {
+      CSVExportMappedMachine machine = null;
+
       if (machineId > -1 && requestArgument.MappedMachines != null && requestArgument.MappedMachines.Count > 0)
       {
-        var machine = requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
-        if (machine != null)
-          return $"\"{machine.Name}\"";
+         machine = requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
       }
 
-      return $"\"Unknown\"";
+      return machine != null ? "\"{machine.Name}\"" : "\"Unknown\"";
     }
   }
 }

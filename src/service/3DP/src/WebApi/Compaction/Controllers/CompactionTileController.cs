@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       
-      var tileResult = WithServiceExceptionTryExecute(() =>
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
           boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders, explicitFilters));
@@ -193,7 +193,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         : null;
 
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
-      var tileResult = WithServiceExceptionTryExecute(() =>
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, projectUid, mode, width, height,
           boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders, explicitFilters));

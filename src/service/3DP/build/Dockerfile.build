@@ -5,7 +5,9 @@ COPY . /build/
 WORKDIR /build
 
 RUN apt-get update \
-&& apt --assume-yes install libc6-dev \
-&& apt --assume-yes install libgdiplus
+&& apt --assume-yes install libc6-dev
+
+RUN wget https://download.mono-project.com/repo/ubuntu/pool/main/libg/libgdiplus/libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb && \
+    apt-get install -y ./libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb
 
 RUN dotnet publish ./$SERVICE_PATH/src/WebApi/VSS.Productivity3D.WebApi.csproj -o /artifacts -f netcoreapp2.1 --runtime linux-x64

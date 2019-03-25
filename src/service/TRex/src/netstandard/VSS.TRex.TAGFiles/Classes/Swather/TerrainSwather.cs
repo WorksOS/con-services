@@ -27,7 +27,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
         /// </summary>
         private const int kMaxNumberCellPassesPerSwathingEpoch = 25000;
 
-        private BoundingWorldExtent3D swathBounds = new BoundingWorldExtent3D();
+        private readonly BoundingWorldExtent3D swathBounds = new BoundingWorldExtent3D();
 
         public int ProcessedEpochNumber { get; set; }
 
@@ -47,6 +47,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                              PassType passType,
                                              MachineSide machineSide)
         {
+            ProcessedEpochNumber++;
+
             // MinX/Y, MaxX/Y describe the world coordinate rectangle the encompasses
             // the pair of epochs denoting a processing interval.
             // Calculate the grid coverage of the bounding rectangle for the
@@ -64,9 +66,6 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             // We assume that we have a pair of epochs to compute IC information between
             // Determine the rectangle of cells that overlap the interval between the two epochs
             Grid.CalculateRegionGridCoverage(swathBounds, out BoundingIntegerExtent2D CellExtent);
-
-            if (!swathBounds.IsValidPlanExtent)
-              throw new TRexTAGFileProcessingException("Invalid bounds for processing cell passes over");
 
             // Check that the swathing of this epoch will not create an inordinate number of cell passes
             // If so, prevent swathing of this epoch interval
@@ -194,8 +193,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                             // MachineSpeed is meters per second - we need to convert this to
                             // centimeters per seconds for the cell pass
-                            if ((MachineSpd != Consts.NullDouble) &&
-                                (MachineSpd < (65535.0 / 100.0))) // Machine too fast (its > 2358 km/hr)
+                            if (MachineSpd != Consts.NullDouble &&
+                                MachineSpd < 65535.0 / 100.0) // Machine too fast (its > 2358 km/hr)
                             {
                                 ProcessedCellPass.MachineSpeed = (ushort)Math.Round(MachineSpd * 100);
                             }

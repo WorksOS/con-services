@@ -7,10 +7,12 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
 {
   /// <summary>
   /// The response returned from the Grid request executor that contains the response code and the set of
-  /// subgrids extracted for the grid report in question
+  /// sub grids extracted for the grid report in question
   /// </summary>
   public class GriddedReportRequestResponse : SubGridsPipelinedResponseBase
   {
+    private static byte VERSION_NUMBER = 1;
+
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType;       // == TRaptorReportType
     public List<GriddedReportDataRow> GriddedReportDataRowList;
@@ -34,6 +36,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt((int)ReturnCode);
       writer.WriteInt((int)ReportType);
       writer.WriteInt(GriddedReportDataRowList.Count);
@@ -50,6 +55,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       ReturnCode = (ReportReturnCode)reader.ReadInt();
       ReportType = (ReportType)reader.ReadInt();
       var griddedRowsCount = reader.ReadInt();

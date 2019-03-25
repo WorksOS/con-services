@@ -9,12 +9,12 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Patches
 {
-  public class PatchTaskTests //: IClassFixture<DILoggingFixture>
+  public class PatchTaskTests 
   {
     [Fact]
     public void Test_PatchTask_Creation()
     {
-      PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All);
+      PatchTask task = new PatchTask();
 
       Assert.NotNull(task);
       Assert.NotNull(task.PatchSubGrids);
@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Exports.Patches
       var pipeLine = new Mock<ISubGridPipelineBase>();
       pipeLine.Setup(mk => mk.Aborted).Returns(false);
 
-      PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All)
+      PatchTask task = new PatchTask() 
       {
         PipeLine = pipeLine.Object
       };

@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Common;
 using VSS.TRex.Tests.Analytics.Common;
@@ -52,6 +53,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
       Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for BelowMDPPercent.");
       Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for TotalAreaCoveredSqMeters.");
       Assert.True(result.IsTargetMDPConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetMDPConstant.");
+
+      result.ReturnCode.Should().Be(MissingTargetDataResultType.NoProblems);
     }
 
     [Fact]

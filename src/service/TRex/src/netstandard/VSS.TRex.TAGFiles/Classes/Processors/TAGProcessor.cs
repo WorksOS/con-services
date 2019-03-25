@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
@@ -250,8 +251,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
               break;
             }
           default:
-            Debug.Assert(false, "Unknown sensor type");
-            break;
+            throw new TRexTAGFileProcessingException($"Unknown sensor type: {(int)ICSensorType}");
         }
 
         MachineTargetValueChangesAggregator.VibrationStateEvents.PutValueAtDate(DataTime, TempVibrationState);
@@ -646,12 +646,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// <param name="machineSide"></param>
     public override void DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide)
     {
-      Debug.Assert(SiteModel != null, "Null site model/data store for processor");
-      Debug.Assert(Machine != null, "Null machine reference for processor");
-
       (Swather ?? (Swather = CreateSwather(null))).InterpolationFence = InterpolationFence;
-
-      Debug.Assert(Swather != null, "Unable to create appropriate swather for processing epoch");
 
       // Primary e.g. blade, front drum
       Swather.PerformSwathing(FrontHeightInterpolator1, FrontHeightInterpolator2, FrontTimeInterpolator1,
@@ -742,7 +737,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
           break;
 
         default:
-          throw new ArgumentOutOfRangeException(nameof(eventType), eventType, "Unknown epoch state event type");
+          throw new TRexTAGFileProcessingException($"Unknown epoch state event type: {eventType}");
       }
 
       return true;

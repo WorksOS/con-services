@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests.Geometry
         {
             XYZ p = new XYZ(1, 2, 3);
 
-            Assert.Equal("X:1.000, Y:2.000, Z:3.000", p.ToString());
+            p.ToString().Should().ContainAll(new[] {"X:1.000", "Y:2.000", "Z:3.000"});
         }
 
         [Fact()]

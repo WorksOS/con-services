@@ -9,6 +9,7 @@ using SixLabors.Primitives;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
+using VSS.TCCFileAccess;
 using MasterDataModels = VSS.MasterData.Models.Models;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
@@ -26,15 +27,21 @@ namespace VSS.Tile.Service.Common.Services
   {
     private readonly IConfigurationStore config;
     private readonly IDataOceanClient dataOceanClient;
+    private readonly IFileRepository tccFileRepo;
     private readonly ILogger log;
     private readonly ITPaaSApplicationAuthentication authn;
+    private readonly string tccFilespaceId;
+    private readonly bool useDataOcean;
 
-    public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn)
+    public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn, IFileRepository tccRepository)
     {
       config = configuration;
       this.dataOceanClient = dataOceanClient;
       log = logger.CreateLogger<DxfTileService>();
       this.authn = authn;
+      tccFilespaceId = config.GetValueString("TCCFILESPACEID");
+      useDataOcean = config.GetValueBool("USE_DATA_OCEAN", false);
+      tccFileRepo = tccRepository;
     }
 
     /// <summary>
@@ -114,25 +121,11 @@ namespace VSS.Tile.Service.Common.Services
         Rectangle clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
 
         //Join all the DXF tiles into one large tile
-        var dataOceanFileUtil = new DataOceanFileUtil(dxfFile.Name, dxfFile.Path);
-        for (int yTile = (int) tileTopLeft.y; yTile <= (int) tileBottomRight.y; yTile++)
-        {
-          for (int xTile = (int) tileTopLeft.x; xTile <= (int) tileBottomRight.x; xTile++)
-          {
-            var targetFile = dataOceanFileUtil.GetTileFileName(parameters.zoomLevel, yTile, xTile);
-            log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
-            var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders());
-            if (file != null)
-            {
-              Image<Rgba32> tile = Image.Load<Rgba32>(file);
+        if (useDataOcean)
+          await JoinDataOceanTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
+        else
+          await JoinTccTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
 
-              Point offset = new Point(
-                (xTile - (int) tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
-                (yTile - (int) tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
-              tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
-            }
-          }
-        }
         //Now clip the large tile
         tileBitmap.Mutate(ctx => ctx.Crop(clipRect));
         if (clipWidth >= parameters.mapWidth && clipHeight >= parameters.mapHeight)
@@ -150,8 +143,62 @@ namespace VSS.Tile.Service.Common.Services
         }            
       }
     }
-  }
+    private async Task JoinDataOceanTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
+    {
+      var dataOceanFileUtil = new DataOceanFileUtil(dxfFile.Name, dxfFile.Path);
+      for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
+      {
+        for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)
+        {
+          var targetFile = dataOceanFileUtil.GetTileFileName(zoomLevel, yTile, xTile);
+          log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
+          var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders());
+          if (file != null)
+          {
+            Image<Rgba32> tile = Image.Load<Rgba32>(file);
 
+            Point offset = new Point(
+              (xTile - (int)tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
+              (yTile - (int)tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
+            tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
+          }
+        }
+      }
+    }
+
+    private async Task JoinTccTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
+    {
+      var suffix = FileUtils.GeneratedFileSuffix(dxfFile.ImportedFileType);
+      string generatedName = FileUtils.GeneratedFileName(dxfFile.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
+      string zoomPath =
+        $"{FileUtils.ZoomPath(FileUtils.TilePath(dxfFile.Path, generatedName), zoomLevel)}";
+
+      for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
+      {
+        string targetFolder = $"{zoomPath}/{yTile}";
+        //TCC only renders tiles where there is DXF data. So check if any tiles for this y.
+        if (await tccFileRepo.FolderExists(tccFilespaceId, targetFolder))
+        {
+          for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)
+          {
+            string targetFile = $"{targetFolder}/{xTile}.png";
+            if (await tccFileRepo.FileExists(tccFilespaceId, targetFile))
+            {
+              log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
+
+              var file = await tccFileRepo.GetFile(tccFilespaceId, targetFile);
+              Image<Rgba32> tile = Image.Load<Rgba32>(file);
+
+              Point offset = new Point(
+                (xTile - (int)tileTopLeft.x) * WebMercatorProjection.TILE_SIZE,
+                (yTile - (int)tileTopLeft.y) * WebMercatorProjection.TILE_SIZE);
+              tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
+            }
+          }
+        }
+      }
+    }
+  }
 
   public interface IDxfTileService
   {

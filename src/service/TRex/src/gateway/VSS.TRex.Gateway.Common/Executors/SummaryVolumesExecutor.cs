@@ -114,7 +114,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     private BoundingBox3DGrid ConvertExtents(BoundingWorldExtent3D extents)
     {
-      return BoundingBox3DGrid.CreatBoundingBox3DGrid(
+      return new BoundingBox3DGrid(
         extents.MinX,
         extents.MinY,
         extents.MinZ,

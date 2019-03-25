@@ -25,8 +25,9 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         /// <summary>
         /// Constructor that hard wires the expected grid data type to height
         /// </summary>
-        public VolumesComputationTask() : base(Guid.NewGuid(), "", GridDataType.Height)
+        public VolumesComputationTask() 
         {
+          GridDataType = GridDataType.Height;
         }
 
         /// <summary>

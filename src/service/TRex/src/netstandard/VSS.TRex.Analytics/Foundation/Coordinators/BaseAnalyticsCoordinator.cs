@@ -39,28 +39,20 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
             Log.LogInformation("In: Executing Coordination logic");
 
             TResponse Response = new TResponse();
-            try
+            RequestDescriptor = Guid.NewGuid(); 
+            SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+
+            var Aggregator = ConstructAggregator(arg);
+            var Computor = ConstructComputor(arg, Aggregator);
+
+            if (Computor.ComputeAnalytics(Response))
             {
-                RequestDescriptor = Guid.NewGuid(); 
+                // Instruct the Aggregator to perform any finalisation logic before returning results
+                Aggregator.Finalise();
 
-                SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
-
-                var Aggregator = ConstructAggregator(arg);
-                var Computor = ConstructComputor(arg, Aggregator);
-
-                if (Computor.ComputeAnalytics(Response))
-                {
-                    // Instruct the Aggregator to perform any finalisation logic before returning results
-                    Aggregator.Finalise();
-
-                    ReadOutResults(Aggregator, Response);
-                }
+                ReadOutResults(Aggregator, Response);
             }
-            catch (Exception E)
-            {
-                Log.LogError(E, "Exception:");
-            }
-
+            
             Log.LogInformation("Out: Executing Coordination logic");
 
             return Response;

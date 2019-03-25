@@ -4,6 +4,6 @@ namespace VSS.Common.Kubernetes.Interfaces
 {
   public interface IKubernetesClientFactory
   {
-    IKubernetes CreateClient(string kubernetesNamespace, string kubernetesContext = null);
+    (IKubernetes client, string currentNamespace) CreateClient(string kubernetesContext = null);
   }
 }

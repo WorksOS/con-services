@@ -8,6 +8,8 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
 {
   public class StationOffsetReportRequestResponse_ClusterCompute : SubGridsPipelinedResponseBase, IAggregateWith<StationOffsetReportRequestResponse_ClusterCompute>
   {
+    private static byte VERSION_NUMBER = 1;
+
     public ReportReturnCode ReturnCode;  // == TRaptorReportReturnCode
     private ReportType ReportType;       // == TRaptorReportType
     public List<StationOffsetRow> StationOffsetRows;
@@ -41,6 +43,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteInt((int)ReturnCode);
       writer.WriteInt((int)ReportType);
       writer.WriteInt(StationOffsetRows.Count);
@@ -57,6 +62,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
       ReturnCode = (ReportReturnCode)reader.ReadInt();
       ReportType = (ReportType)reader.ReadInt();
       var griddedRowsCount = reader.ReadInt();

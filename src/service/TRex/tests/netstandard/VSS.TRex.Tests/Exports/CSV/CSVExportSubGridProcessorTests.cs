@@ -25,45 +25,69 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void PassCountLastPassNotDbase()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 
     [Fact(Skip = "Importing a DC file is currently being implemented")]
     public void PassCountLastPassNotDbaseWithLatLong()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 
     [Fact]
     public void PassCountLastPassDBase()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, true,
         out CSVExportRequestArgument requestArgument);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808525.440,376730.880,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
+      string row0 = @"2019/Jan/23 00:22:10.033,808525.440,376730.880,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
       rows[0].Should().Be(row0);
     }
     
     [Fact]
     public void VetaFinalPass()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument);
 
@@ -71,20 +95,26 @@ namespace VSS.TRex.Tests.Exports.CSV
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019-Jan-23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019-Jan-23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
     
     [Fact]
     public void PassCountAllPassesNotDBase()
     {
+      // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1000);
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       rows.Count.Should().Be(384);
-      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",0.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 
@@ -101,12 +131,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
-      var fixtureConfigStore = DIContext.Obtain<IConfigurationStore>();
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(maxExportRows);
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(moqConfiguration.Object))
-        .Complete();
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
@@ -114,10 +143,6 @@ namespace VSS.TRex.Tests.Exports.CSV
         rows.Count.Should().Be(maxExportRows);
       else
         rows.Count.Should().BeLessOrEqualTo(maxExportRows);
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(fixtureConfigStore))
-        .Complete();
     }
 
     [Theory]
@@ -133,12 +158,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       //the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
-      var fixtureConfigStore = DIContext.Obtain<IConfigurationStore>();
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(maxExportRows);
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(moqConfiguration.Object))
-        .Complete();
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = new List<string>();
@@ -151,10 +175,6 @@ namespace VSS.TRex.Tests.Exports.CSV
         rows.Count.Should().Be(maxExportRows);
       else
         rows.Count.Should().BeLessOrEqualTo(maxExportRows);
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(fixtureConfigStore))
-        .Complete();
     }
 
 
@@ -171,12 +191,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // the fixture requires it's own ConfigStore settings, which are used in GetSubGrids.
       //  need to restore it for the next test
-      var fixtureConfigStore = DIContext.Obtain<IConfigurationStore>();
-      var moqConfiguration = new Mock<IConfigurationStore>();
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(maxExportRows);
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(moqConfiguration.Object))
-        .Complete();
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
@@ -184,10 +203,6 @@ namespace VSS.TRex.Tests.Exports.CSV
         rows.Count.Should().Be(maxExportRows);
       else
         rows.Count.Should().BeLessOrEqualTo(maxExportRows);
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(fixtureConfigStore))
-        .Complete();
     }
 
 

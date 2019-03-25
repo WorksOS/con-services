@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Tasks
@@ -11,18 +10,9 @@ namespace VSS.TRex.Pipelines.Tasks
     /// </summary>
     public class PipelinedSubGridTask : TaskBase 
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelinedSubGridTask>();
 
         public PipelinedSubGridTask()
-        { }
-
-        /// <summary>
-        /// Primary task constructor
-        /// </summary>
-        /// <param name="requestDescriptor"></param>
-        /// <param name="tRexNodeID"></param>
-        /// <param name="gridDataType"></param>
-        public PipelinedSubGridTask(Guid requestDescriptor, string tRexNodeID, GridDataType gridDataType) : base(requestDescriptor, tRexNodeID, gridDataType)
         {
         }
 
@@ -33,14 +23,12 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <returns></returns>
         public override bool TransferResponse(object response)
         {
-            if (PipeLine != null && !PipeLine.Aborted /*&& PipeLine.OperationNode != null*/)
-            {
-                // PipeLine.OperationNode.AddSubGridToOperateOn(response);
-                return true;
-            }
+            bool result = PipeLine != null && !PipeLine.Aborted;
 
-            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubGridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
-            return false;
+            if (!result)
+              Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubGridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
+
+            return result;
         }
 
         /// <summary>
@@ -48,27 +36,26 @@ namespace VSS.TRex.Pipelines.Tasks
         /// </summary>
         public override void Cancel()
         {
-            if (PipeLine == null)
-            {
-                return;
-            }
-
+          if (PipeLine != null)
+          {
             try
             {
-                Log.LogDebug("WARNING: Aborting pipeline due to cancellation");
-                PipeLine.Abort();
+              Log.LogDebug("WARNING: Aborting pipeline due to cancellation");
+              PipeLine.Abort();
             }
-            catch
+            catch (Exception e)
             {
-                // Just in case the pipeline commits suicide before other related tasks are
-                // cancelled (and so also inform the pipeline that it is cancelled), swallow
-                // any exception generated for the abort request.
+              Log.LogError(e, "Exception occurred during pipeline cancellation");
+              // Just in case the pipeline commits suicide before other related tasks are
+              // cancelled (and so also inform the pipeline that it is cancelled), swallow
+              // any exception generated for the abort request.
             }
             finally
             {
-                Log.LogInformation("Nulling pipeline reference");
-                PipeLine = null;
+              Log.LogInformation("Nulling pipeline reference");
+              PipeLine = null;
             }
+          }
         }
 
         /// <summary>
@@ -78,15 +65,12 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <returns></returns>
         public override bool TransferResponses(object[] responses)
         {
-            if (PipeLine != null && !PipeLine.Aborted /*&& PipeLine.OperationNode != null*/)
-            {
-                // PipeLine.OperationNode.AddSubGridToOperateOn(response);
-                return true;
-            }
+          bool result = PipeLine != null && !PipeLine.Aborted;
 
-            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubGridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
+          if (!result)
+            Log.LogInformation($" WARNING: {nameof(TransferResponses)}: No pipeline available to submit grouped result for request {RequestDescriptor}");
 
-            return responses.All(TransferResponse);
+          return result && responses.All(TransferResponse);
         }
     }
 }
