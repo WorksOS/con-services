@@ -72,7 +72,6 @@
     <Compile Remove=".\ProductionData\ResultHandling\CompactionDesignProfile.cs" />
 
     <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />
-    <Compile Remove=".\Report\Executors\ElevationStatisticsExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportReportExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
