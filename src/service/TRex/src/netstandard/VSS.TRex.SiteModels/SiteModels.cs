@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -65,6 +67,9 @@ namespace VSS.TRex.SiteModels
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid id, bool createIfNotExist)
     {
       ISiteModel result;
+
+      if (createIfNotExist && storageProxy.Mutability != StorageMutability.Mutable)
+        throw new TRexSiteModelException("Site models may only be created in the mutable grid context");
 
       lock (CachedModels)
       {
