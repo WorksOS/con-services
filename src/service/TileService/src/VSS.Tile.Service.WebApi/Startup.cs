@@ -20,6 +20,7 @@ using VSS.DataOcean.Client;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.TCCFileAccess;
 
 namespace VSS.Tile.Service.WebApi
 {
@@ -65,6 +66,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
+      services.AddSingleton<IFileRepository, FileRepository>();
 
       services.AddSingleton<CacheInvalidationService>();
 

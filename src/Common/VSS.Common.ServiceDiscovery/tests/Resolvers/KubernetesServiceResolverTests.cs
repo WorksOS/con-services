@@ -48,8 +48,8 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     {
       var mock = new Mock<IKubernetesClientFactory>();
       mock
-        .Setup(m => m.CreateClient(It.IsAny<string>(), It.IsAny<string>()))
-        .Returns(kubernetesClientMock.Object);
+        .Setup(m => m.CreateClient(It.IsAny<string>()))
+        .Returns((kubernetesClientMock.Object, "default"));
 
       serviceCollection.AddSingleton<IKubernetesClientFactory>(mock.Object);
     }
@@ -99,6 +99,16 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
     }
 
     [TestMethod]
+    public void TestEnabled()
+    {
+      CreateMockFactory(new Mock<IKubernetes>());
+      var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolver>() as KubernetesServiceResolver;
+
+      Assert.IsNotNull(resolver);
+      Assert.IsTrue(resolver.IsEnabled);
+    }
+
+    [TestMethod]
     public void TestPriority()
     {
       const int expectedPriority = 99942;
@@ -120,7 +130,6 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       const string expectedNamespace = "test-namespace";
       const string expectedContext = "test-context";
 
-      mockConfiguration.Values["KubernetesNamespace"] = expectedNamespace;
       mockConfiguration.Values["KubernetesContext"] = expectedContext;
 
       var mockFactory = new Mock<IKubernetesClientFactory>();
@@ -133,15 +142,15 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       // Verify that the factory was called with the config values
       Assert.IsNotNull(resolver);
       mockFactory.Verify(m =>
-        m.CreateClient(It.Is<string>(s => s == expectedNamespace), It.Is<string>(c => c == expectedContext)));
+        m.CreateClient(It.Is<string>(c => c == expectedContext)));
     }
 
     [TestMethod]
     public void TestNoKubernetesResult()
     {
       var mockFactory = new Mock<IKubernetesClientFactory>();
-      mockFactory.Setup(m => m.CreateClient(It.IsAny<string>(), It.IsAny<string>()))
-        .Returns((IKubernetes)null);
+      mockFactory.Setup(m => m.CreateClient( It.IsAny<string>()))
+        .Returns((null, null));
 
       serviceCollection.AddSingleton(mockFactory.Object);
 

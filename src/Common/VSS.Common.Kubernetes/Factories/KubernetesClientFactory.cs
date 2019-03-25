@@ -3,6 +3,7 @@ using k8s;
 using k8s.Exceptions;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Kubernetes.Interfaces;
+using VSS.ConfigurationStore;
 using YamlDotNet.Core;
 
 namespace VSS.Common.Kubernetes.Factories
@@ -10,23 +11,30 @@ namespace VSS.Common.Kubernetes.Factories
   public class KubernetesClientFactory : IKubernetesClientFactory
   {
     private readonly ILogger<KubernetesClientFactory> logger;
+    private readonly IConfigurationStore configuration;
     private KubernetesClientConfiguration kubernetesConfiguration;
 
-    public KubernetesClientFactory(ILogger<KubernetesClientFactory> logger)
+    private readonly string defaultNamespace;
+
+    private string ClusterNamespace =>
+      kubernetesConfiguration == null || string.IsNullOrEmpty(kubernetesConfiguration.Namespace)
+        ? defaultNamespace
+        : kubernetesConfiguration.Namespace;
+
+    public KubernetesClientFactory(ILogger<KubernetesClientFactory> logger, IConfigurationStore configuration)
     {
       this.logger = logger;
+      this.configuration = configuration;
+      var environment = configuration.GetValueString("ENVIRONMENT", "default");
+      defaultNamespace = configuration.GetValueString("kubernetesNamespace", environment);
     }
 
-    public IKubernetes CreateClient(string kubernetesNamespace, string kubernetesContext = null)
+    public (IKubernetes client, string currentNamespace) CreateClient(string kubernetesContext = null)
     {
-      if (string.IsNullOrEmpty(kubernetesNamespace))
+      if (kubernetesConfiguration != null)
       {
-        logger.LogWarning($"{nameof(kubernetesNamespace)} is not defined, we cannot query the cluster to discover services");
-        return null;
+        return (new k8s.Kubernetes(kubernetesConfiguration), ClusterNamespace);
       }
-
-      if (kubernetesConfiguration != null) 
-        return new k8s.Kubernetes(kubernetesConfiguration);
 
       if (string.IsNullOrWhiteSpace(kubernetesContext))
       {
@@ -49,7 +57,7 @@ namespace VSS.Common.Kubernetes.Factories
             if (genericException is KubeConfigException)
             {
               logger.LogWarning($"Cannot get ~/.kube/config file - giving up connecting to the cluster. Error: {genericException.Message}");
-              return null;
+              return (null, null);
             }
 #if DEBUG
             // This expcetion occurswhen we can't parse the file, due to custom authentication methods (such as we what we use for AWS)
@@ -83,11 +91,11 @@ namespace VSS.Common.Kubernetes.Factories
         catch (KubeConfigException)
         {
           logger.LogWarning("Cannot get ~/.kube/config file - giving up connecting to the cluster");
-          return null;
+          return (null, null);
         }
       }
 
-      return new k8s.Kubernetes(kubernetesConfiguration);
+      return (new k8s.Kubernetes(kubernetesConfiguration), ClusterNamespace);
     }
   }
 }

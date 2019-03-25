@@ -42,7 +42,10 @@ namespace VSS.MasterData.Proxies
         ? HeaderConstants.InternalHeaders 
         : HeaderConstants.ExternalHeaders;
 
-      foreach (var headerKey in  headers.Keys)
+      // Have to store the keys here, or else we modify the dictionary while iterating
+      var keys = headers.Keys.ToList();
+
+      foreach (var headerKey in  keys)
       {
         if(keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
           continue;

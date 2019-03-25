@@ -39,6 +39,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         logger.LogInformation($"\t{serviceResolver.GetType().Name}");
         logger.LogInformation($"\t\tPriority: {serviceResolver.Priority}");
         logger.LogInformation($"\t\tService Type: {serviceResolver.ServiceType}");
+        logger.LogInformation($"\t\tEnabled: {serviceResolver.IsEnabled}");
       }
       logger.LogInformation("-----");
     }
@@ -51,6 +52,8 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     {
       foreach (var serviceResolver in Resolvers)
       {
+        if (!serviceResolver.IsEnabled)
+          continue;
         try
         {
           var endPoint = await serviceResolver.ResolveService(serviceName);
