@@ -43,5 +43,6 @@ namespace VSS.TRex.Profiling
       LastCellPassElevation2 = reader.ReadFloat();
     }
 
+    public override bool IsNull() => false;
   }
 }

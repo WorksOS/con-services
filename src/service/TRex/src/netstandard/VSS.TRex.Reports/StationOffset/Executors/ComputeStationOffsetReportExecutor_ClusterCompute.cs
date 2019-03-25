@@ -46,9 +46,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     public StationOffsetReportRequestResponse_ClusterCompute Execute()
     {
       StationOffsetReportRequestResponse_ClusterCompute response = null;
+
       try
-      {
-        try
         {
           // Note: Start/end point lat/lon fields have been converted into grid local coordinate system by this point
           if (requestArgument.Points.Count > 0)
@@ -58,7 +57,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           else
           {
             Log.LogInformation($"#In#: DataModel {requestArgument.ProjectID}, Note! vertices list has insufficient vertices (min of 1 required)");
-            return new StationOffsetReportRequestResponse_ClusterCompute(){ResultStatus = RequestErrorStatus.OK, ReturnCode = ReportReturnCode.NoData };
+            return new StationOffsetReportRequestResponse_ClusterCompute{ResultStatus = RequestErrorStatus.OK, ReturnCode = ReportReturnCode.NoData };
           }
 
           return response = GetProductionData();
@@ -68,13 +67,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           Log.LogInformation(
             $"#Out# Execute: DataModel {requestArgument.ProjectID} complete for stationOffset report. #Result#:{response?.ResultStatus ?? RequestErrorStatus.Exception} with {response?.StationOffsetRows.Count ?? 0} offsets");
         }
-      }
-      catch (Exception E)
-      {
-        Log.LogError(E, "Execute: Exception:");
-      }
-
-      return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.NoResultReturned};
     }
 
 
