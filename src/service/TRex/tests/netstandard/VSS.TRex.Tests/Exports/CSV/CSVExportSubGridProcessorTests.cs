@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019/Jan/23 00:22:10.033,808525.440,376730.880,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
+      string row0 = @"2019/Jan/23 00:22:10.033,808532.750,376734.110,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,";
       rows[0].Should().Be(row0);
     }
     
@@ -95,7 +95,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var rows = new List<string>();
       rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      string row0 = @"2019-Jan-23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019-Jan-23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
     
@@ -114,7 +114,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       rows.Count.Should().Be(384);
-      string row0 = @"2019/Jan/23 00:22:10.033,808525.440m,376730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
+      string row0 = @"2019/Jan/23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?";
       rows[0].Should().Be(row0);
     }
 

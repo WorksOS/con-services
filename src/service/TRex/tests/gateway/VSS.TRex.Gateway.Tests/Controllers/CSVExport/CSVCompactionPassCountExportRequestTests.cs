@@ -4,12 +4,11 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Tests.Exports.CSV
+namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 {
-  public class CSVCompactionPassCountExportRequestTests : IClassFixture<DITagFileFixture>
+  public class CSVCompactionPassCountExportRequestTests 
   {
     [Theory]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null, "gotAFilename",

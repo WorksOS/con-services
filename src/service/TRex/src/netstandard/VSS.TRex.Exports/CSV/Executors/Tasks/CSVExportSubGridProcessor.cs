@@ -114,7 +114,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
           return;
 
-        rows.Add(FormatADataRow(cell, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
+        var easting = subGridWorldOriginX + (x + 0.5) * lastPassSubGrid.CellSize;
+        var northing = subGridWorldOriginY + (y + 0.5) * lastPassSubGrid.CellSize;
+        rows.Add(FormatADataRow(cell, easting, northing, runningIndexLLHCoords));
         runningIndexLLHCoords++;
         totalRowCountSoFar++;
       });
@@ -154,8 +156,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
               continue;
             halfPassCount = 0;
           }
-
-          rows.Add(FormatADataRow(cellPass, subGridWorldOriginX, subGridWorldOriginY, runningIndexLLHCoords));
+          var easting = subGridWorldOriginX + (x + 0.5) * allPassesSubGrid.CellSize;
+          var northing = subGridWorldOriginY + (y + 0.5) * allPassesSubGrid.CellSize;
+          rows.Add(FormatADataRow(cellPass, easting, northing, runningIndexLLHCoords));
           totalRowCountSoFar++;
         }
         runningIndexLLHCoords++;
@@ -164,7 +167,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       return rows;
     }
 
-    private string FormatADataRow(ClientCellProfileLeafSubgridRecord cell, double subGridWorldOriginX, double subGridWorldOriginY, int runningIndexLLHCoords)
+    private string FormatADataRow(ClientCellProfileLeafSubgridRecord cell, double easting, double northing, int runningIndexLLHCoords)
     {
       var resultString = new StringBuilder();
       if (!cell.LastPassTime.Equals(runningLastPassTime))
@@ -174,8 +177,6 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       }
       resultString.Append($"{cellPassTimeString},");
 
-      var northing = cell.CellYOffset + subGridWorldOriginY;
-      var easting = cell.CellXOffset + subGridWorldOriginX;
       if (!(runningNorthing.Equals(northing) && runningEasting.Equals(easting)))
       {
         coordString = FormatCoordinate(northing, easting, runningIndexLLHCoords);

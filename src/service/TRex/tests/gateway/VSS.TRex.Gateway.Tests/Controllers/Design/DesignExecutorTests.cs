@@ -9,7 +9,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Alignments;
 using VSS.TRex.Common;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
@@ -17,7 +16,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
-namespace VSS.TRex.Gateway.Tests.Controllers
+namespace VSS.TRex.Gateway.Tests.Controllers.Design
 {
   public class DesignExecutorTests : IDisposable
   {
@@ -77,7 +76,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var designUid = Guid.NewGuid();
       var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
       var extents = new BoundingWorldExtent3D(1, 2, 50, 100, -45, 50 );
-      var design = new Design(designUid, designDescriptor, extents);
+      var design = new Designs.Storage.Design(designUid, designDescriptor, extents);
 
       var result = AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(design);
 
