@@ -8,17 +8,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
     public class GenericApplicationServiceServer : ApplicationServiceServer
     {
         /// <summary>
-        /// Static intance of the TRexApplicationServicesServer
-        /// </summary>
-        private static GenericApplicationServiceServer _instance;
-
-        /// <summary>
-        /// Obtains, or creates, the static singleton intances for the TRexApplicationServicesServer
-        /// </summary>
-        /// <returns></returns>
-        public static GenericApplicationServiceServer  Instance() => _instance == null ? _instance : (_instance = new GenericApplicationServiceServer());
-
-        /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public GenericApplicationServiceServer()
@@ -26,15 +15,11 @@ namespace VSS.TRex.GridFabric.Servers.Client
         }
 
         /// <summary>
-        /// Generic implenentation of a function lambda executed in the contect of the TRexApplicationServicesServer
+        /// Generic implenentation of a function lambda executed in the context of the TRexApplicationServicesServer
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static TResult PerformAction<TResult>(Func<TResult> func)
-        {
-            Instance();
-            return func();
-        }
+        public static TResult PerformAction<TResult>(Func<TResult> func) => func();
     }
 }
