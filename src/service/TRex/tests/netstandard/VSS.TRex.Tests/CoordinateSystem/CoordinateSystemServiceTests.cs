@@ -24,7 +24,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
           Latitude = 36.2073144965672,
           Longitude = -115.024944388223,
           Height = 550.96678869192408
-        });
+        },
+        false);
 
       NEECoords.Should().NotBeNull();
 
@@ -42,7 +43,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
           new LLH { Latitude = 36.21, Longitude = -115.01, Height = 10 },
           new LLH { Latitude = 36.22, Longitude = -115.02, Height = 11 },
           new LLH { Latitude = 36.23, Longitude = -115.03, Height = 12 }
-        }).NEECoordinates.ToList();
+        },
+        false).NEECoordinates.ToList();
 
       NEECoords.Should().NotBeNull();
 
@@ -96,7 +98,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
     public void CoordinateService_SimpleXYZLLHToNEE()
     {
       // XYZ coordinate holding LLH data.
-      var NEECoords = ConvertCoordinates.LLHToNEE(DIMENSIONS_2012_DC_CSIB, new XYZ(-115.01, 36.21, 10));
+      var NEECoords = ConvertCoordinates.LLHToNEE(DIMENSIONS_2012_DC_CSIB, new XYZ(-115.01, 36.21, 10), false);
 
       NEECoords.Should().NotBeNull();
 
@@ -116,7 +118,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
         new XYZ(-115.03, 36.23, 12)
       };
 
-      var NEECoords = ConvertCoordinates.LLHToNEE(DIMENSIONS_2012_DC_CSIB, coords).NEECoordinates;
+      var NEECoords = ConvertCoordinates.LLHToNEE(DIMENSIONS_2012_DC_CSIB, coords, false).NEECoordinates;
 
       NEECoords.Should().NotBeNull();
 
@@ -171,7 +173,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
     [Fact(Skip = "Skip until coreX is available")]
     public void CoordinateService_SimpleWGS84PointToXYZNEE()
     {
-      var NEECoords = ConvertCoordinates.WGS84ToCalibration(DIMENSIONS_2012_DC_CSIB, new WGS84Point(-115.01, 36.21, 10));
+      var NEECoords = ConvertCoordinates.WGS84ToCalibration(DIMENSIONS_2012_DC_CSIB, new WGS84Point(-115.01, 36.21, 10), false);
 
       NEECoords.Should().NotBeNull();
 
@@ -188,7 +190,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
         new WGS84Point(-115.02, 36.22, 11)
       };
 
-      var NEECoords = ConvertCoordinates.WGS84ToCalibration(DIMENSIONS_2012_DC_CSIB, points);
+      var NEECoords = ConvertCoordinates.WGS84ToCalibration(DIMENSIONS_2012_DC_CSIB, points, false);
 
       NEECoords.Should().NotBeNull();
 

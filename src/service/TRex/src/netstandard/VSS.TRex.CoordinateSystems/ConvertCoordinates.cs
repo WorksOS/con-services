@@ -4,6 +4,7 @@ using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -65,22 +66,31 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes a <see cref="LLH"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public static NEE LLHToNEE(string id, LLH LLH) => serviceClient.GetNEEFromLLHAsync(id, LLH).Result;
+    public static NEE LLHToNEE(string id, LLH LLH, bool convertToRadians = true)
+    {
+      if (convertToRadians)
+      {
+        LLH.Longitude = MathUtilities.RadiansToDegrees(LLH.Longitude);
+        LLH.Latitude = MathUtilities.RadiansToDegrees(LLH.Latitude);
+      }
+
+      return serviceClient.GetNEEFromLLHAsync(id, LLH).Result;
+    }
 
     /// <summary>
     /// Takes an array of <see cref="LLH"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public static (RequestErrorStatus ErrorCode, NEE[] NEECoordinates) LLHToNEE(string id, LLH[] LLH)
+    public static (RequestErrorStatus ErrorCode, NEE[] NEECoordinates) LLHToNEE(string id, LLH[] LLH, bool convertToRadians = true)
     {
-      return serviceClient.GetNEEFromLLHAsync(id, LLH.ToRequestArray()).Result;
+      return serviceClient.GetNEEFromLLHAsync(id, LLH.ToRequestArray(convertToRadians)).Result;
     }
 
     /// <summary>
     /// Converts <see cref="XYZ"/> coordinates holding <see cref="LLH"/> data into <see cref="NEE"/> data.
     /// </summary>
-    public static XYZ LLHToNEE(string id, XYZ coordinates)
+    public static XYZ LLHToNEE(string id, XYZ coordinates, bool convertToRadians = true)
     {
-      var result = serviceClient.GetNEEFromLLHAsync(id, coordinates.ToLLH()).Result;
+      var result = serviceClient.GetNEEFromLLHAsync(id, coordinates.ToLLH(convertToRadians)).Result;
 
       return new XYZ
       {
@@ -108,9 +118,9 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Takes an array of <see cref="XYZ"/> and uses the Coordinate Service to convert it into <see cref="NEE"/> data.
     /// </summary>
-    public static (RequestErrorStatus ErrorCode, XYZ[] NEECoordinates) LLHToNEE(string id, XYZ[] coordinates)
+    public static (RequestErrorStatus ErrorCode, XYZ[] NEECoordinates) LLHToNEE(string id, XYZ[] coordinates, bool convertToRadians = true)
     {
-      var result = serviceClient.GetNEEFromLLHAsync(id, coordinates.ToLLHRequestArray()).Result;
+      var result = serviceClient.GetNEEFromLLHAsync(id, coordinates.ToLLHRequestArray(convertToRadians)).Result;
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
         return (result.ErrorCode, null);
@@ -164,12 +174,12 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Uses the Coordinate Service to convert WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    public static XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point)
+    public static XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point, bool convertToRadians = true)
     {
       var nee = serviceClient.GetNEEFromLLHAsync(id, new LLH
       {
-        Latitude = wgs84Point.Lat,
-        Longitude = wgs84Point.Lon,
+        Latitude = convertToRadians ? MathUtilities.RadiansToDegrees(wgs84Point.Lat) : wgs84Point.Lat,
+        Longitude = convertToRadians ? MathUtilities.RadiansToDegrees(wgs84Point.Lon) : wgs84Point.Lon,
         Height = wgs84Point.Height
       }).Result;
 
@@ -184,9 +194,9 @@ namespace VSS.TRex.CoordinateSystems
     /// <summary>
     /// Uses the Coordinate Service to convert an array of WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    public static XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points)
+    public static XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points, bool convertToRadians = true)
     {
-      (var errorCode, NEE[] neeCoordinates) = serviceClient.GetNEEFromLLHAsync(id, wgs84Points.ToRequestArray()).Result;
+      (var errorCode, NEE[] neeCoordinates) = serviceClient.GetNEEFromLLHAsync(id, wgs84Points.ToRequestArray(convertToRadians)).Result;
 
       if (errorCode != RequestErrorStatus.OK)
       {
