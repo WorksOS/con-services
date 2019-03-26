@@ -29,6 +29,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
   public class GriddedReportComputeFuncExecutor
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private const Double StartGridOffset = 0.000001; // by offsetting the grid start position a tiny distance we avoid skipped cells due to cell boundary checks
 
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
@@ -106,6 +107,10 @@ namespace VSS.TRex.Reports.Gridded.Executors
           _griddedReportRequestArgument.StartEasting = 0;
         }
       }
+
+      // Avoid starting on cell boundary by applying tiny offset
+      _griddedReportRequestArgument.StartNorthing = StartGridOffset;
+      _griddedReportRequestArgument.StartEasting  = StartGridOffset;
 
       // Interval will be >= 0.1m and <= 100.0m
       processor.Pipeline.AreaControlSet =
