@@ -72,7 +72,7 @@ namespace VSS.TRex.Designs.Interfaces
       out DesignProfilerRequestResult errorCode);
 
     /// <summary>
-    /// Calculates an elevation subgrid for a design subgrid on this design
+    /// Calculates an elevation sub grid for a design sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>
@@ -87,7 +87,7 @@ namespace VSS.TRex.Designs.Interfaces
       out DesignProfilerRequestResult errorCode);
 
     /// <summary>
-    /// Calculates a filter mask for a designated subgrid on this design
+    /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>

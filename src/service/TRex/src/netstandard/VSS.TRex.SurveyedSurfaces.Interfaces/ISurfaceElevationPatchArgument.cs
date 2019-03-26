@@ -57,6 +57,6 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <returns></returns>
     string CacheFingerprint();
 
-    void SetOTGBottomLeFtLocation(uint oTGCellBottomLeftX, uint oTGCellBottomLeftY);
+    void SetOTGBottomLeftLocation(uint oTGCellBottomLeftX, uint oTGCellBottomLeftY);
   }
 }

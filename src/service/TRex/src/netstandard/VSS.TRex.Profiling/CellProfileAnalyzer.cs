@@ -460,7 +460,7 @@ namespace VSS.TRex.Profiling
           if (FilteredSurveyedSurfaces != null)
           {
             // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-            SurfaceElevationPatchArg.SetOTGBottomLeFtLocation(_SubGridAsLeaf.OriginX, _SubGridAsLeaf.OriginY);
+            SurfaceElevationPatchArg.SetOTGBottomLeftLocation(_SubGridAsLeaf.OriginX, _SubGridAsLeaf.OriginY);
             SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
             CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
