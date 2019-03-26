@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -112,6 +113,11 @@ namespace VSS.Productivity3D.Push.Clients
         catch (HttpRequestException e)
         {
           Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
+          await Task.Delay(RECONNECT_DELAY_MS);
+        }
+        catch (Exception e)
+        {
+          Logger.LogError(e, "Failed to connect due to unknown exception");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
       }
