@@ -1,7 +1,9 @@
 ﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Push.Abstractions;
 
@@ -83,13 +85,12 @@ namespace VSS.Productivity3D.Push.Clients
       {
         Logger.LogError(e, $"Lost Connection to `{Configuration.GetValueString(UrlKey)}`");
         Connected = false;
-
-        await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
+        await Task.Factory.StartNew(TryConnect,TaskCreationOptions.LongRunning).ConfigureAwait(false);
       };
 
       SetupCallbacks();
 
-      return Task.Factory.StartNew(TryConnect);
+      return Task.Factory.StartNew(TryConnect, TaskCreationOptions.LongRunning);
     }
 
     /// <summary>
@@ -97,11 +98,13 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     private async Task TryConnect()
     {
+      var tokenSource = new CancellationTokenSource(RECONNECT_DELAY_MS);
       while (true)
       {
         try
         {
-          await Connection.StartAsync();
+          Logger.LogDebug($"Connecting to `{Configuration.GetValueString(UrlKey)}`");
+          await Connection.StartAsync(tokenSource.Token);
           Connected = true;
           Logger.LogInformation($"Connected to `{Configuration.GetValueString(UrlKey)}`");
           break;
