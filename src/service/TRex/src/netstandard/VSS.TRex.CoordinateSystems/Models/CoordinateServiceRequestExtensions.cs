@@ -13,15 +13,15 @@ namespace VSS.TRex.CoordinateSystems.Models
     /// <remarks>
     /// Note the deliberate order change, with Longitude preceeding Latitude in the LLH sequence.
     /// </remarks>
-    public static double[,] ToRequestArray(this LLH[] LLHs)
+    public static double[,] ToRequestArray(this LLH[] LLHs, bool convertToRadians = true)
     {
       var requestArray = new double[LLHs.Length, 3];
 
       for (int i = 0; i < LLHs.Length; i++)
       {
-        requestArray[i, 0] = MathUtilities.RadiansToDegrees(LLHs[i].Longitude);
-        requestArray[i, 1] = MathUtilities.RadiansToDegrees(LLHs[i].Latitude);
-        requestArray[i, 2] = MathUtilities.RadiansToDegrees(LLHs[i].Height);
+        requestArray[i, 0] = convertToRadians ? MathUtilities.RadiansToDegrees(LLHs[i].Longitude) : LLHs[i].Longitude;
+        requestArray[i, 1] = convertToRadians ? MathUtilities.RadiansToDegrees(LLHs[i].Latitude) : LLHs[i].Latitude;
+        requestArray[i, 2] = LLHs[i].Height;
       }
 
       return requestArray;
@@ -34,14 +34,14 @@ namespace VSS.TRex.CoordinateSystems.Models
     /// <remarks>
     /// Note the deliberate order change, with Longitude preceeding Latitude in the LLH sequence.
     /// </remarks>
-    public static double[,] ToRequestArray(this WGS84Point[] wgs84Points)
+    public static double[,] ToRequestArray(this WGS84Point[] wgs84Points, bool convertToRadians = true)
     {
       var requestArray = new double[wgs84Points.Length, 3];
 
       for (int i = 0; i < wgs84Points.Length; i++)
       {
-        requestArray[i, 0] = wgs84Points[i].Lon;
-        requestArray[i, 1] = wgs84Points[i].Lat;
+        requestArray[i, 0] = convertToRadians ? MathUtilities.RadiansToDegrees(wgs84Points[i].Lon) : wgs84Points[i].Lon;
+        requestArray[i, 1] = convertToRadians ? MathUtilities.RadiansToDegrees(wgs84Points[i].Lat) : wgs84Points[i].Lat;
         requestArray[i, 2] = wgs84Points[i].Height;
       }
 
@@ -113,12 +113,12 @@ namespace VSS.TRex.CoordinateSystems.Models
     /// <summary>
     /// Converts an <see cref="XYZ"/> object to a <see cref="LLH"/> coordinate object.
     /// </summary>
-    public static LLH ToLLH(this XYZ data)
+    public static LLH ToLLH(this XYZ data, bool convertToRadians = true)
     {
       return new LLH
       {
-        Longitude = data.X,
-        Latitude = data.Y,
+        Longitude = convertToRadians ? MathUtilities.RadiansToDegrees(data.X) : data.X,
+        Latitude = convertToRadians ? MathUtilities.RadiansToDegrees(data.Y) : data.Y,
         Height = data.Z
       };
     }
@@ -139,15 +139,15 @@ namespace VSS.TRex.CoordinateSystems.Models
     /// <summary>
     /// Converts an array of <see cref="XYZ"/> to an array of <see cref="LLH"/> objects.
     /// </summary>
-    public static double[,] ToLLHRequestArray(this XYZ[] arrayData)
+    public static double[,] ToLLHRequestArray(this XYZ[] arrayData, bool convertToRadians = true)
     {
       var requestArray = new double[arrayData.Length, 3];
 
       for (int i = 0; i < arrayData.Length; i++)
       {
-        requestArray[i, 0] = MathUtilities.RadiansToDegrees(arrayData[i].X);
-        requestArray[i, 1] = MathUtilities.RadiansToDegrees(arrayData[i].Y);
-        requestArray[i, 2] = MathUtilities.RadiansToDegrees(arrayData[i].Z);
+        requestArray[i, 0] = convertToRadians ? MathUtilities.RadiansToDegrees(arrayData[i].X) : arrayData[i].X;
+        requestArray[i, 1] = convertToRadians ? MathUtilities.RadiansToDegrees(arrayData[i].Y) : arrayData[i].Y;
+        requestArray[i, 2] = arrayData[i].Z;
       }
 
       return requestArray;

@@ -6,6 +6,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
