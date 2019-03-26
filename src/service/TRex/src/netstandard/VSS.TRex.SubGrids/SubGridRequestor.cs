@@ -169,7 +169,7 @@ namespace VSS.TRex.SubGrids
                 if ((ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                      || SurfaceDesignMaskElevations == null)
                 {
-                    Log.LogError($"#D# InitialiseFilterContext RequestDesignElevationPatch for Design {SurfaceDesignMaskDesign.Get_DesignDescriptor().FileName} failed");
+                    Log.LogError($"#D# InitialiseFilterContext RequestDesignElevationPatch for Design {SurfaceDesignMaskDesign.DesignDescriptor.FileName} failed");
                     return false;
                 }
             }

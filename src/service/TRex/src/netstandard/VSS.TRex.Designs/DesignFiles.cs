@@ -100,12 +100,12 @@ end;
         design = new TTMDesign(ACellSize);
 
         string designFilePathAndName = Path.Combine(FilePathHelper.GetTempFolderForProject(DataModelID),
-          designRef.Get_DesignDescriptor().FileName);
+          designRef.DesignDescriptor.FileName);
 
         if (!File.Exists(designFilePathAndName))
         {
           design.LoadFromStorage(DataModelID,
-            designRef.Get_DesignDescriptor().FileName,
+            designRef.DesignDescriptor.FileName,
             Path.GetDirectoryName(designFilePathAndName), true);
         }
 

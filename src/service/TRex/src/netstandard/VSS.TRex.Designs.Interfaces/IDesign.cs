@@ -101,7 +101,7 @@ namespace VSS.TRex.Designs.Interfaces
       out SubGridTreeBitmapSubGridBits filterMask,
       out DesignProfilerRequestResult errorCode);
 
-    DesignDescriptor Get_DesignDescriptor();
+    DesignDescriptor DesignDescriptor { get; }
 
     List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode);
   }
