@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using TCCToDataOcean.DatabaseAgent;
@@ -11,7 +10,6 @@ using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -24,13 +22,13 @@ namespace TCCToDataOcean
   public class Migrator : IMigrator
   {
     private readonly IProjectRepository ProjectRepo;
-    private readonly IConfigurationStore ConfigStore;
-    private readonly IServiceExceptionHandler ServiceExceptionHandler;
     private readonly IFileRepository FileRepo;
     private readonly IWebApiUtils WebApiUtils;
     private readonly IImportFile ImportFile;
     private readonly ILogger Log;
     private readonly ILiteDbAgent _migrationDb;
+    private readonly ICSIBAgent _csibAgent;
+
     private readonly string FileSpaceId;
     private readonly string ProjectApiUrl;
     private readonly string UploadFileApiUrl;
@@ -54,31 +52,32 @@ namespace TCCToDataOcean
       ImportedFileType.Alignment
     };
 
-    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore, ILiteDbAgent liteDbAgent,
-      IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IWebApiUtils webApiUtils, IImportFile importFile)
+    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore,
+                    ILiteDbAgent liteDbAgent, IFileRepository fileRepo, IWebApiUtils webApiUtils, IImportFile importFile,
+                    IEnvironmentHelper environmentHelper, ICSIBAgent csibAgent)
     {
       Log = logger.CreateLogger<Migrator>();
       ProjectRepo = projectRepository;
-      ConfigStore = configStore;
+      var configStore1 = configStore;
       FileRepo = fileRepo;
-      ServiceExceptionHandler = serviceExceptionHandler;
       WebApiUtils = webApiUtils;
       ImportFile = importFile;
       _migrationDb = liteDbAgent;
+      _csibAgent = csibAgent;
 
-      FileSpaceId = GetEnvironmentVariable("TCCFILESPACEID", 48);
-      ProjectApiUrl = GetEnvironmentVariable("PROJECT_API_URL", 1);
-      UploadFileApiUrl = GetEnvironmentVariable("IMPORTED_FILE_API_URL2", 1);
-      ImportedFileApiUrl = GetEnvironmentVariable("IMPORTED_FILE_API_URL", 3);
-      TemporaryFolder = Path.Combine(GetEnvironmentVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
+      FileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
+      ProjectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
+      UploadFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL2", 1);
+      ImportedFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL", 3);
+      TemporaryFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
-      _resumeModeEnabled = ConfigStore.GetValueBool("RESUME_MODE_ENABLED", defaultValue: false);
+      _resumeModeEnabled = configStore1.GetValueBool("RESUME_MODE_ENABLED", defaultValue: false);
       // Diagnostic settings
-      _downloadProjectFiles = ConfigStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
-      _uploadProjectFiles = ConfigStore.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
-      _downloadProjectCoordinateSystemFile = ConfigStore.GetValueBool("DOWNLOAD_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
-      _updateProjectCoordinateSystemFile = ConfigStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
-      _saveCoordinateSystemFile = ConfigStore.GetValueBool("SAVE_COORDIANTE_SYSTEM_FILE", defaultValue: false);
+      _downloadProjectFiles = configStore1.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
+      _uploadProjectFiles = configStore1.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
+      _downloadProjectCoordinateSystemFile = configStore1.GetValueBool("DOWNLOAD_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
+      _updateProjectCoordinateSystemFile = configStore1.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
+      _saveCoordinateSystemFile = configStore1.GetValueBool("SAVE_COORDIANTE_SYSTEM_FILE", defaultValue: false);
     }
 
     public async Task MigrateFilesForAllActiveProjects()
@@ -137,32 +136,58 @@ namespace TCCToDataOcean
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
-        var coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
+        // GET CSIB
+        var csibResponse = await _csibAgent.GetCSIBForProject(project);
 
-        if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
+        _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
+
+        if (csibResponse.Code != 0)
         {
-          // DIAGNOSTIC RUNTIME SWITCH
-          if (_updateProjectCoordinateSystemFile)
+          // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
+          var coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
+
+          if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
           {
-            var updateProjectResult = WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+            // DIAGNOSTIC RUNTIME SWITCH
+            if (_updateProjectCoordinateSystemFile)
+            {
+              var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
 
-            coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
+              coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
 
-            Log.LogInformation($"{Method.Info()} | Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+              Log.LogInformation($"{Method.Info()} | Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+            }
+            else
+            {
+              Log.LogDebug($"{Method.Info("DEBUG")} | Skipping updating project coordinate system file step");
+            }
           }
           else
           {
-            Log.LogDebug($"{Method.Info("DEBUG")} | Skipping updating project coordinate system file step");
+            _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
           }
         }
         else
         {
-          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
+          _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
+
+          var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
+          var a = coordSysInfo["coordinateSystem"]["id"].ToString();
+          var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
+
+          var dcFilePath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
+          if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
+
+          var tempFileName = Path.Combine(dcFilePath, "project.dc");
+
+          Log.LogInformation($"{Method.Info()} | Creating DC file '{tempFileName}' for project {project.ProjectUID}");
+
+          File.WriteAllText(tempFileName, dcFileContent);
         }
       }
 
       var importedFilesResult = false;
-      var filesResult = ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
+      var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
 
       if (filesResult.ImportedFileDescriptors?.Count > 0)
       {
@@ -328,18 +353,6 @@ namespace TCCToDataOcean
       Log.LogInformation($"{Method.Out()} | File {file.ImportedFileUid} update result {result.Code} {result.Message}");
 
       return (true, result);
-    }
-
-    private string GetEnvironmentVariable(string key, int errorNumber)
-    {
-      var value = ConfigStore.GetValueString(key);
-      if (string.IsNullOrEmpty(value))
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorNumber,
-          $"Missing environment variable {key}");
-      }
-
-      return value;
     }
   }
 }

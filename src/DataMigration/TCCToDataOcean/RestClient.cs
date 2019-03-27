@@ -1,21 +1,18 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
 using VSS.WebApi.Common;
 
 namespace TCCToDataOcean
 {
-  public class MediaTypes
-  {
-    public const string JSON = "application/json";
-    public const string MULTIPART_FORM_DATA = "multipart/form-data";
-  }
-
   public class RestClient : IRestClient
   {
     private readonly HttpClient httpClient;
@@ -37,9 +34,9 @@ namespace TCCToDataOcean
       Log.LogInformation(Method.Out());
     }
 
-    public Task<HttpResponseMessage> SendHttpClientRequest(string uri, HttpMethod method, string payloadData, string acceptHeader, string contentType, string customerUid)
+    public async Task<TResponse> SendHttpClientRequest<TResponse>(string uri, HttpMethod method, string acceptHeader, string contentType, string customerUid, string payloadData = null) where TResponse : class
     {
-      Log.LogInformation(Method.In());
+      Log.LogInformation($"{Method.In()} | URI: {uri}");
 
       var request = GetRequestMessage(method, uri);
 
@@ -48,26 +45,56 @@ namespace TCCToDataOcean
 
       if (payloadData != null)
       {
-        switch (contentType)
+        switch (acceptHeader)
         {
-          case MediaTypes.JSON:
+          case MediaType.APPLICATION_JSON:
             {
               request.Content = new StringContent(payloadData, Encoding.UTF8, contentType);
-
               break;
             }
-          case MediaTypes.MULTIPART_FORM_DATA:
+          //case MediaType.MULTIPART_FORM_DATA:
+          //  {
+          //    contentType = $"{MediaType.MULTIPART_FORM_DATA}; boundary=-----{Guid.NewGuid().ToString()}";
+          //    throw new NotImplementedException();
+          //  }
+          default:
             {
-              throw new NotImplementedException();
-
-              contentType = $"{MediaTypes.MULTIPART_FORM_DATA}; boundary=-----{Guid.NewGuid().ToString()}";
+              throw new Exception($"Unsupported content type '{contentType}'");
             }
         }
       }
 
-      Log.LogInformation(Method.Out());
+      var response = await httpClient.SendAsync(request);
 
-      return httpClient.SendAsync(request);
+      var receiveStream = response.Content.ReadAsStreamAsync().Result;
+      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
+      var responseBody = readStream.ReadToEnd();
+
+      Log.LogInformation($"{Method.Info()} | Status code: {response.StatusCode}, {responseBody}");
+
+      try
+      {
+        switch (response.Content.Headers.ContentType.MediaType)
+        {
+          case MediaType.APPLICATION_JSON:
+            {
+              return JsonConvert.DeserializeObject<TResponse>(responseBody);
+            }
+          case MediaType.TEXT_PLAIN:
+          case MediaType.APPLICATION_OCTET_STREAM:
+            {
+              return await response.Content.ReadAsStringAsync() as TResponse;
+            }
+          default:
+            {
+              throw new Exception($"Unsupported content type '{response.Content.Headers.ContentType.MediaType}'");
+            }
+        }
+      }
+      finally
+      {
+        Log.LogInformation(Method.Out());
+      }
     }
   }
 }

@@ -1,10 +1,11 @@
-﻿using VSS.Productivity3D.Project.Abstractions.Models;
+﻿using System.Threading.Tasks;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace TCCToDataOcean.Interfaces
 {
   public interface IWebApiUtils
   {
-    ProjectDataSingleResult UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent);
+    Task<ProjectDataSingleResult> UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent);
   }
 }

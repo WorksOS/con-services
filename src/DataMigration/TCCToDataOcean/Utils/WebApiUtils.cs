@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using TCCToDataOcean.Interfaces;
 using VSS.ConfigurationStore;
@@ -32,7 +30,7 @@ namespace TCCToDataOcean.Utils
     /// <summary>
     /// Update the project via the web api. 
     /// </summary>
-    public ProjectDataSingleResult UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent)
+    public Task<ProjectDataSingleResult> UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent)
     {
       var updateProjectEvt = new UpdateProjectEvent
       {
@@ -50,16 +48,8 @@ namespace TCCToDataOcean.Utils
       };
 
       var jsonString = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvt }, JsonSettings);
-      var response = Task.Run(() => RestClient.SendHttpClientRequest(uriRoot, HttpMethod.Put, jsonString, Types.MediaType.ApplicationJson, Types.MediaType.ApplicationJson, project.CustomerUID)).Result;
 
-      var receiveStream = response.Content.ReadAsStreamAsync().Result;
-      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
-      var responseBody = readStream.ReadToEnd();
-
-      return JsonConvert.DeserializeObject<ProjectDataSingleResult>(responseBody, new JsonSerializerSettings
-      {
-        Formatting = Formatting.Indented
-      });
+      return RestClient.SendHttpClientRequest<ProjectDataSingleResult>(uriRoot, HttpMethod.Put, Types.MediaType.APPLICATION_JSON, Types.MediaType.APPLICATION_JSON, project.CustomerUID, jsonString);
     }
   }
 }

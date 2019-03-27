@@ -1469,14 +1469,14 @@ namespace VSS.Productivity3D.Project.Repository
         .Select(g => g.First()).ToList();
     }
 
-    /// <summary>
+        /// <summary>
     ///     There may be 0 or n subscriptions for each project. None/many may be current.
     ///     This method gets the latest EndDate so at most 1 sub per project
     ///     Also returns the GeofenceWRK. List returned excludes archived projects.
     /// </summary>
-    public async Task<IEnumerable<Abstractions.Models.DatabaseModels.Project>> GetActiveProjects()
+    public async Task<IEnumerable<ProjectDataModel>> GetActiveProjects()
     {
-      var projects = await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
+      var projects = await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
               c.CustomerUID, cp.LegacyCustomerID, 
               p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
@@ -1495,7 +1495,7 @@ namespace VSS.Productivity3D.Project.Repository
       // need to get the row with the later SubscriptionEndDate if there are duplicates
       // Also if there are >1 projectGeofences.. hmm.. it will just return either
       return projects.OrderByDescending(proj => proj.SubscriptionEndDate).GroupBy(d => d.ProjectUID)
-                     .Select(g => g.First()).ToList();
+        .Select(g => g.First()).ToList();
     }
 
     /// <summary>

@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
@@ -25,7 +24,6 @@ namespace TCCToDataOcean
   {
     private readonly IRestClient RestClient;
     private readonly ILogger Log;
-    private readonly ILiteDbAgent _migrationDb;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
@@ -34,49 +32,17 @@ namespace TCCToDataOcean
     private const int CHUNK_SIZE = 1024 * 1024;
     private readonly string BearerToken;
 
-    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient, ILiteDbAgent liteDbAgent)
+    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient)
     {
       Log = loggerFactory.CreateLogger<ImportFile>();
-      _migrationDb = liteDbAgent;
-
       BearerToken = "Bearer " + authentication.GetApplicationBearerToken();
-
       RestClient = restClient;
     }
 
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    public FileDataResult GetImportedFilesFromWebApi(string uri, Project project)
-    {
-      Log.LogInformation($"{Method.In()} | Get imported files for {project.ProjectUID}, customer {project.CustomerUID}");
-
-      var response = Task.Run(() => RestClient.SendHttpClientRequest(uri, HttpMethod.Get, null, MediaType.ApplicationJson, MediaType.ApplicationJson, project.CustomerUID)).Result;
-
-      var receiveStream = response.Content.ReadAsStreamAsync().Result;
-      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
-      var responseBody = readStream.ReadToEnd();
-
-      Log.LogInformation($"{Method.Info()} | Status code: {response.StatusCode}, {responseBody}");
-
-      switch (response.StatusCode)
-      {
-        case HttpStatusCode.Unauthorized:
-          {
-            Log.LogError($"{Method.Out()} | Check TPAAS authentication credentials.");
-
-            Environment.Exit(1);
-            break;
-          }
-      }
-
-      Log.LogInformation(Method.Out());
-
-      return JsonConvert.DeserializeObject<FileDataResult>(responseBody, new JsonSerializerSettings
-      {
-        Formatting = Formatting.Indented
-      });
-    }
+    public Task<FileDataResult> GetImportedFilesFromWebApi(string uri, Project project) => RestClient.SendHttpClientRequest<FileDataResult>(uri, HttpMethod.Get, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, project.CustomerUID);
 
     /// <summary>
     /// Send request to the FileImportV4 controller

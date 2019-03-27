@@ -116,6 +116,8 @@ namespace TCCToDataOcean.DatabaseAgent
       projects.Update(dbObj);
     }
 
+    private LiteCollection<T> GetCollection<T>(string tableName) => db.GetCollection<T>(tableName);
+
     public void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount)
     {
       var projects = db.GetCollection<MigrationProject>(tableName);
@@ -125,6 +127,30 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.EligibleFileCount = eligibleFileCount;
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
+      projects.Update(dbObj);
+    }
+
+    public void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib)
+    {
+      var projects = db.GetCollection<MigrationProject>(tableName);
+      var dbObj = projects.FindOne(x => x.ProjectUid == key);
+
+      UpdateProject(projects, dbObj, () => dbObj.CanResolveCSIB = canResolveCsib);
+    }
+
+    public void SetProjectCSIB(string tableName, string key, string csib)
+    {
+      var projects = db.GetCollection<MigrationProject>(tableName);
+      var dbObj = projects.FindOne(x => x.ProjectUid == key);
+
+      UpdateProject(projects, dbObj, () => dbObj.CSIB = csib);
+    }
+    
+    private static void UpdateProject(LiteCollection<MigrationProject> projects, MigrationProject dbObj, Action action)
+    {
+      action();
+
+      dbObj.DateTimeUpdated = DateTime.UtcNow;
       projects.Update(dbObj);
     }
   }

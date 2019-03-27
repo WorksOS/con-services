@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
@@ -22,7 +23,12 @@ namespace TCCToDataOcean
   {
     public const string LoggerRepoName = "TCCToDataOcean";
 
-    static void Main()
+    private static void Main()
+    {
+      MainAsync().GetAwaiter().GetResult();
+    }
+
+    private static async Task MainAsync()
     {
       var serviceCollection = new ServiceCollection();
       ConfigureServices(serviceCollection);
@@ -30,7 +36,7 @@ namespace TCCToDataOcean
       var serviceProvider = serviceCollection.BuildServiceProvider();
       var migrator = serviceProvider.GetRequiredService<IMigrator>();
 
-      _ = migrator.MigrateFilesForAllActiveProjects().ConfigureAwait(true);
+      await migrator.MigrateFilesForAllActiveProjects().ConfigureAwait(false);
 
       serviceProvider.GetRequiredService<ILiteDbAgent>()
                      .SetMigationInfo_EndTime();
@@ -48,6 +54,7 @@ namespace TCCToDataOcean
       services.AddScoped<IProjectRepository, ProjectRepository>();
       services.AddScoped<IErrorCodesProvider, MigrationErrorCodesProvider>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton<IEnvironmentHelper, EnvironmentHelper>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IWebApiUtils, WebApiUtils>();
       services.AddSingleton<IRestClient, RestClient>();
@@ -55,8 +62,9 @@ namespace TCCToDataOcean
       services.AddTransient<IMigrator, Migrator>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
+      services.AddSingleton<ICSIBAgent, CSIBAgent>();
 
-      Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4net.xml");
+      Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName);
     }
   }
 }
