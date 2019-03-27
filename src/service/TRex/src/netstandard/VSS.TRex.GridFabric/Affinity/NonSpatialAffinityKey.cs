@@ -1,7 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
 
@@ -16,7 +15,7 @@ namespace VSS.TRex.GridFabric.Affinity
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The GUID for the project the subgrid data belongs to.
+    /// The GUID for the project the sub grid data belongs to.
     /// </summary>
     public Guid ProjectUID { get; set; }
 
@@ -26,7 +25,7 @@ namespace VSS.TRex.GridFabric.Affinity
     public string KeyName { get; set; }
 
     /// <summary>
-    /// A constructor for the affinity key that accepts the project and subgrid origin location
+    /// A constructor for the affinity key that accepts the project and sub grid origin location
     /// and returns an instance of the spatial affinity key
     /// </summary>
     /// <param name="projectID"></param>

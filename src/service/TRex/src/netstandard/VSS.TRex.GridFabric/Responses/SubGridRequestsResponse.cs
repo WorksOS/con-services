@@ -28,55 +28,55 @@ namespace VSS.TRex.GridFabric.Responses
     /// <summary>
     /// The number of subgrids in the total subgrids request processed by the responding cluster node
     /// </summary>
-    public long NumSubgridsProcessed { get; set; } = -1;
+    public long NumSubgridsProcessed { get; set; }
 
     /// <summary>
     /// The total number of subgrids scanned by the processing cluster node. This should match the overall number
     /// of subgrids in the request unless ResponseCode indicates a failure.
     /// </summary>
-    public long NumSubgridsExamined { get; set; } = -1;
+    public long NumSubgridsExamined { get; set; }
 
     /// <summary>
     /// The number of subgrids containing production data in the total subgrids request processed by the responding cluster node
     /// </summary>
-    public long NumProdDataSubGridsProcessed { get; set; } = -1;
+    public long NumProdDataSubGridsProcessed { get; set; }
 
     /// <summary>
     /// The total number of subgrids containing production data scanned by the processing cluster node. This should match the overall number
     /// of production data subgrids in the request unless ResponseCode indicates a failure.
     /// </summary>
-    public long NumProdDataSubGridsExamined { get; set; } = -1;
+    public long NumProdDataSubGridsExamined { get; set; } 
 
     /// <summary>
     /// The number of subgrids containing surveyed surfaces data in the total subgrids request processed by the responding cluster node
     /// </summary>
-    public long NumSurveyedSurfaceSubGridsProcessed { get; set; } = -1;
+    public long NumSurveyedSurfaceSubGridsProcessed { get; set; }
 
     /// <summary>
     /// The total number of subgrids containing surveyed surface data scanned by the processing cluster node. This should match the overall number
     /// of surveyed surface subgrids in the request unless ResponseCode indicates a failure.
     /// </summary>
-    public long NumSurveyedSurfaceSubGridsExamined { get; set; } = -1;
+    public long NumSurveyedSurfaceSubGridsExamined { get; set; }
 
-  public override void ToBinary(IBinaryRawWriter writer)
-  {
-    VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-    writer.WriteInt((int)ResponseCode);
-    writer.WriteString(ClusterNode);
-    writer.WriteLong(NumSubgridsProcessed);
-    writer.WriteLong(NumSubgridsExamined);
-    writer.WriteLong(NumProdDataSubGridsProcessed);
-    writer.WriteLong(NumProdDataSubGridsExamined);
-    writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
-    writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
+      writer.WriteInt((int) ResponseCode);
+      writer.WriteString(ClusterNode);
+      writer.WriteLong(NumSubgridsProcessed);
+      writer.WriteLong(NumSubgridsExamined);
+      writer.WriteLong(NumProdDataSubGridsProcessed);
+      writer.WriteLong(NumProdDataSubGridsExamined);
+      writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
+      writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ResponseCode = (SubGridRequestsResponseResult)reader.ReadInt();
+      ResponseCode = (SubGridRequestsResponseResult) reader.ReadInt();
       ClusterNode = reader.ReadString();
       NumSubgridsProcessed = reader.ReadLong();
       NumSubgridsExamined = reader.ReadLong();
