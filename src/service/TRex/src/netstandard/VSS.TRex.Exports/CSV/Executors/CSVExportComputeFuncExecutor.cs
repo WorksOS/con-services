@@ -71,7 +71,7 @@ namespace VSS.TRex.Exports.CSV.Executors
         processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
         processor.Task.GridDataType = gridDataType;
 
-        ((CSVExportTask) processor.Task).subGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
+        ((CSVExportTask) processor.Task).SubGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
 
         if (!processor.Build())
         {
@@ -89,10 +89,10 @@ namespace VSS.TRex.Exports.CSV.Executors
           return false;
         }
 
-        if (((CSVExportTask) processor.Task).dataRows.Count > 0)
+        if (((CSVExportTask) processor.Task).DataRows.Count > 0)
         {
           var csvExportFileWriter = new CSVExportFileWriter(_CSVExportRequestArgument);
-          var s3FullPath = csvExportFileWriter.PersistResult(((CSVExportTask) processor.Task).dataRows);
+          var s3FullPath = csvExportFileWriter.PersistResult(((CSVExportTask) processor.Task).DataRows);
 
           if (string.IsNullOrEmpty(s3FullPath))
           {
@@ -100,7 +100,7 @@ namespace VSS.TRex.Exports.CSV.Executors
             return false;
           }
 
-          if (((CSVExportTask) processor.Task).subGridExportProcessor.RecordCountLimitReached())
+          if (((CSVExportTask) processor.Task).SubGridExportProcessor.RecordCountLimitReached())
             CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportExceededRowLimit;
           else
             CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;

@@ -248,50 +248,47 @@ namespace VSS.TRex.Caching
       // Obtain the list of contexts for this project
       lock (Contexts)
       {
-        if (!ProjectContexts.TryGetValue(projectUid, out projectContexts))
+        if (ProjectContexts.TryGetValue(projectUid, out projectContexts))
         {
-          // There are no cache contexts for this project, leave...
-          return;
+          // Make a clone of this list to facilitate working through the evictions without holding
+          // a long term lock on the global set of contexts
+          projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
         }
-
-        // Make a clone of this list to facilitate working through the evictions without holding
-        // a long term lock on the global set of contexts
-        projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
       }
-
-      if (projectContexts.Count == 0)
-        return;
 
       int numInvalidatedSubGrids = 0;
       int numScannedSubGrids = 0;
       DateTime startTime = DateTime.Now;
 
-      // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
-      // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
-      // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
-      foreach (var context in projectContexts)
+      if ((projectContexts?.Count ?? 0) > 0)
       {
-        lock (context)
+        // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
+        // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
+        // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
+        foreach (var context in projectContexts)
         {
-          // Empty contexts are ignored
-          if (context.TokenCount == 0)
-            continue;
-
-          // If the context in question is not sensitive to production data ingest then ignore it
-          if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) == 0)
-            continue;
-
-          // Iterate across all elements in the mask:
-          // 1. Locate the cache entry
-          // 2. Mark it as dirty
-          mask.ScanAllSetBitsAsSubGridAddresses(origin =>
+          lock (context)
           {
-            context.InvalidateSubgridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
+            // Empty contexts are ignored
+            if (context.TokenCount > 0)
+            {
+              // If the context in question is not sensitive to production data ingest then ignore it
+              if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) != 0)
+              {
+                // Iterate across all elements in the mask:
+                // 1. Locate the cache entry
+                // 2. Mark it as dirty
+                mask.ScanAllSetBitsAsSubGridAddresses(origin =>
+                {
+                  context.InvalidateSubgridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
 
-            numScannedSubGrids++;
-            if (subGridPresentForInvalidation)
-              numInvalidatedSubGrids++;
-          });
+                  numScannedSubGrids++;
+                  if (subGridPresentForInvalidation)
+                    numInvalidatedSubGrids++;
+                });
+              }
+            }
+          }
         }
       }
 

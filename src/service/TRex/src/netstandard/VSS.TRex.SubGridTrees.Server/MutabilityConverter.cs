@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -20,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Server
   /// </summary>
   public class MutabilityConverter : IMutabilityConverter
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(MutabilityConverter));
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<MutabilityConverter>();
     private const int MinEventStreamLength = 16;
 
     /// <summary>

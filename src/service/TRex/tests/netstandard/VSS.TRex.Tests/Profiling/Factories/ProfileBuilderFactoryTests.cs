@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
       }
 
       [Fact]
-      public void Test_ProfileBuilderFactory_NewProfileLiftBuilder()
+      public void Test_ProfileBuilderFactory_NewProfileLiftBuilder_CellPasses()
       {
         var factory = new ProfilerBuilderFactory<ProfileCell>();
 
@@ -46,6 +46,18 @@ namespace VSS.TRex.Tests.Profiling.Factories
                                                    null, 
                                                    new FilterSet(new CombinedFilter()), 
                                                    null, null, null) != null, "Failed to construct new profile lift builder");
+      }
+
+      [Fact]
+      public void Test_ProfileBuilderFactory_NewProfileLiftBuilder_SummaryVolume()
+      {
+        var factory = new ProfilerBuilderFactory<SummaryVolumeProfileCell>();
+
+        Assert.True(factory.NewCellProfileAnalyzer(ProfileStyle.SummaryVolume,
+                      new SiteModel(Guid.NewGuid()),
+                      null,
+                      new FilterSet(new CombinedFilter()),
+                      null, null, null) != null, "Failed to construct new profile lift builder");
       }
   }
 }

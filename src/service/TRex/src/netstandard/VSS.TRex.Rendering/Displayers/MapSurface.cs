@@ -365,11 +365,8 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void CalculateXYOffsets()
         {
-            if (DrawCanvas == null)
-            {
-                return;
-            }
-
+          if (DrawCanvas != null)
+          {
             // DotSymbolSize = Math.Round(GetDeviceCaps(DrawCanvas.Handle, LOGPIXELSX) / DotSymbolsPerInch) + 2;
             // HalfDotSymbolSize1 = DotSymbolSize / 2;
             // HalfDotSymbolSize2 = DotSymbolSize - DotSymbolSize / 2;
@@ -381,6 +378,7 @@ namespace VSS.TRex.Rendering.Displayers
             YOffset = 0;
             XAxisAdjust = XAxesDirection == 1 ? 0 : ClipWidth;
             YAxisAdjust = YAxesDirection == 1 ? ClipHeight : 0;
+          }
         }
 
         //        procedure DisplaySurfacePaint(Sender : TObject);
