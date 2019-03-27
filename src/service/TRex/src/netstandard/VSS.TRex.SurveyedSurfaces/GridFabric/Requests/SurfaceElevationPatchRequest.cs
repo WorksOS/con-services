@@ -2,6 +2,7 @@
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.DI;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -49,20 +50,32 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
     public override IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg)
     {
-      IClientLeafSubGrid clientResult = null;
-
-      // Check the item is available in the cache
-      if (_context?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
+      IClientLeafSubGrid ExtractFromCachedItem(IClientLeafSubGrid cachedItem, SubGridTreeBitmapSubGridBits map)
       {
-        clientResult = ClientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
-        clientResult.Assign(cacheResult);
+        var resultItem = ClientLeafSubGridFactory.GetSubGridEx
+          (arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
+          cachedItem.CellSize, cachedItem.Level, cachedItem.OriginX, cachedItem.OriginY);
+        resultItem.AssignFromCachedPreProcessedClientSubgrid(cachedItem, map);
 
-        return clientResult;
+        return resultItem;
       }
 
-      // Always request the full sub grid from the surveyed surface engine
-      arg.ProcessingMap.Fill();
+      bool cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null;
 
+      // Check the item is available in the cache
+      if (cachingSupported && _context?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
+        return ExtractFromCachedItem(cacheResult, arg.ProcessingMap);
+
+      SubGridTreeBitmapSubGridBits savedMap = null;
+
+      // Always request the full sub grid from the surveyed surface engine unless composite elevations are requested
+      if (cachingSupported)
+      {
+        savedMap = arg.ProcessingMap;
+        arg.ProcessingMap = SubGridTreeBitmapSubGridBits.FullMask;
+      }
+
+      IClientLeafSubGrid clientResult = null;
       byte[] result = Compute.Apply(_computeFunc, arg);
 
       if (result != null)
@@ -71,8 +84,11 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         clientResult.FromBytes(result);
 
         // Fow now, only cache non-composite elevation sub grids
-        if (arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null)
+        if (cachingSupported)
           _cache?.Add(_context, clientResult);
+
+        if (savedMap != null)
+          clientResult = ExtractFromCachedItem(clientResult, savedMap);
       }
 
       return clientResult;

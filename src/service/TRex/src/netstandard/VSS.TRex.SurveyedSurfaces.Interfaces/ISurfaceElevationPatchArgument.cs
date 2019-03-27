@@ -34,7 +34,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// A map of the cells within the sub grid patch to be computed
     /// </summary>
-    SubGridTreeBitmapSubGridBits ProcessingMap { get; }
+    SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
 
     /// <summary>
     /// The list of surveyed surface UIDs to be included in the calculation

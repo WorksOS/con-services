@@ -43,7 +43,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// <summary>
     /// A map of the cells within the sub grid patch to be computed
     /// </summary>
-    public SubGridTreeBitmapSubGridBits ProcessingMap { get; private set; }
+    public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
 
     /// <summary>
     /// The list of surveyed surfaces to be included in the calculation

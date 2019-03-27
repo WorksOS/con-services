@@ -83,8 +83,8 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
 
     [Theory]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
-//    [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
-//    [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
+    [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
+    [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
     public void Execute_SingleSurveyedSurface_WithSpatialCaching(SurveyedSurfacePatchType patchType, GridDataType expectedGridType)
     {
       AddApplicationGridRouting();
