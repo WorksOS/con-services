@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
@@ -34,8 +36,6 @@ namespace TCCToDataOcean
     private readonly string UploadFileApiUrl;
     private readonly string ImportedFileApiUrl;
     private readonly string TemporaryFolder;
-
-    private readonly bool _resumeModeEnabled;
 
     // Diagnostic settings
     private readonly bool _downloadProjectFiles;
@@ -71,7 +71,6 @@ namespace TCCToDataOcean
       ImportedFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL", 3);
       TemporaryFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
-      _resumeModeEnabled = configStore1.GetValueBool("RESUME_MODE_ENABLED", defaultValue: false);
       // Diagnostic settings
       _downloadProjectFiles = configStore1.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
       _uploadProjectFiles = configStore1.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
@@ -134,56 +133,51 @@ namespace TCCToDataOcean
 
       var coordinateSystemFileMigrationResult = false;
 
-      if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
+      // Get the real CSIB for this project, ignoring what's attached to the project in the database.
+      var csibResponse = await _csibAgent.GetCSIBForProject(project);
+
+      _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
+      byte[] coordSystemFileContent;
+
+      if (csibResponse.Code != 0)
       {
-        // GET CSIB
-        var csibResponse = await _csibAgent.GetCSIBForProject(project);
+        // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
+        coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
+      }
+      else
+      {
+        _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
 
-        _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
+        var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
+        var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
 
-        if (csibResponse.Code != 0)
+        coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
+      }
+
+      if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
+      {
+        _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, true);
+
+        // DIAGNOSTIC RUNTIME SWITCH
+        if (_updateProjectCoordinateSystemFile)
         {
-          // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
-          var coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
+          var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
 
-          if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
-          {
-            // DIAGNOSTIC RUNTIME SWITCH
-            if (_updateProjectCoordinateSystemFile)
-            {
-              var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+          coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
 
-              coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
-
-              Log.LogInformation($"{Method.Info()} | Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
-            }
-            else
-            {
-              Log.LogDebug($"{Method.Info("DEBUG")} | Skipping updating project coordinate system file step");
-            }
-          }
-          else
-          {
-            _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
-          }
+          Log.LogInformation($"{Method.Info()} | Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
         }
         else
         {
-          _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
-
-          var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
-          var a = coordSysInfo["coordinateSystem"]["id"].ToString();
-          var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
-
-          var dcFilePath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
-          if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
-
-          var tempFileName = Path.Combine(dcFilePath, "project.dc");
-
-          Log.LogInformation($"{Method.Info()} | Creating DC file '{tempFileName}' for project {project.ProjectUID}");
-
-          File.WriteAllText(tempFileName, dcFileContent);
+          Log.LogDebug($"{Method.Info("DEBUG")} | Skipping updating project coordinate system file step");
         }
+
+        // DIAGNOSTIC STEP: To validate content of DC file is good.
+        SaveDCFileToDisk(project, coordSystemFileContent);
+      }
+      else
+      {
+        _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, false);
       }
 
       var importedFilesResult = false;
@@ -224,6 +218,27 @@ namespace TCCToDataOcean
       _migrationDb.SetMigationInfo_IncrementProjectsProcessed();
 
       return result;
+    }
+
+    /// <summary>
+    /// Saves the DC file content to disk; for testing purposes only so we can eyeball the content.
+    /// </summary>
+    private void SaveDCFileToDisk(Project project, byte[] dcFileContent)
+    {
+      Log.LogDebug($"{Method.In()} | Writing coordinate system file for project {project.ProjectUID}");
+
+      var dcFilePath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
+
+      if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
+
+      // TODO Could check the actual project.CoordinateSystemFileName property, and it's a valid filename, use it; otherwise gen a new name.f
+      var tempFileName = Path.Combine(dcFilePath, "CoordSystemFile.dc");
+
+      Log.LogInformation($"{Method.Info()} | Creating DC file '{tempFileName}' for project {project.ProjectUID}");
+
+      File.WriteAllBytes(tempFileName, dcFileContent);
+
+      Log.LogDebug(Method.Out());
     }
 
     /// <summary>
