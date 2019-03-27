@@ -6,10 +6,9 @@ namespace VSS.TRex.Designs.Interfaces
   public interface IDesignFiles
   {
     bool RemoveDesignFromCache(Guid designUid, IDesignBase design, bool deleteFile);
-    void AddDesignToCache(Guid designUid, IDesignBase design);
 
     /// <summary>
-    /// Acquire a lock and reference to the design referenced by the given design descriptor
+    /// Acquire a lock and reference to the design referenced by the given design UID
     /// </summary>
     /// <param name="designUid"></param>
     /// <param name="DataModelID"></param>

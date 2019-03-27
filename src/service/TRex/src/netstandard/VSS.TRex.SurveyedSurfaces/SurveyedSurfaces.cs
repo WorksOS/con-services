@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -17,8 +18,6 @@ namespace VSS.TRex.SurveyedSurfaces
   public class SurveyedSurfaces : List<ISurveyedSurface>, ISurveyedSurfaces
   {
     private const byte VERSION_NUMBER = 1;
-
-    private bool SortDescending;
 
     private IExistenceMaps existenceMaps;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
@@ -56,6 +55,29 @@ namespace VSS.TRex.SurveyedSurfaces
     }
 
     /// <summary>
+    /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool IsSameAs(ISurveyedSurfaces other)
+    {
+      if (Count != other.Count)
+      {
+        return false;
+      }
+
+      for (int I = 0; I < Count; I++)
+      {
+        if (this[I].ID != other[I].ID)
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    /// <summary>
     /// Create a new surveyed surface in the list based on the provided details
     /// </summary>
     /// <param name="surveyedSurfaceUid"></param>
@@ -74,8 +96,6 @@ namespace VSS.TRex.SurveyedSurfaces
       {
         ss = new SurveyedSurface(surveyedSurfaceUid, designDescriptor, asAtDate, extents);
         Add(ss);
-
-        Sort();
       }
 
       return ss;
@@ -119,17 +139,7 @@ namespace VSS.TRex.SurveyedSurfaces
       }
     }
 
-    public void SortChronologically(bool Descending)
-    {
-      SortDescending = Descending;
-
-      Sort();
-    }
-
-    private new void Sort()
-    {
-      Sort((x, y) => SortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
-    }
+    public void SortChronologically(bool Descending) => Sort((x, y) => Descending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime
@@ -274,13 +284,13 @@ namespace VSS.TRex.SurveyedSurfaces
     /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
     /// assumed to be the same.
     /// </summary>
-    /// <param name="surveyedSurfaceUid"></param>
+    /// <param name="siteModelID"></param>
     /// <param name="Filter"></param>
     /// <param name="ComparisonList"></param>
     /// <param name="FilteredSurveyedSurfaces"></param>
     /// <param name="OverallExistenceMap"></param>
     /// <returns></returns>
-    public bool ProcessSurveyedSurfacesForFilter(Guid surveyedSurfaceUid,
+    public bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
       ICombinedFilter Filter,
       ISurveyedSurfaces ComparisonList,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
@@ -295,19 +305,18 @@ namespace VSS.TRex.SurveyedSurfaces
 
       if (FilteredSurveyedSurfaces != null)
       {
-        if (FilteredSurveyedSurfaces.Equals(ComparisonList))
+        if (FilteredSurveyedSurfaces.IsSameAs(ComparisonList))
           return true;
 
         if (FilteredSurveyedSurfaces.Count > 0)
         {
-          ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(surveyedSurfaceUid,
+          ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
             FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
           if (OverallExistenceMap == null)
             return false;
 
-          if (surveyedSurfaceExistenceMap != null)
-            OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
+          OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
         }
       }
 

@@ -95,5 +95,12 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// Locates a surveyed surface in the list with the given GUID
     /// </summary>
     ISurveyedSurface Locate(Guid surveyedSurfaceUid);
+
+    /// <summary>
+    /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    bool IsSameAs(ISurveyedSurfaces other);
   }
 }

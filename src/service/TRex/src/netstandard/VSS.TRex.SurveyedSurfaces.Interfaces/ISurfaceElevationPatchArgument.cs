@@ -37,8 +37,10 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     SubGridTreeBitmapSubGridBits ProcessingMap { get; }
 
     /// <summary>
-    /// The list of surveyed surfaces to be included in the calculation
-    /// [Note: This is fairly inefficient, the receiver of the request should be able to access surveyed surfaces locally...]
+    /// The list of surveyed surface UIDs to be included in the calculation
+    /// Note: This list should be ordered in the preferred time order for the calculation.
+    /// IE: If latest single elevations are needed then this list should be sorted in decreasing time,
+    /// similarly if earliest single elevations are needed then this list should be sorted in increasing time.
     /// </summary>
     Guid[] IncludedSurveyedSurfaces { get; }
 
