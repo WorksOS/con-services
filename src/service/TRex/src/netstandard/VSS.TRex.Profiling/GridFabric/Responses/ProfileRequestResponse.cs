@@ -67,6 +67,8 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
 
       if (reader.ReadBoolean())
       {
+        ProfileCells = new List<T>();
+
         var numberOfProfileCells = reader.ReadInt();
 
         if (numberOfProfileCells > 0)

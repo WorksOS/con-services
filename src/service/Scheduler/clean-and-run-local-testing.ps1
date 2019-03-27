@@ -1,15 +1,37 @@
-Write-Host "Stopping Docker containers" -ForegroundColor DarkGray
-docker stop $(docker ps -aq)
+[Console]::ResetColor()
+
+IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
+
+# Switch to Linux daemon
+$dockerDaemon = Docker version | Select-Object -Last 2
+
+if ($dockerDaemon -like "*windows*") {
+    Write-Host "Current Docker Desktop daemon: Windows"
+
+    IF (docker ps -q --filter "name=mockprojectwebapi") {
+        Write-Host "Found mockwebapi container running on Windows daemon, terminating..." -ForegroundColor DarkGray
+        docker stop $(docker ps -q --filter "name=mockprojectwebapi")
+    }
+
+    Write-Host "Switching to Linux daemon..." -ForegroundColor DarkGray
+    restart-service vmms # Found this was required or the daemon could hang during switching via dockercli.exe.
+    & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+    Write-Host "Done" -ForegroundColor Green
+}
 
 Write-Host "Removing old application containers" -ForegroundColor DarkGray
-docker rm $(docker ps -aq --filter "name=scheduler_schema")
-docker rm $(docker ps -aq --filter "name=scheduler_webapi")
-docker rm $(docker ps -aq --filter "name=scheduler_accepttest")
-docker rm $(docker ps -aq --filter "name=scheduler_db")
-docker rm $(docker ps -aq --filter "name=scheduler_mockprojectwebapi")
 
-Write-Host "Connecting to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+# Stop and remove Scheduler application containers only; leave non affected containers running.
+$array = @("scheduler_")
+
+FOR ($i = 0; $i -lt $array.length; $i++) {
+    $containerName = $array[$i]
+
+    IF (docker ps -q --filter "name=$containerName") { docker stop $(docker ps -q --filter "name=$containerName") }
+    IF (docker ps -aq --filter "name=$containerName") { docker rm $(docker ps -aq --filter "name=$containerName") }
+}
+
+Write-Host "Done" -ForegroundColor Green
 
 Write-Host "Building solution" -ForegroundColor DarkGray
 
@@ -35,6 +57,9 @@ Write-Host "Building image dependencies" -ForegroundColor DarkGray
 Set-Location $PSScriptRoot
 Invoke-Expression "docker-compose --file docker-compose-local.yml pull"
 
+Write-Host "Connecting to image host" -ForegroundColor DarkGray
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+
 Write-Host "Building Docker containers" -ForegroundColor DarkGray
 
 # This legacy setting suppresses logging to the console by piping it to a file on disk. If you're looking for the application logs from within the container see .artifacts/logs/.
@@ -48,8 +73,9 @@ IF ($args -notcontains "--no-test") {
     Start-Sleep -s 20 # Wait for the database container to come up.
     Invoke-Expression "dotnet test .\AcceptanceTests\VSS.Productivity3D.Scheduler.AcceptanceTests.sln --logger:trx"
 }
-
-[Console]::ResetColor()
+ELSE {
+    IF (docker ps -q --filter "name=scheduler_accepttest") { docker stop $(docker ps -q --filter "name=scheduler_accepttest") }
+}
 
 IF (-not $?) {
     Write-Host "Error: Environment failed to start" -ForegroundColor Red
