@@ -268,12 +268,21 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     }
 
     [Fact]
-    public void Locate()
+    public void Locate_Success()
     {
       var date = DateTime.UtcNow;
       var ss = MakeSurveyedSurfacesSet(date);
 
       ss.All(x => ss.Locate(x.ID) == x).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Locate_FailWithNotExist()
+    {
+      var date = DateTime.UtcNow;
+      var ss = MakeSurveyedSurfacesSet(date);
+
+      ss.Locate(Guid.NewGuid()).Should().BeNull();
     }
 
     [Fact]
