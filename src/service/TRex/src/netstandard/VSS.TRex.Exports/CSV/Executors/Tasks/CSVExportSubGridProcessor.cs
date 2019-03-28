@@ -27,70 +27,70 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   {
     private static ILogger log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
 
-    private readonly int maxExportRows;
-    private int totalRowCountSoFar;
+    private readonly int _maxExportRows;
+    private int _totalRowCountSoFar;
 
-    public bool RecordCountLimitReached() { return totalRowCountSoFar >= maxExportRows;}
+    public bool RecordCountLimitReached() { return _totalRowCountSoFar >= _maxExportRows;}
 
-    private readonly CSVExportRequestArgument requestArgument;
-    private readonly CSVExportFormatter csvExportFormatter;
-    private readonly ISiteModel siteModel;
+    private readonly CSVExportRequestArgument _requestArgument;
+    private readonly CSVExportFormatter _csvExportFormatter;
+    private readonly ISiteModel _siteModel;
 
-    private XYZ[] LLHCoords = null;
-    private DateTime runningLastPassTime = DateTime.MinValue;
-    private string cellPassTimeString;
-    private double runningNorthing = Consts.NullDouble;
-    private double runningEasting = Consts.NullDouble;
-    private string coordString;
-    private float runningHeight = Consts.NullHeight;
-    private string heightString;
-    private int runningDesignNameID = Consts.kNoDesignNameID;
-    private string lastDesignNameString;
-    private short runningMachineID = -1;
-    private string lastMachineNameString;
-    private ushort runningMachineSpeed = Consts.NullMachineSpeed;
-    private string machineSpeedString;
-    private GPSMode runningGPSMode = GPSMode.NoGPS;
-    private string gpsModeString = "Not_Applicable";
-    private Types.GPSAccuracy runningGPSAccuracy = Types.GPSAccuracy.Unknown;
-    private ushort runningGPSTolerance = CellPassConsts.NullGPSTolerance;
-    private string gpsAccuracyToleranceString;
-    private int runningTargetPassCount = CellPassConsts.NullPassCountValue;
-    private string targetPassCountString;
-    private short runningLastPassValidCCV = CellPassConsts.NullCCV;
-    private string lastPassValidCCVString;
-    private short runningTargetCCV = CellPassConsts.NullCCV;
-    private string lastTargetCCVString;
-    private short runningLastPassValidMDP = CellPassConsts.NullCCV;
-    private string lastPassValidMDPString;
-    private short runningTargetMDP = CellPassConsts.NullCCV;
-    private string lastTargetMDPString;
-    private short runningValidRMV = CellPassConsts.NullCCV;
-    private string lastValidRMVString;
-    private ushort runningValidFreq = CellPassConsts.NullFrequency;
-    private string lastValidFreqString;
-    private ushort runningValidAmp = CellPassConsts.NullAmplitude;
-    private string lastValidAmpString;
-    private float runningTargetThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
-    private string lastTargetThicknessString;
-    private MachineGear runningEventMachineGear = MachineGear.Null;
-    private string lastEventMachineGearString;
-    private VibrationState runningEventVibrationState = VibrationState.Invalid;
-    private string lastEventVibrationStateString;
-    private ushort runningLastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
-    private string lastPassValidTemperatureString;
+    private XYZ[] _llhCoords = null;
+    private DateTime _runningLastPassTime = DateTime.MinValue;
+    private string _cellPassTimeString;
+    private double _runningNorthing = Consts.NullDouble;
+    private double _runningEasting = Consts.NullDouble;
+    private string _coordString;
+    private float _runningHeight = Consts.NullHeight;
+    private string _heightString;
+    private int _runningDesignNameId = Consts.kNoDesignNameID;
+    private string _lastDesignNameString;
+    private short _runningMachineId = -1;
+    private string _lastMachineNameString;
+    private ushort _runningMachineSpeed = Consts.NullMachineSpeed;
+    private string _machineSpeedString;
+    private GPSMode _runningGpsMode = GPSMode.NoGPS;
+    private string _gpsModeString = "Not_Applicable";
+    private Types.GPSAccuracy _runningGpsAccuracy = Types.GPSAccuracy.Unknown;
+    private ushort _runningGpsTolerance = CellPassConsts.NullGPSTolerance;
+    private string _gpsAccuracyToleranceString;
+    private int _runningTargetPassCount = CellPassConsts.NullPassCountValue;
+    private string _targetPassCountString;
+    private short _runningLastPassValidCcv = CellPassConsts.NullCCV;
+    private string _lastPassValidCcvString;
+    private short _runningTargetCcv = CellPassConsts.NullCCV;
+    private string _lastTargetCcvString;
+    private short _runningLastPassValidMdp = CellPassConsts.NullCCV;
+    private string _lastPassValidMdpString;
+    private short _runningTargetMdp = CellPassConsts.NullCCV;
+    private string _lastTargetMdpString;
+    private short _runningValidRmv = CellPassConsts.NullCCV;
+    private string _lastValidRmvString;
+    private ushort _runningValidFreq = CellPassConsts.NullFrequency;
+    private string _lastValidFreqString;
+    private ushort _runningValidAmp = CellPassConsts.NullAmplitude;
+    private string _lastValidAmpString;
+    private float _runningTargetThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
+    private string _lastTargetThicknessString;
+    private MachineGear _runningEventMachineGear = MachineGear.Null;
+    private string _lastEventMachineGearString;
+    private VibrationState _runningEventVibrationState = VibrationState.Invalid;
+    private string _lastEventVibrationStateString;
+    private ushort _runningLastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
+    private string _lastPassValidTemperatureString;
 
     public CSVExportSubGridProcessor(CSVExportRequestArgument requestArgument)
     {
-      maxExportRows = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_EXPORT_ROWS", Consts.DEFAULT_MAX_EXPORT_ROWS);
-      this.requestArgument = requestArgument;
-      csvExportFormatter = new CSVExportFormatter(requestArgument.UserPreferences, requestArgument.OutputType, requestArgument.RawDataAsDBase);
-      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
-      cellPassTimeString = coordString = heightString = lastDesignNameString = lastMachineNameString =
-        machineSpeedString = gpsAccuracyToleranceString = targetPassCountString = lastPassValidCCVString = 
-        lastTargetCCVString = lastPassValidMDPString = lastTargetMDPString = lastValidRMVString = 
-        lastValidFreqString = lastValidAmpString = lastTargetThicknessString = lastEventMachineGearString = 
-        lastEventVibrationStateString = lastPassValidTemperatureString = csvExportFormatter.nullString;
+      _maxExportRows = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_EXPORT_ROWS", Consts.DEFAULT_MAX_EXPORT_ROWS);
+      _requestArgument = requestArgument;
+      _csvExportFormatter = new CSVExportFormatter(requestArgument.UserPreferences, requestArgument.OutputType, requestArgument.RawDataAsDBase);
+      _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
+      _cellPassTimeString = _coordString = _heightString = _lastDesignNameString = _lastMachineNameString =
+        _machineSpeedString = _gpsAccuracyToleranceString = _targetPassCountString = _lastPassValidCcvString = 
+        _lastTargetCcvString = _lastPassValidMdpString = _lastTargetMdpString = _lastValidRmvString = 
+        _lastValidFreqString = _lastValidAmpString = _lastTargetThicknessString = _lastEventMachineGearString = 
+        _lastEventVibrationStateString = _lastPassValidTemperatureString = _csvExportFormatter.NullString;
     }
 
     public List<string> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
@@ -100,8 +100,8 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         return rows;
 
       int runningIndexLLHCoords = 0;
-      if (requestArgument.CoordType == CoordType.LatLon)
-        LLHCoords = SetupLLPositions(siteModel.CSIB(), lastPassSubGrid);
+      if (_requestArgument.CoordType == CoordType.LatLon)
+        _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);
 
       lastPassSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -118,7 +118,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         var northing = subGridWorldOriginY + (y + 0.5) * lastPassSubGrid.CellSize;
         rows.Add(FormatADataRow(cell, easting, northing, runningIndexLLHCoords));
         runningIndexLLHCoords++;
-        totalRowCountSoFar++;
+        _totalRowCountSoFar++;
       });
 
       return rows;
@@ -130,10 +130,10 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (RecordCountLimitReached())
         return rows;
 
-      int runningIndexLLHCoords = 0;
-      int halfPassCount = 0;
-      if (requestArgument.CoordType == CoordType.LatLon)
-        LLHCoords = SetupLLPositions(siteModel.CSIB(), allPassesSubGrid);
+      var runningIndexLLHCoords = 0;
+      var halfPassCount = 0;
+      if (_requestArgument.CoordType == CoordType.LatLon)
+        _llhCoords = SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid);
 
       allPassesSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -154,12 +154,12 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
             halfPassCount++;
             if (halfPassCount < 2)
               continue;
-            halfPassCount = 0;
           }
+          halfPassCount = 0;
           var easting = subGridWorldOriginX + (x + 0.5) * allPassesSubGrid.CellSize;
           var northing = subGridWorldOriginY + (y + 0.5) * allPassesSubGrid.CellSize;
           rows.Add(FormatADataRow(cellPass, easting, northing, runningIndexLLHCoords));
-          totalRowCountSoFar++;
+          _totalRowCountSoFar++;
         }
         runningIndexLLHCoords++;
       });
@@ -170,156 +170,156 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private string FormatADataRow(ClientCellProfileLeafSubgridRecord cell, double easting, double northing, int runningIndexLLHCoords)
     {
       var resultString = new StringBuilder();
-      if (!cell.LastPassTime.Equals(runningLastPassTime))
+      if (!cell.LastPassTime.Equals(_runningLastPassTime))
       {
-        cellPassTimeString = csvExportFormatter.FormatCellPassTime(cell.LastPassTime);
-        runningLastPassTime = cell.LastPassTime;
+        _cellPassTimeString = _csvExportFormatter.FormatCellPassTime(cell.LastPassTime);
+        _runningLastPassTime = cell.LastPassTime;
       }
-      resultString.Append($"{cellPassTimeString},");
+      resultString.Append($"{_cellPassTimeString},");
 
-      if (!(runningNorthing.Equals(northing) && runningEasting.Equals(easting)))
+      if (!(_runningNorthing.Equals(northing) && _runningEasting.Equals(easting)))
       {
-        coordString = FormatCoordinate(northing, easting, runningIndexLLHCoords);
-        runningNorthing = northing;
-        runningEasting = easting;
+        _coordString = FormatCoordinate(northing, easting, runningIndexLLHCoords);
+        _runningNorthing = northing;
+        _runningEasting = easting;
       }
-      resultString.Append($"{coordString},");
+      resultString.Append($"{_coordString},");
 
-      if (!cell.Height.Equals(runningHeight))
+      if (!cell.Height.Equals(_runningHeight))
       {
-        heightString = csvExportFormatter.FormatElevation(cell.Height);
-        runningHeight = cell.Height;
+        _heightString = _csvExportFormatter.FormatElevation(cell.Height);
+        _runningHeight = cell.Height;
       }
-      resultString.Append($"{heightString},");
+      resultString.Append($"{_heightString},");
 
       resultString.Append($"{cell.PassCount},");
 
-      var lastPassValidRadioLatencyString = csvExportFormatter.FormatRadioLatency(cell.LastPassValidRadioLatency);
+      var lastPassValidRadioLatencyString = _csvExportFormatter.FormatRadioLatency(cell.LastPassValidRadioLatency);
       resultString.Append($"{lastPassValidRadioLatencyString},");
 
-      if (!cell.EventDesignNameID.Equals(runningDesignNameID))
+      if (!cell.EventDesignNameID.Equals(_runningDesignNameId))
       {
-        lastDesignNameString = FormatDesignNameID(cell.EventDesignNameID);
-        runningDesignNameID = cell.EventDesignNameID;
+        _lastDesignNameString = FormatDesignNameID(cell.EventDesignNameID);
+        _runningDesignNameId = cell.EventDesignNameID;
       }
-      resultString.Append($"{lastDesignNameString},");
+      resultString.Append($"{_lastDesignNameString},");
 
-      if (!cell.InternalSiteModelMachineIndex.Equals(runningMachineID))
+      if (!cell.InternalSiteModelMachineIndex.Equals(_runningMachineId))
       {
-        lastMachineNameString = FormatMachineName(cell.InternalSiteModelMachineIndex);
-        runningMachineID = cell.InternalSiteModelMachineIndex;
+        _lastMachineNameString = FormatMachineName(cell.InternalSiteModelMachineIndex);
+        _runningMachineId = cell.InternalSiteModelMachineIndex;
       }
-      resultString.Append($"{lastMachineNameString},");
+      resultString.Append($"{_lastMachineNameString},");
 
-      if (!cell.MachineSpeed.Equals(runningMachineSpeed))
+      if (!cell.MachineSpeed.Equals(_runningMachineSpeed))
       {
-        machineSpeedString = csvExportFormatter.FormatSpeed(cell.MachineSpeed);
-        runningMachineSpeed = cell.MachineSpeed;
+        _machineSpeedString = _csvExportFormatter.FormatSpeed(cell.MachineSpeed);
+        _runningMachineSpeed = cell.MachineSpeed;
       }
-      resultString.Append($"{machineSpeedString},");
+      resultString.Append($"{_machineSpeedString},");
 
-      if (!cell.LastPassValidGPSMode.Equals(runningGPSMode))
+      if (!cell.LastPassValidGPSMode.Equals(_runningGpsMode))
       {
-        gpsModeString = csvExportFormatter.FormatGPSMode(cell.LastPassValidGPSMode);
-        runningGPSMode = cell.LastPassValidGPSMode;
+        _gpsModeString = _csvExportFormatter.FormatGPSMode(cell.LastPassValidGPSMode);
+        _runningGpsMode = cell.LastPassValidGPSMode;
       }
-      resultString.Append($"{gpsModeString},");
+      resultString.Append($"{_gpsModeString},");
 
-      if (!(cell.GPSAccuracy.Equals(runningGPSAccuracy) && cell.GPSTolerance.Equals(runningGPSTolerance)))
+      if (!(cell.GPSAccuracy.Equals(_runningGpsAccuracy) && cell.GPSTolerance.Equals(_runningGpsTolerance)))
       {
-        gpsAccuracyToleranceString = csvExportFormatter.FormatGPSAccuracy(cell.GPSAccuracy, cell.GPSTolerance);
-        runningGPSAccuracy = cell.GPSAccuracy;
-        runningGPSTolerance = cell.GPSTolerance;
+        _gpsAccuracyToleranceString = _csvExportFormatter.FormatGPSAccuracy(cell.GPSAccuracy, cell.GPSTolerance);
+        _runningGpsAccuracy = cell.GPSAccuracy;
+        _runningGpsTolerance = cell.GPSTolerance;
       }
-      resultString.Append($"{gpsAccuracyToleranceString},");
+      resultString.Append($"{_gpsAccuracyToleranceString},");
 
-      if (!cell.TargetPassCount.Equals(runningTargetPassCount))
+      if (!cell.TargetPassCount.Equals(_runningTargetPassCount))
       {
-        targetPassCountString = csvExportFormatter.FormatPassCount(cell.TargetPassCount);
-        runningTargetPassCount = cell.TargetPassCount;
+        _targetPassCountString = _csvExportFormatter.FormatPassCount(cell.TargetPassCount);
+        _runningTargetPassCount = cell.TargetPassCount;
       }
-      resultString.Append($"{targetPassCountString},");
+      resultString.Append($"{_targetPassCountString},");
 
       resultString.Append($"{cell.TotalWholePasses},");
 
       resultString.Append($"{cell.LayersCount},"); // for cellPasses this contains layerID
 
-      if (!cell.LastPassValidCCV.Equals(runningLastPassValidCCV))
+      if (!cell.LastPassValidCCV.Equals(_runningLastPassValidCcv))
       {
-        lastPassValidCCVString = csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidCCV);
-        runningLastPassValidCCV = cell.LastPassValidCCV;
+        _lastPassValidCcvString = _csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidCCV);
+        _runningLastPassValidCcv = cell.LastPassValidCCV;
       }
-      resultString.Append($"{lastPassValidCCVString},");
+      resultString.Append($"{_lastPassValidCcvString},");
 
-      if (!cell.TargetCCV.Equals(runningTargetCCV))
+      if (!cell.TargetCCV.Equals(_runningTargetCcv))
       {
-        lastTargetCCVString = csvExportFormatter.FormatCompactionCCVTypes(cell.TargetCCV);
-        runningTargetCCV = cell.TargetCCV;
+        _lastTargetCcvString = _csvExportFormatter.FormatCompactionCCVTypes(cell.TargetCCV);
+        _runningTargetCcv = cell.TargetCCV;
       }
-      resultString.Append($"{lastTargetCCVString},");
+      resultString.Append($"{_lastTargetCcvString},");
 
-      if (!cell.LastPassValidMDP.Equals(runningLastPassValidMDP))
+      if (!cell.LastPassValidMDP.Equals(_runningLastPassValidMdp))
       {
-        lastPassValidMDPString = csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidMDP);
-        runningLastPassValidMDP = cell.LastPassValidMDP;
+        _lastPassValidMdpString = _csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidMDP);
+        _runningLastPassValidMdp = cell.LastPassValidMDP;
       }
-      resultString.Append($"{lastPassValidMDPString},");
+      resultString.Append($"{_lastPassValidMdpString},");
 
-      if (!cell.TargetMDP.Equals(runningTargetMDP))
+      if (!cell.TargetMDP.Equals(_runningTargetMdp))
       {
-        lastTargetMDPString = csvExportFormatter.FormatCompactionCCVTypes(cell.TargetMDP);
-        runningTargetMDP = cell.TargetMDP;
+        _lastTargetMdpString = _csvExportFormatter.FormatCompactionCCVTypes(cell.TargetMDP);
+        _runningTargetMdp = cell.TargetMDP;
       }
-      resultString.Append($"{lastTargetMDPString},");
+      resultString.Append($"{_lastTargetMdpString},");
 
-      if (!cell.LastPassValidRMV.Equals(runningValidRMV))
+      if (!cell.LastPassValidRMV.Equals(_runningValidRmv))
       {
-        lastValidRMVString = csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidRMV);
-        runningValidRMV = cell.LastPassValidRMV;
+        _lastValidRmvString = _csvExportFormatter.FormatCompactionCCVTypes(cell.LastPassValidRMV);
+        _runningValidRmv = cell.LastPassValidRMV;
       }
-      resultString.Append($"{lastValidRMVString},");
+      resultString.Append($"{_lastValidRmvString},");
 
-      if (!cell.LastPassValidFreq.Equals(runningValidFreq))
+      if (!cell.LastPassValidFreq.Equals(_runningValidFreq))
       {
-        lastValidFreqString = csvExportFormatter.FormatFrequency(cell.LastPassValidFreq);
-        runningValidFreq = cell.LastPassValidFreq;
+        _lastValidFreqString = _csvExportFormatter.FormatFrequency(cell.LastPassValidFreq);
+        _runningValidFreq = cell.LastPassValidFreq;
       }
-      resultString.Append($"{lastValidFreqString},");
+      resultString.Append($"{_lastValidFreqString},");
 
-      if (!cell.LastPassValidAmp.Equals(runningValidAmp))
+      if (!cell.LastPassValidAmp.Equals(_runningValidAmp))
       {
-        lastValidAmpString = csvExportFormatter.FormatAmplitude(cell.LastPassValidAmp);
-        runningValidAmp = cell.LastPassValidAmp;
+        _lastValidAmpString = _csvExportFormatter.FormatAmplitude(cell.LastPassValidAmp);
+        _runningValidAmp = cell.LastPassValidAmp;
       }
-      resultString.Append($"{lastValidAmpString},");
+      resultString.Append($"{_lastValidAmpString},");
 
-      if (!cell.TargetThickness.Equals(runningTargetThickness))
+      if (!cell.TargetThickness.Equals(_runningTargetThickness))
       {
-        lastTargetThicknessString = csvExportFormatter.FormatTargetThickness(cell.TargetThickness);
-        runningTargetThickness = cell.TargetThickness;
+        _lastTargetThicknessString = _csvExportFormatter.FormatTargetThickness(cell.TargetThickness);
+        _runningTargetThickness = cell.TargetThickness;
       }
-      resultString.Append($"{lastTargetThicknessString},");
+      resultString.Append($"{_lastTargetThicknessString},");
 
-      if (!cell.EventMachineGear.Equals(runningEventMachineGear))
+      if (!cell.EventMachineGear.Equals(_runningEventMachineGear))
       {
-        lastEventMachineGearString = csvExportFormatter.FormatMachineGearValue(cell.EventMachineGear);
-        runningEventMachineGear = cell.EventMachineGear;
+        _lastEventMachineGearString = _csvExportFormatter.FormatMachineGearValue(cell.EventMachineGear);
+        _runningEventMachineGear = cell.EventMachineGear;
       }
-      resultString.Append($"{lastEventMachineGearString},");
+      resultString.Append($"{_lastEventMachineGearString},");
 
-      if (!cell.EventVibrationState.Equals(runningEventVibrationState))
+      if (!cell.EventVibrationState.Equals(_runningEventVibrationState))
       {
-        lastEventVibrationStateString = csvExportFormatter.FormatEventVibrationState(cell.EventVibrationState);
-        runningEventVibrationState = cell.EventVibrationState;
+        _lastEventVibrationStateString = _csvExportFormatter.FormatEventVibrationState(cell.EventVibrationState);
+        _runningEventVibrationState = cell.EventVibrationState;
       }
-      resultString.Append($"{lastEventVibrationStateString},");
+      resultString.Append($"{_lastEventVibrationStateString},");
 
-      if (!cell.LastPassValidTemperature.Equals(runningLastPassValidTemperature))
+      if (!cell.LastPassValidTemperature.Equals(_runningLastPassValidTemperature))
       {
-        lastPassValidTemperatureString = csvExportFormatter.FormatLastPassValidTemperature(cell.LastPassValidTemperature);
-        runningLastPassValidTemperature = cell.LastPassValidTemperature;
+        _lastPassValidTemperatureString = _csvExportFormatter.FormatLastPassValidTemperature(cell.LastPassValidTemperature);
+        _runningLastPassValidTemperature = cell.LastPassValidTemperature;
       }
-      resultString.Append($"{lastPassValidTemperatureString}"); // no training comma
+      resultString.Append($"{_lastPassValidTemperatureString}"); // no training comma
 
       return resultString.ToString();
     }
@@ -331,28 +331,25 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     // Note: only adds entry where cellPassCount exists, so may not be 1024 entries
     private XYZ[] SetupLLPositions(string csibName, IClientLeafSubGrid subGrid)
     {
-      int indexIntoNEECoords = 0;
+      var indexIntoNEECoords = 0;
       var NEECoords = new XYZ[1024];
-      var subGridp = subGrid as ClientCellProfileLeafSubgrid;
+      var subGridProfile = subGrid as ClientCellProfileLeafSubgrid;
 
       subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        var cell = subGridp.Cells[x, y];
+        var cell = subGridProfile.Cells[x, y];
         if (cell.PassCount == 0) // Nothing for us to do, as cell is empty
           return;
-        var northing = cell.CellYOffset + subGridWorldOriginY;
-        var easting = cell.CellXOffset + subGridWorldOriginX;
+        var easting = subGridWorldOriginX + (x + 0.5) * subGridProfile.CellSize;
+        var northing = subGridWorldOriginY + (y + 0.5) * subGridProfile.CellSize;
         NEECoords[indexIntoNEECoords] = new XYZ(easting, northing, cell.Height);
         indexIntoNEECoords++;
       });
       var result = ConvertCoordinates.NEEToLLH(csibName, NEECoords);
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
-        //Log.LogInformation("Summary volume failure, could not convert bounding area from grid to WGS coordinates");
-        //response.ResponseCode = SubGridRequestsResponseResult.Failure;
-
-        log.LogError($"#Out# CSVExportExecutor. Unable to convert NEE to LLH : Project: {siteModel.ID}");
+        log.LogError($"#Out# CSVExportExecutor. Unable to convert NEE to LLH : Project: {_siteModel.ID}");
         throw new ServiceException(HttpStatusCode.InternalServerError,
          new ContractExecutionResult((int) RequestErrorStatus.ExportCoordConversionError, "Missing ProjectUID.")); 
 
@@ -362,32 +359,32 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     private string FormatCoordinate(double northing, double easting, int runningIndexLLHCoords)
     {
-      return requestArgument.CoordType == CoordType.Northeast
-       ? $"{csvExportFormatter.FormatCellPos(northing)},{csvExportFormatter.FormatCellPos(easting)}"
-       : $"{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].Y, 8)}{csvExportFormatter.RadiansToLatLongString(LLHCoords[runningIndexLLHCoords - 1].X, 8)}";
+      return _requestArgument.CoordType == CoordType.Northeast
+       ? $"{_csvExportFormatter.FormatCellPos(northing)},{_csvExportFormatter.FormatCellPos(easting)}"
+       : $"{_csvExportFormatter.RadiansToLatLongString(_llhCoords[runningIndexLLHCoords - 1].Y, 8)}{_csvExportFormatter.RadiansToLatLongString(_llhCoords[runningIndexLLHCoords - 1].X, 8)}";
     }
 
     private string FormatDesignNameID(int designNameId)
     {
       if (designNameId > Consts.kNoDesignNameID)
       {
-        var design = siteModel.SiteModelMachineDesigns.Locate(designNameId);
+        var design = _siteModel.SiteModelMachineDesigns.Locate(designNameId);
         return design != null ? $"{design.Name}" : $"{designNameId}";
       }
 
-      return csvExportFormatter.nullString;
+      return _csvExportFormatter.NullString;
     }
 
     private string FormatMachineName(int machineId)
     {
       CSVExportMappedMachine machine = null;
 
-      if (machineId > -1 && requestArgument.MappedMachines != null && requestArgument.MappedMachines.Count > 0)
+      if (machineId > -1 && _requestArgument.MappedMachines != null && _requestArgument.MappedMachines.Count > 0)
       {
-         machine = requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
+         machine = _requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
       }
 
-      return machine != null ? "\"{machine.Name}\"" : "\"Unknown\"";
+      return machine != null ? $"\"{machine.Name}\"" : "\"Unknown\"";
     }
   }
 }

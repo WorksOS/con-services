@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
+using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -234,6 +235,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Save the site model metadata to preserve the site model extent information across a site model change notification event
       siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+    }
+
+    public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
+    {
+      var executor = new AddCoordinateSystemExecutor();
+      executor.Execute(siteModel.ID, csib);
     }
 
     public new void Dispose()
