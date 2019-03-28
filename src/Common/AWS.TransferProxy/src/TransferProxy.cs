@@ -6,6 +6,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
@@ -19,33 +20,57 @@ namespace VSS.AWS.TransferProxy
     private readonly string awsSecretKey;
     private readonly string awsBucketName;
     private readonly TimeSpan awsLinkExpiry;
+    private readonly ILogger logger;
 
     private const int MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL = 7;
 
-    [Obsolete("Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
-    public TransferProxy(IConfigurationStore configStore) : this(configStore, "AWS_BUCKET_NAME")
+    [Obsolete(
+      "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
+    public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log) : this(configStore, log,
+      "AWS_BUCKET_NAME")
     {
     }
 
-    public TransferProxy(IConfigurationStore configStore, string storageKey)
+    public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log, string storageKey)
     {
+      logger = log;
+      if (string.IsNullOrEmpty(storageKey))
+      {
+        throw new ArgumentException($"Missing environment variable {storageKey}", nameof(storageKey));
+      }
       awsAccessKey = configStore.GetValueString("AWS_ACCESS_KEY");
       awsSecretKey = configStore.GetValueString("AWS_SECRET_KEY");
       awsBucketName = configStore.GetValueString(storageKey);
 
-      awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ?? TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
+      awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ??
+                      TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
 
       if (string.IsNullOrEmpty(awsAccessKey) ||
-          string.IsNullOrEmpty(awsSecretKey) ||
-          string.IsNullOrEmpty(awsBucketName))
-      {
-        throw new Exception($"Missing environment variable AWS_ACCESS_KEY, AWS_SECRET_KEY or {storageKey}");
-      }
+          string.IsNullOrEmpty(awsSecretKey))
+        logger.LogWarning("AWS_KEY and AWS_SECRET are not used - applying assumed role instead");
     }
+
+    private TransferUtility GetTansferUtil()
+    {
+      if (string.IsNullOrEmpty(awsAccessKey) ||
+          string.IsNullOrEmpty(awsSecretKey))
+        return new TransferUtility(RegionEndpoint.USWest2);
+      return new TransferUtility(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2);
+    }
+
+    private IAmazonS3 GetS3Client()
+    {
+      if (string.IsNullOrEmpty(awsAccessKey) &&
+          string.IsNullOrEmpty(awsSecretKey))
+        return new AmazonS3Client(RegionEndpoint.USWest2);
+      return new  AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2);
+    }
+
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
     {
-      using (var transferUtil = new TransferUtility(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2))
+
+      using (var transferUtil = GetTansferUtil())
       {
         var stream = await transferUtil.OpenStreamAsync(bucketName, s3Key);
         string mimeType;
@@ -65,19 +90,16 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
-    /// <summary>
+  /// <summary>
     /// Create a task to download a file from S3 storage
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>
     /// <returns>FileStreamResult if the file exists</returns>
-    public async Task<FileStreamResult> Download(string s3Key)
-    {
-      return await DownloadFromBucket(s3Key, awsBucketName);
-    }
+    public Task<FileStreamResult> Download(string s3Key) => DownloadFromBucket(s3Key, awsBucketName);
 
-    public void UploadToBucket(Stream stream, string s3Key, string bucketName)
+  public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {
-      using (var transferUtil = new TransferUtility(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2))
+      using (var transferUtil = GetTansferUtil())
       {
         transferUtil.Upload(stream, bucketName, s3Key);
       }
@@ -122,7 +144,7 @@ namespace VSS.AWS.TransferProxy
         Expires = DateTime.Now.Add(awsLinkExpiry)
       };
 
-      using (IAmazonS3 s3Client = new AmazonS3Client(awsAccessKey, awsSecretKey, RegionEndpoint.USWest2))
+      using (IAmazonS3 s3Client = GetS3Client())
       {
         return s3Client.GetPreSignedURL(request);
       }
