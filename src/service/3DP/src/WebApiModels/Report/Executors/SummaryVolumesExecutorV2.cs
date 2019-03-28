@@ -102,10 +102,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             out result);
         }
 
-        if (raptorResult == TASNodeErrorStatus.asneOK)
-          return ResultConverter.SimpleVolumesResultToSummaryVolumesResult(result);
-
-        throw CreateServiceException<SummaryVolumesExecutorV2>((int)raptorResult);
+        switch (raptorResult)
+        {
+          case TASNodeErrorStatus.asneOK:
+            return ResultConverter.SimpleVolumesResultToSummaryVolumesResult(result);
+          case TASNodeErrorStatus.asneNoProductionDataFound:
+            return null;
+          default:
+            throw CreateServiceException<SummaryVolumesExecutorV2>((int)raptorResult);
+        }
 #endif
       }
       finally
