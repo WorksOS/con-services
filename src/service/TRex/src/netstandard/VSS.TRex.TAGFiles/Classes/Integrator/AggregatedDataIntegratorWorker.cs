@@ -13,6 +13,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -108,13 +109,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
         // and also explicitly provides the transactional storage proxy being used for processing the
         // data from TAG files into the model
-        ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(storageProxy_Mutable, Task.PersistedTargetSiteModelID, true);
+        ISiteModel SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(Task.PersistedTargetSiteModelID, true);
 
         if (SiteModelFromDM == null)
         {
           Log.LogError($"Unable to lock SiteModel {Task.PersistedTargetSiteModelID} from the data model file");
           return false;
         }
+
+        SiteModelFromDM.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
         Task.StartProcessingTime = DateTime.Now;
 

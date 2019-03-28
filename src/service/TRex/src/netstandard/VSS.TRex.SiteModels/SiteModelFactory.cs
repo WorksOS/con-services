@@ -1,13 +1,18 @@
 ﻿using System;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SiteModels
 {
   public class SiteModelFactory : ISiteModelFactory
   {
-    public ISiteModel NewSiteModel() => new SiteModel();
+    public ISiteModel NewSiteModel(StorageMutability requiredStorageRepresentation)
+    {
+      var siteModel = new SiteModel();
+      siteModel.SetStorageRepresentationToSupply(requiredStorageRepresentation);
 
-    public ISiteModel NewSiteModel(Guid id) => new SiteModel(id);
+      return siteModel;
+    }
 
     public ISiteModel NewSiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) => new SiteModel(originModel, originFlags);
 

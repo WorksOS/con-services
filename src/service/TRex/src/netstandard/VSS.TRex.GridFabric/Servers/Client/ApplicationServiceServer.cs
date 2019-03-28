@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Common;
-using VSS.TRex.GridFabric.Models.Servers;
+﻿using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric.Servers.Client
 {
@@ -18,9 +17,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
     public ApplicationServiceServer(string[] roles) : base(roles)
     {
-      // Enable use of immutable data pools for all immutable client contexts
-      TRexServerConfig.Instance().UseMutableSpatialData = false;
-      TRexServerConfig.Instance().UseMutableNonSpatialData = false;
     }
   }
 }

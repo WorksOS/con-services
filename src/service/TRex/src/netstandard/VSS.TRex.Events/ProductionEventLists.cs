@@ -225,7 +225,7 @@ namespace VSS.TRex.Events
             {
               if (!SiteModel.IsTransient)
               {
-                temp.LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+                temp.LoadFromStore(SiteModel.PrimaryStorageProxy);
               }
 
               allEventsForMachine[(int) eventType] = temp;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -8,7 +7,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.Types;
@@ -27,7 +25,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public DateTime StartTime = DateTime.MinValue;
     public DateTime EndTime = DateTime.MaxValue;
 
-    public ISubGrid Owner { get; set; }
+    public IServerLeafSubGrid Owner { get; set; }
 
     public bool HasAllPasses { get; set; }
     public bool HasLatestData { get; set; }
@@ -46,6 +44,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
     private readonly bool _itemsPersistedViaDataPersistorToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
 
+    private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
+    private readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
 
     /// <summary>
     /// Default no-arg constructor
@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Determines if this segments tiume range bounds the data tiem givein in the time argument
+    /// Determines if this segments time range bounds the data time given in the time argument
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
@@ -75,7 +75,10 @@ namespace VSS.TRex.SubGridTrees.Server
       if (PassesData == null)
       {
         HasAllPasses = true;
-        PassesData = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper();
+
+        PassesData = Owner.IsMutable
+          ? subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper()
+          : subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
       }
     }
 
@@ -84,7 +87,9 @@ namespace VSS.TRex.SubGridTrees.Server
       if (LatestPasses == null)
       {
         HasLatestData = true;
-        LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper();
+        LatestPasses = Owner.IsMutable
+          ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper()
+          : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper();
       }
     }
 

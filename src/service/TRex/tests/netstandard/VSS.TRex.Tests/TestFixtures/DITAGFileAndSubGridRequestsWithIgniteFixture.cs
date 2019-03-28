@@ -29,6 +29,7 @@ using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
@@ -205,6 +206,11 @@ namespace VSS.TRex.Tests.TestFixtures
     public static ISiteModel NewEmptyModel()
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       return siteModel;
     }

@@ -51,10 +51,10 @@ namespace VSS.TRex.SiteModels
     /// Constructs a site model meta data manager instance oriented to the TRex grid that is the primary grid
     /// referenced by the DI'd SiteModels instance
     /// </summary>
-    public SiteModelMetadataManager()
+    public SiteModelMetadataManager(StorageMutability mutability)
     {
       // Obtain the ignite reference for the primary grid orientation of SiteModels
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(DIContext.Obtain<ISiteModels>().StorageProxy.Mutability);
+      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
 
       metaDataCache = ignite?.GetOrCreateCache<Guid, ISiteModelMetadata>(ConfigureCache());
 

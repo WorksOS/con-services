@@ -18,6 +18,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
@@ -108,6 +109,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
@@ -136,7 +142,7 @@ namespace VSS.TRex.Tests.TestFixtures
         leaf =>
         {
           if (leaf is IServerLeafSubGrid Leaf)
-            Leaf.ComputeLatestPassInformation(true, DIContext.Obtain<ISiteModels>().StorageProxy);
+            Leaf.ComputeLatestPassInformation(true, targetSiteModel.PrimaryStorageProxy);
           return true;
         });
 
@@ -192,7 +198,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SiteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX, cellY));
 
       // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
     public static void AddSingleSubGridWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass>[,] passes)
@@ -233,7 +239,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
 
       // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
     public new void Dispose()

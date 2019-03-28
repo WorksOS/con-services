@@ -5,7 +5,6 @@ using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Exports.Patches.GridFabric;
-using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;

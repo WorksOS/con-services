@@ -438,7 +438,7 @@ namespace VSS.TRex.Profiling
           // Does the sub grid tree contain this node in it's existence map?
           if (PDExistenceMap[CurrentSubGridOrigin.X, CurrentSubGridOrigin.Y])
             SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
-              (StorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
+              (SiteModel.PrimaryStorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
 
           _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
           if (_SubGridAsLeaf == null)

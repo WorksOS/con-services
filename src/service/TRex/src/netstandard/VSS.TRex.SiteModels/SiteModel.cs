@@ -26,6 +26,7 @@ using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SiteModels
 {
@@ -65,6 +66,26 @@ namespace VSS.TRex.SiteModels
 
     private const byte VERSION_NUMBER = 1;
 
+    /// <summary>
+    /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply
+    /// By default this is assigned to Immutable. Actors responsible for mutating information in the site model (ie: TAG file ingest
+    /// processors should ensure they obtain the mutable representation).
+    /// </summary>
+    public StorageMutability StorageRepresentationToSupply { get; private set; } = StorageMutability.Immutable;
+
+    public void SetStorageRepresentationToSupply(StorageMutability mutability)
+    {
+      if (mutability != StorageRepresentationToSupply)
+      {
+        // Dump the Grid reference as this will need to be re-created
+        grid = null;
+        StorageRepresentationToSupply = mutability;
+        PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
+      }
+    }
+
+    public IStorageProxy PrimaryStorageProxy { get; private set; } 
+
     public Guid ID { get; set; } = Guid.Empty;
 
     public DateTime CreationDate { get; private set; }
@@ -88,7 +109,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID) {CellSize = this.CellSize});
+    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID, StorageRepresentationToSupply) {CellSize = this.CellSize});
 
     public bool GridLoaded => grid != null;
 
@@ -132,8 +153,7 @@ namespace VSS.TRex.SiteModels
         return csib;
       }
 
-      FileSystemErrorStatus readResult =
-        DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID,
+      FileSystemErrorStatus readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
           CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
           FileSystemStreamType.CoordinateSystemCSIB,
           out MemoryStream csibStream);
@@ -197,7 +217,7 @@ namespace VSS.TRex.SiteModels
               _siteModelDesigns = new SiteModelDesignList();
 
               if (!IsTransient)
-                _siteModelDesigns.LoadFromPersistentStore(ID);
+                _siteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
             }
           }
         }
@@ -258,7 +278,7 @@ namespace VSS.TRex.SiteModels
               siteProofingRuns = new SiteProofingRunList {DataModelID = ID};
 
               if (!IsTransient)
-                siteProofingRuns.LoadFromPersistentStore();
+                siteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
             }
           }
         }
@@ -290,7 +310,7 @@ namespace VSS.TRex.SiteModels
               };
 
               if (!IsTransient)
-                siteModelMachineDesigns.LoadFromPersistentStore();
+                siteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
             }
           }
         }
@@ -324,7 +344,7 @@ namespace VSS.TRex.SiteModels
 
               if (!IsTransient)
               {
-                machines.LoadFromPersistentStore();
+                machines.LoadFromPersistentStore(PrimaryStorageProxy);
               }
             }
           }
@@ -347,6 +367,7 @@ namespace VSS.TRex.SiteModels
       CreationDate = DateTime.UtcNow;
       LastModifiedDate = CreationDate;
 
+      PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(StorageRepresentationToSupply);
     }
 
     /// <summary>
@@ -365,6 +386,8 @@ namespace VSS.TRex.SiteModels
 
       CreationDate = originModel.CreationDate;
       LastModifiedDate = originModel.LastModifiedDate;
+
+      SetStorageRepresentationToSupply(originModel.StorageRepresentationToSupply);
 
       grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
         ? originModel.Grid
@@ -562,7 +585,7 @@ namespace VSS.TRex.SiteModels
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
       Guid SavedID = ID;
-      FileSystemErrorStatus Result = DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      FileSystemErrorStatus Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {
@@ -633,7 +656,7 @@ namespace VSS.TRex.SiteModels
       ISubGridTreeBitMask localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
       // Read its content from storage 
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (MS == null)
       {

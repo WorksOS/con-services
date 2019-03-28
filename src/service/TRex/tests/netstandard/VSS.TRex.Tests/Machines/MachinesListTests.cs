@@ -129,12 +129,12 @@ namespace VSS.TRex.Tests.Machines
       var m = l.CreateNew("Machine1", "HardwareID1", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.Empty);
 
-      // Save it them read it back
-      l.SaveToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+      // Save it then read it back
+      l.SaveToPersistentStore(DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy);
 
       // read it back
       var l2 = new MachinesList();
-      l2.LoadFromPersistentStore();
+      l2.LoadFromPersistentStore(DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy);
 
       l.Should().BeEquivalentTo(l2);
     }

@@ -158,13 +158,6 @@ namespace VSS.TRex.Tests.Volumes
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
-    public ISiteModel NewEmptyModel()
-    {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      return siteModel;
-    }
-
     private void CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(SimpleVolumesResponse response)
     {
       const double EPSILON = 0.000001;
@@ -184,12 +177,12 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
 
-    private void BuildModelForSingleCellSmmaryVolume(out ISiteModel siteModel, float heightIncrement)
+    private void BuildModelForSingleCellSummaryVolume(out ISiteModel siteModel, float heightIncrement)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
 
-      siteModel = NewEmptyModel();
+      siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
@@ -210,7 +203,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, 0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, 0.5f);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -224,7 +217,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, 0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, 0.5f);
 
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -256,7 +249,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, -0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, -0.5f);
 
       var request = new SimpleVolumesRequest_ClusterCompute();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
@@ -270,7 +263,7 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      BuildModelForSingleCellSmmaryVolume(out var siteModel, -0.5f);
+      BuildModelForSingleCellSummaryVolume(out var siteModel, -0.5f);
 
       var request = new SimpleVolumesRequest_ApplicationService();
       var response = request.Execute(SimpleDefaultRequestArg(siteModel.ID));
