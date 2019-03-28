@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
 
     [Theory]
     [InlineData(2.0, 36)]
-    [InlineData(0.34, 960)]
+    [InlineData(0.34, 1024)]
     public void Execute_SingleSubGridSingleCell_ConstantElevation(double interval, int expectedRows)
     {
       AddApplicationGridRouting();

@@ -9,6 +9,7 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -222,9 +223,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
-      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(1);
-      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+      DILoggingFixture.ResetMaxExportRowsConfig(1);
       
       MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
@@ -242,6 +241,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportExceededRowLimit);
+      DILoggingFixture.ResetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
     }
     
 

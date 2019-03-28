@@ -74,6 +74,17 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
+    public static void ResetMaxExportRowsConfig(int rowCount)
+    {
+      // the LoggingFixture sets to Consts.DEFAULT_MAX_EXPORT_ROWS, which are used in GetSubGrids.
+      //  need to restore it for the next test
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS")).Returns(rowCount);
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(rowCount);
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+    }
+
     public DILoggingFixture()
     {
       SetupFixture();

@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -108,7 +109,14 @@ namespace VSS.Productivity3D.Push.Clients
         }
         catch (HttpRequestException e)
         {
-          Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
+          // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
+          Logger.LogError($"Failed to connect due to exception - Is the Server online? Message: {e.Message}");
+          await Task.Delay(RECONNECT_DELAY_MS);
+        }
+        catch (Exception e)
+        {
+          // We need to catch all exceptions, if we don't the reconnection thread will be stopped.
+          Logger.LogError(e, "Failed to connect due to exception - Unknown exception occured.");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
       }
