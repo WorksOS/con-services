@@ -112,6 +112,26 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     }
 
     [Fact]
+    public void MapPointToXYZ()
+    {
+      var gridPoint = new Point(1.234, 5.678);
+      var xyz = AutoMapperUtility.Automapper.Map<XYZ>(gridPoint);
+      Assert.Equal(gridPoint.Longitude, xyz.X);
+      Assert.Equal(gridPoint.Latitude, xyz.Y);
+      Assert.Equal(0, xyz.Z);
+    }
+
+    [Fact]
+    public void MapWGSPointToXYZ()
+    {
+      var llPoint = new WGSPoint(1.234, 5.678);
+      var xyz = AutoMapperUtility.Automapper.Map<XYZ>(llPoint);
+      Assert.Equal(llPoint.Lat, xyz.Y);
+      Assert.Equal(llPoint.Lon, xyz.X);
+      Assert.Equal(0, xyz.Z);
+    }
+
+	[Fact]
     public void MapMachineToMachineStatus()
     {
       var machineUid1 = Guid.NewGuid();
