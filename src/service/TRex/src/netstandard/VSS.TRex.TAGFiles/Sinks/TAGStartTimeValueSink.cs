@@ -19,18 +19,12 @@ namespace VSS.TRex.TAGFiles.Classes.Sinks
         /// Abort the scan when a time and week record have been observed.
         /// </summary>
         /// <returns></returns>
-        public override bool Aborting()
-        {
-            return base.Aborting() || ValueMatcherState.HaveSeenATimeValue && ValueMatcherState.HaveSeenAWeekValue;
-        }
+        public override bool Aborting() => base.Aborting() || ValueMatcherState.HaveSeenATimeValue && ValueMatcherState.HaveSeenAWeekValue;
 
         /// <summary>
         /// Default finishing behaviour
         /// </summary>
         /// <returns></returns>
-        public override bool Finishing()
-        {
-            return true;
-        }
+        public override bool Finishing() => true;
     }
 }
