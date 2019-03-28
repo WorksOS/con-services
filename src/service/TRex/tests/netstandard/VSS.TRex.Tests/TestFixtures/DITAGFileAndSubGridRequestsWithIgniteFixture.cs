@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
@@ -117,8 +118,8 @@ namespace VSS.TRex.Tests.TestFixtures
       var filePathAndName = Path.Combine(filePath, fileName);
 
       TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-      var loadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad);
-      loadResult.Should().Be(DesignLoadResult.Success);
+      var designLoadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad); 
+      designLoadResult.Should().Be(DesignLoadResult.Success);
 
       BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
       ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
@@ -250,6 +251,12 @@ namespace VSS.TRex.Tests.TestFixtures
     public static Guid ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate)
     {
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
+    }
+	
+	 public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
+    {
+      var executor = new AddCoordinateSystemExecutor();
+      executor.Execute(siteModel.ID, csib);
     }
 
     public new void Dispose()

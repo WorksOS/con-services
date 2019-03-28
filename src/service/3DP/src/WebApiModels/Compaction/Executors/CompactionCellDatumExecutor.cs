@@ -15,8 +15,8 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return conversionResult.ConversionCoordinates[0];
     }
 
-    protected override CellDatumResponse ConvertTRexCellDatumResult(object trexResult)
+    protected override CellDatumResult ConvertTRexCellDatumResult(object trexResult)
     {
       // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       return null;
@@ -81,7 +81,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       CheckForCoordinate(request.LLPoint);
       
-      // Gett grid coordinates...
       var pointList = GetGridCoordinates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.LLPoint);
       
       _northing = pointList.Points.Coords[0].Y;
@@ -90,11 +89,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return base.GetCellDatumData(request, out data);
     }
 
-    protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
+    protected override CellDatumResult ConvertCellDatumResult(TCellProductionData result)
     {
       return new CompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
-        result.ReturnCode,
+        (CellDatumReturnCode)result.ReturnCode,
         result.ReturnCode == 0 ? result.Value : (double?)null,
         result.TimeStampUTC,
         _northing,
@@ -126,6 +125,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorResult.AddCoordinateResultErrorMessages(ContractExecutionStates);
 #endif
     }
+
   }
 }
 

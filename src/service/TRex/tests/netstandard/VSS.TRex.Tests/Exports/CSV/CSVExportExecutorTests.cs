@@ -22,7 +22,6 @@ using FluentAssertions;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Requests;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {

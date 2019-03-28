@@ -10,7 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Executors
 {
@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Common.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_DATUM"))
       {
 #endif
-        var trexData = await GetTRexCellDatumData(request);
+        var trexData = GetTRexCellDatumData(request);
 
         if (trexData != null)
           return ConvertTRexCellDatumResult(trexData);
@@ -45,14 +45,14 @@ namespace VSS.Productivity3D.Common.Executors
 #endif
     }
 
-    protected virtual async Task<object> GetTRexCellDatumData(CellDatumRequest request)
+    protected virtual Task<object> GetTRexCellDatumData(CellDatumRequest request)
     {
       // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
     }
 
-    protected virtual CellDatumResponse ConvertTRexCellDatumResult(object result)
+    protected virtual CellDatumResult ConvertTRexCellDatumResult(object result)
     {
       // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
       return null;
@@ -75,13 +75,13 @@ namespace VSS.Productivity3D.Common.Executors
         out data);
     }
 
-    protected virtual CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
+    protected virtual CellDatumResult ConvertCellDatumResult(TCellProductionData result)
     {
-      return new CellDatumResponse(
+      return new CellDatumResult(
           RaptorConverters.convertDisplayMode((TICDisplayMode) result.DisplayMode),
-              result.ReturnCode,
-              result.ReturnCode == 0 ? result.Value : (double?)null,
-              result.TimeStampUTC);
+          (CellDatumReturnCode)result.ReturnCode,
+          result.ReturnCode == 0 ? result.Value : (double?)null,
+          result.TimeStampUTC);
     }
 #endif
 

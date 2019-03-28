@@ -21,12 +21,14 @@ namespace WebApiTests.Utilities
       httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
 
-      TileServiceBaseUrl = Environment.GetEnvironmentVariable("TILE_WEBSERVICES_URL");
+      TileServiceBaseUrl = Environment.GetEnvironmentVariable("TILE_WEBSERVICES_URL").TrimEnd('/');
     }
 
     public static Task<HttpResponseMessage> SendHttpClientRequest(string baseAddress, string route, HttpMethod method, string acceptHeader, string contentType, string payloadData)
     {
-      var requestMessage = new HttpRequestMessage(method, new Uri($"{baseAddress}{route}"));
+      Console.WriteLine(string.Concat($"[{method}] ", baseAddress, route));
+
+      var requestMessage = new HttpRequestMessage(method, new Uri(string.Concat(baseAddress, route)));
 
       if (payloadData != null)
       {
@@ -34,8 +36,6 @@ namespace WebApiTests.Utilities
       }
 
       requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
-
-      Console.WriteLine($"[{method}] {requestMessage.RequestUri.AbsoluteUri}");
 
       return httpClient.SendAsync(requestMessage);
     }
