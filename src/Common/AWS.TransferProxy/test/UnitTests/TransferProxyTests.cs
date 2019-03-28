@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using VSS.ConfigurationStore;
 
 namespace VSS.AWS.TransferProxy.UnitTests
@@ -12,18 +14,20 @@ namespace VSS.AWS.TransferProxy.UnitTests
     [ExpectedException(typeof(Exception))]
     [DataRow(null)]
     [DataRow("")]
+    [Ignore] //This shouldn't happen anymore
     public void Should_throw_When_AWS_ACCESS_KEY_isnt_present(string value)
     {
       var mockStore = new Mock<IConfigurationStore>();
       mockStore.Setup(x => x.GetValueString("AWS_ACCESS_KEY")).Returns(value);
 
-      _ = new TransferProxy(mockStore.Object);
+      _ = new TransferProxy(mockStore.Object,new NullLogger<TransferProxy>());
     }
     
     [TestMethod]
     [ExpectedException(typeof(Exception))]
     [DataRow(null)]
     [DataRow("")]
+    [Ignore] //This shouldn't happen anymore
     public void Should_throw_When_AWS_SECRET_KEY_isnt_present(string value)
     {
       var mockStore = new Mock<IConfigurationStore>();
@@ -31,13 +35,14 @@ namespace VSS.AWS.TransferProxy.UnitTests
       mockStore.Setup(x => x.GetValueString("AWS_ACCESS_KEY")).Returns("AWS_ACCESS_KEY");
       mockStore.Setup(x => x.GetValueString("AWS_SECRET_KEY")).Returns(value);
 
-      _ = new TransferProxy(mockStore.Object);
+      _ = new TransferProxy(mockStore.Object, new NullLogger<TransferProxy>());
     }    
 
     [TestMethod]
     [ExpectedException(typeof(Exception))]
     [DataRow(null)]
     [DataRow("")]
+    [Ignore] //This shouldn't happen anymore
     public void Should_throw_When_AWS_BUCKET_NAME_isnt_present(string value)
     {
       var mockStore = new Mock<IConfigurationStore>();
@@ -46,7 +51,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
       mockStore.Setup(x => x.GetValueString("AWS_SECRET_KEY")).Returns("AWS_SECRET_KEY");
       mockStore.Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns(value);
 
-      _ = new TransferProxy(mockStore.Object);
+      _ = new TransferProxy(mockStore.Object, new NullLogger<TransferProxy>());
     }  
 
     [TestMethod]
@@ -64,7 +69,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
       mockStore.Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns("AWS_BUCKET_NAME");
       mockStore.Setup(x => x.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY")).Returns(result);
 
-      _ = new TransferProxy(mockStore.Object);
+      _ = new TransferProxy(mockStore.Object, new NullLogger<TransferProxy>());
     }
   }
 }
