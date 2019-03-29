@@ -2,12 +2,14 @@ MYSQL_SERVER_NAME_VSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
 MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
 MYSQL_DATABASE_NAME: VSS-AssetMgmt3D
 MYSQL_PORT: "3306"
-MYSQL_USERNAME: vssTagFileAuthUsr
-MYSQL_ROOT_PASSWORD: mRty94hER
+MYSQL_USERNAME: vssAssetMgmt3DUsr
+MYSQL_ROOT_PASSWORD: E1f5nUdCMcQv
+MYSQL_USERNAME_BUILD: "vssBuildUsr"
+MYSQL_PASSWORD_BUILD: "V$$8u1ld45er"
 KAFKA_URI: 10.211.16.11
 KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: AssetMgmt3D-Consumer-Prod
-KAFKA_TOPIC: VSS.Interfaces.Events.MasterData.IAssetEvent.V1
+KAFKA_TOPIC: VSS.Interfaces.Events.MasterData.IAssetEvent.V1,VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1
 KAFKA_TOPIC_NAME_SUFFIX: 
 KAFKA_OFFSET: latest
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
