@@ -4,6 +4,8 @@ import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../project/project-filter-model';
+import Projectmodel = require("./project-model");
+import CellDatumResult = Projectmodel.CellDatumResult;
 
 @Component({
   selector: 'project',
@@ -43,6 +45,9 @@ export class ProjectComponent {
   private mousePixelX: number = 0;
   private mousePixelY: number = 0;
 
+  private prevMousePixelX: number = -1;
+  private prevMousePixelY: number = -1;
+
   private mouseWorldX: number = 0;
   private mouseWorldY: number = 0;
 
@@ -77,22 +82,25 @@ export class ProjectComponent {
 
   public existenceMapSubGridCount: number = 0;
 
-  public machineColumns: string[] = 
-  ["id",
-  "internalSiteModelMachineIndex",
-  "name",
-  "machineType",
-  "deviceType",
-  "machineHardwareID",
-  "isJohnDoeMachine",
-  "lastKnownX",
-  "lastKnownY",
-  "lastKnownPositionTimeStamp",
-  "lastKnownDesignName",
-  "lastKnownLayerId"];
+  public machineColumns: string[] =
+  [
+    "id",
+    "internalSiteModelMachineIndex",
+    "name",
+    "machineType",
+    "deviceType",
+    "machineHardwareID",
+    "isJohnDoeMachine",
+    "lastKnownX",
+    "lastKnownY",
+    "lastKnownPositionTimeStamp",
+    "lastKnownDesignName",
+    "lastKnownLayerId"
+  ];
 
   public machineColumnNames: string[] =
-   ["ID",
+  [
+    "ID",
     "Index", // "internalSiteModelMachineIndex"
     "Name",
     "Type",
@@ -103,7 +111,8 @@ export class ProjectComponent {
     "Last Known Y",
     "Last Known Date",
     "Last Known Design",
-    "Last Known Layer"];
+    "Last Known Layer"
+  ];
 
   public projectMetadata: ISiteModelMetadata;
 
@@ -133,16 +142,16 @@ export class ProjectComponent {
   public _compositeElevationProfilePath_FirstCompositeElev: string = "";
   public _compositeElevationProfilePath_LowestCompositeElev: string = "";
   public _compositeElevationProfilePath_HighestCompositeElev: string = "";
-  
-  public showLastElevationProfile              : boolean = true;
-  public showFirstElevationProfile             : boolean = true;
-  public showLowestElevationProfile            : boolean = true;
-  public showHighestElevationProfile           : boolean = true;
-  public showLastCompositeElevationProfile     : boolean = true;
-  public showFirstCompositeElevationProfile    : boolean = true;
-  public showLowestCompositeElevationProfile   : boolean = true;
-  public showHighestCompositeElevationProfile  : boolean = true;
-  
+
+  public showLastElevationProfile: boolean = true;
+  public showFirstElevationProfile: boolean = true;
+  public showLowestElevationProfile: boolean = true;
+  public showHighestElevationProfile: boolean = true;
+  public showLastCompositeElevationProfile: boolean = true;
+  public showFirstCompositeElevationProfile: boolean = true;
+  public showLowestCompositeElevationProfile: boolean = true;
+  public showHighestCompositeElevationProfile: boolean = true;
+
   public userProfilePath: string = "";
   public userProfilePoint1SVG_CX: Number = 0;
   public userProfilePoint1SVG_CY: Number = 0;
@@ -168,17 +177,17 @@ export class ProjectComponent {
   public svSecondPointX: number = 0.0;
   public svSecondPointY: number = 0.0;
 
-
-
   public profileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public mouseProfileWorldStation: Number = 0.0;
   public mouseProfileWorldZ: Number = 0.0;
 
-  public mouseProfilePixelLocation:string = '';
+  public mouseProfilePixelLocation: string = '';
   public mouseProfileWorldLocation: string = '';
 
-  public designProfileUid: string = ""
+  public designProfileUid: string = "";
 
+  public cellDatum: string = "";
+  
 constructor(
   private projectService: ProjectService
   ) { }
@@ -354,7 +363,7 @@ constructor(
       this.projectVolume = new VolumeResult(volume.cut, volume.cutArea, volume.fillArea, volume.fillArea, volume.totalCoverageArea));
   }
 
-  private updateMouseLocationDetails(offsetX : number, offsetY: number): void {
+  private updateMouseLocationDetails(offsetX: number, offsetY: number): void {
     this.mousePixelX = offsetX;
     this.mousePixelY = this.pixelsY - offsetY;
 
@@ -388,7 +397,17 @@ constructor(
       this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
     }
 
-
+    //if user pauses then get cell datum value
+    if (this.prevMousePixelX == this.mousePixelX && this.prevMousePixelY == this.mousePixelY) {
+      this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode).subscribe(result => {
+        //TODO: display nicely
+        //for now just display raw value
+        this.cellDatum = result.returnCode == 0 ? result.value.toFixed(1) : "";
+        this.cellDatum += " (" + result.timestamp + ")";
+      });
+    };
+    this.prevMousePixelX = this.mousePixelX;
+    this.prevMousePixelY = this.mousePixelY;
   }
 
   public onMouseOver(event: any): void {

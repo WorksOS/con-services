@@ -110,4 +110,6 @@ export class MachineEventType {
 }
 export class XYZS {
 }
+export class CellDatumResult {
+}
 //# sourceMappingURL=project-model.js.map
