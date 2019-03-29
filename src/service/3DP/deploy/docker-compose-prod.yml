@@ -6,6 +6,7 @@ services:
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=prod-aslv01.vssengg.com
+     - assetmgmet3d-service-private-v1=http://assetmgmt3d.prod.k8s.services.myvisionlink.com/api/v1
      - AWS_ACCESS_KEY=AKIAIY4WKVFBVRDH75ZQ
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=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
