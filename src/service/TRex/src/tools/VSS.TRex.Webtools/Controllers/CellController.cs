@@ -22,7 +22,7 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] int displayMode,
       [FromQuery] double x,
       [FromQuery] double y)
-    {
+    { 
       var cellDatumRequest = new CellDatumRequest_ApplicationService();
       var response = cellDatumRequest.Execute(new CellDatumRequestArgument_ApplicationService
       {
