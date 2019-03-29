@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 #if RAPTOR
 using SVOICDecls;
 using VLPDDecls;
+using VSS.Productivity3D.Common.Proxies;
 #endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Executors
@@ -29,10 +30,10 @@ namespace VSS.Productivity3D.Common.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_DATUM"))
       {
 #endif
-        var trexData = GetTRexCellDatumData(request);
+        var trexData = await GetTRexCellDatumData(request);
 
         if (trexData != null)
-          return ConvertTRexCellDatumResult(trexData);
+          return trexData;
 
         throw CreateNoCellDatumReturnedException();
 #if RAPTOR
@@ -45,17 +46,11 @@ namespace VSS.Productivity3D.Common.Executors
 #endif
     }
 
-    protected virtual Task<object> GetTRexCellDatumData(CellDatumRequest request)
+    protected virtual async Task<CellDatumResult> GetTRexCellDatumData(CellDatumRequest request)
     {
-      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-    }
-
-    protected virtual CellDatumResult ConvertTRexCellDatumResult(object result)
-    {
-      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
-      return null;
+      var trexRequest = new CellDatumTRexRequest(request.ProjectUid.Value, request.DisplayMode, request.LLPoint,
+        request.GridPoint, request.Filter, request.Design?.FileUid);
+      return await trexCompactionDataProxy.SendDataPostRequest<CompactionCellDatumResult, CellDatumTRexRequest>(trexRequest, "/cells/datum", customHeaders);
     }
 #if RAPTOR
     protected virtual bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)

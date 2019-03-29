@@ -82,12 +82,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<CellDatumResult> Post([FromBody]CellDatumRequest request)
     {
       request.Validate();
+      return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger,
 #if RAPTOR
-      return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
 #endif
+        configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).ProcessAsync(request) as CellDatumResult;
     }
 
     /// <summary>
