@@ -22,6 +22,8 @@ namespace VSS.Productivity3D.Push
 
     public override bool InternalConnection(HttpContext context)
     {
+      // Test for now to use GraphQL against signalR
+      return true;
       if (context.Request.Headers.ContainsKey(SKIP_AUTHENTICATION_HEADER))
       {
         return true;
