@@ -13,16 +13,6 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_PassCountSummary : PVMDisplayerBase
   {
     /// <summary>
-    /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.
-    /// </summary>
-    private bool UseMachineTargetPass = false;
-
-    /// <summary>
-    /// Pass Count target range.
-    /// </summary>
-    public PassCountRangeRecord TargetPassCountRange = new PassCountRangeRecord(3, 5);
-
-    /// <summary>
     /// Renders Pass Count summary data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
@@ -42,14 +32,7 @@ namespace VSS.TRex.Rendering.Displayers
 
       var passTargetRange = new PassCountRangeRecord(cellValue.TargetPassCount, cellValue.TargetPassCount);
 
-      // If we are not using the machine Pass Target value then we need to replace the
-      // Pass Count Target report from the machine, with the override value specified in the options
-      if (!UseMachineTargetPass)
-        passTargetRange = TargetPassCountRange;
-
-      var returnedColour = cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue || passTargetRange.Min == CellPassConsts.NullPassCountValue || passTargetRange.Max == CellPassConsts.NullPassCountValue
-        ? Color.Empty
-        : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, passTargetRange);
+      var returnedColour = cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, passTargetRange);
 
       return returnedColour;
     }

@@ -1,25 +1,23 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map displayer renderer for machine speed summary information presented as rendered tiles
+  /// Plan View Map displayer renderer for material temperature information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_MachineSpeedSummary : PVMDisplayerBase
+  public class PVMDisplayer_Temperature : PVMDisplayerBase
   {
     /// <summary>
-    /// Renders Machine Speed summary data as tiles. 
+    /// Renders material temperature details data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
     protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      return base.DoRenderSubGrid<ClientMachineTargetSpeedLeafSubGrid>(subGrid);
+      return base.DoRenderSubGrid<ClientTemperatureLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -28,10 +26,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      var value = ((ClientMachineTargetSpeedLeafSubGrid)SubGrid).Cells[east_col, north_row];
+      ushort value = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row].MeasuredTemperature;
 
-      return value.Max == CellPassConsts.NullMachineSpeed ? Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value);
+      return value == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : Palette.ChooseColour(value);
     }
-
   }
 }

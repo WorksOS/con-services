@@ -6,6 +6,8 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
+using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
@@ -14,6 +16,8 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
+
+    public PaletteBase Palette { get; set; }
 
     public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted();
 
@@ -27,6 +31,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
 
     public TileRenderRequestArgument(Guid siteModelID,
                                      DisplayMode mode,
+                                     PaletteBase palette,
                                      BoundingWorldExtent3D extents,
                                      bool coordsAreGrid,
                                      ushort pixelsX,
@@ -36,6 +41,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     {
       ProjectID = siteModelID;
       Mode = mode;
+      Palette = palette;
       Extents = extents;
       CoordsAreGrid = coordsAreGrid;
       PixelsX = pixelsX;
@@ -55,6 +61,9 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt((int)Mode);
+
+      writer.WriteBoolean(Palette != null);
+      Palette?.ToBinary(writer);
 
       writer.WriteBoolean(Extents != null);
       Extents.ToBinary(writer);
@@ -78,6 +87,12 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
 
       if (reader.ReadBoolean())
       {
+        Palette = GetPalette();
+        Palette.FromBinary(reader);
+      }
+
+      if (reader.ReadBoolean())
+      {
         Extents = new BoundingWorldExtent3D();
         Extents.FromBinary(reader);
       }
@@ -85,6 +100,40 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       CoordsAreGrid = reader.ReadBoolean();
       PixelsX = (ushort)reader.ReadInt();
       PixelsY = (ushort)reader.ReadInt();
+    }
+
+    private PaletteBase GetPalette()
+    {
+      switch (Mode)
+      {
+        case DisplayMode.CCA:
+          return new CCAPalette();
+        case DisplayMode.CCASummary:
+          return new CCASummaryPalette();
+        case DisplayMode.CCV:
+        case DisplayMode.CCVSummary:
+          return new CMVPalette();
+        case DisplayMode.CutFill:
+          return new CutFillPalette();
+        case DisplayMode.Height:
+          return new HeightPalette();
+        case DisplayMode.MDPPercentSummary:
+          return new MDPSummaryPalette();
+        case DisplayMode.PassCount:
+          return new PassCountPalette();
+        case DisplayMode.PassCountSummary:
+          return new PassCountSummaryPalette();
+        case DisplayMode.MachineSpeed:
+          return new SpeedPalette();
+        case DisplayMode.TargetSpeedSummary:
+          return new SpeedSummaryPalette();
+        case DisplayMode.TemperatureDetail:
+          return new TemperaturePalette();
+        case DisplayMode.TemperatureSummary:
+          return new TemperatureSummaryPalette();
+        default:
+            throw new TRexException($"No implemented colour palette for this mode ({Mode})");
+      }
     }
   }
 }

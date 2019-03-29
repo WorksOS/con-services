@@ -1,17 +1,19 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
+  /// Plan View Map displayer renderer for material temperature summary information presented as rendered tiles
   /// </summary>
   public class PVMDisplayer_TemperatureSummary : PVMDisplayerBase
   {
     /// <summary>
-    /// Renders Temperature summary data as tiles. 
+    /// Renders material temperature summary data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
@@ -26,9 +28,13 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      ushort value = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row].MeasuredTemperature;
+      var cellValue = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
-      return value == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : Palette.ChooseColour(value);
+      var temperatureLevels = new TemperatureWarningLevelsRecord(cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
+
+      var returnedColour = cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, temperatureLevels);
+
+      return returnedColour;
     }
   }
 }

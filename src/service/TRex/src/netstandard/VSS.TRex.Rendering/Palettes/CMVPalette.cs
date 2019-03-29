@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes
@@ -8,15 +10,20 @@ namespace VSS.TRex.Rendering.Palettes
   /// </summary>
   public class CMVPalette : PaletteBase
   {
+    private const byte VERSION_NUMBER = 1;
+
+    private const double CMV_DEFAULT_PERCENTAGE_MIN = 80.0;
+    private const double CMV_DEFAULT_PERCENTAGE_MAX = 120.0;
+
     public bool DisplayTargetCCVColourInPVM { get; set; }
     public bool DisplayDecoupledColourInPVM { get; set; }
 
-    private CMVRangePercentageRecord _cmvPercentageRange = new CMVRangePercentageRecord(80, 120);
+    public CMVRangePercentageRecord CMVPercentageRange = new CMVRangePercentageRecord(CMV_DEFAULT_PERCENTAGE_MIN, CMV_DEFAULT_PERCENTAGE_MAX);
+
+    public Color TargetCCVColour = Color.Blue;
 
     private double _minTarget;
     private double _maxTarget;
-
-    private Color _targetCCVColour = Color.Blue;
 
     private static Transition[] Transitions =
     {
@@ -29,8 +36,8 @@ namespace VSS.TRex.Rendering.Palettes
 
     public CMVPalette() : base(Transitions)
     {
-      _minTarget = _cmvPercentageRange.Min / 100;
-      _maxTarget = _cmvPercentageRange.Max / 100;
+      _minTarget = CMVPercentageRange.Min / 100;
+      _maxTarget = CMVPercentageRange.Max / 100;
     }
 
     public Color ChooseColour(double value, double targetValue)
@@ -38,9 +45,45 @@ namespace VSS.TRex.Rendering.Palettes
       // Check to see if the value is in the target range and use the target CMV colour
       // if it is. CCVRange holds a min/max percentage of target CMV...
       if (DisplayTargetCCVColourInPVM && (value >= targetValue * _minTarget && value <= targetValue * _maxTarget))
-        return _targetCCVColour;
+        return TargetCCVColour;
 
       return ChooseColour(value);
+    }
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      base.ToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteBoolean(DisplayDecoupledColourInPVM);
+      writer.WriteBoolean(DisplayTargetCCVColourInPVM);
+
+      CMVPercentageRange.ToBinary(writer);
+
+      writer.WriteInt(TargetCCVColour.ToArgb());
+    }
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      DisplayDecoupledColourInPVM = reader.ReadBoolean();
+      DisplayTargetCCVColourInPVM = reader.ReadBoolean();
+
+      CMVPercentageRange.FromBinary(reader);
+
+      TargetCCVColour = Color.FromArgb(reader.ReadInt());
     }
   }
 }

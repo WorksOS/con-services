@@ -44,6 +44,7 @@ namespace VSS.TRex.Webtools.Controllers
       var request = new TileRenderRequest();
       TileRenderResponse_Core2 response = await request.ExecuteAsync(new TileRenderRequestArgument(
         siteModelID: Guid.Parse(siteModelID),
+        palette: null,
         coordsAreGrid: true,
         pixelsX: pixelsX,
         pixelsY: pixelsY,
