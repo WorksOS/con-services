@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +10,7 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
@@ -26,6 +26,21 @@ namespace VSS.TRex.SubGridTrees.Server
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
       private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
+
+        /// <summary>
+        /// Controls whether segment and cell pass information held within this sub grid is represented
+        /// in the mutable or immutable forms supported by TRex
+        /// </summary>
+        public bool IsMutable { get; private set; }
+
+        public void SetIsMutable(bool isMutable)
+        {
+          IsMutable = isMutable;
+          Directory = new SubGridDirectory
+          {
+            IsMutable = isMutable
+          };
+        }
 
         /// <summary>
         /// Does this sub grid contain directory information for all the segments that exist within it?
@@ -45,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// A directory containing metadata regarding the segments present within this sub grid
         /// </summary>
-        public ISubGridDirectory Directory { get; set; } = new SubGridDirectory();
+        public ISubGridDirectory Directory { get; set; } 
 
         /// <summary>
         /// The primary wrapper containing all segments that have been loaded
@@ -101,8 +116,10 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public ServerSubGridTreeLeaf(ISubGridTree owner,
                                      ISubGrid parent,
-                                     byte level) : base(owner, parent, level)
+                                     byte level,
+                                     StorageMutability mutability) : base(owner, parent, level)
         {
+          SetIsMutable(mutability == StorageMutability.Mutable);
         }
 
         public void AddPass(uint cellX, uint cellY, CellPass Pass)

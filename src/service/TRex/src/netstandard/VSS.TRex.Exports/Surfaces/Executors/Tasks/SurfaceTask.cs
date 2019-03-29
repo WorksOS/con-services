@@ -33,37 +33,40 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     public override bool TransferResponse(object response)
     {
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
+      bool result = false;
 
-      if (!base.TransferResponse(response))
-        return false;
-
-      if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+      if (base.TransferResponse(response))
       {
-        Log.LogWarning("No sub grid responses returned");
-        return false;
-      }
-
-      // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid_Float...
-
-      foreach (var subGrid in subGridResponses)
-      {
-        if (subGrid != null)
+        if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
         {
-          ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
-
-          GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+          Log.LogWarning("No sub grid responses returned");
+        }
+        else
+        {
+          // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid_Float...
+          foreach (var subGrid in subGridResponses)
           {
-            OriginX = originSubGrid.OriginX,
-            OriginY = originSubGrid.OriginY,
-            Items = originSubGrid.Clone2DArray(),
-            Level = originSubGrid.Level
-          };
+            if (subGrid != null)
+            {
+              ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
 
-          SurfaceSubgrids.Add(leaf);
+              GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+              {
+                OriginX = originSubGrid.OriginX,
+                OriginY = originSubGrid.OriginY,
+                Items = originSubGrid.Clone2DArray(),
+                Level = originSubGrid.Level
+              };
+
+              SurfaceSubgrids.Add(leaf);
+            }
+          }
+
+          result = true;
         }
       }
 
-      return true;
+      return result;
     }
   }
 }

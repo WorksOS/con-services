@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;

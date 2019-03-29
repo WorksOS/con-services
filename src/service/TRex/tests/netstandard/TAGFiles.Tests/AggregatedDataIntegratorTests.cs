@@ -2,13 +2,14 @@
 using System;
 using VSS.TRex.Events;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class AggregatedDataIntegratorTests : IClassFixture<DILoggingFixture>
+        public class AggregatedDataIntegratorTests : IClassFixture<DITagFileFixture>
   {
         [Fact]
         public void Test_AggregatedDataIntegrator_AddTaskToProcessList()
@@ -17,7 +18,7 @@ namespace TAGFiles.Tests
 
             SiteModel siteModel = new SiteModel(/*"TestName", "TestDesc", */Guid.NewGuid(), 1.0);
             VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine("TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-            ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID);
+            ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
             ProductionEventLists events = new ProductionEventLists(siteModel, machine.InternalSiteModelMachineIndex);
 
             integrator.AddTaskToProcessList(siteModel, siteModel.ID, machine, machine.ID, tree, 0, events);

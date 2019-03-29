@@ -44,6 +44,8 @@ namespace VSS.TRex.Profiling.Executors
     private ISubGridSegmentCellPassIterator CellPassIterator;
     private ISubGridSegmentIterator SegmentIterator;
 
+    private ISiteModel SiteModel;
+
     /// <summary>
     /// Constructs the profile analysis executor
     /// </summary>
@@ -73,7 +75,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="passFilter"></param>
     private void SetupForCellPassStackExamination(ICellPassAttributeFilter passFilter)
     {      
-      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().StorageProxy);
+      SegmentIterator = new SubGridSegmentIterator(null, null, SiteModel.PrimaryStorageProxy);
 
       if (passFilter.ReturnEarliestFilteredCellPass ||
           (passFilter.HasElevationTypeFilter && passFilter.ElevationType == ElevationType.First))
@@ -115,7 +117,7 @@ namespace VSS.TRex.Profiling.Executors
           else
             Log.LogWarning($"#In#: DataModel {ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
 
-          ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ProjectID);
+          SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ProjectID);
 
           if (SiteModel == null)
           {

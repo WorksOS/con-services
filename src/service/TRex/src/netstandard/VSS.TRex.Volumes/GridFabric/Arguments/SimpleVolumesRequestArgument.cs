@@ -61,6 +61,25 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     {
     }
 
+    private void WriteFilter(IBinaryRawWriter writer, ICombinedFilter filter)
+    {
+      writer.WriteBoolean(filter != null);
+      filter?.ToBinary(writer);
+    }
+
+    private ICombinedFilter ReadFilter(IBinaryRawReader reader)
+    {
+      ICombinedFilter filter = null;
+
+      if (reader.ReadBoolean())
+      {
+        filter = new CombinedFilter();
+        filter.FromBinary(reader);
+      }
+
+      return filter;
+    }
+
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
@@ -74,17 +93,13 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       writer.WriteGuid(ProjectID);
       writer.WriteInt((int)VolumeType);
 
-      writer.WriteBoolean(BaseFilter != null);
-      BaseFilter?.ToBinary(writer);
-
-      writer.WriteBoolean(TopFilter != null);
-      TopFilter?.ToBinary(writer);
+      WriteFilter(writer, BaseFilter);
+      WriteFilter(writer, TopFilter);
 
       writer.WriteGuid(BaseDesignID);
       writer.WriteGuid(TopDesignID);
 
-      writer.WriteBoolean(AdditionalSpatialFilter != null);
-      AdditionalSpatialFilter?.ToBinary(writer);
+      WriteFilter(writer, AdditionalSpatialFilter);
 
       writer.WriteDouble(CutTolerance);
       writer.WriteDouble(FillTolerance);
@@ -103,26 +118,13 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       VolumeType = (VolumeComputationType)reader.ReadInt();
 
-      if (reader.ReadBoolean())
-      {
-        BaseFilter = new CombinedFilter();
-        BaseFilter.FromBinary(reader);
-      }
-
-      if (reader.ReadBoolean())
-      {
-        TopFilter = new CombinedFilter();
-        TopFilter.FromBinary(reader);
-      }
+      BaseFilter = ReadFilter(reader);
+      TopFilter = ReadFilter(reader);
 
       BaseDesignID = reader.ReadGuid() ?? Guid.Empty;
       TopDesignID = reader.ReadGuid() ?? Guid.Empty;
 
-      if (reader.ReadBoolean())
-      {
-        AdditionalSpatialFilter = new CombinedFilter();
-        AdditionalSpatialFilter.FromBinary(reader);
-      }
+      AdditionalSpatialFilter = ReadFilter(reader);
 
       CutTolerance = reader.ReadDouble();
       FillTolerance = reader.ReadDouble();

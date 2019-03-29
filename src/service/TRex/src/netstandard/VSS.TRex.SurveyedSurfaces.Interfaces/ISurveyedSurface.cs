@@ -17,7 +17,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// </summary>`
     Guid ID { get; set; }
 
-    DesignDescriptor Get_DesignDescriptor();
+    DesignDescriptor DesignDescriptor { get; }
 
     /// <summary>
     /// Serialises state to a binary writer
@@ -54,6 +54,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// </summary>
     /// <returns></returns>
     string ToString();
+
 
     /// <summary>
     /// Determine if two surveyed surfaces are equal

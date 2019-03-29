@@ -13,12 +13,12 @@ using VSS.TRex.Gateway.Common.ResultHandling;
 namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {
   /// <summary>
-  /// Process Tagfiles Controller
+  /// Process TAG files Controller
   /// </summary>
   public class TagFileController : BaseController
   {
     /// <summary>
-    /// Controller for tagfile processing
+    /// Controller for tag file processing
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="exceptionHandler"></param>
@@ -29,7 +29,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// Test endpoint for tagfiles
+    /// Test endpoint for tag files
     /// </summary>
     // [PostRequestVerifier]
     [Route("api/v2/tagfiles")]

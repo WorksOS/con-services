@@ -63,6 +63,6 @@ namespace VSS.TRex.Machines.Interfaces
       Guid machineID);
 
     void SaveToPersistentStore(IStorageProxy StorageProxy);
-    void LoadFromPersistentStore();
+    void LoadFromPersistentStore(IStorageProxy StorageProxy);
   }
 }

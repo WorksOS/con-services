@@ -46,5 +46,7 @@ namespace VSS.TRex.Designs.Interfaces
     void AcquireExclusiveInterlock();
     void ReleaseExclusiveInterlock();
     List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
+
+    bool IsLoading { get; set; }
   }
 }

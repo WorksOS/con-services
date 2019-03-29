@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -10,7 +10,13 @@ namespace VSS.TRex.SubGridTrees.Server
   public class SubGridDirectory : ISubGridDirectory
   {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridDirectory>();
-     
+
+        /// <summary>
+        /// Controls whether segment and cell pass information held within this sub grid is represented
+        /// in the mutable or immutable forms supported by TRex
+        /// </summary>
+        public bool IsMutable { get; set; } = false;
+
         /// <summary>
         /// This sub grid is present in the persistent store
         /// </summary>
@@ -25,11 +31,15 @@ namespace VSS.TRex.SubGridTrees.Server
         // all the segments in the sub grid
         public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
 
+        private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
+
         public void AllocateGlobalLatestCells()
         {
             if (GlobalLatestCells == null)
             {
-                GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper();
+              GlobalLatestCells = IsMutable
+                ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper()
+                : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper();
             }
         }
 

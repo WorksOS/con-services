@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
@@ -11,10 +12,11 @@ namespace VSS.TRex.SiteModels.Interfaces
   {
     ISiteModel GetSiteModel(Guid ID);
     ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist);
-    ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID);
-    ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist);
 
-    IStorageProxy StorageProxy { get; }
+    IStorageProxy PrimaryMutableStorageProxy { get; }
+    IStorageProxy PrimaryImmutableStorageProxy { get; }
+
+    IStorageProxy PrimaryStorageProxy(StorageMutability mutability);
 
     /// <summary>
     /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model

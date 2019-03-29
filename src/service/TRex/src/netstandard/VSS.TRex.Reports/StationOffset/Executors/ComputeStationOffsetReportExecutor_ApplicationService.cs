@@ -110,8 +110,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           return;
 
         var subGrid = SubGridUtilities.LocateSubGridContaining
-        (DIContext.Obtain<ISiteModels>().StorageProxy,
-          siteModel.Grid, address.X, address.Y, siteModel.Grid.NumLevels, false, false);
+        (siteModel.PrimaryStorageProxy, siteModel.Grid, address.X, address.Y, siteModel.Grid.NumLevels, false, false);
 
         if (subGrid != null)
         {

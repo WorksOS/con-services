@@ -1,12 +1,9 @@
-﻿using System;
-using Apache.Ignite.Core;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
@@ -27,6 +24,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -98,13 +96,13 @@ namespace VSS.TRex.Webtools
       // Register the listener for site model attribute change notifications
       services.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName()));
       services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
-      services.AddSingleton<IDesignManager>(factory => new DesignManager());
-      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
+      services.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable));
+      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable));
 
       services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
-      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager());
+      services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable));
 
-      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
+      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Immutable));
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI(services);

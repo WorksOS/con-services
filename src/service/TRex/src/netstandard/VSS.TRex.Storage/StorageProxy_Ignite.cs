@@ -277,19 +277,13 @@ namespace VSS.TRex.Storage
     public void SetImmutableStorageProxy(IStorageProxy immutableProxy)
     {
       if (Mutability != StorageMutability.Mutable)
-      {
         throw new ArgumentException("Non-mutable storage proxy may not accept an immutable storage proxy reference");
-      }
 
       if (immutableProxy == null)
-      {
         throw new ArgumentException("Null immutable storage proxy reference supplied to SetImmutableStorageProxy()");
-      }
 
       if (immutableProxy.Mutability != StorageMutability.Immutable)
-      {
         throw new ArgumentException("Immutable storage proxy reference is not marked with Immutable mutability");
-      }
 
       ImmutableProxy = immutableProxy;
     }
