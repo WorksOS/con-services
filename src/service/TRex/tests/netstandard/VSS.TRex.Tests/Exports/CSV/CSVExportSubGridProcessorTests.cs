@@ -8,6 +8,8 @@ using FluentAssertions;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using System.Collections.Generic;
+using Tests.Common;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Types;
@@ -23,12 +25,19 @@ namespace VSS.TRex.Tests.Exports.CSV
 {
   public class CSVExportSubGridProcessorTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
   {
-    private const string DIMENSIONS_2012_DC_CSIB = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
+    public CSVExportSubGridProcessorTests()
+    {
+      DILoggingFixture.SetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
+    }
 
     [Fact]
     public void PassCountLastPassNotDbase()
     {
-      DILoggingFixture.ResetMaxExportRowsConfig(1000);
+      var maxRowsToExport = 1000;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
@@ -41,7 +50,10 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact(Skip = "Importing a DC file is currently being implemented")]
     public void PassCountLastPassNotDbaseWithLatLong()
     {
-      DILoggingFixture.ResetMaxExportRowsConfig(1000);
+      var maxRowsToExport = 1000;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
@@ -54,7 +66,10 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void PassCountLastPassDBase()
     {
-      DILoggingFixture.ResetMaxExportRowsConfig(1000);
+      var maxRowsToExport = 1000;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, true,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
@@ -67,7 +82,10 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void VetaFinalPass_NorthingEasting()
     {
-      DILoggingFixture.ResetMaxExportRowsConfig(100000);
+      var maxRowsToExport = 100000;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _, "Dimensions2018-CaseMachine"); 
 
@@ -80,11 +98,14 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact(Skip = "Skip until coreX is available")]
     public void VetaFinalPass_LatLong()
     {
-      DILoggingFixture.ResetMaxExportRowsConfig(10);
+      var maxRowsToExport = 10;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel siteModel, "Dimensions2018-CaseMachine");
 
-      DITAGFileAndSubGridRequestsFixture.AddCSIBToSiteModel(ref siteModel, DIMENSIONS_2012_DC_CSIB);
+      DITAGFileAndSubGridRequestsFixture.AddCSIBToSiteModel(ref siteModel, TestCommonConsts.DIMENSIONS_2012_DC_CSIB);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
@@ -95,7 +116,10 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void PassCountAllPassesNotDBase()
     {
-      DILoggingFixture.ResetMaxExportRowsConfig(1000);
+      var maxRowsToExport = 1000;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
@@ -113,10 +137,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData(400)]
     public void RowCountLimit_AllPasses(int maxExportRows)
     {
+      DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
+      DILoggingFixture.TestMaxExportRowsConfig(maxExportRows);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
-      DILoggingFixture.ResetMaxExportRowsConfig(maxExportRows);
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
@@ -134,10 +160,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData(400000)]
     public void RowCountLimit_AllPassesMultiSubGrids(int maxExportRows)
     {
+      DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
+      DILoggingFixture.TestMaxExportRowsConfig(maxExportRows);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
-      DILoggingFixture.ResetMaxExportRowsConfig(maxExportRows);
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = new List<string>();
@@ -158,10 +186,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData(400)]
     public void RowCountLimit_FinalPass(int maxExportRows)
     {
+      DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
+      DILoggingFixture.TestMaxExportRowsConfig(maxExportRows);
+
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
-      DILoggingFixture.ResetMaxExportRowsConfig(maxExportRows);
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
@@ -174,11 +204,14 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CellProfile_FullDataContingent()
     {
+      var maxRowsToExport = 1;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       SetupSiteAndRequestArgument(CoordType.Northeast, OutputTypes.VedaFinalPass, false, "ElevationMappingMode-KettlewellDrive",
         out CSVExportRequestArgument requestArgument);
       requestArgument.MappedMachines = new List<CSVExportMappedMachine>() {new CSVExportMappedMachine() {InternalSiteModelMachineIndex = 2, Name = "The machine Name"}};
 
-      DILoggingFixture.ResetMaxExportRowsConfig(1);
       var clientGrid = SetupProfileSampleCell();
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
@@ -191,11 +224,14 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CellPasses_IncludesHalfPasses()
     {
+      var maxRowsToExport = 10;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       SetupSiteAndRequestArgument(CoordType.Northeast, OutputTypes.PassCountAllPasses, false, "ElevationMappingMode-KettlewellDrive",
         out CSVExportRequestArgument requestArgument);
       requestArgument.MappedMachines = new List<CSVExportMappedMachine>() { new CSVExportMappedMachine() { InternalSiteModelMachineIndex = 2, Name = "The machine Name" } };
 
-      DILoggingFixture.ResetMaxExportRowsConfig(10);
       var clientGrid = SetupProfileAllPassesSampleCell();
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 

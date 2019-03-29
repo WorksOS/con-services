@@ -270,6 +270,18 @@ namespace VSS.TRex.Tests.Exports.CSV
       result.Should().Be(expectedResult);
     }
 
+    [Fact]
+    public void FormatEventVibrationState_Unknown()
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatEventVibrationState((VibrationState)100);
+      result.Should().Be("unknown: 100");
+    }
+
+
     private UserPreferences DefaultUserPreferences()
     {
       return new UserPreferences(

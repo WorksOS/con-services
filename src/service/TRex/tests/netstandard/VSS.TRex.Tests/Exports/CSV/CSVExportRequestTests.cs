@@ -6,7 +6,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -30,9 +29,16 @@ namespace VSS.TRex.Tests.Exports.CSV
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CSVExportRequestComputeFunc, CSVExportRequestArgument, CSVExportRequestResponse>();
     private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
 
+    public CSVExportRequestTests()
+    {
+      DILoggingFixture.SetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
+    }
+
     [Fact]
     public void CSVExportRequest_Creation()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       var request = new CSVExportRequest();
       request.Should().NotBeNull();
     }
@@ -40,6 +46,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_EmptySiteModel()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -54,6 +61,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfile()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -85,6 +93,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfileAllPasses()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -116,6 +125,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_SingleSubGridSinglePass()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -154,6 +164,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_UnableToWriteResultToS3()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -179,6 +190,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_NoProductionData()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -194,6 +206,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_NoCellPasses()
     {
+      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -220,11 +233,13 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_ExceedsLimit()
     {
+      var maxRowsToExport = 1;
+      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      DILoggingFixture.ResetMaxExportRowsConfig(1);
-      
       MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
@@ -241,9 +256,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportExceededRowLimit);
-      DILoggingFixture.ResetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
     }
-    
 
     private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid, OutputTypes outputType = OutputTypes.PassCountLastPass)
     {

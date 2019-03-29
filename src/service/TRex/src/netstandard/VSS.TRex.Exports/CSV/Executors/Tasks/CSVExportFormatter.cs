@@ -57,14 +57,6 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     {
       switch (newUserPreference.Units)
       {
-        case UnitsTypeEnum.US: // USSurveyFeet
-        {
-          DistanceConversionFactor = USFeetToMeters;
-          SpeedUnitString = "mph";
-          SpeedConversionFactor = USFeetToMeters * 5280;
-          DistanceUnitString = "FT";
-          break;
-        }
         case UnitsTypeEnum.Metric:
         {
           DistanceConversionFactor = 1.0;
@@ -79,6 +71,14 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           SpeedUnitString = "mph";
           SpeedConversionFactor = ImperialFeetToMeters * 5280;
           DistanceUnitString = "ft";
+          break;
+        }
+        default:   // case UnitsTypeEnum.US: // USSurveyFeet
+        {
+          DistanceConversionFactor = USFeetToMeters;
+          SpeedUnitString = "mph";
+          SpeedConversionFactor = USFeetToMeters * 5280;
+          DistanceUnitString = "FT";
           break;
         }
       }
@@ -208,12 +208,13 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
     public string FormatEventVibrationState(VibrationState value)
     {
-      var result = $"unknown: {value}";
+      string result;
       switch (value)
       {
         case VibrationState.Off: result = "Off"; break;
         case VibrationState.On: result = "On"; break;
         case VibrationState.Invalid: result = "Not_Applicable"; break;
+        default: result = $"unknown: {value}"; break;
       }
 
       return result;
