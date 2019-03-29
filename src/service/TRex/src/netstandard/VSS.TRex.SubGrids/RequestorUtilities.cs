@@ -146,7 +146,7 @@ namespace VSS.TRex.SubGrids
         var requestor = SubGridRequestorFactory();
         requestor.Initialize(siteModel,
           x.GridDataType,
-          siteModels.StorageProxy,
+          siteModel.PrimaryStorageProxy,
           x.Filter,
           false, // Override cell restriction
           BoundingIntegerExtent2D.Inverted(),

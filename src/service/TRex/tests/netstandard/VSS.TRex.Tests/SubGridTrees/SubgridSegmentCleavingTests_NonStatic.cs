@@ -25,6 +25,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         private IServerLeafSubGrid MakeSubgridWith10240CellPassesAtOneSecondIntervals()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
+            subGrid.SetIsMutable(true);
             subGrid.AllocateLeafFullPassStacks();
 
             // Create a segment with 10240 cell passes with each cell pass occuring one second apart. 
@@ -34,7 +35,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             {
               VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
-                    subGrid.AddPass(x, y, new CellPass()
+                    subGrid.AddPass(x, y, new CellPass
                     {
                         Time = passTime,
                         Height = (float)1.0
@@ -124,12 +125,13 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubgridSegmentCleaving_CellPassAddition_IncreasingTime()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
+            subGrid.SetIsMutable(true);
             subGrid.AllocateLeafFullPassStacks();
 
             // Create a segment with 10240 cell passes with each cell pass occuring one second apart. 
             DateTime passTime = startTime;
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -137,7 +139,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             passTime = passTime.AddSeconds(1);
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -153,12 +155,13 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubgridSegmentCleaving_CellPassAddition_DecreasingTime()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
+            subGrid.SetIsMutable(true);
             subGrid.AllocateLeafFullPassStacks();
 
             // Create a segment with 10240 cell passes with each cell pass occuring one second apart. 
             DateTime passTime = startTime.AddSeconds(1);
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -166,7 +169,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             passTime = passTime.AddSeconds(-1);
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -191,6 +194,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create a second segment specially and use the cell pass adopter to move cell passes 
             SubGridCellPassesDataSegment segment2 = new SubGridCellPassesDataSegment
             {
+                Owner = subGrid,
                 SegmentInfo = new SubGridCellPassesDataSegmentInfo()
             };
             segment2.AllocateFullPassStacks();

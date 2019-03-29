@@ -17,8 +17,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentIterator_SubGridSegmentIterator()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), StorageMutability.Mutable);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 
@@ -29,8 +29,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentIterator_SetTimeRange()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), StorageMutability.Mutable);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 
@@ -63,8 +63,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentIterator_InitialiseIterator()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), StorageMutability.Mutable);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory,
               StorageProxy.Instance(StorageMutability.Mutable))
@@ -90,8 +90,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentIterator_SetIteratorElevationRange()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), StorageMutability.Mutable);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 

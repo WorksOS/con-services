@@ -32,7 +32,7 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of the spatial grid cache to use to store mutable cell and cell pass information
         /// </summary>
         /// <returns></returns>
-        public static string ImmutableSpatialCacheName() => TRexServerConfig.Instance().CompressImmutableSpatialData ? kSpatialImmutableCompressed : kSpatialImmutable;
+        public static string ImmutableSpatialCacheName() => kSpatialImmutableCompressed;
     
         /// <summary>
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
@@ -43,7 +43,7 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of the spatial grid cache to use to store immutable cell and cell pass information
         /// </summary>
         /// <returns></returns>
-        public static string ImmutableNonSpatialCacheName() => TRexServerConfig.Instance().CompressImmutableNonSpatialData ? kNonSpatialImmutableCompressed : kNonSpatialImmutable;
+        public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutableCompressed;
 
         public static string SpatialCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
 

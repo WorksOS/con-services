@@ -66,7 +66,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{705ACE48-32FB-4C0A-8F17-CB60F3AC2CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Common.Kubernetes", "VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{CB372A55-0C07-48A0-964C-9E734F6B50E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{CB372A55-0C07-48A0-964C-9E734F6B50E5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D35A8B8-EF2C-488F-8A37-2A47796496C6}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\.editorconfig = ..\..\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

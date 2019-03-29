@@ -15,8 +15,7 @@ namespace VSS.TRex.Webtools
     public static ISiteModels SwitchableSiteModelsContext()
     {
       return SwitchableSiteModelsContexts[(int) switchableMutability] ??
-             (SwitchableSiteModelsContexts[(int) switchableMutability] =
-               new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().Storage(switchableMutability)));
+             (SwitchableSiteModelsContexts[(int) switchableMutability] = new SiteModels.SiteModels());
     }
   }
 }

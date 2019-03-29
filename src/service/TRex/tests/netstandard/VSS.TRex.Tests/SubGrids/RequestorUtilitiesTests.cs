@@ -56,9 +56,9 @@ namespace VSS.TRex.Tests.SubGrids
 
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
 
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(() => null)))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
 
         .Complete();

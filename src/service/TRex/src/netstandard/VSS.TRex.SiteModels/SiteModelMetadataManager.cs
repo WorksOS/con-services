@@ -21,7 +21,7 @@ namespace VSS.TRex.SiteModels
   public class SiteModelMetadataManager : ISiteModelMetadataManager
   {
     /// <summary>
-    /// The Ignite cache containing the sitemodel metadata
+    /// The Ignite cache containing the site model metadata
     /// </summary>
     private ICache<Guid, ISiteModelMetadata> metaDataCache;
 
@@ -37,7 +37,7 @@ namespace VSS.TRex.SiteModels
         // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
         KeepBinaryInStore = false,
 
-        // Replicate the sitemodel metadata across nodes
+        // Replicate the site model metadata across nodes
         CacheMode = CacheMode.Replicated,
 
         // No backups for now
@@ -51,10 +51,10 @@ namespace VSS.TRex.SiteModels
     /// Constructs a site model meta data manager instance oriented to the TRex grid that is the primary grid
     /// referenced by the DI'd SiteModels instance
     /// </summary>
-    public SiteModelMetadataManager()
+    public SiteModelMetadataManager(StorageMutability mutability)
     {
       // Obtain the ignite reference for the primary grid orientation of SiteModels
-      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(DIContext.Obtain<ISiteModels>().StorageProxy.Mutability);
+      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
 
       metaDataCache = ignite?.GetOrCreateCache<Guid, ISiteModelMetadata>(ConfigureCache());
 
@@ -63,7 +63,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Adds a new metadata record for a sitemodel
+    /// Adds a new metadata record for a site model
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="metaData"></param>
@@ -73,7 +73,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Requests TRex update the stored metadata for a particular sitemodel by creating a new
+    /// Requests TRex update the stored metadata for a particular site model by creating a new
     /// metadata record from scratch.
     /// Note: This does force the site model to load a range of elements to construct the update
     /// metadata object.

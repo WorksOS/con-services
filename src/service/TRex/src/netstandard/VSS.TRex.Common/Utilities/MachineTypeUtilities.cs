@@ -13,12 +13,5 @@ namespace VSS.TRex.Common.Utilities
     /// <param name="type"></param>
     /// <returns></returns>
     public static bool IsHalfPassCompactorMachine(MachineType type) => type == MachineType.FourDrumLandfillCompactor;
-
-    /// <summary>
-    /// Notes if the pass counting basis for the machine type in in terms of 'half passes', ie: one half pass per tracked axle of the machine
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static bool IsHalfPassCompactorMachine(byte type) => (MachineType)type == MachineType.FourDrumLandfillCompactor;    
   }
 }

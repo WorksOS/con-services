@@ -13,7 +13,7 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
   /// </summary>
   public class ProfileRequestComputeFunc_ApplicationService<T> : BaseComputeFunc, IComputeFunc<ProfileRequestArgument_ApplicationService, ProfileRequestResponse<T>> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ApplicationService<T>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ApplicationService<T>>();
 
     /// <summary>
     /// Delegates processing of the profile like to the cluster compute layer, then aggregates together the fractional responses

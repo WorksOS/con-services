@@ -135,7 +135,7 @@ namespace VSS.TRex.SubGridTrees
         // CreateNewSubGrid creates a new sub grid relevant to the requested level
         // in the tree. This new sub grid is not added into the tree structure -
         // it is unattached until explicitly inserted.
-        public ISubGrid CreateNewSubGrid(byte level) => SubGridFactory.GetSubGrid(this, level);
+        public virtual ISubGrid CreateNewSubGrid(byte level) => SubGridFactory.GetSubGrid(this, level);
 
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
@@ -351,7 +351,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="cellY"></param>
         /// <param name="pathType"></param>
         /// <returns></returns>
-        public ISubGrid ConstructPathToCell(uint cellX, uint cellY,
+        public virtual ISubGrid ConstructPathToCell(uint cellX, uint cellY,
                                             SubGridPathConstructionType pathType)
         {
             ISubGrid result = null;

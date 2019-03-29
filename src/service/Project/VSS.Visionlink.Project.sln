@@ -92,6 +92,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client", "..\..\Common\Pegasus\VSS.Pegasus.Client\src\VSS.Pegasus.Client.csproj", "{636F39D9-43FB-4BA7-AD54-D108AD9116FD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{497A0782-6967-46D5-9758-F162029A712B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\.editorconfig = ..\..\..\.editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

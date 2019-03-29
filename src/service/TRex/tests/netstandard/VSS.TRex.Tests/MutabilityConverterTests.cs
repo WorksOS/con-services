@@ -65,13 +65,13 @@ namespace VSS.TRex.Tests
     [Fact]
     public void Test_MutabilityConverterTests_ConvertSubgridDirectoryTest()
     {
-      // Create a subgrid directory with a single segment and some cells. Create a stream from it then use the
+      // Create a sub grid directory with a single segment and some cells. Create a stream from it then use the
       // mutability converter to convert it to the immutable form. Read this back into an immutable representation
       // and compare the mutable and immutable versions for consistency.
 
       // Create a leaf to contain the mutable directory
-      IServerLeafSubGrid mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
-      mutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false);
+      IServerLeafSubGrid mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable);
+      mutableLeaf.Directory.GlobalLatestCells = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewMutableWrapper();
 
       // Load the mutable stream of information
       mutableLeaf.Directory.CreateDefaultSegment();
@@ -88,8 +88,8 @@ namespace VSS.TRex.Tests
       /* todo also test using the mutableStream */
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, null, mutableLeaf, out MemoryStream immutableStream);
 
-      IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
-      immutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
+      IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable);
+      immutableLeaf.Directory.GlobalLatestCells = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewImmutableWrapper();
 
       immutableStream.Position = 0;
       immutableLeaf.LoadDirectoryFromStream(immutableStream);
@@ -118,8 +118,8 @@ namespace VSS.TRex.Tests
 
       // Create a mutable segment to contain the passes
       SubGridCellPassesDataSegment mutableSegment = new SubGridCellPassesDataSegment
-      (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false),
-        SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false));
+      (DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewMutableWrapper(),
+        DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>().NewMutableWrapper());
 
       // Load the mutable stream of information
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
@@ -157,8 +157,8 @@ namespace VSS.TRex.Tests
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, null, mutableSegment, out MemoryStream immutableStream);
 
       SubGridCellPassesDataSegment immutableSegment = new SubGridCellPassesDataSegment
-      (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true),
-        SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true));
+      (DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewImmutableWrapper(),
+        DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>().NewImmutableWrapper());
 
       immutableStream.Position = 0;
 
@@ -243,7 +243,7 @@ namespace VSS.TRex.Tests
       storageProxy.SetImmutableStorageProxy(new StorageProxy_Ignite_Transactional(StorageMutability.Immutable));
 
       var moqSiteModels = new Mock<ISiteModels>();
-      moqSiteModels.Setup(mk => mk.StorageProxy).Returns(storageProxy);
+      moqSiteModels.Setup(mk => mk.PrimaryMutableStorageProxy).Returns(storageProxy);
 
       DIBuilder
         .Continue()

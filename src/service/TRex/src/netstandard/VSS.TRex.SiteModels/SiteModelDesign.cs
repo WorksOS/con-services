@@ -25,8 +25,8 @@ namespace VSS.TRex.SiteModels
       Extents = extents;
     }
 
-    public bool MatchesDesignName(string other) => (other != null) && Name.Equals(other);
+    public bool MatchesDesignName(string other) => other != null && Name.Equals(other);
 
-    public bool Equals(string other) => (other != null) && Name.Equals(other);
+    public bool Equals(string other) => other != null && Name.Equals(other);
   }
 }

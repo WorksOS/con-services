@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Logging;
@@ -30,7 +29,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     /// </summary>
     public class ImmutableClientServer : IgniteServer, IImmutableClientServer
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ImmutableClientServer>();
 
     /// <summary>
     /// Constructor that creates a new server instance with a single role

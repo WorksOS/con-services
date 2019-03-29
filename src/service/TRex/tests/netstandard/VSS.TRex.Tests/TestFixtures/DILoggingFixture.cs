@@ -9,6 +9,8 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -71,6 +73,8 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build()
         .Add(x => x.AddSingleton<IConfigurationStore>(DIContext.Obtain<Mock<IConfigurationStore>>().Object))
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(x => x.AddSingleton<ISubGridCellSegmentPassesDataWrapperFactory>(new SubGridCellSegmentPassesDataWrapperFactory()))
+        .Add(x => x.AddSingleton<ISubGridCellLatestPassesDataWrapperFactory>(new SubGridCellLatestPassesDataWrapperFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Complete();
     }
