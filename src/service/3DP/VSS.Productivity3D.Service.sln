@@ -90,6 +90,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Proxy", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Proxy\VSS.Productivity3D.3DAssetMgmt.Proxy.csproj", "{615F9E06-7BD7-4347-871E-E87C24D3A166}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{16B38AE3-AA27-4FDB-9CEE-C96FE8B62656}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\.editorconfig = ..\..\..\.editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -64,7 +64,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Models", "src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj", "{3A2A7D7A-C640-4EB0-8062-C8F450A69681}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Productivity3D.Scheduler.Proxy", "src\VSS.Productivity3D.Scheduler.Proxy\VSS.Productivity3D.Scheduler.Proxy.csproj", "{1FE5995C-4E36-44F0-B9E5-46A11C8732D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Proxy", "src\VSS.Productivity3D.Scheduler.Proxy\VSS.Productivity3D.Scheduler.Proxy.csproj", "{1FE5995C-4E36-44F0-B9E5-46A11C8732D3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D8791C80-9A8D-4EFD-87EA-1CF0C60829D3}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\.editorconfig = ..\..\..\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
