@@ -7,6 +7,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
@@ -28,6 +29,13 @@ namespace VSS.AWS.TransferProxy
       "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
     public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log) : this(configStore, log,
       "AWS_BUCKET_NAME")
+    {
+    }
+
+    [Obsolete(
+      "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
+    public TransferProxy(IConfigurationStore configStore, string storageKey) : this(configStore, new NullLogger<TransferProxy>(),
+      storageKey)
     {
     }
 
