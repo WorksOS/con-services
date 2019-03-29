@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
@@ -176,6 +177,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel
         (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
+    }
+
+    public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
+    {
+      var executor = new AddCoordinateSystemExecutor();
+      executor.Execute(siteModel.ID, csib);
     }
 
     public new void Dispose()

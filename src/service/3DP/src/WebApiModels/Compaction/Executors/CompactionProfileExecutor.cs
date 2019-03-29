@@ -166,8 +166,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         request.VolumeDesignDescriptor?.FileUid,
         request.GridPoints != null,
         request.GridPoints?.x1 ?? (request.WGS84Points?.lon1 ?? 0.0),
-        request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y1 ?? (request.WGS84Points?.lat1 ?? 0.0),
+        request.GridPoints?.x2 ?? (request.WGS84Points?.lon2 ?? 0.0),
         request.GridPoints?.y2 ?? (request.WGS84Points?.lat2 ?? 0.0),
         request.ReturnAllPassesAndLayers
       );

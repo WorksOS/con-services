@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 #if RAPTOR
 using SVOICDecls;
 using VLPDDecls;
+using VSS.Productivity3D.Common.Proxies;
 #endif
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Executors
 {
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.Common.Executors
         var trexData = await GetTRexCellDatumData(request);
 
         if (trexData != null)
-          return ConvertTRexCellDatumResult(trexData);
+          return trexData;
 
         throw CreateNoCellDatumReturnedException();
 #if RAPTOR
@@ -45,17 +46,11 @@ namespace VSS.Productivity3D.Common.Executors
 #endif
     }
 
-    protected virtual async Task<object> GetTRexCellDatumData(CellDatumRequest request)
+    protected virtual async Task<CellDatumResult> GetTRexCellDatumData(CellDatumRequest request)
     {
-      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-    }
-
-    protected virtual CellDatumResponse ConvertTRexCellDatumResult(object result)
-    {
-      // TODO To be implemented once getting cell datum endpoint is exposed in the TRex Gateway WebAPI.
-      return null;
+      var trexRequest = new CellDatumTRexRequest(request.ProjectUid.Value, request.DisplayMode, request.LLPoint,
+        request.GridPoint, request.Filter, request.Design?.FileUid);
+      return await trexCompactionDataProxy.SendDataPostRequest<CompactionCellDatumResult, CellDatumTRexRequest>(trexRequest, "/cells/datum", customHeaders);
     }
 #if RAPTOR
     protected virtual bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
@@ -75,13 +70,13 @@ namespace VSS.Productivity3D.Common.Executors
         out data);
     }
 
-    protected virtual CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
+    protected virtual CellDatumResult ConvertCellDatumResult(TCellProductionData result)
     {
-      return new CellDatumResponse(
+      return new CellDatumResult(
           RaptorConverters.convertDisplayMode((TICDisplayMode) result.DisplayMode),
-              result.ReturnCode,
-              result.ReturnCode == 0 ? result.Value : (double?)null,
-              result.TimeStampUTC);
+          (CellDatumReturnCode)result.ReturnCode,
+          result.ReturnCode == 0 ? result.Value : (double?)null,
+          result.TimeStampUTC);
     }
 #endif
 

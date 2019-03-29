@@ -3,34 +3,33 @@ kind: ConfigMap
 metadata:
   name: tileservice-testing
 data:
-  PROJECT_API_URL: http://localhost:5001/api/v4/mockproject
+  ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
+  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  DATA_OCEAN_ROOT_FOLDER: dev
+  DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
+  DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
+  DATA_OCEAN_URL: http://localhost:5001
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
   IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/mock/importedfiles
+  LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump
+  LOG_MAX_CHAR: "1000"
+  MOCK_WEBAPI_BASE_URL: http://localhost:5001
+  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
+  PEGASUS_EXECUTION_TIMEOUT_MINS: "1"
+  PEGASUS_EXECUTION_WAIT_MILLSECS: "1000"
+  PEGASUS_URL: http://localhost:5001
   PREFERENCE_API_URL: http://localhost:5001/api/v1/mock/preferences
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  PROJECT_API_URL: http://localhost:5001/api/v4/mockproject
   RAPTOR_3DPM_API_URL: http://localhost:5001/api/v2
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
   TCCORG: vldev
-  TCCUSERNAME: vldev
   TCCPWD: vldev_key
-  ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
-  LOG_MAX_CHAR: "1000"
-  WEBAPI_DEBUG_URI: http://localhost:80/
-  WEBAPI_URI: http://localhost:80/
-  TILE_WEBSERVICES_URL: http://localhost:80
-  LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump
+  TCCUSERNAME: vldev
   TILE_CACHE_LIFE: 00:15:00
+  TILE_WEBSERVICES_URL: http://localhost:80
   TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
   TPAAS_OAUTH_URL: http://localhost:5001/api/oauth2/token
-  DATA_OCEAN_URL: http://localhost:5001
-  DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
-  DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
-  DATA_OCEAN_ROOT_FOLDER: dev
-  PEGASUS_URL: http://localhost:5001
-  PEGASUS_EXECUTION_TIMEOUT_MINS: "1"
-  PEGASUS_EXECUTION_WAIT_MILLSECS: "1000"
-  PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7
-  MOCK_WEBAPI_BASE_URL: http://localhost:5001
   USE_DATA_OCEAN: "false"
-
+  WEBAPI_DEBUG_URI: http://localhost:80/
+  WEBAPI_URI: http://localhost:80/

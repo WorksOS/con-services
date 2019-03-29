@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,11 +14,14 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -42,7 +48,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
-
+#if RAPTOR
     [TestMethod]
     public void CompactionCellDatumExecutorNoResult()
     {
@@ -105,6 +111,66 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Build<CompactionCellDatumExecutor>(logger, raptorClient.Object, configStore: configStore.Object);
 
       Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request), "On Cell Datum request. Failed to process coordinate conversion request.");
+    }
+#endif
+  
+    [TestMethod]
+    public async Task CompactionCellDatumExecutor_TRex_Success()
+    {
+      var expectedResult = new CompactionCellDatumResult(DisplayMode.Height, CellDatumReturnCode.ValueFound, 5.23,
+        DateTime.UtcNow.AddHours(-4.5), 12345, 9876);
+
+      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
+      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCellDatumResult, CellDatumTRexRequest>(
+          It.IsAny<CellDatumTRexRequest>(),
+          It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(), false))
+        .ReturnsAsync(expectedResult);
+
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns("true");
+
+      var executor = RequestExecutorContainerFactory
+        .Build<CompactionCellDatumExecutor>(logger, configStore: configStore.Object, trexCompactionDataProxy: tRexProxy.Object);
+
+      var request =
+        new CellDatumRequest(0, Guid.NewGuid(), expectedResult.displayMode, new WGSPoint(123.456, 678.987), null, null, null, null);
+
+      var result = await executor.ProcessAsync(request) as CompactionCellDatumResult;
+      Assert.AreEqual(expectedResult.displayMode, result.displayMode, "Wrong displayMode");
+      Assert.AreEqual(expectedResult.returnCode, result.returnCode, "Wrong returnCode");
+      Assert.AreEqual(expectedResult.value, result.value, "Wrong value");
+      Assert.AreEqual(expectedResult.timestamp, result.timestamp, "Wrong timestamp");
+      Assert.AreEqual(expectedResult.northing, result.northing, "Wrong northing");
+      Assert.AreEqual(expectedResult.easting, result.easting, "Wrong easting");
+    }
+
+    [TestMethod]
+    public void CompactionCellDatumExecutor_TRex_NoCoords()
+    {
+      var expectedResult = new CompactionCellDatumResult(DisplayMode.Height, CellDatumReturnCode.ValueFound, 5.23,
+        DateTime.UtcNow.AddHours(-4.5), 12345, 9876);
+
+      var tRexProxy = new Mock<ITRexCompactionDataProxy>();
+      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCellDatumResult, CellDatumTRexRequest>(
+          It.IsAny<CellDatumTRexRequest>(),
+          It.IsAny<string>(),
+          It.IsAny<IDictionary<string, string>>(), false))
+        .ReturnsAsync(expectedResult);
+
+      var configStore = new Mock<IConfigurationStore>();
+      configStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_CELL_DATUM")).Returns("true");
+
+      var executor = RequestExecutorContainerFactory
+        .Build<CompactionCellDatumExecutor>(logger, configStore: configStore.Object, trexCompactionDataProxy: tRexProxy.Object);
+
+      var request =
+        new CellDatumRequest(0, Guid.NewGuid(), expectedResult.displayMode, null, new Point(expectedResult.northing, expectedResult.easting), null, null, null);
+
+      var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).Result;
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+      Assert.AreEqual("No WGS84 coordinates provided", ex.GetResult.Message);
+
     }
   }
 }
