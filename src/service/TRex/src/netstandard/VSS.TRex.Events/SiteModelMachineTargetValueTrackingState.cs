@@ -138,9 +138,9 @@ namespace VSS.TRex.Events
     /// <param name="stamp"></param>
     /// <param name="_Time"></param>
     /// <returns></returns>
-    public T DetermineTrackingStateValue(int stamp, DateTime _Time)
+    public T DetermineTrackingStateValue(int stamp, DateTime _Time, T defaultValue)
     {
-      T result = default;
+      T result = defaultValue;
 
       if (Stamp == stamp)
       {
@@ -150,7 +150,7 @@ namespace VSS.TRex.Events
             result = ThisEvent;
           else
           {
-            result = EventList.GetValueAtDate(_Time, out int _);
+            result = EventList.GetValueAtDate(_Time, out int _, defaultValue);
             RecordEventState(Stamp);
           }
         }
@@ -159,7 +159,7 @@ namespace VSS.TRex.Events
         Stamp = stamp;
       else
       {
-        result = EventList.GetValueAtDate(_Time, out int _);
+        result = EventList.GetValueAtDate(_Time, out int _, defaultValue);
         RecordEventState(Stamp);
       }
 

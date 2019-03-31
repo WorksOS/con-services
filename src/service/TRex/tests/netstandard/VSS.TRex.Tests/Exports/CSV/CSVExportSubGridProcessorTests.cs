@@ -28,15 +28,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     public CSVExportSubGridProcessorTests()
     {
       DILoggingFixture.SetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
     }
 
     [Fact]
     public void PassCountLastPassNotDbase()
     {
-      var maxRowsToExport = 1000;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(1000);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -44,15 +41,13 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?");
+      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Importing a DC file is currently being implemented")]
     public void PassCountLastPassNotDbaseWithLatLong()
     {
-      var maxRowsToExport = 1000;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(1000);
 
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.PassCountLastPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -60,15 +55,13 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?");
+      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact]
     public void PassCountLastPassDBase()
     {
-      var maxRowsToExport = 1000;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(1000);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountLastPass, true,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -76,15 +69,13 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
-      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808532.750,376734.110,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,0.000,Neutral,Off,");
+      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808532.750,376734.110,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,,,,");
     }
 
     [Fact]
     public void VetaFinalPass_NorthingEasting()
     {
-      var maxRowsToExport = 100000;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(100000);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _, "Dimensions2018-CaseMachine"); 
@@ -92,15 +83,13 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(8);
-      rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,Fine (0.000m),?,2,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?");
+      rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,?,?,2,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Skip until coreX is available")]
     public void VetaFinalPass_LatLong()
     {
-      var maxRowsToExport = 10;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(10);
 
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel siteModel, "Dimensions2018-CaseMachine");
@@ -110,15 +99,13 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(8);
-      rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,Fine (0.000m),?,2,1,?,?,?,?,?,?,?,0.000m,Neutral,Off,?");
+      rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,Fine (0.000m),?,2,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact]
     public void PassCountAllPassesNotDBase()
     {
-      var maxRowsToExport = 1000;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(1000);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -126,7 +113,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       rows.Count.Should().Be(384);
-      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,0.0,?,0.0,?,?,?,0.000m,Neutral,Off,?");
+      rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Theory]
@@ -138,7 +125,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void RowCountLimit_AllPasses(int maxExportRows)
     {
       DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
-      DILoggingFixture.TestMaxExportRowsConfig(maxExportRows);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -161,7 +147,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void RowCountLimit_AllPassesMultiSubGrids(int maxExportRows)
     {
       DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
-      DILoggingFixture.TestMaxExportRowsConfig(maxExportRows);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.PassCountAllPasses, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -187,7 +172,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     public void RowCountLimit_FinalPass(int maxExportRows)
     {
       DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
-      DILoggingFixture.TestMaxExportRowsConfig(maxExportRows);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel _);
@@ -204,9 +188,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CellProfile_FullDataContingent()
     {
-      var maxRowsToExport = 1;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(1);
 
       SetupSiteAndRequestArgument(CoordType.Northeast, OutputTypes.VedaFinalPass, false, "ElevationMappingMode-KettlewellDrive",
         out CSVExportRequestArgument requestArgument);
@@ -224,9 +206,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CellPasses_IncludesHalfPasses()
     {
-      var maxRowsToExport = 10;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(10);
 
       SetupSiteAndRequestArgument(CoordType.Northeast, OutputTypes.PassCountAllPasses, false, "ElevationMappingMode-KettlewellDrive",
         out CSVExportRequestArgument requestArgument);

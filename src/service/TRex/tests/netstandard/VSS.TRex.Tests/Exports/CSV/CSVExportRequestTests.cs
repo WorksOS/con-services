@@ -32,13 +32,11 @@ namespace VSS.TRex.Tests.Exports.CSV
     public CSVExportRequestTests()
     {
       DILoggingFixture.SetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
     }
 
     [Fact]
     public void CSVExportRequest_Creation()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       var request = new CSVExportRequest();
       request.Should().NotBeNull();
     }
@@ -46,7 +44,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_EmptySiteModel()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -61,7 +58,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfile()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -87,13 +83,12 @@ namespace VSS.TRex.Tests.Exports.CSV
       var lines = File.ReadAllLines(extractedFileName);
       lines.Length.Should().Be(2);
       lines[0].Should().Be("Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
-      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,Fine (0.000m),?,1,1,?,?,0.0,?,?,?,?,0.000m,Neutral,Off,0.0°C");
+      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
     }
 
     [Fact]
     public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfileAllPasses()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -119,13 +114,12 @@ namespace VSS.TRex.Tests.Exports.CSV
       var lines = File.ReadAllLines(extractedFileName);
       lines.Length.Should().Be(2);
       lines[0].Should().Be("Time,CellN,CellE,Elevation,PassNumber,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,ValidPos,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
-      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,Fine (0.000m),?,0,1,?,0.0,0.0,0.0,?,?,?,0.000m,Neutral,Off,0.0°C");
+      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,0,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
     }
 
     [Fact]
     public void CSVExportRequest_Execute_SingleSubGridSinglePass()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -156,15 +150,14 @@ namespace VSS.TRex.Tests.Exports.CSV
       lines.Length.Should().Be(SubGridTreeConsts.SubGridTreeCellsPerSubGrid + 1);
       lines[0].Should().BeEquivalentTo(
         "Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
-      lines[1].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,Fine (0.000m),?,1,1,?,?,0.0,?,?,?,?,0.000m,Neutral,Off,0.0°C");
-      lines[10].Length.Should().Be(143);
-      lines[10].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,3.230m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,Fine (0.000m),?,1,1,?,?,0.0,?,?,?,?,0.000m,Neutral,Off,0.0°C");
+      lines[1].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+      lines[10].Length.Should().Be(118);
+      lines[10].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,3.230m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
     }
 
     [Fact]
     public void CSVExportRequest_Execute_UnableToWriteResultToS3()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -190,7 +183,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_NoProductionData()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -206,7 +198,6 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_NoCellPasses()
     {
-      DILoggingFixture.TestMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -233,9 +224,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void CSVExportRequest_Execute_ExceedsLimit()
     {
-      var maxRowsToExport = 1;
-      DILoggingFixture.SetMaxExportRowsConfig(maxRowsToExport);
-      DILoggingFixture.TestMaxExportRowsConfig(maxRowsToExport);
+      DILoggingFixture.SetMaxExportRowsConfig(1);
 
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
