@@ -108,6 +108,20 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
+    /// Drops a site model from the site models cache.
+    /// Note: This may be performed safely at any time irrespective of the concurrently executing requests
+    /// referencing that site model
+    /// </summary>
+    /// <param name="ID">The UID identifying the site model to be dropped from the cache</param>
+    public void DropSiteModel(Guid ID)
+    {
+      lock (CachedModels)
+      {
+        CachedModels.Remove(ID);
+      }
+    }
+
+    /// <summary>
     /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
     /// requiring the site model to be reloaded
     /// </summary>
