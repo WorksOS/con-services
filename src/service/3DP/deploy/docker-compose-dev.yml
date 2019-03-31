@@ -5,6 +5,7 @@ services:
     environment:
       - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
       - ASNODEIP=dev-aslv01.vssengg.com
+      - assetmgmet3d-service-private-v1=http://assetmgmt3d.dev.eks.vspengg.com/api/v1
       - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
       - AWS_SECRET_KEY=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
