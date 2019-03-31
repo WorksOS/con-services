@@ -151,12 +151,12 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     public static void ProcessMachine333TAGFiles(Guid projectID)
     {
-      ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine333");
+      ProcessTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333");
     }
 
     public static void ProcessMachine10101TAGFiles(Guid projectID)
     {
-      ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
+      ProcessTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
     }
 
     private static void DependencyInjection()
@@ -230,14 +230,14 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         // ProcessMachine10101TAGFiles(projectID);
         // ProcessMachine333TAGFiles(projectID);
 
-        //ProcessSingleTAGFile(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
+        //ProcessSingleTAGFile(projectID, TestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
         //ProcessSingleTAGFile(projectID);
 
         // Process all TAG files for project 4733:
-        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
-        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
-        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
-        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
+        //ProcessTAGFilesInFolder(projectID, TestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
+        //ProcessTAGFilesInFolder(projectID, TestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
+        //ProcessTAGFilesInFolder(projectID, TestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
+        //ProcessTAGFilesInFolder(projectID, TestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
       }
       finally
       {

@@ -4,9 +4,13 @@ using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Types;
+using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -20,20 +24,20 @@ namespace VSS.TRex.Tests.Exports.CSV
       OutputTypes outputType = OutputTypes.PassCountAllPasses;
 
       var formatter = new CSVExportFormatter(csvUserPreference, outputType, false);
-      formatter.userPreference.DateSeparator.Should().Be("/");
-      formatter.userPreference.TimeSeparator.Should().Be(":");
-      formatter.userPreference.DecimalSeparator.Should().Be(".");
-      formatter.userPreference.ThousandsSeparator.Should().Be(",");
-      formatter.outputType.Should().Be(outputType);
-      formatter.isRawDataAsDBaseRequired.Should().Be(false);
-      formatter.nullString.Should().Be("?");
+      formatter.UserPreference.DateSeparator.Should().Be("/");
+      formatter.UserPreference.TimeSeparator.Should().Be(":");
+      formatter.UserPreference.DecimalSeparator.Should().Be(".");
+      formatter.UserPreference.ThousandsSeparator.Should().Be(",");
+      formatter.OutputType.Should().Be(outputType);
+      formatter.IsRawDataAsDBaseRequired.Should().Be(false);
+      formatter.NullString.Should().Be("?");
 
-      formatter.userPreference.Units.Should().Be(UnitsTypeEnum.Metric);
-      formatter.distanceConversionFactor.Should().Be(1.0);
-      formatter.speedUnitString.Should().Be("km/h");
-      formatter.speedConversionFactor.Should().Be(1000);
-      formatter.distanceUnitString.Should().Be("m");
-      formatter.exportDateTimeFormatString.Should().Be("yyyy/MMM/dd HH:mm:ss.fff");
+      formatter.UserPreference.Units.Should().Be(UnitsTypeEnum.Metric);
+      formatter.DistanceConversionFactor.Should().Be(1.0);
+      formatter.SpeedUnitString.Should().Be("km/h");
+      formatter.SpeedConversionFactor.Should().Be(1000);
+      formatter.DistanceUnitString.Should().Be("m");
+      formatter.ExportDateTimeFormatString.Should().Be("yyyy/MMM/dd HH:mm:ss.fff");
     }
 
     [Theory]
@@ -67,21 +71,21 @@ namespace VSS.TRex.Tests.Exports.CSV
       var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreference);
 
       var formatter = new CSVExportFormatter(csvUserPreference, outputType, isRawDataAsDBaseRequired);
-      formatter.userPreference.DateSeparator.Should().Be(dateSeparator);
-      formatter.userPreference.TimeSeparator.Should().Be(timeSeparator);
-      formatter.userPreference.DecimalSeparator.Should().Be(decimalSeparator);
-      formatter.userPreference.ThousandsSeparator.Should().Be(thousandsSeparator);
-      formatter.outputType.Should().Be(outputType);
-      formatter.isRawDataAsDBaseRequired.Should().Be(isRawDataAsDBaseRequired);
+      formatter.UserPreference.DateSeparator.Should().Be(dateSeparator);
+      formatter.UserPreference.TimeSeparator.Should().Be(timeSeparator);
+      formatter.UserPreference.DecimalSeparator.Should().Be(decimalSeparator);
+      formatter.UserPreference.ThousandsSeparator.Should().Be(thousandsSeparator);
+      formatter.OutputType.Should().Be(outputType);
+      formatter.IsRawDataAsDBaseRequired.Should().Be(isRawDataAsDBaseRequired);
       // this depends on isRawDataAsDBaseRequired
-      formatter.nullString.Should().Be(expectedNullString);
+      formatter.NullString.Should().Be(expectedNullString);
 
-      formatter.userPreference.Units.Should().Be(units);
-      formatter.distanceConversionFactor.Should().Be(expectedDistanceConversionFactor);
-      formatter.speedUnitString.Should().Be(expectedSpeedUnitString);
-      formatter.speedConversionFactor.Should().Be(expectedSpeedConversionFactor);
-      formatter.distanceUnitString.Should().Be(expectedDistanceUnitString);
-      formatter.exportDateTimeFormatString.Should().Be(expectedExportDateTimeFormatString);
+      formatter.UserPreference.Units.Should().Be(units);
+      formatter.DistanceConversionFactor.Should().Be(expectedDistanceConversionFactor);
+      formatter.SpeedUnitString.Should().Be(expectedSpeedUnitString);
+      formatter.SpeedConversionFactor.Should().Be(expectedSpeedConversionFactor);
+      formatter.DistanceUnitString.Should().Be(expectedDistanceUnitString);
+      formatter.ExportDateTimeFormatString.Should().Be(expectedExportDateTimeFormatString);
     }
 
     [Theory]
@@ -111,8 +115,8 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData("&", "@", UnitsTypeEnum.US, false, 24666.7123112f, "80927&374FT")]
     [InlineData("&", "@", UnitsTypeEnum.Imperial, false, 24666.7123112f, "80927&536ft")]
     [InlineData("&", "@", UnitsTypeEnum.Imperial, true, 24666.7123112f, "80927&536")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, -3.4E38f, "")]
-    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, -3.4E38f, "?")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, true, Consts.NullHeight, "")]
+    [InlineData("&", "@", UnitsTypeEnum.Imperial, false, Consts.NullHeight, "?")]
     public void FormatElevationString
     (string decimalSeparator, string thousandsSeparator, UnitsTypeEnum units,
       bool isRawDataAsDBaseRequired,
@@ -128,6 +132,155 @@ namespace VSS.TRex.Tests.Exports.CSV
       var result = formatter.FormatElevation(value);
       result.Should().Be(expectedResult);
     }
+
+    [Theory]
+    [InlineData(TemperatureUnitEnum.Fahrenheit, 2466, "475.9°F")]
+    [InlineData(TemperatureUnitEnum.Celsius, 2466, "246.6°C")]
+    [InlineData(TemperatureUnitEnum.None, 2466, "246.6°C")]
+    [InlineData(TemperatureUnitEnum.Fahrenheit, CellPassConsts.NullMaterialTemperatureValue, "?")]
+    [InlineData(TemperatureUnitEnum.Celsius, CellPassConsts.NullMaterialTemperatureValue, "?")]
+    [InlineData(TemperatureUnitEnum.Celsius, CellPassConsts.NullMaterialTemperatureValue - 1, "409.5°C")]
+    public void FormatLastPassValidTemperature(TemperatureUnitEnum temperatureUnits, ushort value, string expectedResult)
+    {
+      var userPreferences = new UserPreferences(){TemperatureUnits = (int)temperatureUnits };
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatLastPassValidTemperature(value);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(true, 2466, "246.6")]
+    [InlineData(false, 2466, "246.6Hz")]
+    [InlineData(true, CellPassConsts.NullFrequency, "")]
+    [InlineData(false, CellPassConsts.NullFrequency, "?")]
+    public void FormatFrequency(bool isRawDataAsDBaseRequired, ushort value, string expectedResult)
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass, isRawDataAsDBaseRequired);
+
+      var result = formatter.FormatFrequency(value);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(false, UnitsTypeEnum.US, GPSAccuracy.Fine, 2466, "Fine (8.091FT)")]
+    [InlineData(true, UnitsTypeEnum.Metric, GPSAccuracy.Medium, 2466, "Medium (2.466)")]
+    [InlineData(true, UnitsTypeEnum.Metric, GPSAccuracy.Coarse, 2466, "Coarse (2.466)")]
+    [InlineData(true, UnitsTypeEnum.Metric, GPSAccuracy.Unknown, 2466, "unknown: Unknown (2.466)")]
+    [InlineData(false, UnitsTypeEnum.US, GPSAccuracy.Fine, CellPassConsts.NullGPSTolerance, "?")]
+    [InlineData(true, UnitsTypeEnum.US, GPSAccuracy.Fine, CellPassConsts.NullGPSTolerance, "")]
+    public void FormatGPSAccuracy(bool isRawDataAsDBaseRequired, UnitsTypeEnum units, GPSAccuracy gpsAccuracy, int gpsTolerance, string expectedResult)
+    {
+      var userPreferences = new UserPreferences(){ Units = (int)units };
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass, isRawDataAsDBaseRequired);
+
+      var result = formatter.FormatGPSAccuracy(gpsAccuracy, gpsTolerance);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(false, UnitsTypeEnum.US, 24687, "552.2mph")]
+    [InlineData(true, UnitsTypeEnum.Metric, 24687, "888.7")]
+    [InlineData(false, UnitsTypeEnum.US, Consts.NullMachineSpeed, "?")]
+    [InlineData(true, UnitsTypeEnum.US, Consts.NullMachineSpeed, "")]
+    public void FormatSpeed(bool isRawDataAsDBaseRequired, UnitsTypeEnum units, int speed, string expectedResult)
+    {
+      var userPreferences = new UserPreferences() { Units = (int)units };
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass, isRawDataAsDBaseRequired);
+
+      var result = formatter.FormatSpeed(speed);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(true, 2466, "24.66")]
+    [InlineData(false, 2466, "24.66mm")]
+    [InlineData(true, CellPassConsts.NullAmplitude, "")]
+    [InlineData(false, CellPassConsts.NullAmplitude, "?")]
+    public void FormatAmplitude(bool isRawDataAsDBaseRequired, ushort value, string expectedResult)
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass, isRawDataAsDBaseRequired);
+
+      var result = formatter.FormatAmplitude(value);
+      result.Should().Be(expectedResult);
+    }
+    
+    [Theory]
+    [InlineData(MachineGear.Neutral, "Neutral")]
+    [InlineData(MachineGear.Forward, "Forward")]
+    [InlineData(MachineGear.Reverse, "Reverse")]
+    [InlineData(MachineGear.Forward2, "Forward_2")]
+    [InlineData(MachineGear.Forward3, "Forward_3")]
+    [InlineData(MachineGear.Forward4, "Forward_4")]
+    [InlineData(MachineGear.Forward5, "Forward_5")]
+    [InlineData(MachineGear.Reverse2, "Reverse_2")]
+    [InlineData(MachineGear.Reverse3, "Reverse_3")]
+    [InlineData(MachineGear.Reverse4, "Reverse_4")]
+    [InlineData(MachineGear.Reverse5, "Reverse_5")]
+    [InlineData(MachineGear.Park, "Park")]
+    [InlineData(MachineGear.Unknown, "Sensor_Failed")]
+    public void FormatMachineGear(MachineGear value, string expectedResult)
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatMachineGearValue(value);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(GPSMode.Old, "Old Position")]
+    [InlineData(GPSMode.AutonomousPosition, "Autonomous")]
+    [InlineData(GPSMode.Float, "Float")]
+    [InlineData(GPSMode.Fixed, "RTK Fixed")]
+    [InlineData(GPSMode.DGPS, "Differential_GPS")]
+    [InlineData(GPSMode.SBAS, "SBAS")]
+    [InlineData(GPSMode.LocationRTK, "Location_RTK")]
+    [InlineData(GPSMode.NoGPS, "Not_Applicable")]
+    [InlineData(GPSMode.Unknown5, "unknown: Unknown5")]
+    public void FormatGPSMode(GPSMode value, string expectedResult)
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatGPSMode(value);
+      result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(VibrationState.Off, "Off")]
+    [InlineData(VibrationState.On, "On")]
+    [InlineData(VibrationState.Invalid, "Not_Applicable")]
+    public void FormatEventVibrationState(VibrationState value, string expectedResult)
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatEventVibrationState(value);
+      result.Should().Be(expectedResult);
+    }
+
+    [Fact]
+    public void FormatEventVibrationState_Unknown()
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatEventVibrationState((VibrationState)100);
+      result.Should().Be("unknown: 100");
+    }
+
 
     private UserPreferences DefaultUserPreferences()
     {

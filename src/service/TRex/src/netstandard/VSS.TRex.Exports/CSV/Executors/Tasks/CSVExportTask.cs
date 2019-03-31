@@ -17,8 +17,6 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     public CSVExportSubGridProcessor SubGridExportProcessor { get; set; }
     public List<string> DataRows { get; set; } = new List<string>();
 
-    public CSVExportTask() {}
-
     /// <summary>
     /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
@@ -39,7 +37,6 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           result = true;
           foreach (var subGrid in subGridResponses)
           {
-            
             if (subGrid != null)
             {
               List<string> rows;
