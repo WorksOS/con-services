@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.ConfigurationStore;
@@ -76,6 +77,23 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISubGridCellLatestPassesDataWrapperFactory>(new SubGridCellLatestPassesDataWrapperFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Complete();
+    }
+
+    public static void SetMaxExportRowsConfig(int rowCount)
+    {
+      // this Fixture sets to Consts.DEFAULT_MAX_EXPORT_ROWS. Some tests need it to be something different.
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS")).Returns(rowCount);
+      moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(rowCount);
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
+    }
+
+    public static void TestMaxExportRowsConfig(int rowCount)
+    {
+      var configuration = DIContext.Obtain<IConfigurationStore>();
+      configuration.GetValueInt("MAX_EXPORT_ROWS").Should().Be(rowCount);
+      configuration.GetValueInt("MAX_EXPORT_ROWS", 1).Should().Be(rowCount);
     }
 
     public DILoggingFixture()

@@ -29,22 +29,27 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     /// <returns></returns>
     public override bool TransferResponse(object response)
     {
-      if (!base.TransferResponse(response))
-        return false;
+      bool result = false;
 
-      if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+      if (base.TransferResponse(response))
       {
-        Log.LogWarning("No sub grid responses returned");
-        return false;
+        if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+        {
+          Log.LogWarning("No sub grid responses returned");
+        }
+        else
+        {
+          foreach (var subGrid in subGridResponses)
+          {
+            if (subGrid is ClientCellProfileLeafSubgrid leafSubGrid)
+              ProcessorDelegate(leafSubGrid);
+          }
+
+          result = true;
+        }
       }
 
-      foreach (var subGrid in subGridResponses)
-      {
-        if (subGrid is ClientCellProfileLeafSubgrid leafSubGrid)
-          ProcessorDelegate(leafSubGrid);
-      }
-
-      return true;
+      return result;
     }
   }
 }

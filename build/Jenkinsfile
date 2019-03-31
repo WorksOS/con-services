@@ -67,6 +67,7 @@ node ('jenkinsslave-pod') {
     def elbTestContainer = testContainer
 
     def ecrRepository = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
+	def ecrRepositoryDb = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db"
     def finalImage = "${ecrRepository}:${versionNumber}"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
@@ -248,6 +249,11 @@ node ('jenkinsslave-pod') {
 			{	
 				sh "docker tag ${containerDb} ${dbFinalImage}"
 				sh "docker push ${dbFinalImage}"
+							
+			if (additionalImageTag != "None"){
+				sh "docker tag ${containerDb} ${ecrRepositoryDb}:${additionalImageTag}"
+				sh "docker push ${ecrRepositoryDb}:${additionalImageTag}"
+			}
 			}
 			sh "mv ${servicePath}/deploy ${env.WORKSPACE}"
 			sh "ls -la"

@@ -242,7 +242,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       ContractExecutionStates.DynamicAddwithOffset(
         "Invalid page size or number for patch request. Try reducing the area being requested.",
         (int)RequestErrorStatus.InvalidArgument);
-      ContractExecutionStates.DynamicAddwithOffset("Failed to create coordinate transformer.",
+      ContractExecutionStates.DynamicAddwithOffset("Failed to configure internal pipeline.",
         (int)RequestErrorStatus.FailedToConfigureInternalPipeline);
       ContractExecutionStates.DynamicAddwithOffset("Failed to retrieve design file from storage.",
         (int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3);

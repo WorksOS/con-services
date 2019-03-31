@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -8,6 +9,7 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
@@ -31,7 +33,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as CompactionReportStationOffsetTRexRequest;
-
       if (request == null)
       {
         ThrowRequestTypeCastException<CompactionReportStationOffsetTRexRequest>();
@@ -41,20 +42,19 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
       
-      StationOffsetReportRequest_ApplicationService tRexRequest = new StationOffsetReportRequest_ApplicationService();
+      var tRexRequest = new StationOffsetReportRequest_ApplicationService();
       var stationOffsetReportRequestArgument_ApplicationService = AutoMapperUtility.Automapper.Map<StationOffsetReportRequestArgument_ApplicationService>(request);
       stationOffsetReportRequestArgument_ApplicationService.Filters = new FilterSet(filter);
       
-      StationOffsetReportRequestResponse_ApplicationService response = tRexRequest.Execute(stationOffsetReportRequestArgument_ApplicationService);
-
+      var response = tRexRequest.Execute(stationOffsetReportRequestArgument_ApplicationService);
       var result = new StationOffsetReportResult()
       {
-        ReturnCode = response.ReturnCode,
+        ReturnCode = response?.ReturnCode ?? ReportReturnCode.UnknownError,
         ReportType = ReportType.StationOffset,
         GriddedData = AutoMapperUtility.Automapper.Map<StationOffsetReportData_ApplicationService>(request)
       };
-      result.GriddedData.NumberOfRows = response.StationOffsetReportDataRowList.Count;
-      result.GriddedData.Rows.AddRange(response.StationOffsetReportDataRowList);
+      result.GriddedData.NumberOfRows = response?.StationOffsetReportDataRowList.Count ?? 0;
+      result.GriddedData.Rows.AddRange(response?.StationOffsetReportDataRowList ?? new List<StationOffsetReportDataRow_ApplicationService>());
       return new GriddedReportDataResult(result.Write());
     }
 
