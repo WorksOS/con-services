@@ -18,7 +18,7 @@
         Reverse4,
         Reverse5,
         Park,
-        Unknown,
+        SensorFailed,
         Null = 255
     }
 }

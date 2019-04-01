@@ -200,7 +200,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         case MachineGear.Reverse4: result = "Reverse_4"; break;
         case MachineGear.Reverse5: result = "Reverse_5"; break;
         case MachineGear.Park: result = "Park"; break;
-        default: result = "Sensor_Failed"; break;
+        case MachineGear.SensorFailed: result = "Sensor_Failed"; break;
+        case MachineGear.Null: result = NullString; break;
+        default: result = $"unknown: {value}"; break;
       }
 
       return result;
