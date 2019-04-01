@@ -61,7 +61,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool NextSegment()
         {
-            bool Result = false;
+            bool Result;
 
             if (InitialNumberOfSegments != _Directory.SegmentDirectory.Count)
                 throw new TRexSubGridProcessingException("Number of segments in sub grid has changed since the iterator was initialised");
@@ -71,77 +71,79 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 Idx = IterationDirection == IterationDirection.Forwards ? ++Idx : --Idx;
                 bool SegmentIndexInRange = Range.InRange(Idx, 0, _Directory.SegmentDirectory.Count - 1);
 
-                if (SegmentIndexInRange)
-                { 
-                    var SegmentInfo = _Directory.SegmentDirectory[Idx];
-                    
-                    Result = Range.InRange(SegmentInfo.StartTime, StartSegmentTime, EndSegmentTime) ||
-                             Range.InRange(SegmentInfo.EndTime, StartSegmentTime, EndSegmentTime) ||
-                             Range.InRange(StartSegmentTime, SegmentInfo.StartTime, SegmentInfo.EndTime) ||
-                             Range.InRange(EndSegmentTime, SegmentInfo.StartTime, SegmentInfo.EndTime);
-                    
-                    // If there is an elevation range restriction is place then check to see if the
-                    // segment contains any cell passes in the elevation range
-                    if (Result && RestrictSegmentIterationBasedOnElevationRange)
+                if (!SegmentIndexInRange)
+                  return false;
+
+                var SegmentInfo = _Directory.SegmentDirectory[Idx];
+
+                Result = Range.InRange(SegmentInfo.StartTime, StartSegmentTime, EndSegmentTime) ||
+                         Range.InRange(SegmentInfo.EndTime, StartSegmentTime, EndSegmentTime) ||
+                         Range.InRange(StartSegmentTime, SegmentInfo.StartTime, SegmentInfo.EndTime) ||
+                         Range.InRange(EndSegmentTime, SegmentInfo.StartTime, SegmentInfo.EndTime);
+
+                // If there is an elevation range restriction is place then check to see if the
+                // segment contains any cell passes in the elevation range
+                if (Result && RestrictSegmentIterationBasedOnElevationRange)
+                {
+                  if (SegmentInfo.MinElevation != Consts.NullDouble && SegmentInfo.MaxElevation != Consts.NullDouble)
+                  {
+                    Result = Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
+                             Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
+                             Range.InRange(MinIterationElevation, SegmentInfo.MinElevation,
+                               SegmentInfo.MaxElevation) ||
+                             Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
+                  }
+                  else if (SegmentInfo.Segment?.PassesData != null)
+                  {
+                    // The elevation range information we use here is accessed via
+                    // the entropic compression information used to compress the attributes held
+                    // in the segment. If the segment has not been loaded yet then this information
+                    // is not available. In this case don't perform the test, but allow the segment
+                    // to be loaded and the passes in it processed according to the current filter.
+                    // If the segment has been loaded then access this information and determine
+                    // if there is any need to extract cell passes from this segment. If not, just move
+                    // to the next segment
+
+                    SegmentInfo.Segment.PassesData.GetSegmentElevationRange(out double SegmentMinElev,
+                      out double SegmentMaxElev);
+                    if (SegmentMinElev != Consts.NullDouble && SegmentMaxElev != Consts.NullDouble)
                     {
-                        if (SegmentInfo.MinElevation != Consts.NullDouble && SegmentInfo.MaxElevation != Consts.NullDouble)
-                        {
-                            Result = Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
-                                     Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
-                                     Range.InRange(MinIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation) ||
-                                     Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
-                        }
-                        else
-                          if (SegmentInfo.Segment?.PassesData != null)
-                        {
-                            // The elevation range information we use here is accessed via
-                            // the entropic compression information used to compress the attributes held
-                            // in the segment. If the segment has not been loaded yet then this information
-                            // is not available. In this case don't perform the test, but allow the segment
-                            // to be loaded and the passes in it processed according to the current filter.
-                            // If the segment has been loaded then access this information and determine
-                            // if there is any need to extract cell passes from this segment. If not, just move
-                            // to the next segment
-                    
-                            SegmentInfo.Segment.PassesData.GetSegmentElevationRange(out double SegmentMinElev, out double SegmentMaxElev);
-                            if (SegmentMinElev != Consts.NullDouble && SegmentMaxElev != Consts.NullDouble)
-                            {
-                                // Save the computed elevation range values for this segment
-                                SegmentInfo.MinElevation = SegmentMinElev;
-                                SegmentInfo.MaxElevation = SegmentMaxElev;
-                    
-                                Result = Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
-                                         Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
-                                         Range.InRange(MinIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation) ||
-                                         Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
-                            }
-                            else
-                            {
-                                Result = false;
-                            }
-                        }
-                    
-                        if (Result && HasMachineRestriction && SegmentInfo.Segment?.PassesData != null)
-                        {
-                            // Check to see if this segment has any machines that match the
-                            // machine restriction. If not, advance to the next segment
-                            bool HasMachinesOfInterest = false;
-                            var segmentMachineIDSet = SegmentInfo.Segment.PassesData.GetMachineIDSet();
-                    
-                            if (segmentMachineIDSet != null)
-                            {
-                                for (int i = 0; i < MachineIDSet.Count; i++)
-                                {
-                                    HasMachinesOfInterest = MachineIDSet[i] && segmentMachineIDSet[i];
-                                    if (HasMachinesOfInterest)
-                                        break;
-                                }
-                    
-                                Result = HasMachinesOfInterest;
-                            }
-                        }
+                      // Save the computed elevation range values for this segment
+                      SegmentInfo.MinElevation = SegmentMinElev;
+                      SegmentInfo.MaxElevation = SegmentMaxElev;
+
+                      Result =
+                        Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
+                        Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
+                        Range.InRange(MinIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation) ||
+                        Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
                     }
-                }                
+                    else
+                    {
+                      Result = false;
+                    }
+                  }
+
+                  if (Result && HasMachineRestriction && SegmentInfo.Segment?.PassesData != null)
+                  {
+                    // Check to see if this segment has any machines that match the
+                    // machine restriction. If not, advance to the next segment
+                    bool HasMachinesOfInterest = false;
+                    var segmentMachineIDSet = SegmentInfo.Segment.PassesData.GetMachineIDSet();
+
+                    if (segmentMachineIDSet != null)
+                    {
+                      for (int i = 0; i < MachineIDSet.Count; i++)
+                      {
+                        HasMachinesOfInterest = MachineIDSet[i] && segmentMachineIDSet[i];
+                        if (HasMachinesOfInterest)
+                          break;
+                      }
+
+                      Result = HasMachinesOfInterest;
+                    }
+                  }
+                }
             }
             while (!Result);
 
