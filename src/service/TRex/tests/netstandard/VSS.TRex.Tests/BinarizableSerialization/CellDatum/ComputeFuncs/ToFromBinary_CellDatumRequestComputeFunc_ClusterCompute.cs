@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.CellDatum.ComputeFuncs
     [Fact]
     public void Test_CellDatumRequestComputeFunc_ClusterCompute_Simple()
     {
-      var func = new CellDatumRequestComputeFunc_ClusterCompute { Argument = new CellDatumRequestArgument_ClusterCompute() };
+      var func = new CellDatumRequestComputeFunc_ClusterCompute();
       SimpleBinarizableInstanceTester.TestClass<CellDatumRequestComputeFunc_ClusterCompute>("Empty CellDatumRequestComputeFunc_ClusterCompute not same after round trip serialisation");
     }
 

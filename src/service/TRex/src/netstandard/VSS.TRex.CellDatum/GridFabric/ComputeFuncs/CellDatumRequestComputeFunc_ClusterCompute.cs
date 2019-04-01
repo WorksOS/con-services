@@ -51,15 +51,19 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
     {
       base.ToBinary(writer);
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-      Argument.ToBinary(writer);
+      writer.WriteBoolean(Argument != null);
+      Argument?.ToBinary(writer);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-      Argument = new CellDatumRequestArgument_ClusterCompute();
-      Argument.FromBinary(reader);
+      if (reader.ReadBoolean())
+      {
+        Argument = new CellDatumRequestArgument_ClusterCompute();
+        Argument.FromBinary(reader);
+      }
     }
   }
 }
