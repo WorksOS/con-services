@@ -27,16 +27,6 @@ namespace VSS.TRex.Rendering.Displayers
     private const short AbsoluteTargetCMV = 70;
 
     /// <summary>
-    /// Renders CMV summary data as tiles. 
-    /// </summary>
-    /// <param name="subGrid"></param>
-    /// <returns></returns>
-    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
-    {
-      return base.DoRenderSubGrid<ClientCMVLeafSubGrid>(subGrid);
-    }
-
-    /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>

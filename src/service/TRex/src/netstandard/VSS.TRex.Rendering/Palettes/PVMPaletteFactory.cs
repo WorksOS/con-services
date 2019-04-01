@@ -7,108 +7,108 @@ using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Rendering.Palettes
 {
-    /// <summary>
-    /// A factory responsible for determining the appropriate plan view map colour palette to use
-    /// when rendering plan view tiles (Web Map Service tiles)
-    /// </summary>
-    public static class PVMPaletteFactory
+  /// <summary>
+  /// A factory responsible for determining the appropriate plan view map colour palette to use
+  /// when rendering plan view tiles (Web Map Service tiles)
+  /// </summary>
+  public static class PVMPaletteFactory
+  {
+    public static IPlanViewPalette GetPallete(ISiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
     {
-        public static IPlanViewPalette GetPallete(ISiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
-        {
-            switch (mode)
-            {
-                case DisplayMode.Height:
-                    BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
-                    return new HeightPalette(extent.MinZ, extent.MaxZ);
+      switch (mode)
+      {
+        case DisplayMode.Height:
+          BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
+          return new HeightPalette(extent.MinZ, extent.MaxZ);
 
-                case DisplayMode.MachineSpeed:       return new SpeedPalette();
-                case DisplayMode.TargetSpeedSummary: return new SpeedSummaryPalette();
-                case DisplayMode.CCV:                return new CMVPalette();
-                case DisplayMode.MDP:                return new MDPSummaryPalette();
-                case DisplayMode.PassCount:          return new PassCountPalette();
-                case DisplayMode.PassCountSummary:   return new PassCountSummaryPalette();
-                case DisplayMode.TemperatureDetail:  return new TemperaturePalette();
-                case DisplayMode.TemperatureSummary: return new TemperatureSummaryPalette();
-                case DisplayMode.CCA:                return new CCAPalette();
-                case DisplayMode.CCASummary:         return new CCASummaryPalette();
+        case DisplayMode.MachineSpeed: return new SpeedPalette();
+        case DisplayMode.TargetSpeedSummary: return new SpeedSummaryPalette();
+        case DisplayMode.CCV: return new CMVPalette();
+        case DisplayMode.MDPPercentSummary: return new MDPSummaryPalette();
+        case DisplayMode.PassCount: return new PassCountPalette();
+        case DisplayMode.PassCountSummary: return new PassCountSummaryPalette();
+        case DisplayMode.TemperatureDetail: return new TemperaturePalette();
+        case DisplayMode.TemperatureSummary: return new TemperatureSummaryPalette();
+        case DisplayMode.CCA: return new CCAPalette();
+        case DisplayMode.CCASummary: return new CCASummaryPalette();
 
-                default: 
-                    throw new TRexException($"Unknown display mode in {nameof(GetPallete)}");
-            }
-            
-            // TODO The additional logic in the commented out code below should be implemented as per the corresponding User Story...
-            /*
-            Complicated legacy implementation follows:
-              if Assigned(FDisplayPalettes) then
-                case FMode of
-                  icdmHeight             : FPalette := FDisplayPalettes.HeightPalette;
-                  icdmCCV                : FPalette := FDisplayPalettes.CCVPalette;
-                  icdmCCVPercent         : FPalette := FDisplayPalettes.CCVPercentPalette;
-                  icdmLatency            : FPalette := FDisplayPalettes.RadioLatencyPalette;
-                  icdmPassCount,
-                  icdmPassCountSummary   : FPalette := FDisplayPalettes.PassCountPalette;
-                  icdmRMV                : FPalette := FDisplayPalettes.RMVPalette;
-                  icdmFrequency          : FPalette := FDisplayPalettes.FrequencyPalette;
-                  icdmAmplitude          : FPalette := FDisplayPalettes.AmplitudePalette;
-                  icdmCutFill            : FPalette := FDisplayPalettes.CutFillPalette;
-                  icdmMoisture           : FPalette := FDisplayPalettes.MoisturePalette;
-                  icdmTemperatureSummary :; // see below AJR 14974
-                  icdmGPSMode            :; // See GPSMode palette assignment below
-                  icdmCCVSummary         :; // See CCV summary palette assignment below
-                  icdmCCVPercentSummary  :; // See CCV Percent summary palette assignment below
-                  icdmCompactionCoverage : FPalette := Nil; // Single fixed colour
-                  icdmVolumeCoverage     : FPalette := FDisplayPalettes.VolumeOverlayPalette;
-                  icdmMDP                : FPalette := FDisplayPalettes.MDPPalette;
-                  icdmMDPSummary         :;
-                  icdmMDPPercent         : FPalette := FDisplayPalettes.MDPPercentPalette;
-                  icdmMDPPercentSummary  :;
-                  icdmMachineSpeed       : FPalette := FDisplayPalettes.MachineSpeedPalette;
-                  icdmTargetSpeedSummary :;// FPalette := FDisplayPalettes.SpeedSummaryPalette;
-            //    icdmCCA                : FPalette :=    does not seem to be need right now?
-            //      icdmCCASummary       : FPalette :=   does not seem to be needed right now?
+        default:
+          throw new TRexException($"Unknown display mode in {nameof(GetPallete)}");
+      }
 
-                end;
+      // TODO The additional logic in the commented out code below should be implemented as per the corresponding User Story...
+      /*
+      Complicated legacy implementation follows:
+        if Assigned(FDisplayPalettes) then
+          case FMode of
+            icdmHeight             : FPalette := FDisplayPalettes.HeightPalette;
+            icdmCCV                : FPalette := FDisplayPalettes.CCVPalette;
+            icdmCCVPercent         : FPalette := FDisplayPalettes.CCVPercentPalette;
+            icdmLatency            : FPalette := FDisplayPalettes.RadioLatencyPalette;
+            icdmPassCount,
+            icdmPassCountSummary   : FPalette := FDisplayPalettes.PassCountPalette;
+            icdmRMV                : FPalette := FDisplayPalettes.RMVPalette;
+            icdmFrequency          : FPalette := FDisplayPalettes.FrequencyPalette;
+            icdmAmplitude          : FPalette := FDisplayPalettes.AmplitudePalette;
+            icdmCutFill            : FPalette := FDisplayPalettes.CutFillPalette;
+            icdmMoisture           : FPalette := FDisplayPalettes.MoisturePalette;
+            icdmTemperatureSummary :; // see below AJR 14974
+            icdmGPSMode            :; // See GPSMode palette assignment below
+            icdmCCVSummary         :; // See CCV summary palette assignment below
+            icdmCCVPercentSummary  :; // See CCV Percent summary palette assignment below
+            icdmCompactionCoverage : FPalette := Nil; // Single fixed colour
+            icdmVolumeCoverage     : FPalette := FDisplayPalettes.VolumeOverlayPalette;
+            icdmMDP                : FPalette := FDisplayPalettes.MDPPalette;
+            icdmMDPSummary         :;
+            icdmMDPPercent         : FPalette := FDisplayPalettes.MDPPercentPalette;
+            icdmMDPPercentSummary  :;
+            icdmMachineSpeed       : FPalette := FDisplayPalettes.MachineSpeedPalette;
+            icdmTargetSpeedSummary :;// FPalette := FDisplayPalettes.SpeedSummaryPalette;
+      //    icdmCCA                : FPalette :=    does not seem to be need right now?
+      //      icdmCCASummary       : FPalette :=   does not seem to be needed right now?
 
-              if Assigned(FPalette) and (FPalette.TransitionColours.Count = 0) then
-                FPalette.SetToDefaults;
+          end;
 
-              FDisplayer.Palette := FPalette; // CCA set up here
+        if Assigned(FPalette) and (FPalette.TransitionColours.Count = 0) then
+          FPalette.SetToDefaults;
 
-              // Assign specialty palettes that don't conform to the scaled palette base class
-              case FMode of
+        FDisplayer.Palette := FPalette; // CCA set up here
 
-                icdmTemperatureSummary:
-                  begin
-                    with (FDisplayer as TSVOICPVMDisplayer_TemperatureSummary) do
-                      BuildTemperaturePaletteFromPaletteTransitions(FPalette);
+        // Assign specialty palettes that don't conform to the scaled palette base class
+        case FMode of
 
-                  end;
-                icdmCCVSummary,
-                icdmCCVPercentSummary:
-                  begin
-                    with (FDisplayer as TSVOICPVMDisplayer_CCV) do
-                      BuildCCVSummaryPaletteFromPaletteTransitions(FPalette);
-                  end;
+          icdmTemperatureSummary:
+            begin
+              with (FDisplayer as TSVOICPVMDisplayer_TemperatureSummary) do
+                BuildTemperaturePaletteFromPaletteTransitions(FPalette);
 
-                icdmGPSMode:
-                  begin
-                    with (FDisplayer as TSVOICPVMDisplayer_GPSMode) do
-                      BuildGPSModeSummaryPaletteFromPaletteTransitions(FPalette)
-                  end;
+            end;
+          icdmCCVSummary,
+          icdmCCVPercentSummary:
+            begin
+              with (FDisplayer as TSVOICPVMDisplayer_CCV) do
+                BuildCCVSummaryPaletteFromPaletteTransitions(FPalette);
+            end;
 
-                icdmMDPSummary,
-                icdmMDPPercentSummary:
-                  begin
-                    with (FDisplayer as TSVOICPVMDisplayer_MDP) do
-                      BuildMDPSummaryPaletteFromPaletteTransitions(FPalette);
-                  end;
-                icdmTargetSpeedSummary:
-                  begin
-                    with (FDisplayer as TSVOICPVMDisplayer_SpeedSummary) do
-                      BuildSpeedSummaryPaletteFromPaletteTransitions(FPalette);
-                  end;
-              end;
-                         */
-        }
+          icdmGPSMode:
+            begin
+              with (FDisplayer as TSVOICPVMDisplayer_GPSMode) do
+                BuildGPSModeSummaryPaletteFromPaletteTransitions(FPalette)
+            end;
+
+          icdmMDPSummary,
+          icdmMDPPercentSummary:
+            begin
+              with (FDisplayer as TSVOICPVMDisplayer_MDP) do
+                BuildMDPSummaryPaletteFromPaletteTransitions(FPalette);
+            end;
+          icdmTargetSpeedSummary:
+            begin
+              with (FDisplayer as TSVOICPVMDisplayer_SpeedSummary) do
+                BuildSpeedSummaryPaletteFromPaletteTransitions(FPalette);
+            end;
+        end;
+                   */
     }
+  }
 }

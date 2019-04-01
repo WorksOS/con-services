@@ -132,13 +132,21 @@ namespace VSS.TRex.Rendering
       // Obtain the display responsible for rendering the thematic information for this mode
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
-      //// Create and assign the colour pallete logic for this mode to the displayer
-      //Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
-
-      Displayer.Palette = colourPalette;
-
       if (Displayer == null)
         return RequestErrorStatus.UnsupportedDisplayType;
+
+      // Create and assign the colour pallete logic for this mode to the displayer
+      if (colourPalette == null)
+      {
+        if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
+        {
+          // TODO Create CCA palette...
+        }
+        else
+          Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
+      }
+      else
+        Displayer.Palette = colourPalette;
 
       // Create the world coordinate display surface the displayer will render onto
       Displayer.MapView = new MapSurface
