@@ -18,6 +18,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     ISiteModelMachineDesign CreateNew(string name);
     
     void SaveToPersistentStore(IStorageProxy storageProxy);
-    void LoadFromPersistentStore();
+    void LoadFromPersistentStore(IStorageProxy storageProxy);
   }
 }

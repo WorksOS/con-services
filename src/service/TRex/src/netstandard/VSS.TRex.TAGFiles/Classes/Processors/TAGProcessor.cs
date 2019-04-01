@@ -62,7 +62,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     //    is much faster than in piecemeal fashion.
     // 2. Contention: This reduces contention for the primary server interface lock between
     //    the tag file processor and client applications. }
-    public IServerSubGridTree SiteModelGridAggregator { get; set; }
+    public IServerSubGridTree SiteModelGridAggregator { get; }
 
     // Machine is a reference to the intelligent compaction machine that
     // has collected the data being processed.
@@ -72,7 +72,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     // machine state events of interest that we encounter while processing the
     // file. These are then integrated into the machine events in a single step
     // at a later point in processing
-    public ProductionEventLists MachineTargetValueChangesAggregator { get; set; }
+    public ProductionEventLists MachineTargetValueChangesAggregator { get; }
 
     /*
     // FOnProgressCheck provides a callback to the owner of the ST processing
@@ -747,7 +747,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// DoEpochPreProcessAction is called in ProcessEpochContext immediately
     /// before any processing of the epoch information is done. It allows a
     /// descendent class to implement appropriate actions such as inspecting
-    /// or processing other information in the epoch not direclty related
+    /// or processing other information in the epoch not directly related
     /// to the epoch interval itself (such as proofing run information in
     /// intelligent compaction tag files.
     /// </summary>

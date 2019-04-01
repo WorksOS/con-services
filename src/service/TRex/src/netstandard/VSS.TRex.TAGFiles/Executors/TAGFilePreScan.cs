@@ -44,10 +44,17 @@ namespace VSS.TRex.TAGFiles.Executors
     public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
 
     /// <summary>
+    /// The time stamp of the last measured epoch in the TAG file.
+    /// </summary>
+    public DateTime? LastDataTime { get; set; }
+
+    /// <summary>
     /// Set the state of the executor to an initialised state
     /// </summary>
     private void Initialise()
     {
+      LastDataTime = null;
+
       SeedLatitude = null;
       SeedLongitude = null;
       ProcessedEpochCount = 0;
@@ -77,6 +84,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="Processor"></param>
     private void SetPublishedState(TAGProcessorPreScanState Processor)
     {
+      LastDataTime = Processor.DataTime;
       SeedLatitude = Processor.LLHLat;
       SeedLongitude = Processor.LLHLon;
       SeedHeight = Processor.LLHHeight;

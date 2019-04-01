@@ -33,7 +33,7 @@ namespace VSS.TRex.Caching.Interfaces
 
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
-    void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
+    void InvalidateSubGridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
 
     void MarkForRemoval(DateTime markedForRemovalAtUtc);
 

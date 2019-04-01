@@ -5,6 +5,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridDirectory
   {
+    bool IsMutable { get; set; }
+
     bool ExistsInPersistentStore { get; }
 
     List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; set; }

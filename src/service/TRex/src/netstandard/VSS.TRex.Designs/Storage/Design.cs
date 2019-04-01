@@ -79,10 +79,7 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// The full design descriptor representing the design
     /// </summary>
-    public readonly DesignDescriptor DesignDescriptor;
-
-    // Public accessor method for design descriptor struct
-    public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
+    public DesignDescriptor DesignDescriptor { get; private set; }
 
     /// <summary>
     /// Computes a geometric profile across the design given a series of vertices describing the path to be profiled.
@@ -181,10 +178,10 @@ namespace VSS.TRex.Designs.Storage
     /// <returns></returns>
     public bool Equals(IDesign other)
     {
-      return (other != null) &&
-             (ID == other.ID) &&
-             DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
-             (Extents.Equals(other.Extents));
+      return other != null &&
+             ID == other.ID &&
+             DesignDescriptor.Equals(other.DesignDescriptor) &&
+             Extents.Equals(other.Extents);
     }
 
     /// <summary>

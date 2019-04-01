@@ -5,7 +5,7 @@ namespace VSS.TRex.Common.Types
   public struct PatchOffsetsRecord
   {
     /// <summary>
-    /// Elevatin offset in millimeters.
+    /// Elevation offset in millimeters.
     /// </summary>
     public uint ElevationOffset { get; set; }
 
@@ -53,6 +53,5 @@ namespace VSS.TRex.Common.Types
       ElevationOffset = reader.ReadUInt32();
       TimeOffset = reader.ReadUInt32();
     }
-
   }
 }

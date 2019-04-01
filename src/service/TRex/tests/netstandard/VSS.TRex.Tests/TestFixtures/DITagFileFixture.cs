@@ -25,7 +25,6 @@ using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Executors;
-using Xunit;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -37,8 +36,7 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read)),
-        "Converter execute returned false");
+      converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read));
 
       return converter;
     }
@@ -48,7 +46,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var converter = new TAGFileConverter();
 
       var fn = Path.Combine("TestData", "TAGFiles", subFolder, fileName);
-      Assert.True(converter.Execute(new FileStream(fn, FileMode.Open, FileAccess.Read)), "Converter execute returned false");
+      converter.Execute(new FileStream(fn, FileMode.Open, FileAccess.Read));
 
       return converter;
     }
@@ -57,8 +55,7 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      Assert.True(converter.Execute(new FileStream(fileName, FileMode.Open, FileAccess.Read)),
-        "Converter execute returned false");
+      converter.Execute(new FileStream(fileName, FileMode.Open, FileAccess.Read));
 
       return converter;
     }
@@ -107,18 +104,18 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
 
-        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
-        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
-        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
 
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
 

@@ -33,7 +33,7 @@ namespace VSS.TRex.Alignments.Interfaces
     /// </summary>
     Guid ID { get; }
 
-    DesignDescriptor Get_DesignDescriptor();
+    DesignDescriptor DesignDescriptor { get; }
 
     /// <summary>
     /// Returns the real world 3D enclosing extents for the Alignment topology, including any configured vertical offset

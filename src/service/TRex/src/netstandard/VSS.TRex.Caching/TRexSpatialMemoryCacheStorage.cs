@@ -242,5 +242,7 @@ namespace VSS.TRex.Caching
         return cacheItem.Item;
       }
     }
+
+    public bool IsEmpty() => MRUHead == -1;
   }
 }

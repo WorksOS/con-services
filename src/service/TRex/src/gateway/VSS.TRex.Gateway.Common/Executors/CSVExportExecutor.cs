@@ -59,12 +59,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       csvExportRequestArgument.Filters = new FilterSet(filter);
       var response = tRexRequest.Execute(csvExportRequestArgument);
 
-      if (response.ResultStatus != RequestErrorStatus.OK)
+      if (response == null || response.ResultStatus != RequestErrorStatus.OK)
       {
-        log.LogError($"CSVExportExecutor unable to process request. Project: {request.ProjectUid} Filename: {request.FileName} Response: {response.ResultStatus.ToString()}");
+        log.LogError($"CSVExportExecutor unable to process request. Project: {request.ProjectUid} Filename: {request.FileName} Response: {response?.ResultStatus.ToString()}");
         throw CreateServiceException<CSVExportExecutor>
         (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
-          response.ResultStatus);
+          response?.ResultStatus ?? RequestErrorStatus.FailedToConfigureInternalPipeline);
       }
 
       return new CompactionExportResult(response.fileName);

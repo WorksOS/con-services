@@ -14,10 +14,8 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportTask>();
     
-    public CSVExportSubGridProcessor SubGridExportProcessor;
-    public List<string> DataRows = new List<string>();
-
-    public CSVExportTask() {}
+    public CSVExportSubGridProcessor SubGridExportProcessor { get; set; }
+    public List<string> DataRows { get; set; } = new List<string>();
 
     /// <summary>
     /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
@@ -39,7 +37,6 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
           result = true;
           foreach (var subGrid in subGridResponses)
           {
-            
             if (subGrid != null)
             {
               List<string> rows;

@@ -7,6 +7,7 @@ using VSS.TRex.Logging;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
@@ -85,10 +86,10 @@ namespace VSS.TRex.TAGFiles.Executors
         // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
         // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
         // storage proxy assigned to it
-        SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
+        SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(StorageMutability.Mutable);
         Machine = new Machine();
 
-        SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID)
+        SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable)
         {
           CellSize = SiteModel.CellSize
         };
@@ -139,10 +140,10 @@ namespace VSS.TRex.TAGFiles.Executors
                 // Notify the Processor that all reading operations have completed for the file
                 Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
 
+                SetPublishedState(Processor);
+
                 if (ReadResult != TAGReadResult.NoError)
                     return false;
-
-                SetPublishedState(Processor);
             }
             catch (Exception e) // make sure any exception is trapped to return correct response to caller
             {

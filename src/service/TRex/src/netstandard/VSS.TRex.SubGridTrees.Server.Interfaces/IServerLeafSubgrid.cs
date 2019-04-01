@@ -9,6 +9,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     public interface IServerLeafSubGrid : ILeafSubGrid
     {
+        /// <summary>
+        /// Controls whether segment and cell pass information held within this sub grid is represented
+        /// in the mutable or immutable forms supported by TRex
+        /// </summary>
+        bool IsMutable { get; }
+
+        void SetIsMutable(bool isMutable);
+
         ISubGridCellPassesDataWrapper Cells { get; set; }
 
         ISubGridDirectory Directory { get; set; }

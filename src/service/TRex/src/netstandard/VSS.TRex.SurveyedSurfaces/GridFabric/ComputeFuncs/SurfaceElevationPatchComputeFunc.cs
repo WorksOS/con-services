@@ -14,20 +14,14 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchComputeFunc>();
 
     /// <summary>
-    /// Local reference to the client sub grid factory
-    /// </summary>
-    private static IClientLeafSubGridFactory clientLeafSubGridFactory;
-
-    private IClientLeafSubGridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
-
-    /// <summary>
     /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to
     /// </summary>
     /// <param name="arg"></param>
     /// <returns></returns>
     public byte[] Invoke(ISurfaceElevationPatchArgument arg)
     {
+      byte[] resultAsBytes = null;
+
       try
       {
         Log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
@@ -36,24 +30,24 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 
         IClientLeafSubGrid result = Executor.Execute();
 
-        if (result == null)
-          return null;
-
-        try
+        if (result != null)
         {
-          return result.ToBytes();
-        }
-        finally
-        {
-          ClientLeafSubGridFactory.ReturnClientSubGrid(ref result);
+          try
+          {
+            resultAsBytes = result.ToBytes();
+          }
+          finally
+          {
+            DIContext.Obtain<IClientLeafSubGridFactory>().ReturnClientSubGrid(ref result);
+          }
         }
       }
       catch (Exception E)
       {
-        Log.LogError(E, "Exception:");
+        Log.LogError(E, $"{nameof(SurfaceElevationPatchComputeFunc)}.Invoke: Exception:");
       }
 
-      return null;
+      return resultAsBytes;
     }
   }
 }
