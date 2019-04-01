@@ -12,6 +12,7 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Designs
 {
@@ -30,10 +31,10 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Default no-arg constructor that sets the grid and cache name to default values
     /// </summary>
-    public DesignManager() 
+    public DesignManager(StorageMutability mutability) 
     {
-       WriteStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-       ReadStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+       WriteStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy;
+       ReadStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
     }
 
     /// <summary>

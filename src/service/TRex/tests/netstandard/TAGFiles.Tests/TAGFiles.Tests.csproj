@@ -1044,6 +1044,9 @@
     <None Update="TestData\TAGFiles\Dimensions2018-CaseMachine\CellMutationLog-2652J085SW--CASE CX160C--121107210953.tag.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\TAGFiles\DimensionsSinkError.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TAGFiles\ElevationMappingMode-KettlewellDrive\0187J008YU--TNZ 323F GS520--190123002153.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

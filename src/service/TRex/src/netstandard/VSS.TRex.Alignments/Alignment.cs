@@ -55,9 +55,9 @@ namespace VSS.TRex.Alignments
     public Guid ID { get; set; }
 
     /// <summary>
-    /// Readonly property exposing the design decriptor for the underlying topology surface
+    /// Readonly property exposing the design descriptor for the underlying topology surface
     /// </summary>
-    public DesignDescriptor DesignDescriptor;
+    public DesignDescriptor DesignDescriptor { get; }
 
     /// <summary>
     /// Returns the real world 3D enclosing extents for the Alignment topology, including any configured vertical offset
@@ -124,8 +124,6 @@ namespace VSS.TRex.Alignments
         $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
     }
 
-    public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
-
     /// <summary>
     /// Resolves each station/offset to a NEE value
     /// </summary>
@@ -147,10 +145,10 @@ namespace VSS.TRex.Alignments
     /// <returns></returns>
     public bool Equals(IAlignment other)
     {
-      return (other != null) && 
-             (ID == other.ID) &&
-             DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
-             (Extents.Equals(other.Extents));
+      return other != null && 
+             ID == other.ID &&
+             DesignDescriptor.Equals(other.DesignDescriptor) &&
+             Extents.Equals(other.Extents);
     }
 
   }

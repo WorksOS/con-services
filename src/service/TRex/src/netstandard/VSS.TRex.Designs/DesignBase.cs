@@ -27,6 +27,12 @@ namespace VSS.TRex.Designs
     {
     }
 
+    /// <summary>
+    /// Indicates if the design exists but is in the process of being loaded. This is used to control
+    /// multiple concurrent requests to a design that is not yet loaded.
+    /// </summary>
+    public bool IsLoading { get; set; } = false;
+
     public abstract DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
 
     public abstract DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);

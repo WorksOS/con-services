@@ -110,9 +110,9 @@ namespace VSS.TRex.SiteModels
     /// Loads the content of the machine designs list from the persistent store. If there is no item in the persistent store containing
     /// machine designs for this site model them return an empty list.
     /// </summary>
-    public void LoadFromPersistentStore()
+    public void LoadFromPersistentStore(IStorageProxy storageProxy)
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
+      storageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
       if (MS == null)
         return;
 

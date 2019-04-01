@@ -3,12 +3,13 @@ using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class FilterSpatialCacheFingerprint
+  public class FilterSpatialCacheFingerprint: IClassFixture<DITagFileFixture>
   {
     [Fact]
     public void Test_GetCacheFingerPrint_Default()

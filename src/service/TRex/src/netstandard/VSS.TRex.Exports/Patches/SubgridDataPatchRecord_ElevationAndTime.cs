@@ -120,13 +120,12 @@ namespace VSS.TRex.Exports.Patches
 
             if (Math.Abs(valueHeight - CellPassConsts.NullHeight) < Consts.TOLERANCE_DIMENSION)
             {
-              Data[x, y].ElevationOffset = uint.MaxValue;
-              Data[x, y].TimeOffset = uint.MaxValue;
+              Data[x, y] = new PatchOffsetsRecord(uint.MaxValue, uint.MaxValue);
             }
             else
             {
-              Data[x, y].ElevationOffset = (uint) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE);
-              Data[x, y].TimeOffset = valueTime - minTime;
+              Data[x, y] = new PatchOffsetsRecord((uint) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE),
+                                                  valueTime - minTime);
             }
           });
         }

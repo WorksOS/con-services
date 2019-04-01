@@ -8,6 +8,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -17,6 +18,15 @@ namespace VSS.TRex.SiteModels.Interfaces
 {
   public interface ISiteModel
   {
+    /// <summary>
+    /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply
+    /// </summary>
+    StorageMutability StorageRepresentationToSupply { get; }
+
+    void SetStorageRepresentationToSupply(StorageMutability mutability);
+
+    IStorageProxy PrimaryStorageProxy { get; }
+
     Guid ID { get; set; }
 
     DateTime CreationDate { get; }

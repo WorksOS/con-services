@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
@@ -49,6 +50,20 @@ namespace VSS.TRex.Tests.Profiling.Factories
       }
 
       [Fact]
+      public void Test_ProfileBuilderFactory_NewProfileLiftBuilder_FailWithInvalidProfileCellType()
+      {
+        var factory = new ProfilerBuilderFactory<ProfileCell>();
+
+        Action act = () => factory.NewCellProfileAnalyzer((ProfileStyle) 100,
+            new SiteModel(Guid.NewGuid()),
+            null,
+            new FilterSet(new CombinedFilter()),
+            null, null, null);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+      }
+
+    [Fact]
       public void Test_ProfileBuilderFactory_NewProfileLiftBuilder_SummaryVolume()
       {
         var factory = new ProfilerBuilderFactory<SummaryVolumeProfileCell>();

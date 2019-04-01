@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Storage.Models;
 
@@ -8,7 +7,7 @@ namespace VSS.TRex.Webtools.Controllers
   [Route("api/switchablegrid")]
   public class SwitchableGridController : Controller
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SwitchableGridController>();
 
     /// <summary>
     /// Switches to mutable grid

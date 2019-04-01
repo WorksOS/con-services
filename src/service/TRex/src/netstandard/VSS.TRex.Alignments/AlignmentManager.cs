@@ -12,6 +12,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Alignments
 {
@@ -30,10 +31,10 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Constructs an instance using the supplied storage proxy
     /// </summary>
-    public AlignmentManager()
+    public AlignmentManager(StorageMutability mutability)
     {
-      _writeStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-      _readStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+      _writeStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy; 
+      _readStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
     }
 
     /// <summary>

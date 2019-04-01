@@ -14,6 +14,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.Executors;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -184,6 +185,11 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     private ISiteModel CreateSiteModelWithSingleCellForTesting()
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       siteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // vibrationState is needed to get cmv values

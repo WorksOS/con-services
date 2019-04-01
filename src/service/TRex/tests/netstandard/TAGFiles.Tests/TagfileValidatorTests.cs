@@ -228,7 +228,7 @@ namespace TAGFiles.Tests
       var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
 
       var moqSiteModels = new Mock<ISiteModels>();
-      moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
+      moqSiteModels.Setup(mk => mk.PrimaryMutableStorageProxy).Returns(moqStorageProxy.Object);
 
       DIBuilder
         .Continue()
@@ -240,15 +240,15 @@ namespace TAGFiles.Tests
         .Build();
 
       ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
+      mockedSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       var moqSiteModelFactory = new Mock<ISiteModelFactory>();
-      moqSiteModelFactory.Setup(mk => mk.NewSiteModel()).Returns(mockedSiteModel);
-      moqSiteModelFactory.Setup(mk => mk.NewSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      moqSiteModelFactory.Setup(mk => mk.NewSiteModel(StorageMutability.Mutable)).Returns(mockedSiteModel);
 
       moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
 
       // Mock the new site model creation API to return just a new site model
-      moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
 
       //Moq doesn't support extension methods in IConfiguration/Root.
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();

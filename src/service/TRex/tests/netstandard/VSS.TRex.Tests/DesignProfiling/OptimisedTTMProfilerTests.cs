@@ -23,7 +23,6 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Fact]
     public void Test_OptimisedTTMProfiler_Creation()
     {
-      var siteModel = new SiteModel(Guid.Empty, 1.0);
       var profiler = new OptimisedTTMProfiler(null, null, null);
     }
 
