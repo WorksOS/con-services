@@ -377,18 +377,23 @@ namespace VSS.TRex.SubGrids
              
           {
             var internalMachineIndex = _globalLatestCells.ReadInternalMachineIndex(StripeIndex, J);
-            var machine = _siteModel.Machines[internalMachineIndex]; 
-
-            bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
-            var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.LastStateValue();
-
-            bool minimumElevationMappingModeAtLatestCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
-
-            if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
+            if (internalMachineIndex != CellPassConsts.NullInternalSiteModelMachineIndex)
             {
-              // It is not possible to use the latest cell pass to answer the query - force the query engine into the cell pass examination work flow
-              _useLastPassGrid = false;
-              _canUseGlobalLatestCells = false;
+              var machine = _siteModel.Machines[internalMachineIndex];
+
+              bool machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+              var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents
+                .LastStateValue();
+
+              bool minimumElevationMappingModeAtLatestCellPassTime =
+                mappingMode == ElevationMappingMode.MinimumElevation;
+
+              if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
+              {
+                // It is not possible to use the latest cell pass to answer the query - force the query engine into the cell pass examination work flow
+                _useLastPassGrid = false;
+                _canUseGlobalLatestCells = false;
+              }
             }
           }
         }
