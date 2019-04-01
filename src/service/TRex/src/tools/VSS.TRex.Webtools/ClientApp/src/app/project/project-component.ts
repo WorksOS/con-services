@@ -4,8 +4,7 @@ import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../project/project-filter-model';
-import Projectmodel = require("./project-model");
-import CellDatumResult = Projectmodel.CellDatumResult;
+import { CellDatumResult} from "./project-model";
 
 @Component({
   selector: 'project',
@@ -187,6 +186,7 @@ export class ProjectComponent {
   public designProfileUid: string = "";
 
   public cellDatum: string = "";
+  private showCellDatum: boolean = false;
   
 constructor(
   private projectService: ProjectService
@@ -363,6 +363,10 @@ constructor(
       this.projectVolume = new VolumeResult(volume.cut, volume.cutArea, volume.fillArea, volume.fillArea, volume.totalCoverageArea));
   }
 
+  public toggleCellDatum(): void {
+    this.showCellDatum = !this.showCellDatum;
+  }
+
   private updateMouseLocationDetails(offsetX: number, offsetY: number): void {
     this.mousePixelX = offsetX;
     this.mousePixelY = this.pixelsY - offsetY;
@@ -398,16 +402,21 @@ constructor(
     }
 
     //if user pauses then get cell datum value
-    if (this.prevMousePixelX == this.mousePixelX && this.prevMousePixelY == this.mousePixelY) {
-      this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode).subscribe(result => {
-        //TODO: display nicely
-        //for now just display raw value
-        this.cellDatum = result.returnCode == 0 ? result.value.toFixed(1) : "";
-        this.cellDatum += " (" + result.timestamp + ")";
-      });
-    };
-    this.prevMousePixelX = this.mousePixelX;
-    this.prevMousePixelY = this.mousePixelY;
+    if (this.showCellDatum) {
+      if (this.prevMousePixelX == this.mousePixelX && this.prevMousePixelY == this.mousePixelY) {
+        this.projectService.getCellDatum(this.projectUid, this.designUID, this.mouseWorldX, this.mouseWorldY, this.mode)
+          .subscribe(result => {
+            //TODO: display nicely
+            //for now just display raw value
+            this.cellDatum = result.returnCode == 0 ? result.value.toFixed(1) : "";
+            this.cellDatum += " (" + result.timestamp + ")";
+          });
+      };
+      this.prevMousePixelX = this.mousePixelX;
+      this.prevMousePixelY = this.mousePixelY;
+    } else {
+      this.cellDatum = "";
+    }
   }
 
   public onMouseOver(event: any): void {

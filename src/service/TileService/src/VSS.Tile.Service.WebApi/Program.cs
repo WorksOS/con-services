@@ -35,7 +35,7 @@ namespace VSS.Tile.Service.WebApi
           })
           .UsePrometheus()
           .UseStartup<Startup>()
-          //.UseUrls("http://localhost:5050/") /* use for debugging service locally */
+          .UseUrls("http://localhost:5050/") /* use for debugging service locally */
           .Build();
       });
 

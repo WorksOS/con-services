@@ -143,7 +143,8 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Volumes.CutFillVolume)
+        typeof(VSS.TRex.Volumes.CutFillVolume),
+        typeof(VSS.TRex.CellDatum.GridFabric.Responses.CellDatumResponse_ApplicationService)
       };
 
       foreach (var asmType in AssemblyDependencies)

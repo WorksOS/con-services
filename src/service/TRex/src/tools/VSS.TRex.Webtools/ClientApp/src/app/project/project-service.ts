@@ -11,8 +11,8 @@ import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
-import Projectmodel = require("./project-model");
-import CellDatumResult = Projectmodel.CellDatumResult;
+import { CellDatumResult } from "./project-model";
+
 
 const httpOptions = {
   headers: new HttpHeaders({
