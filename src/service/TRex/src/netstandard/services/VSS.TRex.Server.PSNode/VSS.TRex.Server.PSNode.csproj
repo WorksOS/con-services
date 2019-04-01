@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj">
       <Private>true</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.CellDatum\VSS.TRex.CellDatum.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Cells\VSS.TRex.Cells.csproj">
       <Private>true</Private>
     </ProjectReference>
