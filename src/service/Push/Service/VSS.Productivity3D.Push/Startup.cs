@@ -32,15 +32,6 @@ namespace VSS.Productivity3D.Push
 
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddCors(options => options.AddPolicy("PUSH-CORS", builder =>
-      {
-        builder
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          .WithOrigins("*")
-          .AllowCredentials();
-      }));
-      ;
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -54,7 +45,6 @@ namespace VSS.Productivity3D.Push
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      app.UseCors("PUSH-CORS");
       app.UseFilterMiddleware<PushAuthentication>();
       app.UseSignalR(route =>
       {

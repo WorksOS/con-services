@@ -29,6 +29,17 @@ namespace VSS.WebApi.Common
 
       services.AddCors(options =>
       {
+        // Don't let this into master
+        // Here for testing only
+        // will move to BaseStartup and provide a overloadable method if you need extra cores
+        options.AddPolicy("DEVELOPMENT-CORS", builder =>
+        {
+          builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .WithOrigins("http://localhost:4200");
+        });
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
           .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
             "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache", "Cache-Control")
