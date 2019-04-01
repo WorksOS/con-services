@@ -173,7 +173,8 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.Volumes.CutFillVolume),
-        typeof (VSS.TRex.Reports.StationOffset.Executors.ComputeStationOffsetReportExecutor_ClusterCompute)
+        typeof (VSS.TRex.Reports.StationOffset.Executors.ComputeStationOffsetReportExecutor_ClusterCompute),
+        typeof(VSS.TRex.CellDatum.GridFabric.Responses.CellDatumResponse_ClusterCompute)
       };
 
       foreach (var asmType in AssemblyDependencies)

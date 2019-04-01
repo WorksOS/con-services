@@ -11,6 +11,8 @@ import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
+import { CellDatumResult } from "./project-model";
+
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -176,6 +178,12 @@ export class ProjectService {
 
   public drawProfileLineForSummaryVolumes(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
     return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/volumes/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
+  public getCellDatum(projectUid: string, designUid: string, x: number, y: number, displayMode: number): Observable<CellDatumResult> {
+    //This calls the WebTools controller which calls TRex directly (nothing to do with TRex gateway)
+    return this.executeRequest<CellDatumResult>
+      ('getCellDatum', `cells/datum?projectUid=${projectUid}&designUid=${designUid}&x=${x}&y=${y}&displayMode=${displayMode}`);
   }
 
 }

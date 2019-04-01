@@ -42,7 +42,7 @@ namespace VSS.TRex.Events.Interfaces
   {
     void CopyEventsFrom(IProductionEvents<T> eventsList);
 
-    T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue = default(T));
+    T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue);
 
     T LastStateValue(T defaultValue = default(T));
     DateTime LastStateDate();
