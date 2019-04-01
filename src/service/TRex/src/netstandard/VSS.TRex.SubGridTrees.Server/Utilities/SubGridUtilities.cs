@@ -63,7 +63,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                 // sub grid addition and reading content from the persistent store.
 
                 // First check to see if the requested cell is present in a leaf sub grid
-                ISubGrid subGrid = forSubGridTree.LocateClosestSubGridContaining(cellX, cellY, level);
+                var subGrid = forSubGridTree.LocateClosestSubGridContaining(cellX, cellY, level);
 
                 if (subGrid == null) // Something bad happened
                 {

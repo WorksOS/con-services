@@ -117,9 +117,11 @@ namespace VSS.TRex.SiteModels
 
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
-    /// load it from storage/cache
+    /// load it from storage/cache.
+    /// This will ever return a null reference. In the case of a site model that does not have any spatial data withi it
+    /// this will return an empty existence map rather than null.
     /// </summary>
-    public ISubGridTreeBitMask ExistenceMap => existenceMap ?? GetProductionDataExistenceMap();
+    public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
 
     /// <summary>
     /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
@@ -148,10 +150,7 @@ namespace VSS.TRex.SiteModels
         return csib;
 
       if (IsTransient)
-      {
-        csib = string.Empty;
-        return csib;
-      }
+        return csib = string.Empty;
 
       FileSystemErrorStatus readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
           CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
@@ -159,10 +158,7 @@ namespace VSS.TRex.SiteModels
           out MemoryStream csibStream);
 
       if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
-      {
-        csib = string.Empty;
-        return csib;
-      }
+        return csib = string.Empty;
 
       using (csibStream)
       {
@@ -584,26 +580,12 @@ namespace VSS.TRex.SiteModels
 
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
-      Guid SavedID = ID;
       FileSystemErrorStatus Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {
         using (MS)
         {
-          if (SavedID != ID)
-          {
-            // The SiteModelID read from the FS file does not match the ID expected.
-
-            // RPW 31/1/11: This used to be an error with it's own error code. This is now
-            // changed to a warning, but loading of the site model is allowed. This
-            // is particularly useful for testing purposes where copying around projects
-            // is much quicker than reprocessing large sets of TAG files
-
-            Log.LogWarning($"Site model ID read ({ID}) does not match expected ID ({SavedID}), setting to expected");
-            ID = SavedID;
-          }
-
           MS.Position = 0;
           using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
           {
@@ -624,16 +606,6 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Returns a reference to the existence map for the site model. If the existence map is not yet present
-    /// load it from storage/cache
-    /// </summary>
-    /// <returns></returns>
-    private ISubGridTreeBitMask GetProductionDataExistenceMap()
-    {
-        return existenceMap ?? (LoadProductionDataExistenceMapFromStorage() == FileSystemErrorStatus.OK ? existenceMap : null);
-    }
-
-    /// <summary>
     /// Saves the content of the existence map to storage
     /// </summary>
     /// <returns></returns>
@@ -642,35 +614,29 @@ namespace VSS.TRex.SiteModels
       var result = FileSystemErrorStatus.OK;
 
       if (existenceMap != null)
-        storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
+        result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), existenceMap);
 
-      return FileSystemErrorStatus.OK;
+      return result;
     }
 
     /// <summary>
     /// Retrieves the content of the existence map from storage
     /// </summary>
     /// <returns></returns>
-    private FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
+    private SubGridTreeSubGridExistenceBitMask LoadProductionDataExistenceMapFromStorage()
     {
-      ISubGridTreeBitMask localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
+      var localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
       // Read its content from storage 
-      PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (MS == null)
-      {
-        Log.LogInformation($"Attempt to read existence map for site model {ID} failed as the map does not exist, creating new existence map");
-        existenceMap = new SubGridTreeSubGridExistenceBitMask();
-        return FileSystemErrorStatus.OK;
-      }
-
-      localExistenceMap.FromStream(MS);
+        Log.LogInformation($"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
+      else
+        localExistenceMap.FromStream(MS);
 
       // Replace existence map with the newly read map
-      existenceMap = localExistenceMap;
-
-      return FileSystemErrorStatus.OK;
+      return localExistenceMap;
     }
 
     /// <summary>

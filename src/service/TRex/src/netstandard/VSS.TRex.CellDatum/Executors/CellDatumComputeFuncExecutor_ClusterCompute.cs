@@ -32,7 +32,7 @@ namespace VSS.TRex.CellDatum.Executors
     public CellDatumComputeFuncExecutor_ClusterCompute() {}
 
     /// <summary>
-    /// Executor that implements requesting and rendering subgrid information to create the cell datum
+    /// Executor that implements requesting and rendering sub grid information to create the cell datum
     /// </summary>
     public CellDatumResponse_ClusterCompute Execute(CellDatumRequestArgument_ClusterCompute arg, SubGridSpatialAffinityKey key)
     {
@@ -66,12 +66,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// </summary>
     private void GetProductionData(ISiteModel siteModel, IDesign cutFillDesign, CellDatumResponse_ClusterCompute result, CellDatumRequestArgument_ClusterCompute arg)
     {
-      ISubGridTreeBitMask existenceMap = siteModel.ExistenceMap;
-      if (existenceMap == null)
-      {
-        Log.LogError($"Failed to locate production data existence map from site model {siteModel.ID}");
-        return;
-      }
+      var existenceMap = siteModel.ExistenceMap;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var requestors = utilities.ConstructRequestors(siteModel,
@@ -100,11 +95,11 @@ namespace VSS.TRex.CellDatum.Executors
       }
 
       ClientCellProfileLeafSubgridRecord cell = (clientGrid as ClientCellProfileLeafSubgrid).Cells[cellX, cellY];
-      if (cell.PassCount == 0) // Nothing for us to do, as cell is not in our areaControlSet...
-        return;
-
-      ExtractRequiredValue(cutFillDesign, cell, result, arg);
-      result.TimeStampUTC = cell.LastPassTime;
+      if (cell.PassCount > 0) // Cell is not in our areaControlSet...
+      {
+        ExtractRequiredValue(cutFillDesign, cell, result, arg);
+        result.TimeStampUTC = cell.LastPassTime;
+      }
     }
 
     /// <summary>
@@ -129,10 +124,7 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.CCVSummary:
         case DisplayMode.CCVPercentSummary:
           result.Value = 0; // default - no value...
-          if (Dummy_LiftBuildSettings.OverrideMachineCCV)
-            intValue = Dummy_LiftBuildSettings.OverridingMachineCCV;
-          else
-            intValue = cell.TargetCCV;
+          intValue = Dummy_LiftBuildSettings.OverrideMachineCCV ? Dummy_LiftBuildSettings.OverridingMachineCCV : cell.TargetCCV;
           if (intValue != 0)
           {
             success = cell.LastPassValidCCV != CellPassConsts.NullCCV && intValue != CellPassConsts.NullCCV;
@@ -192,10 +184,7 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.MDPPercent:
         case DisplayMode.MDPPercentSummary:
           result.Value = 0; // default - no value...
-          if (Dummy_LiftBuildSettings.OverrideMachineMDP)
-            intValue = Dummy_LiftBuildSettings.OverridingMachineMDP;
-          else
-            intValue = cell.TargetMDP;
+          intValue = Dummy_LiftBuildSettings.OverrideMachineMDP ? Dummy_LiftBuildSettings.OverridingMachineMDP : cell.TargetMDP;
           if (intValue != 0)
           {
             success = cell.LastPassValidMDP != CellPassConsts.NullMDP && intValue != CellPassConsts.NullMDP;
