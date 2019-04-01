@@ -186,22 +186,6 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Calculate the world coordinate extents for this client leaf sub grid.
-    /// This uses the local cell size and index origin offset information to perform the 
-    /// calculation locally without the need for a reference sub grid tree.
-    /// </summary>
-    /// <returns></returns>
-    public BoundingWorldExtent3D CalculateWorldExtent()
-    {
-      double WOx = (OriginX - IndexOriginOffset) * CellSize;
-      double WOy = (OriginY - IndexOriginOffset) * CellSize;
-
-      return new BoundingWorldExtent3D(WOx, WOy,
-                                       WOx + SubGridTreeConsts.SubGridTreeDimension * CellSize,
-                                       WOy + SubGridTreeConsts.SubGridTreeDimension * CellSize);
-    }
-
-    /// <summary>
     /// Assign cell information from a previously cached result held in the general sub grid result cache
     /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid

@@ -13,6 +13,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     ISiteModel GetSiteModel(Guid ID);
     ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist);
 
+    void DropSiteModel(Guid ID);
+
     IStorageProxy PrimaryMutableStorageProxy { get; }
     IStorageProxy PrimaryImmutableStorageProxy { get; }
 
