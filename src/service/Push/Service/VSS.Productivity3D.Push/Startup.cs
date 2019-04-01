@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -30,8 +32,15 @@ namespace VSS.Productivity3D.Push
 
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-     services.AddMvc();
-
+      services.AddCors(options => options.AddPolicy("PUSH-CORS", builder =>
+      {
+        builder
+          .AllowAnyMethod()
+          .AllowAnyHeader()
+          .WithOrigins("*")
+          .AllowCredentials();
+      }));
+      ;
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -40,13 +49,13 @@ namespace VSS.Productivity3D.Push
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
-      services.AddSignalR();
+      services.AddSignalR(o => o.EnableDetailedErrors = true);
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
+      app.UseCors("PUSH-CORS");
       app.UseFilterMiddleware<PushAuthentication>();
-      
       app.UseSignalR(route =>
       {
         route.MapHub<NotificationHub>("/notifications");
