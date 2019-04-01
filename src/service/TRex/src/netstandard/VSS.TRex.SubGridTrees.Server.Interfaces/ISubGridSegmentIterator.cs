@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         ISubGridDirectory Directory { get; set; }
         bool IsFirstSegmentInTimeOrder { get; }
         IterationDirection IterationDirection { get; set; }
-        IIteratorStateIndex IterationState { get; set; }
+        IIteratorStateIndex IterationState { get; }
         bool MarkReturnedSegmentsAsTouched { get; set; }
         int NumberOfSegmentsScanned { get; set; }
         bool RetrieveAllPasses { get; set; }

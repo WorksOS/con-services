@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -16,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         // IterationState records the progress of the iteration by recording the path through
         // the sub grid tree which marks the progress of the iteration
-        public IIteratorStateIndex IterationState { get; set; } = new IteratorStateIndex();
+        public IIteratorStateIndex IterationState { get; } = new IteratorStateIndex();
 
         public IStorageProxy StorageProxy { get; set; }
 
@@ -35,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             while (IterationState.NextSegment())
             {
-                ISubGridCellPassesDataSegmentInfo SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
+                var SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
 
                 if (SegmentInfo.Segment != null)
                 {
@@ -43,34 +44,22 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 }
                 else
                 {
-                    if (ReturnDirtyOnly)
+                    // if there is no segment present in the cache then it can't be dirty, so is
+                    // not a candidate to be returned by the iterator
+                    // Similarly if the caller is only interested in segments that are present in the cache,
+                    // we do not need to read it from the persistent store
+                    if (!ReturnDirtyOnly && !ReturnCachedItemsOnly)
                     {
-                        // if there is no segment present in the cache then it can't be dirty, so is
-                        // not a candidate to be returned by the iterator
-                        continue;
-                    }
-
-                    if (ReturnCachedItemsOnly)
-                    {
-                        // The caller is only interested in segments that are present in the cache,
-                        // so we do not need to read it from the persistent store
-                        continue;
-                    }
-
-                    // This additional check to determine if the segment is defined
-                    // is necessary to check if an earlier thread through this code has
-                    // already allocated the new segment
-                    if (SegmentInfo.Segment == null)
-                    {
-                        IterationState.SubGrid.AllocateSegment(SegmentInfo);
-                    }
-
-                    Result = SegmentInfo.Segment;
-
-                    if (Result == null)
-                    {
-                        Log.LogCritical("IterationState.SubGrid.Cells.AllocateSegment failed to create a new segment");
-                        return null;
+                        // This additional check to determine if the segment is defined
+                        // is necessary to check if an earlier thread through this code has
+                        // already allocated the new segment
+                        if (SegmentInfo.Segment == null)
+                          IterationState.SubGrid.AllocateSegment(SegmentInfo);
+                   
+                        Result = SegmentInfo.Segment;
+                   
+                        if (Result == null)
+                          throw new TRexSubGridProcessingException("IterationState.SubGrid.Cells.AllocateSegment failed to create a new segment");
                     }
                 }
 
@@ -151,8 +140,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// </summary>
         public bool ReturnDirtyOnly { get; set; }
 
-        public IterationDirection IterationDirection { get => IterationState.IterationDirection;  set => IterationState.IterationDirection = value;
-        }
+        public IterationDirection IterationDirection { get => IterationState.IterationDirection;  set => IterationState.IterationDirection = value; }
 
         /// <summary>
         /// Allows the caller of the iterator to restrict the

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
-    /// Provides a base class for iterating through cells in subgrids in a cell pass by cell pass manner.
+    /// Provides a base class for iterating through cells in sub grids in a cell pass by cell pass manner.
     /// Separate iterators for static and non-static cell passes are derived from this class by overriding
     /// the abstract functors in the base class
     /// </summary>
@@ -20,33 +17,17 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridSegmentCellPassIterator_Base));
 
         /// <summary>
-        /// The subgrid relative cellX ordiante of the cell within which cell passes are being iterated
+        /// The sub grid relative cellX ordinate of the cell within which cell passes are being iterated
         /// </summary>
-        protected byte cellX = byte.MaxValue;
+        public byte CellX { get; private set; }
 
         /// <summary>
-        /// The subgrid relative cellX ordinate of the cell within which cell passes are being iterated
+        /// The sub grid relative cellY ordinate of the cell within which cell passes are being iterated
         /// </summary>
-        public byte CellX
-        {
-            get { return cellX; }
-        }
+        public byte CellY { get; private set; }
 
         /// <summary>
-        /// The subgrid relative cellY ordinate of the cell within which cell passes are being iterated
-        /// </summary>
-        protected byte cellY = byte.MaxValue;
-
-        /// <summary>
-        /// The subgrid relative cellY ordinate of the cell within which cell passes are being iterated
-        /// </summary>
-        public byte CellY
-        {
-            get { return cellY; }
-        }
-
-        /// <summary>
-        /// The iterator responsible for moving through the set of segments in the subgrid as the cell pass
+        /// The iterator responsible for moving through the set of segments in the sub grid as the cell pass
         /// iterator moves through the set of cell passes
         /// </summary>
         public ISubGridSegmentIterator SegmentIterator { get; set; }
@@ -55,35 +36,19 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         protected int finishCellInSegmentIndex = -1;
 
         /// <summary>
-        /// Incrementor appropriate to the forwards or backwards direction of the iteration
+        /// Incrementer appropriate to the forwards or backwards direction of the iteration
         /// </summary>
         protected int cellPassIterationDirectionIncrement = 1;
 
         /// <summary>
         /// The minimum cell pass time the call passes iterated through will be returned
         /// </summary>
-        protected DateTime iteratorStartTime = DateTime.MinValue;
-
-        /// <summary>
-        /// The minimum cell pass time the call passes iterated through will be returned
-        /// </summary>
-        public DateTime IteratorStartTime
-        {
-            get { return iteratorStartTime; }
-        }
+        public DateTime IteratorStartTime { get; private set; } = DateTime.MinValue;
 
         /// <summary>
         /// The maximum cell pass time the call passes iterated through will be returned
         /// </summary>
-        protected DateTime iteratorEndTime = DateTime.MaxValue;
-
-        /// <summary>
-        /// The maximum cell pass time the call passes iterated through will be returned
-        /// </summary>
-        public DateTime IteratorEndTime
-        {
-            get { return iteratorEndTime; }
-        }
+        public DateTime IteratorEndTime { get; private set; } =  DateTime.MaxValue;
 
         /// <summary>
         /// The date/time of the cell pass that was returned last from the iterator
@@ -129,8 +94,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         }
 
         /// <summary>
-        /// Overidable method to initialise each new segment. Static and non-static cell pass representatins
-        /// provide overides for this behaviour
+        /// Overridable method to initialise each new segment. Static and non-static cell pass representations
+        /// provide overrides for this behaviour
         /// </summary>
         protected abstract void InitialiseForNewSegment(IterationDirection direction);
 
@@ -141,23 +106,20 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         protected void InitialiseForNewSegment()
         {
             if (SegmentIterator.CurrentSubGridSegment == null)
-            {
-                Log.LogCritical("No current sub grid segment in iterator to initialise cell enumeration over.");
-                return;
-            }
+              throw new TRexSubGridProcessingException("No current sub grid segment in iterator to initialise cell enumeration over.");
 
             InitialiseForNewSegment(SegmentIterator.IterationDirection);
         }
 
         // SetCellCoordinatesInSubGrid set the coordinates of the cell in the sub grid that
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
-        public void SetCellCoordinatesInSubgrid(byte _cellX, byte _cellY)
+        public void SetCellCoordinatesInSubgrid(byte cellX, byte cellY)
         {
-            if (_cellX > SubGridTreeConsts.SubGridTreeDimensionMinus1 || _cellY > SubGridTreeConsts.SubGridTreeDimensionMinus1)
+            if (cellX > SubGridTreeConsts.SubGridTreeDimensionMinus1 || cellY > SubGridTreeConsts.SubGridTreeDimensionMinus1)
               throw new TRexSubGridProcessingException($"Cell coordinates out of range in {nameof(SetCellCoordinatesInSubgrid)}");
 
-            cellX = _cellX;
-            cellY = _cellY;
+            CellX = cellX;
+            CellY = cellY;
         }
 
         /// <summary>
@@ -174,10 +136,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public void Initialise()
         {
             if (SegmentIterator == null)
-            {
-                Log.LogCritical("No segment iterator assigned");
-                return;
-            }
+                throw new TRexSubGridProcessingException("No segment iterator assigned");
 
             lastReturnedCellPassTime = SegmentIterator.IterationDirection == IterationDirection.Forwards
                 ? DateTime.MinValue
@@ -205,48 +164,47 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool GetNextCellPass(ref CellPass CellPass)
         {
             DateTime CellPassTime;
+            bool result = false;
 
-            if (SegmentIterator.CurrentSubGridSegment == null)
-                return false; // No more cells to process
-
-            if (cellX > SubGridTreeConsts.SubGridTreeDimensionMinus1 || cellY > SubGridTreeConsts.SubGridTreeDimensionMinus1)
-              throw new TRexSubGridProcessingException($"Cell coordinates out of range in {nameof(GetNextCellPass)}");
-
-            do
-            {
-                cellInSegmentIndex += cellPassIterationDirectionIncrement;
-
-                while (cellInSegmentIndex == finishCellInSegmentIndex && SegmentIterator.CurrentSubGridSegment != null)
+            if (SegmentIterator.CurrentSubGridSegment != null)
+            { 
+                do
                 {
-                    MoveToNextSegment();
-
                     cellInSegmentIndex += cellPassIterationDirectionIncrement;
-                }
+            
+                    while (cellInSegmentIndex == finishCellInSegmentIndex && SegmentIterator.CurrentSubGridSegment != null)
+                    {
+                        MoveToNextSegment();
+            
+                        cellInSegmentIndex += cellPassIterationDirectionIncrement;
+                    }
+            
+                    if (SegmentIterator.CurrentSubGridSegment == null)
+                        return false; // No more segments to process
+            
+                    CellPass = ExtractCellPass();
+                    CellPassTime = CellPass.Time;
+            
+                    if (CellPassTime == DateTime.MinValue)
+                      throw new TRexSubGridProcessingException($"Cell pass with null time returned from {nameof(GetNextCellPass)}");
+            
+                    if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
+                    {
+                        if (CellPassTime > IteratorEndTime)
+                            return false;
+                    }
+                    else
+                    {
+                        if (CellPassTime < IteratorStartTime)
+                            return false;
+                    }
+                } while (CellPassTime < IteratorStartTime || CellPassTime > IteratorEndTime);
+            
+                lastReturnedCellPassTime = CellPassTime;
+                result = true;
+            }
 
-                if (SegmentIterator.CurrentSubGridSegment == null)
-                    return false; // No more segments to process
-
-                CellPass = ExtractCellPass();
-                CellPassTime = CellPass.Time;
-
-                if (CellPassTime == DateTime.MinValue)
-                  throw new TRexSubGridProcessingException($"Cell pass with null time returned from {nameof(GetNextCellPass)}");
-
-                if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
-                {
-                    if (CellPassTime > iteratorEndTime)
-                        return false;
-                }
-                else
-                {
-                    if (CellPassTime < iteratorStartTime)
-                        return false;
-                }
-            } while (CellPassTime < iteratorStartTime || CellPassTime > iteratorEndTime);
-
-            lastReturnedCellPassTime = CellPassTime;
-
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -261,8 +219,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool MayHaveMoreFilterableCellPasses()
         {
             return SegmentIterator.IterationDirection == IterationDirection.Forwards
-                ? lastReturnedCellPassTime < iteratorEndTime
-                : lastReturnedCellPassTime > iteratorStartTime;
+                ? lastReturnedCellPassTime < IteratorEndTime
+                : lastReturnedCellPassTime > IteratorStartTime;
         }
 
         /// <summary>
@@ -273,26 +231,11 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// <param name="iteratorEndTime"></param>
         public void SetTimeRange(bool hasTimeFilter, DateTime iteratorStartTime, DateTime iteratorEndTime)
         {
-            if (hasTimeFilter)
-            {
-                this.iteratorStartTime = iteratorStartTime;
-                this.iteratorEndTime = iteratorEndTime;
-            }
-            else
-            {
-                this.iteratorStartTime = DateTime.MinValue;
-                this.iteratorEndTime = DateTime.MaxValue;
-            }
+            IteratorStartTime = hasTimeFilter ? iteratorStartTime: DateTime.MinValue;
+            IteratorEndTime = hasTimeFilter ? iteratorEndTime : DateTime.MaxValue;
 
             // if we have a attached segment iterator then also set its date range
             SegmentIterator?.SetTimeRange(iteratorStartTime, iteratorEndTime);
         }
-
-        /// <summary>
-        /// Sets the machine restriction within the iterator to the set of machines passed to it. The cell pass iterator
-        /// will proactively ignore cell passes from machines not present in the passed set.
-        /// </summary>
-        /// <param name="machineIDSet"></param>
-        public void SetMachineRestriction(BitArray machineIDSet) => SegmentIterator.SetMachineRestriction(machineIDSet);
     }
 }
