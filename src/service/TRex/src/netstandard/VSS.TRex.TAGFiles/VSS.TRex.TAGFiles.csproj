@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Events.Models\VSS.TRex.Events.Models.csproj" />
@@ -33,6 +34,7 @@
     <ProjectReference Include="..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
     <ProjectReference Include="..\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

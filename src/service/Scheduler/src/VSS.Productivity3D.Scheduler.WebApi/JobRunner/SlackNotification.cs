@@ -1,8 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using Microsoft.Extensions.Logging;
 using Slack.Webhooks;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Scheduler.Abstractions;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 {
@@ -11,14 +14,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
   /// </summary>
   public class SlackNotification : IDevOpsNotification
   {
-    private readonly string url;
-    private readonly string channel;
-    private readonly string username;
+    private readonly string url = String.Empty;
+    private readonly string channel = String.Empty;
+    private readonly string username = String.Empty;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    public SlackNotification(IConfigurationStore configStore)
+    public SlackNotification(IConfigurationStore configStore, ILogger<SlackNotification> logger)
     {
       //see https://productivity3d.slack.com/apps/new/A0F7XDUAZ-incoming-webhooks for configuration values
       url = configStore.GetValueString("SLACK_URL");
@@ -26,9 +29,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
       username = configStore.GetValueString("SLACK_USERNAME");
       if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(channel) || string.IsNullOrEmpty(username))
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "Missing slack client configuration"));
+        logger.LogWarning("Missing environemtn variables for Slack - Slacking is switched off");
       }
     }
 
@@ -37,8 +38,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     /// </summary>
     public bool Notify(string message)
     {
+      if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(channel) || string.IsNullOrEmpty(username))
+        return false;
       var slackClient = new SlackClient(url);
-      
+
       var slackMessage = new SlackMessage
       {
         Channel = channel,

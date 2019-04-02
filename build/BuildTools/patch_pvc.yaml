@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app: jenkins
+  name: jenkins
+  namespace: jenkins
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: aws-us-west-2a-gp2
+  volumeName: pvc-98d73cb7-31c2-11e9-822d-02c7a2adac9c
+status:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 100Gi

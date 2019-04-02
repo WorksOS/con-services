@@ -6,6 +6,7 @@ using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;

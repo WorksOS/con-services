@@ -15,6 +15,7 @@
     <ProjectReference Include="..\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;

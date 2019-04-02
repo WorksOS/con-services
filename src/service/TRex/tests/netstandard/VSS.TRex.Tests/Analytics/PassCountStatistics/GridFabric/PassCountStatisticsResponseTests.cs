@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;

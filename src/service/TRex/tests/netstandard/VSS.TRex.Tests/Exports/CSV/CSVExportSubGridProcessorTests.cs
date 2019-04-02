@@ -20,6 +20,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
 using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
+using VSS.TRex.Common.Models;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {

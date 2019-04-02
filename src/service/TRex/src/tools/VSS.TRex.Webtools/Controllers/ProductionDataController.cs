@@ -22,6 +22,7 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common.Records;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;

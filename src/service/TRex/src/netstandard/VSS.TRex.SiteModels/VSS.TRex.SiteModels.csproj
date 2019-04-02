@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.Alignments.Interfaces\VSS.TRex.Alignments.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.Events\VSS.TRex.Events.csproj" />
@@ -24,6 +25,7 @@
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
     <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>
