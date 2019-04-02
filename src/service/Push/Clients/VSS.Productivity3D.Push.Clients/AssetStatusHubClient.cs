@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Push.Clients
       return Task.CompletedTask;
     }
 
-    public override string UrlKey => ROUTE;
+    public override string HubRoute => ROUTE;
     public override void SetupCallbacks()
     {
 
