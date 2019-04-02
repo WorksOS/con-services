@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;

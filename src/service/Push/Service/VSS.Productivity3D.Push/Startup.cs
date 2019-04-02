@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.ServiceDiscovery.Constants;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -45,8 +48,23 @@ namespace VSS.Productivity3D.Push
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, PushResult>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+
+      // Attempt to resolve the redis cache, and use it for SignalR
+      var serviceDiscovery = services.BuildServiceProvider().GetService<IServiceResolution>();
+      var redisService = serviceDiscovery.ResolveService(ServiceNameConstants.REDIS_CACHE).Result;
+
+      if (redisService.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(redisService.Endpoint))
+      {
+        Log.LogWarning("Failed to find REDIS SERVER, SignalR not scalable");
+        services.AddSignalR(options => { options.EnableDetailedErrors = true; } );
+      }
+      else
+      {
+        Log.LogInformation($"SignalR Using `{redisService.Endpoint}` for Redis Server");
+        services.AddSignalR(options => { options.EnableDetailedErrors = true; })
+          .AddStackExchangeRedis(redisService.Endpoint, options => { options.Configuration.ChannelPrefix = "push-service"; });
+      }
       
-      services.AddSignalR(options => { options.EnableDetailedErrors = true; } );
     }
 
     /// <inheritdoc />

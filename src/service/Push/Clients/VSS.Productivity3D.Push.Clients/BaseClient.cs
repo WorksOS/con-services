@@ -38,8 +38,6 @@ namespace VSS.Productivity3D.Push.Clients
       Logger = loggerFactory.CreateLogger(GetType().Name);
       Configuration = configuration;
       this.serviceDiscovery = serviceDiscovery;
-
-
     }
 
     /// <inheritdoc />
