@@ -7,16 +7,16 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridCellLatestPassDataWrapper
   {
-    SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; set; }
+    SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; }
 
-    SubGridTreeBitmapSubGridBits CCVValuesAreFromLastPass { get; set; }
-    SubGridTreeBitmapSubGridBits RMVValuesAreFromLastPass { get; set; }
-    SubGridTreeBitmapSubGridBits FrequencyValuesAreFromLastPass { get; set; }
-    SubGridTreeBitmapSubGridBits AmplitudeValuesAreFromLastPass { get; set; }
-    SubGridTreeBitmapSubGridBits GPSModeValuesAreFromLatestCellPass { get; set; }
-    SubGridTreeBitmapSubGridBits TemperatureValuesAreFromLastPass { get; set; }
-    SubGridTreeBitmapSubGridBits MDPValuesAreFromLastPass { get; set; }
-    SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; set; }
+    SubGridTreeBitmapSubGridBits CCVValuesAreFromLastPass { get; }
+    SubGridTreeBitmapSubGridBits RMVValuesAreFromLastPass { get; }
+    SubGridTreeBitmapSubGridBits FrequencyValuesAreFromLastPass { get; }
+    SubGridTreeBitmapSubGridBits AmplitudeValuesAreFromLastPass { get; }
+    SubGridTreeBitmapSubGridBits GPSModeValuesAreFromLatestCellPass { get; }
+    SubGridTreeBitmapSubGridBits TemperatureValuesAreFromLastPass { get; }
+    SubGridTreeBitmapSubGridBits MDPValuesAreFromLastPass { get; }
+    SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; }
 
     void Clear();
     void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source);
