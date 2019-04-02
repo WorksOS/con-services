@@ -21,7 +21,9 @@ namespace VSS.Productivity3D.AssetMgmt3D
 {
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, "3d-assetmanagement")
+    public const string LoggerRepoName = "3d-assetmgmt";
+
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
     {
     }
 
@@ -38,6 +40,7 @@ namespace VSS.Productivity3D.AssetMgmt3D
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IProjectListProxy, ProjectV4ListServiceDiscoveryProxy>();
+
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
       services.AddTransient<IAssetRepository, AssetRepository>();

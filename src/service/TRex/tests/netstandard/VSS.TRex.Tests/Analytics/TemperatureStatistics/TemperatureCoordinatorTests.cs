@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;

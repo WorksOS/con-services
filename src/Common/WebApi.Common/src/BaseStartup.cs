@@ -1,8 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using App.Metrics;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
+using VSS.Common.ServiceDiscovery;
+using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 
 namespace VSS.WebApi.Common
 {
@@ -22,6 +30,11 @@ namespace VSS.WebApi.Common
       env.ConfigureLog4Net("log4net.xml", loggerRepoName);
     }
 
+    //Backing field
+    private ILogger _logger;
+    private IConfigurationStore _configuration;
+
+
     /// <summary>
     /// The service collection reference
     /// </summary>
@@ -33,9 +46,39 @@ namespace VSS.WebApi.Common
     protected ServiceProvider ServiceProvider { get; private set; }
 
     /// <summary>
+    /// Provides access to configuration settings
+    /// </summary>
+    protected IConfigurationStore Configuration
+    {
+      get
+      {
+        if (_configuration == null)
+        {
+          _configuration = new GenericConfiguration(new NullLoggerFactory());
+        }
+        return _configuration;
+      }
+      set => _configuration = value;
+    }
+      
+
+    /// <summary>
     /// Gets the ILogger type used for logging.
     /// </summary>
-    protected ILogger Log { get; private set; }
+    protected ILogger Log
+    {
+      get
+      {
+        if (_logger == null)
+        {
+          _logger = new LoggerFactory().AddConsole().CreateLogger(nameof(BaseStartup));
+        }
+        return _logger;
+      }
+      set => _logger = value;
+    }
+
+
 
     /// <summary>
     /// The name of this service for swagger etc.
@@ -58,13 +101,28 @@ namespace VSS.WebApi.Common
     {
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
+      services.AddServiceDiscovery();
 
-      Services = services;
+      services.AddMvcCore(
+        config =>
+        {
+          // for jsonProperty validation
+          config.Filters.Add(new ValidationFilterAttribute());
+        }).AddMetricsCore();
+
+      var metrics = AppMetrics.CreateDefaultBuilder()
+        .Build();
+
+      services.AddMetrics(metrics);
+      services.AddMetricsTrackingMiddleware();
 
       ConfigureAdditionalServices(services);
 
+      Services = services;
+
       ServiceProvider = Services.BuildServiceProvider();
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
+      Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -73,10 +131,18 @@ namespace VSS.WebApi.Common
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      app.UseMetricsAllMiddleware();
       app.UseCommon(ServiceName);
+
+      if (Configuration.GetValueBool("newrelic").HasValue && Configuration.GetValueBool("newrelic").Value)
+      {
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
 
       Services.AddSingleton(loggerFactory);
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
+
+      app.UseMvc();
     }
 
     /// <summary>

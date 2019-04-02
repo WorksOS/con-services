@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -12,7 +13,6 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -27,25 +27,24 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
-  public class Startup
+  public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    private const string SERVICE_TITLE = "TRex Gateway API";
     /// <summary>
     /// The logger repository name
     /// </summary>
-    public const string LOGGER_REPO_NAME = "WebApi";
+    public const string LoggerRepoName = "TrexGatewayWebApi";
+
+    public override string ServiceName => "TRex Gateway API";
+    public override string ServiceDescription => "TRex Gateway API";
+    public override string ServiceVersion => "v1";
 
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     /// </summary>
-    public void ConfigureServices(IServiceCollection services)
+ 
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-
       // Add framework services.
       DIBuilder.New(services)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -77,30 +76,22 @@ namespace VSS.TRex.Gateway.WebApi
         });
       });
 
-      services.AddJaeger(SERVICE_TITLE);
-
-      //services.AddMemoryCache();
-      services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Gateway");
-
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       DIBuilder.Continue()
         .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
         .Complete();
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    /// </summary>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
       }
+    }
 
-      app.UseCommon(SERVICE_TITLE);
-      app.UseMvc();
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    {
     }
   }
 }

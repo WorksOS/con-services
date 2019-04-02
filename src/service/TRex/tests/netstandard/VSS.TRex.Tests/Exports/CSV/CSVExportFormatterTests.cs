@@ -225,7 +225,8 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData(MachineGear.Reverse4, "Reverse_4")]
     [InlineData(MachineGear.Reverse5, "Reverse_5")]
     [InlineData(MachineGear.Park, "Park")]
-    [InlineData(MachineGear.Unknown, "Sensor_Failed")]
+    [InlineData(MachineGear.SensorFailed, "Sensor_Failed")]
+    [InlineData(MachineGear.Null, "?")]
     public void FormatMachineGear(MachineGear value, string expectedResult)
     {
       var userPreferences = new UserPreferences();
@@ -235,6 +236,18 @@ namespace VSS.TRex.Tests.Exports.CSV
       var result = formatter.FormatMachineGearValue(value);
       result.Should().Be(expectedResult);
     }
+
+    [Fact]
+    public void FormatMachineGear_NoEnumValue()
+    {
+      var userPreferences = new UserPreferences();
+      var csvUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
+      var formatter = new CSVExportFormatter(csvUserPreference, OutputTypes.PassCountLastPass);
+
+      var result = formatter.FormatMachineGearValue((MachineGear)100);
+      result.Should().Be("unknown: 100");
+    }
+    
 
     [Theory]
     [InlineData(GPSMode.Old, "Old Position")]

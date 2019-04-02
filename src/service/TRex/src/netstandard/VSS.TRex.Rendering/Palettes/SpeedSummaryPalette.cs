@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes

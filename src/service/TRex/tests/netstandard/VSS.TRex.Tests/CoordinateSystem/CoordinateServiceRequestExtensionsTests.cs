@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;

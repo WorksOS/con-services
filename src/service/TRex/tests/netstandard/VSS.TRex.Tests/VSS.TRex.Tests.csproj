@@ -46,6 +46,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching.Interfaces\VSS.TRex.Caching.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching\VSS.TRex.Caching.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
@@ -85,6 +86,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />

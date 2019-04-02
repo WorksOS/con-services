@@ -87,15 +87,12 @@ namespace VSS.TRex.Tests.TestFixtures
       moqConfiguration.Setup(x => x.GetValueInt("MAX_EXPORT_ROWS", It.IsAny<int>())).Returns(rowCount);
 
       DIBuilder.Continue().Add(x => x.AddSingleton(moqConfiguration.Object)).Complete();
-    }
 
-    public static void TestMaxExportRowsConfig(int rowCount)
-    {
       var configuration = DIContext.Obtain<IConfigurationStore>();
       configuration.GetValueInt("MAX_EXPORT_ROWS").Should().Be(rowCount);
       configuration.GetValueInt("MAX_EXPORT_ROWS", 1).Should().Be(rowCount);
     }
-
+    
     public DILoggingFixture()
     {
       SetupFixture();

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -36,45 +37,43 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
-  public class Startup
+  public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    private const string SERVICE_TITLE = "TRex Mutable Gateway API";
-    /// <summary>
+ /// <summary>
     /// The logger repository name
     /// </summary>
-    public const string LOGGER_REPO_NAME = "WebApi";
+    public const string LoggerRepoName = "TRexMutableWebApi";
+
+ public override string ServiceName => "TRex Mutable Gateway API";
+    public override string ServiceDescription => "TRex Mutable Gateway API";
+    public override string ServiceVersion => "v1";
 
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     /// </summary>
-    public void ConfigureServices(IServiceCollection services)
+ 
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       DIBuilder.New(services)
-        .Add(TRexGridFactory.AddGridFactoriesToDI)
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+         .Add(TRexGridFactory.AddGridFactoriesToDI)
+         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
 
-        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))
+         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+         .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))
 
-        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
-        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
-        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
-        .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
-        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
-        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
-        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
-        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
-        .Build();
+         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
+         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
+         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
+         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
+         .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
+         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
+         .Build();
 
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
-      services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
-      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       services.AddOpenTracing(builder =>
@@ -85,12 +84,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
         });
       });
 
-      services.AddJaeger(SERVICE_TITLE);
-
-      services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Mutable Gateway");
-
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT)))
@@ -98,18 +91,13 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
         .Complete();
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    /// </summary>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-      }
+    }
 
-      app.UseCommon(SERVICE_TITLE);
-      app.UseMvc();
+
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    {
     }
   }
 }

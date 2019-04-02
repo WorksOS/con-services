@@ -47,11 +47,11 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = GetMockHangfireContext(typeof(VSSHangfireJobRunnerTests), TestContext.TestName, string.Empty);
       var errorProvider = new Mock<IErrorCodesProvider>();
       var configStore = new Mock<IConfigurationStore>();
-      var jobFactory = new VSSJobFactory(loggerFactory, serviceProvider);
+      var jobFactory = new JobFactory(loggerFactory, serviceProvider);
       var vssJobUid = Guid.NewGuid();
       jobFactory.RegisterJob(vssJobUid, typeof(MockDxfTileGenerationJob));
       var devOpsNotification = new Mock<IDevOpsNotification>();
-      var jobRunner = new VSSHangfireJobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory, devOpsNotification.Object);
+      var jobRunner = new JobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory, devOpsNotification.Object);
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };
       var result = jobRunner.RunHangfireJob(request, context);
       Assert.IsTrue(setupCalled);
@@ -66,11 +66,11 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var errorProvider = new Mock<IErrorCodesProvider>();
       var configStore = new Mock<IConfigurationStore>();
       configStore.Setup(c => c.GetValueString(It.IsAny<string>())).Returns("some environment");
-      var jobFactory = new Mock<IVSSJobFactory>();
+      var jobFactory = new Mock<IJobFactory>();
       jobFactory.Setup(f => f.GetJob(It.IsAny<Guid>()))
-        .Returns((IVSSJob) null);
+        .Returns((IJob) null);
       var devOpsNotification = new Mock<IDevOpsNotification>();
-      var jobRunner = new VSSHangfireJobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory.Object, devOpsNotification.Object);
+      var jobRunner = new JobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory.Object, devOpsNotification.Object);
       var vssJobUid = Guid.NewGuid();
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };
       Assert.ThrowsException<AggregateException>(() => jobRunner.RunHangfireJob(request, context).Result);

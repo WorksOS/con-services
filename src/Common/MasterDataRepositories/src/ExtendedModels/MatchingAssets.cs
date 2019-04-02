@@ -18,8 +18,7 @@ namespace VSS.MasterData.Repositories.ExtendedModels
 
     public override bool Equals(object obj)
     {
-      var otherAsset = obj as MatchingAssets;
-      if (otherAsset == null) return false;
+      if (!(obj is MatchingAssets otherAsset)) return false;
       return otherAsset.AssetUID == AssetUID
              && otherAsset.MatchingAssetUID == MatchingAssetUID
              && otherAsset.Name == Name
@@ -37,3 +36,4 @@ namespace VSS.MasterData.Repositories.ExtendedModels
     }
   }
 }
+

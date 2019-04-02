@@ -2,6 +2,7 @@
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Profiling.Models;
 
 

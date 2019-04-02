@@ -1,13 +1,28 @@
-replicas: 1
 
 image:
   repository: 276986344560.dkr.ecr.us-west-2.amazonaws.com/helm-vsts-agent
-  tag: master-11047-eks
-  pullPolicy: Always
+  tag: merino
 
 resources:
   disk: "5Gi"
 
 vstsToken: "kk6mfp4kkqmupyec7tztxiiihzsg4okb6otwufw7hsfclizmlqvq"
 vstsAccount: "VisionLink"
-vstsPool: "eks-stg"
+vstsPool: "kubernetes-production"
+
+replicas: 2
+
+#tolerations: 
+#  - key: "dedicated"
+#    operator: "Equal"
+#    value: "jenkins"
+#    effect: "NoSchedule"
+
+
+  ## Node labels for controller pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+#nodeSelector: 
+#  vss/application: jenkins
+
+

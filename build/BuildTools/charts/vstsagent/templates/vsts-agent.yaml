@@ -48,11 +48,20 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.image.imagePullSecret }}
 {{ end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: workspace
     spec:
       accessModes: [ ReadWriteOnce ]
+      storageClassName: gp-west-2b-retain
       resources:
         requests:
           storage: {{ .Values.resources.disk | default "50Gi" | quote }}

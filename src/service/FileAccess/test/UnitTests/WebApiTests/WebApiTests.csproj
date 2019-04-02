@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -24,11 +24,10 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.18" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.FileAccess.WebAPI.Models.csproj" />
   </ItemGroup>
 
