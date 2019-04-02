@@ -31,6 +31,7 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.PassCountSummary: return new PassCountSummaryPalette();
         case DisplayMode.TemperatureDetail: return new TemperaturePalette();
         case DisplayMode.TemperatureSummary: return new TemperatureSummaryPalette();
+        case DisplayMode.CutFill: return new CutFillPalette();
         case DisplayMode.CCA: return new CCAPalette();
         case DisplayMode.CCASummary: return new CCASummaryPalette();
 
