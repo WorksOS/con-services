@@ -24,6 +24,10 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     private const int RECONNECT_DELAY_MS = 1000;
 
+    public const string PUSH_REQUEST_NO_AUTH = "PUSH_NO_AUTHENTICATION_HEADER";
+
+    public const string SKIP_AUTHENTICATION_HEADER = "X-VSS-NO-TPAAS";
+
     protected readonly IConfigurationStore Configuration;
     
     protected ILogger Logger;
@@ -67,9 +71,7 @@ namespace VSS.Productivity3D.Push.Clients
     {
       if (string.IsNullOrWhiteSpace(HubRoute))
       {
-        // This should be set in code
-        Logger.LogCritical($"No URL Key provided to Push Client - not starting");
-        return;
+        throw new ArgumentException("No URL Key provided to Push Client - not starting", nameof(HubRoute));
       }
 
       await Task.Factory.StartNew(TryConnect);
@@ -90,7 +92,7 @@ namespace VSS.Productivity3D.Push.Clients
           if (Connection == null)
           {
             Connected = false;
-            await Task.Delay(1000 * 60); // delay a minute before retrying
+            await Task.Delay(RECONNECT_DELAY_MS); 
           }
           else
           {
@@ -139,10 +141,10 @@ namespace VSS.Productivity3D.Push.Clients
       Connection = new HubConnectionBuilder()
         .WithUrl(endpoint, options =>
         {
-          if (Configuration.GetValueBool("PUSH_NO_AUTHENTICATION_HEADER", false))
+          if (Configuration.GetValueBool(PUSH_REQUEST_NO_AUTH, false))
           {
             Logger.LogInformation("Attempting to skip TPaaS Authentication");
-            options.Headers.Add("X-VSS-NO-TPAAS", "true");
+            options.Headers.Add(SKIP_AUTHENTICATION_HEADER, "true");
           }
           else
           {
