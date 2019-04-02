@@ -72,10 +72,65 @@ namespace VSS.Productivity3D.Push.Clients
         return;
       }
 
+      await Task.Factory.StartNew(TryConnect);
+    }
+
+    /// <summary>
+    /// Actually does the connection, and keeps retrying until it connects
+    /// </summary>
+    private async Task TryConnect()
+    {
+      while (true)
+      {
+        try
+        {
+          // If the URL of the endpoint changes, we need to be able to connect to the new URL
+          // SignalR doesn't give us a way to set a new url without recreating the Connection Object
+          await SetupConnection();
+          if (Connection == null)
+          {
+            Connected = false;
+            await Task.Delay(1000 * 60); // delay a minute before retrying
+          }
+          else
+          {
+            await Connection.StartAsync();
+            Connected = true;
+            Logger.LogInformation($"Connected to `{endpoint.AbsolutePath}`");
+          }
+
+          break;
+        }
+        catch (HttpRequestException e)
+        {
+          // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
+          Logger.LogError($"Failed to connect due to exception - Is the Server online? Message: {e.Message}");
+          await Task.Delay(RECONNECT_DELAY_MS);
+        }
+        catch (Exception e)
+        {
+          // We need to catch all exceptions, if we don't the reconnection thread will be stopped.
+          Logger.LogError(e, "Failed to connect due to exception - Unknown exception occured.");
+          await Task.Delay(RECONNECT_DELAY_MS);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Setup a connection to Push Service, using service resolution
+    /// </summary>
+    private async Task SetupConnection()
+    {
+      if (Connection != null)
+      {
+        await Disconnect();
+        Connection = null;
+      }
+
       var serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
       if (serviceResult.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(serviceResult.Endpoint))
       {
-        Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}` in settings, not connecting....");
+        Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}`.");
         return;
       }
 
@@ -104,38 +159,8 @@ namespace VSS.Productivity3D.Push.Clients
         await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
       };
 
+      // We must call setup callbacks after we setup the connection
       SetupCallbacks();
-
-      await Task.Factory.StartNew(TryConnect);
-    }
-
-    /// <summary>
-    /// Actually does the connection, and keeps retrying until it connects
-    /// </summary>
-    private async Task TryConnect()
-    {
-      while (true)
-      {
-        try
-        {
-          await Connection.StartAsync();
-          Connected = true;
-          Logger.LogInformation($"Connected to `{endpoint.AbsolutePath}`");
-          break;
-        }
-        catch (HttpRequestException e)
-        {
-          // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
-          Logger.LogError($"Failed to connect due to exception - Is the Server online? Message: {e.Message}");
-          await Task.Delay(RECONNECT_DELAY_MS);
-        }
-        catch (Exception e)
-        {
-          // We need to catch all exceptions, if we don't the reconnection thread will be stopped.
-          Logger.LogError(e, "Failed to connect due to exception - Unknown exception occured.");
-          await Task.Delay(RECONNECT_DELAY_MS);
-        }
-      }
     }
   }
 }
