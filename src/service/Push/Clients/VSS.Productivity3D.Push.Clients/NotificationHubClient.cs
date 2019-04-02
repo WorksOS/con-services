@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Push.Clients
     }
 
     /// <inheritdoc />
-    public override string UrlKey => ROUTE;
+    public override string HubRoute => ROUTE;
 
     /// <inheritdoc />
     /// <summary>
