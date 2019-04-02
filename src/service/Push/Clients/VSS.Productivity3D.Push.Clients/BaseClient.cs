@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.Common.Abstractions.ServiceDiscovery.Models;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -26,23 +28,27 @@ namespace VSS.Productivity3D.Push.Clients
     
     protected ILogger Logger;
     protected HubConnection Connection;
-    private IServiceResolution ServiceDiscovery;
 
+    private readonly IServiceResolution serviceDiscovery;
+
+    private Uri endpoint;
 
     protected BaseClient(IConfigurationStore configuration, IServiceResolution serviceDiscovery, ILoggerFactory loggerFactory)
     {
       Logger = loggerFactory.CreateLogger(GetType().Name);
       Configuration = configuration;
-      ServiceDiscovery = serviceDiscovery;
+      this.serviceDiscovery = serviceDiscovery;
+
+
     }
 
     /// <inheritdoc />
     public bool Connected { get; private set; }
 
     /// <summary>
-    /// The URL Key for the Configuration Store
+    /// The Route for the hub, which is appended to the Push URL
     /// </summary>
-    public abstract string UrlKey { get; }
+    public abstract string HubRoute { get; }
 
     /// <summary>
     /// Method to setup any callbacks from the SignalR Hub
@@ -61,22 +67,24 @@ namespace VSS.Productivity3D.Push.Clients
     /// <inheritdoc />
     public async Task Connect()
     {
-      if (string.IsNullOrWhiteSpace(UrlKey))
+      if (string.IsNullOrWhiteSpace(HubRoute))
       {
         // This should be set in code
         Logger.LogCritical($"No URL Key provided to Push Client - not starting");
         return;
       }
 
-      var url = await ServiceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
-      if (url.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(url.Endpoint))
+      var serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
+      if (serviceResult.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(serviceResult.Endpoint))
       {
-        Logger.LogWarning($"Cannot find key {UrlKey} in settings, not connecting....");
+        Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}` in settings, not connecting....");
         return;
       }
 
+      endpoint = new Uri(new Uri(serviceResult.Endpoint), HubRoute);
+
       Connection = new HubConnectionBuilder()
-        .WithUrl(new Uri($"{url.Endpoint}{UrlKey}"), options =>
+        .WithUrl(endpoint, options =>
         {
           if (Configuration.GetValueBool("PUSH_NO_AUTHENTICATION_HEADER", false))
           {
@@ -92,7 +100,7 @@ namespace VSS.Productivity3D.Push.Clients
 
       Connection.Closed += async (e) =>
       {
-        Logger.LogError(e, $"Lost Connection to `{Configuration.GetValueString(UrlKey)}`");
+        Logger.LogError(e, $"Lost Connection to `{endpoint.AbsolutePath}`");
         Connected = false;
 
         await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
@@ -114,7 +122,7 @@ namespace VSS.Productivity3D.Push.Clients
         {
           await Connection.StartAsync();
           Connected = true;
-          Logger.LogInformation($"Connected to `{Configuration.GetValueString(UrlKey)}`");
+          Logger.LogInformation($"Connected to `{endpoint.AbsolutePath}`");
           break;
         }
         catch (HttpRequestException e)

@@ -4,13 +4,11 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.WebApi.Common.Swagger;
@@ -31,34 +29,7 @@ namespace VSS.WebApi.Common
       
       // Guard against BaseStartup::ServiceVersion not being implemented in Startup.cs; else the following call to setup Swagger fails with 'null value for key'.
       if (string.IsNullOrEmpty(version)) { version = "v1"; }
-
-      services.AddCors(options =>
-      {
-        // Don't let this into master
-        // Here for testing only
-        // will move to BaseStartup and provide a overloadable method if you need extra cores
-        options.AddPolicy("DEVELOPMENT-CORS", builder =>
-        {
-          builder.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .WithOrigins("http://localhost:4200");
-        });
-        options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-          .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-            "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache", "Cache-Control")
-          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
-          .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
-      });
-
-      services.AddMvc(
-        config =>
-        {
-          config.Filters.Add(new ValidationFilterAttribute());
-        }
-      );
-
+      
       //Configure swagger
       services.AddSwaggerGen(c =>
       {

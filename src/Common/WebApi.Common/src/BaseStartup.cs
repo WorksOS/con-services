@@ -1,5 +1,9 @@
-﻿using App.Metrics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using App.Metrics;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
@@ -99,16 +104,31 @@ namespace VSS.WebApi.Common
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
     {
+      var corsPolicies = GetCors();
+      services.AddCors(options =>
+      {
+        foreach (var (name, corsPolicy) in corsPolicies)
+        {
+          options.AddPolicy(name, corsPolicy);
+        }
+      });
+
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
       services.AddServiceDiscovery();
 
-      services.AddMvcCore(
-        config =>
+      services.AddMvcCore(config =>
         {
           // for jsonProperty validation
           config.Filters.Add(new ValidationFilterAttribute());
         }).AddMetricsCore();
+
+      services.AddMvc(
+        config =>
+        {
+          config.Filters.Add(new ValidationFilterAttribute());
+        }
+      );
 
       var metrics = AppMetrics.CreateDefaultBuilder()
         .Build();
@@ -131,6 +151,10 @@ namespace VSS.WebApi.Common
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      var corsPolicyNames = GetCors().Select(c => c.Item1);
+      foreach (var corsPolicyName in corsPolicyNames)
+        app.UseCors(corsPolicyName);
+
       app.UseMetricsAllMiddleware();
       app.UseCommon(ServiceName);
 
@@ -158,5 +182,27 @@ namespace VSS.WebApi.Common
     protected abstract void ConfigureAdditionalAppSettings(IApplicationBuilder app,
       IHostingEnvironment env,
       ILoggerFactory factory);
+
+    /// <summary>
+    /// Get the required CORS Policies, by default the VSS Specific cors policy is added
+    /// If you extend, call the base method unless you have a good reason.
+    /// </summary>
+    protected virtual IEnumerable<(string, CorsPolicy)> GetCors()
+    {
+      yield return ("VSS", new CorsPolicyBuilder().AllowAnyOrigin()
+        .WithHeaders(HeaderConstants.ORIGIN,
+          HeaderConstants.X_REQUESTED_WITH,
+          HeaderConstants.CONTENT_TYPE,
+          HeaderConstants.ACCEPT,
+          HeaderConstants.AUTHORIZATION,
+          HeaderConstants.X_VISION_LINK_CUSTOMER_UID,
+          HeaderConstants.X_VISION_LINK_USER_UID,
+          HeaderConstants.X_JWT_ASSERTION,
+          HeaderConstants.X_VISION_LINK_CLEAR_CACHE,
+          HeaderConstants.CACHE_CONTROL)
+        .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
+        .SetPreflightMaxAge(TimeSpan.FromSeconds(2520))
+        .Build());
+    }
   }
 }

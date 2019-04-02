@@ -35,8 +35,6 @@ namespace VSS.WebApi.Common
         throw new ArgumentNullException("app");
 
       app.UseExceptionTrap();
-      app.UseCors("DEVELOPMENT-CORS");
-      app.UseCors("VSS");
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
       app.UseSwagger();
