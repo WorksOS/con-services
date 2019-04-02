@@ -35,7 +35,7 @@ namespace VSS.TRex.Compression
 
           var span = time - timeOrigin;
           if (span.TotalMilliseconds < 0)
-            throw new ArgumentException($"Time argument {time} should not be less that the {timeOrigin}");
+            throw new ArgumentException($"Time argument [{time}] should not be less that the origin [{timeOrigin}]");
 
          return (long)Math.Floor(span.TotalMilliseconds) / MILLISECONDS_TO_DECISECONDS_FACTOR;
         }
