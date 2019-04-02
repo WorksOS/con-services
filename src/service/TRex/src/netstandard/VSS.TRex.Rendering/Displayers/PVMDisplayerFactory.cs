@@ -23,6 +23,12 @@ namespace VSS.TRex.Rendering.Displayers
         case DisplayMode.CCV:
           displayer = new PVMDisplayer_CMV();
           break;
+        case DisplayMode.CCVSummary:
+          displayer = new PVMDisplayer_CMVSummary();
+          break;
+        case DisplayMode.MDP:
+          displayer = new PVMDisplayer_MDP();
+          break;
         case DisplayMode.MDPPercentSummary:
           displayer = new PVMDisplayer_MDPSummary();
           break;

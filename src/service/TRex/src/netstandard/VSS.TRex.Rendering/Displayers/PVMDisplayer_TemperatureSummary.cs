@@ -22,9 +22,7 @@ namespace VSS.TRex.Rendering.Displayers
 
       var temperatureLevels = new TemperatureWarningLevelsRecord(cellValue.TemperatureLevels.Min, cellValue.TemperatureLevels.Max);
 
-      var returnedColour = cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, temperatureLevels);
-
-      return returnedColour;
+      return cellValue.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : ((TemperatureSummaryPalette)Palette).ChooseColour(cellValue.MeasuredTemperature, temperatureLevels);
     }
   }
 }

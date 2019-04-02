@@ -2,7 +2,6 @@
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Displayers
@@ -22,9 +21,7 @@ namespace VSS.TRex.Rendering.Displayers
 
       var passTargetRange = new PassCountRangeRecord(cellValue.TargetPassCount, cellValue.TargetPassCount);
 
-      var returnedColour = cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, passTargetRange);
-
-      return returnedColour;
+      return cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : ((PassCountSummaryPalette)Palette).ChooseColour(cellValue.MeasuredPassCount, passTargetRange);
     }
   }
 }

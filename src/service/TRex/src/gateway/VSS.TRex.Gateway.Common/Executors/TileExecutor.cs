@@ -114,14 +114,33 @@ namespace VSS.TRex.Gateway.Common.Executors
           ccaSummaryPalette.OvercompactedColour = Color.FromArgb((int)request.Palettes[2].Color);
           break;
         case DisplayMode.CCV:
-        case DisplayMode.CCVSummary:
           convertedPalette = new CMVPalette();
 
-          var cmvPalette = ((CMVPalette) convertedPalette);
+          var cmvPalette = ((CMVPalette)convertedPalette);
 
           cmvPalette.CMVPercentageRange.Min = request.LiftBuildSettings.CCVRange?.Min ?? PERCENTAGE_RANGE_MIN;
           cmvPalette.CMVPercentageRange.Max = request.LiftBuildSettings.CCVRange?.Max ?? PERCENTAGE_RANGE_MAX;
+
+          cmvPalette.UseMachineTargetCMV = !request.LiftBuildSettings.OverridingMachineCCV.HasValue;
+          cmvPalette.AbsoluteTargetCMV = request.LiftBuildSettings.OverridingMachineCCV ?? 0;
+
           cmvPalette.TargetCCVColour = Color.Green;
+          cmvPalette.DefaultDecoupledCMVColour = Color.Black;
+          break;
+        case DisplayMode.CCVSummary:
+          convertedPalette = new CMVSummaryPalette();
+
+          var cmvSummaryPalette = ((CMVSummaryPalette) convertedPalette);
+
+          cmvSummaryPalette.CMVPercentageRange.Min = request.LiftBuildSettings.CCVRange?.Min ?? PERCENTAGE_RANGE_MIN;
+          cmvSummaryPalette.CMVPercentageRange.Max = request.LiftBuildSettings.CCVRange?.Max ?? PERCENTAGE_RANGE_MAX;
+
+          cmvSummaryPalette.UseMachineTargetCMV = !request.LiftBuildSettings.OverridingMachineCCV.HasValue;
+          cmvSummaryPalette.AbsoluteTargetCMV = request.LiftBuildSettings.OverridingMachineCCV ?? 0;
+
+          cmvSummaryPalette.AboveCMVTargetRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
+          cmvSummaryPalette.WithinCMVTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
+          cmvSummaryPalette.BelowCMVTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
           break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
@@ -138,16 +157,33 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           ((HeightPalette)convertedPalette).ElevationPalette = colors;
           break;
-        case DisplayMode.MDPPercentSummary:
-          convertedPalette = new MDPSummaryPalette();
+        case DisplayMode.MDP:
+          convertedPalette = new MDPPalette();
 
-          var mdpPalette = ((MDPSummaryPalette)convertedPalette);
+          var mdpPalette = ((MDPPalette)convertedPalette);
 
           mdpPalette.MDPPercentageRange.Min = request.LiftBuildSettings.MDPRange?.Min ?? PERCENTAGE_RANGE_MIN;
           mdpPalette.MDPPercentageRange.Max = request.LiftBuildSettings.MDPRange?.Max ?? PERCENTAGE_RANGE_MAX;
-          mdpPalette.TargetMDPColour = Color.Green;
+
           mdpPalette.UseMachineTargetMDP = !request.LiftBuildSettings.OverridingMachineMDP.HasValue;
-          mdpPalette.AbsoluteTargetMDP = request.LiftBuildSettings.OverridingMachineMDP ?? 0; 
+          mdpPalette.AbsoluteTargetMDP = request.LiftBuildSettings.OverridingMachineMDP ?? 0;
+
+          mdpPalette.TargetMDPColour = Color.Green;
+          break;
+        case DisplayMode.MDPPercentSummary:
+          convertedPalette = new MDPSummaryPalette();
+
+          var mdpSummaryPalette = ((MDPSummaryPalette)convertedPalette);
+
+          mdpSummaryPalette.MDPPercentageRange.Min = request.LiftBuildSettings.MDPRange?.Min ?? PERCENTAGE_RANGE_MIN;
+          mdpSummaryPalette.MDPPercentageRange.Max = request.LiftBuildSettings.MDPRange?.Max ?? PERCENTAGE_RANGE_MAX;
+
+          mdpSummaryPalette.UseMachineTargetMDP = !request.LiftBuildSettings.OverridingMachineMDP.HasValue;
+          mdpSummaryPalette.AbsoluteTargetMDP = request.LiftBuildSettings.OverridingMachineMDP ?? 0;
+
+          mdpSummaryPalette.AboveMDPTargetRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
+          mdpSummaryPalette.WithinMDPTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
+          mdpSummaryPalette.BelowMDPTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
           break;
         case DisplayMode.PassCount:
           convertedPalette = new PassCountPalette();
@@ -157,9 +193,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var passCountPalette = ((PassCountSummaryPalette)convertedPalette);
 
-          passCountPalette.BelowPassTargetRangeColour = Color.FromArgb((int) request.Palettes[0].Color);
-          passCountPalette.AbovePassTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
-          passCountPalette.AbovePassTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+          passCountPalette.AbovePassTargetRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
+          passCountPalette.WithinPassTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
+          passCountPalette.BelowPassTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+
           passCountPalette.UseMachineTargetPass = request.LiftBuildSettings.OverridingTargetPassCountRange == null;
           passCountPalette.TargetPassCountRange.Min = request.LiftBuildSettings.OverridingTargetPassCountRange?.Min ?? PASS_COUNT_TARGET_RANGE_MIN;
           passCountPalette.TargetPassCountRange.Max = request.LiftBuildSettings.OverridingTargetPassCountRange?.Max ?? PASS_COUNT_TARGET_RANGE_MAX;
@@ -172,9 +209,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var speedSummaryPalette = ((SpeedSummaryPalette)convertedPalette);
 
-          speedSummaryPalette.LowerSpeedRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
+          speedSummaryPalette.OverSpeedRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
           speedSummaryPalette.WithinSpeedRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
-          speedSummaryPalette.OverSpeedRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+          speedSummaryPalette.LowerSpeedRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+
           speedSummaryPalette.MachineSpeedTarget.Min = request.LiftBuildSettings.MachineSpeedTarget?.MinTargetMachineSpeed ?? CellPassConsts.NullMachineSpeed;
           speedSummaryPalette.MachineSpeedTarget.Max = request.LiftBuildSettings.MachineSpeedTarget?.MaxTargetMachineSpeed ?? CellPassConsts.NullMachineSpeed;
           break;
@@ -186,9 +224,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var temperatureSummaryPalette = ((TemperatureSummaryPalette)convertedPalette);
 
-          temperatureSummaryPalette.BelowMinLevelColour = Color.FromArgb((int)request.Palettes[0].Color);
+          temperatureSummaryPalette.AboveMaxLevelColour = Color.FromArgb((int)request.Palettes[0].Color);
           temperatureSummaryPalette.WithinLevelsColour = Color.FromArgb((int)request.Palettes[1].Color);
-          temperatureSummaryPalette.AboveMaxLevelColour = Color.FromArgb((int)request.Palettes[2].Color);
+          temperatureSummaryPalette.BelowMinLevelColour = Color.FromArgb((int)request.Palettes[2].Color);
+          
           temperatureSummaryPalette.UseMachineTempWarningLevels = request.LiftBuildSettings.OverridingTemperatureWarningLevels == null;
           temperatureSummaryPalette.TemperatureLevels.Min = request.LiftBuildSettings.OverridingTemperatureWarningLevels?.Min ?? TEMPERATURE_LEVELS_MIN;
           temperatureSummaryPalette.TemperatureLevels.Max = request.LiftBuildSettings.OverridingTemperatureWarningLevels?.Max ?? TEMPERATURE_LEVELS_MAX;
@@ -197,7 +236,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           throw new TRexException($"No implemented colour palette for this mode ({request.Mode})");
       }
 
-      if (request.Mode != DisplayMode.Height && 
+      if (request.Mode != DisplayMode.Height &&
+          request.Mode != DisplayMode.CCVSummary &&
           request.Mode != DisplayMode.PassCountSummary && 
           request.Mode != DisplayMode.CCASummary &&
           request.Mode != DisplayMode.MDPSummary &&

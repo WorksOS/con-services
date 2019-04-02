@@ -49,7 +49,7 @@ namespace VSS.TRex.Rendering.Palettes
     public Color ChooseColour(ushort measuredPassCount, PassCountRangeRecord passTargetRange)
     {
       // If we are not using the machine Pass Target value then we need to replace the
-      // Pass Count Target report from the machine, with the override value specified in the options
+      // Pass Count Target reported from the machine, with the override value specified in the options
       if (!UseMachineTargetPass)
         passTargetRange = TargetPassCountRange;
 

@@ -2,7 +2,6 @@
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {

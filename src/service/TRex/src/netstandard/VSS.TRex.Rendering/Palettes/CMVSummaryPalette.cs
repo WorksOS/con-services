@@ -6,28 +6,28 @@ using VSS.TRex.Common.CellPasses;
 namespace VSS.TRex.Rendering.Palettes
 {
   /// <summary>
-  /// Simple palette for rendering raw MDP summary data
+  /// Simple palette for rendering raw CMV summary data
   /// </summary>
-  public class MDPSummaryPalette : MDPBasePalette
+  public class CMVSummaryPalette : CMVBasePalette
   {
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The color, which MDP summary data displayed in on a plan view map, where MDP values are greater than target range.
+    /// The color, which CMV summary data displayed in on a plan view map, where CMV values are greater than target range.
     /// </summary>
-    public Color AboveMDPTargetRangeColour = Color.Red;
+    public Color AboveCMVTargetRangeColour = Color.Red;
 
     /// <summary>
-    /// The color, which MDP summary data displayed in on a plan view map, where MDP values are within target range.
+    /// The color, which CMV summary data displayed in on a plan view map, where CMV values are within target range.
     /// </summary>
-    public Color WithinMDPTargetRangeColour = Color.Lime;
+    public Color WithinCMVTargetRangeColour = Color.Lime;
 
     /// <summary>
-    /// The color, which MDP summary data displayed in on a plan view map, where MDP values are less than target range.
+    /// The color, which CMV summary data displayed in on a plan view map, where CMV values are less than target range.
     /// </summary>
-    public Color BelowMDPTargetRangeColour = Color.Blue;
+    public Color BelowCMVTargetRangeColour = Color.Blue;
 
-    public MDPSummaryPalette() : base(null)
+    public CMVSummaryPalette() : base(null)
     {
     }
 
@@ -35,19 +35,19 @@ namespace VSS.TRex.Rendering.Palettes
     {
       // If we are not using the machine CMV value then we need to replace the
       // CMV Target reported from the machine, with the override value specified in the options
-      if (!UseMachineTargetMDP)
-        targetValue = AbsoluteTargetMDP;
+      if (!UseMachineTargetCMV)
+        targetValue = AbsoluteTargetCMV;
 
       if (targetValue == CellPassConsts.NullCCV)
         return Color.Empty;
 
       if (value < targetValue * _minTarget)
-        return BelowMDPTargetRangeColour;
+        return BelowCMVTargetRangeColour;
 
       if (value > targetValue * _maxTarget)
-        return AboveMDPTargetRangeColour;
+        return AboveCMVTargetRangeColour;
 
-      return WithinMDPTargetRangeColour;
+      return WithinCMVTargetRangeColour;
     }
 
     /// <summary>
@@ -60,9 +60,9 @@ namespace VSS.TRex.Rendering.Palettes
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt(AboveMDPTargetRangeColour.ToArgb());
-      writer.WriteInt(WithinMDPTargetRangeColour.ToArgb());
-      writer.WriteInt(BelowMDPTargetRangeColour.ToArgb());
+      writer.WriteInt(AboveCMVTargetRangeColour.ToArgb());
+      writer.WriteInt(WithinCMVTargetRangeColour.ToArgb());
+      writer.WriteInt(BelowCMVTargetRangeColour.ToArgb());
     }
 
     /// <summary>
@@ -75,9 +75,9 @@ namespace VSS.TRex.Rendering.Palettes
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      AboveMDPTargetRangeColour = Color.FromArgb(reader.ReadInt());
-      WithinMDPTargetRangeColour = Color.FromArgb(reader.ReadInt());
-      BelowMDPTargetRangeColour = Color.FromArgb(reader.ReadInt());
+      AboveCMVTargetRangeColour = Color.FromArgb(reader.ReadInt());
+      WithinCMVTargetRangeColour = Color.FromArgb(reader.ReadInt());
+      BelowCMVTargetRangeColour = Color.FromArgb(reader.ReadInt());
     }
   }
 }

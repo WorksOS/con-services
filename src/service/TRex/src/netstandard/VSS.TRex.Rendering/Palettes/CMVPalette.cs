@@ -1,29 +1,26 @@
 ﻿using System.Drawing;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Types;
+using VSS.TRex.SubGridTrees.Client.Types;
 
 namespace VSS.TRex.Rendering.Palettes
 {
   /// <summary>
   /// Simple palette for rendering raw CMV data
   /// </summary>
-  public class CMVPalette : PaletteBase
+  public class CMVPalette : CMVBasePalette
   {
     private const byte VERSION_NUMBER = 1;
 
-    private const double CMV_DEFAULT_PERCENTAGE_MIN = 80.0;
-    private const double CMV_DEFAULT_PERCENTAGE_MAX = 120.0;
-
     public bool DisplayTargetCCVColourInPVM { get; set; }
     public bool DisplayDecoupledColourInPVM { get; set; }
-
-    public CMVRangePercentageRecord CMVPercentageRange = new CMVRangePercentageRecord(CMV_DEFAULT_PERCENTAGE_MIN, CMV_DEFAULT_PERCENTAGE_MAX);
-
+    
     public Color TargetCCVColour = Color.Blue;
 
-    private double _minTarget;
-    private double _maxTarget;
+    /// <summary>
+    /// The default colour that is used to display decoupled CMV data.
+    /// </summary>
+    public Color DefaultDecoupledCMVColour = Color.Black;
 
     private static Transition[] Transitions =
     {
@@ -36,18 +33,21 @@ namespace VSS.TRex.Rendering.Palettes
 
     public CMVPalette() : base(Transitions)
     {
-      _minTarget = CMVPercentageRange.Min / 100;
-      _maxTarget = CMVPercentageRange.Max / 100;
     }
 
-    public Color ChooseColour(double value, double targetValue)
+    public Color ChooseColour(SubGridCellPassDataCMVEntryRecord cmvData)
     {
+      if (cmvData.IsDecoupled && DisplayDecoupledColourInPVM)
+        return DefaultDecoupledCMVColour;
+
       // Check to see if the value is in the target range and use the target CMV colour
       // if it is. CCVRange holds a min/max percentage of target CMV...
-      if (DisplayTargetCCVColourInPVM && (value >= targetValue * _minTarget && value <= targetValue * _maxTarget))
+      var targetCMVValue = !UseMachineTargetCMV ? AbsoluteTargetCMV : cmvData.TargetCMV;
+
+      if (DisplayTargetCCVColourInPVM && (cmvData.MeasuredCMV >= targetCMVValue * _minTarget && cmvData.MeasuredCMV <= targetCMVValue * _maxTarget))
         return TargetCCVColour;
 
-      return ChooseColour(value);
+      return ChooseColour(cmvData.MeasuredCMV);
     }
 
     /// <summary>
@@ -62,10 +62,8 @@ namespace VSS.TRex.Rendering.Palettes
 
       writer.WriteBoolean(DisplayDecoupledColourInPVM);
       writer.WriteBoolean(DisplayTargetCCVColourInPVM);
-
-      CMVPercentageRange.ToBinary(writer);
-
       writer.WriteInt(TargetCCVColour.ToArgb());
+      writer.WriteInt(DefaultDecoupledCMVColour.ToArgb());
     }
 
     /// <summary>
@@ -80,10 +78,8 @@ namespace VSS.TRex.Rendering.Palettes
 
       DisplayDecoupledColourInPVM = reader.ReadBoolean();
       DisplayTargetCCVColourInPVM = reader.ReadBoolean();
-
-      CMVPercentageRange.FromBinary(reader);
-
       TargetCCVColour = Color.FromArgb(reader.ReadInt());
+      DefaultDecoupledCMVColour = Color.FromArgb(reader.ReadInt());
     }
   }
 }

@@ -22,6 +22,5 @@ namespace VSS.TRex.Rendering.Displayers
 
       return value.Max == CellPassConsts.NullMachineSpeed ? Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value);
     }
-
   }
 }
