@@ -580,7 +580,7 @@ namespace VSS.TRex.SiteModels
 
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
-      FileSystemErrorStatus Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {
