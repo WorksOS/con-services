@@ -27,7 +27,8 @@ namespace VSS.Productivity3D.Push
 
     public override bool InternalConnection(HttpContext context)
     {
-      // Test for now to use GraphQL against signalR
+      // Websockets don't support headers, so we may need to use Query Strings, if so map to a header for us
+      // https://github.com/aspnet/SignalR/issues/875#issuecomment-333390304
       if (context.Request.Query.ContainsKey(HeaderConstants.AUTHORIZATION))
       {
         log.LogInformation($"Found {HeaderConstants.AUTHORIZATION} in a query param for url `{context.Request.Path}`");
