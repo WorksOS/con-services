@@ -124,10 +124,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void AddPass(uint cellX, uint cellY, CellPass Pass)
         {
-            ISubGridCellPassesDataSegment Segment = Cells.SelectSegment(Pass.Time);
+            var Segment = Cells.SelectSegment(Pass.Time);
 
             if (Segment == null)
                 throw new TRexSubGridTreeException("Cells.SelectSegment failed to return a segment");
+
+            if (Pass.Time == DateTime.MinValue || Pass.Time.Kind != DateTimeKind.Utc)
+              throw new TRexSubGridTreeException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time");
 
             if (!Segment.HasAllPasses)
                 Segment.AllocateFullPassStacks();

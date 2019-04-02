@@ -70,7 +70,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         (baseTime, ElevationMappingMode.MinimumElevation)
       });
 
-      IEnumerable<CellPass> cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+      var cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
         new CellPass
         {
           InternalSiteModelMachineIndex = excavatorMachineIndex,

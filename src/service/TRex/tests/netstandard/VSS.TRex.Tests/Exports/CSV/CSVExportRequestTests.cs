@@ -64,12 +64,13 @@ namespace VSS.TRex.Tests.Exports.CSV
       var tempFileName = MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
       var cellPasses = new[] { new CellPass { Time = baseDate, Height = 1.0f } };
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
@@ -96,11 +97,12 @@ namespace VSS.TRex.Tests.Exports.CSV
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
 
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
       var cellPasses = new[] { new CellPass { Time = baseDate, Height = 1.0f } };
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID, OutputTypes.PassCountAllPasses));
       response.Should().NotBeNull();
@@ -126,7 +128,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var tempFileName = MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
       var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
@@ -164,7 +166,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       MockS3FileTransfer_UploadToBucket("InvalidFilename*@");
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
       var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
@@ -204,7 +206,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
       // half passes only pick up every 2nd one.
       var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
@@ -232,7 +234,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       MockS3FileTransfer_UploadToBucket();
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
       var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>

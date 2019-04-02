@@ -20,8 +20,8 @@ namespace VSS.TRex.Tests.Compression
         {
             DateTime origin = new DateTime(2000, 1, 1, 1, 1, 1);
 
-            Assert.Equal(1, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin));
-            Assert.Equal(11, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 11), origin));
+            Assert.Equal(0, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin));
+            Assert.Equal(100, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 11), origin));
         }
 
         [Fact]

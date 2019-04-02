@@ -9,6 +9,8 @@ namespace VSS.TRex.Compression
     /// </summary>
     public static class AttributeValueModifiers
     {
+        public const int MILLISECONDS_TO_DECISECONDS_FACTOR = 100;
+
         /// <summary>
         /// Performs a computation to modify the height into the form used by the compressed static version
         /// of the segment cell pass information, which is an integer number of millimeters above datum.
@@ -16,17 +18,27 @@ namespace VSS.TRex.Compression
         /// <param name="height"></param>
         /// <returns></returns>
         // ReSharper disable once CompareOfFloatsByEqualityOperator
-        public static int ModifiedHeight(float height) => (int)(height == Consts.NullHeight ? int.MaxValue : Math.Round(height * 1000));
+        public static long ModifiedHeight(float height) => (long)(height == Consts.NullHeight ? int.MaxValue : Math.Round(height * 1000));
 
         /// <summary>
         /// Performs a computation to modify the time into the form used by the compressed static version
         /// of the segment cell pass information, which is a relative time offset from an origin, expressed with 
-        /// a resolution of seconds.
+        /// a resolution of 100 milliseconds.
         /// </summary>
         /// <param name="time"></param>
         /// <param name="timeOrigin"></param>
         /// <returns></returns>
-        public static int ModifiedTime(DateTime time, DateTime timeOrigin) => (int)(Math.Floor((time - timeOrigin).TotalSeconds) + 1);
+        public static long ModifiedTime(DateTime time, DateTime timeOrigin)
+        {
+          if (time == DateTime.MinValue)
+            return -1;
+
+          var span = time - timeOrigin;
+          if (span.TotalMilliseconds < 0)
+            throw new ArgumentException($"Time argument {time} should not be less that the {timeOrigin}");
+
+         return (long)Math.Floor(span.TotalMilliseconds) / MILLISECONDS_TO_DECISECONDS_FACTOR;
+        }
 
         /// <summary>
         /// Performs a computation to modify the GPS mode into the form used by the compressed static version
@@ -35,6 +47,6 @@ namespace VSS.TRex.Compression
         /// </summary>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public static int ModifiedGPSMode(GPSMode mode) => (int)mode & 0xf;
+        public static long ModifiedGPSMode(GPSMode mode) => (long)mode & 0xf;
     }
 }
