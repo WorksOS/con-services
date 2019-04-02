@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\gateway\VSS.TRex.ConnectedSite.Gateway.WebApi\VSS.TRex.ConnectedSite.Gateway.WebApi.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

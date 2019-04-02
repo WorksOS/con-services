@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
   </ItemGroup>

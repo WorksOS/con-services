@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.Types;
 using Xunit;

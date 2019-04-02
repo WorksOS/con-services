@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;

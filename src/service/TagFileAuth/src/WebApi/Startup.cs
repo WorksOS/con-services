@@ -12,7 +12,6 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -22,51 +21,25 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   /// <summary>
   /// Configures services and request pipelines.
   /// </summary>
-  public class Startup
+  public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    private const string SERVICE_TITLE = "3dpm Tag File Auth API";
 
+
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
+    {
+    }
     /// <summary>
     /// Log4net repository logger name.
     /// </summary>
-    public const string LoggerRepoName = "WebApi";
-    private IServiceCollection serviceCollection;
+    public const string LoggerRepoName = "TFA_WebApi";
 
+    public override string ServiceName => "3dpm Tag File Auth API";
+    public override string ServiceDescription => "The service is used for TagFile authorization";
+    public override string ServiceVersion => "v1";
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Startup"/> class.
-    /// </summary>
-    public Startup(IHostingEnvironment env)
+ 
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      var builder = new ConfigurationBuilder()
-        .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
-
-      builder.AddEnvironmentVariables();
-      Configuration = builder.Build();
-    }
-    
-    /// <summary>
-    /// Gets the configuration.
-    /// </summary>
-    /// <value>
-    /// The configuration.
-    /// </value>
-    private IConfigurationRoot Configuration { get; }
-
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container
-    /// </summary>
-    /// <param name="services"></param>
-    public void ConfigureServices(IServiceCollection services)
-    {
-      services.AddCommon<Startup>(SERVICE_TITLE);
 
       // Add framework services.
       services
@@ -78,12 +51,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddMvc(
-        config =>
-        {
-          // for jsonProperty validation
-          config.Filters.Add(new ValidationFilterAttribute());
-        });
+
 
       services.AddOpenTracing(builder =>
       {
@@ -93,31 +61,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         });
       });
 
-      services.AddJaeger(SERVICE_TITLE);
-      services.AddOpenTracing();
-      
-      serviceCollection = services;
     }
 
-
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-    /// <summary>
-    /// Configures the specified application.
-    /// </summary>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.BuildServiceProvider();
-
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon(SERVICE_TITLE);
-
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseMiddleware<NewRelicMiddleware>();
-      }
-
-      app.UseMvc();
     }
+
   }
 }

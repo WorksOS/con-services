@@ -18,10 +18,10 @@ namespace VSS.Productivity3D.Push
 {
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, "push")
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
     {
     }
-
+    public const string LoggerRepoName = "push";
     public override string ServiceName => "Push Service API";
 
     public override string ServiceDescription => "A service to manage distribution of notifications between services";
@@ -40,7 +40,8 @@ namespace VSS.Productivity3D.Push
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
-      services.AddSignalR();
+
+      services.AddSignalR(options => { options.EnableDetailedErrors = true; } );
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
@@ -49,11 +50,11 @@ namespace VSS.Productivity3D.Push
       
       app.UseSignalR(route =>
       {
-        route.MapHub<NotificationHub>("/notifications");
+        route.MapHub<NotificationHub>(NotificationHubClient.ROUTE);
+        route.MapHub<AssetStatusHub>(AssetStatusHubClient.ROUTE);
       });
       
       app.UseMvc();
-
     }
   }
 }

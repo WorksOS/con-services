@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
@@ -47,6 +48,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />

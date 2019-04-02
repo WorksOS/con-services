@@ -3,15 +3,17 @@ using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
+using VSS.Tpaas.Client.Abstractions;
+using VSS.Tpaas.Client.Clients;
+using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.HttpClients.Clients;
-using VSS.TRex.HttpClients.RequestHandlers;
+using VSS.TRex.HttpClients;
 using VSS.TRex.Types;
-using VSS.TRrex.HttpClients.Abstractions;
 
 namespace VSS.TRex.CoordinateSystems
 {
@@ -34,7 +36,7 @@ namespace VSS.TRex.CoordinateSystems
       {
         DIBuilder
           .Continue()
-          .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>()
+          .Add(x => x.AddTransient<TRexTPaaSAuthenticatedRequestHandler>()
             .AddHttpClient<ITPaaSClient, TPaaSClient>(client => client.BaseAddress = new Uri(configurationStore.GetValueString(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY)))
             .ConfigurePrimaryHttpMessageHandler(() => new TPaaSApplicationCredentialsRequestHandler
             {
@@ -42,7 +44,7 @@ namespace VSS.TRex.CoordinateSystems
               InnerHandler = new HttpClientHandler()
             })
             .Services.AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri(configurationStore.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY)))
-            .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>())
+            .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>())
           .Complete();
       }
 

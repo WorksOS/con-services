@@ -12,6 +12,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Xunit;
 using Moq;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
