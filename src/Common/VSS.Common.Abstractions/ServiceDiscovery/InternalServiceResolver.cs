@@ -72,7 +72,12 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           logger.LogWarning(e, $"Failed to resolve service '{serviceName}' due to error");
         }
       }
-      return null;
+
+      return new ServiceResult
+      {
+        Type = ServiceResultType.Unknown,
+        Endpoint = null
+      };
     }
 
     /// <summary>
