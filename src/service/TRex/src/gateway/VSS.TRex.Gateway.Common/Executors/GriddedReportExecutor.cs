@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -9,6 +10,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.Gridded.GridFabric;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -30,30 +32,28 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as CompactionReportGridTRexRequest;
-
       if (request == null)
       {
         ThrowRequestTypeCastException<CompactionReportGridTRexRequest>();
         return null; // to keep compiler happy
       }
 
-        var siteModel = GetSiteModel(request.ProjectUid);
+      var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      GriddedReportRequest tRexRequest = new GriddedReportRequest();
+      var tRexRequest = new GriddedReportRequest();
       var griddedReportRequestArgument = AutoMapperUtility.Automapper.Map<GriddedReportRequestArgument>(request);
       griddedReportRequestArgument.Filters = new FilterSet(filter);
 
       var response = tRexRequest.Execute(griddedReportRequestArgument);
-
       var result = new GriddedReportResult()
       {
-        ReturnCode = response.ReturnCode,
+        ReturnCode = response?.ReturnCode ?? ReportReturnCode.UnknownError,
         ReportType = ReportType.Gridded,
         GriddedData = AutoMapperUtility.Automapper.Map<GriddedReportData>(request)
       };
-      result.GriddedData.NumberOfRows = response.GriddedReportDataRowList.Count;
-      result.GriddedData.Rows.AddRange(response.GriddedReportDataRowList);
+      result.GriddedData.NumberOfRows = response?.GriddedReportDataRowList.Count ?? 0;
+      result.GriddedData.Rows.AddRange(response?.GriddedReportDataRowList ?? new List<GriddedReportDataRow>());
       return new GriddedReportDataResult(result.Write());
     }
 

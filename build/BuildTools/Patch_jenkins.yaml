@@ -1,0 +1,10 @@
+spec:
+  template:
+    spec:
+      tolerations: 
+        - key: "dedicated"
+          operator: "Equal"
+          value: "jenkins"
+          effect: "NoSchedule"
+      nodeSelector: 
+        vss/application: jenkins

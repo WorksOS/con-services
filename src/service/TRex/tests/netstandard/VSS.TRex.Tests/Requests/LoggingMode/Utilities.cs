@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
-        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
+        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _, ElevationMappingMode.LatestElevation).Should().Be(ElevationMappingMode.MinimumElevation);
 
       return siteModel;
     }
@@ -121,7 +121,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
-        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
+        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _, ElevationMappingMode.LatestElevation).Should().Be(ElevationMappingMode.MinimumElevation);
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, numPassesToCreate);
 
@@ -137,7 +137,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
-        siteModel.MachinesTargetValues[bulldozerMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.LatestElevation);
+        siteModel.MachinesTargetValues[bulldozerMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _, ElevationMappingMode.LatestElevation).Should().Be(ElevationMappingMode.LatestElevation);
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 2 * numPassesToCreate);
 
@@ -153,7 +153,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
-        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
+        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _, ElevationMappingMode.LatestElevation).Should().Be(ElevationMappingMode.MinimumElevation);
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, 0, 0, cellPasses, 1, 3 * numPassesToCreate);
 
@@ -172,7 +172,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Ensure all cell passes register the correct elevation mapping mode
       foreach (var cellPass in cellPasses)
-        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _).Should().Be(ElevationMappingMode.MinimumElevation);
+        siteModel.MachinesTargetValues[excavatorMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(cellPass.Time, out _, ElevationMappingMode.LatestElevation).Should().Be(ElevationMappingMode.MinimumElevation);
 
       return siteModel;
     }

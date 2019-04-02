@@ -1,5 +1,9 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Common.Abstractions.ServiceDiscovery;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Clients;
 
@@ -18,7 +22,8 @@ namespace VSS.Productivity3D.Push.WebAPI
     {
       services.AddSingleton<TInterface, TImplementation>();
       services.AddHostedService<HostedClientService<TInterface>>();
-      
+      services.AddTransient<IServiceResolution, InternalServiceResolver>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
       return services;
     }
   }

@@ -8,7 +8,7 @@ rootDomain: eks.vspengg.com
 globalConfig: 3dapp-alpha
 
 # Must match the const in VSS.Common.Abstractions.ServiceDiscovery.Constants.ServiceNameConstants
-serviceName: assetmgmet3d-service
+serviceName: assetmgmt3d-service
 
 replicaCount: 1
 
@@ -32,7 +32,7 @@ ingress:
   enabled: true
   # Used to create an Ingress record. environment name will be appended
   hosts:
-    - assetagmt3d
+    - assetmgmt3d
   annotations:
     kubernetes.io/ingress.class: nginx
     external-dns.alpha.kubernetes.io/target: eks.vspengg.com

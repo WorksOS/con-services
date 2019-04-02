@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Tasks
 {

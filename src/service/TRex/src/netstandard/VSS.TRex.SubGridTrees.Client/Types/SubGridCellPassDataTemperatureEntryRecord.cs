@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client.Types

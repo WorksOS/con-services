@@ -23,7 +23,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The Ignite cache containing the site model metadata
     /// </summary>
-    private ICache<Guid, ISiteModelMetadata> metaDataCache;
+    private readonly ICache<Guid, ISiteModelMetadata> metaDataCache;
 
     /// <summary>
     /// Configure the parameters of the existence map cache

@@ -97,7 +97,7 @@ namespace VSS.TRex.SubGridTrees.Client
       var lowLayerIndex = -1;
       var highLayerIndex = -1;
 
-      IProfileLayers layers = ((IProfileCell) context.CellProfile).Layers;
+      var layers = ((IProfileCell) context.CellProfile).Layers;
 
       for (var i = layers.Count() - 1; i >= 0; i--)
       {

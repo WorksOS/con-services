@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;

@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 

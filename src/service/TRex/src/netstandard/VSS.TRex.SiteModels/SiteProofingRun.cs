@@ -57,7 +57,7 @@ namespace VSS.TRex.SiteModels
       return MachineID == machineID && DateTime.Compare(StartTime, time) <= 0 && DateTime.Compare(EndTime, time) >= 0;
     }
 
-    public bool Equals(string other) => (other != null) && Name.Equals(other);
+    public bool Equals(string other) => other != null && Name.Equals(other);
 
     public void Read(BinaryReader reader)
     {

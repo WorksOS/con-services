@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using FluentAssertions;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Exports.Patches;
 using VSS.TRex.SubGridTrees.Interfaces;
