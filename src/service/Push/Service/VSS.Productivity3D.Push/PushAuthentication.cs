@@ -10,8 +10,6 @@ namespace VSS.Productivity3D.Push
 {
   public class PushAuthentication : TIDAuthentication
   {
-    public const string SKIP_AUTHENTICATION_HEADER = "X-VSS-NO-TPAAS";
-
     private ILogger log;
     
 
@@ -42,7 +40,7 @@ namespace VSS.Productivity3D.Push
       }
 
       // This is only used locally.
-      if (context.Request.Headers.ContainsKey(SKIP_AUTHENTICATION_HEADER))
+      if (context.Request.Headers.ContainsKey(Clients.BaseClient.SKIP_AUTHENTICATION_HEADER))
       {
         return true;
       }
