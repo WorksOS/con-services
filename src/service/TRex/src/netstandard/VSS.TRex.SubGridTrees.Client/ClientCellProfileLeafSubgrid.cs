@@ -20,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Client
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientCellProfileLeafSubgrid>();
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client sub grid
     /// </summary>
     static ClientCellProfileLeafSubgrid()
     {
