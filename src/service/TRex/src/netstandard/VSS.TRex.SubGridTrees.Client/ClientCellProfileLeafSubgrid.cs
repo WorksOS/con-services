@@ -218,17 +218,17 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].TotalWholePasses = cellProfileFromContext.TotalNumberOfWholePasses(true); // include superseded layers
       Cells[cellX, cellY].LayersCount = cellProfileFromContext.Layers.Count();
 
-      cellProfileFromContext.Passes.LastPassValidCCVDetails(out var lastPassValidCCV, out var _targetCCV); // get details from last VALID pass
-      Cells[cellX, cellY].LastPassValidCCV = lastPassValidCCV;
-      cellProfileFromContext.CellTargetCCV = _targetCCV;
+      cellProfileFromContext.Passes.LastPassValidCCVDetails(out var _lastPassValidCCV, out var _targetCCV); // get details from last VALID pass
+      Cells[cellX, cellY].LastPassValidCCV = _lastPassValidCCV;
+      Cells[cellX, cellY].TargetCCV = _targetCCV;
 
       cellProfileFromContext.Passes.LastPassValidMDPDetails(out var _lastPassValidMDP, out var _targetMDP); // get details from last VALID pass
       Cells[cellX, cellY].LastPassValidMDP = _lastPassValidMDP;
-      cellProfileFromContext.CellTargetMDP = _targetMDP;
+      Cells[cellX, cellY].TargetMDP = _targetMDP;
 
       cellProfileFromContext.Passes.LastPassValidCCADetails(out var _lastPassValidCCA, out var _targetCCA); // get details from last VALID pass
       Cells[cellX, cellY].LastPassValidCCA = _lastPassValidCCA;
-      cellProfileFromContext.CellTargetCCA = _targetCCA;
+      Cells[cellX, cellY].TargetCCA = _targetCCA;
 
       Cells[cellX, cellY].LastPassValidRMV = cellProfileFromContext.Passes.LastPassValidRMV();
       Cells[cellX, cellY].LastPassValidFreq = cellProfileFromContext.Passes.LastPassValidFreq();

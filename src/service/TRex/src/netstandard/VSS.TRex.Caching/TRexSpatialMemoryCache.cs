@@ -177,11 +177,14 @@ namespace VSS.TRex.Caching
 
       bool result = context.Add(element);
 
-      // Perform some house keeping to keep the cache size in bounds
-      ItemAddedToContext(element.IndicativeSizeInBytes());
-      while (CurrentSizeInBytes > MaxSizeInBytes)
+      if (result)
       {
-        MRUList.EvictOneLRUItemWithLock();
+        // Perform some house keeping to keep the cache size in bounds
+        ItemAddedToContext(element.IndicativeSizeInBytes());
+        while (CurrentSizeInBytes > MaxSizeInBytes && !MRUList.IsEmpty())
+        {
+          MRUList.EvictOneLRUItemWithLock();
+        }
       }
 
       return result;
@@ -280,7 +283,7 @@ namespace VSS.TRex.Caching
                 // 2. Mark it as dirty
                 mask.ScanAllSetBitsAsSubGridAddresses(origin =>
                 {
-                  context.InvalidateSubgridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
+                  context.InvalidateSubGridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
 
                   numScannedSubGrids++;
                   if (subGridPresentForInvalidation)

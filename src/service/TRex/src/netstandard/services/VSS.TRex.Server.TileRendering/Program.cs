@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Tpaas.Client.Clients;
+using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.CoordinateSystems;
@@ -16,8 +18,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.HttpClients.Clients;
-using VSS.TRex.HttpClients.RequestHandlers;
+using VSS.TRex.HttpClients;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -31,6 +32,7 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -73,7 +75,7 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
@@ -88,8 +90,8 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new TileRenderingServer()))
-        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
-        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
 
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
@@ -98,12 +100,12 @@ namespace VSS.TRex.Server.TileRendering
 
         // Setup dependencies for communication with the Trimble Coordinate Service.
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
-        .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>())
+        .Add(x => x.AddTransient<TRexTPaaSAuthenticatedRequestHandler>())
         .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
         .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
         .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
-          .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>()
+          .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Complete();
     }

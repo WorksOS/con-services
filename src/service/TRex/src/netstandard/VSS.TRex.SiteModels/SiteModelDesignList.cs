@@ -65,9 +65,9 @@ namespace VSS.TRex.SiteModels
     /// Loads the content of the proofing run list from the persistent store. If there is no item in the persistent store containing
     /// proofing runs for this site model them return an empty list.
     /// </summary>
-    public void LoadFromPersistentStore(Guid projectUid)
+    public void LoadFromPersistentStore(Guid projectUid, IStorageProxy storageProxy)
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out MemoryStream ms);
+      storageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out MemoryStream ms);
       if (ms == null)
         return;
 

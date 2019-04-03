@@ -59,6 +59,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     private void BuildModelForSingleSubGridCutFill(out ISiteModel siteModel, float heightIncrement)
@@ -129,22 +130,6 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       result.ResultStatus.Should().Be(RequestErrorStatus.NoDesignProvided);
     }
 
-    private Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
-    {
-      // Make the mutable TIN containing the triangle and register it to the site model
-      VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
-      tin.Vertices.InitPointSearch(-100, -100, 100, 100, 3);
-      tin.Triangles.AddTriangle(tin.Vertices.AddPoint(-25, -25, elevation),
-        tin.Vertices.AddPoint(25, -25, elevation),
-        tin.Vertices.AddPoint(0, 25, elevation));
-
-      var tempFileName = Path.GetTempFileName() + ".ttm";
-      tin.SaveToFile(tempFileName, true);
-
-      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel
-        (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
-    }
-
     [Fact]
     public void SiteModelWithSingleCell_FullExtents_WithSingleFlatTriangleDesignAboutOrigin()
     {
@@ -175,7 +160,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       AddDesignProfilerGridRouting();
 
       BuildModelForSingleSubGridCutFill(out var siteModel, 0.1f);
-      var designUid = ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 2.0f);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 2.0f);
 
       var operation = new CutFillStatisticsOperation();
       var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);

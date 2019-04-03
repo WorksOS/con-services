@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -10,6 +9,7 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -24,23 +24,45 @@ namespace VSS.TRex.SubGridTrees.Server
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTree>();
 
     /// <summary>
+    /// Controls whether segment and cell pass information held within this server sub grid tree is represented
+    /// in the mutable or immutable forms supported by TRex
+    /// </summary>
+    public bool IsMutable { get; private set; } = false;
+
+    /// <summary>
     /// Controls emission of sub grid reading activities into the log.
     /// </summary>
     public bool RecordSubGridFileReadingToLog { get; set; } = false;
 
     private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     
-    public ServerSubGridTree(Guid siteModelID) :
-      base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
-        new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
+    public ServerSubGridTree(Guid siteModelID, StorageMutability mutability) :
+      this(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
+        new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), mutability)
     {
       ID = siteModelID; // Ensure the ID of the sub grid tree matches the datamodel ID
     }
 
     public ServerSubGridTree(byte numLevels,
       double cellSize,
-      ISubGridFactory subGridFactory) : base(numLevels, cellSize, subGridFactory)
+      ISubGridFactory subGridFactory,
+      StorageMutability mutability) : base(numLevels, cellSize, subGridFactory)
     {
+      IsMutable = mutability == StorageMutability.Mutable;
+    }
+
+    public override ISubGrid CreateNewSubGrid(byte level)
+    {
+      var subGrid = base.CreateNewSubGrid(level);
+
+      if (level == NumLevels) 
+      {
+        // It is a leaf sub grid, decorate it with the required mutability. Note, this subGrid is guaranteed to be an instance
+        // of leaf generic type supplied to the factory in the constructor for this sub grid tree.
+        ((ServerSubGridTreeLeaf)subGrid).SetIsMutable(IsMutable);
+      }
+
+      return subGrid;
     }
 
     /// <summary>

@@ -12,16 +12,16 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// The existence map detailed which cells have pass data recorded for them
         /// </summary>
-        public SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-        public SubGridTreeBitmapSubGridBits CCVValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits RMVValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits FrequencyValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits AmplitudeValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits GPSModeValuesAreFromLatestCellPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits TemperatureValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits MDPValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits CCVValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits RMVValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits FrequencyValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits AmplitudeValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits GPSModeValuesAreFromLatestCellPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits TemperatureValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits MDPValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       /*
         public bool HasCCVData() => true;

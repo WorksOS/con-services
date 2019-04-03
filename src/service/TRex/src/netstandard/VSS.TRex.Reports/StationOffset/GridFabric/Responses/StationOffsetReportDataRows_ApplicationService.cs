@@ -29,14 +29,5 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
         Add(temp);
       }
     }
-    
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

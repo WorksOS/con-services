@@ -7,8 +7,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
+using VSS.TRex.ConnectedSite.Gateway.Models;
 using VSS.TRex.ConnectedSite.Gateway.WebApi;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Models;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -22,7 +22,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
       // Test constants
       var expectedUri = new Uri("http://nowhere.specific/positions/in/v1/CB460-1SW");
       var messageTime = DateTime.UtcNow;
-      var expectedRequestMessage = "{\"ts\":\"" + messageTime.ToString("o") +  "\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
+      var expectedRequestMessage = "{\"ts\":\"" + messageTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") +  "\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
       var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
       handlerMock
@@ -87,7 +87,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
       var expectedUri = new Uri("http://nowhere.specific/status/in/v1/CB430-1SM");
       var messageTime = DateTime.UtcNow;
       var expectedRequestMessage =
-        "{\"timestamp\":\"" + messageTime.ToString("o") + "\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
+        "{\"timestamp\":\"" + messageTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + "\",\"designName\":\"Highway to hell\",\"assetType\":\"Dozer\",\"appVersion\":\"666a\",\"appName\":\"GCS900\",\"assetNickname\":\"Little Nicky\",\"lat\":-2.0,\"lon\":3.0,\"h\":1.0}";
 
       var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
       handlerMock

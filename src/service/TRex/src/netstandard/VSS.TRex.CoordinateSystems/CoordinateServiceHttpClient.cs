@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.HttpClients.Constants;
+using VSS.Tpaas.Client.Constants;
 
 namespace VSS.TRex.CoordinateSystems
 {

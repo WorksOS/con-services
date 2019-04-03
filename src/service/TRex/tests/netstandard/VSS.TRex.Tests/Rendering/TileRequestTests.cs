@@ -73,6 +73,7 @@ namespace VSS.TRex.Tests.Rendering
         }).ToArray();
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, cellX, cellY, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     private void CheckSimpleRenderTileResponse(TileRenderResponse response)

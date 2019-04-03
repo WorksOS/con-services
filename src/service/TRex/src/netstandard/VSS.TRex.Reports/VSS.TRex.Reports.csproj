@@ -20,6 +20,7 @@
     <ProjectReference Include="..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
     <ProjectReference Include="..\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

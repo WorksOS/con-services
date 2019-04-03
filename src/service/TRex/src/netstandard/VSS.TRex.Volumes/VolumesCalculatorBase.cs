@@ -247,14 +247,11 @@ namespace VSS.TRex.Volumes
             {
                 ProdDataExistenceMap = SiteModel.ExistenceMap;
 
-                if (ProdDataExistenceMap == null)
-                    return RequestErrorStatus.FailedToRequestSubgridExistenceMap;
-
                 try
                 {
                     if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
                     {
-                        if (ActiveDesign == null || ActiveDesign.Get_DesignDescriptor().IsNull)
+                        if (ActiveDesign == null || ActiveDesign.DesignDescriptor.IsNull)
                         {
                             Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
                             return RequestErrorStatus.NoDesignProvided;

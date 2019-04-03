@@ -9,6 +9,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
@@ -20,6 +21,19 @@ namespace TAGFiles.Tests
 
   public class AggregatedDataIntegratorWorkerTests : IClassFixture<DITagFileFixture>
   {
+    private ISiteModel BuildModel()
+    {
+      // Create the site model and machine etc to aggregate the processed TAG file into
+      //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
+      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
+      return targetSiteModel;
+    }
+
     [Fact()]
     public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
     {
@@ -34,8 +48,7 @@ namespace TAGFiles.Tests
       TAGFileConverter converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
-      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      ISiteModel targetSiteModel = BuildModel();
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       converter.Machine.ID = targetMachine.ID;
@@ -64,8 +77,7 @@ namespace TAGFiles.Tests
       TAGFileConverter converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      //ISiteModel targetSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
-      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      ISiteModel targetSiteModel = BuildModel();
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       converter1.Machine.ID = targetMachine.ID;
@@ -107,7 +119,7 @@ namespace TAGFiles.Tests
       converters.Length.Should().Be(numToTake);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      ISiteModel targetSiteModel = BuildModel();
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
@@ -149,7 +161,7 @@ namespace TAGFiles.Tests
       none
       */
       EventIntegrator eventIntegrator = new EventIntegrator();
-      var sourceSiteModel = new SiteModel();
+      var sourceSiteModel = BuildModel();
       var design4 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       var design2 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       var sourceEventList = new ProductionEventLists(sourceSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -157,7 +169,7 @@ namespace TAGFiles.Tests
       sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), design4.Id);
       Assert.Equal(2, sourceEventList.MachineDesignNameIDStateEvents.Count());
 
-      var targetSiteModel = new SiteModel();
+      var targetSiteModel = BuildModel();
       var targetEventList = new ProductionEventLists(targetSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       eventIntegrator.IntegrateMachineEvents(sourceEventList, targetEventList, false, sourceSiteModel, targetSiteModel);
@@ -188,7 +200,7 @@ namespace TAGFiles.Tests
        0    'DesignName5'
       */
       EventIntegrator eventIntegrator = new EventIntegrator();
-      var sourceSiteModel = new SiteModel();
+      var sourceSiteModel = BuildModel();
       var design3 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       var design4 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       var sourceEventList = new ProductionEventLists(sourceSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -196,7 +208,7 @@ namespace TAGFiles.Tests
       sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), design4.Id);
       Assert.Equal(2, sourceEventList.MachineDesignNameIDStateEvents.Count()); 
 
-      var targetSiteModel = new SiteModel();
+      var targetSiteModel = BuildModel();
       var design5 = targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName5");
       Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
 
@@ -227,7 +239,7 @@ namespace TAGFiles.Tests
        0    'DesignName4'
       */
       EventIntegrator eventIntegrator = new EventIntegrator();
-      var sourceSiteModel = new SiteModel();
+      var sourceSiteModel = BuildModel(); 
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       var sourceEventList = new ProductionEventLists(sourceSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -235,7 +247,7 @@ namespace TAGFiles.Tests
       sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
       Assert.Equal(2, sourceEventList.MachineDesignNameIDStateEvents.Count());
 
-      var targetSiteModel = new SiteModel();
+      var targetSiteModel = BuildModel();
       targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Count);
 
@@ -264,7 +276,7 @@ namespace TAGFiles.Tests
        1    'DesignName4'
       */
       EventIntegrator eventIntegrator = new EventIntegrator();
-      var sourceSiteModel = new SiteModel();
+      var sourceSiteModel = BuildModel();
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       var sourceEventList = new ProductionEventLists(sourceSiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -272,7 +284,7 @@ namespace TAGFiles.Tests
       sourceEventList.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
       Assert.Equal(2, sourceEventList.MachineDesignNameIDStateEvents.Count());
 
-      var targetSiteModel = new SiteModel();
+      var targetSiteModel = BuildModel();
       targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       targetSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       Assert.Equal(3, targetSiteModel.SiteModelMachineDesigns.Count);

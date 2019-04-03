@@ -46,14 +46,10 @@ namespace VSS.TRex.GridFabric.Grids
     public IIgnite Grid(string gridName, IgniteConfiguration cfg = null)
     {
       if (true == gridName?.Equals(TRexGrids.MutableGridName()))
-      {
-        return igniteGrids[(int)StorageMutability.Mutable] ?? (igniteGrids[(int)StorageMutability.Mutable] = IgniteGridFactory(gridName, cfg));
-      }
+        return Grid(StorageMutability.Mutable, cfg);
 
       if (true == gridName?.Equals(TRexGrids.ImmutableGridName()))
-      {
-        return igniteGrids[(int)StorageMutability.Immutable] ?? (igniteGrids[(int)StorageMutability.Immutable] = IgniteGridFactory(gridName, cfg));
-      }
+        return Grid(StorageMutability.Immutable, cfg);
 
       throw new TRexException($"{gridName} is an unknown grid to create a reference for.");
     }

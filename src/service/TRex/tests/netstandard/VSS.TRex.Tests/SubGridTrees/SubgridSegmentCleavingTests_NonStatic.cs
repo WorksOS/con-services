@@ -20,11 +20,12 @@ namespace VSS.TRex.Tests.SubGridTrees
 {
     public class SubgridSegmentCleavingTests_NonStatic : IClassFixture<DILoggingFixture>
   {
-        private DateTime startTime = new DateTime(2000, 1, 1, 0, 0, 0);
+        private DateTime startTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
         private IServerLeafSubGrid MakeSubgridWith10240CellPassesAtOneSecondIntervals()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
+            subGrid.SetIsMutable(true);
             subGrid.AllocateLeafFullPassStacks();
 
             // Create a segment with 10240 cell passes with each cell pass occuring one second apart. 
@@ -34,7 +35,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             {
               VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
-                    subGrid.AddPass(x, y, new CellPass()
+                    subGrid.AddPass(x, y, new CellPass
                     {
                         Time = passTime,
                         Height = (float)1.0
@@ -124,12 +125,13 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubgridSegmentCleaving_CellPassAddition_IncreasingTime()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
+            subGrid.SetIsMutable(true);
             subGrid.AllocateLeafFullPassStacks();
 
             // Create a segment with 10240 cell passes with each cell pass occuring one second apart. 
             DateTime passTime = startTime;
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -137,7 +139,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             passTime = passTime.AddSeconds(1);
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -153,12 +155,13 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubgridSegmentCleaving_CellPassAddition_DecreasingTime()
         {
             IServerLeafSubGrid subGrid = new ServerSubGridTreeLeaf();
+            subGrid.SetIsMutable(true);
             subGrid.AllocateLeafFullPassStacks();
 
             // Create a segment with 10240 cell passes with each cell pass occuring one second apart. 
             DateTime passTime = startTime.AddSeconds(1);
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -166,7 +169,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             passTime = passTime.AddSeconds(-1);
 
-            subGrid.AddPass(0, 0, new CellPass()
+            subGrid.AddPass(0, 0, new CellPass
             {
                 Time = passTime,
                 Height = (float)1.0
@@ -191,6 +194,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create a second segment specially and use the cell pass adopter to move cell passes 
             SubGridCellPassesDataSegment segment2 = new SubGridCellPassesDataSegment
             {
+                Owner = subGrid,
                 SegmentInfo = new SubGridCellPassesDataSegmentInfo()
             };
             segment2.AllocateFullPassStacks();
@@ -308,7 +312,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_SubgridSegment_VerifyComputedAndRecordedSegmentTimeRangeBounds_Success()
     {
       // Create a subgrid to hold the segment
-      IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+      var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
       Assert.True(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Newly created segment fails bounds test");
     }
@@ -317,7 +321,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_SubgridSegment_VerifyComputedAndRecordedSegmentTimeRangeBounds_Fail()
     {
       // Create a subgrid to hold the segment
-      IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+      var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
       subGrid.Cells.PassesData[0].SegmentInfo.EndTime = new DateTime(1900, 1, 1);
 
       Assert.False(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Modified invalid segment passes bounds test");

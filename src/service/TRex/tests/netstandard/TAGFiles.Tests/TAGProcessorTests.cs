@@ -6,6 +6,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Types;
@@ -22,7 +23,7 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
@@ -37,7 +38,7 @@ namespace TAGFiles.Tests
              SiteModel.IgnoreInvalidPositions = false;
 
             var Machine = new Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
@@ -74,7 +75,7 @@ namespace TAGFiles.Tests
             SiteModel.IgnoreInvalidPositions = true;
         
             var Machine = new Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
         
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
@@ -98,7 +99,7 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
@@ -134,7 +135,7 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);

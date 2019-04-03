@@ -44,57 +44,28 @@ namespace VSS.MasterData.Project.WebAPI
   /// <summary>
   /// 
   /// </summary>
-  public class Startup
+  public class Startup : BaseStartup
   {
-    /// <summary>
-    /// The name of this service for swagger etc.
-    /// </summary>
-    private const string SERVICE_TITLE = "Project Service API";
-
-    /// <summary>
-    /// The logger repository name
-    /// </summary>
-    public const string LoggerRepoName = "WebApi";
-
-    private IServiceCollection serviceCollection;
-    public static IServiceProvider serviceProvider;
 
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Startup"/> class.
-    /// </summary>
-    /// <param name="env">The env.</param>
-    public Startup(IHostingEnvironment env)
+
+    public override string ServiceName => "Project Service API";
+    public override string ServiceDescription => " Project masterdata service";
+    public override string ServiceVersion => "v4";
+
+    private static IServiceProvider serviceProvider;
+
+    public const string LoggerRepoName = "projectservice";
+
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
     {
-      var builder = new ConfigurationBuilder()
-        .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
-
-      builder.AddEnvironmentVariables();
-      Configuration = builder.Build();
-
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
-    /// <summary>
-    /// Gets the configuration.
-    /// </summary>
-    /// <value>
-    /// The configuration.
-    /// </value>
-    private IConfigurationRoot Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container
-    /// <summary>
-    /// Configures the services.
-    /// </summary>
-    /// <param name="services">The services.</param>
-    public void ConfigureServices(IServiceCollection services)
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddCommon<Startup>(SERVICE_TITLE);
+
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       //TODO: Check if SetPreflightMaxAge(TimeSpan.FromSeconds(2520) in WebApi pkg matters
 
       // Add framework services.
@@ -126,23 +97,16 @@ namespace VSS.MasterData.Project.WebAPI
         builder.ConfigureAspNetCore(options =>
         {
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
         });
       });
 
-      services.AddJaeger(SERVICE_TITLE);
-
-      services.AddOpenTracing();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
       services.AddTransient<ImportedFileUpdateService>();
 
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      serviceProvider = services.BuildServiceProvider();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       //Note: The injection of CAP subscriber service needed before 'services.AddCap()'
-      services.AddTransient<ISubscriberService, SubscriberService>();
+      //services.AddTransient<ISubscriberService, SubscriberService>();
       //Disable CAP for now #76666
       /*
       services.AddCap(x =>
@@ -162,28 +126,10 @@ namespace VSS.MasterData.Project.WebAPI
       });
       */
 
-      serviceCollection = services;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-    /// <summary>
-    /// Configures the specified application.
-    /// </summary>
-    /// <param name="app">The application.</param>
-    /// <param name="env">The env.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.BuildServiceProvider();
-
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon(SERVICE_TITLE);
-
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseMiddleware<NewRelicMiddleware>();
-      }
 
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseStaticFiles();
@@ -196,6 +142,7 @@ namespace VSS.MasterData.Project.WebAPI
         return next(context);
       });
       app.UseMvc();
+      serviceProvider = ServiceProvider;
     }
 
     private static ITransferProxy TransferProxyMethod(TransferProxyType type)
@@ -210,5 +157,7 @@ namespace VSS.MasterData.Project.WebAPI
             "AWS_BUCKET_NAME");
       }
     }
+
+
   }
 }

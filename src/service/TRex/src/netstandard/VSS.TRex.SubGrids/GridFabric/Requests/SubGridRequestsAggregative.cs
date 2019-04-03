@@ -27,6 +27,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         {
         }
 
+        /// <summary>
+        /// This needs to implement IDisposable because the sub grid requestor layer wants to use 'using' for the progressive
+        /// sub grid requestor. This means the aggregative one also need to implement IDisposable, even though it has no behaviour.
+        /// </summary>
         public void Dispose()
         {
         }

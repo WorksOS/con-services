@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -27,49 +26,37 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     private readonly Dictionary<Guid, ISiteModel> CachedModels = new Dictionary<Guid, ISiteModel>();
 
-    private IStorageProxy _StorageProxy;
-    private readonly Func<IStorageProxy> StorageProxyFactory;
+    private IStorageProxy _PrimaryMutableStorageProxy;
+    private IStorageProxy _PrimaryImmutableStorageProxy;
+    private IStorageProxyFactory _StorageProxyFactory;
 
-    /// <summary>
-    /// The default storage proxy to be used for requests
-    /// </summary>
-    public IStorageProxy StorageProxy => _StorageProxy ?? (_StorageProxy = StorageProxyFactory());
+    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ?? (_StorageProxyFactory = DIContext.Obtain<IStorageProxyFactory>());
+
+    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ?? (_PrimaryMutableStorageProxy = StorageProxyFactory.MutableGridStorage());
+    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ?? (_PrimaryImmutableStorageProxy = StorageProxyFactory.ImmutableGridStorage());
+
+    public IStorageProxy PrimaryStorageProxy(StorageMutability mutability)
+    {
+      return mutability == StorageMutability.Immutable ? PrimaryImmutableStorageProxy : PrimaryMutableStorageProxy;
+    }
 
     /// <summary>
     /// Default no-arg constructor. Made private to enforce provision of storage proxy
     /// </summary>
-    private SiteModels() { }
+    public SiteModels() { }
 
-    /// <summary>
-    /// Constructs a SiteModels instance taking a storageProxyFactory delegate that will create the
-    /// appropriate primary storage proxy
-    /// </summary>
-    /// <param name="storageProxyFactory"></param>
-    public SiteModels(Func<IStorageProxy> storageProxyFactory) : this()
-    {
-      StorageProxyFactory = storageProxyFactory;
-    }
-
-    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(StorageProxy, ID, false);
-
-    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(StorageProxy, ID, CreateIfNotExist);
-
-    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
+    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ID, false);
 
     /// <summary>
     /// Retrieves a site model from the persistent store ready for use. If the site model does not
     /// exist it will be created if CreateIfNotExist is true.
     /// </summary>
-    /// <param name="storageProxy"></param>
     /// <param name="id"></param>
     /// <param name="createIfNotExist"></param>
     /// <returns></returns>
-    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid id, bool createIfNotExist)
+    public ISiteModel GetSiteModel(Guid id, bool createIfNotExist)
     {
       ISiteModel result;
-
-      if (createIfNotExist && storageProxy.Mutability != StorageMutability.Mutable)
-        throw new TRexSiteModelException("Site models may only be created in the mutable grid context");
 
       lock (CachedModels)
       {
@@ -118,6 +105,20 @@ namespace VSS.TRex.SiteModels
       }
 
       return null;
+    }
+
+    /// <summary>
+    /// Drops a site model from the site models cache.
+    /// Note: This may be performed safely at any time irrespective of the concurrently executing requests
+    /// referencing that site model
+    /// </summary>
+    /// <param name="ID">The UID identifying the site model to be dropped from the cache</param>
+    public void DropSiteModel(Guid ID)
+    {
+      lock (CachedModels)
+      {
+        CachedModels.Remove(ID);
+      }
     }
 
     /// <summary>

@@ -66,7 +66,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{705ACE48-32FB-4C0A-8F17-CB60F3AC2CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Common.Kubernetes", "VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{CB372A55-0C07-48A0-964C-9E734F6B50E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{CB372A55-0C07-48A0-964C-9E734F6B50E5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D35A8B8-EF2C-488F-8A37-2A47796496C6}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\.editorconfig = ..\..\.editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\service\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{C8309D66-2D21-4FED-8130-9B0D792B1FF1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\service\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj", "{262723C4-C7ED-429E-AFD3-0866B6E13334}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -194,6 +203,14 @@ Global
 		{CB372A55-0C07-48A0-964C-9E734F6B50E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB372A55-0C07-48A0-964C-9E734F6B50E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB372A55-0C07-48A0-964C-9E734F6B50E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8309D66-2D21-4FED-8130-9B0D792B1FF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8309D66-2D21-4FED-8130-9B0D792B1FF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8309D66-2D21-4FED-8130-9B0D792B1FF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8309D66-2D21-4FED-8130-9B0D792B1FF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{262723C4-C7ED-429E-AFD3-0866B6E13334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{262723C4-C7ED-429E-AFD3-0866B6E13334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{262723C4-C7ED-429E-AFD3-0866B6E13334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{262723C4-C7ED-429E-AFD3-0866B6E13334}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -211,6 +228,8 @@ Global
 		{8B10F148-F1D0-4C63-8D25-04205EF125CB} = {E3D53CA2-8A78-4099-8C66-63B997FCC0D6}
 		{094BAA3C-DABA-4B4C-882F-D2782D5C4D99} = {8B10F148-F1D0-4C63-8D25-04205EF125CB}
 		{65351FE0-F073-4CAB-820F-2E155BED4D6D} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
+		{C8309D66-2D21-4FED-8130-9B0D792B1FF1} = {E3D53CA2-8A78-4099-8C66-63B997FCC0D6}
+		{262723C4-C7ED-429E-AFD3-0866B6E13334} = {E3D53CA2-8A78-4099-8C66-63B997FCC0D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61051E1C-44A2-4BB0-966A-5921ABAD87E8}

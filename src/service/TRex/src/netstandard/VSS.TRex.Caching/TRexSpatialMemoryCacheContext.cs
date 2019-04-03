@@ -15,12 +15,12 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// The project for which this cache context stores items
     /// </summary>
-    public Guid ProjectUID { get; private set; }
+    public Guid ProjectUID { get; }
 
     /// <summary>
     /// THe fingerprint used to distinguish this cache context from others stored in the overall cache
     /// </summary>
-    public string FingerPrint { get; private set; }
+    public string FingerPrint { get; }
 
     /// <summary>
     /// Notes if this context has been marked for removal, for instance as a result of the last element within it
@@ -72,6 +72,7 @@ namespace VSS.TRex.Caching
     /// <param name="mruList"></param>
     /// <param name="cacheDurationTime"></param>
     /// <param name="fingerPrint"></param>
+    /// <param name="projectUID"></param>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
       ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
       TimeSpan cacheDurationTime, string fingerPrint, Guid projectUID)
@@ -99,7 +100,7 @@ namespace VSS.TRex.Caching
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
-        // of 0 used as the null value in integer based subgrid trees
+        // of 0 used as the null value in integer based sub grid trees
         if (ContextTokens[x, y] != 0)
         {
           // This cache element in the context already contains an item.
@@ -170,7 +171,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Removes the index for an item from the context token subgrid tree only. This is intended to be used by the MRU list to communicate
+    /// Removes the index for an item from the context token sub grid tree only. This is intended to be used by the MRU list to communicate
     /// elements that are being removed from the MRUList in response to adding new items to the cache.
     /// </summary>
     /// <param name="item"></param>
@@ -190,7 +191,7 @@ namespace VSS.TRex.Caching
     /// <param name="originX"></param>
     /// <param name="originY"></param>
     /// <param name="subGridPresentForInvalidation"></param>
-    public void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
+    public void InvalidateSubGridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
     {
       subGridPresentForInvalidation = false;
 

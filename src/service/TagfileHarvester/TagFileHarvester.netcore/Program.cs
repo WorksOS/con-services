@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using log4net;
 using log4net.Config;
+using log4net.Repository.Hierarchy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -29,8 +30,7 @@ namespace TagFileHarvester.netcore
 
       public Task StartAsync(CancellationToken cancellationToken)
       {
-
-        XmlConfigurator.Configure(new FileInfo("log4net.xml"));
+      	XmlConfigurator.Configure(LogManager.GetRepository(Assembly.GetEntryAssembly()), new FileInfo("log4net.xml"));
 
 
         OrgsHandler.MaxThreadsToProcessTagFiles = config.GetValueInt("MaxThreadsToProcessTagFiles");

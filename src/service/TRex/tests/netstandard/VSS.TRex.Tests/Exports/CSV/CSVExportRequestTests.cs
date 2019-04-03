@@ -8,6 +8,7 @@ using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -28,9 +29,246 @@ namespace VSS.TRex.Tests.Exports.CSV
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CSVExportRequestComputeFunc, CSVExportRequestArgument, CSVExportRequestResponse>();
     private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
 
-    private string MockS3FileTransfer_UploadToBucket()
+    public CSVExportRequestTests()
     {
-      var tempFileName = Path.GetTempFileName() + ".zip";
+      DILoggingFixture.SetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
+    }
+
+    [Fact]
+    public void CSVExportRequest_Creation()
+    {
+      var request = new CSVExportRequest();
+      request.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_EmptySiteModel()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfile()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tempFileName = MockS3FileTransfer_UploadToBucket();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+
+      var cellPasses = new[] { new CellPass { Time = baseDate, Height = 1.0f } };
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+
+      // Read back the zip file
+      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
+      var extractedFileName = Path.GetTempFileName() + ".csv";
+      archive.Entries[0].ExtractToFile(extractedFileName);
+
+      var lines = File.ReadAllLines(extractedFileName);
+      lines.Length.Should().Be(2);
+      lines[0].Should().Be("Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
+      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfileAllPasses()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tempFileName = MockS3FileTransfer_UploadToBucket();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+      var cellPasses = new[] { new CellPass { Time = baseDate, Height = 1.0f } };
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID, OutputTypes.PassCountAllPasses));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+
+      // Read back the zip file
+      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
+      var extractedFileName = Path.GetTempFileName() + ".csv";
+      archive.Entries[0].ExtractToFile(extractedFileName);
+
+      var lines = File.ReadAllLines(extractedFileName);
+      lines.Length.Should().Be(2);
+      lines[0].Should().Be("Time,CellN,CellE,Elevation,PassNumber,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,ValidPos,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
+      lines[1].Should().Be(@"2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,""Unknown"",0.0km/h,Old Position,?,?,0,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_SingleSubGridSinglePass()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tempFileName = MockS3FileTransfer_UploadToBucket();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+
+      var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        cellPasses[x, y] = new[] { new CellPass { Time = baseDate, Height = 1.0f } }; 
+      });
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+
+      // Read back the zip file
+      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
+      var extractedFileName = Path.GetTempFileName() + ".csv";
+      archive.Entries[0].ExtractToFile(extractedFileName);
+
+      var lines = File.ReadAllLines(extractedFileName);
+      lines.Length.Should().Be(SubGridTreeConsts.SubGridTreeCellsPerSubGrid + 1);
+      lines[0].Should().BeEquivalentTo(
+        "Time,CellN,CellE,Elevation,PassCount,LastRadioLtncy,DesignName,Machine,Speed,LastGPSMode,GPSAccTol,TargPassCount,TotalPasses,Lift,LastCMV,TargCMV,LastMDP,TargMDP,LastRMV,LastFreq,LastAmp,TargThickness,MachineGear,VibeState,LastTemp");
+      lines[1].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,0.170m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+      lines[10].Length.Should().Be(118);
+      lines[10].Should().BeEquivalentTo("2000/Jan/01 01:00:00.000,3.230m,0.170m,1.000m,1,0,?,\"Unknown\",0.0km/h,Old Position,?,?,1,1,?,?,0.0,?,?,?,?,?,?,?,0.0°C");
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_UnableToWriteResultToS3()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      MockS3FileTransfer_UploadToBucket("InvalidFilename*@");
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+
+      var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        cellPasses[x, y] = new[] { new CellPass { Time = baseDate, Height = 1.0f } };
+      });
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.ExportUnableToLoadFileToS3);
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_NoProductionData()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      MockS3FileTransfer_UploadToBucket();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_NoCellPasses()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      MockS3FileTransfer_UploadToBucket();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+
+      // half passes only pick up every 2nd one.
+      var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        cellPasses[x, y] = new[] { new CellPass { Time = baseDate, Height = 1.0f, HalfPass = true} };
+      });
+
+      DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.ExportNoDataFound);
+    }
+
+    [Fact]
+    public void CSVExportRequest_Execute_ExceedsLimit()
+    {
+      DILoggingFixture.SetMaxExportRowsConfig(1);
+
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      MockS3FileTransfer_UploadToBucket();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new CSVExportRequest();
+      var baseDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+
+      var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        cellPasses[x, y] = new[] { new CellPass { Time = baseDate, Height = 1.0f} };
+      });
+      DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.ExportExceededRowLimit);
+    }
+
+    private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid, OutputTypes outputType = OutputTypes.PassCountLastPass)
+    {
+      return new CSVExportRequestArgument
+      {
+        FileName = "the file name",
+        Filters = new FilterSet(new CombinedFilter()),
+        CoordType = CoordType.Northeast,
+        OutputType = outputType,
+        UserPreferences = new CSVExportUserPreferences(),
+        MappedMachines = new List<CSVExportMappedMachine>(),
+        RestrictOutputSize = false,
+        RawDataAsDBase = false,
+        TRexNodeID = "'Test_CSVExportRequest_Execute_EmptySiteModel",
+        ProjectID = projectUid
+      };
+    }
+
+    private string MockS3FileTransfer_UploadToBucket(string overrideFilename = null)
+    {
+      var tempFileName = overrideFilename ?? Path.GetTempFileName() + ".zip";
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -46,124 +284,6 @@ namespace VSS.TRex.Tests.Exports.CSV
       DIBuilder.Continue().Add(x => x.AddSingleton(mockTransferProxy.Object)).Complete();
 
       return tempFileName;
-    }
-
-    [Fact]
-    public void Test_CSVExportRequest_Creation()
-    {
-      var request = new CSVExportRequest();
-      request.Should().NotBeNull();
-    }
-
-    private CSVExportRequestArgument SimpleCSVExportRequestArgument(Guid projectUid)
-    {
-      return new CSVExportRequestArgument
-      {
-        FileName = "the file name",
-        Filters = new FilterSet(new CombinedFilter()),
-        CoordType = CoordType.Northeast,
-        OutputType = OutputTypes.PassCountLastPass,
-        UserPreferences = new CSVExportUserPreferences(),
-        MappedMachines = new List<CSVExportMappedMachine>(),
-        RestrictOutputSize = false,
-        RawDataAsDBase = false,
-        TRexNodeID = "'Test_CSVExportRequest_Execute_EmptySiteModel",
-        ProjectID = projectUid
-      };
-    }
-
-    [Fact]
-    public void Test_CSVExportRequest_Execute_EmptySiteModel()
-    {
-      AddApplicationGridRouting();
-      AddClusterComputeGridRouting();
-
-      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var request = new CSVExportRequest();
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
-
-      response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
-    }
-
-    [Fact]
-    public void Test_CSVExportRequest_Execute_SingleCellSinglePass()
-    {
-      AddApplicationGridRouting();
-      AddClusterComputeGridRouting();
-
-      var tempFileName = MockS3FileTransfer_UploadToBucket();
-      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var request = new CSVExportRequest();
-
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
-      var cellPasses = new[]
-      {
-        new CellPass
-        {
-          Time = baseDate,
-          Height = 1.0f
-        }
-      };
-
-      DITAGFileAndSubGridRequestsWithIgniteFixture.AddSingleCellWithPasses(siteModel,
-        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
-
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
-
-      response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-
-      // Read back the zip file
-      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
-      var extractedFileName = Path.GetTempFileName() + ".csv";
-      archive.Entries[0].ExtractToFile(extractedFileName);
-
-      var lines = File.ReadAllLines(extractedFileName);
-
-      lines.Length.Should().Be(2);
-    }
-
-    [Fact]
-    public void Test_CSVExportRequest_Execute_SingleSubGridSinglePass()
-    {
-      AddApplicationGridRouting();
-      AddClusterComputeGridRouting();
-
-      var tempFileName = MockS3FileTransfer_UploadToBucket();
-      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var request = new CSVExportRequest();
-      var baseDate = new DateTime(2000, 1, 1, 1, 0, 0, 0);
-
-      var cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
-      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-      {
-        cellPasses[x, y] = new[]
-        {
-          new CellPass
-          {
-            Time = baseDate,
-            Height = 1.0f
-          }
-        };
-      });
-
-      DITAGFileAndSubGridRequestsWithIgniteFixture.AddSingleSubGridWithPasses(siteModel,
-        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
-
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
-
-      response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-
-      // Read back the zip file
-      var archive = ZipFile.Open(tempFileName, ZipArchiveMode.Read);
-      var extractedFileName = Path.GetTempFileName() + ".csv";
-      archive.Entries[0].ExtractToFile(extractedFileName);
-
-      var lines = File.ReadAllLines(extractedFileName);
-
-      lines.Length.Should().Be(SubGridTreeConsts.SubGridTreeCellsPerSubGrid + 1);
     }
   }
 }

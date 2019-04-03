@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
@@ -29,7 +30,9 @@ using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
@@ -109,6 +112,14 @@ namespace VSS.TRex.Tests.TestFixtures
       IgniteMock.ResetDynamicMockedIgniteContent();
     }
 
+    /// <summary>
+    /// Adds a design identified by a filename and location to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="filePath"></param>
+    /// <param name="fileName"></param>
+    /// <param name="constructIndexFilesOnLoad"></param>
+    /// <returns></returns>
     public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
       bool constructIndexFilesOnLoad)
     {
@@ -130,7 +141,7 @@ namespace VSS.TRex.Tests.TestFixtures
         new DesignDescriptor(designUid, filePath, fileName, 0), extents);
       existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
 
-      // Tell the sitemodels collection the site model has changed 
+      // Tell the site models collection the site model has changed 
       DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(new SiteModelAttributesChangedEvent
         {
           SiteModelID = siteModel.ID,
@@ -155,13 +166,85 @@ namespace VSS.TRex.Tests.TestFixtures
       return designUid;
     }
 
+    /// <summary>
+    /// Adds a surveyed surface identified by a file name and location, plus asAtDate.
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="filePath"></param>
+    /// <param name="fileName"></param>
+    /// <param name="asAtDate"></param>
+    /// <param name="constructIndexFilesOnLoad"></param>
+    /// <returns></returns>
+    public static Guid AddSurveyedSurfaceToSiteModel(ref ISiteModel siteModel, string filePath, string fileName, DateTime asAtDate,
+     bool constructIndexFilesOnLoad)
+    {
+      var filePathAndName = Path.Combine(filePath, fileName);
+
+      TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+      var loadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad);
+      loadResult.Should().Be(DesignLoadResult.Success);
+
+      BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+      ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+      ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+
+      Guid surveyedSurfaceUid = Guid.NewGuid();
+      var existenceMaps = DIContext.Obtain<IExistenceMaps>();
+
+      // Create the design surface in the site model
+      var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModel.ID,
+        new DesignDescriptor(surveyedSurfaceUid, filePath, fileName, 0), asAtDate, extents);
+      existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
+
+      // Tell the site models collection the site model has changed 
+      DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(new SiteModelAttributesChangedEvent
+      {
+        SiteModelID = siteModel.ID,
+        SurveyedSurfacesModified = true
+      });
+
+      // get the newly updated site model with the surveyed surface included
+      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
+
+      // Place the surveyed surface into the project temp folder prior to executing the render so the design profiler
+      // will not attempt to access the file from S3
+      var tempPath = FilePathHelper.GetTempFolderForProject(siteModel.ID);
+      var srcFileName = Path.Combine(filePath, fileName);
+      var destFileName = Path.Combine(tempPath, fileName);
+
+      File.Copy(srcFileName, destFileName);
+      File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION,
+                destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+      File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION,
+                destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+
+      return surveyedSurfaceUid;
+    }
+
+
+    /// <summary>
+    /// Creates a new otherwise empty site model configured to provide mutable data representation and adds
+    /// an initial bulldozer machine to it
+    /// </summary>
+    /// <returns></returns>
     public static ISiteModel NewEmptyModel()
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       return siteModel;
     }
 
+    /// <summary>
+    /// Constructs a simple TIN model containing a single triangle at (-25, -25), (25, -25), (0, 25)
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <returns></returns>
     public static Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
     {
       // Make a mutable TIN containing a single triangle and as below and register it to the site model
@@ -176,6 +259,56 @@ namespace VSS.TRex.Tests.TestFixtures
 
       return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel
         (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
+    }
+
+    /// <summary>
+    /// Constructs a single triangle design surface as per ConstructSingleFlatTriangleDesignAboutOrigin but allows
+    /// the triangle to be offset from the origin.
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <param name="asAtDate"></param>
+    /// <param name="offsetX"></param>
+    /// <param name="offsetY"></param>
+    /// <returns></returns>
+    public static Guid ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate, double offsetX, double offsetY)
+    {
+      // Make a mutable TIN containing a single triangle and as below and register it to the site model
+      VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
+      tin.Vertices.InitPointSearch(-100 + offsetX, -100 + offsetY, 100 + offsetX, 100 + offsetY, 3);
+      tin.Triangles.AddTriangle(tin.Vertices.AddPoint(-25 + offsetX, -25, elevation),
+        tin.Vertices.AddPoint(25 + offsetX, -25 + offsetY, elevation),
+        tin.Vertices.AddPoint(0 + offsetX, 25 + offsetY, elevation));
+
+      var tempFileName = Path.GetTempFileName() + ".ttm";
+      tin.SaveToFile(tempFileName, true);
+
+      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddSurveyedSurfaceToSiteModel
+        (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), asAtDate, true);
+    }
+
+    /// <summary>
+    /// Constructs a surveyed surface of the same TIN produced by ConstructSingleFlatTriangleDesignAboutOrigin and
+    /// with the supplied AsAtData to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <param name="asAtDate"></param>
+    /// <returns></returns>
+    public static Guid ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate)
+    {
+      return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
+    }
+	
+    /// <summary>
+    /// Adds the provided coordinate system expressed as a CSIB to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="csib"></param>
+	 public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
+    {
+      var executor = new AddCoordinateSystemExecutor();
+      executor.Execute(siteModel.ID, csib);
     }
 
     public new void Dispose()

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
@@ -16,7 +15,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public static class ProcessTAGFilesExecutor
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger("ProcessTAGFilesExecutor");
 
         public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
@@ -38,7 +37,7 @@ namespace VSS.TRex.TAGFiles.Executors
             // Machine machine = new Machine(null, "TestName", "TestHardwareID",  0, 0, Guid.NewGuid(), 0, false);
 
             // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
-            // updates made for subgrid changes
+            // updates made for sub grid changes
             foreach (ProcessTAGFileRequestFileItem item in TAGFiles)
             {
                 try

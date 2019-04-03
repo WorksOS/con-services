@@ -150,3 +150,12 @@ export class XYZS {
   z: number;
   station: number;
 }
+
+export class CellDatumResult {
+  displayMode: number;
+  returnCode: number;
+  value: number;
+  timestamp: Date;
+  northing: number;
+  easting: number;
+}

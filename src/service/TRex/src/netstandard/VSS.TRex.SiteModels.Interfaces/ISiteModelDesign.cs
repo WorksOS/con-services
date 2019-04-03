@@ -6,6 +6,5 @@ namespace VSS.TRex.SiteModels.Interfaces
   {
     string Name { get; }
     BoundingWorldExtent3D Extents { get; set; }
-    bool MatchesDesignName(string other);
   }
 }

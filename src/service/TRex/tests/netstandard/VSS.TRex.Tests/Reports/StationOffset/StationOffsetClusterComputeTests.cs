@@ -8,12 +8,14 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.Executors;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -71,7 +73,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       result.StationOffsetRows.Count.Should().Be(points.Count);
       result.StationOffsetRows[0].Northing.Should().Be(808525.44000000006);
       result.StationOffsetRows[0].Easting.Should().Be(376730.88);
-      result.StationOffsetRows[0].Elevation.Should().Be(68.6305160522461);
+      result.StationOffsetRows[0].Elevation.Should().Be(68.630996704101562);// Mutable representation result ==> (68.6305160522461);
       result.StationOffsetRows[0].CutFill.Should().Be(Consts.NullHeight);
       result.StationOffsetRows[0].Cmv.Should().Be(CellPassConsts.NullCCV);
       result.StationOffsetRows[0].Mdp.Should().Be(CellPassConsts.NullMDP);
@@ -166,7 +168,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       result.StationOffsetRows[0].Temperature.Should().Be((short)Temperature_Test);
     }
 
-    private readonly DateTime BASE_TIME = DateTime.Now;
+    private readonly DateTime BASE_TIME = DateTime.UtcNow;
     private const int TIME_INCREMENT_SECONDS = 10; // seconds
     private const float BASE_HEIGHT = 100.0f;
     private const float HEIGHT_DECREMENT = -0.1f;
@@ -183,7 +185,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     /// <returns></returns>
     private ISiteModel CreateSiteModelWithSingleCellForTesting()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       siteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // vibrationState is needed to get cmv values

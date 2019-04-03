@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +10,7 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
@@ -26,6 +26,21 @@ namespace VSS.TRex.SubGridTrees.Server
     public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
       private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTreeLeaf>();
+
+        /// <summary>
+        /// Controls whether segment and cell pass information held within this sub grid is represented
+        /// in the mutable or immutable forms supported by TRex
+        /// </summary>
+        public bool IsMutable { get; private set; }
+
+        public void SetIsMutable(bool isMutable)
+        {
+          IsMutable = isMutable;
+          Directory = new SubGridDirectory
+          {
+            IsMutable = isMutable
+          };
+        }
 
         /// <summary>
         /// Does this sub grid contain directory information for all the segments that exist within it?
@@ -45,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// A directory containing metadata regarding the segments present within this sub grid
         /// </summary>
-        public ISubGridDirectory Directory { get; set; } = new SubGridDirectory();
+        public ISubGridDirectory Directory { get; set; } 
 
         /// <summary>
         /// The primary wrapper containing all segments that have been loaded
@@ -101,16 +116,21 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public ServerSubGridTreeLeaf(ISubGridTree owner,
                                      ISubGrid parent,
-                                     byte level) : base(owner, parent, level)
+                                     byte level,
+                                     StorageMutability mutability) : base(owner, parent, level)
         {
+          SetIsMutable(mutability == StorageMutability.Mutable);
         }
 
         public void AddPass(uint cellX, uint cellY, CellPass Pass)
         {
-            ISubGridCellPassesDataSegment Segment = Cells.SelectSegment(Pass.Time);
+            var Segment = Cells.SelectSegment(Pass.Time);
 
             if (Segment == null)
                 throw new TRexSubGridTreeException("Cells.SelectSegment failed to return a segment");
+
+            if (Pass.Time == DateTime.MinValue || Pass.Time.Kind != DateTimeKind.Utc)
+              throw new TRexSubGridTreeException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time");
 
             if (!Segment.HasAllPasses)
                 Segment.AllocateFullPassStacks();
@@ -238,8 +258,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.CCV = CellPasses[I].CCV;
                             ValueFromLatestCellPass = I == LastPassIndex;
-
-                            return;
                         }
                         break;
 
@@ -248,8 +266,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.RMV = CellPasses[I].RMV;
                             ValueFromLatestCellPass = I == LastPassIndex;
-
-                            return;
                         }
                         break;
 
@@ -258,8 +274,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.Frequency = CellPasses[I].Frequency;
                             ValueFromLatestCellPass = I == LastPassIndex;
-
-                            return;
                         }
                         break;
 
@@ -268,8 +282,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.Amplitude = CellPasses[I].Amplitude;
                             ValueFromLatestCellPass = I == LastPassIndex;
-
-                            return;
                         }
                         break;
 
@@ -283,7 +295,6 @@ namespace VSS.TRex.SubGridTrees.Server
                             {
                                 LatestData.gpsMode = CellPasses[I].gpsMode;
                                 ValueFromLatestCellPass = I == LastPassIndex;
-                                return;
                             }
                         }
                         break;
@@ -293,8 +304,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.MaterialTemperature = CellPasses[I].MaterialTemperature;
                             ValueFromLatestCellPass = I == LastPassIndex;
-
-                            return;
                         }
                         break;
 
@@ -303,8 +312,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.MDP = CellPasses[I].MDP;
                             ValueFromLatestCellPass = I == LastPassIndex;
-
-                            return;
                         }
                         break;
 
@@ -313,7 +320,6 @@ namespace VSS.TRex.SubGridTrees.Server
                         {
                             LatestData.CCA = CellPasses[I].CCA;
                             ValueFromLatestCellPass = I == LastPassIndex;
-                            return;
                         }
                         break;
                 }
@@ -388,12 +394,6 @@ namespace VSS.TRex.SubGridTrees.Server
             Segment.AllocateLatestPassGrid();
             Segment.LatestPasses.Clear();
             Segment.Dirty = true;
-
-            if (Segment.LatestPasses == null)
-            {
-                Log.LogCritical($"Cell latest pass store for {Moniker()} not instantiated");
-                return;
-            }
 
             if (Cells == null)
             {
@@ -585,8 +585,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, ISubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses)
         {
-            bool Result;
-
             if (loadAllPasses && Segment.Dirty)
             {
                 Log.LogCritical("Leaf sub grid segment loads of cell pass data may not be performed while the segment is dirty. The information should be taken from the cache instead");
@@ -596,25 +594,25 @@ namespace VSS.TRex.SubGridTrees.Server
              FileSystemErrorStatus FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                          (Owner.ID, FileName, OriginX, OriginY, FileName, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
-             Result = FSError == FileSystemErrorStatus.OK;
+             bool Result = FSError == FileSystemErrorStatus.OK;
 
              if (!Result)
              {
-               if (FSError == FileSystemErrorStatus.FileDoesNotExist)
-                 Log.LogError($"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist.");
-               else
-                 Log.LogError($"Unable to load leaf sub grid segment {FileName}, model {Owner.ID}. Details: {FSError}");
-
-               return false;
+               Log.LogError(FSError == FileSystemErrorStatus.FileDoesNotExist
+                 ? $"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist."
+                 : $"Unable to load leaf sub grid segment {FileName}, model {Owner.ID}. Details: {FSError}");
              }
-
-             SMS.Position = 0;
-             using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+             else
              {
+
+               SMS.Position = 0;
+               using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+               {
                  Result = Segment.Read(reader, loadLatestData, loadAllPasses);
+               }
              }
 
-            return Result;
+             return Result;
         }
 
         public bool SaveDirectoryToStream(Stream stream)

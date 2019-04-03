@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Helpers;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees
     /// Represents a sub grid in terms of one bit per cell in the sub grid. Many bit-wise operations are supported
     /// allowing efficient manipulation of bit masks representing sub grids and trees.
     /// </summary>
-    public class SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
+    public class SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>, IBinaryReaderWriter
     {
         /// <summary>
         /// The code used in serialized bit masks to indicate all bits are unset (0), and so are not explicitly written
@@ -49,7 +49,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
         /// </summary>
-        public readonly uint[] Bits;
+        public uint[] Bits { get; private set; }
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -64,11 +64,18 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
+        /// Parameterless constructor required for IBinaryReaderWriter automated serialization unit testing
+        /// </summary>
+        public SubGridTreeBitmapSubGridBits()
+        {
+        }
+
+        /// <summary>
         /// Initialise the internal state of a new structure. This must be called prior to use of the instance.
         /// If filled is true then all bits in the bits array will be set to '1'
         /// </summary>
         /// <param name="options"></param>
-        public SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions options)
+        public SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions options) : this()
         {
             Bits = new uint[SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
 
@@ -91,7 +98,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Initialise the internal state of a new structure based on an other bitmask.
         /// </summary>
-        public SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits source)
+        public SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits source) : this()
         {
           Bits = new uint[SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
 
@@ -107,7 +114,8 @@ namespace VSS.TRex.SubGridTrees
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
-            Buffer.BlockCopy(SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
+            if (Bits != null)
+              Buffer.BlockCopy(SubGridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubGridBitsHelper.BytesInBitsArray);
             //Array.Clear(Bits, 0, Bits.Length);
         }
 
@@ -187,7 +195,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator &(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] & b.Bits[i];
@@ -227,7 +235,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator |(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] | b.Bits[i];
@@ -267,7 +275,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator ^(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] ^ b.Bits[i];
@@ -294,7 +302,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator -(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] ^ (a.Bits[i] & b.Bits[i]);
@@ -310,7 +318,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator ~(SubGridTreeBitmapSubGridBits bits)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = ~bits.Bits[i];
@@ -351,7 +359,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public BoundingIntegerExtent2D ComputeCellsExtents()
         {
-            BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
+            var result = new BoundingIntegerExtent2D();
             result.SetInverted();
 
             for (int Y = 0; Y < SubGridTreeConsts.SubGridTreeDimension; Y++)
@@ -397,8 +405,11 @@ namespace VSS.TRex.SubGridTrees
         {
             long result = 0;
 
-            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            if (Bits != null)
+            {
+              for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result += Bits[i];
+            }
 
             return result;
         }
@@ -666,5 +677,9 @@ namespace VSS.TRex.SubGridTrees
       {
         return Bits?.Length * 4 ?? 0; // Array of 32 bit uint values
       }
-    }
+
+    public void Read(BinaryReader reader) => Read(reader, new byte[200]);
+
+    public void Write(BinaryWriter writer) => Write(writer, new byte[200]);
+  }
 }

@@ -2,6 +2,7 @@
 using System;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -169,7 +170,7 @@ namespace VSS.TRex.SubGrids
                 if ((ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                      || SurfaceDesignMaskElevations == null)
                 {
-                    Log.LogError($"#D# InitialiseFilterContext RequestDesignElevationPatch for Design {SurfaceDesignMaskDesign.Get_DesignDescriptor().FileName} failed");
+                    Log.LogError($"#D# InitialiseFilterContext RequestDesignElevationPatch for Design {SurfaceDesignMaskDesign.DesignDescriptor.FileName} failed");
                     return false;
                 }
             }
@@ -328,7 +329,7 @@ namespace VSS.TRex.SubGrids
             try
             {
                 // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-                SurfaceElevationPatchArg.SetOTGBottomLeFtLocation(ClientGrid.OriginX, ClientGrid.OriginY);
+                SurfaceElevationPatchArg.SetOTGBottomLeftLocation(ClientGrid.OriginX, ClientGrid.OriginY);
 
                 SurfaceElevations = surfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg) as ClientHeightAndTimeLeafSubGrid;
 

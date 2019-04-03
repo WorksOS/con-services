@@ -158,7 +158,7 @@ namespace WebApiTests.Utilities
           firstparam = false;
           queryString.Append(WebUtility.UrlEncode(parameter));
           queryString.Append("=");
-          queryString.Append(QueryString[parameter]);
+          queryString.Append(WebUtility.UrlEncode(QueryString[parameter]));
         }
       }
 

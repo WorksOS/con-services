@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Common.Types;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -63,8 +64,6 @@ namespace VSS.TRex.Exports.Patches
 
       base.Populate(subGrid);
 
-      //IGenericClientLeafSubGrid<float> elevSubGrid = (IGenericClientLeafSubGrid<float>)subGrid;
-
       ClientHeightAndTimeLeafSubGrid elevSubGrid = (ClientHeightAndTimeLeafSubGrid)subGrid;
       var elevations = elevSubGrid.Cells;
       var times = elevSubGrid.Times;
@@ -120,13 +119,12 @@ namespace VSS.TRex.Exports.Patches
 
             if (Math.Abs(valueHeight - CellPassConsts.NullHeight) < Consts.TOLERANCE_DIMENSION)
             {
-              Data[x, y].ElevationOffset = uint.MaxValue;
-              Data[x, y].TimeOffset = uint.MaxValue;
+              Data[x, y] = new PatchOffsetsRecord(uint.MaxValue, uint.MaxValue);
             }
             else
             {
-              Data[x, y].ElevationOffset = (uint) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE);
-              Data[x, y].TimeOffset = valueTime - minTime;
+              Data[x, y] = new PatchOffsetsRecord((uint) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE),
+                                                  valueTime - minTime);
             }
           });
         }

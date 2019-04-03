@@ -371,8 +371,8 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="Extent"></param>
     /// <returns></returns>
-    public bool Equals(BoundingWorldExtent3D Extent) => (MinX == Extent.MinX) && (MinY == Extent.MinY) && (MinZ == Extent.MinZ) &&
-                                                        (MaxX == Extent.MaxX) && (MaxY == Extent.MaxY) && (MaxZ == Extent.MaxZ);
+    public bool Equals(BoundingWorldExtent3D Extent) => MinX == Extent.MinX && MinY == Extent.MinY && MinZ == Extent.MinZ &&
+                                                        MaxX == Extent.MaxX && MaxY == Extent.MaxY && MaxZ == Extent.MaxZ;
 
     /// <summary>
     /// Determine if the elevation bounds in the bounding box are valid and does not specify a negative interval

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -14,14 +15,9 @@ using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
-  public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, ISurveyedSurfaces
+  public class SurveyedSurfaces : List<ISurveyedSurface>, ISurveyedSurfaces
   {
     private const byte VERSION_NUMBER = 1;
-
-    private bool FSorted;
-    private bool SortDescending;
-
-    public bool Sorted => FSorted;
 
     private IExistenceMaps existenceMaps;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
@@ -31,15 +27,6 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public SurveyedSurfaces()
     {
-    }
-
-    /// <summary>
-    /// Constructor accepting a Binary Reader instance from which to instantiate itself
-    /// </summary>
-    /// <param name="reader"></param>
-    public SurveyedSurfaces(BinaryReader reader)
-    {
-      Read(reader);
     }
 
     public void Write(BinaryWriter writer)
@@ -68,6 +55,29 @@ namespace VSS.TRex.SurveyedSurfaces
     }
 
     /// <summary>
+    /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool IsSameAs(ISurveyedSurfaces other)
+    {
+      if (Count != other.Count)
+      {
+        return false;
+      }
+
+      for (int I = 0; I < Count; I++)
+      {
+        if (this[I].ID != other[I].ID)
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    /// <summary>
     /// Create a new surveyed surface in the list based on the provided details
     /// </summary>
     /// <param name="surveyedSurfaceUid"></param>
@@ -80,17 +90,13 @@ namespace VSS.TRex.SurveyedSurfaces
       DateTime asAtDate,
       BoundingWorldExtent3D extents)
     {
-      ISurveyedSurface match = Find(x => x.ID == surveyedSurfaceUid);
+      var ss = Find(x => x.ID == surveyedSurfaceUid);
 
-      if (match != null)
+      if (ss == null) // No existing surveyed surface
       {
-        return match;
+        ss = new SurveyedSurface(surveyedSurfaceUid, designDescriptor, asAtDate, extents);
+        Add(ss);
       }
-
-      ISurveyedSurface ss = new SurveyedSurface(surveyedSurfaceUid, designDescriptor, asAtDate, extents);
-      Add(ss);
-
-      Sort();
 
       return ss;
     }
@@ -133,19 +139,7 @@ namespace VSS.TRex.SurveyedSurfaces
       }
     }
 
-    public void SortChronologically(bool Descending = true)
-    {
-      SortDescending = Descending;
-
-      Sort();
-
-      FSorted = true;
-    }
-
-    private new void Sort()
-    {
-      Sort((x, y) => SortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
-    }
+    public void SortChronologically(bool Descending) => Sort((x, y) => Descending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime
@@ -155,15 +149,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     public bool HasSurfaceLaterThan(DateTime timeStamp)
     {
+      bool result = false;
+
       for (int i = Count - 1; i >= 0; i--)
       {
         if (this[i].AsAtDate.CompareTo(timeStamp) > 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -176,15 +173,18 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       DateTime _TimeStamp = DateTime.FromBinary(timeStamp);
 
+      bool result = false;
+
       for (int i = Count - 1; i >= 0; i--)
       {
         if (this[i].AsAtDate.CompareTo(_TimeStamp) > 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -195,15 +195,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     public bool HasSurfaceEarlierThan(DateTime timeStamp)
     {
+      bool result = false;
+
       for (int i = 0; i < Count; i++)
       {
         if (this[i].AsAtDate.CompareTo(timeStamp) < 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
+      return result;
     }
 
     /// <summary>
@@ -216,38 +219,18 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       DateTime _TimeStamp = DateTime.FromBinary(timeStamp);
 
+      bool result = false;
+
       for (int i = 0; i < Count; i++)
       {
         if (this[i].AsAtDate.CompareTo(_TimeStamp) < 0)
         {
-          return true;
+          result = true;
+          break;
         }
       }
 
-      return false;
-    }
-
-    /// <summary>
-    /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    public bool IsSameAs(SurveyedSurfaces other)
-    {
-      if (Count != other.Count)
-      {
-        return false;
-      }
-
-      for (int I = 0; I < Count; I++)
-      {
-        if (this[I].ID != other[I].ID)
-        {
-          return false;
-        }
-      }
-
-      return true;
+      return result;
     }
 
     /// <summary>
@@ -292,11 +275,6 @@ namespace VSS.TRex.SurveyedSurfaces
       }
     }
 
-    public int CompareTo(ISurveyedSurface other)
-    {
-      throw new NotImplementedException();
-    }
-
     public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     /// <summary>
@@ -306,13 +284,13 @@ namespace VSS.TRex.SurveyedSurfaces
     /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
     /// assumed to be the same.
     /// </summary>
-    /// <param name="surveyedSurfaceUid"></param>
+    /// <param name="siteModelID"></param>
     /// <param name="Filter"></param>
     /// <param name="ComparisonList"></param>
     /// <param name="FilteredSurveyedSurfaces"></param>
     /// <param name="OverallExistenceMap"></param>
     /// <returns></returns>
-    public bool ProcessSurveyedSurfacesForFilter(Guid surveyedSurfaceUid,
+    public bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
       ICombinedFilter Filter,
       ISurveyedSurfaces ComparisonList,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
@@ -327,19 +305,18 @@ namespace VSS.TRex.SurveyedSurfaces
 
       if (FilteredSurveyedSurfaces != null)
       {
-        if (FilteredSurveyedSurfaces.Equals(ComparisonList))
+        if (FilteredSurveyedSurfaces.IsSameAs(ComparisonList))
           return true;
 
         if (FilteredSurveyedSurfaces.Count > 0)
         {
-          ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(surveyedSurfaceUid,
+          ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
             FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
           if (OverallExistenceMap == null)
             return false;
 
-          if (surveyedSurfaceExistenceMap != null)
-            OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
+          OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
         }
       }
 

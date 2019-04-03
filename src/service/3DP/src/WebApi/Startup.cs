@@ -82,7 +82,6 @@ namespace VSS.Productivity3D.WebApi
         builder.ConfigureAspNetCore(options =>
         {
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
         });
       });
 
@@ -97,13 +96,7 @@ namespace VSS.Productivity3D.WebApi
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<RaptorAuthentication>();
-
-      //Add stats
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseFilterMiddleware<NewRelicMiddleware>();
-      }
-
+  
       app.UseRewriter(new RewriteOptions().Add(RewriteMalformedPath));
       app.UseResponseCaching();
       app.UseResponseCompression();

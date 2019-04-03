@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Reflection;
+using System.Threading;
 using App.Metrics;
 using App.Metrics.AspNetCore;
 using App.Metrics.AspNetCore.Health;
@@ -9,10 +12,12 @@ using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
+using VSS.Log4Net.Extensions;
 
 namespace VSS.WebApi.Common
 {
@@ -30,7 +35,6 @@ namespace VSS.WebApi.Common
         throw new ArgumentNullException("app");
 
       app.UseExceptionTrap();
-      app.UseCors("VSS");
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
       app.UseSwagger();
@@ -46,7 +50,34 @@ namespace VSS.WebApi.Common
       return app;
     }
 
-    private static IMetricsRoot Metrics;
+
+    public static IWebHostBuilder BuildKestrelWebHost(this IWebHostBuilder builder, string loggerName)
+    {
+      var kestrelConfig = new ConfigurationBuilder()
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
+        .Build();
+
+      builder
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseConfiguration(kestrelConfig)
+        .ConfigureLogging(localBuilder =>
+        {
+          Log4NetProvider.RepoName = loggerName;
+          localBuilder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          localBuilder.SetMinimumLevel(LogLevel.Debug);
+          localBuilder.AddConfiguration(kestrelConfig);
+        })
+        .UseMetrics()
+        .UseHealth()
+        .UseMetricsWebTracking();
+
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
+      //Check how many requests we can execute
+      ServicePointManager.DefaultConnectionLimit = 128;
+      return builder;
+    }
 
     /// <summary>
     /// Uses the prometheus.
@@ -54,13 +85,13 @@ namespace VSS.WebApi.Common
     /// <param name="builder">The builder.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">builder</exception>
+    [Obsolete("Please do not use this method anymore")]
     public static IWebHostBuilder UsePrometheus(this IWebHostBuilder builder)
     {
-      Metrics = AppMetrics.CreateDefaultBuilder()
-        .OutputMetrics.AsPrometheusPlainText()
+
+      var  Metrics = new MetricsBuilder()
         .OutputMetrics.AsPrometheusProtobuf()
         .Build();
-
 
       if (builder == null)
         throw new ArgumentNullException("builder");
@@ -71,8 +102,6 @@ namespace VSS.WebApi.Common
           {
             options.EndpointOptions = endpointsOptions =>
             {
-              endpointsOptions.MetricsTextEndpointOutputFormatter =
-                Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
               endpointsOptions.MetricsEndpointOutputFormatter =
                 Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
             };

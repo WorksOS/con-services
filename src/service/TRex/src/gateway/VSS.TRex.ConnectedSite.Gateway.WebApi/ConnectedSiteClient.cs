@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.TRex.HttpClients.Constants;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
+using VSS.Tpaas.Client.Constants;
+using VSS.TRex.ConnectedSite.Gateway.Abstractions;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 {
@@ -15,6 +15,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
   {
 
     private ILogger<ConnectedSiteClient> _logger;
+    private static JsonSerializerSettings settings = new JsonSerializerSettings { DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ" };
     private HttpClient _client;
 
     /// <summary>
@@ -30,12 +31,13 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 
     /// <summary>
     /// Post a status message to connected site
+    /// Date format is yyyy-MM-ddTHH:mm:ss.fffZ
     /// </summary>
     /// <param name="message">Message to send</param>
     /// <returns></returns>
     public async Task<HttpResponseMessage> PostMessage<T>(T message) where T : IConnectedSiteMessage
     {
-      StringContent requestContent = new StringContent(JsonConvert.SerializeObject(message));
+      StringContent requestContent = new StringContent(JsonConvert.SerializeObject(message, settings));
       requestContent.Headers.ContentType.MediaType = MediaTypes.JSON;
       _logger.LogDebug($"Posting position to connected site {message.Route}");
       return await _client.PostAsync(message.Route, requestContent).ConfigureAwait(false);

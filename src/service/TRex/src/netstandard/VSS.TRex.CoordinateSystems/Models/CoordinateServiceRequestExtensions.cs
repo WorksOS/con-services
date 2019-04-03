@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Common.Utilities;
+﻿using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 

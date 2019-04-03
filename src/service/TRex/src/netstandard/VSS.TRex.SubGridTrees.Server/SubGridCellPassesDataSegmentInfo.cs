@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Returns a string representing the segment identifier for this segment within this subgrid. The identifier
+        /// Returns a string representing the segment identifier for this segment within this sub grid. The identifier
         /// is based on the time range this segment is responsible for storing cell passes for.
         /// </summary>
         /// <returns></returns>

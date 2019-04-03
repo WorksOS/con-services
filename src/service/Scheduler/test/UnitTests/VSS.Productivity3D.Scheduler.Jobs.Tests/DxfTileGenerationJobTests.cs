@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Pegasus.Client;
@@ -98,7 +99,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       var mockTPaaSAuth = new Mock<ITPaaSApplicationAuthentication>();
       var mockProvider = new Mock<IServiceProvider>();
       var mockConfig = new Mock<IConfigurationStore>();
-      var mockNotification = new Mock<NotificationHubClient>(mockProvider.Object, mockConfig.Object, loggerFactory);
+      var mockPushProxy = new Mock<IServiceResolution>();
+      var mockNotification = new Mock<NotificationHubClient>(mockProvider.Object, mockConfig.Object, mockPushProxy.Object, loggerFactory);
       var job = new DxfTileGenerationJob(mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, loggerFactory);
       return job;
     }

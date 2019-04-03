@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
+using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -18,6 +19,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
@@ -64,7 +66,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build()
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
         // Register the factories for cell profiling support
         .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(new ProfilerBuilderFactory<ProfileCell>()))
@@ -108,6 +110,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+
+      // Switch to mutable storage representation to allow creation of content in the site model
+      targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
+      targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
@@ -122,7 +129,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Construct an integration worker and ask it to perform the integration
       ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
       };
@@ -136,15 +143,20 @@ namespace VSS.TRex.Tests.TestFixtures
         leaf =>
         {
           if (leaf is IServerLeafSubGrid Leaf)
-            Leaf.ComputeLatestPassInformation(true, DIContext.Obtain<ISiteModels>().StorageProxy);
+            Leaf.ComputeLatestPassInformation(true, targetSiteModel.PrimaryStorageProxy);
           return true;
         });
+
+      targetSiteModel.SaveToPersistentStoreForTAGFileIngest(targetSiteModel.PrimaryStorageProxy).Should().BeTrue();
+
+      // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
+      ConvertSiteModelToImmutable(targetSiteModel);
 
       return targetSiteModel;
     }
 
     public static void AddSingleCellWithPasses(ISiteModel siteModel, uint cellX, uint cellY, 
-      IEnumerable<CellPass> passes, int expectedCellCount = -1, int expectedPasssCount = -1)
+      IEnumerable<CellPass> passes, int expectedCellCount = -1, int expectedPassCount = -1)
     {
       // Construct the sub grid to hold the cell being tested
       IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
@@ -167,8 +179,8 @@ namespace VSS.TRex.Tests.TestFixtures
         leaf.AddPass(subGridX, subGridY, pass);
 
       var cellPasses = leaf.Cells.PassesData[0].PassesData.ExtractCellPasses(subGridX, subGridY);
-      if (expectedPasssCount > -1)
-        cellPasses.Length.Should().Be(expectedPasssCount);
+      if (expectedPassCount > -1)
+        cellPasses.Length.Should().Be(expectedPassCount);
 
       // Assign global latest cell pass to the appropriate pass
       leaf.Directory.GlobalLatestCells[subGridX, subGridY] = cellPasses.Last();
@@ -191,14 +203,17 @@ namespace VSS.TRex.Tests.TestFixtures
 
       siteModel.SiteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX, cellY));
 
+      // Save the leaf information just created
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+
       // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
     }
 
     public static void AddSingleSubGridWithPasses(ISiteModel siteModel, uint cellX, uint cellY, IEnumerable<CellPass>[,] passes)
     {
       // Construct the sub grid to hold the cell being tested
-      IServerLeafSubGrid leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      var leaf = siteModel.Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
       leaf.Should().NotBeNull();
 
       leaf.AllocateLeafFullPassStacks();
@@ -232,8 +247,33 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX + SubGridTreeConsts.SubGridTreeDimension, cellY + SubGridTreeConsts.SubGridTreeDimension));
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
 
+      // Save the leaf information just created
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+
       // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
+    }
+
+    public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
+    {
+      var executor = new AddCoordinateSystemExecutor();
+      executor.Execute(siteModel.ID, csib);
+    }
+
+    /// <summary>
+    /// Takes a site model and modifies its internal representation to be the immutable form
+    /// </summary>
+    /// <param name="siteModel"></param>
+    public static void ConvertSiteModelToImmutable(ISiteModel siteModel)
+    {
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
+
+      // Read all sub grids from the persistent store into the grid ready for access
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
+      {
+        TRex.SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(siteModel.PrimaryStorageProxy, siteModel.Grid,
+          x.X, x.Y, siteModel.Grid.NumLevels, false, false).Should().NotBeNull();
+      });
     }
 
     public new void Dispose()
