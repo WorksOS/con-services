@@ -210,10 +210,12 @@ namespace VSS.TRex.SiteModels
           {
             if (_siteModelDesigns == null)
             {
-              _siteModelDesigns = new SiteModelDesignList();
+              var newSiteModelDesigns = new SiteModelDesignList();
 
               if (!IsTransient)
-                _siteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
+                newSiteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
+
+              _siteModelDesigns = newSiteModelDesigns;
             }
           }
         }
@@ -271,10 +273,12 @@ namespace VSS.TRex.SiteModels
           {
             if (siteProofingRuns == null)
             {
-              siteProofingRuns = new SiteProofingRunList {DataModelID = ID};
+              var newSiteProofingRuns = new SiteProofingRunList {DataModelID = ID};
 
               if (!IsTransient)
-                siteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
+                newSiteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteProofingRuns = newSiteProofingRuns;
             }
           }
         }
@@ -300,13 +304,15 @@ namespace VSS.TRex.SiteModels
           {
             if (siteModelMachineDesigns == null)
             {
-              siteModelMachineDesigns = new SiteModelMachineDesignList
+              var newSiteModelMachineDesigns = new SiteModelMachineDesignList
               {
                 DataModelID = ID
               };
 
               if (!IsTransient)
-                siteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+                newSiteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteModelMachineDesigns = newSiteModelMachineDesigns;
             }
           }
         }
@@ -333,15 +339,17 @@ namespace VSS.TRex.SiteModels
           {
             if (machines == null)
             {
-              machines = new MachinesList
+              var newMachines = new MachinesList
               {
                 DataModelID = ID
               };
 
               if (!IsTransient)
               {
-                machines.LoadFromPersistentStore(PrimaryStorageProxy);
+                newMachines.LoadFromPersistentStore(PrimaryStorageProxy);
               }
+
+              machines = newMachines;
             }
           }
         }
