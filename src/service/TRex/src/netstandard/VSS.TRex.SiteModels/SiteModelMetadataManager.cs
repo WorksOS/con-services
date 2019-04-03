@@ -81,7 +81,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="siteModelID"></param>
     public void Update(Guid siteModelID)
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelID);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelID);
 
       if (siteModel != null)
         metaDataCache.Put(siteModelID, siteModel.MetaData);
@@ -181,7 +181,7 @@ namespace VSS.TRex.SiteModels
       }
       catch (Exception e)
       {
-        throw new TRexException($"Failure to retrieve all metadata for site models", e);
+        throw new TRexException("Failure to retrieve all metadata for site models", e);
       }
     }
   }

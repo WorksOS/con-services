@@ -118,7 +118,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
     /// load it from storage/cache.
-    /// This will ever return a null reference. In the case of a site model that does not have any spatial data withi it
+    /// This will never return a null reference. In the case of a site model that does not have any spatial data withi it
     /// this will return an empty existence map rather than null.
     /// </summary>
     public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
@@ -580,7 +580,7 @@ namespace VSS.TRex.SiteModels
 
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
-      FileSystemErrorStatus Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {

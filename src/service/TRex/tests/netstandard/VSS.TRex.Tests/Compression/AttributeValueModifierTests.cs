@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Compression;
 using VSS.TRex.Types;
@@ -18,11 +19,20 @@ namespace VSS.TRex.Tests.Compression
         [Fact]
         public void Test_AttributeValueModifier_Time()
         {
-            DateTime origin = new DateTime(2000, 1, 1, 1, 1, 1);
+            var origin = new DateTime(2000, 1, 1, 1, 1, 1);
 
-            Assert.Equal(1, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin));
-            Assert.Equal(11, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 11), origin));
+            Assert.Equal(0, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin));
+            Assert.Equal(100, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 11), origin));
         }
+
+        [Fact]
+        public void Test_AttributeValueModifier_Time_FailWithNegativeOffset()
+        {
+          var origin = new DateTime(2000, 2, 1, 1, 1, 1);
+
+          Action act = () => AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin);
+          act.Should().Throw<ArgumentException>().WithMessage("Time argument [*] should not be less that the origin [*]");
+    }
 
         [Fact]
         public void Test_AttributeValueModifier_GPSMode()
