@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
@@ -8,7 +7,6 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.CellDatum.Executors
@@ -23,7 +21,7 @@ namespace VSS.TRex.CellDatum.Executors
     public CellDatumComputeFuncExecutor_ApplicationService() {}
 
     /// <summary>
-    /// Executor that implements requesting and rendering subgrid information to create the cell datum
+    /// Executor that implements requesting and rendering sub grid information to create the cell datum
     /// </summary>
     public CellDatumResponse_ApplicationService Execute(CellDatumRequestArgument_ApplicationService arg)
     {
@@ -32,7 +30,7 @@ namespace VSS.TRex.CellDatum.Executors
       var result = new CellDatumResponse_ApplicationService
       { ReturnCode = CellDatumReturnCode.UnexpectedError, DisplayMode = arg.Mode, Northing = arg.Point.Y, Easting = arg.Point.X };
    
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
       {
         Log.LogError($"Failed to locate site model {arg.ProjectID}");
@@ -47,12 +45,7 @@ namespace VSS.TRex.CellDatum.Executors
         result.Easting = arg.Point.X;
       }
 
-      ISubGridTreeBitMask existenceMap = siteModel.ExistenceMap;
-      if (existenceMap == null)
-      {
-        Log.LogError($"Failed to locate production data existence map from site model {siteModel.ID}");
-        return result;
-      }
+      var existenceMap = siteModel.ExistenceMap;
 
       // Determine the on-the-ground cell 
       siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X, arg.Point.Y, out uint OTGCellX, out uint OTGCellY);
@@ -74,7 +67,5 @@ namespace VSS.TRex.CellDatum.Executors
 
       return result;
     }
-
- 
   }
 }

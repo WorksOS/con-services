@@ -52,6 +52,7 @@ namespace VSS.TRex.Tests.Exports.Patches
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     private PatchRequestArgument SimplePatchRequestArgument(Guid projectUid)

@@ -197,9 +197,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public void GetSegmentElevationRange(out double MinElev, out double MaxElev)
       {
-//        MinElev = Consts.NullDouble;
-//        MaxElev = Consts.NullDouble;
-
         throw new TRexException("Elevation range determination for segments limited to STATIC_CELL_PASSES");
       }
 

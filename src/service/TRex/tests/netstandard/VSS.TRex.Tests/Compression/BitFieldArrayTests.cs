@@ -92,7 +92,7 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(1U, bfa.MemorySize());
         
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new[] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
         
             // Write a '1' to the bfa
             bfa.StreamWriteStart();
@@ -159,7 +159,7 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal((uint)memorySize, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { minValue, maxValue }, mask, nativeNullValue, fieldIsNullable, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long [] { minValue, maxValue }, mask, nativeNullValue, fieldIsNullable, ref descriptor);
 
             descriptor.RequiredBits.Should().Be((byte)bitsPerRecord);
             descriptor.NumValues.Should().Be(expectedNumValues);
@@ -249,7 +249,7 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(125U, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long [] { 0, 1 }, 0xffffffff, 0, false, ref descriptor);
 
             // Write a '1' to the bfa
             bfa.StreamWriteStart();
@@ -294,7 +294,7 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(2U, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long [] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
 
             // Write a '1234' to the bfa
             bfa.StreamWriteStart();
@@ -333,7 +333,7 @@ namespace VSS.TRex.Tests.Compression
             Assert.Equal(1375U, bfa.MemorySize());
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(new [] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(new long[] { 0, 2047 }, 0xffffffff, 0, false, ref descriptor);
 
             // Write a '1234' to the bfa
             bfa.StreamWriteStart();

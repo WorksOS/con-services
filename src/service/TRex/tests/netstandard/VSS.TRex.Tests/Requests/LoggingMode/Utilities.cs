@@ -9,6 +9,8 @@ using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
@@ -68,7 +70,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
         (baseTime, ElevationMappingMode.MinimumElevation)
       });
 
-      IEnumerable<CellPass> cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
+      var cellPasses = Enumerable.Range(0, numPassesToCreate).Select(x =>
         new CellPass
         {
           InternalSiteModelMachineIndex = excavatorMachineIndex,
@@ -191,6 +193,10 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       };
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out processedTasks);
 
+      // Verify the existence map has the correct number of sub grids
+      siteModel.ExistenceMap.CountBits().Should().Be(expectedSubgrids);
+
+      // Verify the expected number of sub grids are present in the grid
       siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubgrids);
 
       // Ensure there are two appropriate elevation mapping mode events

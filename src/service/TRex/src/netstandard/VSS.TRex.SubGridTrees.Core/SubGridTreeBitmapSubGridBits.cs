@@ -195,7 +195,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator &(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] & b.Bits[i];
@@ -235,7 +235,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator |(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] | b.Bits[i];
@@ -275,7 +275,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator ^(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] ^ b.Bits[i];
@@ -302,7 +302,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator -(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] ^ (a.Bits[i] & b.Bits[i]);
@@ -318,7 +318,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public static SubGridTreeBitmapSubGridBits operator ~(SubGridTreeBitmapSubGridBits bits)
         {
-            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            var result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = ~bits.Bits[i];
@@ -359,7 +359,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public BoundingIntegerExtent2D ComputeCellsExtents()
         {
-            BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
+            var result = new BoundingIntegerExtent2D();
             result.SetInverted();
 
             for (int Y = 0; Y < SubGridTreeConsts.SubGridTreeDimension; Y++)

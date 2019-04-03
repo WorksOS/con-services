@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.Common.Abstractions.ServiceDiscovery.Models;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -22,27 +24,33 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     private const int RECONNECT_DELAY_MS = 1000;
 
+    public const string PUSH_REQUEST_NO_AUTH = "PUSH_NO_AUTHENTICATION_HEADER";
+
+    public const string SKIP_AUTHENTICATION_HEADER = "X-VSS-NO-TPAAS";
+
     protected readonly IConfigurationStore Configuration;
     
     protected ILogger Logger;
     protected HubConnection Connection;
-    private IServiceResolution ServiceDiscovery;
 
+    private readonly IServiceResolution serviceDiscovery;
+
+    private Uri endpoint;
 
     protected BaseClient(IConfigurationStore configuration, IServiceResolution serviceDiscovery, ILoggerFactory loggerFactory)
     {
       Logger = loggerFactory.CreateLogger(GetType().Name);
       Configuration = configuration;
-      ServiceDiscovery = serviceDiscovery;
+      this.serviceDiscovery = serviceDiscovery;
     }
 
     /// <inheritdoc />
     public bool Connected { get; private set; }
 
     /// <summary>
-    /// The URL Key for the Configuration Store
+    /// The Route for the hub, which is appended to the Push URL
     /// </summary>
-    public abstract string UrlKey { get; }
+    public abstract string HubRoute { get; }
 
     /// <summary>
     /// Method to setup any callbacks from the SignalR Hub
@@ -61,44 +69,10 @@ namespace VSS.Productivity3D.Push.Clients
     /// <inheritdoc />
     public async Task Connect()
     {
-      if (string.IsNullOrWhiteSpace(UrlKey))
+      if (string.IsNullOrWhiteSpace(HubRoute))
       {
-        // This should be set in code
-        Logger.LogCritical($"No URL Key provided to Push Client - not starting");
-        return;
+        throw new ArgumentException("No URL Key provided to Push Client - not starting", nameof(HubRoute));
       }
-
-      var url = await ServiceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
-      if (url.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(url.Endpoint))
-      {
-        Logger.LogWarning($"Cannot find key {UrlKey} in settings, not connecting....");
-        return;
-      }
-
-      Connection = new HubConnectionBuilder()
-        .WithUrl(new Uri($"{url.Endpoint}{UrlKey}"), options =>
-        {
-          if (Configuration.GetValueBool("PUSH_NO_AUTHENTICATION_HEADER", false))
-          {
-            Logger.LogInformation("Attempting to skip TPaaS Authentication");
-            options.Headers.Add("X-VSS-NO-TPAAS", "true");
-          }
-          else
-          {
-            Logger.LogWarning("No authentication headers added.");
-          }
-
-        }).Build();
-
-      Connection.Closed += async (e) =>
-      {
-        Logger.LogError(e, $"Lost Connection to `{Configuration.GetValueString(UrlKey)}`");
-        Connected = false;
-
-        await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
-      };
-
-      SetupCallbacks();
 
       await Task.Factory.StartNew(TryConnect);
     }
@@ -112,9 +86,21 @@ namespace VSS.Productivity3D.Push.Clients
       {
         try
         {
-          await Connection.StartAsync();
-          Connected = true;
-          Logger.LogInformation($"Connected to `{Configuration.GetValueString(UrlKey)}`");
+          // If the URL of the endpoint changes, we need to be able to connect to the new URL
+          // SignalR doesn't give us a way to set a new url without recreating the Connection Object
+          await SetupConnection();
+          if (Connection == null)
+          {
+            Connected = false;
+            await Task.Delay(RECONNECT_DELAY_MS); 
+          }
+          else
+          {
+            await Connection.StartAsync();
+            Connected = true;
+            Logger.LogInformation($"Connected to `{endpoint.AbsolutePath}`");
+          }
+
           break;
         }
         catch (HttpRequestException e)
@@ -130,6 +116,53 @@ namespace VSS.Productivity3D.Push.Clients
           await Task.Delay(RECONNECT_DELAY_MS);
         }
       }
+    }
+
+    /// <summary>
+    /// Setup a connection to Push Service, using service resolution
+    /// </summary>
+    private async Task SetupConnection()
+    {
+      if (Connection != null)
+      {
+        await Disconnect();
+        Connection = null;
+      }
+
+      var serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
+      if (serviceResult.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(serviceResult.Endpoint))
+      {
+        Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}`.");
+        return;
+      }
+
+      endpoint = new Uri(new Uri(serviceResult.Endpoint), HubRoute);
+
+      Connection = new HubConnectionBuilder()
+        .WithUrl(endpoint, options =>
+        {
+          if (Configuration.GetValueBool(PUSH_REQUEST_NO_AUTH, false))
+          {
+            Logger.LogInformation("Attempting to skip TPaaS Authentication");
+            options.Headers.Add(SKIP_AUTHENTICATION_HEADER, "true");
+          }
+          else
+          {
+            Logger.LogWarning("No authentication headers added.");
+          }
+
+        }).Build();
+
+      Connection.Closed += async (e) =>
+      {
+        Logger.LogError(e, $"Lost Connection to `{endpoint.AbsolutePath}`");
+        Connected = false;
+
+        await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
+      };
+
+      // We must call setup callbacks after we setup the connection
+      SetupCallbacks();
     }
   }
 }

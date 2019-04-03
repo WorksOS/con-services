@@ -96,13 +96,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         }
       }
 
-      ISubGridTreeBitMask existenceMap = siteModel.ExistenceMap;
-      if (existenceMap == null)
-      {
-        Log.LogError($"Failed to locate production data existence map from site model {requestArgument.ProjectID}");
-        return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
-      }
-
+      var existenceMap = siteModel.ExistenceMap;
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var requestors = utilities.ConstructRequestors(siteModel,
         utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, true, GridDataType.CellProfile),

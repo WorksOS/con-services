@@ -247,9 +247,6 @@ namespace VSS.TRex.Volumes
             {
                 ProdDataExistenceMap = SiteModel.ExistenceMap;
 
-                if (ProdDataExistenceMap == null)
-                    return RequestErrorStatus.FailedToRequestSubgridExistenceMap;
-
                 try
                 {
                     if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))

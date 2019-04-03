@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.SubGridTrees
   {
         private CellPass CreateTestCellPass()
         {
-            return new CellPass()
+            return new CellPass
             {
                 Amplitude = 100,
                 CCA = 200,
@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                 PassType = PassType.Front,
                 RadioLatency = 10,
                 RMV = 900,
-                Time = new DateTime(2000, 1, 1, 1, 1, 1)
+                Time = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc)
             };
         }
 
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_AddPass()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), StorageMutability.Mutable);
+            var tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>(), StorageMutability.Mutable);
             var leaf = tree.CreateNewSubGrid(SubGridTreeConsts.SubGridTreeLevels) as ServerSubGridTreeLeaf;
 
             leaf.Clear();
@@ -94,7 +94,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                           leaf.Directory.SegmentDirectory.First().Segment.PassesData != null,
                           "Segment passes data not created correctly for AddPass()");
 
-            CellPass pass = CreateTestCellPass();
+            var pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
 
             // Check the cell passes in the segment records the cell pass

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -47,6 +48,7 @@ namespace VSS.TRex.Designs
 
     public OptimisedSpatialIndexSubGridTree SpatialIndexOptimised { get; private set; }
 
+    [ExcludeFromCodeCoverage] // This method not currently used in favour of cell by cell lookups into triangles
     private void AddTrianglePieceToElevationPatch(XYZ H1, XYZ H2, XYZ V,
       Triangle Tri,
       bool SingleRowOnly,

@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       SubGridSegmentCellPassIterator_NonStatic iterator = new SubGridSegmentCellPassIterator_NonStatic();
 
-      Assert.True(iterator.CellX == byte.MaxValue && iterator.CellY == byte.MaxValue, "CellX/Y not initialised correctly");
+      Assert.True(iterator.CellX == 0 && iterator.CellY == 0, "CellX/Y not initialised correctly");
       Assert.Equal(iterator.MaxNumberOfPassesToReturn, int.MaxValue);
       Assert.Null(iterator.SegmentIterator);
     }
