@@ -63,65 +63,67 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     }
                 }
 
-                if (!Result.Dirty && ReturnDirtyOnly)
-                {
-                    // The segment is not dirty, and the iterator has been instructed only to return
-                    // dirty segments, so ignore this one
-                    Result = null;
-                    continue;
-                }
-
-                // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
-                if (!Result.Dirty && !ReturnCachedItemsOnly && 
-                    (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
-                  {
-                    // This additional check to determine if the required storage classes
-                    // are present is necessary to check if an earlier thread through this code has
-                    // already allocated them
-
-                    if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
+                if (Result != null)
+                { 
+                    if (!Result.Dirty && ReturnDirtyOnly)
                     {
-                        if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
-                            (StorageProxy,
-                             new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
-                             RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
-                             IterationState.SubGrid,
-                             Result))
+                        // The segment is not dirty, and the iterator has been instructed only to return
+                        // dirty segments, so ignore this one
+                        Result = null;
+                        continue;
+                    }
+                
+                    // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
+                    if (!Result.Dirty && !ReturnCachedItemsOnly && 
+                        (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
+                      {
+                        // This additional check to determine if the required storage classes
+                        // are present is necessary to check if an earlier thread through this code has
+                        // already allocated them
+                
+                        if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
                         {
-                            /* TODO: no separate cache - it is in ignite
-                            // The segment is now loaded and available for use and should be touched
-                            // to link it into the cache segment MRU management
-                            if (Result != null && Result.Owner.PresentInCache)
+                            if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
+                                (StorageProxy,
+                                 new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
+                                 RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
+                                 IterationState.SubGrid,
+                                 Result))
                             {
-                               DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                                /* TODO: no separate cache - it is in ignite
+                                // The segment is now loaded and available for use and should be touched
+                                // to link it into the cache segment MRU management
+                                if (Result != null && Result.Owner.PresentInCache)
+                                {
+                                   DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                                }
+                                */
                             }
-                            */
-                        }
-                        else
-                        {
-                            /* TODO: no separate cache - it is in ignite
-                            // The segment is failed to load, however it may have been created
-                            // to hold the data being read. The failure handling will have backtracked
-                            // out any allocations made within the segment, but it is safer to include
-                            // it into the cache and allow it to be managed there than to
-                            // independently remove it here
-                            if (Result != null && Result.Owner.PresentInCache)
+                            else
                             {
-                                DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                                /* TODO: no separate cache - it is in ignite
+                                // The segment is failed to load, however it may have been created
+                                // to hold the data being read. The failure handling will have backtracked
+                                // out any allocations made within the segment, but it is safer to include
+                                // it into the cache and allow it to be managed there than to
+                                // independently remove it here
+                                if (Result != null && Result.Owner.PresentInCache)
+                                {
+                                    DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                                }
+                                */
+                
+                                // Segment failed to be loaded. Multiple messages will have been posted to the log.
+                                // Move to the next item in the iteration
+                                Result = null; 
+                                continue;
                             }
-                            */
-
-                            // Segment failed to be loaded. Multiple messages will have been posted to the log.
-                            // Move to the next item in the iteration
-                            Result = null; 
-                            continue;
                         }
                     }
                 }
 
-                if (Result != null)
-                {
-                    // We have a candidate to return as the next item in the iteration
+                if (Result != null) // We have a candidate to return as the next item in the iteration
+                {                    
                     break;
                 }
             }
