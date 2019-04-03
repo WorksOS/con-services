@@ -18,6 +18,7 @@ namespace TCCToDataOcean.DatabaseAgent
     public int TotalFileCount { get; set; }
     public int EligibleFileCount { get; set; }
     public bool CanResolveCSIB { get; set; }
+    public string ResolveCSIBMessage { get; set; }
     public string CSIB { get; set; }
 
     public MigrationProject()

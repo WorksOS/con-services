@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -137,6 +136,9 @@ namespace TCCToDataOcean
       var csibResponse = await _csibAgent.GetCSIBForProject(project);
 
       _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
+
+      if (csibResponse.Code != 0) _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
+
       byte[] coordSystemFileContent;
 
       if (csibResponse.Code != 0)
@@ -237,7 +239,7 @@ namespace TCCToDataOcean
       Log.LogInformation($"{Method.Info()} | Creating DC file '{tempFileName}' for project {project.ProjectUID}");
 
       File.WriteAllBytes(tempFileName, dcFileContent);
-
+     
       Log.LogDebug(Method.Out());
     }
 

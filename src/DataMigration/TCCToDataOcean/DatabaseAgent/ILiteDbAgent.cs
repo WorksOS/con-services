@@ -14,6 +14,7 @@ namespace TCCToDataOcean.DatabaseAgent
     void SetProjectCoordinateSystemDetails(string tableName, Project project, bool isValid);
     void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount);
     void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib);
+    void SetResolveCSIBMessage(string tableName, string key, string message);
     void SetProjectCSIB(string tableName, string key, string csib);
 
     void InitDatabase();

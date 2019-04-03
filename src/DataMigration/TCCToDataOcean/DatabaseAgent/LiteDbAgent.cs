@@ -1,5 +1,6 @@
 ﻿using LiteDB;
 using System;
+using System.IO;
 using System.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -13,7 +14,10 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public LiteDbAgent(IConfigurationStore configurationStore)
     {
-      db = new LiteDatabase(configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE"));
+      var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "database");
+      if (!Directory.Exists(databasePath)) Directory.CreateDirectory(databasePath);
+
+      db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE")));
     }
 
     public void DropTables(string[] tableNames)
@@ -136,6 +140,14 @@ namespace TCCToDataOcean.DatabaseAgent
       var dbObj = projects.FindOne(x => x.ProjectUid == key);
 
       UpdateProject(projects, dbObj, () => dbObj.CanResolveCSIB = canResolveCsib);
+    }
+
+    public void SetResolveCSIBMessage(string tableName, string key, string message)
+    {
+      var projects = db.GetCollection<MigrationProject>(tableName);
+      var dbObj = projects.FindOne(x => x.ProjectUid == key);
+
+      UpdateProject(projects, dbObj, () => dbObj.ResolveCSIBMessage = message);
     }
 
     public void SetProjectCSIB(string tableName, string key, string csib)
