@@ -575,6 +575,7 @@ namespace VSS.TRex.Rendering.Executors
 
         ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes);
 
+
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
         {
           return Renderer.Displayer.MapView.BitmapCanvas;
