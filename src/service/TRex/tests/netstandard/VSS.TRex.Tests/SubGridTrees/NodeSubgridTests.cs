@@ -16,20 +16,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_NodeSubGrid_Creation()
     {
       SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
-      INodeSubGrid subgrid = null;
-
-      // Test creation of a leaf node without an owner tree
-      try
-      {
-        subgrid = new NodeSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels - 1);
-        Assert.True(false, "Was able to create a node subgrid with no owning tree");
-      }
-      catch (Exception)
-      {
-        // As expected
-      }
-
-      subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
+      INodeSubGrid subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
 
       Assert.NotNull(subgrid);
     }
@@ -91,7 +78,6 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_NodeSubGrid_DeleteSubGrid()
     {
       SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
-      INodeSubGrid subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
 
       // Fill the entirety of the parent subgrid with new child subgrids using SetSubGrid
@@ -143,7 +129,6 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_NodeSubGrid_SetSubgrid()
     {
       SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
-      INodeSubGrid subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
       INodeSubGrid parentSubgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 2);
 
       // Fill the entirety of the parent subgrid with new child subgrids using SetSubGrid
@@ -391,16 +376,16 @@ namespace VSS.TRex.Tests.SubGridTrees
       var sparcityLimit = NodeSubGrid.SubGridTreeNodeCellSparcityLimit;
 
       // Add sparcity limit - 1 child node sub grids to the parent
-      for (int i = 0; i < sparcityLimit - 1; i++)
+      for (int i = 0; i < sparcityLimit; i++)
       {
         var subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
         parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, subgrid);
       }
 
-      parentSubgrid.CountNonNullCells().Should().Be((int) sparcityLimit - 1);
+      parentSubgrid.CountNonNullCells().Should().Be((int) sparcityLimit);
 
       // Read through the sub grids added, plus another one to cover access failure
-      for (int i = 0; i < sparcityLimit - 1; i++)
+      for (int i = 0; i < sparcityLimit; i++)
       {
         var subGrid2 = parentSubgrid.GetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension);
         subGrid2.Should().NotBeNull();
@@ -409,8 +394,8 @@ namespace VSS.TRex.Tests.SubGridTrees
       var subGrid = parentSubgrid.GetSubGrid((int)sparcityLimit % SubGridTreeConsts.SubGridTreeDimension,(int)sparcityLimit / SubGridTreeConsts.SubGridTreeDimension);
       subGrid.Should().BeNull();
 
-      // Drain the subgrids back out of the node
-      for (int i = 0; i < sparcityLimit - 1; i++)
+      // Drain the sub grids back out of the node
+      for (int i = 0; i < sparcityLimit; i++)
         parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, null);
 
       parentSubgrid.CountNonNullCells().Should().Be(0);
@@ -432,7 +417,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
       parentSubgrid.CountNonNullCells().Should().Be((int)sparcityLimit + 1);
 
-      // Read through the subgrids added, plus another one rto cover access failure
+      // Read through the sub grids added, plus another one rto cover access failure
       for (int i = 0; i < sparcityLimit + 2; i++)
       {
         var subgrid = new NodeSubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
@@ -443,7 +428,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       var subGrid = parentSubgrid.GetSubGrid((int)(sparcityLimit + 2) % SubGridTreeConsts.SubGridTreeDimension, (int)(sparcityLimit + 2) / SubGridTreeConsts.SubGridTreeDimension);
       subGrid.Should().BeNull();
 
-      // Drain the subgrids back out of the node
+      // Drain the sub grids back out of the node
       for (int i = 0; i < sparcityLimit + 1; i++)
         parentSubgrid.SetSubGrid(i % SubGridTreeConsts.SubGridTreeDimension, i / SubGridTreeConsts.SubGridTreeDimension, null);
 
