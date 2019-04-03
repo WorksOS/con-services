@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Compression
@@ -20,6 +21,8 @@ namespace VSS.TRex.Compression
         // ReSharper disable once CompareOfFloatsByEqualityOperator
         public static long ModifiedHeight(float height) => (long)(height == Consts.NullHeight ? int.MaxValue : Math.Round(height * 1000));
 
+        public const long MODIFIED_TIME_PROJECTED_NULL_VALUE = -1;
+
         /// <summary>
         /// Performs a computation to modify the time into the form used by the compressed static version
         /// of the segment cell pass information, which is a relative time offset from an origin, expressed with 
@@ -31,7 +34,7 @@ namespace VSS.TRex.Compression
         public static long ModifiedTime(DateTime time, DateTime timeOrigin)
         {
           if (time == DateTime.MinValue)
-            return -1;
+            return MODIFIED_TIME_PROJECTED_NULL_VALUE;
 
           var span = time - timeOrigin;
           if (span.TotalMilliseconds < 0)
@@ -47,6 +50,6 @@ namespace VSS.TRex.Compression
         /// </summary>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public static long ModifiedGPSMode(GPSMode mode) => (long)mode & 0xf;
+        public static long ModifiedGPSMode(GPSMode mode) => (long)mode & CellPassConsts.GPS_MODE_STORE_BIT_MASK;
     }
 }

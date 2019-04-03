@@ -179,6 +179,6 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// The mask to be applied to the GPSModeStore member of the cell pass to access the GPSMode enumeration value
     /// </summary>
-    public const byte GPSModeStoreMask = 0b00001111;
+    public const byte GPS_MODE_STORE_BIT_MASK = 0b00001111;
   }
 }
