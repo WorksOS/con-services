@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var request = CastRequestObjectTo<ProjectID>(item);
       log.LogInformation(
         $"GetMachineIdsExecutor: {JsonConvert.SerializeObject(request)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINES")}");
-      
+
       List<MachineStatus> machines;
       bool haveUids = true;
 

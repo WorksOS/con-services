@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Models.Models
     public long? Id { get; set; }
 
     /// <summary>
-    /// A project unique identifier.
+    /// A filter unique identifier.
     /// </summary>
     [JsonProperty(PropertyName = "UID", Required = Required.Default)]
     public Guid? Uid { get; set; }
@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Only use cell passes recorded when the machine was driving in the forwards direction. If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
     /// </summary>
     [JsonProperty(PropertyName = "forwardDirection", Required = Required.Default)]
-    public bool? ForwardDirection { get; private set; }
+    public bool? ForwardDirection { get; set; }
 
     /// <summary>
     /// The alignment file to be used as an alignment spatial filter

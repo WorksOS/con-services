@@ -6,15 +6,21 @@ namespace VSS.Productivity3D.Models.Models
   public class AssetOnDesignPeriod : IEquatable<AssetOnDesignPeriod>
   {
     /// <summary>
-    ///The name of the design.
+    ///This design name comes from the tag file.
+    ///  So long as the same tag files have been imported into Trex and Raptor,
+    ///     the designNames will be the same in both systems and can be used for matching
     /// </summary>
     [JsonProperty(PropertyName = "designName")]
-    public string Name { get; private set; }
+    public string Name { get; private set; } // todoJeannie add to Trex return and Raptor?
+
     /// <summary>
-    ///The Raptor design identifier.
+    ///The Trex OR Raptor design identifier.
+    ///   This is a value unique and internal to each system.
+    ///   Use designName for matching between systems
     /// </summary>
     [JsonProperty(PropertyName = "designId")]
     public long Id { get; private set; }
+
     /// <summary>
     /// Machine identifier that the design is on. Used for filtering in machine details end point only.
     /// </summary>

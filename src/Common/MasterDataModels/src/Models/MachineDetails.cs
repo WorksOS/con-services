@@ -22,7 +22,7 @@ namespace VSS.MasterData.Models.Models
     /// </remarks>
     [JsonConverter(typeof(FormatLongAsStringConverter))]
     [JsonProperty(PropertyName = "assetID", Required = Required.Always)]
-    public long AssetId { get; set; }
+    public long AssetId { get; protected set; }
 
     /// <summary>
     /// The textual name of the machine. This is the human readable machine name from the machine control display, and written in tagfiles.
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Models.Models
     /// If a John doe, then the Uid is a Guid.Empty?
     /// </remarks>
     [JsonProperty(PropertyName = "assetUid", Required = Required.Default)]
-    public Guid? AssetUid { get; set; } = null;
+    public Guid? AssetUid { get; protected set; } = null;
 
     /// <summary>
     /// Private constructor
@@ -57,15 +57,12 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Create instance of MachineDetails
     /// </summary>
-    public static MachineDetails Create(long assetId, string machineName, bool isJohnDoe, Guid? assetUid = null)
+    public MachineDetails (long assetId, string machineName, bool isJohnDoe, Guid? assetUid = null)
     {
-      return new MachineDetails
-      {
-        AssetId = assetId,
-        MachineName = machineName,
-        IsJohnDoe = isJohnDoe,
-        AssetUid = assetUid
-      };
+      AssetId = assetId;
+      MachineName = machineName;
+      IsJohnDoe = isJohnDoe;
+      AssetUid = assetUid;
     }
 
     /// <summary>
