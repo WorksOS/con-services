@@ -38,8 +38,8 @@ namespace VSS.TRex.SubGridTrees.Server
             if (GlobalLatestCells == null)
             {
               GlobalLatestCells = IsMutable
-                ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper()
-                : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper();
+                ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
+                : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Global();
             }
         }
 

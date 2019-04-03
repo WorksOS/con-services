@@ -118,7 +118,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
     /// load it from storage/cache.
-    /// This will never return a null reference. In the case of a site model that does not have any spatial data withi it
+    /// This will never return a null reference. In the case of a site model that does not have any spatial data within it
     /// this will return an empty existence map rather than null.
     /// </summary>
     public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
