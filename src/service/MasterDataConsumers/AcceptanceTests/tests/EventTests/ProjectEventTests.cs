@@ -378,8 +378,8 @@ namespace EventTests
 
       msg.Title("Create Imported File test 1", "Create one Imported File - Surveyed Surface");
       var eventArray = new[] {
-        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC   |" ,
-        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} | {surveyedUtc} |"};
+        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC   | Offset   | ParentUID   |" ,
+        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} | {surveyedUtc} | 0        |             |"};
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
@@ -410,8 +410,8 @@ namespace EventTests
 
       msg.Title("Create Imported File test 2", "Create one Imported File - Reference Surface");
       var eventArray = new[] {
-        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | Offset   | ParentUID  |" ,
-        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} | {offset} | {parentUid}|"};
+        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC | Offset   | ParentUID   |" ,
+        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} |             | {offset} | {parentUid} |"};
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
