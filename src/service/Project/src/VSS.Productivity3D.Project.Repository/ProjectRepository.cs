@@ -20,7 +20,7 @@ using ProjectDataModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseMo
 namespace VSS.Productivity3D.Project.Repository
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>, IProjectRepository
-  {
+  { 
     private const int LegacyProjectIdCutoff = 2000000;
 
     // The landfill Service requires the existance of a Geofence representing the Projects Boundary.
