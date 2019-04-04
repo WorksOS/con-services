@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using TCCToDataOcean.Utils;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -12,12 +13,14 @@ namespace TCCToDataOcean.DatabaseAgent
   {
     private readonly LiteDatabase db;
 
-    public LiteDbAgent(IConfigurationStore configurationStore)
+    public LiteDbAgent(IConfigurationStore configurationStore, IEnvironmentHelper environmentHelper)
     {
       var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "database");
+      var databaseSuffix = environmentHelper.GetVariable("MIGRATION_TARGET", 1);
+
       if (!Directory.Exists(databasePath)) Directory.CreateDirectory(databasePath);
 
-      db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE")));
+      db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
     }
 
     public void DropTables(string[] tableNames)
@@ -43,7 +46,7 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.Duration = endTimeUtc.Subtract(dbObj.StartTime).ToString();
       objs.Update(dbObj);
     }
-    
+
     public void SetMigationInfo_SetProjectCount(int projectCount)
     {
       var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
@@ -52,7 +55,7 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.ProjectsTotal = projectCount;
       objs.Update(dbObj);
     }
-    
+
     public void SetMigationInfo_SetEligibleProjectCount(int projectCount)
     {
       var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
@@ -70,7 +73,7 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.ProjectsCompleted += 1;
       objs.Update(dbObj);
     }
-    
+
     public void WriteRecord(string tableName, Project project)
     {
       db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project));
@@ -157,7 +160,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
       UpdateProject(projects, dbObj, () => dbObj.CSIB = csib);
     }
-    
+
     private static void UpdateProject(LiteCollection<MigrationProject> projects, MigrationProject dbObj, Action action)
     {
       action();
