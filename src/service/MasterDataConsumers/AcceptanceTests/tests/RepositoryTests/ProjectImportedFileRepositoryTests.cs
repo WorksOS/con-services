@@ -100,7 +100,7 @@ namespace RepositoryTests
         ImportedFileID = new Random().Next(1, 1999999),
         CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.Alignment,
-        Name = "Test SS type.dxf",
+        Name = "Test alignment type.svl",
         FileDescriptor = "fd",
         FileCreatedUtc = actionUtc,
         FileUpdatedUtc = actionUtc,
@@ -124,6 +124,68 @@ namespace RepositoryTests
       var ifList = gList.Result.ToList();
       Assert.AreEqual(1, ifList.Count, "ImportedFile count is incorrect from ProjectRepo");
       Assert.AreEqual(DxfUnitsType.UsSurveyFeet, ifList[0].DxfUnitsType, "ImportedFile DXF units is incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Create ImportedFile - Happy path i.e. 
+    ///   ImportedFile doesn't exist already.
+    ///   Alignment type has non-default Units
+    /// </summary>
+    [TestMethod]
+    public void CreateImportedFile_HappyPath_WithParent()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+
+
+      //Create the parent design first
+      var createImportedFileEvent1 = new CreateImportedFileEvent()
+      {
+        ProjectUID = projectUid,
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileID = new Random().Next(1, 1999999),
+        CustomerUID = customerUid,
+        ImportedFileType = ImportedFileType.DesignSurface,
+        Name = "Test design type.ttm",
+        FileDescriptor = "fd",
+        FileCreatedUtc = actionUtc,
+        FileUpdatedUtc = actionUtc,
+        ImportedBy = "JoeSmoe",
+        ActionUTC = actionUtc
+      };
+
+      //Create reference surface
+      var createImportedFileEvent2 = new CreateImportedFileEvent()
+      {
+        ProjectUID = projectUid,
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileID = new Random().Next(1, 1999999),
+        CustomerUID = customerUid,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
+        Name = "Test reference type.ttm",
+        FileDescriptor = "fd",
+        FileCreatedUtc = actionUtc,
+        FileUpdatedUtc = actionUtc,
+        ImportedBy = "JoeSmoe",
+        ActionUTC = actionUtc,
+        ParentUID = createImportedFileEvent1.ImportedFileUID,
+        Offset = 1.5
+      };
+
+      _projectContext.StoreEvent(createImportedFileEvent1).Wait();
+      _projectContext.StoreEvent(createImportedFileEvent2).Wait();
+
+      var g = _projectContext.GetImportedFile(createImportedFileEvent1.ImportedFileUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve parent ImportedFile from ProjectRepo");
+
+      g = _projectContext.GetImportedFile(createImportedFileEvent2.ImportedFileUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve child ImportedFile from ProjectRepo");
+
+      Assert.AreEqual(createImportedFileEvent2.ParentUID, g.Result.ParentUid, "Wrong ParentUid");
+      Assert.AreEqual(createImportedFileEvent2.Offset, g.Result.Offset, "Wrong Offset");
     }
 
     /// <summary>
@@ -249,6 +311,7 @@ namespace RepositoryTests
         SurveyedUTC = actionUtc.AddDays(-1),
         MinZoomLevel = 18,
         MaxZoomLevel = 20,
+        Offset = 1.5,
         ActionUTC = actionUtc
       };
 
@@ -261,6 +324,7 @@ namespace RepositoryTests
         FileDescriptor = "fd",
         MinZoomLevel = 16,
         MaxZoomLevel = 19,
+        Offset = 2.8,
         FileCreatedUtc = actionUtc.AddDays(2).AddHours(2),
         FileUpdatedUtc = actionUtc.AddDays(2).AddHours(3),
         ImportedBy = "JoeSmoe3",
@@ -278,6 +342,7 @@ namespace RepositoryTests
         "ImportedFile FileDescriptor was not updated");
       Assert.AreEqual(updateImportedFileEvent.MinZoomLevel, g.Result.MinZoomLevel, "ImportedFile MinZoomLevel was not updated");
       Assert.AreEqual(updateImportedFileEvent.MaxZoomLevel, g.Result.MaxZoomLevel, "ImportedFile MaxZoomLevel was not updated");
+      Assert.AreEqual(updateImportedFileEvent.Offset, g.Result.Offset, "ImportedFile Offset was not updated");
       Assert.AreEqual(2, g.Result.ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 2 history records for this create+update.");
       Assert.AreEqual(createImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileCreatedUtc, "Oldest history record FileCreatedUtc incorrect.");
       Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc, "Oldest history record FileUpdateUtc incorrect.");

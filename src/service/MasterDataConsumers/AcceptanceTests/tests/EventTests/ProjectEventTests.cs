@@ -359,7 +359,7 @@ namespace EventTests
     }
 
     [TestMethod]
-    public void CreateImportedFileEvent()
+    public void CreateImportedFileEvent_SurveyedSurface()
     {
       var msg = new Msg();
       var testSupport = new TestSupport();
@@ -376,16 +376,48 @@ namespace EventTests
       var importedBy = "JoeSmoe";
       var surveyedUtc = new DateTime(2016, 12, 15, 2, 30, 3);
 
-      msg.Title("Create Imported File test 1", "Create one Imported File");
+      msg.Title("Create Imported File test 1", "Create one Imported File - Surveyed Surface");
       var eventArray = new[] {
-        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC   |" ,
-        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} | {surveyedUtc} |"};
+        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC   | Offset   | ParentUID   |" ,
+        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} | {surveyedUtc} | 0        |             |"};
 
       testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ImportedFile", "ImportedFileUID",
         "fk_ProjectUID, ImportedFileID, fk_CustomerUID,  fk_ImportedFileTypeID, Name, FileDescriptor, fileCreatedUtc, fileUpdatedUtc, importedBy,  surveyedUTC", //Fields
         $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)ImportedFileType.SurveyedSurface}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {surveyedUtc}", //Expected
+        importedFileGuid);
+    }
+
+    [TestMethod]
+    public void CreateImportedFileEvent_ReferenceSurface()
+    {
+      var msg = new Msg();
+      var testSupport = new TestSupport();
+      var mysql = new MySqlHelper();
+      var projectGuid = Guid.NewGuid();
+      var importedFileGuid = Guid.NewGuid();
+      var importedFileId = new Random().Next(1, 1999999);
+      var customerGuid = Guid.NewGuid();
+      var importedFileType = ImportedFileType.ReferenceSurface;
+      var name = "Test Ref type.ttm";
+      var fileDescriptor = "fd";
+      var fileCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var fileUpdatedUtc = fileCreatedUtc;
+      var importedBy = "JoeSmoe";
+      var offset = 1.5;
+      var parentUid = Guid.NewGuid();
+
+      msg.Title("Create Imported File test 2", "Create one Imported File - Reference Surface");
+      var eventArray = new[] {
+        "| EventType                | EventDate   | ProjectUID    | ImportedFileUID    | ImportedFileID   | CustomerUID    | ImportedFileType   | Name   | FileDescriptor   | FileCreatedUTC   | FileUpdatedUTC   | ImportedBy   | SurveyedUTC | Offset   | ParentUID   |" ,
+        $"| CreateImportedFileEvent | 0d+09:00:00 | {projectGuid} | {importedFileGuid} | {importedFileId} | {customerGuid} | {importedFileType} | {name} | {fileDescriptor} | {fileCreatedUtc} | {fileUpdatedUtc} | {importedBy} |             | {offset} | {parentUid} |"};
+
+      testSupport.PublishEventCollection(eventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ImportedFile", "ImportedFileUID",
+        "fk_ProjectUID, ImportedFileID, fk_CustomerUID,  fk_ImportedFileTypeID, Name, FileDescriptor, fileCreatedUtc, fileUpdatedUtc, importedBy,  Offset, fk_ReferenceImportedFileUID", //Fields
+        $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)ImportedFileType.SurveyedSurface}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {offset}, {parentUid}", //Expected
         importedFileGuid);
     }
   }
