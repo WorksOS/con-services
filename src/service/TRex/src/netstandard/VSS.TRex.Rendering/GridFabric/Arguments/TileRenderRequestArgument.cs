@@ -112,7 +112,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
           return new CCASummaryPalette();
         case DisplayMode.CCV:
           return new CMVPalette();
-        case DisplayMode.CCVSummary:
+        case DisplayMode.CCVPercentSummary:
           return new CMVSummaryPalette();
         case DisplayMode.CutFill:
           return new CutFillPalette();

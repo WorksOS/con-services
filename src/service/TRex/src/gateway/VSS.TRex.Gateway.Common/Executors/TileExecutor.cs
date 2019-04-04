@@ -127,7 +127,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           cmvPalette.TargetCCVColour = Color.Green;
           cmvPalette.DefaultDecoupledCMVColour = Color.Black;
           break;
-        case DisplayMode.CCVSummary:
+        case DisplayMode.CCVPercentSummary:
           convertedPalette = new CMVSummaryPalette();
 
           var cmvSummaryPalette = ((CMVSummaryPalette) convertedPalette);
@@ -237,10 +237,10 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       if (request.Mode != DisplayMode.Height &&
-          request.Mode != DisplayMode.CCVSummary &&
+          request.Mode != DisplayMode.CCVPercentSummary &&
           request.Mode != DisplayMode.PassCountSummary && 
           request.Mode != DisplayMode.CCASummary &&
-          request.Mode != DisplayMode.MDPSummary &&
+          request.Mode != DisplayMode.MDPPercentSummary &&
           request.Mode != DisplayMode.TargetSpeedSummary &&
           request.Mode != DisplayMode.TemperatureSummary)
       {

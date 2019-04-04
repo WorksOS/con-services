@@ -73,8 +73,8 @@ namespace VSS.TRex.Rendering.Palettes
 
         PaletteTransitions = new Transition[numberOfTransitions];
 
-        foreach (var transition in PaletteTransitions)
-          transition.FromBinary(reader);
+        for (int i = 0; i < PaletteTransitions.Length; i++)
+          PaletteTransitions[i].FromBinary(reader);
       }
     }
   }

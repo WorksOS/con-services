@@ -47,6 +47,11 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] ushort pixelsX,
       [FromQuery] ushort pixelsY)
     {
+      minX = 2727.791186;
+      minY = 1156.222555;
+      maxX = 2758.667491;
+      maxY = 1186.965794;
+
       var request = new TileRenderRequest();
       var response = await request.ExecuteAsync(new TileRenderRequestArgument(
         siteModelID: Guid.Parse(siteModelID), 
@@ -74,7 +79,7 @@ namespace VSS.TRex.Webtools.Controllers
       {
         (DisplayMode.Height, "Height"),
         (DisplayMode.CCV, "CCV"),
-        (DisplayMode.CCVSummary, "CCV Summary"),
+        (DisplayMode.CCVPercentSummary, "CCV Summary"),
         (DisplayMode.PassCount, "Pass Count"),
         (DisplayMode.PassCountSummary, "Pass Count Summary"),
         (DisplayMode.MDPPercentSummary, "MDP Summary"),
