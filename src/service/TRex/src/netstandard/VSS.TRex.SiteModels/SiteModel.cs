@@ -118,7 +118,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
     /// load it from storage/cache.
-    /// This will never return a null reference. In the case of a site model that does not have any spatial data withi it
+    /// This will never return a null reference. In the case of a site model that does not have any spatial data within it
     /// this will return an empty existence map rather than null.
     /// </summary>
     public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
@@ -210,10 +210,12 @@ namespace VSS.TRex.SiteModels
           {
             if (_siteModelDesigns == null)
             {
-              _siteModelDesigns = new SiteModelDesignList();
+              var newSiteModelDesigns = new SiteModelDesignList();
 
               if (!IsTransient)
-                _siteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
+                newSiteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
+
+              _siteModelDesigns = newSiteModelDesigns;
             }
           }
         }
@@ -271,10 +273,12 @@ namespace VSS.TRex.SiteModels
           {
             if (siteProofingRuns == null)
             {
-              siteProofingRuns = new SiteProofingRunList {DataModelID = ID};
+              var newSiteProofingRuns = new SiteProofingRunList {DataModelID = ID};
 
               if (!IsTransient)
-                siteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
+                newSiteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteProofingRuns = newSiteProofingRuns;
             }
           }
         }
@@ -300,13 +304,15 @@ namespace VSS.TRex.SiteModels
           {
             if (siteModelMachineDesigns == null)
             {
-              siteModelMachineDesigns = new SiteModelMachineDesignList
+              var newSiteModelMachineDesigns = new SiteModelMachineDesignList
               {
                 DataModelID = ID
               };
 
               if (!IsTransient)
-                siteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+                newSiteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteModelMachineDesigns = newSiteModelMachineDesigns;
             }
           }
         }
@@ -333,15 +339,17 @@ namespace VSS.TRex.SiteModels
           {
             if (machines == null)
             {
-              machines = new MachinesList
+              var newMachines = new MachinesList
               {
                 DataModelID = ID
               };
 
               if (!IsTransient)
               {
-                machines.LoadFromPersistentStore(PrimaryStorageProxy);
+                newMachines.LoadFromPersistentStore(PrimaryStorageProxy);
               }
+
+              machines = newMachines;
             }
           }
         }
