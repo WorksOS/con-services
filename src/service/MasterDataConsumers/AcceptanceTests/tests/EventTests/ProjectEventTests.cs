@@ -385,7 +385,7 @@ namespace EventTests
       mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ImportedFile", "ImportedFileUID",
         "fk_ProjectUID, ImportedFileID, fk_CustomerUID,  fk_ImportedFileTypeID, Name, FileDescriptor, fileCreatedUtc, fileUpdatedUtc, importedBy,  surveyedUTC", //Fields
-        $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)ImportedFileType.SurveyedSurface}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {surveyedUtc}", //Expected
+        $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)importedFileType}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {surveyedUtc}", //Expected
         importedFileGuid);
     }
 
@@ -417,7 +417,7 @@ namespace EventTests
       mysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "ImportedFileUID", 1, importedFileGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ImportedFile", "ImportedFileUID",
         "fk_ProjectUID, ImportedFileID, fk_CustomerUID,  fk_ImportedFileTypeID, Name, FileDescriptor, fileCreatedUtc, fileUpdatedUtc, importedBy,  Offset, fk_ReferenceImportedFileUID", //Fields
-        $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)ImportedFileType.SurveyedSurface}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {offset}, {parentUid}", //Expected
+        $"{projectGuid}, {importedFileId}, {customerGuid}, {(int)importedFileType}, {name}, {fileDescriptor}, {fileCreatedUtc}, {fileUpdatedUtc}, {importedBy}, {offset}, {parentUid}", //Expected
         importedFileGuid);
     }
   }

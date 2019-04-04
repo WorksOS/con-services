@@ -184,7 +184,7 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve child ImportedFile from ProjectRepo");
 
-      Assert.AreEqual(createImportedFileEvent2.ParentUID, g.Result.ParentUid, "Wrong ParentUid");
+      Assert.AreEqual(createImportedFileEvent2.ParentUID.ToString(), g.Result.ParentUid, "Wrong ParentUid");
       Assert.AreEqual(createImportedFileEvent2.Offset, g.Result.Offset, "Wrong Offset");
     }
 
@@ -342,7 +342,7 @@ namespace RepositoryTests
         "ImportedFile FileDescriptor was not updated");
       Assert.AreEqual(updateImportedFileEvent.MinZoomLevel, g.Result.MinZoomLevel, "ImportedFile MinZoomLevel was not updated");
       Assert.AreEqual(updateImportedFileEvent.MaxZoomLevel, g.Result.MaxZoomLevel, "ImportedFile MaxZoomLevel was not updated");
-      Assert.AreEqual(updateImportedFileEvent.Offset, g.Result.Offset, "ImportedFile Offset was not updated");
+      Assert.AreEqual(updateImportedFileEvent.Offset, g.Result.Offset, 0.1, "ImportedFile Offset was not updated");
       Assert.AreEqual(2, g.Result.ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 2 history records for this create+update.");
       Assert.AreEqual(createImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileCreatedUtc, "Oldest history record FileCreatedUtc incorrect.");
       Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc, "Oldest history record FileUpdateUtc incorrect.");
