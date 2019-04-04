@@ -33,7 +33,10 @@ namespace VSS.TRex.Compression
         /// <returns></returns>
         public static long ModifiedTime(DateTime time, DateTime timeOrigin)
         {
-          if (time == DateTime.MinValue)
+          if (time.Kind != DateTimeKind.Utc || timeOrigin.Kind != DateTimeKind.Utc)
+            throw new ArgumentException("Time and time origin must be a UTC date time");
+
+          if (time == Consts.MIN_DATETIME_AS_UTC)
             return MODIFIED_TIME_PROJECTED_NULL_VALUE;
 
           var span = time - timeOrigin;

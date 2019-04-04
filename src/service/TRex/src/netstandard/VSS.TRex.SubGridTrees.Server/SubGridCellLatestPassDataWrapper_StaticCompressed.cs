@@ -136,7 +136,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Compute the time of the earliest real cell pass within the latest cell passes, and the elevation of the lowest recorded cell
             // passes in the latest cell passes
-            FirstRealCellPassTime = DateTime.MaxValue;
+            FirstRealCellPassTime = Consts.MAX_DATETIME_AS_UTC;
 
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
@@ -230,7 +230,7 @@ namespace VSS.TRex.SubGridTrees.Server
             uint BitLocation = (((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * NumBitsPerCellPass) + EncodedFieldDescriptors.Time.OffsetBits;
 
             long IntegerTime = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time);
-            return IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddMilliseconds(AttributeValueModifiers.MILLISECONDS_TO_DECISECONDS_FACTOR * IntegerTime);
+            return IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? Consts.MIN_DATETIME_AS_UTC : FirstRealCellPassTime.AddMilliseconds(AttributeValueModifiers.MILLISECONDS_TO_DECISECONDS_FACTOR * IntegerTime);
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace VSS.TRex.SubGridTrees.Server
             Result.InternalSiteModelMachineIndex = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.InternalMachineID);
 
             long IntegerTime = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time);
-            Result.Time = IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddSeconds(IntegerTime);
+            Result.Time = IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? Consts.MIN_DATETIME_AS_UTC : FirstRealCellPassTime.AddSeconds(IntegerTime);
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
             Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);

@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.Cells
                 PassType = PassType.Front,
                 RadioLatency = 10,
                 RMV = 11,
-                Time = new DateTime(2017, 1, 1, 12, 30, 0)
+                Time = DateTime.SpecifyKind(new DateTime(2017, 1, 1, 12, 30, 0), DateTimeKind.Utc)
             };
         }
 
@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Cells
                 PassType = PassType.Rear,
                 RadioLatency = 100,
                 RMV = 110,
-                Time = new DateTime(2017, 1, 1, 12, 45, 0)
+                Time = DateTime.SpecifyKind(new DateTime(2017, 1, 1, 12, 45, 0), DateTimeKind.Utc)
             };
         }
 

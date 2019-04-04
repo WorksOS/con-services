@@ -80,7 +80,7 @@ namespace TAGFiles.Tests
       TAGFileConverter converter = DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", "2652J085SW--CASE CX160C--121101215100.tag");
       converter.Processor.OnGroundFlagSet.Should().Be(true);
 
-      DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Unspecified);
+      DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Utc);
       converter.Processor.OnGrounds.GetOnGroundAtDateTime(theTime).Should().Be(OnGroundState.YesMachineSoftware);
     }
 

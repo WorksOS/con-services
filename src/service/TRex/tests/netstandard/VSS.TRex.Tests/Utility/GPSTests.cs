@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Utility
         [Fact]
         public void DateTimeToGPSOriginTime_Invalid_Early()
         {
-            Action act = () => GPS.DateTimeToGPSOriginTime(new DateTime(1950, 1, 1), out _, out _);
+            Action act = () => GPS.DateTimeToGPSOriginTime(DateTime.SpecifyKind(new DateTime(1950, 1, 1), DateTimeKind.Utc), out _, out _);
             act.Should().Throw<ArgumentException>().WithMessage("Date to be converted to GPS date is before the GPS date origin*");
         }
 
