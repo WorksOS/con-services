@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests
 
       // Create a leaf to contain the mutable directory
       IServerLeafSubGrid mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable);
-      mutableLeaf.Directory.GlobalLatestCells = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewMutableWrapper();
+      mutableLeaf.Directory.GlobalLatestCells = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewMutableWrapper_Global();
 
       // Load the mutable stream of information
       mutableLeaf.Directory.CreateDefaultSegment();
@@ -89,7 +89,7 @@ namespace VSS.TRex.Tests
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, null, mutableLeaf, out MemoryStream immutableStream);
 
       IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Immutable);
-      immutableLeaf.Directory.GlobalLatestCells = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewImmutableWrapper();
+      immutableLeaf.Directory.GlobalLatestCells = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewImmutableWrapper_Global();
 
       immutableStream.Position = 0;
       immutableLeaf.LoadDirectoryFromStream(immutableStream);
@@ -117,8 +117,8 @@ namespace VSS.TRex.Tests
       // and compare the mutable and immutable versions for consistency.
 
       // Create a mutable segment to contain the passes
-      SubGridCellPassesDataSegment mutableSegment = new SubGridCellPassesDataSegment
-      (DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewMutableWrapper(),
+      var mutableSegment = new SubGridCellPassesDataSegment
+      (DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewMutableWrapper_Global(),
         DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>().NewMutableWrapper());
 
       // Load the mutable stream of information
@@ -129,7 +129,7 @@ namespace VSS.TRex.Tests
         // Add 5 passes to each cell
         for (int i = 0; i < 5; i++)
         {
-          CellPass cellPass = TestCellPass();
+          var cellPass = TestCellPass();
 
           // Adjust the height/time so there is a range of values
           cellPass.Time = cellPass.Time.AddMinutes(i);
@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests
       mutableSegment.SegmentInfo = new SubGridCellPassesDataSegmentInfo(DateTime.MinValue, DateTime.MaxValue, null);
 
       // Take a copy of the mutable cells and cell passes for later reference
-      SubGridCellLatestPassDataWrapper_NonStatic mutableLatest = (mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic);
+      var mutableLatest = mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
       CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState();
 
       MemoryStream mutableStream = new MemoryStream();
@@ -156,8 +156,8 @@ namespace VSS.TRex.Tests
       var mutabilityConverter = new MutabilityConverter();
       mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, null, mutableSegment, out MemoryStream immutableStream);
 
-      SubGridCellPassesDataSegment immutableSegment = new SubGridCellPassesDataSegment
-      (DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewImmutableWrapper(),
+      var immutableSegment = new SubGridCellPassesDataSegment
+      (DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>().NewImmutableWrapper_Segment(),
         DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>().NewImmutableWrapper());
 
       immutableStream.Position = 0;
@@ -167,19 +167,21 @@ namespace VSS.TRex.Tests
         immutableSegment.Read(reader, true, true);
       }
 
-      SubGridCellLatestPassDataWrapper_StaticCompressed immutableLatest = (immutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed);
-      ISubGridCellSegmentPassesDataWrapper immutablePasses = immutableSegment.PassesData;
-
-      // Check height of the latest cells match to tolerance given the compressed lossiness.
-      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      var immutableLatest = immutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed;
+      if (immutableLatest != null)
       {
-        double mutableValue = mutableLatest.PassData[x, y].Height;
-        double immutableValue = immutableLatest.ReadHeight(x, y);
+        // Check height of the latest cells match to tolerance given the compressed lossiness.
+        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+        {
+          double mutableValue = mutableLatest.PassData[x, y].Height;
+          double immutableValue = immutableLatest.ReadHeight(x, y);
 
-        double diff = immutableValue - mutableValue;
+          double diff = immutableValue - mutableValue;
 
-        Assert.True(Math.Abs(diff) <= 0.001, $"Cell height at ({x}, {y}) has unexpected value: {immutableValue} vs {mutableValue}, diff = {diff}");
-      });
+          Assert.True(Math.Abs(diff) <= 0.001,
+            $"Cell height at ({x}, {y}) has unexpected value: {immutableValue} vs {mutableValue}, diff = {diff}");
+        });
+      }
 
       // Check the heights specially to account for tolerance differences
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
