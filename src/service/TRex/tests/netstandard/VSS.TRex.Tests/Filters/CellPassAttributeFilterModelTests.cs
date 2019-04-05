@@ -1,9 +1,11 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.BinarizableSerialization;
 using VSS.TRex.Types;
 using Xunit;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Tests.Filters
 {
@@ -35,7 +37,7 @@ namespace VSS.TRex.Tests.Filters
         ElevationType = ElevationType.Highest,
         EndTime = DateTime.MaxValue,
         FilterTemperatureByLastPass = true,
-        GCSGuidanceMode = MachineAutomaticsMode.Manual,
+        GCSGuidanceMode = AutomaticsType.Manual,
         GPSAccuracyIsInclusive = true,
         GPSToleranceIsGreaterThan = true,
         HasCompactionMachinesOnlyFilter = true,

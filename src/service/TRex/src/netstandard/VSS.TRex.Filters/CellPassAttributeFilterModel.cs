@@ -1,10 +1,12 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Filters
 {
@@ -269,7 +271,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The machine automatics guidance mode to be in used to record cell passes that will meet the filter.
     /// </summary>
-    public MachineAutomaticsMode GCSGuidanceMode { get; set; } = MachineAutomaticsMode.Unknown;
+    public AutomaticsType GCSGuidanceMode { get; set; } = AutomaticsType.Unknown;
 
     /// <summary>
     /// ReturnEarliestFilteredCellPass details how we choose a cell pass from a set of filtered
@@ -457,7 +459,7 @@ namespace VSS.TRex.Filters
       GPSToleranceIsGreaterThan = reader.ReadBoolean();
 
       ElevationType = (ElevationType)reader.ReadByte();
-      GCSGuidanceMode = (MachineAutomaticsMode)reader.ReadByte();
+      GCSGuidanceMode = (AutomaticsType)reader.ReadByte();
 
       ReturnEarliestFilteredCellPass = reader.ReadBoolean();
 

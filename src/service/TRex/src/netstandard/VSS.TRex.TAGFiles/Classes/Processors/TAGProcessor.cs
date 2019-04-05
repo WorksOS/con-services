@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
@@ -351,9 +351,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       MachineGear Gear = MachineGear.Null;
 
-      if (Value == TRex.Types.MachineDirection.Forward)
+      if (Value == MachineDirection.Forward)
         Gear = MachineGear.Forward;
-      else if (Value == TRex.Types.MachineDirection.Reverse)
+      else if (Value == MachineDirection.Reverse)
         Gear = MachineGear.Reverse;
 
       if (DataTime != DateTime.MinValue && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
@@ -518,7 +518,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       //}
     }
 
-    protected override void SetAutomaticsMode(MachineAutomaticsMode Value)
+    protected override void SetAutomaticsMode(AutomaticsType Value)
     {
       base.SetAutomaticsMode(Value);
 

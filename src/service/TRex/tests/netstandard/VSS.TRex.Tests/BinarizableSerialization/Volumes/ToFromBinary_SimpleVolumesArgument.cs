@@ -4,6 +4,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using Xunit;
 

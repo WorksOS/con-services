@@ -6,13 +6,13 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Queues;
-using VSS.TRex.Machines;
 using VSS.TRex.Types;
 using static VSS.TRex.Gateway.Common.Converters.AutoMapperUtility;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Gateway.Common.Converters.Profiles
 {
@@ -48,23 +48,29 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           HasDesignFilter = src.OnMachineDesignId.HasValue,
           DesignNameID = (int) (src.OnMachineDesignId ?? Consts.kNoDesignNameID),
 
-          HasElevationMappingModeFilter = false, // todoJeannie
+          HasVibeStateFilter = src.VibeStateOn.HasValue && src.VibeStateOn.Value,
+          HasLayerStateFilter = src.LayerType.HasValue,
+          LayerState = src.LayerType.HasValue ? LayerState.On : LayerState.Off,
+
+          HasElevationMappingModeFilter = false, // todoJeannie help, does this have something to do with LayerType/Number?
 
           HasElevationTypeFilter = src.ReturnEarliest.HasValue,
           ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
-          ElevationType = returnEarliestFilteredCellPass ? Types.ElevationType.First : Types.ElevationType.Last,
+          ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
 
-          HasGCSGuidanceModeFilter = false, // todoJeannie 
-          HasGPSAccuracyFilter = false, // todoJeannie 
-          HasGPSToleranceFilter = false, // todoJeannie 
-          HasPositioningTechFilter = false, // todoJeannie 
+          HasGCSGuidanceModeFilter = src.AutomaticsType.HasValue,
+          GCSGuidanceMode = src.AutomaticsType ?? AutomaticsType.Unknown,
+
+          HasGPSAccuracyFilter = false,     // todoJeannie this filter is not set-able in FilterResult (GPSAccuracy)
+          HasGPSToleranceFilter = false,    // todoJeannie this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
+          HasPositioningTechFilter = false, // todoJeannie this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
 
           HasLayerIDFilter = src.LayerNumber.HasValue,
           LayerID = (int) (src.LayerNumber ?? CellPassConsts.NullLayerID),
 
-          HasElevationRangeFilter = false, // todoJeannie 
-          HasPassTypeFilter = false, // todoJeannie 
-          HasCompactionMachinesOnlyFilter = false, // todoJeannie 
+          HasElevationRangeFilter = false,  // todoJeannie help, does this have something to do with LayerType/Number?
+          HasPassTypeFilter = false,        // todoJeannie this filter is not set-able in FilterResult (bladeOnGround)
+          HasCompactionMachinesOnlyFilter = false, // todoJeannie this filter is not set-able in FilterResult (compactorDataOnly)
 
           HasTemperatureRangeFilter = src.TemperatureRangeMin.HasValue && src.TemperatureRangeMax.HasValue,
           MaterialTemperatureMin = (ushort) (src.TemperatureRangeMin ?? CellPassConsts.NullMaterialTemperatureValue),

@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Common.Types;
+﻿using VSS.MasterData.Models.Models;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 
@@ -48,7 +49,7 @@ namespace VSS.TRex.Events.Interfaces
     /// <summary>
     /// Records the state of the automatic machine control on the machine at the time measurements were being made.
     /// </summary>
-    IProductionEvents<MachineAutomaticsMode> MachineAutomaticsStateEvents { get; }
+    IProductionEvents<AutomaticsType> MachineAutomaticsStateEvents { get; }
 
     /// <summary>
     /// Records the state of the selected machine gear at the time measurements were being made

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
