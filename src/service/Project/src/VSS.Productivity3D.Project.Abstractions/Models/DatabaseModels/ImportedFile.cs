@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
              && otherImportedFile.MaxZoomLevel == MaxZoomLevel
              && otherImportedFile.ImportedFileHistory == ImportedFileHistory
              && otherImportedFile.ParentUid == ParentUid 
-             && otherImportedFile.Offset == Offset;
+             && Math.Round(otherImportedFile.Offset, 3) == Math.Round(Offset, 3);
     }
 
     public override int GetHashCode()
