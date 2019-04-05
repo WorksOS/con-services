@@ -2,6 +2,8 @@
 using System.Linq;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Geometry;
@@ -14,6 +16,8 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
   /// </summary>
   public class CoordinateServiceUtility : ICoordinateServiceUtility
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CoordinateServiceUtility>();
+
     /// <summary>
     /// Converts XYZ to LLH
     /// </summary>
@@ -44,7 +48,11 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
         }
       }
       else
+      {
+        Log.LogError(
+          $"{nameof(CoordinateServiceUtility)} Failed to convert Coordinates. Error  {RequestErrorStatus.OK} Coords: {JsonConvert.SerializeObject(LLHCoords.Length)}");
         return ContractExecutionStatesEnum.InternalProcessingError;
+      }
 
       return ContractExecutionStatesEnum.ExecutedSuccessfully;
     }
