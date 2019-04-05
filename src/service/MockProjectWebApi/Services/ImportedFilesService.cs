@@ -116,6 +116,34 @@ namespace MockProjectWebApi.Services
             IsActivated = true,
             MinZoomLevel = 16,
             MaxZoomLevel = 19
+          },
+          new FileData
+          {
+            Name = "Section 1 IFC Rev J (1.5)",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "ImportFileProxyTest",
+            ImportedFileType = ImportedFileType.ReferenceSurface,
+            ImportedFileUid = "5642ec46-7aa4-4056-8785-c9534a06f54f",
+            LegacyFileId = 116,
+            IsActivated = true,
+            MinZoomLevel = 16,
+            MaxZoomLevel = 19,
+            ParentUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
+            Offset = 1.5
+          },
+          new FileData
+          {
+            Name = "Section 1 IFC Rev J (-2.5)",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "ImportFileProxyTest",
+            ImportedFileType = ImportedFileType.ReferenceSurface,
+            ImportedFileUid = "3bb94403-9d42-46ae-85e0-9261c8682a0d",
+            LegacyFileId = 117,
+            IsActivated = true,
+            MinZoomLevel = 16,
+            MaxZoomLevel = 19,
+            ParentUid = "eb798b46-c927-4fdd-b998-b11011ee7365",
+            Offset = -2.5
           }
       };
 
