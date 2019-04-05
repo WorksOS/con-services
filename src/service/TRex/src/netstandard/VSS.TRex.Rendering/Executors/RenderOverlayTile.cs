@@ -446,6 +446,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       Log.LogInformation($"After conversion NEECoords are {string.Concat(NEECoords)}");
 
+      // The coordintates below are for debuging purposes...
       NEECoords[0].X = 2727.791186;
       NEECoords[0].Y = 1156.222554;
 
