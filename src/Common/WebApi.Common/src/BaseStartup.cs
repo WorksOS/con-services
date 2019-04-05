@@ -5,7 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using App.Metrics;
+using App.Metrics.Formatters;
 using App.Metrics.Formatters.InfluxDB;
+using App.Metrics.Formatters.Prometheus;
 using App.Metrics.Reporting;
 using log4net;
 using log4net.Config;
@@ -149,7 +151,8 @@ namespace VSS.WebApi.Common
           options.ReportingEnabled = true;
           options.AddServerTag();
           options.AddAppTag(appName: ServiceName);
-        });
+        })
+        .OutputMetrics.AsPrometheusProtobuf(); 
 
       //if (influxUrl.Type == ServiceResultType.InternalKubernetes)
       {
@@ -173,7 +176,10 @@ namespace VSS.WebApi.Common
 
       services.AddMetrics(metrics);
       services.AddMetricsTrackingMiddleware();
-      services.AddMetricsEndpoints();
+      services.AddMetricsEndpoints(options =>
+      {
+        options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
+      });
 
       Services = services;
 
