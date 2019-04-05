@@ -101,7 +101,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellPassCount(out var siteModel, 0.5f);
-      siteModel.MachinesTargetValues[0].TargetPassCountStateEvents.PutValueAtDate(DateTime.MinValue, 10);
+      siteModel.MachinesTargetValues[0].TargetPassCountStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 10);
 
       var operation = new PassCountStatisticsOperation();
 

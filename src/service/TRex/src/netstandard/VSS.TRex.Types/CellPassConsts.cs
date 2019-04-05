@@ -44,7 +44,7 @@ namespace VSS.TRex.Common.CellPasses
     //public const long NullMachineID = 0;
     public const short NullInternalSiteModelMachineIndex = short.MinValue;
 
-    public static DateTime NullTime = DateTime.MinValue;
+    public static DateTime NullTime = Consts.MIN_DATETIME_AS_UTC;
 
     /// <summary>
     /// Null GPSMode value

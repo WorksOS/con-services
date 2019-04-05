@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces;
@@ -23,7 +22,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     public void NewInstance()
     {
       var factory = new SurveyedSurfaceFactory();
-      var instance = factory.NewInstance(Guid.NewGuid(), DesignDescriptor.Null(), DateTime.MinValue, BoundingWorldExtent3D.Null());
+      var instance = factory.NewInstance(Guid.NewGuid(), DesignDescriptor.Null(), Consts.MIN_DATETIME_AS_UTC, BoundingWorldExtent3D.Null());
 
       instance.Should().NotBeNull();
       instance.Should().BeAssignableTo<ISurveyedSurface>();

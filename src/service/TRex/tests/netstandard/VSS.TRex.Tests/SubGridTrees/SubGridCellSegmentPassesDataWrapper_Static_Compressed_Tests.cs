@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                 PassType = PassType.Track,
                 RadioLatency = 109,
                 RMV = 110,
-                Time = new DateTime(2000, 1, 2, 3, 4, 5)
+                Time = DateTime.SpecifyKind(new DateTime(2000, 1, 2, 3, 4, 5), DateTimeKind.Utc)
             };
         }
 

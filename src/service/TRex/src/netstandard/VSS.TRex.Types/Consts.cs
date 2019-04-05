@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Common
+﻿using System;
+
+namespace VSS.TRex.Common
 {
   public static class Consts
   {
@@ -12,6 +14,9 @@
     public const double MAX_ELEVATION = 1e10;
 
     public const double NullReal = 1E308;
+
+    public static readonly DateTime MIN_DATETIME_AS_UTC = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+    public static readonly DateTime MAX_DATETIME_AS_UTC = DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
 
     /// <summary>
     /// IEEE single/float null value

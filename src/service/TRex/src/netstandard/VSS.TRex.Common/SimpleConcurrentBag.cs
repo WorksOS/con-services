@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace VSS.TRex.Common
 {
@@ -6,6 +7,7 @@ namespace VSS.TRex.Common
   /// Provides a very simple implementation of a concurrent bag that holds a collection of class instances. It provides no
   /// ordering guarantees, though this implementation will function semantically as a LIFO queue.
   /// </summary>
+  [ExcludeFromCodeCoverage] // Not currently used - may be used for sub grid recycling in the sub grid factory in future
   public class SimpleConcurrentBag<T> where T : class
   {
     /// <summary>

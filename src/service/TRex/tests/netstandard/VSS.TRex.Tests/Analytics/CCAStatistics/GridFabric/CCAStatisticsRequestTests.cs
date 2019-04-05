@@ -5,6 +5,7 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Analytics.CCAStatistics;
 using VSS.TRex.Analytics.CCAStatistics.GridFabric;
 using VSS.TRex.Cells;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -36,7 +37,7 @@ namespace VSS.TRex.Tests.Analytics.CCAStatistics.GridFabric
 
       siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCAStateEvents.PutValueAtDate(DateTime.MinValue, 5);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCAStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 5);
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass

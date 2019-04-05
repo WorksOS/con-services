@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Gateway.Common.Helpers;
@@ -35,8 +36,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     public void CSVExportHelper_EndDateOnly()
     {
       var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
-        new DateTime(2018, 1, 10),
-        new DateTime(2019, 2, 11), "","",
+        DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
+        DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "","",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
       var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
@@ -58,7 +59,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     public void CSVExportHelper_DateRangeFromFilter()
     {
       var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
-        new DateTime(2019, 1, 10),
+        DateTime.SpecifyKind(new DateTime(2019, 1, 10), DateTimeKind.Utc),
         null, "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
@@ -112,8 +113,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       
       var startEndDate = CSVExportHelper.GetDateRange(siteModel, null);
-      startEndDate.startUtc.Should().Be(DateTime.MaxValue);
-      startEndDate.endUtc.Should().Be(DateTime.MinValue);
+      startEndDate.startUtc.Should().Be(Consts.MAX_DATETIME_AS_UTC);
+      startEndDate.endUtc.Should().Be(Consts.MIN_DATETIME_AS_UTC);
     }
 
     [Fact]

@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     {
       CellXOffset = 0;                                                             
       CellYOffset = 0;
-      LastPassTime = DateTime.MinValue;
+      LastPassTime = Consts.MIN_DATETIME_AS_UTC;
       PassCount = 0;
       LastPassValidRadioLatency = CellPassConsts.NullRadioLatency;
       EventDesignNameID = Consts.kNoDesignNameID;

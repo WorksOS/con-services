@@ -806,7 +806,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
 
       // Iterate through all the vertices adding them to the surface
-      DateTime StartTime = DateTime.Now;
+      DateTime StartTime = DateTime.UtcNow;
       surfaceWalkOverflowCount = 0;
 
       // Don't read the 4 vertices we added for the bounding rectangle tris
@@ -815,7 +815,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         if (!IncorporateCoord(TIN.Vertices[I], ref CurrentTri))
           return false;
 
-      DateTime FinishTime = DateTime.Now;
+      DateTime FinishTime = DateTime.UtcNow;
 
       Log.LogInformation($"Coordinate incorporation took {FinishTime - StartTime} to process {TIN.Vertices.Count} vertices into {TIN.Triangles.Count} triangles " +
                          $"at a rate of {TIN.Vertices.Count / ((FinishTime - StartTime).TotalSeconds)} vertices/sec, encountering {surfaceWalkOverflowCount} surface walk overflows");
