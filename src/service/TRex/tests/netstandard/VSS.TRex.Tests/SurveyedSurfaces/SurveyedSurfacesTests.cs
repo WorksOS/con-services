@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -120,7 +121,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
 
       var filtered = new TRex.SurveyedSurfaces.SurveyedSurfaces();
 
-      ss.FilterSurveyedSurfaceDetails(false, DateTime.MinValue, DateTime.MinValue, true, filtered, new Guid[0]);
+      ss.FilterSurveyedSurfaceDetails(false, Consts.MIN_DATETIME_AS_UTC, Consts.MIN_DATETIME_AS_UTC, true, filtered, new Guid[0]);
 
       filtered.Count.Should().Be(0);
     }
@@ -133,7 +134,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
 
       var filtered = new TRex.SurveyedSurfaces.SurveyedSurfaces();
 
-      ss.FilterSurveyedSurfaceDetails(false, DateTime.MinValue, DateTime.MinValue, false, filtered, new Guid[0]);
+      ss.FilterSurveyedSurfaceDetails(false, Consts.MIN_DATETIME_AS_UTC, Consts.MIN_DATETIME_AS_UTC, false, filtered, new Guid[0]);
 
       filtered.Should().BeEquivalentTo(ss);
     }
@@ -146,7 +147,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
 
       var filtered = new TRex.SurveyedSurfaces.SurveyedSurfaces();
 
-      ss.FilterSurveyedSurfaceDetails(true, DateTime.MinValue, DateTime.MaxValue, false, filtered, new Guid[0]);
+      ss.FilterSurveyedSurfaceDetails(true, Consts.MIN_DATETIME_AS_UTC, Consts.MAX_DATETIME_AS_UTC, false, filtered, new Guid[0]);
 
       filtered.Should().BeEquivalentTo(ss);
     }
@@ -175,7 +176,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var filtered = new TRex.SurveyedSurfaces.SurveyedSurfaces();
 
       // Exclude all surveyed surfaces after first two
-      ss.FilterSurveyedSurfaceDetails(true, DateTime.MinValue, DateTime.MaxValue, false, filtered, 
+      ss.FilterSurveyedSurfaceDetails(true, Consts.MIN_DATETIME_AS_UTC, Consts.MAX_DATETIME_AS_UTC, false, filtered, 
         ss.Skip(2).Select(x => x.ID).ToArray());
 
       filtered.Count.Should().Be(2);
@@ -221,7 +222,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var filtered = new TRex.SurveyedSurfaces.SurveyedSurfaces();
 
       // Include the first two surveyed surfaces in the list, and exclude the last one in the surveyed surfaces list
-      ss.FilterSurveyedSurfaceDetails(false, DateTime.MinValue, DateTime.MinValue, false, filtered, new[] { ss.Last().ID });
+      ss.FilterSurveyedSurfaceDetails(false, Consts.MIN_DATETIME_AS_UTC, Consts.MIN_DATETIME_AS_UTC, false, filtered, new[] { ss.Last().ID });
 
       filtered.Count.Should().Be(ss.Count - 1);
       filtered.Should().BeEquivalentTo(ss.Take(ss.Count - 1));

@@ -54,10 +54,10 @@ namespace TAGFiles.Tests
           var V11 = new XYZ(V11x, V11y, V11z);
 
           // Create four corner vertices for time of the processing context (with two epochs three seconds apart
-          var T00 = new XYZ(V00x, V00y, new DateTime(2000, 1, 1, 1, 1, 0).ToOADate());
-          var T01 = new XYZ(V01x, V01y, new DateTime(2000, 1, 1, 1, 1, 0).ToOADate());
-          var T10 = new XYZ(V10x, V10y, new DateTime(2000, 1, 1, 1, 1, 3).ToOADate());
-          var T11 = new XYZ(V11x, V11y, new DateTime(2000, 1, 1, 1, 1, 3).ToOADate());
+          var T00 = new XYZ(V00x, V00y, new DateTime(2000, 1, 1, 1, 1, 0, 0, DateTimeKind.Utc).ToOADate());
+          var T01 = new XYZ(V01x, V01y, new DateTime(2000, 1, 1, 1, 1, 0, 0, DateTimeKind.Utc).ToOADate());
+          var T10 = new XYZ(V10x, V10y, new DateTime(2000, 1, 1, 1, 1, 3, 0, DateTimeKind.Utc).ToOADate());
+          var T11 = new XYZ(V11x, V11y, new DateTime(2000, 1, 1, 1, 1, 3, 0, DateTimeKind.Utc).ToOADate());
 
           // Create the height and time interpolation triangles
           HeightInterpolator1 = new SimpleTriangle(V00, V01, V10);

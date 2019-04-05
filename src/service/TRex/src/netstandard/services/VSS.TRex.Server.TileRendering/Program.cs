@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Tpaas.Client.Clients;
+using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.CoordinateSystems;
@@ -16,8 +18,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.HttpClients.Clients;
-using VSS.TRex.HttpClients.RequestHandlers;
+using VSS.TRex.HttpClients;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -99,12 +100,12 @@ namespace VSS.TRex.Server.TileRendering
 
         // Setup dependencies for communication with the Trimble Coordinate Service.
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
-        .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>())
+        .Add(x => x.AddTransient<TRexTPaaSAuthenticatedRequestHandler>())
         .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
         .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
         .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
-          .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>()
+          .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Complete();
     }

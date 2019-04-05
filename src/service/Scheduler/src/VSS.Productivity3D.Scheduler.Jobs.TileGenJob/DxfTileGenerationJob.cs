@@ -21,9 +21,11 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
   /// <summary>
   /// Job to generate DXF tiles using Pegasus.
   /// </summary>
-  public class DxfTileGenerationJob : IVSSJob
+  public class DxfTileGenerationJob : IJob
   {
-    public static Guid VSSJobUid = Guid.Parse("5f3eed28-58e8-451e-8459-5f5a39d5c3b6");
+
+    public static Guid VSSJOB_UID = Guid.Parse("5f3eed28-58e8-451e-8459-5f5a39d5c3b6");
+    public Guid VSSJobUid => VSSJOB_UID;
 
     private readonly IPegasusClient pegasusClient;
     private readonly ITPaaSApplicationAuthentication authentication;

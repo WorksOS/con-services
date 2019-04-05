@@ -22,13 +22,13 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public bool Dirty { get; set; }
 
-    public DateTime StartTime = DateTime.MinValue;
-    public DateTime EndTime = DateTime.MaxValue;
+    public DateTime StartTime = Consts.MIN_DATETIME_AS_UTC;
+    public DateTime EndTime = Consts.MAX_DATETIME_AS_UTC;
 
     public IServerLeafSubGrid Owner { get; set; }
 
-    public bool HasAllPasses { get; set; }
-    public bool HasLatestData { get; set; }
+    public bool HasAllPasses => PassesData != null;
+    public bool HasLatestData => LatestPasses != null;
 
     public ISubGridCellPassesDataSegmentInfo SegmentInfo { get; set; }
 
@@ -37,11 +37,8 @@ namespace VSS.TRex.SubGridTrees.Server
     public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
 
     private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
-
     private readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
-
     private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
-
     private readonly bool _itemsPersistedViaDataPersistorToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
 
     private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
@@ -57,10 +54,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public SubGridCellPassesDataSegment(ISubGridCellLatestPassDataWrapper latestPasses, ISubGridCellSegmentPassesDataWrapper passesData)
     {
       LatestPasses = latestPasses;
-      HasLatestData = LatestPasses != null;
-
       PassesData = passesData;
-      HasAllPasses = PassesData != null;
     }
 
     /// <summary>
@@ -74,8 +68,6 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       if (PassesData == null)
       {
-        HasAllPasses = true;
-
         PassesData = Owner.IsMutable
           ? subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper()
           : subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
@@ -86,29 +78,26 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       if (LatestPasses == null)
       {
-        HasLatestData = true;
         LatestPasses = Owner.IsMutable
-          ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper()
-          : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper();
+          ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
+          : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Global();
       }
     }
 
     public void DeAllocateFullPassStacks()
     {
-      HasAllPasses = false;
       PassesData = null;
     }
 
     public void DeAllocateLatestPassGrid()
     {
-      HasLatestData = false;
       LatestPasses = null;
     }
 
     public bool SavePayloadToStream(BinaryWriter writer)
     {
-      if (!(HasAllPasses && HasLatestData && PassesData != null && LatestPasses != null))
-        throw new TRexSubGridIOException("Leaf sub grids being written to persistent store must be fully populated with pass stacks and latest pass grid");
+      if (!HasAllPasses)
+        throw new TRexSubGridIOException("Leaf sub grids being written to persistent store must be fully populated with pass stacks");
 
       int CellStacksOffset = -1;
 
@@ -116,7 +105,9 @@ namespace VSS.TRex.SubGridTrees.Server
       long CellStacksOffsetOffset = writer.BaseStream.Position;
       writer.Write(CellStacksOffset);
 
-      LatestPasses.Write(writer, new byte[10000]);
+      // Segments may not have any defined latest pass information
+      writer.Write(LatestPasses != null);
+      LatestPasses?.Write(writer, new byte[10000]);
 
       CellStacksOffset = (int) writer.BaseStream.Position;
 
@@ -142,13 +133,10 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (HasLatestData && loadLatestData)
       {
-        if (LatestPasses == null)
-        {
-          Log.LogError("Cell latest pass store not instantiated in LoadPayloadFromStream_v2p0");
-          return false;
-        }
-
-        LatestPasses.Read(reader, new byte[10000]);
+        if (reader.ReadBoolean())
+          LatestPasses.Read(reader, new byte[10000]);
+        else
+          LatestPasses = null;
       }
 
       if (HasAllPasses && loadAllPasses)
@@ -195,7 +183,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Write(BinaryWriter writer)
     {
       // Write the version to the stream
-      SubGridStreamHeader Header = new SubGridStreamHeader()
+      SubGridStreamHeader Header = new SubGridStreamHeader
       {
         Identifier = SubGridStreamHeader.kICServerSubGridLeafFileMoniker,
         Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridSegmentFile,

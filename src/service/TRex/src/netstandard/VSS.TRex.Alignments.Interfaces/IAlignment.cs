@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Common.Types;

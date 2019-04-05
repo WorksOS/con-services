@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.Scheduler.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public virtual void Validate()
     {
       if (JobUid == Guid.Empty)
       {

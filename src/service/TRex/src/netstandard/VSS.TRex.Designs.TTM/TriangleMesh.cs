@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.Geometry;
 
+
 namespace VSS.TRex.Designs.TTM
 {
   public class TriangleMesh

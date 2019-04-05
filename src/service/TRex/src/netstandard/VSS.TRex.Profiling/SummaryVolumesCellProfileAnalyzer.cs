@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -84,9 +85,9 @@ namespace VSS.TRex.Profiling
 
         // Determine if intermediary filter/surface behaviour is required to support summary volumes
         IntermediaryFilterRequired = VolumeType == VolumeComputationType.Between2Filters &&
-                                          BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == DateTime.MinValue && // 'From' has As-At Time filter
+                                          BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC && // 'From' has As-At Time filter
                                           !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass && // Want latest cell pass in 'from'
-                                          TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != DateTime.MinValue && // 'To' has time-range filter with latest
+                                          TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC && // 'To' has time-range filter with latest
                                           !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass; // Want latest cell pass in 'to'
 
         if (IntermediaryFilterRequired)

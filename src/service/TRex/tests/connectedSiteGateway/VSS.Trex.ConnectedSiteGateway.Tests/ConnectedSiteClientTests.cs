@@ -7,8 +7,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
+using VSS.TRex.ConnectedSite.Gateway.Models;
 using VSS.TRex.ConnectedSite.Gateway.WebApi;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Models;
 using VSS.TRex.Types;
 using Xunit;
 

@@ -4,6 +4,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
+using VSS.TRex.Machines;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -129,7 +130,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_Time()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("Time", x => { x.HasTimeFilter = true; x.StartTime = new DateTime(2000, 1, 1); });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("Time", x => { x.HasTimeFilter = true; x.StartTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc); });
         }
 
         [Fact()]
@@ -398,6 +399,7 @@ namespace VSS.TRex.Tests.Filters
           filter1.MaterialTemperatureMax = 30;
           filter1.HasTemperatureRangeFilter = true;
           filter1.FilterTemperatureByLastPass = true;
+          filter1.MachinesList = new Guid[]{Guid.NewGuid(), Guid.NewGuid(), };
 
           //Assert.Equal(-1, filter1.CompareTo(filter2));
           filter2.Assign(filter1);
@@ -480,10 +482,14 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearTime()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Time",
-                                                            x => { x.HasTimeFilter = true; x.StartTime = new DateTime(2000, 1, 1); x.EndTime = new DateTime(2000, 1, 2); },
+                                                            x => { x.HasTimeFilter = true;
+                                                                   x.StartTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc);
+                                                                   x.EndTime = DateTime.SpecifyKind(new DateTime(2000, 1, 2), DateTimeKind.Utc); },
                                                             x => x.HasTimeFilter,
                                                             x => { x.ClearTime(); },
-                                                            x => !x.HasTimeFilter && x.StartTime == DateTime.MinValue && x.EndTime == DateTime.MaxValue);
+                                                            x => !x.HasTimeFilter && 
+                                                                  x.StartTime == TRex.Common.Consts.MIN_DATETIME_AS_UTC 
+                                                                  && x.EndTime == TRex.Common.Consts.MAX_DATETIME_AS_UTC);
         }
 
         [Fact(Skip = "Not Implemented")]
@@ -582,7 +588,7 @@ namespace VSS.TRex.Tests.Filters
             filter.HasTimeFilter = true;
             Assert.False(filter.IsTimeRangeFilter(), "Time range set");
 
-            filter.StartTime = new DateTime(2000, 1, 1);
+            filter.StartTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc);
             Assert.True(filter.IsTimeRangeFilter(), "Time range not set");
         }
 
@@ -593,29 +599,59 @@ namespace VSS.TRex.Tests.Filters
 
         }
 
-        /* Possible obsolete functioality
-        [Fact]
-        public void Test_CellPassAttributeFilter_MachineIDListsComparison()
+        [Fact(Skip = "Not Implemented")]
+        public void Test_CellPassAttributeFilter_GetMachineIDsSet()
         {
-          short[] list1 = null;
-          short[] list2 = {1, 2};
-          short[] list3 = {2, 3};
-          short[] list4 = {2, 3};
-     
-          CellPassAttributeFilter.MachineIDListsComparison(list1, list1).Should().Be(0);
-          CellPassAttributeFilter.MachineIDListsComparison(list1, list2).Should().Be(0);
-          CellPassAttributeFilter.MachineIDListsComparison(list2, list1).Should().Be(0);
-     
-          CellPassAttributeFilter.MachineIDListsComparison(list2, list3).Should().Be(-1);
-          CellPassAttributeFilter.MachineIDListsComparison(list3, list2).Should().Be(1);
-          CellPassAttributeFilter.MachineIDListsComparison(list3, list4).Should().Be(1);
+          var machineID1 = Guid.NewGuid();
+          var machineID2 = Guid.NewGuid();
+          var siteModel = new TRex.SiteModels.SiteModel();
+          siteModel.Machines.Add(new Machine
+          {
+            ID = machineID1,
+            InternalSiteModelMachineIndex = 0
+          });
+          siteModel.Machines.Add(new Machine
+          {
+            ID = machineID2,
+            InternalSiteModelMachineIndex = 5
+          });
+
+          var data = new FilterSet(
+            new CombinedFilter
+            {
+              AttributeFilter =
+              {
+               SiteModel = siteModel,
+               MachinesList = new Guid[]{machineID1, machineID2}
+              }
+            });
+      Assert.True(false);
+
         }
-        */
+        
+    /* Possible obsolete functioality
+    [Fact]
+    public void Test_CellPassAttributeFilter_MachineIDListsComparison()
+    {
+      short[] list1 = null;
+      short[] list2 = {1, 2};
+      short[] list3 = {2, 3};
+      short[] list4 = {2, 3};
 
-        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Tests involving cell passes >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      CellPassAttributeFilter.MachineIDListsComparison(list1, list1).Should().Be(0);
+      CellPassAttributeFilter.MachineIDListsComparison(list1, list2).Should().Be(0);
+      CellPassAttributeFilter.MachineIDListsComparison(list2, list1).Should().Be(0);
 
-
-
+      CellPassAttributeFilter.MachineIDListsComparison(list2, list3).Should().Be(-1);
+      CellPassAttributeFilter.MachineIDListsComparison(list3, list2).Should().Be(1);
+      CellPassAttributeFilter.MachineIDListsComparison(list3, list4).Should().Be(1);
     }
+    */
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Tests involving cell passes >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+  }
 }
 

@@ -43,7 +43,6 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Server.PSNode
 {

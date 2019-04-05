@@ -91,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
           var jobRequest = new JobRequest
           {
-            JobUid = DxfTileGenerationJob.VSSJobUid,
+            JobUid = DxfTileGenerationJob.VSSJOB_UID,
             RunParameters = new DxfTileGenerationRequest
             {
               CustomerUid = Guid.Parse(customerUid),

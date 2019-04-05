@@ -6,6 +6,7 @@ using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;

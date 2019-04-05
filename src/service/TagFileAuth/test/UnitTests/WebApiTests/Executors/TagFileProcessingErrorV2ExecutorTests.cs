@@ -188,7 +188,7 @@ namespace WebApiTests.Executors
       tagFileProcessingErrorRequest.Validate();
      
       var assetRepo = new Mock<IAssetRepository>();
-      var asset = new Asset() { LegacyAssetID = legacyAssetId.Value, AssetUID = assetUid, Name = "theAssetName", SerialNumber = "assetSerialNumber", AssetType = "SNM940", OwningCustomerUID = customerUid };
+      var asset = new Asset() { LegacyAssetID = legacyAssetId.Value, AssetUID = assetUid, Name = "theAssetName", SerialNumber = "AssetSerialNumber", AssetType = "SNM940", OwningCustomerUID = customerUid };
       assetRepo.Setup(c => c.GetAsset(It.IsAny<long>())).ReturnsAsync(asset);
 
       var producer = new Mock<IKafka>();

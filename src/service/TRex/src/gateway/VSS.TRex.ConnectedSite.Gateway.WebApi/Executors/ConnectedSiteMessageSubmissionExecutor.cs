@@ -7,9 +7,10 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common.Types;
+using VSS.TRex.ConnectedSite.Gateway.Abstractions;
+using VSS.TRex.ConnectedSite.Gateway.Models;
 using VSS.TRex.ConnectedSite.Gateway.WebApi;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Models;
 using VSS.TRex.ConnectedSite.Gateway.WebApi.ResultHandling;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
@@ -80,15 +81,15 @@ namespace VSS.TRex.ConnectedSite.Gateway.Executors
             switch (request.MessageType)
             {
               case ConnectedSiteMessageType.L1PositionMessage:
-                message = new L1ConnectedSiteMessage(tagDetails);
+                message = ConnectedSiteMessageFactory.BuildL1ConnectedSiteMessage(tagDetails);
                 break;
               case ConnectedSiteMessageType.L2StatusMessage:
-                message = new L2ConnectedSiteMessage(tagDetails);
+                message = ConnectedSiteMessageFactory.BuildL2ConnectedSiteMessage(tagDetails);
                 break;
               default:
                 throw new NotImplementedException("Unknown ConnectedSite Message Type");
             }
-            if (!(message.PlatformType == Common.Types.MachineControlPlatformType.EC520 
+            if (!(message.PlatformType == MachineControlPlatformType.EC520 
               || message.PlatformType == Common.Types.MachineControlPlatformType.UNKNOWN))
             {
               var response = await client.PostMessage(message);

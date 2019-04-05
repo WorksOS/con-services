@@ -174,7 +174,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref siteModel, 1.0f, asAtDate.AddMinutes(1));
 
       var filteredSurveyedSurfaces = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-      siteModel.SurveyedSurfaces.FilterSurveyedSurfaceDetails(false, DateTime.MinValue, DateTime.MinValue, 
+      siteModel.SurveyedSurfaces.FilterSurveyedSurfaceDetails(false, Consts.MIN_DATETIME_AS_UTC, Consts.MIN_DATETIME_AS_UTC, 
         false, filteredSurveyedSurfaces, new Guid[0]);
 
       var req = new SurfaceElevationPatchRequest();

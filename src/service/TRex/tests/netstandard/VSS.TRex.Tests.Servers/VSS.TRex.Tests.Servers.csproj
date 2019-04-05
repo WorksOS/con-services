@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
   </ItemGroup>
 

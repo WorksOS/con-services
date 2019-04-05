@@ -10,10 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Tpaas.Client\src\VSS.Tpaas.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
@@ -21,6 +22,7 @@
     <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

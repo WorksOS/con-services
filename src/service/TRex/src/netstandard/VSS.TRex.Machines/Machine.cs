@@ -6,6 +6,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Designs.TTM.Optimised;
 
 namespace VSS.TRex.Machines
 {
@@ -32,11 +33,11 @@ namespace VSS.TRex.Machines
 
     public bool IsJohnDoeMachine { get; set; }
 
-    public double LastKnownX { get; set; } = Consts.NullDouble;
+    public double LastKnownX { get; set; } = Common.Consts.NullDouble;
 
-    public double LastKnownY { get; set; } = Consts.NullDouble;
+    public double LastKnownY { get; set; } = Common.Consts.NullDouble;
 
-    public DateTime LastKnownPositionTimeStamp { get; set; } = DateTime.MinValue;
+    public DateTime LastKnownPositionTimeStamp { get; set; } = Common.Consts.MIN_DATETIME_AS_UTC;
 
     public string LastKnownDesignName { get; set; } = string.Empty;
 

@@ -155,6 +155,7 @@
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj">
       <Private>true</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
       <Private>true</Private>
     </ProjectReference>

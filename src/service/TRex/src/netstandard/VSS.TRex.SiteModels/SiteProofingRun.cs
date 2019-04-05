@@ -2,6 +2,8 @@
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Compression;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 
@@ -15,13 +17,33 @@ namespace VSS.TRex.SiteModels
   {
     private const byte VERSION_NUMBER = 1;
 
-    public short MachineID { get; set; }
+    public short MachineID { get; set; } = CellPassConsts.NullInternalSiteModelMachineIndex;
 
     public string Name { get; set; } = string.Empty;
 
-    public DateTime StartTime { get; set; }
+    private DateTime _startTime = Consts.MIN_DATETIME_AS_UTC;
 
-    public DateTime EndTime { get; set; }
+    public DateTime StartTime { get => _startTime;
+      set
+      {
+        if (value.Kind != DateTimeKind.Utc)
+          throw new ArgumentException("Proofing run start time must be a UTC date time", nameof(StartTime));
+        _startTime = value;
+      }
+    }
+
+    private DateTime _endTime = Consts.MIN_DATETIME_AS_UTC;
+
+    public DateTime EndTime
+    {
+      get => _endTime;
+      set
+      {
+        if (value.Kind != DateTimeKind.Utc)
+          throw new ArgumentException("Proofing run end time must be a UTC date time", nameof(EndTime));
+        _endTime = value;
+      }
+    }
 
     public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 

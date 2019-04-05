@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;

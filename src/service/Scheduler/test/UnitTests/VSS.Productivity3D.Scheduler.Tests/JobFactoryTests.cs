@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     public void TestInitialize()
     {
       var services = new ServiceCollection();
-      services.AddSingleton<IVSSJobFactory, VSSJobFactory>();
+      services.AddSingleton<IJobFactory, JobFactory>();
       serviceProvider = services
         .AddLogging()
         .BuildServiceProvider();
@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void CanRegisterJob()
     {
-      var factory = serviceProvider.GetService<IVSSJobFactory>();
+      var factory = serviceProvider.GetService<IJobFactory>();
       Assert.IsNotNull(factory);
 
       // We should be able to register the job with different guids
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void CanGetJob()
     {
-      var factory = serviceProvider.GetService<IVSSJobFactory>();
+      var factory = serviceProvider.GetService<IJobFactory>();
       Assert.IsNotNull(factory);
 
       var id = Guid.Parse("7E91D04B-781D-4767-8486-FBD0B0B5F44B");
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [TestMethod]
     public void InvalidJobThrowsError()
     {
-      var factory = serviceProvider.GetService<IVSSJobFactory>();
+      var factory = serviceProvider.GetService<IJobFactory>();
       Assert.IsNotNull(factory);
 
       var id = Guid.Parse("EB6150FC-0305-4C5F-B299-5A11F50A057A");

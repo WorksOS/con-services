@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
@@ -16,8 +17,8 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         /// <param name="endTime"></param>
         public static void CalculateTimeRange(ISubGridCellSegmentPassesDataWrapper segment, out DateTime startTime, out DateTime endTime)
         {
-            startTime = DateTime.MaxValue;
-            endTime = DateTime.MinValue;
+            startTime = Consts.MAX_DATETIME_AS_UTC;
+            endTime = Consts.MIN_DATETIME_AS_UTC;
 
             DateTime _startTime = startTime;
             DateTime _endTime = endTime;

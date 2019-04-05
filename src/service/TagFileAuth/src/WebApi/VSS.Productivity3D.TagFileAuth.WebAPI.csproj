@@ -10,11 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jaeger" Version="0.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
-    <PackageReference Include="NewRelic.Agent.Api" Version="8.10.51" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.5.0" />
   </ItemGroup>
 
@@ -30,6 +28,19 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="kestrelsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
   <PropertyGroup>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>

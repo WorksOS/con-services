@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.TRex.HttpClients.Constants;
+using VSS.Tpaas.Client.Constants;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Types;

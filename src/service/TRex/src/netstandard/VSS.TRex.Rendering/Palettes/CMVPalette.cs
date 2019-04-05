@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes

@@ -96,7 +96,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     (string dateSeparator, string timeSeparator, string decimalSeparator, OutputTypes outputType,
       string value, double timeZoneOffset, string expectedResult)
     {
-      DateTime valueDateTime = DateTime.Parse(value);
+      DateTime valueDateTime = DateTime.SpecifyKind(DateTime.Parse(value), DateTimeKind.Utc);
 
       var userPreferences = new UserPreferences(
         "",

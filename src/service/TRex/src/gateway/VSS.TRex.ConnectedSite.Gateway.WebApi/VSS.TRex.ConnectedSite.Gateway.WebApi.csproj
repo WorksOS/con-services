@@ -23,11 +23,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Tpaas.Client\src\VSS.Tpaas.Client.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj" />
+    <ProjectReference Include="..\..\interfaces\VSS.TRex.ConnectedSite.Gateway.Models\VSS.TRex.ConnectedSite.Gateway.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
   </ItemGroup>
@@ -35,6 +39,12 @@
 
 
   <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="kestrelsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

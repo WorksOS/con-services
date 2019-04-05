@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

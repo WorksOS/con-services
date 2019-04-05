@@ -17,6 +17,7 @@
     <ProjectReference Include="..\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Analytics.Foundation.Models;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.PassCountStatistics

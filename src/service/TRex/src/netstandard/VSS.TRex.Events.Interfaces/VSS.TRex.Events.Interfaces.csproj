@@ -14,6 +14,7 @@
     <ProjectReference Include="..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>
