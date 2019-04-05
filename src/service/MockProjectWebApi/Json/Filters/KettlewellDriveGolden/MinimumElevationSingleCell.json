@@ -1,0 +1,26 @@
+{
+  "startUtc": "2019-03-27T21:00:00Z",
+  "endUtc": "2019-03-27T21:30:00Z",
+  "dateRangeType": 7,
+  "dateRangeName": "Custom",
+  "polygonUid": "c96e9fc1-32e9-4e92-bf94-8e291a97d8c5",
+  "polygonName": "MinElevationSingleCell",
+  "polygonLL": [
+    {
+      "Lat": -43.5131973131333,
+      "Lon": 172.438472433625
+    },
+    {
+      "Lat": -43.513197434707,
+      "Lon": 172.438468242674
+    },
+    {
+      "Lat": -43.5132002309037,
+      "Lon": 172.438468410312
+    },
+    {
+      "Lat": -43.5132004132644,
+      "Lon": 172.43847293654
+    }
+  ]
+}

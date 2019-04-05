@@ -85,6 +85,16 @@ namespace MockProjectWebApi.Services
           ProjectUid = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
           ProjectType = ProjectType.Standard,
           IsArchived = true
+        },
+        new ProjectData
+        {
+          LegacyProjectId = 2000589,
+          ProjectUid = "0583c019-f92a-4762-94c1-ad13a98ecab6",
+          ProjectType = ProjectType.Standard,
+          Name = "Kettlewell Drive - Golden DS",
+          ProjectGeofenceWKT = "POLYGON((172.437121306867 -43.5121438699137,172.438280021162 -43.5160497338425,172.442228232831 -43.5154584240685,172.44089785716 -43.5114747124825,172.437121306867 -43.5121438699137))",
+          ProjectTimeZone = "New Zealand Standard Time",
+          IsArchived = false
         }
       };
     }

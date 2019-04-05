@@ -23,12 +23,9 @@ namespace MockProjectWebApi.Utils
 
     public const int LANDFILL_PROJECT_ID = 385;
     public const string LANDFILL_PROJECT_UID = "e1f85c4d-04eb-463c-9a5b-9644c96e75ca";
-  }
 
-  //public class Project
-  //{
-  //  public static Guid DIMENSIONS_PROJECT_UID => Guid.Parse("ff91dd40-1569-4765-a2bc-014321f76ace");
-  //  public static Guid GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 => Guid.Parse("7925f179-013d-4aaf-aff4-7b9833bb06d6");
-  //  public static Guid GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2 => Guid.Parse("86a42bbf-9d0e-4079-850f-835496d715c5");
-  //}
+    //Used for Minimum elevation mode tests
+    public const int KETTLEWELL_DRIVE_PROJECT_ID = 2000589;
+    public const string KETTLEWELL_DRIVE_PROJECT_UID = "0583c019-f92a-4762-94c1-ad13a98ecab6";
+  }
 }
