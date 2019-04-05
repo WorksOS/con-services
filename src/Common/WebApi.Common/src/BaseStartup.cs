@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using App.Metrics;
+using App.Metrics.Formatters.InfluxDB;
+using App.Metrics.Reporting;
+using log4net;
+using log4net.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +17,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using VSS.Common.Abstractions.Http;
+using VSS.Common.Abstractions.ServiceDiscovery.Constants;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
@@ -111,36 +121,68 @@ namespace VSS.WebApi.Common
         }
       });
 
+      //TODO this should be enabled for LibLog
+      /*XmlConfigurator.Configure(
+        LogManager.GetRepository(Assembly.GetAssembly(typeof(LogManager))),
+        new FileInfo("log4net.xml"));*/
+
+
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
       services.AddServiceDiscovery();
 
       services.AddMvcCore(config =>
+      {
+        // for jsonProperty validation
+        config.Filters.Add(new ValidationFilterAttribute());
+      }).AddMetricsCore();
+
+      //TODO Service Discovery doesn't work across namespaces in k8s so hardcoding for now
+      /*var tempooraryServiceProvider = services.BuildServiceProvider();
+      var influxUrl = tempooraryServiceProvider.GetRequiredService<IServiceResolution>()
+        .ResolveService(ServiceNameConstants.INFLUX_DB).Result;*/
+
+      var metricsBuilder = AppMetrics.CreateDefaultBuilder()
+        .Configuration.Configure(options =>
         {
-          // for jsonProperty validation
-          config.Filters.Add(new ValidationFilterAttribute());
-        }).AddMetricsCore();
+          options.Enabled = true;
+          options.ReportingEnabled = true;
+          options.AddServerTag();
+          options.AddAppTag(appName: ServiceName);
+        });
+
+      //if (influxUrl.Type == ServiceResultType.InternalKubernetes)
+      {
+        metricsBuilder.Report.ToInfluxDb(
+          options =>
+          {
+            options.InfluxDb.BaseUri = new Uri("http://monitoring-influxdb.kube-system:8086");
+            options.InfluxDb.Database = "metricsdatabase";
+            options.InfluxDb.CreateDataBaseIfNotExists = true;
+          });
+
+      }
+
+      var metrics = metricsBuilder.Build();
+
+      ConfigureAdditionalServices(services);
 
       services.AddMvc(
-        config =>
-        {
-          config.Filters.Add(new ValidationFilterAttribute());
-        }
-      );
-
-      var metrics = AppMetrics.CreateDefaultBuilder()
-        .Build();
+        config => { config.Filters.Add(new ValidationFilterAttribute()); }
+      ).AddMetrics();
 
       services.AddMetrics(metrics);
       services.AddMetricsTrackingMiddleware();
-
-      ConfigureAdditionalServices(services);
+      services.AddMetricsEndpoints();
 
       Services = services;
 
       ServiceProvider = Services.BuildServiceProvider();
+
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+
+      services.AddMetricsReportingHostedService();
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -154,6 +196,7 @@ namespace VSS.WebApi.Common
         app.UseCors(corsPolicyName);
 
       app.UseMetricsAllMiddleware();
+      app.UseMetricsAllEndpoints();
       app.UseCommon(ServiceName);
 
       if (Configuration.GetValueBool("newrelic").HasValue && Configuration.GetValueBool("newrelic").Value)
