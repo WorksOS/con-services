@@ -20,6 +20,13 @@ namespace VSS.TRex.Tests.Utility
         }
 
         [Fact]
+        public void DateTimeToGPSOriginTime_Invalid_NonUTCDate()
+        {
+          Action act = () => GPS.DateTimeToGPSOriginTime(DateTime.Now, out _, out _);
+          act.Should().Throw<ArgumentException>().WithMessage("Date must be a UTC date time*");
+        }
+
+        [Fact]
         public void DateTimeToGPSOriginTime_Invalid_Early()
         {
             Action act = () => GPS.DateTimeToGPSOriginTime(DateTime.SpecifyKind(new DateTime(1950, 1, 1), DateTimeKind.Utc), out _, out _);

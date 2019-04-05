@@ -2,13 +2,11 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
@@ -41,17 +39,8 @@ namespace VSS.TRex.Tests.Rendering
 
     private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)
     {
-      return new TileRenderRequestArgument
-      {
-        CoordsAreGrid = true,
-        Extents = siteModel.SiteModelExtent,
-        TRexNodeID = "UnitTest_TileRenderRequestNode",
-        Mode = displayMode,
-        ProjectID = siteModel.ID,
-        Filters = new FilterSet(new CombinedFilter()),
-        PixelsX = 256,
-        PixelsY = 256
-      };
+      return new TileRenderRequestArgument(siteModel.ID, displayMode, siteModel.SiteModelExtent, true, 256, 256,
+        new FilterSet(new CombinedFilter()), Guid.Empty);
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
@@ -110,6 +99,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TargetSpeedSummary)]
     //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
     public void Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
@@ -140,6 +130,7 @@ namespace VSS.TRex.Tests.Rendering
     //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.PassCount)]
     public void Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -166,6 +157,7 @@ namespace VSS.TRex.Tests.Rendering
     [InlineData(DisplayMode.TemperatureSummary)]
     //[InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.PassCount)]
     public void Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
