@@ -20,7 +20,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <summary>
     /// Validate the Create request e.g that the file has been uploaded and parameters are as expected.
     /// </summary>
-    public static void ValidateUpsertImportedFileRequest(Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy, DateTime? surveyedUtc, string filename)
+    public static void ValidateUpsertImportedFileRequest(Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, 
+      DateTime fileUpdatedUtc, string importedBy, DateTime? surveyedUtc, string filename, Guid? parentUid, double offset)
     {
       if (projectUid == Guid.Empty)
       {
@@ -47,7 +48,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (!(importedFileType == ImportedFileType.Linework && fileExtension == ".dxf" ||
             importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
             importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
-            importedFileType == ImportedFileType.Alignment && fileExtension == ".svl"))
+            importedFileType == ImportedFileType.Alignment && fileExtension == ".svl" ||
+            importedFileType == ImportedFileType.ReferenceSurface && fileExtension == ".ttm"))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
@@ -94,6 +96,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(36),
             ProjectErrorCodesProvider.FirstNameWithOffset(36)));
+      }
+
+      if (importedFileType == ImportedFileType.ReferenceSurface && (parentUid == null || offset == 0))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(118),
+            ProjectErrorCodesProvider.FirstNameWithOffset(118)));
       }
     }
   }

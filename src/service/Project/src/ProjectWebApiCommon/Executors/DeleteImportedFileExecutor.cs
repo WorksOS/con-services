@@ -56,7 +56,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
       var isDesignFileType = deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
                              deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             deleteImportedFile.ImportedFileType == ImportedFileType.Alignment;
+                             deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
+                             deleteImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       DeleteImportedFileEvent deleteImportedFileEvent = null;
       if (useTrexGatewayDesignImport && isDesignFileType)
@@ -157,7 +158,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //TODO: When scheduled reports are implemented, extend this check to them as well.
       if (deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
           deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || 
-          deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+          deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
+          deleteImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface)
       {
         var filters = await ImportedFileRequestDatabaseHelper.GetFilters(deleteImportedFile.ProjectUid, customHeaders, filterServiceProxy);
         if (filters != null && filters.Any())

@@ -159,6 +159,8 @@ namespace VSS.MasterData.ProjectTests
         FileUpdatedUtc = DateTime.UtcNow.AddDays(-1),
         ImportedBy = "joeSmoe@trimble.com",
         SurveyedUtc = null,
+        ParentUid = null,
+        Offset = 0,
         IsDeleted = false,
         LastActionedUtc = DateTime.UtcNow
       };
@@ -173,6 +175,8 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc, "FileUpdatedUtc has not been mapped correctly");
       Assert.AreEqual(request.ImportedBy, importedFileDescriptor.ImportedBy, "ImportedBy has not been mapped correctly");
       Assert.AreEqual(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+      Assert.AreEqual(request.ParentUid, importedFileDescriptor.ParentUid, "ParentUid has not been mapped correctly");
+      Assert.AreEqual(request.Offset, importedFileDescriptor.Offset, "Offset has not been mapped correctly");
       Assert.AreEqual(request.LastActionedUtc, importedFileDescriptor.ImportedUtc, "ImportedUtc has not been mapped correctly");
       Assert.AreEqual(true, importedFileDescriptor.IsActivated, "IsActivated has not been mapped correctly");
 

@@ -123,6 +123,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Unable to obtain DataOcean root folder.", 115);
       this.DynamicAddwithOffset("Unable to write file to DataOcean.", 116);
       this.DynamicAddwithOffset("Unable to delete file from DataOcean", 117);
+      this.DynamicAddwithOffset("A reference surface must have a parent design surface and offset", 118);
 
     }
   }

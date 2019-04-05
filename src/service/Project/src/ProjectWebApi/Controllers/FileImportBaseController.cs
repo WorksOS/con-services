@@ -198,6 +198,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return importedFileType == ImportedFileType.DesignSurface ||
              importedFileType == ImportedFileType.SurveyedSurface ||
              importedFileType == ImportedFileType.Alignment;
+      //Don't save reference surface to s3 (The original design file will have been saved).
     }
      
   }

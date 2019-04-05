@@ -73,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static async Task<ImportedFile> GetImportedFileForProject
       (string projectUid, string fileName, ImportedFileType importedFileType, DateTime? surveyedUtc,
-      ILogger log, IProjectRepository projectRepo)
+      ILogger log, IProjectRepository projectRepo, double offset, Guid? parentUid)
     {
       var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
       ImportedFile existing = null;
@@ -86,6 +86,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
                  importedFileType == ImportedFileType.SurveyedSurface &&
                  f.SurveyedUtc == surveyedUtc ||
                  importedFileType != ImportedFileType.SurveyedSurface
+               )
+               && (
+                 importedFileType == ImportedFileType.ReferenceSurface &&
+                 f.Offset == offset &&
+                 f.ParentUid == parentUid.ToString() ||
+                 importedFileType != ImportedFileType.ReferenceSurface
                ));
       }
       return existing;
@@ -112,7 +118,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<CreateImportedFileEvent> CreateImportedFileinDb(Guid customerUid, Guid projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
+      Guid? parentUid, double offset)
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
@@ -130,7 +137,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         ImportedBy = importedBy,
         SurveyedUTC = surveyedUtc,
         ActionUTC = nowUtc, // aka importedUtc
-        ReceivedUTC = nowUtc
+        ReceivedUTC = nowUtc,
+        ParentUID = parentUid,
+        Offset = offset
       };
 
       var isCreated = await projectRepo.StoreEvent(createImportedFileEvent).ConfigureAwait(false);

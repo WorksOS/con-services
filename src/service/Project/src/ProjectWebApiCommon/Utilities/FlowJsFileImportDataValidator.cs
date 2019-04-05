@@ -17,7 +17,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     public static void ValidateUpsertImportedFileRequest(FlowFile file, Guid projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, 
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string importedBy, DateTime? surveyedUtc)
+      string importedBy, DateTime? surveyedUtc, Guid? parentUid, double offset)
     {
       if (file == null)
       {
@@ -41,7 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             ProjectErrorCodesProvider.FirstNameWithOffset(29)));
       }
 
-      ValidateUpsertImportedFileRequest(projectUid, importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, importedBy, surveyedUtc, file.flowFilename);
+      ValidateUpsertImportedFileRequest(projectUid, importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, importedBy, surveyedUtc, file.flowFilename, parentUid, offset);
     }
   }
 }

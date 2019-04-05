@@ -27,11 +27,11 @@ namespace VSS.MasterData.Proxies
     public async Task<FileDataSingleResult> CreateImportedFile(
       string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
-      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
+      DateTime? surveyedUtc, Guid? parentUid, double offset, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"ImportedFileProxy.CreateImportedFile: request for file {utf8filename}");
       FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
-        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, HttpMethod.Post);
+        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, parentUid, offset, customHeaders, HttpMethod.Post);
       log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -40,10 +40,10 @@ namespace VSS.MasterData.Proxies
     public async Task<FileDataSingleResult> UpdateImportedFile(
       string fullFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
-      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
+      DateTime? surveyedUtc, double offset, IDictionary<string, string> customHeaders = null)
     {
       FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
-        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, HttpMethod.Put);
+        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, null, offset, customHeaders, HttpMethod.Put);
       log.LogDebug("ImportedFileProxy.UpdateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -63,7 +63,7 @@ namespace VSS.MasterData.Proxies
 
     private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
-      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, HttpMethod method = null)
+      DateTime? surveyedUtc, Guid? parentUid, double offset, IDictionary<string, string> customHeaders = null, HttpMethod method = null)
     {
 
       var queryParams = new Dictionary<string,string>();
@@ -78,6 +78,12 @@ namespace VSS.MasterData.Proxies
       if (importedFileType == ImportedFileType.Linework)
       {
         queryParams.Add("DxfUnitsType", dxfUnitsType.ToString());
+      }
+      if (importedFileType == ImportedFileType.ReferenceSurface)
+      {
+        if (method == HttpMethod.Post)
+          queryParams.Add("parentUid", parentUid.ToString());
+        queryParams.Add("offset", offset.ToString());
       }
       return await UploadFileToWebApi(importedFileName, utf8filename, queryParams, method, customHeaders);
     }

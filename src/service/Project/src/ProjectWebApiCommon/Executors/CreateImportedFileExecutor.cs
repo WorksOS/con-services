@@ -57,7 +57,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         out var useRaptorGatewayDesignImport);
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
                              createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface ||
-                             createimportedfile.ImportedFileType == ImportedFileType.Alignment;
+                             createimportedfile.ImportedFileType == ImportedFileType.Alignment ||
+                             createimportedfile.ImportedFileType == ImportedFileType.ReferenceSurface;
 
       // need to write to Db prior to 
       //      notifying raptor, as raptor needs the legacyImportedFileID 
@@ -68,7 +69,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileName,
           createimportedfile.SurveyedUtc, JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
           createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
-          log, serviceExceptionHandler, projectRepo)
+          log, serviceExceptionHandler, projectRepo, createimportedfile.ParentUid, createimportedfile.Offset)
         .ConfigureAwait(false);
 
       if (useTrexGatewayDesignImport && isDesignFileType)

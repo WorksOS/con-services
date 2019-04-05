@@ -24,6 +24,8 @@ namespace VSS.MasterData.ProjectTests
     private static readonly DateTime? surfaceUtc = DateTime.UtcNow;
     private static readonly DateTime fileCreatedUtc = DateTime.UtcNow;
     private static readonly DateTime fileUpdatedUtc = DateTime.UtcNow;
+    private static readonly Guid? parentUId = null;
+    private static readonly double offset = 0;
 
     static ImportFileV4ValidationTests()
     {
@@ -46,7 +48,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(null, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(27)));
     }
 
@@ -57,7 +59,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(28)));
     }
 
@@ -68,7 +70,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(29)));
     }
 
@@ -79,7 +81,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, Guid.Empty, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(5)));
     }
 
@@ -90,7 +92,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(31)));
     }
 
@@ -101,7 +103,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
@@ -112,7 +114,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
-          DateTime.MinValue, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          DateTime.MinValue, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(33)));
     }
 
@@ -123,7 +125,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, DateTime.MinValue, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, DateTime.MinValue, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(34)));
     }
 
@@ -134,7 +136,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, null, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, null, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(35)));
     }
 
@@ -144,7 +146,7 @@ namespace VSS.MasterData.ProjectTests
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.dxf" };
 
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Linework, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null);
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset);
     }
 
     [TestMethod]
@@ -154,7 +156,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Linework, DxfUnitsType.Meters,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
@@ -164,7 +166,7 @@ namespace VSS.MasterData.ProjectTests
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
-        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null);
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset);
     }
 
     [TestMethod]
@@ -174,7 +176,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
@@ -185,7 +187,7 @@ namespace VSS.MasterData.ProjectTests
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
-        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc);
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset);
     }
 
     [TestMethod]
@@ -195,7 +197,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
@@ -206,7 +208,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.SurveyedSurface, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(36)));
     }
 
@@ -217,7 +219,7 @@ namespace VSS.MasterData.ProjectTests
       var file = new FlowFile { path = "\\*", flowFilename = "deblah.svl" };
 
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
-        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null);
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset);
     }
 
     [TestMethod]
@@ -227,7 +229,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUId, offset));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
