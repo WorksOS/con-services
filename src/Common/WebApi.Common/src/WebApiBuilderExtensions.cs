@@ -67,9 +67,7 @@ namespace VSS.WebApi.Common
           localBuilder.SetMinimumLevel(LogLevel.Debug);
           localBuilder.AddConfiguration(kestrelConfig);
         })
-        .UseMetrics()
-        .UseHealth()
-        .UseMetricsWebTracking();
+        .UseHealth();
 
       ThreadPool.SetMaxThreads(1024, 2048);
       ThreadPool.SetMinThreads(1024, 2048);

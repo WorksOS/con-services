@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
@@ -38,7 +39,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                 PassType = PassType.Track,
                 RadioLatency = 109,
                 RMV = 110,
-                Time = new DateTime(2000, 1, 2, 3, 4, 5)
+                Time = DateTime.SpecifyKind(new DateTime(2000, 1, 2, 3, 4, 5), DateTimeKind.Utc)
             };
         }
 
@@ -59,7 +60,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             Assert.Equal(0U, item.PassCount(1, 1));
 
-            item.AddPass(1, 1, new CellPass());
+            item.AddPass(1, 1, new CellPass() {Time = DateTime.UtcNow});
             Assert.Equal(1U, item.PassCount(1, 1));
         }
 
@@ -117,13 +118,13 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_LocateTime_Test()
         {
             CellPass pass1 = TestCellPass();
-            pass1.Time = new DateTime(2000, 1, 1, 0, 0, 0);
+            pass1.Time = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
             CellPass pass2 = TestCellPass();
-            pass2.Time = new DateTime(2000, 1, 2, 0, 0, 0);
+            pass2.Time = DateTime.SpecifyKind(new DateTime(2000, 1, 2, 0, 0, 0), DateTimeKind.Utc);
 
             CellPass pass3 = TestCellPass();
-            pass3.Time = new DateTime(2000, 1, 3, 0, 0, 0);
+            pass3.Time = DateTime.SpecifyKind(new DateTime(2000, 1, 3, 0, 0, 0), DateTimeKind.Utc);
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
             item.AddPass(1, 1, pass1);
@@ -132,20 +133,20 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             Assert.Equal(3U, item.PassCount(1, 1));
 
-            bool exactMatch = item.LocateTime(1, 1, new DateTime(1999, 12, 31, 0, 0, 0), out int index);
+            bool exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(1999, 12, 31, 0, 0, 0), DateTimeKind.Utc), out int index);
             Assert.False(exactMatch, "Exact match found!!!");
             Assert.Equal(0, index);
 
-            exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 1, 0, 0, 0), out index);
+            exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc), out index);
             Assert.True(exactMatch && index > -1 && item.Pass(1, 1, (uint)index).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 0), located pass is {item.Pass(1, 1, (uint)index)}");
 
-            exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 1, 0, 0, 1), out index);
+            exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 1), DateTimeKind.Utc), out index);
             Assert.True(exactMatch == false && item.Pass(1, 1, (uint)index - 1).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 1), index = {index}");
 
-            exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 2, 10, 0, 0), out index);
+            exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2000, 1, 2, 10, 0, 0), DateTimeKind.Utc), out index);
             Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index - 1).Equals(pass2), $"Failed to locate pass at DateTime(2001, 1, 2, 10, 0, 0), index = {index}");
 
-            exactMatch = item.LocateTime(1, 1, new DateTime(2001, 1, 1, 0, 0, 0), out index);
+            exactMatch = item.LocateTime(1, 1, DateTime.SpecifyKind(new DateTime(2001, 1, 1, 0, 0, 0), DateTimeKind.Utc), out index);
             Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index - 1).Equals(pass3), $"Failed to locate pass at DateTime(2001, 1, 1, 0, 0, 0), index = {index}");
         }
 
@@ -230,13 +231,13 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_Cell_Test()
         {
             CellPass pass1 = TestCellPass();
-            pass1.Time = new DateTime(2000, 1, 1, 0, 0, 0);
+            pass1.Time = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
             CellPass pass2 = TestCellPass();
-            pass2.Time = new DateTime(2000, 1, 2, 0, 0, 0);
+            pass2.Time = DateTime.SpecifyKind(new DateTime(2000, 1, 2, 0, 0, 0), DateTimeKind.Utc);
 
             CellPass pass3 = TestCellPass();
-            pass3.Time = new DateTime(2000, 1, 3, 0, 0, 0);
+            pass3.Time = DateTime.SpecifyKind(new DateTime(2000, 1, 3, 0, 0, 0), DateTimeKind.Utc);
 
             CellPass[] passes = new CellPass[] { pass1, pass2, pass3 };
 

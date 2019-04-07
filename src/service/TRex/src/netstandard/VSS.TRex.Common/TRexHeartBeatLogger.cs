@@ -19,6 +19,8 @@ namespace VSS.TRex.Common
 
     private readonly Thread contextRunner;
 
+    private bool Stopped { get; set; } = false;
+
     public int IntervalInMilliseconds { get; }
 
     /// <summary>
@@ -26,20 +28,23 @@ namespace VSS.TRex.Common
     /// </summary>
     public TRexHeartBeatLogger(int intervalMS)
     {
-      if (intervalMS <= 100)
-        throw new ArgumentException("Heart beat logger interval cannot be <= 100 milliseconds");
+      if (intervalMS < 100)
+        throw new ArgumentException("Heart beat logger interval cannot be < 100 milliseconds");
 
       loggingContexts = new List<object>();
       IntervalInMilliseconds = intervalMS;
 
       contextRunner = new Thread(() =>
       {
-        while (contextRunner.ThreadState == ThreadState.Running)
+        while (contextRunner.ThreadState == ThreadState.Running && !Stopped)
         {
           try
           {
-            foreach (var context in loggingContexts)
-              Log.LogInformation($"Heartbeat: {context}");
+            lock (loggingContexts)
+            {
+              foreach (var context in loggingContexts)
+                Log.LogInformation($"Heartbeat: {context}");
+            }
 
             Thread.Sleep(IntervalInMilliseconds);
           }
@@ -60,8 +65,25 @@ namespace VSS.TRex.Common
     {
     }
 
-    public void AddContext(object context) => loggingContexts.Add(context);
+    public void AddContext(object context)
+    {
+      lock (loggingContexts)
+      {
+        loggingContexts.Add(context);
+      }
+    }
 
-    public void RemoveContext(object context) => loggingContexts.Remove(context);
+    public void RemoveContext(object context)
+    {
+      lock (loggingContexts)
+      {
+        loggingContexts.Remove(context);
+      }
+    }
+
+    public void Stop()
+    {
+      Stopped = true;
+    }
   }
 }

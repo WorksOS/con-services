@@ -19,20 +19,20 @@ namespace VSS.TRex.Tests.Compression
         [Fact]
         public void Test_AttributeValueModifier_Time()
         {
-            var origin = new DateTime(2000, 1, 1, 1, 1, 1);
+            var origin = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
 
-            Assert.Equal(0, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin));
-            Assert.Equal(100, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 11), origin));
+            Assert.Equal(0, AttributeValueModifiers.ModifiedTime(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc), origin));
+            Assert.Equal(100, AttributeValueModifiers.ModifiedTime(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 11), DateTimeKind.Utc), origin));
         }
 
         [Fact]
         public void Test_AttributeValueModifier_Time_FailWithNegativeOffset()
         {
-          var origin = new DateTime(2000, 2, 1, 1, 1, 1);
+          var origin = DateTime.SpecifyKind(new DateTime(2000, 2, 1, 1, 1, 1), DateTimeKind.Utc);
 
-          Action act = () => AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin);
+          Action act = () => AttributeValueModifiers.ModifiedTime(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc), origin);
           act.Should().Throw<ArgumentException>().WithMessage("Time argument [*] should not be less that the origin [*]");
-    }
+        }
 
         [Fact]
         public void Test_AttributeValueModifier_GPSMode()

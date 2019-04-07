@@ -83,8 +83,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       string[] machineNames = new string[] { "first machineName" };
       var userPreferences = new UserPreferences();
       var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
-        new DateTime(2018, 1, 10),
-        new DateTime(2019, 2, 11), "", "",
+        DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
+        DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
       var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);

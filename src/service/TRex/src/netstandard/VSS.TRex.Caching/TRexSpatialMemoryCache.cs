@@ -261,7 +261,7 @@ namespace VSS.TRex.Caching
 
       int numInvalidatedSubGrids = 0;
       int numScannedSubGrids = 0;
-      DateTime startTime = DateTime.Now;
+      DateTime startTime = DateTime.UtcNow;
 
       if ((projectContexts?.Count ?? 0) > 0)
       {
@@ -295,7 +295,7 @@ namespace VSS.TRex.Caching
         }
       }
 
-      log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts.Count} contexts in {DateTime.Now - startTime} [project {projectUid}]");
+      log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts.Count} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
     }
 
     /// <summary>
@@ -307,7 +307,7 @@ namespace VSS.TRex.Caching
     {
       int numRemoved = 0;
       DateTime removalDateUtc = DateTime.UtcNow.AddSeconds(-ageSeconds);
-      DateTime startTime = DateTime.Now;
+      DateTime startTime = DateTime.UtcNow;
       
       lock (Contexts)
       {
@@ -335,7 +335,7 @@ namespace VSS.TRex.Caching
         }
       }
 
-      log.LogInformation($"{numRemoved} contexts removed in {DateTime.Now - startTime}");
+      log.LogInformation($"{numRemoved} contexts removed in {DateTime.UtcNow - startTime}");
     }
 
     public void Dispose()
