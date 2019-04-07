@@ -76,15 +76,15 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void VetaFinalPass_NorthingEasting()
     {
-      DILoggingFixture.SetMaxExportRowsConfig(100000);
+      DILoggingFixture.SetMaxExportRowsConfig(100);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
-        out CSVExportRequestArgument requestArgument, out ISiteModel _, "Dimensions2018-CaseMachine"); 
+        out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
-      rows.Count.Should().Be(8);
-      rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,?,?,2,1,?,?,?,?,?,?,?,?,?,?,?");
+      rows.Count.Should().Be(100);
+      rows[0].Should().Be(@"2019-Jan-23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Skip until coreX is available")]
