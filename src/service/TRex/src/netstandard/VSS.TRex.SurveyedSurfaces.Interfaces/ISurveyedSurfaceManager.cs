@@ -7,7 +7,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
   public interface ISurveyedSurfaceManager
   {
     /// <summary>
-    /// Add a new surveyed surface to a sitemodel
+    /// Add a new surveyed surface to a site model
     /// </summary>
     /// <param name="siteModelUid"></param>
     /// <param name="designDescriptor"></param>

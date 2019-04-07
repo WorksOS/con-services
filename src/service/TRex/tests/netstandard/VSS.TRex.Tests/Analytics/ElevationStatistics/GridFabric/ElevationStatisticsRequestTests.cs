@@ -48,6 +48,7 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics.GridFabric
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     [Fact]

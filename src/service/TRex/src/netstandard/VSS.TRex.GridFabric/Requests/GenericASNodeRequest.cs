@@ -27,7 +27,7 @@ namespace VSS.TRex.GridFabric.Requests
     public override TResponse Execute(TArgument arg)
     {
       // Construct the function to be used
-      TComputeFunc func = new TComputeFunc();
+      var func = new TComputeFunc();
 
       // Send the request to the application service pool and retrieve the result
       // and return it to the caller

@@ -10,9 +10,9 @@ namespace VSS.TRex.Common.Utilities
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="offset"></param>
-        public static string FormatCellPassTime(DateTime dateTime, bool offset = true)
-        {
-            return $"{(offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime):yyyy/MMM/dd HH:mm:ss.zzz}";
-        }
+   //     public static string FormatCellPassTime(DateTime dateTime, bool offset = true)
+   //     {
+   //         return $"{(offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime):yyyy/MMM/dd HH:mm:ss.zzz}";
+   //     }
     }
 }

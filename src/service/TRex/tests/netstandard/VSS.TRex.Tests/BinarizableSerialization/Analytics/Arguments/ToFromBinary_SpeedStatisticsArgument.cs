@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;

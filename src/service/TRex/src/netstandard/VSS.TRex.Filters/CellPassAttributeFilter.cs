@@ -664,8 +664,8 @@ namespace VSS.TRex.Filters
     {
       HasTimeFilter = false;
 
-      StartTime = DateTime.MinValue;
-      EndTime = DateTime.MaxValue;
+      StartTime = Consts.MIN_DATETIME_AS_UTC;
+      EndTime = Consts.MAX_DATETIME_AS_UTC;
     }
 
     private static readonly GPSAccuracyAndTolerance NullGPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
@@ -923,7 +923,7 @@ namespace VSS.TRex.Filters
 
     public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
     {
-      if (StartTime == DateTime.MinValue)
+      if (StartTime == Consts.MIN_DATETIME_AS_UTC)
       {
         // It's an End/As At time filter
         if (PassValue.Time > EndTime)

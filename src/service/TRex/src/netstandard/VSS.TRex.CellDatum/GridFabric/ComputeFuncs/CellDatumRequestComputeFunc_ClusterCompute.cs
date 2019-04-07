@@ -31,7 +31,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
       try
       {
-        CellDatumComputeFuncExecutor_ClusterCompute request = new CellDatumComputeFuncExecutor_ClusterCompute();
+        var request = new CellDatumComputeFuncExecutor_ClusterCompute();
 
         Log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.Execute()");
 

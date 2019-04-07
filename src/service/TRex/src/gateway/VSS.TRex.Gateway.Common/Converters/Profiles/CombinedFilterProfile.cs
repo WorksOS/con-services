@@ -23,7 +23,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
       public ICellPassAttributeFilter Resolve(FilterResult src, CombinedFilter dst, ICellPassAttributeFilter member, ResolutionContext context)
       {
         var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value && src.ReturnEarliest.Value == true;
-
+        
         var contributingMachines = new Guid[0];
         // todoJeannie should check if any machines are valid for site??
         if (src.ContributingMachines != null && src.ContributingMachines.Count > 0)
@@ -34,8 +34,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         return new CellPassAttributeFilter
         {
           HasTimeFilter = src.StartUtc.HasValue && src.EndUtc.HasValue,
-          StartTime = src.StartUtc ?? DateTime.MinValue,
-          EndTime = src.EndUtc ?? DateTime.MaxValue,
+          StartTime = src.StartUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC,
+          EndTime = src.EndUtc ?? TRex.Common.Consts.MAX_DATETIME_AS_UTC,
 
           HasMachineFilter = contributingMachines.Length > 0,
           MachinesList = contributingMachines,

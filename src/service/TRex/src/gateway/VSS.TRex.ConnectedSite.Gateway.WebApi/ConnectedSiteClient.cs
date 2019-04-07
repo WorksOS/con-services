@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.TRex.HttpClients.Constants;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
+using VSS.Tpaas.Client.Constants;
+using VSS.TRex.ConnectedSite.Gateway.Abstractions;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 {

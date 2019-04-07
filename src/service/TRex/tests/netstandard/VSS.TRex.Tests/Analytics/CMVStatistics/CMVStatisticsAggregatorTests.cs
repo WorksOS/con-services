@@ -4,6 +4,7 @@ using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;

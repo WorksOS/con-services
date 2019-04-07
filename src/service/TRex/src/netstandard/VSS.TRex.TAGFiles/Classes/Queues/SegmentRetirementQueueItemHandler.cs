@@ -89,12 +89,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         }
 
         Log.LogInformation($"Prepared {count} retires for removal");
-        DateTime startTime = DateTime.Now;
+        DateTime startTime = DateTime.UtcNow;
 
         // Commit all the deletes for this retiree group
         if (storageProxy.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten))
         {
-          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {DateTime.Now - startTime}");
+          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {DateTime.UtcNow - startTime}");
         }
         else
         {

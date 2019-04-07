@@ -36,6 +36,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
         {
+            if (pass.Time == Common.Consts.MIN_DATETIME_AS_UTC || pass.Time.Kind != DateTimeKind.Utc)
+              throw new ArgumentException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time", nameof(pass.Time)); 
+
             _mutationHook?.AddPass(X, Y, PassData[X, Y], pass, position);
 
             PassData[X, Y].AddPass(pass, position);
@@ -197,9 +200,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public void GetSegmentElevationRange(out double MinElev, out double MaxElev)
       {
-//        MinElev = Consts.NullDouble;
-//        MaxElev = Consts.NullDouble;
-
         throw new TRexException("Elevation range determination for segments limited to STATIC_CELL_PASSES");
       }
 

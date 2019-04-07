@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Records;
 using VSS.TRex.Common.Types;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -62,8 +63,6 @@ namespace VSS.TRex.Exports.Patches
       //========================================================================================
 
       base.Populate(subGrid);
-
-      //IGenericClientLeafSubGrid<float> elevSubGrid = (IGenericClientLeafSubGrid<float>)subGrid;
 
       ClientHeightAndTimeLeafSubGrid elevSubGrid = (ClientHeightAndTimeLeafSubGrid)subGrid;
       var elevations = elevSubGrid.Cells;

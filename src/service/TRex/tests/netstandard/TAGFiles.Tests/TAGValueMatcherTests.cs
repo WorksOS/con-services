@@ -349,7 +349,7 @@ namespace TAGFiles.Tests
 
       Assert.Equal(1100, (ushort)sink.ICTemperatureValues.GetLatest());
 
-      // Test value ussets correctly on an empty value
+      // Test value assets correctly on an empty value
       Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitInt, 0)),
           "Matcher process function returned false");
 

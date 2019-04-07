@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Reflection;
-using Jaeger;
-using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OpenTracing;
-using OpenTracing.Contrib.NetCore.AspNetCore;
-using OpenTracing.Contrib.NetCore.Configuration;
-using OpenTracing.Contrib.NetCore.CoreFx;
-using OpenTracing.Util;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Landfill.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Landfill.WebAPI.Middleware;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -117,7 +108,6 @@ namespace LandfillService.WebApi.netcore
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
 
-      if (Configuration["newrelic"] == "true") app.UseMiddleware<NewRelicMiddleware>();
       app.UseFilterMiddleware<TIDAuthentication>();
       app.UseMvc();
     }

@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       SubGridSegmentCellPassIterator_NonStatic iterator = new SubGridSegmentCellPassIterator_NonStatic();
 
-      Assert.True(iterator.CellX == byte.MaxValue && iterator.CellY == byte.MaxValue, "CellX/Y not initialised correctly");
+      Assert.True(iterator.CellX == 0 && iterator.CellY == 0, "CellX/Y not initialised correctly");
       Assert.Equal(iterator.MaxNumberOfPassesToReturn, int.MaxValue);
       Assert.Null(iterator.SegmentIterator);
     }
@@ -65,9 +65,10 @@ namespace VSS.TRex.Tests.SubGridTrees
       var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
       var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable), new SubGridDirectory(), null));
 
-      iterator.SetTimeRange(true, new DateTime(2000, 1, 1), new DateTime(2000, 1, 2));
+      iterator.SetTimeRange(true, DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc), DateTime.SpecifyKind(new DateTime(2000, 1, 2),DateTimeKind.Utc));
 
-      Assert.True(iterator.IteratorStartTime == new DateTime(2000, 1, 1) && iterator.IteratorEndTime == new DateTime(2000, 1, 2),
+      Assert.True(iterator.IteratorStartTime == DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc) 
+                  && iterator.IteratorEndTime == DateTime.SpecifyKind(new DateTime(2000, 1, 2), DateTimeKind.Utc),
         "Iteration start and end date not set correctly");
     }
   }

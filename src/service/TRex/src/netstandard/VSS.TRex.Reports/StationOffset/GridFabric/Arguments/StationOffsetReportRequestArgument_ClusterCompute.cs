@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Reports.Gridded;
 

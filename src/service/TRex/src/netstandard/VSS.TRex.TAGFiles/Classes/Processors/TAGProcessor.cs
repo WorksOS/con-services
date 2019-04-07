@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
@@ -85,7 +86,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     FOnAbortProcessing : TNotifyEvent; 
     */
 
-    private DateTime TagFileStartTime = DateTime.MinValue;
+    private DateTime TagFileStartTime = Consts.MIN_DATETIME_AS_UTC;
     private bool HasGPSModeBeenSet = false;
 
     /// <summary>
@@ -94,7 +95,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// </summary>
     protected bool EpochContainsProofingRunDescription()
     {
-      return (StartProofingDataTime != DateTime.MinValue) && // We have a start time for the run
+      return (StartProofingDataTime != Consts.MIN_DATETIME_AS_UTC) && // We have a start time for the run
              (DataTime > StartProofingDataTime); // The current epoch time is greater than the start
     }
 
@@ -151,7 +152,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     protected override void SetDataTime(DateTime Value)
     {
-      bool RecordEvent = DataTime == DateTime.MinValue;
+      bool RecordEvent = DataTime == Consts.MIN_DATETIME_AS_UTC;
 
       base.SetDataTime(Value);
 
@@ -174,7 +175,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       base.SetDesign(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         Value = Value.Trim();
         var siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.Locate(Value);
@@ -225,7 +226,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       VibrationState TempVibrationState = VibrationState.Invalid;
       AutoVibrationState TempAutoVibrationState = AutoVibrationState.Unknown;
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         switch (ICSensorType)
         {
@@ -274,7 +275,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICCCVTargetValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetCCVStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -292,7 +293,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICCCATargetValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetCCAStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -310,7 +311,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICMDPTargetValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetMDPStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -328,7 +329,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICPassTargetValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetPassCountStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -356,7 +357,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       else if (Value == MachineDirection.Reverse)
         Gear = MachineGear.Reverse;
 
-      if (DataTime != DateTime.MinValue && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
         MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Gear);
       //else
       //{
@@ -374,7 +375,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICGear(Value);
 
-      if (DataTime != DateTime.MinValue && Value != MachineGear.SensorFailedDeprecated)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC && Value != MachineGear.SensorFailedDeprecated)
         MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -392,7 +393,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICTempWarningLevelMinValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetMinMaterialTemperature.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -403,7 +404,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     }
 
     /// <summary>
-    /// Sets the target maximum material temperture into the machine target material temperature events list
+    /// Sets the target maximum material temperature into the machine target material temperature events list
     /// </summary>
     /// <param name="Value"></param>
 
@@ -411,7 +412,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICTempWarningLevelMaxValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetMaxMaterialTemperature.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -429,7 +430,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICTargetLiftThickness(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.TargetLiftThicknessStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -491,7 +492,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetRMVJumpThresholdValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.RMVJumpThresholdEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -505,7 +506,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICSensorType(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         // Tell the machine object itself what the current sensor type is
         Machine.CompactionSensorType = Value;
@@ -522,7 +523,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetAutomaticsMode(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.MachineAutomaticsStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -536,7 +537,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetICLayerIDValue(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.LayerIDStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -550,7 +551,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetGPSMode(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         if (PositioningTech == TRex.Types.PositioningTech.Unknown || PositioningTech == TRex.Types.PositioningTech.UTS)
         {
@@ -576,7 +577,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetElevationMappingModeState(Value);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.PutValueAtDate(DataTime, Value);
       //else
       //{
@@ -590,7 +591,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     {
       base.SetGPSAccuracyState(accuracy, tolerance);
 
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
         MachineTargetValueChangesAggregator.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DataTime, new GPSAccuracyAndTolerance(accuracy, tolerance));
       //else
       //{
@@ -678,7 +679,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     public override void DoPostProcessFileAction(bool successState)
     {
       // Record the last data time as the data end event
-      if (DataTime != DateTime.MinValue)
+      if (DataTime != Consts.MIN_DATETIME_AS_UTC)
       {
         MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent);
 
@@ -713,23 +714,23 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       switch (eventType)
       {
         case EpochStateEvent.MachineStartup:
-          if (DataTime != DateTime.MinValue)
+          if (DataTime != Consts.MIN_DATETIME_AS_UTC)
             MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.StartEvent);
           break;
 
         case EpochStateEvent.MachineShutdown:
-          if (DataTime != DateTime.MinValue)
+          if (DataTime != Consts.MIN_DATETIME_AS_UTC)
             MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent);
           break;
 
         case EpochStateEvent.MachineMapReset:
           // Todo: Map reset events not implemented yet
-          //if (DataTime != DateTime.MinValue)
+          //if (DataTime != Consts.MIN_DATETIME_AS_UTC)
           //MachineTargetValueChangesAggregator.MapResetEvents.PutValueAtDate(DataTime, Design);
           break;
 
         case EpochStateEvent.MachineInUTSMode:
-          if (DataTime != DateTime.MinValue)
+          if (DataTime != Consts.MIN_DATETIME_AS_UTC)
           {
             PositioningTech = PositioningTech.UTS;
             MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech);

@@ -14,7 +14,6 @@ using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
@@ -127,13 +126,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           // Obtain the subgrid existence map for the project
-          ISubGridTreeBitMask ProdDataExistenceMap = SiteModel.ExistenceMap;
-
-          if (ProdDataExistenceMap == null)
-          {
-            Log.LogWarning($"Failed to locate production data existence map from sitemodel {ProjectID}");
-            return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
-          }
+          var ProdDataExistenceMap = SiteModel.ExistenceMap;
 
           FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);

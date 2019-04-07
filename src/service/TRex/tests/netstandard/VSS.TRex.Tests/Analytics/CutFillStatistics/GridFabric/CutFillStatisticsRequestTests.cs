@@ -59,6 +59,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     private void BuildModelForSingleSubGridCutFill(out ISiteModel siteModel, float heightIncrement)

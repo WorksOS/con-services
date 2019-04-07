@@ -112,6 +112,14 @@ namespace VSS.TRex.Tests.TestFixtures
       IgniteMock.ResetDynamicMockedIgniteContent();
     }
 
+    /// <summary>
+    /// Adds a design identified by a filename and location to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="filePath"></param>
+    /// <param name="fileName"></param>
+    /// <param name="constructIndexFilesOnLoad"></param>
+    /// <returns></returns>
     public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
       bool constructIndexFilesOnLoad)
     {
@@ -158,6 +166,15 @@ namespace VSS.TRex.Tests.TestFixtures
       return designUid;
     }
 
+    /// <summary>
+    /// Adds a surveyed surface identified by a file name and location, plus asAtDate.
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="filePath"></param>
+    /// <param name="fileName"></param>
+    /// <param name="asAtDate"></param>
+    /// <param name="constructIndexFilesOnLoad"></param>
+    /// <returns></returns>
     public static Guid AddSurveyedSurfaceToSiteModel(ref ISiteModel siteModel, string filePath, string fileName, DateTime asAtDate,
      bool constructIndexFilesOnLoad)
     {
@@ -204,6 +221,12 @@ namespace VSS.TRex.Tests.TestFixtures
       return surveyedSurfaceUid;
     }
 
+
+    /// <summary>
+    /// Creates a new otherwise empty site model configured to provide mutable data representation and adds
+    /// an initial bulldozer machine to it
+    /// </summary>
+    /// <returns></returns>
     public static ISiteModel NewEmptyModel()
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
@@ -216,6 +239,12 @@ namespace VSS.TRex.Tests.TestFixtures
       return siteModel;
     }
 
+    /// <summary>
+    /// Constructs a simple TIN model containing a single triangle at (-25, -25), (25, -25), (0, 25)
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <returns></returns>
     public static Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
     {
       // Make a mutable TIN containing a single triangle and as below and register it to the site model
@@ -232,6 +261,16 @@ namespace VSS.TRex.Tests.TestFixtures
         (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
 
+    /// <summary>
+    /// Constructs a single triangle design surface as per ConstructSingleFlatTriangleDesignAboutOrigin but allows
+    /// the triangle to be offset from the origin.
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <param name="asAtDate"></param>
+    /// <param name="offsetX"></param>
+    /// <param name="offsetY"></param>
+    /// <returns></returns>
     public static Guid ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate, double offsetX, double offsetY)
     {
       // Make a mutable TIN containing a single triangle and as below and register it to the site model
@@ -248,11 +287,24 @@ namespace VSS.TRex.Tests.TestFixtures
         (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), asAtDate, true);
     }
 
+    /// <summary>
+    /// Constructs a surveyed surface of the same TIN produced by ConstructSingleFlatTriangleDesignAboutOrigin and
+    /// with the supplied AsAtData to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <param name="asAtDate"></param>
+    /// <returns></returns>
     public static Guid ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate)
     {
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
     }
 	
+    /// <summary>
+    /// Adds the provided coordinate system expressed as a CSIB to the site model
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="csib"></param>
 	 public static void AddCSIBToSiteModel(ref ISiteModel siteModel, string csib)
     {
       var executor = new AddCoordinateSystemExecutor();

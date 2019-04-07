@@ -125,7 +125,7 @@ namespace VSS.TRex.Pipelines
           {
             Log.LogDebug($"Has Design {filter.SpatialFilter.SurfaceDesignMaskDesignUid}, ANDing with OverallExistMap");
 
-            ISubGridTreeBitMask mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+            var mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
             if (mask != null)
               Pipeline.OverallExistenceMap.SetOp_AND(mask);

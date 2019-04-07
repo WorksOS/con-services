@@ -6,6 +6,7 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Records;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -51,6 +52,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     [Fact]
@@ -99,7 +101,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       AddApplicationGridRouting();
 
       BuildModelForSingleCellPassCount(out var siteModel, 0.5f);
-      siteModel.MachinesTargetValues[0].TargetPassCountStateEvents.PutValueAtDate(DateTime.MinValue, 10);
+      siteModel.MachinesTargetValues[0].TargetPassCountStateEvents.PutValueAtDate(VSS.TRex.Common.Consts.MIN_DATETIME_AS_UTC, 10);
 
       var operation = new PassCountStatisticsOperation();
 

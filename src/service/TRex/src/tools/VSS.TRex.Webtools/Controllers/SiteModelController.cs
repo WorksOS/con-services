@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Logging;
 using VSS.TRex.SiteModels.Interfaces;
@@ -57,7 +58,7 @@ namespace VSS.TRex.Webtools.Controllers
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
 
       if (siteModel == null)
-        return new JsonResult(new Tuple<DateTime, DateTime>(DateTime.MinValue, DateTime.MinValue));
+        return new JsonResult(new Tuple<DateTime, DateTime>(Common.Consts.MIN_DATETIME_AS_UTC, Common.Consts.MIN_DATETIME_AS_UTC));
 
       var startEndDates = siteModel.GetDateRange();
 
@@ -72,7 +73,7 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpGet("{siteModelID}/existencemap/subgridcount")]
     public JsonResult GetSubGridCount(string siteModelID)
     {
-      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistenceMap?.CountBits() ?? 0);
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistenceMap.CountBits() ?? 0);
     }
 
     /// <summary>

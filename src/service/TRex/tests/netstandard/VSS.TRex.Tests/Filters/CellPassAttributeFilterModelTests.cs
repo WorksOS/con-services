@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.BinarizableSerialization;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Tests.Filters
         ElevationRangeOffset = 5.0,
         ElevationRangeThickness = 6.0,
         ElevationType = ElevationType.Highest,
-        EndTime = DateTime.MaxValue,
+        EndTime = Consts.MAX_DATETIME_AS_UTC,
         FilterTemperatureByLastPass = true,
         GCSGuidanceMode = AutomaticsType.Manual,
         GPSAccuracyIsInclusive = true,
@@ -67,7 +68,7 @@ namespace VSS.TRex.Tests.Filters
         PositioningTech = PositioningTech.UTS,
         RequestedGridDataType = GridDataType.CellProfile,
         ReturnEarliestFilteredCellPass = true,
-        StartTime = DateTime.MinValue,
+        StartTime = TRex.Common.Consts.MIN_DATETIME_AS_UTC,
         VibeState = VibrationState.On       
       };
 

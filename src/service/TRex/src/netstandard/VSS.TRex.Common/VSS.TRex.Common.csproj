@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Cells\**" />
+    <EmbeddedResource Remove="Cells\**" />
+    <None Remove="Cells\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DeepCloner" Version="0.10.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
@@ -23,8 +29,11 @@
     <ProjectReference Include="..\..\..\..\..\Common\AWS.TransferProxy\src\VSS.AWS.TransferProxy.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\interfaces\VSS.TRex.Common.Interfaces\VSS.TRex.Common.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
   </ItemGroup>
 
 </Project>

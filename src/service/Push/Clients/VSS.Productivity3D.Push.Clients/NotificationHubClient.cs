@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Productivity.Push.Models.Attributes;
 using VSS.Productivity.Push.Models.Enums;
@@ -21,20 +22,22 @@ namespace VSS.Productivity3D.Push.Clients
   /// </summary>
   public class NotificationHubClient : BaseClient, INotificationHubClient
   {
-    private const string URL_KEY = "NOTIFICATION_HUB_URL";
+    public const string ROUTE = "/notifications";
 
     private List<MethodInfo> methodInfoCache = null;
     private readonly object methodInfoLock = new object();
 
     private readonly IServiceProvider serviceProvider;
-    
-    public NotificationHubClient(IServiceProvider serviceProvider, IConfigurationStore configuration, ILoggerFactory loggerFactory) : base(configuration, loggerFactory)
+
+    public NotificationHubClient(IServiceProvider serviceProvider, IConfigurationStore configuration,
+      IServiceResolution resolution,
+      ILoggerFactory loggerFactory) : base(configuration, resolution, loggerFactory)
     {
       this.serviceProvider = serviceProvider;
     }
 
     /// <inheritdoc />
-    public override string UrlKey => URL_KEY;
+    public override string HubRoute => ROUTE;
 
     /// <inheritdoc />
     /// <summary>
