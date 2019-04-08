@@ -14,6 +14,7 @@ namespace VSS.TRex.GridFabric.Servers
     /// </summary>
     public abstract class IgniteServer : IDisposable
     {
+        public const string TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = "TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE";
         public const int DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
 
         /// <summary>
