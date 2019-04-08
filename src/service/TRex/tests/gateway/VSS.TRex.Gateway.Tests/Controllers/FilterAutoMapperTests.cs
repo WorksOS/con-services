@@ -111,7 +111,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     public void MapFilterResultHasTimeFilterToCombinedFilter()
     {
       var filter = Filter.CreateFilter(
-        new DateTime(2018, 1, 10), new DateTime(2019, 2, 11), null, null,
+        DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
+        DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc),
+        null, null,
         new List<MachineDetails>(0), null, null, 
         null, null, null, null
       );

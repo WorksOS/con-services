@@ -25,10 +25,6 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value && src.ReturnEarliest.Value == true;
         
         var contributingMachines = new Guid[0];
-        // todoJeannie
-        //  set siteModel 
-        //  should check if any machines are valid for site??
-        // validate
         if (src.ContributingMachines != null && src.ContributingMachines.Count > 0)
           contributingMachines = (src.ContributingMachines.Where(m => m.AssetUid.HasValue)
           .Select(m => m.AssetUid.Value).ToArray());
@@ -37,8 +33,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         return new CellPassAttributeFilter
         {
           HasTimeFilter = src.StartUtc.HasValue && src.EndUtc.HasValue,
-          StartTime = src.StartUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC,
-          EndTime = src.EndUtc ?? TRex.Common.Consts.MAX_DATETIME_AS_UTC,
+          StartTime = src.StartUtc ?? Consts.MIN_DATETIME_AS_UTC,
+          EndTime = src.EndUtc ?? Consts.MAX_DATETIME_AS_UTC,
 
           HasMachineFilter = contributingMachines.Length > 0,
           MachinesList = contributingMachines,
@@ -55,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           HasLayerStateFilter = src.LayerType.HasValue,
           LayerState = src.LayerType.HasValue ? LayerState.On : LayerState.Off,
 
-          HasElevationMappingModeFilter = false, // todoJeannie help, does this have something to do with LayerType/Number?
+          HasElevationMappingModeFilter = false, // does this have something to do with LayerType/Number?
 
           HasElevationTypeFilter = src.ReturnEarliest.HasValue,
           ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
@@ -64,16 +60,16 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           HasGCSGuidanceModeFilter = src.AutomaticsType.HasValue,
           GCSGuidanceMode = src.AutomaticsType ?? AutomaticsType.Unknown,
 
-          HasGPSAccuracyFilter = false,     // todoJeannie this filter is not set-able in FilterResult (GPSAccuracy)
-          HasGPSToleranceFilter = false,    // todoJeannie this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
-          HasPositioningTechFilter = false, // todoJeannie this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
+          HasGPSAccuracyFilter = false,     // this filter is not set-able in FilterResult (GPSAccuracy)
+          HasGPSToleranceFilter = false,    // this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
+          HasPositioningTechFilter = false, // this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
 
           HasLayerIDFilter = src.LayerNumber.HasValue,
           LayerID = (int) (src.LayerNumber ?? CellPassConsts.NullLayerID),
 
-          HasElevationRangeFilter = false,  // todoJeannie help, does this have something to do with LayerType/Number?
-          HasPassTypeFilter = false,        // todoJeannie this filter is not set-able in FilterResult (bladeOnGround)
-          HasCompactionMachinesOnlyFilter = false, // todoJeannie this filter is not set-able in FilterResult (compactorDataOnly)
+          HasElevationRangeFilter = false,  // does this have something to do with LayerType/Number?
+          HasPassTypeFilter = false,        // this filter is not set-able in FilterResult (bladeOnGround)
+          HasCompactionMachinesOnlyFilter = false, // this filter is not set-able in FilterResult (compactorDataOnly)
 
           HasTemperatureRangeFilter = src.TemperatureRangeMin.HasValue && src.TemperatureRangeMax.HasValue,
           MaterialTemperatureMin = (ushort) (src.TemperatureRangeMin ?? CellPassConsts.NullMaterialTemperatureValue),

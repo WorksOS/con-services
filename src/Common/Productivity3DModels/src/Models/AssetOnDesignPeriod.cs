@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Models.Models
     ///     the designNames will be the same in both systems and can be used for matching
     /// </summary>
     [JsonProperty(PropertyName = "designName")]
-    public string Name { get; private set; } // todoJeannie add to Trex return and Raptor?
+    public string Name { get; private set; } 
 
     /// <summary>
     ///The Trex OR Raptor design identifier.
