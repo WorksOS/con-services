@@ -101,6 +101,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <Optimize>true</Optimize>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   
     <ItemGroup>
     <Reference Update="System.Xml.Linq">
