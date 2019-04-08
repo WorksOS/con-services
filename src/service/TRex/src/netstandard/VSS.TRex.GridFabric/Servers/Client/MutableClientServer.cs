@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
+using VSS.ConfigurationStore;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
@@ -111,7 +112,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
-            PublicThreadPoolSize = 50,
+            PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE", DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE),
 
             PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled,
 

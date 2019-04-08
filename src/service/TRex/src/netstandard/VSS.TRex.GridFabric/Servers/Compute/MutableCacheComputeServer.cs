@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
+using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
@@ -112,7 +113,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       // Set an Ignite metrics heartbeat of 10 seconds
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
 
-      cfg.PublicThreadPoolSize = 50;
+      cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE", DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE);
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
 

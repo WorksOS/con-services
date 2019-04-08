@@ -14,6 +14,8 @@ namespace VSS.TRex.GridFabric.Servers
     /// </summary>
     public abstract class IgniteServer : IDisposable
     {
+        public const int DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
+
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance
         /// </summary>
