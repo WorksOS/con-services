@@ -84,7 +84,7 @@ namespace VSS.TRex.SurveyedSurfaces
     public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
     {
       if (asAtDate.Kind != DateTimeKind.Utc)
-        throw new TRexException("AsAtDate must be a UTC date time");
+        throw new ArgumentException("AsAtDate must be a UTC date time");
 
       ISurveyedSurfaces ss = Load(siteModelUid);
       ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);

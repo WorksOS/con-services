@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Types
+﻿using System;
+
+namespace VSS.TRex.Types
 {
     public struct TargetPassCountRange
     {
@@ -7,6 +9,8 @@
 
       public void SetMinMax(ushort min, ushort max)
       {
+        if (max < min)
+          throw new ArgumentException("Minimum value must be greater than or equal to minimum value.");
         Min = min;
         Max = max;
       }
