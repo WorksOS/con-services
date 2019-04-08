@@ -151,13 +151,12 @@ namespace VSS.TRex.CoordinateSystems
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
         var log = DIContext.Obtain<ILoggerFactory>().CreateLogger(nameof(NEEToLLH));
-        log.LogError($"{nameof(ConvertCoordinates)} Failed to convert Coordinates NEEToLLH. Error {result.ErrorCode} Coords: {JsonConvert.SerializeObject(result.LLHCoordinates)}");
+        log.LogError($"{nameof(NEEToLLH)} Failed to convert Coordinates NEEToLLH. Error: {result.ErrorCode} Coords: {JsonConvert.SerializeObject(result.LLHCoordinates)}");
 
         return (result.ErrorCode, null);
       }
 
       var LLHCoords = new XYZ[result.LLHCoordinates.Length];
-
       for (var i = 0; i < result.LLHCoordinates.Length; i++)
       {
         LLHCoords[i].X = result.LLHCoordinates[i].Longitude;
