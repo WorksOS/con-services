@@ -15,10 +15,11 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     [Fact]
     public void Test_TAGFileBufferQueueItem()
     {
+      var testDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1, 1), DateTimeKind.Utc);
       var filter = new TAGFileBufferQueueItem
       {
         Content = new byte[] {1, 10, 25, 100},
-        InsertUTC = new DateTime(2000, 1, 1, 1, 1, 1, 1),
+        InsertUTC = testDate,
         ProjectID = Guid.NewGuid(),
         AssetID = Guid.NewGuid(),
         IsJohnDoe = true,
@@ -28,7 +29,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = SimpleBinarizableInstanceTester.TestClass(filter, "Custom TAGFileBufferQueueItem not same after round trip serialisation");
 
       Assert.True(result.member.FileName.Equals("fileName") &&
-                  result.member.InsertUTC.Equals(new DateTime(2000, 1, 1, 1, 1, 1, 1)), 
+                  result.member.InsertUTC.Equals(testDate), 
         "Post IEquality<T> comparer based comparison failure");
     }
   }

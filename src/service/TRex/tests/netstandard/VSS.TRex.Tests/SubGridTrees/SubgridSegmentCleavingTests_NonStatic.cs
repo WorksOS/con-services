@@ -322,7 +322,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       // Create a subgrid to hold the segment
       var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
-      subGrid.Cells.PassesData[0].SegmentInfo.EndTime = new DateTime(1900, 1, 1);
+      subGrid.Cells.PassesData[0].SegmentInfo.EndTime = DateTime.SpecifyKind(new DateTime(1900, 1, 1), DateTimeKind.Utc);
 
       Assert.False(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Modified invalid segment passes bounds test");
     }

@@ -49,14 +49,14 @@ namespace TAGFiles.Tests
             Fence interpolationFence = new Fence();
             interpolationFence.SetRectangleFence(0, 0, 1, 1);
 
-            DateTime StartTime = new DateTime(2000, 1, 1, 1, 1, 1);
+            DateTime StartTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
             processor.DataLeft = new XYZ(0, 0, 5);
             processor.DataRight = new XYZ(1, 0, 5);
             processor.DataTime = StartTime;
 
             Assert.True(processor.ProcessEpochContext(), "ProcessEpochContext returned false in default TAGProcessor state (1)");
 
-            DateTime EndTime = new DateTime(2000, 1, 1, 1, 1, 3);
+            DateTime EndTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 3), DateTimeKind.Utc);
             processor.DataLeft = new XYZ(0, 1, 5);
             processor.DataRight = new XYZ(1, 1, 5);
             processor.DataTime = EndTime;
@@ -86,7 +86,7 @@ namespace TAGFiles.Tests
             Fence interpolationFence = new Fence();
             interpolationFence.SetRectangleFence(0, 0, 1, 1);
         
-            DateTime StartTime = new DateTime(2000, 1, 1, 1, 1, 1);
+            DateTime StartTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
             processor.DataLeft = new XYZ(0, 0, 5);
             processor.DataRight = new XYZ(1, 0, 5);
             processor.DataTime = StartTime;
@@ -108,7 +108,7 @@ namespace TAGFiles.Tests
             // a "Stop recording event". In this instance, the NoGPSModeSet flag will also be true which should trigger emission of 
             // a 'NoGPS' GPS mode state event and a 'UTS' positioning technology state event
 
-            DateTime eventDate = new DateTime(2000, 1, 1, 1, 1, 1);
+            DateTime eventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
 
             // Setting the first data time will create the start event
             processor.DataTime = eventDate;

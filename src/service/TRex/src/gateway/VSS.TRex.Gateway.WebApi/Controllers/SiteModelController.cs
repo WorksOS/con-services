@@ -83,6 +83,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return result;
     }
 
+    
     /// <summary>
     /// Returns list of machines which have contributed to a site model.
     /// </summary>
@@ -99,7 +100,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       if (string.IsNullOrEmpty(siteModel.CSIB()))
       {
         Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
-        return (MachineExecutionResult) new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
+        throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "The SiteModel has no CSIB."));
       }
 
       var machines = siteModel.Machines.ToList();
@@ -112,7 +113,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
           result.MachineStatuses = resultMachines;
         else
-          return (MachineExecutionResult) new ContractExecutionResult(response);
+          throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(response, $"Unable to convert last known machine locations to LLH. machineLocations: {JsonConvert.SerializeObject(machines)}. CSIB: {siteModel.CSIB()}"));
       }
 
       return result;

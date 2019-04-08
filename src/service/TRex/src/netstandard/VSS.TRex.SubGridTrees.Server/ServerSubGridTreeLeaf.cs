@@ -72,8 +72,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         private void InitialiseStartEndTime()
         {
-            LeafStartTime = DateTime.MaxValue;
-            LeafEndTime = DateTime.MinValue;
+            LeafStartTime = Consts.MAX_DATETIME_AS_UTC;
+            LeafEndTime = Consts.MIN_DATETIME_AS_UTC; 
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace VSS.TRex.SubGridTrees.Server
             if (Segment == null)
                 throw new TRexSubGridTreeException("Cells.SelectSegment failed to return a segment");
 
-            if (Pass.Time == DateTime.MinValue || Pass.Time.Kind != DateTimeKind.Utc)
-              throw new TRexSubGridTreeException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time");
+            if (Pass.Time == Consts.MIN_DATETIME_AS_UTC || Pass.Time.Kind != DateTimeKind.Utc)
+                throw new TRexSubGridTreeException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time");
 
             if (!Segment.HasAllPasses)
                 Segment.AllocateFullPassStacks();
@@ -337,25 +337,21 @@ namespace VSS.TRex.SubGridTrees.Server
                                                          out bool MDPFromLatestCellPass,
                                                          out bool CCAFromLatestCellPass)
         {
-            if (CellPasses.Length == 0)
-              throw new ArgumentException($"{nameof(CalculateLatestPassDataForPassStack)} called with a cell pass stack containing no passes");
-
             int LastPassIndex = CellPasses.Length - 1;
 
-            LatestData.Time = CellPasses[LastPassIndex].Time;
-            LatestData.InternalSiteModelMachineIndex = CellPasses[LastPassIndex].InternalSiteModelMachineIndex;
-
-            if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
+            if (LastPassIndex >= 0)
             {
+              LatestData.Time = CellPasses[LastPassIndex].Time;
+              LatestData.InternalSiteModelMachineIndex = CellPasses[LastPassIndex].InternalSiteModelMachineIndex;
+
+              if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
                 LatestData.Height = CellPasses[LastPassIndex].Height;
-            }
 
-            if (CellPasses[LastPassIndex].RadioLatency != CellPassConsts.NullRadioLatency)
-            {
+              if (CellPasses[LastPassIndex].RadioLatency != CellPassConsts.NullRadioLatency)
                 LatestData.RadioLatency = CellPasses[LastPassIndex].RadioLatency;
-            }
 
-            LatestData.MachineSpeed = CellPasses[LastPassIndex].MachineSpeed;
+              LatestData.MachineSpeed = CellPasses[LastPassIndex].MachineSpeed;
+            }
 
             GetAppropriateLatestValueFor(CellPasses, ref LatestData, LastPassIndex, GridDataType.GPSMode, out GPSModeFromLatestCellPass);
             GetAppropriateLatestValueFor(CellPasses, ref LatestData, LastPassIndex, GridDataType.CCV, out CCVFromLatestCellPass);
@@ -386,20 +382,14 @@ namespace VSS.TRex.SubGridTrees.Server
                                                        ISubGridCellPassesDataSegment TemporallyPrecedingSegment)
         {
             if (Segment.PassesData == null)
-            {
-                Log.LogCritical($"CalculateLatestPassGridForSegment passed a segment in {Moniker()} with no cell passes allocated");
-                return;
-            }
+              throw new TRexSubGridTreeException($"{nameof(CalculateLatestPassGridForSegment)} passed a segment in {Moniker()} with no cell passes allocated");
+
+            if (Cells == null)
+              throw new TRexSubGridTreeException($"Cell passes store for {Moniker()} not instantiated");
 
             Segment.AllocateLatestPassGrid();
             Segment.LatestPasses.Clear();
             Segment.Dirty = true;
-
-            if (Cells == null)
-            {
-                Log.LogCritical($"Cell passes store for {Moniker()} not instantiated");
-                return;
-            }
 
             // Seed the latest value tags for this segment with the latest data from the previous segment
             if (TemporallyPrecedingSegment != null)
@@ -482,22 +472,21 @@ namespace VSS.TRex.SubGridTrees.Server
             ISubGridCellLatestPassDataWrapper _GlobalLatestCells = Directory.GlobalLatestCells;
             ISubGridCellLatestPassDataWrapper _LatestPasses = Segment.LatestPasses;
 
-            if (_LatestPasses == null)
-              throw new TRexSubGridTreeException("Cell latest pass store not instantiated");
+            if (_LatestPasses != null)
+            {
+              _GlobalLatestCells.Clear();
+              _GlobalLatestCells.Assign(_LatestPasses);
 
-            _GlobalLatestCells.Clear();
-            _GlobalLatestCells.Assign(_LatestPasses);
-
-            Segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
+              Segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) =>
+                ((SubGridCellLatestPassDataWrapper_NonStatic) _GlobalLatestCells).PassData[x, y] =
+                ((SubGridCellLatestPassDataWrapper_NonStatic) _LatestPasses).PassData[x, y]);
+            }
         }
 
         public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
         {
             if (!Dirty)
-            {
-                Log.LogCritical($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
-                return;
-            }
+              throw new TRexSubGridTreeException($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
 
             ISubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory, storageProxy)
             {
@@ -661,10 +650,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
       public bool LoadDirectoryFromStream(Stream stream)
         {
-            BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true);
-            SubGridStreamHeader Header = new SubGridStreamHeader(reader);
+            var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            var Header = new SubGridStreamHeader(reader);
 
-            // LatestPassData: TICSubGridCellLatestPassData;
             // long LatestCellPassDataSize;
             // long CellPassStacksDataSize;
 
@@ -675,10 +663,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             if (!Header.IsSubGridDirectoryFile)
-            {
-                Log.LogCritical("Sub grid directory file does not identify itself as such in extended header flags");
-                return false;
-            }
+              throw new TRexSubGridIOException("Sub grid directory file does not identify itself as such in extended header flags");
 
             //  FLastUpdateTimeUTC := Header.LastUpdateTimeUTC;
             LeafStartTime = Header.StartTime;
@@ -696,7 +681,7 @@ namespace VSS.TRex.SubGridTrees.Server
             Directory.AllocateGlobalLatestCells();
 
             if (Header.Version == 1)
-                Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
+              Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
             else
               Log.LogError($"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {Header.Identifier}]).");
 

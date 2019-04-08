@@ -55,11 +55,11 @@ namespace VSS.TRex.GridFabric.Queues
                     KeepBinaryInStore = true
                 });
 
-            Add(DateTime.Now, "First");
-            Add(DateTime.Now, "Second");
-            Add(DateTime.Now, "Third");
-            Add(DateTime.Now, "Fourth");
-            Add(DateTime.Now, "Fifth");
+            Add(DateTime.UtcNow, "First");
+            Add(DateTime.UtcNow, "Second");
+            Add(DateTime.UtcNow, "Third");
+            Add(DateTime.UtcNow, "Fourth");
+            Add(DateTime.UtcNow, "Fifth");
         }
 
         public IEnumerable<TestQueueItem> Query(DateTime earlierThan)

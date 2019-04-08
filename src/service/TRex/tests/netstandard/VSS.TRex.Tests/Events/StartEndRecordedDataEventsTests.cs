@@ -32,8 +32,8 @@ namespace VSS.TRex.Tests.Events
             StartEndProductionEvents events =
                 new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
-            var firstEventDate = new DateTime(2000, 1, 1, 0, 0, 0);
-            var secondEventDate = new DateTime(2000, 1, 1, 1, 0, 0);
+            var firstEventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+            var secondEventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0), DateTimeKind.Utc);
 
             void CheckEvents()
             {
@@ -60,10 +60,10 @@ namespace VSS.TRex.Tests.Events
             CheckEvents();
         }
 
-        public static DateTime outerFirstEventDate = new DateTime(2000, 1, 1, 0, 0, 0);
-        public static DateTime innerFirstEventDate = new DateTime(2000, 1, 1, 0, 10, 0);
-        public static DateTime innerSecondEventDate = new DateTime(2000, 1, 1, 0, 20, 0);
-        public static DateTime outerSecondEventDate = new DateTime(2000, 1, 1, 1, 0, 0);
+        public static DateTime outerFirstEventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
+        public static DateTime innerFirstEventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 10, 0), DateTimeKind.Utc);
+        public static DateTime innerSecondEventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 20, 0), DateTimeKind.Utc);
+        public static DateTime outerSecondEventDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0), DateTimeKind.Utc);
 
         public static IEnumerable<object[]> InnerOuterEventDates(int numTests)
         {
@@ -158,7 +158,7 @@ namespace VSS.TRex.Tests.Events
         StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
       
         // Construct an array of 50 dates one minute apart
-        var dateTimes = Enumerable.Range(0, 50).Select(x => new DateTime(2000, 1, 1, 1, x, 0)).ToArray();
+        var dateTimes = Enumerable.Range(0, 50).Select(x => DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, x, 0), DateTimeKind.Utc)).ToArray();
 
         // Make simplest event list
         events.PutValueAtDate(dateTimes[0], ProductionEventType.StartEvent);
@@ -189,7 +189,7 @@ namespace VSS.TRex.Tests.Events
         StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
         // Construct an array of 50 dates one minute apart
-        var dateTimes = Enumerable.Range(0, 50).Select(x => new DateTime(2000, 1, 1, 1, x, 0)).ToArray();
+        var dateTimes = Enumerable.Range(0, 50).Select(x => DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, x, 0), DateTimeKind.Utc)).ToArray();
 
         // mimic many additions of start end events completely covering the wider interval
         for (int i = 0; i < dateTimes.Length - 1; i++)
@@ -210,7 +210,7 @@ namespace VSS.TRex.Tests.Events
         StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
         // Construct an array of 50 dates one minute apart
-        var dateTimes = Enumerable.Range(0, 50).Select(x => new DateTime(2000, 1, 1, 1, x, 0)).ToArray();
+        var dateTimes = Enumerable.Range(0, 50).Select(x => DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, x, 0), DateTimeKind.Utc)).ToArray();
 
         // mimic many additions of start end events completely covering the wider interval
         for (int i = dateTimes.Length - 2; i >= 0; i--)
@@ -231,10 +231,10 @@ namespace VSS.TRex.Tests.Events
         StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
         // Add four events that should result in the following order -> Start-Start-End-End before sorting
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 0, 0), ProductionEventType.StartEvent);
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 0), ProductionEventType.EndEvent);
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 0), ProductionEventType.StartEvent);
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 2, 0), ProductionEventType.EndEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 2, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
 
         Assert.True(events.Events.Count == 4);
         Assert.True(events.Events[0].State == ProductionEventType.StartEvent, "Unexpected order before sorting");
@@ -266,30 +266,30 @@ namespace VSS.TRex.Tests.Events
     {
       // Add four events that should result in two separate start end pairs
       StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 0, 0, 0), ProductionEventType.StartEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 1, 0), ProductionEventType.EndEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 3, 0), ProductionEventType.StartEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 2, 5, 0), ProductionEventType.EndEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 3, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 2, 5, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
 
       events.Collate(null);
       Assert.True(events.Count() == 4, $"[No slop] Event count not 4 after collation of internal start/end pairs (length is {events.Count()})");
 
       // Add four events that should result in one separate start end pair, with just < 1 second slop
       events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 0, 0, 0), ProductionEventType.StartEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 1, 1), ProductionEventType.EndEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 2, 0), ProductionEventType.StartEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 2, 5, 0), ProductionEventType.EndEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1, 1), DateTimeKind.Utc), ProductionEventType.EndEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 2, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 2, 5, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
 
       events.Collate(null);
       Assert.True(events.Count() == 2, $"[Slop < 1000ms] Event count not 2 after collation of internal start/end pairs (length is {events.Count()})");
 
       // Add four events that should result in two separate start end pairs, with > 1 second slop
       events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 0, 0, 0), ProductionEventType.StartEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 1, 0), ProductionEventType.EndEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 2, 1), ProductionEventType.StartEvent);
-      events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 2, 5, 0), ProductionEventType.EndEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 2, 1), DateTimeKind.Utc), ProductionEventType.StartEvent);
+      events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 2, 5, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
 
       events.Collate(null);
       Assert.True(events.Count() == 4, $"[Slop > 1000ms] Event count not 4 after collation of internal start/end pairs (length is {events.Count()})");
@@ -300,9 +300,9 @@ namespace VSS.TRex.Tests.Events
       {
         StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 0, 0), ProductionEventType.StartEvent);
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 0), ProductionEventType.EndEvent);
-        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 2, 0), ProductionEventType.StartEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 0, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 0), DateTimeKind.Utc), ProductionEventType.EndEvent);
+        events.PutValueAtDate(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 2, 0), DateTimeKind.Utc), ProductionEventType.StartEvent);
 
         Assert.False(events.Events[0].EquivalentTo(events.Events[1]), "Events 0 & 1 are equivalent-to when they are not");
         Assert.True(events.Events[0].EquivalentTo(events.Events[2]), "Events 1 & 2 are not equivalent-to when they are");

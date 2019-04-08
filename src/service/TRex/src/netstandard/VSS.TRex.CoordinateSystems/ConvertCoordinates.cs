@@ -14,6 +14,8 @@ using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.HttpClients;
 using VSS.TRex.Types;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.TRex.CoordinateSystems
 {
@@ -27,7 +29,7 @@ namespace VSS.TRex.CoordinateSystems
   public static class ConvertCoordinates
   {
     private static readonly object lockObject = new object();
-
+    
     static ConvertCoordinates()
     {
       var configurationStore = DIContext.Obtain<IConfigurationStore>();
@@ -148,6 +150,9 @@ namespace VSS.TRex.CoordinateSystems
       var result = serviceClient.GetLLHFromNEEAsync(id, coordinates.ToNEERequestArray()).Result;
       if (result.ErrorCode != RequestErrorStatus.OK)
       {
+        var log = DIContext.Obtain<ILoggerFactory>().CreateLogger(nameof(NEEToLLH));
+        log.LogError($"{nameof(ConvertCoordinates)} Failed to convert Coordinates NEEToLLH. Error {result.ErrorCode} Coords: {JsonConvert.SerializeObject(result.LLHCoordinates)}");
+
         return (result.ErrorCode, null);
       }
 

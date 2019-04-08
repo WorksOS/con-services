@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -81,7 +82,7 @@ namespace VSS.TRex.SubGridTrees.Client
           return filteredValue.FilteredPass.MDP == CellPassConsts.NullMDP;
 
         default:
-          return filteredValue.FilteredPass.Time == DateTime.MinValue;
+          return filteredValue.FilteredPass.Time == Consts.MIN_DATETIME_AS_UTC;
       }
     }
 
@@ -99,8 +100,8 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         Cells[x, y] = new ClientCellProfileLeafSubgridRecord
         {
-          LastPassTime = new DateTime(x * 1000 + y + 1),
-          PassCount = x + y,
+          LastPassTime = DateTime.SpecifyKind(new DateTime(x * 1000 + y + 1), DateTimeKind.Utc),
+          PassCount = x + y
         };
       });
     }

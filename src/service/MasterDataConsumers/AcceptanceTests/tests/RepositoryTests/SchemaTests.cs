@@ -134,7 +134,6 @@ namespace RepositoryTests
       };
       CheckSchema(tableName, columnNames);
     }
-
     [TestMethod]
     public void ImportedFileHistorySchemaExists()
     {

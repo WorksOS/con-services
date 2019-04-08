@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events
@@ -24,8 +25,8 @@ namespace VSS.TRex.Events
     {
       EventList = (IProductionEvents<T>)machineEventLists.GetEventList(eventType);
 
-      StartDate = DateTime.MinValue;
-      EndDate = DateTime.MinValue;
+      StartDate = Consts.MIN_DATETIME_AS_UTC;
+      EndDate = Consts.MIN_DATETIME_AS_UTC;
       Index = -1;
       Stamp = -1;
       ThisEvent = default;
@@ -60,7 +61,7 @@ namespace VSS.TRex.Events
         else
         {
           NewNextEvent = default;
-          NewEndDate = DateTime.MaxValue;
+          NewEndDate = Consts.MAX_DATETIME_AS_UTC;
         }
 
         if (_time < NewEndDate)
@@ -88,7 +89,7 @@ namespace VSS.TRex.Events
       if (Index < 0)
       {
         // There was no event logged at the time which is possible for example with map reset events
-        StartDate = DateTime.MinValue;
+        StartDate = Consts.MIN_DATETIME_AS_UTC;
 
         if (EventListCount > 0)
         {
@@ -97,7 +98,7 @@ namespace VSS.TRex.Events
         else
         {
           ThisEvent = default;
-          EndDate = DateTime.MaxValue;
+          EndDate = Consts.MAX_DATETIME_AS_UTC;
         }
 
         NextEvent = default;
@@ -115,14 +116,14 @@ namespace VSS.TRex.Events
         else
         {
           NextEvent = default;
-          EndDate = DateTime.MaxValue;
+          EndDate = Consts.MAX_DATETIME_AS_UTC;
         }
       }
       else if (EventListCount == 0)
       {
         // if there are no events in the list then just use the null/default value for all lookups
-        StartDate = DateTime.MinValue;
-        EndDate = DateTime.MaxValue;
+        StartDate = Consts.MIN_DATETIME_AS_UTC;
+        EndDate = Consts.MAX_DATETIME_AS_UTC;
         ThisEvent = default;
         NextEvent = default;
       }

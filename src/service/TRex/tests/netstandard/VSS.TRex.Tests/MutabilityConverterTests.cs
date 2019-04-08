@@ -3,8 +3,8 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -50,7 +50,7 @@ namespace VSS.TRex.Tests
         PassType = PassType.Track,
         RadioLatency = 109,
         RMV = 110,
-        Time = new DateTime(2000, 1, 2, 3, 4, 5)
+        Time = DateTime.SpecifyKind(new DateTime(2000, 1, 2, 3, 4, 5), DateTimeKind.Utc)
       };
     }
 
@@ -139,7 +139,7 @@ namespace VSS.TRex.Tests
         }
       });
 
-      mutableSegment.SegmentInfo = new SubGridCellPassesDataSegmentInfo(DateTime.MinValue, DateTime.MaxValue, null);
+      mutableSegment.SegmentInfo = new SubGridCellPassesDataSegmentInfo(Consts.MIN_DATETIME_AS_UTC, Consts.MAX_DATETIME_AS_UTC, null);
 
       // Take a copy of the mutable cells and cell passes for later reference
       var mutableLatest = mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;

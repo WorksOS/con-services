@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(context.MRUList == null);
       Assert.True(context.OwnerMemoryCache == null);
       Assert.False(context.MarkedForRemoval);
-      Assert.True(context.MarkedForRemovalAtUtc == DateTime.MinValue);
+      Assert.True(context.MarkedForRemovalAtUtc == TRex.Common.Consts.MIN_DATETIME_AS_UTC);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ namespace VSS.TRex.Tests.Caching
 
       context.Reanimate();
       Assert.False(context.MarkedForRemoval, "Marking context for removal did not set state");
-      Assert.True(context.MarkedForRemovalAtUtc == DateTime.MinValue, "Marking context for removal did not set date");
+      Assert.True(context.MarkedForRemovalAtUtc == TRex.Common.Consts.MIN_DATETIME_AS_UTC, "Marking context for removal did not set date");
     }
 
     [Fact]
@@ -187,7 +187,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
 
       Assert.False(context.MarkedForRemoval, "Marking context for removal did not set state");
-      Assert.True(context.MarkedForRemovalAtUtc == DateTime.MinValue, "Marking context for removal did not set date");
+      Assert.True(context.MarkedForRemovalAtUtc == TRex.Common.Consts.MIN_DATETIME_AS_UTC, "Marking context for removal did not set date");
     }
 
     [Fact]

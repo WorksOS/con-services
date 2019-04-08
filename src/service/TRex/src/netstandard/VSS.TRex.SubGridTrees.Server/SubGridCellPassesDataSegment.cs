@@ -22,8 +22,8 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public bool Dirty { get; set; }
 
-    public DateTime StartTime = DateTime.MinValue;
-    public DateTime EndTime = DateTime.MaxValue;
+    public DateTime StartTime = Consts.MIN_DATETIME_AS_UTC;
+    public DateTime EndTime = Consts.MAX_DATETIME_AS_UTC;
 
     public IServerLeafSubGrid Owner { get; set; }
 
