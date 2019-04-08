@@ -112,6 +112,15 @@ namespace MockProjectWebApi.Services
 
       FilterData.Add(ConstantsUtil.DIMENSIONS_PROJECT_UID, filters2);
       FilterData.Add(ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID, filters2);
+
+      var kettlewellDriveFilters = new FilterListData
+      {
+        filterDescriptors = new List<FilterDescriptor>
+        {
+          FilterDescriptors.KettlewellDrive.MinElevationSingleCellPassMultiMode
+        }
+      };
+      FilterData.Add(ConstantsUtil.KETTLEWELL_DRIVE_PROJECT_UID, kettlewellDriveFilters);
     }
 
     private readonly List<FilterDescriptor> goldenDataFilterDescriptors = new List<FilterDescriptor>

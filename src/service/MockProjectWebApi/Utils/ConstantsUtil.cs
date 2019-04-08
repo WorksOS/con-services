@@ -25,7 +25,7 @@ namespace MockProjectWebApi.Utils
     public const string LANDFILL_PROJECT_UID = "e1f85c4d-04eb-463c-9a5b-9644c96e75ca";
 
     //Used for Minimum elevation mode tests
-    public const int KETTLEWELL_DRIVE_PROJECT_ID = 2000589;
+    public const int KETTLEWELL_DRIVE_PROJECT_ID = 1000589;
     public const string KETTLEWELL_DRIVE_PROJECT_UID = "0583c019-f92a-4762-94c1-ad13a98ecab6";
   }
 }

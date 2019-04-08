@@ -88,7 +88,7 @@ namespace MockProjectWebApi.Services
         },
         new ProjectData
         {
-          LegacyProjectId = 2000589,
+          LegacyProjectId = 1000589,
           ProjectUid = "0583c019-f92a-4762-94c1-ad13a98ecab6",
           ProjectType = ProjectType.Standard,
           Name = "Kettlewell Drive - Golden DS",
