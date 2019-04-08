@@ -64,7 +64,7 @@ namespace VSS.MasterData.ProjectTests
         FileSpaceId = _fileSpaceId,
         Name = "MoundRoadlinework.dxf",
         Path = "/BC Data/Sites/Chch Test Site/Designs/Mound Road",
-        ImportedFileTypeId = ImportedFileType.DesignSurface,
+        ImportedFileTypeId = ImportedFileType.Linework,
         CreatedUtc = DateTime.UtcNow
       };
 
@@ -88,7 +88,7 @@ namespace VSS.MasterData.ProjectTests
       var customHeaders = new Dictionary<string, string>();
       var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoadlinework.dxf";
+      var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
       var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
       var fileUpdatedUtc = fileCreatedUtc;
@@ -164,7 +164,7 @@ namespace VSS.MasterData.ProjectTests
           projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.IsNotNull(result);
-      Assert.AreEqual(0, result.Code, "Raptor Create should have been successfull");
+      Assert.AreEqual(0, result.Code, "Raptor Create should have been successful");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Create should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Raptor Create has invalid projectUid");
       Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Raptor Create has invalid name");
@@ -182,7 +182,7 @@ namespace VSS.MasterData.ProjectTests
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoadlinework.dxf";
+      var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
       var existingImportedFileList = new List<ImportedFile>();
       ImportedFile existingImportedFile = new ImportedFile()
@@ -231,7 +231,7 @@ namespace VSS.MasterData.ProjectTests
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
           projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.AreEqual(0, result.Code, "Raptor Update should have been successfull");
+      Assert.AreEqual(0, result.Code, "Raptor Update should have been successful");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Update should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Raptor Update has invalid projectUid");
       Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Raptor Update has invalid name");
@@ -244,9 +244,8 @@ namespace VSS.MasterData.ProjectTests
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoadlinework.dxf";
+      var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
-      var existingImportedFileList = new List<ImportedFile>();
       ImportedFile existingImportedFile = new ImportedFile()
       {
         ProjectUid = _projectUid,
@@ -320,7 +319,7 @@ namespace VSS.MasterData.ProjectTests
       var customHeaders = new Dictionary<string, string>();
       var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoadlinework.dxf";
+      var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
       var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
       var fileUpdatedUtc = fileCreatedUtc;
@@ -386,7 +385,7 @@ namespace VSS.MasterData.ProjectTests
           projectRepo.Object, null, null);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.IsNotNull(result);
-      Assert.AreEqual(0, result.Code, "Trex Create should have been successfull");
+      Assert.AreEqual(0, result.Code, "Trex Create should have been successful");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Create should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
       Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
@@ -399,9 +398,8 @@ namespace VSS.MasterData.ProjectTests
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoadlinework.dxf";
+      var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
-      var existingImportedFileList = new List<ImportedFile>();
       ImportedFile existingImportedFile = new ImportedFile()
       {
         ProjectUid = _projectUid,
@@ -442,7 +440,7 @@ namespace VSS.MasterData.ProjectTests
           null, null, null, null, tRexImportFileProxy.Object,
           projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.AreEqual(0, result.Code, "Trex Update should have been successfull");
+      Assert.AreEqual(0, result.Code, "Trex Update should have been successful");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Update should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Update has invalid projectUid");
       Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Update has invalid name");
@@ -458,8 +456,85 @@ namespace VSS.MasterData.ProjectTests
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
       var importedFileUid = Guid.NewGuid();
+      var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoadlinework.dxf";
+      var fileName = "MoundRoad.ttm";
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
+
+      ImportedFile existingImportedFile = new ImportedFile()
+      {
+        ProjectUid = _projectUid,
+        ImportedFileUid = importedFileUid.ToString(),
+        LegacyImportedFileId = 200000,
+        ImportedFileType = ImportedFileType.DesignSurface,
+        Name = fileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        ParentUid = null,
+        Offset = 0
+      };
+
+      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
+        Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder",
+        null, existingImportedFile.Offset
+      );
+
+
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
+
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var producer = new Mock<IKafka>();
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+
+      var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
+      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+
+      var filterServiceProxy = new Mock<IFilterServiceProxy>();
+      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new List<FilterDescriptor>());
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
+
+      var fileRepo = new Mock<IFileRepository>();
+      fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+      fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
+      var pegasusClient = new Mock<IPegasusClient>();
+
+      var executor = RequestExecutorContainerFactory
+        .Build<DeleteImportedFileExecutor>(
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          customHeaders, producer.Object, KafkaTopicName,null, null, null, filterServiceProxy.Object,
+          tRexImportFileProxy.Object, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
+      await executor.ProcessAsync(deleteImportedFile);
+    }
+
+    [TestMethod]
+    public async Task CreateImportedFile_TRexHappyPath_ReferenceSurface()
+    {
+      // FlowFile uploads the file from client (possibly as a background task via scheduler)
+      // Controller uploads file to TCC and/or S3
+      //    V2 Note: BCC file has already put the file on TCC.
+      //          the controller a) copies within TCC to client project (raptor)
+      //                         b) copies locally and hence to S3. (TRex)
+      var customHeaders = new Dictionary<string, string>();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
+      var offset = 1.5;
+      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
+      var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
       var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
       var fileUpdatedUtc = fileCreatedUtc;
@@ -470,9 +545,11 @@ namespace VSS.MasterData.ProjectTests
         ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
-        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = fileDescriptor.FileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        Offset = offset,
+        ParentUid = parentUid.ToString()
       };
 
       var createImportedFileEvent = new CreateImportedFileEvent
@@ -480,7 +557,7 @@ namespace VSS.MasterData.ProjectTests
         CustomerUID = Guid.Parse(_customerUid),
         ProjectUID = Guid.Parse(_projectUid),
         ImportedFileUID = importedFileUid,
-        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
         DxfUnitsType = DxfUnitsType.Meters,
         Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
@@ -488,13 +565,15 @@ namespace VSS.MasterData.ProjectTests
         FileUpdatedUtc = fileUpdatedUtc,
         ImportedBy = string.Empty,
         SurveyedUTC = null,
+        ParentUID = parentUid,
+        Offset = offset,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
 
       var createImportedFile = CreateImportedFile.Create(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, 
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset);
 
       var importedFilesList = new List<ImportedFile>(); importedFilesList.Add(newImportedFile);
 
@@ -523,10 +602,148 @@ namespace VSS.MasterData.ProjectTests
           projectRepo.Object, null, null);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.IsNotNull(result);
-      Assert.AreEqual(0, result.Code, "Trex Create should have been successfull");
+      Assert.AreEqual(0, result.Code, "Trex Create should have been successful");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Create should have returned single item");
       Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Create has invalid projectUid");
       Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Create has invalid name");
+    }
+
+    [TestMethod]
+    public async Task UpdateImportedFile_TRexHappyPath_ReferenceSurface()
+    {
+      var customHeaders = new Dictionary<string, string>();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
+      var oldOffset = 1.5;
+      var newOffset = 1.5;
+      var importedFileId = 9999;
+      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
+      var fileName = "MoundRoadlinework.dxf";
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
+      ImportedFile existingImportedFile = new ImportedFile()
+      {
+        ProjectUid = _projectUid,
+        ImportedFileUid = importedFileUid.ToString(),
+        LegacyImportedFileId = 200000,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
+        Name = fileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        Offset = oldOffset,
+        ParentUid = parentUid.ToString()
+      };
+      var importedFilesList = new List<ImportedFile>(); importedFilesList.Add(existingImportedFile);
+
+      var updateImportedFile = UpdateImportedFile.Create(
+       Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset
+      );
+
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
+
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var producer = new Mock<IKafka>();
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+
+      var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
+      tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
+      projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
+      projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
+
+      var executor = RequestExecutorContainerFactory
+        .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+          _customerUid, _userId, _userEmailAddress, customHeaders,
+          producer.Object, KafkaTopicName,
+          null, null, null, null, tRexImportFileProxy.Object,
+          projectRepo.Object);
+      var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
+      Assert.AreEqual(0, result.Code, "Trex Update should have been successful");
+      Assert.IsNotNull(result.ImportedFileDescriptor, "Trex Update should have returned single item");
+      Assert.AreEqual(_projectUid, result.ImportedFileDescriptor.ProjectUid, "Trex Update has invalid projectUid");
+      Assert.AreEqual(fileDescriptor.FileName, result.ImportedFileDescriptor.Name, "Trex Update has invalid name");
+      Assert.AreEqual(newOffset, result.ImportedFileDescriptor.Offset, "Trex Update has invalid offset");
+    }
+
+    [TestMethod]
+    public async Task DeleteImportedFile_TRexHappyPath_ReferenceSurface()
+    {
+      // FlowFile uploads the file from client (possibly as a background task via scheduler)
+      // Controller uploads file to TCC and/or S3
+      //    V2 Note: BCC file has already put the file on TCC.
+      //          the controller a) copies within TCC to client project (raptor)
+      //                         b) copies locally and hence to S3. (TRex)
+      var customHeaders = new Dictionary<string, string>();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
+      var offset = 1.5;
+      var importedFileId = 9999;
+      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
+      var fileName = "MoundRoad.ttm";
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
+
+      ImportedFile existingImportedFile = new ImportedFile()
+      {
+        ProjectUid = _projectUid,
+        ImportedFileUid = importedFileUid.ToString(),
+        LegacyImportedFileId = 200000,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
+        Name = fileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        ParentUid = parentUid.ToString(),
+        Offset = offset
+      };
+
+      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
+        Guid.Parse(_projectUid), ImportedFileType.ReferenceSurface, fileDescriptor,
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder",
+        null, existingImportedFile.Offset
+      );
+
+
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
+
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var producer = new Mock<IKafka>();
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+
+      var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
+      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+
+      var filterServiceProxy = new Mock<IFilterServiceProxy>();
+      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new List<FilterDescriptor>());
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
+
+      var fileRepo = new Mock<IFileRepository>();
+      fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+      fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
+      var pegasusClient = new Mock<IPegasusClient>();
+
+      var executor = RequestExecutorContainerFactory
+        .Build<DeleteImportedFileExecutor>(
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          customHeaders, producer.Object, KafkaTopicName, null, null, null, filterServiceProxy.Object,
+          tRexImportFileProxy.Object, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
+      await executor.ProcessAsync(deleteImportedFile);
     }
   }
 }

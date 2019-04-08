@@ -37,7 +37,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             ProjectErrorCodesProvider.FirstNameWithOffset(30)));
       }
 
-      if (!(importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment))
+      var validType = (importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment)
+                      || importedFileType == ImportedFileType.ReferenceSurface;
+      if (!validType)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(30),

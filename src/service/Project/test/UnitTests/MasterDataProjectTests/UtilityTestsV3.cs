@@ -201,6 +201,8 @@ namespace VSS.MasterData.ProjectTests
         FileUpdatedUtc = DateTime.UtcNow.AddDays(-1),
         ImportedBy = "joeSmoe@trimble.com",
         SurveyedUtc = null,
+        ParentUid = null,
+        Offset = 0,
         IsDeleted = false,
         LastActionedUtc = DateTime.UtcNow
       };

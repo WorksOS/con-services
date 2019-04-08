@@ -97,6 +97,9 @@ namespace TestUtility
         case "Linework":
           uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType} ";
           break;
+        case "ReferenceSurface":
+          uri = $"{uri}&ParentUid={ed.ParentUid}&Offset={ed.Offset} ";
+          break;
       }
 
       if (importOptions.QueryParams != null)
@@ -111,6 +114,8 @@ namespace TestUtility
       {
         uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
+
+      //TODO: (EJJ) work out how to upload 0 bytes for ref surface
 
       var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
       ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
