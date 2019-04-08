@@ -84,7 +84,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(100);
-      rows[0].Should().Be(@"2019-Jan-23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
+      rows[0].Should().Be(@"2019-Jan-23 00:22:09.993,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Skip until coreX is available")]

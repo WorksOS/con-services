@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 
@@ -44,8 +46,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostStationOffsetReport)}: {Request.QueryString}");
 
       reportStationOffsetRequest.Validate();
-      reportDataValidationUtility.ValidateData((object) reportStationOffsetRequest);
-    
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(reportStationOffsetRequest.ProjectUid, nameof(PostStationOffsetReport));
+      reportDataValidationUtility.ValidateData((object) reportStationOffsetRequest, siteModel);
+      if (reportStationOffsetRequest.Filter != null && reportStationOffsetRequest.Filter.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(reportStationOffsetRequest.Filter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+
       var stationOffsetReportDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<StationOffsetReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
@@ -77,7 +82,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostGriddedReport)}: {Request.QueryString}");
 
       reportGridRequest.Validate();
-      reportDataValidationUtility.ValidateData((object)reportGridRequest);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(reportGridRequest.ProjectUid, nameof(PostGriddedReport));
+      reportDataValidationUtility.ValidateData((object)reportGridRequest, siteModel);
+      if (reportGridRequest.Filter != null && reportGridRequest.Filter.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(reportGridRequest.Filter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+
 
       var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

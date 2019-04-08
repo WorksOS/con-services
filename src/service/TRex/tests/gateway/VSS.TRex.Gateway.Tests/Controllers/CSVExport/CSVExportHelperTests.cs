@@ -7,7 +7,6 @@ using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Gateway.Common.Helpers;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -20,8 +19,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_StartEndDate()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var startTime = DateTime.UtcNow.AddHours(-5);
       var endTime = startTime.AddHours(2);
       siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(startTime, ProductionEventType.StartEvent);
@@ -42,7 +41,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       );
       var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
 
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var startTime = DateTime.UtcNow.AddHours(-5);
       var endTime = startTime.AddHours(2);
@@ -65,7 +64,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       );
       var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
 
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var startTime = DateTime.UtcNow.AddHours(-5);
       var endTime = startTime.AddHours(2);
@@ -81,15 +80,15 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_MultiMachines()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       // Due to site\machineList and events\machineList being different entities
       //     the first created on machine create, the 2nd the first time events are accessed
       //   For this test we need to create both machines before accessing any events.
       //   This is ok, because in reality, when a machine is added, it generates a machineChangedEvent,
       //     which will re-create the event\machineList with the new machine.
-      IMachine machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      IMachine machine2 = siteModel.Machines.CreateNew("Test Machine 2", "", MachineType.CarryAllScraper, DeviceTypeEnum.SNM941, false, Guid.NewGuid());
+      var machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var machine2 = siteModel.Machines.CreateNew("Test Machine 2", "", MachineType.CarryAllScraper, DeviceTypeEnum.SNM941, false, Guid.NewGuid());
       
       var startTime1 = DateTime.UtcNow.AddHours(-5);
       var endTime1 = startTime1.AddHours(4.5);
@@ -109,7 +108,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_MachineHasNoEvents()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       
       var startEndDate = CSVExportHelper.GetDateRange(siteModel, null);
@@ -120,9 +119,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_MachineNames_Success()
     {
-      string[] machineNames = new[] {"Test Machine 1"};
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var machineNames = new[] {"Test Machine 1"};
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       var mappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, machineNames);
       mappedMachines.Count.Should().Be(1);
@@ -135,10 +134,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     public void CSVExportHelper_MachineNamesMulti_Success()
     {
       string[] machineNames = new[] { "Test Machine 1", "Test Machine 3" };
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      IMachine machine2 = siteModel.Machines.CreateNew("Test Machine 2", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-      IMachine machine3 = siteModel.Machines.CreateNew("Test Machine 3", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine1 = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var machine2 = siteModel.Machines.CreateNew("Test Machine 2", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var machine3 = siteModel.Machines.CreateNew("Test Machine 3", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       var mappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, machineNames);
       mappedMachines.Count.Should().Be(2);
@@ -154,8 +153,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_MachineNamesMulti_NotFound()
     {
-      string[] machineNames = new[] { "Test Machine 4", "Test Machine 0" };
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machineNames = new[] { "Test Machine 4", "Test Machine 0" };
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       siteModel.Machines.CreateNew("Test Machine 2", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       siteModel.Machines.CreateNew("Test Machine 3", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
@@ -167,7 +166,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_MachineNamesMulti_NoneRequested()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       siteModel.Machines.CreateNew("Test Machine 2", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       siteModel.Machines.CreateNew("Test Machine 3", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
@@ -179,8 +178,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_MachineNamesMulti_NoneAvailable()
     {
-      string[] machineNames = new[] { "Test Machine 4", "Test Machine 0" };
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machineNames = new[] { "Test Machine 4", "Test Machine 0" };
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
      
       var mappedMachines = CSVExportHelper.MapRequestedMachines(siteModel, machineNames);
       mappedMachines.Count.Should().Be(0);

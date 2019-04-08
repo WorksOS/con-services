@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Helpers;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -37,12 +42,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCmvSummary)}: {Request.QueryString}");
 
       cmvSummaryRequest.Validate();
+      ValidateFilterMachines(cmvSummaryRequest.ProjectUid, cmvSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvSummaryRequest) as CMVSummaryResult);
     }
+
 
     /// <summary>
     /// Get MDP summary from production data for the specified project and date range.
@@ -56,6 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation("PostMdpSummary: " + Request.QueryString);
 
       mdpSummaryRequest.Validate();
+      ValidateFilterMachines(mdpSummaryRequest.ProjectUid, mdpSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -75,6 +83,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostPassCountSummary)}: {Request.QueryString}");
 
       passCountSummaryRequest.Validate();
+      ValidateFilterMachines(passCountSummaryRequest.ProjectUid, passCountSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -94,6 +103,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSpeedSummary)}: {Request.QueryString}");
 
       speedSummaryRequest.Validate();
+      ValidateFilterMachines(speedSummaryRequest.ProjectUid, speedSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -111,6 +121,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
 
       temperatureSummaryRequest.Validate();
+      ValidateFilterMachines(temperatureSummaryRequest.ProjectUid, temperatureSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -130,11 +141,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCcaSummary)}: {Request.QueryString}");
 
       ccaSummaryRequest.Validate();
+      ValidateFilterMachines(ccaSummaryRequest.ProjectUid, ccaSummaryRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryCCAExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(ccaSummaryRequest) as CCASummaryResult);
+    }
+
+    private void ValidateFilterMachines(Guid? projectUid, FilterResult filterResult)
+    {
+      if (projectUid == null || projectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectUid.Value, nameof(SummaryDataController));
+      if (filterResult != null && filterResult.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(filterResult.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
     }
   }
 }

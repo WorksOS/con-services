@@ -15,7 +15,6 @@ using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using FilterModel = VSS.MasterData.Repositories.DBModels.Filter;
@@ -79,8 +78,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(resultFilter.AlignmentName);
-      Assert.IsNull(resultFilter.DesignName);
+      Assert.IsNull(resultFilter.AlignmentFileName);
+      Assert.IsNull(resultFilter.DesignFileName);
     }
 
     [TestMethod]
@@ -134,8 +133,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(resultFilter.AlignmentName);
-      Assert.IsNull(resultFilter.DesignName);
+      Assert.IsNull(resultFilter.AlignmentFileName);
+      Assert.IsNull(resultFilter.DesignFileName);
     }
 
     [TestMethod]
@@ -204,8 +203,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.DesignName, "Large Sites Road - Trimble Road.TTM");
-      Assert.IsNull(resultFilter.AlignmentName);
+      Assert.AreEqual(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
+      Assert.IsNull(resultFilter.AlignmentFileName);
     }
 
     [TestMethod]
@@ -274,8 +273,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.AlignmentName, "Large Sites Road.svl");
-      Assert.IsNull(resultFilter.DesignName);
+      Assert.AreEqual(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.IsNull(resultFilter.DesignFileName);
     }
 
     [TestMethod]
@@ -356,8 +355,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.AlignmentName, "Large Sites Road.svl");
-      Assert.AreEqual(resultFilter.DesignName, "Large Sites Road - Trimble Road.TTM");
+      Assert.AreEqual(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.AreEqual(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
     }
   }
 }

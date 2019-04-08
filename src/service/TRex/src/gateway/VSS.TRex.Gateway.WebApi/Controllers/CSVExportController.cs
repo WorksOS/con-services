@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -6,6 +7,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.Common.Requests;
 
 
@@ -67,6 +69,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     private CompactionExportResult Execute<T>(T request)
     {
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(compactionCSVExportRequest.ProjectUid, nameof(CSVExportController));
+      if (compactionCSVExportRequest.Filter != null && compactionCSVExportRequest.Filter.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(
+          compactionCSVExportRequest.Filter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

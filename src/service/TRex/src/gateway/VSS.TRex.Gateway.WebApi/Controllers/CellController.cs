@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -35,6 +38,18 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
 
       patchRequest.Validate();
+      if (patchRequest.ProjectUid == null || patchRequest.ProjectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(patchRequest.ProjectUid.Value, nameof(PostSubGridPatches));
+      if (patchRequest.Filter1 != null && patchRequest.Filter1.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(patchRequest.Filter1.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+      if (patchRequest.Filter2 != null && patchRequest.Filter2.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(patchRequest.Filter2.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+
 
       var patchResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -63,6 +78,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCellDatum)}: {Request.QueryString}");
 
       cellDatumRequest.Validate();
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(cellDatumRequest.ProjectUid, nameof(CompactionCellDatumResult));
+      if (cellDatumRequest.Filter != null && cellDatumRequest.Filter.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(cellDatumRequest.Filter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

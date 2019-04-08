@@ -25,7 +25,10 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value && src.ReturnEarliest.Value == true;
         
         var contributingMachines = new Guid[0];
-        // todoJeannie should check if any machines are valid for site??
+        // todoJeannie
+        //  set siteModel 
+        //  should check if any machines are valid for site??
+        // validate
         if (src.ContributingMachines != null && src.ContributingMachines.Count > 0)
           contributingMachines = (src.ContributingMachines.Where(m => m.AssetUid.HasValue)
           .Select(m => m.AssetUid.Value).ToArray());

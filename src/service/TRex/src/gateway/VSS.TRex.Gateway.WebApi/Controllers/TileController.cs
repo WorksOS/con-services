@@ -1,12 +1,18 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Helpers;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -38,6 +44,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 
       request.Validate();
+      if (request.ProjectUid == null || request.ProjectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(request.ProjectUid.Value, nameof(GetTile));
+      if (request.Filter1 != null && request.Filter1.ContributingMachines != null)
+        GatewayHelper.ValidateMachines(
+          request.Filter1.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

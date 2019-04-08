@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.Filter.Tests
   public class FilterExecutorTests : ExecutorBaseTests
   {
     [TestMethod]
-    [DataRow(FilterType.Persistent)]
+   // todoJeannie  [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Report)]
     public async Task GetFilterExecutor(FilterType filterType)
     {

@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     ///     It is not sent from UI to FilterSvc (blank)
     ///     It is not returned from the FilterSvc anywhere 
     /// </summary>
-    [JsonProperty(PropertyName = "designName", Required = Required.Default)]
+    [JsonProperty(PropertyName = "designName", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
     public string DesignFileName { get; protected set; }
 
     /// <summary>
@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// <summary>
     /// The alignmentFile filename.
     /// </summary>
-    [JsonProperty(PropertyName = "alignmentName", Required = Required.Default)]
+    [JsonProperty(PropertyName = "alignmentName", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
     public string AlignmentFileName { get; protected set; }
 
     /// <summary>
