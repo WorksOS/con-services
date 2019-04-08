@@ -117,7 +117,7 @@ namespace TestUtility
 
       //TODO: (EJJ) work out how to upload 0 bytes for ref surface
 
-      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
+      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod, ed.ImportedFileTypeName == "ReferenceSurface");
       ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
 
       try
@@ -172,13 +172,14 @@ namespace TestUtility
     /// Upload a single file to the web api 
     /// </summary>
     /// <returns>Repsonse from web api as string</returns>
-    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
+    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod, bool isReferenceSurface)
     {
       try
       {
         var name = new DirectoryInfo(fullFileName).Name;
-        Byte[] bytes = File.ReadAllBytes(fullFileName);
-        var fileSize = bytes.Length;
+        //For reference surfaces no file to upload
+        Byte[] bytes = isReferenceSurface ? null : File.ReadAllBytes(fullFileName);
+        var fileSize = isReferenceSurface ? 0 : bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
         for (var offset = 0; offset < chunks; offset++)
@@ -195,12 +196,13 @@ namespace TestUtility
           int currentChunkSize = endByte - startByte;
           var boundaryIdentifier = Guid.NewGuid().ToString();
           var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
-          var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
+          var currentBytes = isReferenceSurface ? null : bytes.Skip(startByte).Take(currentChunkSize).ToArray();
           string contentType = $"multipart/form-data; boundary={BOUNDARY_START}{boundaryIdentifier}";
 
           using (var content = new MemoryStream())
           {
-            FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
+            FormatTheContentDisposition(flowFileUpload, currentBytes, name,
+              $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
             result = DoHttpRequest(uri, httpMethod, content, customerUid, contentType);
           }
         }
@@ -316,7 +318,8 @@ namespace TestUtility
 
       byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(header, 0, header.Length);
-      resultingStream.Write(chunkContent, 0, chunkContent.Length);
+      if (chunkContent != null)
+        resultingStream.Write(chunkContent, 0, chunkContent.Length);
 
       sb = new StringBuilder();
       sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");

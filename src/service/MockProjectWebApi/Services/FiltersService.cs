@@ -185,6 +185,14 @@ namespace MockProjectWebApi.Services
         Name = "Dimensions boundary CMV",
         FilterType = FilterType.Persistent,
         FilterJson = "{\"polygonUID\":\"c910d127-5e3c-453f-82c3-e235848ac20e\",\"polygonName\":\"Dimensions boundary CMV\",\"polygonLL\":[{\"Lat\":36.207183,\"Lon\":-115.020509},{\"Lat\":36.206862,\"Lon\":-115.020187},{\"Lat\":36.207174,\"Lon\":-115.019731}]}"
+      },
+      new FilterDescriptor
+      {
+        FilterUid = "06ee0bd8-c778-422c-9af2-bd86a370be2e",
+        Name = "Filter with reference surface",
+        FilterType = FilterType.Persistent,
+        FilterJson =
+          "{\"startUTC\": null,\"endUTC\": null,\"designUid\": \"c91e56cf-6d5f-436d-9655-cf4f919523f4\",\"contributingMachines\": null,\"onMachineDesignID\": null,\"elevationType\": null,\"vibeStateOn\": null,\"polygonName\": null,\"polygonUid\": null,\"polygonLL\": null,\"forwardDirection\": null,\"layerNumber\": null,\"layerType\": null,\"SpatialFilter\":false}"
       }
     };
   }
