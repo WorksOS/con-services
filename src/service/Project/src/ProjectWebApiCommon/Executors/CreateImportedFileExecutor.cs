@@ -52,6 +52,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           "shouldn't get here"); // to keep compiler happy
       }
 
+      await CheckIfParentSurfaceExistsAsync(createimportedfile);
+
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out var useRaptorGatewayDesignImport);
@@ -146,6 +148,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogInformation(
         $"CreateImportedFileV4. completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       return importedFile;
+    }
+
+    private async Task CheckIfParentSurfaceExistsAsync(CreateImportedFile createImportedFile)
+    {
+      //Check parent exists for a reference design
+      if (createImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface)
+      {
+        var parent = await projectRepo.GetImportedFile(createImportedFile.ParentUid.ToString());
+        if (parent == null)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);
+        }
+      }
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

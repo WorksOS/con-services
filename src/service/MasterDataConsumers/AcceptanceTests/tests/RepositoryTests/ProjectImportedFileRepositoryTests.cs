@@ -186,6 +186,13 @@ namespace RepositoryTests
 
       Assert.AreEqual(createImportedFileEvent2.ParentUID.ToString(), g.Result.ParentUid, "Wrong ParentUid");
       Assert.AreEqual(createImportedFileEvent2.Offset, g.Result.Offset, "Wrong Offset");
+
+      var g2 = _projectContext.GetReferencedImportedFiles(createImportedFileEvent1.ImportedFileUID.ToString());
+      g2.Wait();
+      Assert.IsNotNull(g2.Result, "Unable to retrieve referenced ImportedFiles from ProjectRepo");
+      var list = g2.Result.ToList();
+      Assert.AreEqual(1, list.Count, "Wrong number of referenced ImportedFiles");
+      Assert.AreEqual(createImportedFileEvent2.ImportedFileUID, list[0].ImportedFileUid, "Wrong referenced ImportedFile");
     }
 
     /// <summary>

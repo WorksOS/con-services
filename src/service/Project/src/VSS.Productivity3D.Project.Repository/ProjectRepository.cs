@@ -1711,6 +1711,35 @@ namespace VSS.Productivity3D.Project.Repository
       )).ToList();
     }
 
+    public async Task<IEnumerable<ImportedFile>> GetReferencedImportedFiles(string importedFileUid)
+    {
+      var importedFileList = (await QueryWithAsyncPolicy<ImportedFile>
+      (@"SELECT 
+            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
+          FROM ImportedFile
+            WHERE fk_ReferenceImportedFileUID = @ImportedFileUid
+              AND IsDeleted = 0",
+        new { ImportedFileUid = importedFileUid }
+      )).ToList();
+
+      if (importedFileList.Count > 0)
+      {
+        //They will all belong to the same project
+        var historyAllFiles = await GetImportedFileHistory(importedFileList[0].ProjectUid);
+        foreach (var importedFile in importedFileList)
+        {
+          var historyOne = historyAllFiles.FindAll(x => x.ImportedFileUid == importedFile.ImportedFileUid);
+          if (historyOne.Any())
+          {
+            importedFile.ImportedFileHistory = new ImportedFileHistory(historyOne);
+          }
+        }
+      }
+
+      return importedFileList;
+    }
     #endregion gettersImportedFiles
 
 

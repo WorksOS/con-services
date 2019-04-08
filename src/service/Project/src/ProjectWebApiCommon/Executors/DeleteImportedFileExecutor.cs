@@ -13,6 +13,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Pegasus.Client;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -52,6 +53,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       await CheckIfUsedInAFilterAsync(deleteImportedFile).ConfigureAwait(false);
 
+      await CheckIfHasReferenceSurfacesAsync(deleteImportedFile);
+  
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
       var isDesignFileType = deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
@@ -95,36 +98,40 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         if (importedFileInternalResult == null)
         {
-          importedFileInternalResult = await TccHelper.DeleteFileFromTCCRepository
-            (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-              log, serviceExceptionHandler, fileRepo, projectRepo)
-            .ConfigureAwait(false);
+          if (deleteImportedFile.ImportedFileType != ImportedFileType.ReferenceSurface)
+          { 
+            importedFileInternalResult = await TccHelper.DeleteFileFromTCCRepository
+              (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
+                log, serviceExceptionHandler, fileRepo, projectRepo)
+              .ConfigureAwait(false);
 
-          importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-            deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-            deleteImportedFile.ProjectUid,
-            deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
+            importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
+              deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+              deleteImportedFile.ProjectUid,
+              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
 
-          if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
-              deleteImportedFile.ImportedFileType == ImportedFileType.Linework)
-          {
-            var tasks = new List<Task>();
-            //delete generated DXF tiles
-            var dxfFileName = deleteImportedFile.ImportedFileType == ImportedFileType.Linework ? deleteImportedFile.FileDescriptor.FileName : 
-              DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.ImportedFileType);
-
-            tasks.Add(pegasusClient.DeleteDxfTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn)));
-
-            if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+            if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
+                deleteImportedFile.ImportedFileType == ImportedFileType.Linework)
             {
-              //Do we care if deleting generated DXF file fails?
-              tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
-                dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-                deleteImportedFile.ProjectUid,
-                deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn));
-            }
+              var tasks = new List<Task>();
+              //delete generated DXF tiles
+              var dxfFileName = deleteImportedFile.ImportedFileType == ImportedFileType.Linework
+                ? deleteImportedFile.FileDescriptor.FileName
+                : DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName,
+                  deleteImportedFile.ImportedFileType);
 
-            await Task.WhenAll(tasks);
+              tasks.Add(pegasusClient.DeleteDxfTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn)));
+
+              if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+              {
+                //Do we care if deleting generated DXF file fails?
+                tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
+                  dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+                  deleteImportedFile.ProjectUid,
+                  deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn));
+              }
+              await Task.WhenAll(tasks);
+            }
           }
         }
 
@@ -145,6 +152,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         });
 
       return new ContractExecutionResult();
+    }
+
+    private void xxx()
+    {
+
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
@@ -169,6 +181,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 112);
           }
+        }
+      }
+    }
+
+    private async Task CheckIfHasReferenceSurfacesAsync(DeleteImportedFile deleteImportedFile)
+    {
+      //Cannot delete a design which has reference surfaces associated with it
+      if (deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface)
+      {
+        var children = await projectRepo.GetReferencedImportedFiles(deleteImportedFile.ImportedFileUid.ToString());
+        if (children != null && children.Any())
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 119);
         }
       }
     }

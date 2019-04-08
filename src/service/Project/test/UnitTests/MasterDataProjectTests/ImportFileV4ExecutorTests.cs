@@ -260,8 +260,7 @@ namespace VSS.MasterData.ProjectTests
 
       var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
        Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor, 
-       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder",
-       null, existingImportedFile.Offset
+       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -475,8 +474,7 @@ namespace VSS.MasterData.ProjectTests
 
       var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder",
-        null, existingImportedFile.Offset
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
       );
 
 
@@ -700,8 +698,7 @@ namespace VSS.MasterData.ProjectTests
 
       var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.ReferenceSurface, fileDescriptor,
-        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder",
-        null, existingImportedFile.Offset
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
       );
 
 

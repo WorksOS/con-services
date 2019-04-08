@@ -385,8 +385,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(
         projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 
-        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, DataOceanRootFolder,
-        Guid.Parse(existing.ParentUid), existing.Offset);
+        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId, DataOceanRootFolder);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

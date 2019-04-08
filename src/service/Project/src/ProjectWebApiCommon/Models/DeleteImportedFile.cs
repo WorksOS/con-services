@@ -25,9 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public long? LegacyImportedFileId { get; set; }
 
     public string DataOceanRootFolder { get; set; }
-    public Guid? ParentUid { get; set; }
 
-    public double Offset { get; set; }
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -39,7 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       Guid projectUid, ImportedFileType importedFileTypeId,
       //DateTime? surveyedUtc, 
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId, 
-      long? legacyImportedFileId, string dataOceanRootFolder, Guid? parentUid, double offset
+      long? legacyImportedFileId, string dataOceanRootFolder
     )
     {
       return new DeleteImportedFile()
@@ -51,9 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
         ImportedFileUid = importedFileUid,
         ImportedFileId = importedFileId,
         LegacyImportedFileId = legacyImportedFileId,
-        DataOceanRootFolder = dataOceanRootFolder,
-        ParentUid = parentUid,
-        Offset = offset
+        DataOceanRootFolder = dataOceanRootFolder
       };
     }
 
