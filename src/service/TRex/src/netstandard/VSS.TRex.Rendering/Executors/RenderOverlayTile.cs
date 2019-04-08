@@ -446,20 +446,6 @@ namespace VSS.TRex.Rendering.Executors
       }
       Log.LogInformation($"After conversion NEECoords are {string.Concat(NEECoords)}");
 
-      // The coordintates below are for debuging purposes...
-      NEECoords[0].X = 2727.791186;
-      NEECoords[0].Y = 1156.222554;
-
-      NEECoords[1].X = 2758.667491;
-      NEECoords[1].Y = 1186.965794;
-
-      NEECoords[2].X = 2727.791186;
-      NEECoords[2].Y = 1186.965794;
-
-      NEECoords[3].X = 2758.667491;
-      NEECoords[3].Y = 1156.222554;
-
-
       WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
       WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
 
