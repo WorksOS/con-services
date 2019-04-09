@@ -20,8 +20,8 @@ SET @s = (SELECT IF(
         AND table_schema = DATABASE()
         AND column_name = 'PolygonST'
     ) > 0,
-    "SELECT 1",
-    "UPDATE `Geofence` SET `PolygonST` = ST_GeomFromText(`GeometryWKT`)"
+    "UPDATE `Geofence` SET `PolygonST` = ST_GeomFromText(`GeometryWKT`) WHERE `GeometryWKT` IS NOT NULL AND CHAR_LENGTH(`GeometryWKT`) < 4000",
+	"SELECT 1"
 ));  
 
 PREPARE stmt FROM @s;
@@ -36,8 +36,8 @@ SET @s = (SELECT IF(
         AND table_schema = DATABASE()
         AND column_name = 'GeometryWKT'
     ) > 0,
-    "SELECT 1",
-    "ALTER TABLE `Geofence` DROP COLUMN `GeometryWKT`"
+    "ALTER TABLE `Geofence` DROP COLUMN `GeometryWKT`",
+	"SELECT 1"
 ));  
 
 PREPARE stmt FROM @s;

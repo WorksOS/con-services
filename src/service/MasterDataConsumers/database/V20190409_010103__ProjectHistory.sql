@@ -5,8 +5,8 @@ SET @s = (SELECT IF(
         AND table_schema = DATABASE()
         AND column_name = 'GeometryWKT'
     ) > 0,
-    "SELECT 1",
-    "ALTER TABLE `ProjectHistory` DROP COLUMN `GeometryWKT`"
+    "ALTER TABLE `ProjectHistory` DROP COLUMN `GeometryWKT`",
+	"SELECT 1"
 ));  
 
 PREPARE stmt FROM @s;
