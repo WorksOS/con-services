@@ -287,7 +287,7 @@ namespace VSS.Productivity3D.Project.Repository
       (@"SELECT 
                 ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
-                LastActionedUTC, StartDate, EndDate, GeometryWKT,
+                LastActionedUTC, StartDate, EndDate, AsWKT(PolygonST) AS GeometryWKT,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC
               FROM Project
               WHERE ProjectUID = @ProjectUID
@@ -605,16 +605,16 @@ namespace VSS.Productivity3D.Project.Repository
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
         insert = string.Format(
           "INSERT Project " +
-          "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
+          "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
+          "    (@ProjectUID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
           , formattedPolygon ?? "null");
       else
         insert = string.Format(
           "INSERT Project " +
-          "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
+          "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
           "  VALUES " +
-          "    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
+          "    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
           , formattedPolygon ?? "null");
       return insert;
     }
@@ -638,9 +638,9 @@ namespace VSS.Productivity3D.Project.Repository
                   StartDate = @StartDate, EndDate = @EndDate,   
                   CoordinateSystemFileName = @CoordinateSystemFileName,
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC,
-                  GeometryWKT = '{0}', PolygonST = {1}
+                  PolygonST = {0}
                 WHERE ProjectUID = @ProjectUID"
-          , project.GeometryWKT, formattedPolygon ?? "null");
+          , formattedPolygon ?? "null");
       }
       else
       {
@@ -654,9 +654,9 @@ namespace VSS.Productivity3D.Project.Repository
                   StartDate = @StartDate, EndDate = @EndDate,   
                   CoordinateSystemFileName = @CoordinateSystemFileName,
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC,
-                  GeometryWKT = '{0}', PolygonST = {1}
+                  PolygonST = {0}
                 WHERE ProjectUID = @ProjectUID"
-          , project.GeometryWKT, formattedPolygon ?? "null");
+          , formattedPolygon ?? "null");
       }
 
       return update;
@@ -679,7 +679,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
 
       // may be an existing one if this create comes from a replay of kafka que.
-      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, " +
+      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, AsWKT(PolygonST) AS GeometryWKT, " +
                    "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
                    "     AreaSqMeters, g.LastActionedUTC " +
                    "  FROM ProjectGeofence pg " +
@@ -711,9 +711,9 @@ namespace VSS.Productivity3D.Project.Repository
 
       const string insert =
         @"INSERT Geofence
-              (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
+              (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
           VALUES
-              (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+              (@GeofenceUID, @Name, @Description, ST_GeomFromText(@GeometryWKT), @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
 
       var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
       Log.LogDebug(
@@ -737,7 +737,7 @@ namespace VSS.Productivity3D.Project.Repository
     private async Task<int> UpdateGeofence(Abstractions.Models.DatabaseModels.Project project, Geofence existingGeofence)
     {
       var update = "UPDATE Geofence " +
-                   $" SET GeometryWKT = '{project.GeometryWKT}' " +
+                   $" SET PolygonST = ST_GeomFromText('{project.GeometryWKT}') " +
                    $" WHERE GeofenceUID = '{existingGeofence.GeofenceUID}' " +
                    $"  AND fk_GeofenceTypeID = {(int) GeofenceType.Project}; ";
       var upsertedCount = await ExecuteWithAsyncPolicy(update);
@@ -1068,13 +1068,13 @@ namespace VSS.Productivity3D.Project.Repository
         @"INSERT INTO ProjectHistory
               (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
                 IsDeleted, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate,
-                GeometryWKT, PolygonST,
+                PolygonST,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                 LastActionedUTC)
               SELECT 
                   ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
                   IsDeleted, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate,
-                  GeometryWKT, PolygonST,
+                  PolygonST,
                   CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                   LastActionedUTC
                 FROM Project
@@ -1257,7 +1257,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var project = (await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>(@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1280,7 +1280,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var project = await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>(@"SELECT
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
               FROM Project p 
@@ -1303,7 +1303,7 @@ namespace VSS.Productivity3D.Project.Repository
       var projectSubList = QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1332,7 +1332,7 @@ namespace VSS.Productivity3D.Project.Repository
       var projectList = QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>(@"SELECT 
                 ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID as ProjectType, 
                 IsDeleted, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate, 
-                GeometryWKT,
+                AsWKT(PolygonST) as GeometryWKT,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                 LastActionedUTC 
               FROM ProjectHistory             
@@ -1351,7 +1351,7 @@ namespace VSS.Productivity3D.Project.Repository
       var projects = (await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1383,7 +1383,7 @@ namespace VSS.Productivity3D.Project.Repository
       var projects = QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1415,7 +1415,7 @@ namespace VSS.Productivity3D.Project.Repository
       var projects = QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1450,7 +1450,7 @@ namespace VSS.Productivity3D.Project.Repository
       (@"SELECT 
               c.CustomerUID, cp.LegacyCustomerID, 
               p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-              p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+              p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
               p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
               ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
             FROM Customer c  
@@ -1479,7 +1479,7 @@ namespace VSS.Productivity3D.Project.Repository
       var project = (await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
               FROM Project p 
               WHERE p.ProjectUID = @ProjectUID",
@@ -1536,7 +1536,7 @@ namespace VSS.Productivity3D.Project.Repository
       var project = (await QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT 
                   p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                  p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                  p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                   p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                   ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1579,7 +1579,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       return QueryWithAsyncPolicy<GeofenceWithAssociation>
       (@"SELECT 
-                g.GeofenceUID, g.Name, g.fk_GeofenceTypeID AS GeofenceType, g.GeometryWKT, g.FillColor, g.IsTransparent,
+                g.GeofenceUID, g.Name, g.fk_GeofenceTypeID AS GeofenceType, AsWKT(g.PolygonST) as GeometryWKT, g.FillColor, g.IsTransparent,
                 g.IsDeleted, g.Description, g.fk_CustomerUID AS CustomerUID, g.UserUID, g.AreaSqMeters,
                 g.LastActionedUTC, pg.fk_ProjectUID AS ProjectUID 
               FROM Geofence g 
@@ -1725,7 +1725,7 @@ namespace VSS.Productivity3D.Project.Repository
       var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
       var select = "SELECT DISTINCT " +
                    "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
-                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT, " +
                    "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
                    "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " + "      FROM Project p " +
                    "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
@@ -1752,7 +1752,7 @@ namespace VSS.Productivity3D.Project.Repository
       var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
       var select = "SELECT DISTINCT " +
                    "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
-                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT, " +
                    "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
                    "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
                    "        ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID " +
@@ -1789,7 +1789,7 @@ namespace VSS.Productivity3D.Project.Repository
       var polygonToCheck = $"ST_GeomFromText('{geometryWkt}')";
       var select = $@"SELECT DISTINCT
                           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                          p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                          p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                           p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                           cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
                         FROM Project p 
@@ -1842,7 +1842,7 @@ namespace VSS.Productivity3D.Project.Repository
 
       var select = "SELECT DISTINCT " +
                    "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
-                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT, " +
                    "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
                    "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
                    "        ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID " +
@@ -1867,7 +1867,7 @@ namespace VSS.Productivity3D.Project.Repository
       return QueryWithAsyncPolicy<Abstractions.Models.DatabaseModels.Project>
       (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID

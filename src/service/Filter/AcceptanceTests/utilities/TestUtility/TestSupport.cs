@@ -213,8 +213,8 @@ namespace TestUtility
                 ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}',{eventObject.fk_FilterTypeID},'{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
           break;
         case "Geofence":
-          sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES 
-                ('{eventObject.GeofenceUID}','{eventObject.Name}','{eventObject.fk_GeofenceTypeID}','{eventObject.GeometryWKT}','{eventObject.FillColor}','{eventObject.IsTransparent}','{eventObject.IsDeleted}','{eventObject.Description}','{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC}');";
+          sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,PolygonST,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES 
+                ('{eventObject.GeofenceUID}','{eventObject.Name}','{eventObject.fk_GeofenceTypeID}',ST_GeomFromText('{eventObject.GeometryWKT}'),'{eventObject.FillColor}','{eventObject.IsTransparent}','{eventObject.IsDeleted}','{eventObject.Description}','{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC}');";
           break;
         case "ProjectGeofence":
           sqlCmd += $@"(fk_GeofenceUID,fk_ProjectUID,LastActionedUTC) VALUES 
