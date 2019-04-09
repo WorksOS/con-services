@@ -35,6 +35,13 @@ namespace VSS.TRex.Tests.Compression
         }
 
         [Fact]
+        public void Test_AttributeValueModifier_Time_FailWithNonUTCDate()
+        {
+          Action act = () => AttributeValueModifiers.ModifiedTime(DateTime.Now, DateTime.Now);
+          act.Should().Throw<ArgumentException>().WithMessage("Time and time origin must be a UTC date time");
+        }
+
+    [Fact]
         public void Test_AttributeValueModifier_GPSMode()
         {
             Assert.Equal(0, AttributeValueModifiers.ModifiedGPSMode(GPSMode.Old));

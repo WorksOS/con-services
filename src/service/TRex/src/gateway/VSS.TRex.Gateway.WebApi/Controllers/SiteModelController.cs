@@ -97,7 +97,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachines));
-      if (string.IsNullOrEmpty(siteModel.CSIB()))
+      var CSIB = siteModel.CSIB();
+      if (string.IsNullOrEmpty(CSIB))
       {
         Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
         throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "The SiteModel has no CSIB."));
@@ -108,7 +109,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       if (machines.Any())
       {
-        List<MachineStatus> resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
+        List<MachineStatus> resultMachines =
+          machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
         var response = coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
         if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
           result.MachineStatuses = resultMachines;
