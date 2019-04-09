@@ -43,9 +43,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders)
     {
       if (filter == null)
-      {
         return;
-      }
 
       var processFilterJson =
         ProcessFilterJson(project, filter.FilterJson, raptorProxy, assetResolverProxy, customHeaders);
@@ -80,7 +78,6 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 
       // pair up AssetUids and legacyAssetIds
       PairUpAssetIdentifiersAsync(filterObj.ContributingMachines, assetResolverProxy, customHeaders);
-
       return (JsonConvert.SerializeObject(filterObj), filterObj.ContainsBoundary);
     }
 

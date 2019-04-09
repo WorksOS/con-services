@@ -108,10 +108,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         var resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
         var response = coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
-        if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
-          result.MachineStatuses = resultMachines;
-        else
-          return (MachineExecutionResult) new ContractExecutionResult(response);
+        result.MachineStatuses = resultMachines;
+
+        // todo once corex is implemented, we will have a better idea why patching fails
+        //if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
+        //  result.MachineStatuses = resultMachines;
+        //else
+        //  return (MachineExecutionResult) new ContractExecutionResult(response);
       }
 
       return result;
