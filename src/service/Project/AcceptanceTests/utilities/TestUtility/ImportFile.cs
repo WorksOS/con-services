@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using TestUtility.Model;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -77,7 +78,7 @@ namespace TestUtility
     /// <summary>
     /// Send request to the FileImportV4 controller
     /// </summary>
-    public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(TestSupport ts, string[] importFileArray, int row, ImportOptions importOptions = new ImportOptions())
+    public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(TestSupport ts, string[] importFileArray, int row, ImportOptions importOptions = new ImportOptions(), string expectedExceptionMessage = null)
     {
       var uri = ts.GetBaseUri();
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
@@ -115,8 +116,6 @@ namespace TestUtility
         uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
-      //TODO: (EJJ) work out how to upload 0 bytes for ref surface
-
       var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod, ed.ImportedFileTypeName == "ReferenceSurface");
       ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
 
@@ -131,7 +130,10 @@ namespace TestUtility
       catch (Exception exception)
       {
         Console.WriteLine(response);
-        Assert.Fail(response);
+        if (expectedExceptionMessage != response)
+        {
+          Assert.Fail(response);
+        }
       }
 
       return null;
