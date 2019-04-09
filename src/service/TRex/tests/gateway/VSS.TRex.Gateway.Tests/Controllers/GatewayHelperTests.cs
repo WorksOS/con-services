@@ -16,7 +16,7 @@ using Moq;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
-  public class GatewayHelperTests : IClassFixture<DITagFileFixture>
+  public class GatewayHelperTests : DITagFileFixture, IDisposable
   {
     [Theory]
     [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7")]
@@ -82,10 +82,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
-      var contributingMachines = new List<Guid?>
-      {
-        new Guid()
-      };
+      var contributingMachines = new List<Guid?> { new Guid()};
       var result = Assert.Throws<ServiceException>(() => GatewayHelper.ValidateMachines(contributingMachines, siteModel));
       result.Code.Should().Be(HttpStatusCode.BadRequest);
       result.GetResult.Code.Should().Be(ContractExecutionStatesEnum.ValidationError);
@@ -114,10 +111,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
       var machine = siteModel.Machines.CreateNew("Test Machine 1", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
-      var contributingMachines = new List<Guid?>
-      {
-        new Guid(machine.ID.ToString())
-      };
+      var contributingMachines = new List<Guid?> { new Guid(machine.ID.ToString()) };
       GatewayHelper.ValidateMachines(contributingMachines, siteModel);
     }
 
@@ -137,6 +131,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       GatewayHelper.ValidateMachines(contributingMachines, siteModel);
     }
 
+    public void Dispose()
+    {
+      DIBuilder.Eject();
+    }
   }
 }
 

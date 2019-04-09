@@ -1,2 +1,4 @@
 MYSQL_DATABASE_NAME: VSS-Productivity3D-Filter-Alpha
 JAEGER_SERVICE_NAME: Alpha Filter Service API
+assetmgmet3d-service-private-v1: http://assetmgmt3d.alpha.eks.vspengg.com/api/v1
+ASSETMGMT_CACHE_LIFE: 00:15:00

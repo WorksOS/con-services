@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -96,7 +94,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachines));
-      if (string.IsNullOrEmpty(siteModel.CSIB()))
+      var CSIB = siteModel.CSIB();
+      if (string.IsNullOrEmpty(CSIB))
       {
         Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
         return (MachineExecutionResult) new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
@@ -107,7 +106,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       if (machines.Any())
       {
-        List<MachineStatus> resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
+        var resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
         var response = coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
         if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
           result.MachineStatuses = resultMachines;
