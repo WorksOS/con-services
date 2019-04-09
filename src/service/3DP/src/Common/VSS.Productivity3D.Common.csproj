@@ -42,6 +42,7 @@
     <Compile Remove=".\Proxies\RaptorConverters.cs" />
     <Compile Remove=".\Proxies\TAGProcessor.cs" />
     <Compile Remove=".\ResultHandling\RaptorResult.cs" />
+    <Compile Remove=".\Algorithms\DouglasPeucker.cs" />
   </ItemGroup>
 
   <ItemGroup>

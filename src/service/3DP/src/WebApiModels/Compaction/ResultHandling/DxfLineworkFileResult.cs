@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       Code = (int)code;
     }
 
-    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon)
+    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxPointsToApproximateTo)
     {
       if (LineworkBoundaries == null) return null;
 

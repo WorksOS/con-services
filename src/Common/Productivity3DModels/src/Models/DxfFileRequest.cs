@@ -1,12 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Http;
 
 namespace VSS.Productivity3D.Models.Models
 {
   public class DxfFileRequest
   {
-    private int _dxfUnits = NOT_DEFINED;
     public const int NOT_DEFINED = -1;
+
+    private int _dxfUnits = NOT_DEFINED;
+    private int _maxPoints = NOT_DEFINED;
 
     public IFormFile DxfFile { get; set; }
     public IFormFile CoordinateSystemFile { get; set; }
@@ -16,6 +19,15 @@ namespace VSS.Productivity3D.Models.Models
       set => _dxfUnits = value;
     }
 
+    /// <summary>
+    /// Gets or sets the maximum number of points the returned GeoJSON should include. 
+    /// </summary>
+    public int MaxPoints
+    {
+      get => _maxPoints;
+      set => _maxPoints = value;
+    }
+
     public int MaxBoundariesToProcess { get; set; }
     public bool ConvertLineStringCoordsToPolygon { get; set; }
 
@@ -23,6 +35,7 @@ namespace VSS.Productivity3D.Models.Models
     {
       return $"{nameof(DxfFileRequest)}: " +
              $"{nameof(DxfUnits)}='{DxfUnits}', " +
+             $"{nameof(MaxPoints)}='{MaxPoints}', " +
              $"{nameof(MaxBoundariesToProcess)}='{MaxBoundariesToProcess}', " +
              $"{nameof(ConvertLineStringCoordsToPolygon)}='{ConvertLineStringCoordsToPolygon}'";
     }
