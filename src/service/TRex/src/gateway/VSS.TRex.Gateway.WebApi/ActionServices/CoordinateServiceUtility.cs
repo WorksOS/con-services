@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
       if (NEECoords.Count > 0)
       {
         (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords.ToArray());
-
+     
         // if the count returned is different to that sent, then we can't match with the machines list
         if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)
         {

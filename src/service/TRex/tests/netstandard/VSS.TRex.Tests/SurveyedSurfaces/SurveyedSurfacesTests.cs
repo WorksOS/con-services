@@ -140,6 +140,18 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     }
 
     [Fact]
+    public void FilterSurveyedSurfaceDetails_FailWithNonUTCDates()
+    {
+      var date = DateTime.UtcNow;
+      var ss = MakeSurveyedSurfacesSet(date);
+
+      var filtered = new TRex.SurveyedSurfaces.SurveyedSurfaces();
+
+      Action act = () => ss.FilterSurveyedSurfaceDetails(true, DateTime.Now, DateTime.Now, false, filtered, new Guid[0]);
+      act.Should().Throw<ArgumentException>().WithMessage("StartTime and EndTime must be UTC date times");
+    }
+
+    [Fact]
     public void FilterSurveyedSurfaceDetails_WithTimeFilter_AllOfTime_NoExclusions()
     {
       var date = DateTime.UtcNow;

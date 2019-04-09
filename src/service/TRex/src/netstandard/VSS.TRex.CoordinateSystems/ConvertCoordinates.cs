@@ -29,7 +29,7 @@ namespace VSS.TRex.CoordinateSystems
   public static class ConvertCoordinates
   {
     private static readonly object lockObject = new object();
-
+    
     static ConvertCoordinates()
     {
       var configurationStore = DIContext.Obtain<IConfigurationStore>();

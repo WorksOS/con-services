@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -81,6 +82,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return result;
     }
 
+    
     /// <summary>
     /// Returns list of machines which have contributed to a site model.
     /// </summary>
@@ -98,7 +100,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       if (string.IsNullOrEmpty(CSIB))
       {
         Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
-        return (MachineExecutionResult) new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
+        throw new ServiceException(System.Net.HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "The SiteModel has no CSIB."));
       }
 
       var machines = siteModel.Machines.ToList();

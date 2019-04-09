@@ -35,6 +35,18 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     }
 
     [Fact]
+    public void Add_FailWithNonUTCDate()
+    {
+      var manager = new SurveyedSurfaceManager(StorageMutability.Mutable);
+
+      var siteModelUid = Guid.NewGuid();
+      var designUid = Guid.NewGuid();
+
+      Action act = () => manager.Add(siteModelUid, new DesignDescriptor(designUid, "", "", 0.0), DateTime.Now, BoundingWorldExtent3D.Null());
+      act.Should().Throw<ArgumentException>().WithMessage("AsAtDate must be a UTC date time");
+    }
+
+    [Fact]
     public void List_Empty()
     {
       var manager = new SurveyedSurfaceManager(StorageMutability.Mutable);
