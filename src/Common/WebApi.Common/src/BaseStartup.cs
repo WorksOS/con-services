@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
 using App.Metrics.Formatters;
-using App.Metrics.Formatters.InfluxDB;
 using App.Metrics.Formatters.Prometheus;
-using App.Metrics.Reporting;
-using log4net;
-using log4net.Config;
+using App.Metrics.Health;
+using App.Metrics.Health.Reporting.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -19,9 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using VSS.Common.Abstractions.Http;
-using VSS.Common.Abstractions.ServiceDiscovery.Constants;
-using VSS.Common.Abstractions.ServiceDiscovery.Enums;
-using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
@@ -139,12 +133,8 @@ namespace VSS.WebApi.Common
         config.Filters.Add(new ValidationFilterAttribute());
       }).AddMetricsCore();
 
-      //TODO Service Discovery doesn't work across namespaces in k8s so hardcoding for now
-      /*var tempooraryServiceProvider = services.BuildServiceProvider();
-      var influxUrl = tempooraryServiceProvider.GetRequiredService<IServiceResolution>()
-        .ResolveService(ServiceNameConstants.INFLUX_DB).Result;*/
 
-      var metricsBuilder = AppMetrics.CreateDefaultBuilder()
+      var metrics = AppMetrics.CreateDefaultBuilder()
         .Configuration.Configure(options =>
         {
           options.Enabled = true;
@@ -152,21 +142,25 @@ namespace VSS.WebApi.Common
           options.AddServerTag();
           options.AddAppTag(appName: ServiceName);
         })
-        .OutputMetrics.AsPrometheusProtobuf(); 
+        .OutputMetrics.AsPrometheusPlainText()
+        .Build();
 
-      //if (influxUrl.Type == ServiceResultType.InternalKubernetes)
-      {
-        metricsBuilder.Report.ToInfluxDb(
-          options =>
-          {
-            options.InfluxDb.BaseUri = new Uri("http://monitoring-influxdb.kube-system:8086");
-            options.InfluxDb.Database = "metricsdatabase";
-            options.InfluxDb.CreateDataBaseIfNotExists = true;
-          });
+      var healthMetrics = AppMetricsHealth.CreateDefaultBuilder()
+        .Configuration.Configure(options =>
+        {
+          options.Enabled = true;
+          options.ReportingEnabled = true;
+          options.ApplicationName = ServiceName;
+        })
+        .HealthChecks.RegisterFromAssembly(services)
+        .Report.ToMetrics(metrics)
+        .HealthChecks.AddPingCheck("InternetAccess", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
+        .BuildAndAddTo(services);
 
-      }
 
-      var metrics = metricsBuilder.Build();
+      services.AddHealth(healthMetrics);
+      services.AddHealthEndpoints();
+
 
       ConfigureAdditionalServices(services);
 
@@ -178,7 +172,8 @@ namespace VSS.WebApi.Common
       services.AddMetricsTrackingMiddleware();
       services.AddMetricsEndpoints(options =>
       {
-        options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
+        options.MetricsEndpointOutputFormatter =
+          metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
       });
 
       Services = services;
@@ -189,6 +184,7 @@ namespace VSS.WebApi.Common
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       services.AddMetricsReportingHostedService();
+      services.AddHealthReportingHostedService();
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -203,6 +199,7 @@ namespace VSS.WebApi.Common
 
       app.UseMetricsAllMiddleware();
       app.UseMetricsAllEndpoints();
+      app.UseHealthAllEndpoints();
       app.UseCommon(ServiceName);
 
       if (Configuration.GetValueBool("newrelic").HasValue && Configuration.GetValueBool("newrelic").Value)
