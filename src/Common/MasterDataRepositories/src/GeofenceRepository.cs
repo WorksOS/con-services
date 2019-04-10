@@ -134,11 +134,13 @@ namespace VSS.MasterData.Repositories
       {
         Log.LogDebug($"GeofenceRepository/CreateGeofence: going to create geofence={geofence.GeofenceUID}");
 
-        const string insert =
-          @"INSERT Geofence
-                (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
-            VALUES
-                (@GeofenceUID, @Name, @Description, ST_GeomFromText(@GeometryWKT), @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+        string formattedPolygon = GeometryWKTToSpatial(geofence.GeometryWKT);
+
+        string insert =
+          "INSERT Geofence " + 
+          "     (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters) " +
+          " VALUES " +
+         $"     (@GeofenceUID, @Name, @Description, {formattedPolygon}, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
 
         var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
         Log.LogDebug(
@@ -187,10 +189,12 @@ namespace VSS.MasterData.Repositories
 
           Log.LogDebug($"GeofenceRepository/UpdateGeofence: going to update geofence={geofence.GeofenceUID}");
 
-          const string update =
-            @"UPDATE Geofence                
-                  SET Name = @Name, fk_GeofenceTypeID = @GeofenceType, PolygonST = ST_GeomFromText(@GeometryWKT), FillColor = @FillColor, IsTransparent = @IsTransparent, fk_CustomerUID = @CustomerUID, UserUID = @UserUID, Description = @Description, LastActionedUTC = @LastActionedUTC, AreaSqMeters = @AreaSqMeters                  
-                WHERE GeofenceUID = @GeofenceUID";
+          string formattedPolygon = GeometryWKTToSpatial(geofence.GeometryWKT);
+
+          string update =
+            "UPDATE Geofence " +                
+           $"      SET Name = @Name, fk_GeofenceTypeID = @GeofenceType, PolygonST = {formattedPolygon}, FillColor = @FillColor, IsTransparent = @IsTransparent, fk_CustomerUID = @CustomerUID, UserUID = @UserUID, Description = @Description, LastActionedUTC = @LastActionedUTC, AreaSqMeters = @AreaSqMeters " +                  
+            "    WHERE GeofenceUID = @GeofenceUID";
 
           upsertedCount = await ExecuteWithAsyncPolicy(update, geofence);
           Log.LogDebug(
@@ -207,11 +211,13 @@ namespace VSS.MasterData.Repositories
 
         geofence.Setup();
 
-        const string insert =
-          @"INSERT Geofence
-                (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
-            VALUES
-                (@GeofenceUID, @Name, @Description, ST_GeomFromText(@GeometryWKT), @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+        string formattedPolygon = GeometryWKTToSpatial(geofence.GeometryWKT);
+
+        string insert =
+          "INSERT Geofence " +
+          "      (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters) " +
+          "  VALUES " +
+         $"     (@GeofenceUID, @Name, @Description, {formattedPolygon}, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
         Log.LogDebug(
@@ -254,12 +260,13 @@ namespace VSS.MasterData.Repositories
 
         Log.LogDebug(
           $"GeofenceRepository/DeleteGeofence: going to insert a deleted dummy geofence={geofence.GeofenceUID}");
+        string formattedPolygon = GeometryWKTToSpatial(geofence.GeometryWKT);
 
-        const string insert =
-          @"INSERT Geofence
-                (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
-            VALUES
-                (@GeofenceUID, @Name, @Description, ST_GeomFromText(@GeometryWKT), @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+        string insert =
+          "INSERT Geofence " +
+          "      (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters) " +
+          "  VALUES " +
+         $"      (@GeofenceUID, @Name, @Description, {formattedPolygon}, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
         upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
         Log.LogDebug($"DeleteGeofence (insert): upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
         return upsertedCount;
@@ -336,5 +343,11 @@ namespace VSS.MasterData.Repositories
     }
 
     #endregion getters
+
+    private string GeometryWKTToSpatial(string geometryWKT)
+    {
+      return string.IsNullOrEmpty(geometryWKT) ? "null" : $"ST_GeomFromText('{geometryWKT}')";
+    }
+
   }
 }

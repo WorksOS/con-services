@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
@@ -597,10 +598,8 @@ namespace VSS.Productivity3D.Project.Repository
 
     private string BuildProjectInsertString(Abstractions.Models.DatabaseModels.Project project)
     {
-      string formattedPolygon = null;
-      if (!string.IsNullOrEmpty(project.GeometryWKT))
-        formattedPolygon = $"ST_GeomFromText('{project.GeometryWKT}')";
-
+      string formattedPolygon = GeometryWKTToSpatial(project.GeometryWKT);
+  
       string insert = null;
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
         insert = string.Format(
@@ -608,22 +607,20 @@ namespace VSS.Productivity3D.Project.Repository
           "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
           "  VALUES " +
           "    (@ProjectUID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
-          , formattedPolygon ?? "null");
+          , formattedPolygon);
       else
         insert = string.Format(
           "INSERT Project " +
           "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
           "  VALUES " +
           "    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
-          , formattedPolygon ?? "null");
+          , formattedPolygon);
       return insert;
     }
 
     private string BuildProjectUpdateString(Abstractions.Models.DatabaseModels.Project project)
     {
-      string formattedPolygon = null;
-      if (!string.IsNullOrEmpty(project.GeometryWKT))
-        formattedPolygon = $"ST_GeomFromText('{project.GeometryWKT}')";
+      string formattedPolygon = GeometryWKTToSpatial(project.GeometryWKT);
 
       string update = null;
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
@@ -640,7 +637,7 @@ namespace VSS.Productivity3D.Project.Repository
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC,
                   PolygonST = {0}
                 WHERE ProjectUID = @ProjectUID"
-          , formattedPolygon ?? "null");
+          , formattedPolygon);
       }
       else
       {
@@ -656,7 +653,7 @@ namespace VSS.Productivity3D.Project.Repository
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC,
                   PolygonST = {0}
                 WHERE ProjectUID = @ProjectUID"
-          , formattedPolygon ?? "null");
+          , formattedPolygon);
       }
 
       return update;
@@ -709,11 +706,13 @@ namespace VSS.Productivity3D.Project.Repository
       geofence.IsDeleted = false;
       geofence.LastActionedUTC = DateTime.UtcNow;
 
-      const string insert =
-        @"INSERT Geofence
-              (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
-          VALUES
-              (@GeofenceUID, @Name, @Description, ST_GeomFromText(@GeometryWKT), @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+      string formattedPolygon = GeometryWKTToSpatial(project.GeometryWKT);
+
+      string insert = string.Format(
+         "INSERT Geofence " +
+         "     (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters) " +
+         " VALUES " +
+         "     (@GeofenceUID, @Name, @Description, {0}, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)", formattedPolygon);
 
       var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
       Log.LogDebug(
@@ -736,8 +735,10 @@ namespace VSS.Productivity3D.Project.Repository
 
     private async Task<int> UpdateGeofence(Abstractions.Models.DatabaseModels.Project project, Geofence existingGeofence)
     {
+      string formattedPolygon = GeometryWKTToSpatial(project.GeometryWKT);
+
       var update = "UPDATE Geofence " +
-                   $" SET PolygonST = ST_GeomFromText('{project.GeometryWKT}') " +
+                   $" SET PolygonST = {formattedPolygon} " +
                    $" WHERE GeofenceUID = '{existingGeofence.GeofenceUID}' " +
                    $"  AND fk_GeofenceTypeID = {(int) GeofenceType.Project}; ";
       var upsertedCount = await ExecuteWithAsyncPolicy(update);
@@ -1786,7 +1787,8 @@ namespace VSS.Productivity3D.Project.Repository
     public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
       DateTime endDate, string excludeProjectUid = "")
     {
-      var polygonToCheck = $"ST_GeomFromText('{geometryWkt}')";
+      string polygonToCheck = GeometryWKTToSpatial(geometryWkt);
+
       var select = $@"SELECT DISTINCT
                           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                           p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, AsWKT(p.PolygonST) as GeometryWKT,
@@ -1861,6 +1863,10 @@ namespace VSS.Productivity3D.Project.Repository
 
     #endregion gettersSpatial
 
+    private string GeometryWKTToSpatial(string geometryWKT)
+    {
+      return string.IsNullOrEmpty(geometryWKT) ? "null" : $"ST_GeomFromText('{geometryWKT}')";
+    }
 
     public Task<IEnumerable<Abstractions.Models.DatabaseModels.Project>> GetProjects_UnitTests()
     {
