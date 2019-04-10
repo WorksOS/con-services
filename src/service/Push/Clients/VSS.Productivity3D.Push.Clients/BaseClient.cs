@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.Common.Abstractions.ServiceDiscovery.Models;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Push.Abstractions;
 
 namespace VSS.Productivity3D.Push.Clients
@@ -44,8 +38,18 @@ namespace VSS.Productivity3D.Push.Clients
       this.serviceDiscovery = serviceDiscovery;
     }
 
+    private bool _connected;
+
     /// <inheritdoc />
-    public bool Connected { get; private set; }
+    public bool Connected
+    {
+      get => _connected;
+      private set
+      {
+        _connected = value;
+        SignalRHealthCheck.State = value;
+      }
+    }
 
     /// <summary>
     /// The Route for the hub, which is appended to the Push URL

@@ -2,6 +2,10 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "trex.deployname" . }}-gateway
+  labels:
+    service-name: {{ .Values.serviceName }}
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   selector:
     component: {{ template "trex.deployname" . }}-gateway
