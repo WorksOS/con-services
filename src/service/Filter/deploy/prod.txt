@@ -25,5 +25,3 @@ NEW_RELIC_APP_NAME: k8s-filter-service
 newrelic: "true"
 SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
 LOG_MAX_CHAR: "1000"
-assetmgmet3d-service-private-v1: http://assetmgmt3d.prod.k8s.services.myvisionlink.com/api/v1
-ASSETMGMT_CACHE_LIFE: 00:15:00
