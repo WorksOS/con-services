@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
@@ -154,7 +155,6 @@ namespace VSS.Productivity3D.Push.Clients
           {
             Logger.LogWarning("No authentication headers added.");
           }
-
         }).Build();
 
       Connection.Closed += async (e) =>

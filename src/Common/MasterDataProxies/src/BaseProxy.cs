@@ -453,6 +453,8 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private bool IfCacheNeedsToBeInvalidated(IDictionary<string, string> customHeaders)
     {
+      if (customHeaders == null)
+        return false;
       customHeaders.TryGetValue("X-VisionLink-ClearCache", out var caching);
       return !string.IsNullOrEmpty(caching) && caching == "true";
     }

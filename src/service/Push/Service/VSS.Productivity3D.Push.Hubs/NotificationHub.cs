@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using VSS.Productivity.Push.Models;
 using VSS.Productivity.Push.Models.Notifications;
-using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 
 namespace VSS.Productivity3D.Push.Hubs
 {

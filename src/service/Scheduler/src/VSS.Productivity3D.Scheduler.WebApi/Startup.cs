@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Hangfire;
 using Hangfire.Dashboard;
@@ -18,14 +19,21 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.AssetLocations;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.Clients.AssetLocations;
+using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.WebApi.Common;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 using VSS.Productivity3D.Scheduler.WebAPI.JobRunner;
 using VSS.Productivity3D.Scheduler.WebAPI.Middleware;
 using VSS.Productivity3D.Push.WebAPI;
+using VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
 
@@ -67,6 +75,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       services.AddTransient<IExportJob, ExportJob>();
+      services.AddTransient<IJob, AssetStatusJob>();
+      
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
@@ -86,8 +96,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IDevOpsNotification, SlackNotification>();
       services.AddTransient<IDefaultJobRunner, DefaultJobsManager>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
-      services.AddTransient<IAssetStatusHubClient, AssetStatusHubClient>();
+      services.AddPushServiceClient<IAssetStatusServerHubClient, AssetStatusServerHubClient>();
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
+      services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
+      services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
 
       services.AddOpenTracing(builder =>
       {
@@ -143,9 +157,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       Thread.Sleep(expirationManagerWaitMs);
       Log.LogDebug($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
 
-
       ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(new RecurringJobRequest()
-        {JobUid = Guid.Parse("8b179467-2b36-49fc-aee0-ee5d4f4e8efa"), Schedule = "* * * * *"});
+      {
+        JobUid = AssetStatusJob.VSSJOB_UID, 
+        Schedule = "* * * * *"
+      });
     }
 
     /// <summary>

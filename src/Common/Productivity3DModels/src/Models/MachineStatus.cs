@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Models.Models
@@ -43,6 +44,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Private constructor
     /// </summary>
+    [JsonConstructor]
     private MachineStatus()
     { }
 

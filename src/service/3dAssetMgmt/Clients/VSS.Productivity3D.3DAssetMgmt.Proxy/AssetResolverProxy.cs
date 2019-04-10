@@ -36,7 +36,8 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
 
     public override ApiVersion Version => ApiVersion.V1;
 
-    public override ApiType Type => ApiType.Private;
+    public override ApiType Type => ApiType.Public;
+
     public override string CacheLifeKey => "ASSETMGMT_CACHE_LIFE";
 
     public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<Guid> assetUids,
