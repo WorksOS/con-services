@@ -222,6 +222,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               Task.IntermediaryTargetMachine.DeviceType,
               Task.IntermediaryTargetMachine.IsJohnDoeMachine,
               Task.PersistedTargetMachineID);
+              // todoJeannie
             MachineFromDM.Assign(Task.IntermediaryTargetMachine);
           }
 
