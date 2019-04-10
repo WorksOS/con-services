@@ -3,6 +3,7 @@ using System.Linq;
 using ASNodeDecls;
 using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common.Algorithms;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
@@ -39,20 +40,27 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 
       foreach (var boundary in LineworkBoundaries)
       {
+        TWGS84Point[] fencePoints = boundary.Boundary.FencePoints;
+
+        if (maxPointsToApproximateTo > 2)
+        {
+           fencePoints = new DouglasPeucker().SimplifyPolyline(boundary.Boundary.FencePoints, 5);
+        }
+
         geoJson.Features.Add(new Feature
         {
           Type = GeoJson.FeatureType.FEATURE,
           Properties = new Properties { Name = boundary.BoundaryName },
-          Geometry = GetCoordinatesFromFencePoints(boundary, convertLineStringCoordsToPolygon)
+          Geometry = GetCoordinatesFromFencePoints(fencePoints, convertLineStringCoordsToPolygon)
         });
       }
 
       return geoJson;
     }
 
-    private static Geometry GetCoordinatesFromFencePoints(TWGS84LineworkBoundary boundary, bool convertLineStringCoordsToPolygon)
+    private static Geometry GetCoordinatesFromFencePoints(TWGS84Point[] fencePoints, bool convertLineStringCoordsToPolygon)
     {
-      var boundaries = boundary.Boundary.FencePoints.Select(point => new[] { point.Lon, point.Lat }).ToList(); // GeoJSON is lon/lat.
+      var boundaries = fencePoints.Select(point => new[] { point.Lon, point.Lat }).ToList(); // GeoJSON is lon/lat.
       var boundaryType = Geometry.Types.POLYGON;
 
       if (boundaries.First()[0] != boundaries.Last()[0] && boundaries.First()[1] != boundaries.Last()[1])

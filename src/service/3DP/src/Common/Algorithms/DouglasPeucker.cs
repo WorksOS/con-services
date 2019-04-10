@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     public List<TCoordPoint> SimplifyPolyline(List<TCoordPoint> nePoints, double distanceTolerance)
     {
       var included = new List<bool>();
-      
+
       // TODO (Aaron) init better.
       for (var i = 0; i < nePoints.Count; i++)
       {
@@ -30,16 +30,61 @@ namespace VSS.Productivity3D.Common.Algorithms
       return newPoints;
     }
 
-    //public TWGS84LineworkBoundary[] SimplifyPolyline(TWGS84LineworkBoundary[] nePoints, double distanceTolerance)
-    //{
-    //  var included = new List<bool>();
+    /// <summary>
+    /// Simplify the polyline using Douglas-Peucker algorithm. The algorithm always includes (starts with) the first and last point.
+    /// </summary>
+    public TWGS84Point[] SimplifyPolyline(TWGS84Point[] wgsPoints, double distanceTolerance)
+    {
+      var included = new List<bool>();
 
-    //  for (var i = 0; i < nePoints.Length; i++)
-    //  {
-    //    included.Add(i == 0 || i == nePoints.Length - 1);
-    //  }
-    //}
-    
+      for (var i = 0; i < wgsPoints.Length; i++)
+      {
+        included.Add(i == 0 || i == wgsPoints.Length - 1);
+      }
+
+      ReducePointCount(wgsPoints, 0, wgsPoints.Length - 1, included, distanceTolerance);
+
+      var fencePoints = new List<TWGS84Point>(wgsPoints.Length);
+
+      for (var i = 0; i < wgsPoints.Length; i++)
+      {
+        if (included[i]) fencePoints.Add(wgsPoints[i]);
+      }
+      
+      return fencePoints.ToArray();
+    }
+
+    private static void ReducePointCount(TWGS84Point[] wgsPoints, int startIndex, int endIndex, List<bool> included, double distanceTolerance)
+    {
+      var maxDistanceIndex = -1;
+      double maxDistance = 0;
+
+      for (var i = startIndex + 1; i < endIndex; i++)
+      {
+        double distance = LineToPointDistance2D(
+          wgsPoints[startIndex].Lat,
+          wgsPoints[startIndex].Lon,
+          wgsPoints[endIndex].Lat,
+          wgsPoints[endIndex].Lon,
+          wgsPoints[i].Lat,
+          wgsPoints[i].Lon, true);
+
+        if (distance > maxDistance)
+        {
+          maxDistance = distance;
+          maxDistanceIndex = i;
+        }
+      }
+
+      if (maxDistance > distanceTolerance)
+      {
+        included[maxDistanceIndex] = true;
+
+        ReducePointCount(wgsPoints, startIndex, maxDistanceIndex, included, distanceTolerance);
+        ReducePointCount(wgsPoints, maxDistanceIndex, endIndex, included, distanceTolerance);
+      }
+    }
+
     private static void ReducePointCount(List<TCoordPoint> nePoints, int startIndex, int endIndex, List<bool> included, double distanceTolerance)
     {
       var maxDistanceIndex = -1;
@@ -48,7 +93,13 @@ namespace VSS.Productivity3D.Common.Algorithms
       for (var i = startIndex + 1; i < endIndex; i++)
       {
         double distance =
-          LineToPointDistance2D(nePoints[startIndex].X, nePoints[startIndex].Y, nePoints[endIndex].X, nePoints[endIndex].Y, nePoints[i].X, nePoints[i].Y, true);
+          LineToPointDistance2D(nePoints[startIndex].X,
+          nePoints[startIndex].Y,
+          nePoints[endIndex].X,
+          nePoints[endIndex].Y,
+          nePoints[i].X,
+          nePoints[i].Y,
+          true);
 
         if (distance > maxDistance)
         {
