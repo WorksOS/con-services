@@ -83,6 +83,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return result;
     }
 
+    
     /// <summary>
     /// Returns list of machines which have contributed to a site model.
     /// </summary>
@@ -96,10 +97,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachines));
-      if (string.IsNullOrEmpty(siteModel.CSIB()))
+      var CSIB = siteModel.CSIB();
+      if (string.IsNullOrEmpty(CSIB))
       {
         Log.LogError($"{nameof(GetMachines)}: siteModel has no CSIB");
-        return (MachineExecutionResult) new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError);
+        throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "The SiteModel has no CSIB."));
       }
 
       var machines = siteModel.Machines.ToList();
@@ -107,12 +109,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       if (machines.Any())
       {
-        List<MachineStatus> resultMachines = machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
+        List<MachineStatus> resultMachines =
+          machines.Select(machine => AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToList();
         var response = coordinateServiceUtility.PatchLLH(siteModel.CSIB(), resultMachines);
         if (response == ContractExecutionStatesEnum.ExecutedSuccessfully)
           result.MachineStatuses = resultMachines;
         else
-          return (MachineExecutionResult) new ContractExecutionResult(response);
+          throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(response, $"Unable to convert last known machine locations to LLH. machineLocations: {JsonConvert.SerializeObject(machines)}. CSIB: {siteModel.CSIB()}"));
       }
 
       return result;

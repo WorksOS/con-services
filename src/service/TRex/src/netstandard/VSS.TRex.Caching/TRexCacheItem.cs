@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Caching
 {
@@ -69,7 +70,7 @@ namespace VSS.TRex.Caching
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = context == null ? DateTime.MinValue : DateTime.UtcNow + context.CacheDurationTime;
+      ExpiryTime = context == null ? Consts.MIN_DATETIME_AS_UTC : DateTime.UtcNow + context.CacheDurationTime;
       Prev = prev;
       Next = next;
 

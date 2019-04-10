@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.Filters
         PassType = PassType.Front,
         RadioLatency = 10,
         RMV = 11,
-        Time = new DateTime(2017, 1, 1, 12, 30, 0)
+        Time = DateTime.SpecifyKind(new DateTime(2017, 1, 1, 12, 30, 0), DateTimeKind.Utc)
       };
     }
 

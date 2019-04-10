@@ -20,7 +20,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
   {
     ////////////////////////Private properties
     private bool HaveSeenFirstDataTime { get; set; }
-    private DateTime DataTimePrevious { get; set; } = DateTime.MinValue;
+    private DateTime DataTimePrevious { get; set; } = Consts.MIN_DATETIME_AS_UTC;
 
     private XYZ LeftPoint = XYZ.Null;
     private XYZ RightPoint = XYZ.Null;
@@ -57,7 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     // Proofing runs declarations...
     private string _StartProofing = string.Empty;    // Proofing run name...
-    private DateTime _StartProofingDataTime = DateTime.MinValue;
+    private DateTime _StartProofingDataTime = Consts.MIN_DATETIME_AS_UTC;
 
     // Declarations for processing state information
     private float _ICTargetLiftThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
@@ -140,28 +140,28 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     protected /*virtual*/ void InitialiseAttributeAccumulators()
     {
-      ICMachineSpeedValues.Add(DateTime.MinValue, Consts.NullDouble);
-      ICCCVValues.Add(DateTime.MinValue, CellPassConsts.NullCCV);
-      ICRMVValues.Add(DateTime.MinValue, CellPassConsts.NullRMV);
-      ICFrequencys.Add(DateTime.MinValue, CellPassConsts.NullFrequency);
-      ICAmplitudes.Add(DateTime.MinValue, CellPassConsts.NullAmplitude);
-      GPSModes.Add(DateTime.MinValue, CellPassConsts.NullGPSMode);
+      ICMachineSpeedValues.Add(Consts.MIN_DATETIME_AS_UTC, Consts.NullDouble);
+      ICCCVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCV);
+      ICRMVValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullRMV);
+      ICFrequencys.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullFrequency);
+      ICAmplitudes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullAmplitude);
+      GPSModes.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullGPSMode);
 
       // We will assume that the absence of an OnGround flag in the tag file shall
       // default to true wrt to the processing of the file.
-      OnGrounds.Add(DateTime.MinValue, OnGroundState.YesLegacy);
+      OnGrounds.Add(Consts.MIN_DATETIME_AS_UTC, OnGroundState.YesLegacy);
 
-      AgeOfCorrections.Add(DateTime.MinValue, (byte)0);
+      AgeOfCorrections.Add(Consts.MIN_DATETIME_AS_UTC, (byte)0);
 
-      VolkelMeasureRanges.Add(DateTime.MinValue, CellPassConsts.NullVolkelMeasRange);
-      VolkelMeasureUtilRanges.Add(DateTime.MinValue, CellPassConsts.NullVolkelMeasUtilRange);
-      ICMDPValues.Add(DateTime.MinValue, CellPassConsts.NullMDP);
-      ICTemperatureValues.Add(DateTime.MinValue, CellPassConsts.NullMaterialTemperatureValue);
-      ICCCAValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCALeftFrontValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCARightFrontValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCALeftRearValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
-      ICCCALeftRearValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
+      VolkelMeasureRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasRange);
+      VolkelMeasureUtilRanges.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullVolkelMeasUtilRange);
+      ICMDPValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMDP);
+      ICTemperatureValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullMaterialTemperatureValue);
+      ICCCAValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCARightFrontValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
+      ICCCALeftRearValues.Add(Consts.MIN_DATETIME_AS_UTC, CellPassConsts.NullCCA);
     }
 
     protected virtual void DiscardAllButLatestAttributeAccumulatorValues()
@@ -379,7 +379,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public short GPSWeekNumber { get; set; }
     public uint GPSWeekTime { get; set; }
 
-    private DateTime _DataTime = DateTime.MinValue;
+    private DateTime _DataTime = Consts.MIN_DATETIME_AS_UTC;
     public DateTime DataTime { get { return _DataTime; } set { SetDataTime(value); } }
 
     public DateTime _FirstDataTime;

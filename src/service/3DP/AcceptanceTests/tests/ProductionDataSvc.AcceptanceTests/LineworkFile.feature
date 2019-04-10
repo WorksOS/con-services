@@ -7,7 +7,7 @@ Scenario Outline: LineworkFile - Bad Request
   And with property DxfFile with value "<DxfFile>"
   And with property CoordinateSystemFile with value "<CoordinateSystemFile>"
   When I POST the multipart request I expect response code <HttpCode>
-  Then the response should match "<ResultName>" from the repository
+  Then the response should match "<ResultName>" from the repository with rounding to 8
   Examples: 
   | DxfUnits | MaxBoundariesToProcess | DxfFile             | CoordinateSystemFile | ResultName                               | HttpCode |
   | 2        | 1                      | Null.dxf            | Dimensions_2012.dc   | NullDxfFileData                          | 400      |
@@ -26,7 +26,7 @@ Scenario Outline: LineworkFile - Good Request
   And with property DxfFile with value "<DxfFile>"
   And with property CoordinateSystemFile with value "<CoordinateSystemFile>"
   When I POST the multipart request I expect response code <HttpCode>
-  Then the response should match "<ResultName>" from the repository
+  Then the response should match "<ResultName>" from the repository with rounding to 8
   Examples: 
   | DxfUnits | MaxBoundariesToProcess | ConvertLineStringCoordsToPolygon | DxfFile                        | CoordinateSystemFile | ResultName              | HttpCode |
   | 2        | 21                     |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 21BoundariesDXF         | 200      |

@@ -37,7 +37,7 @@ namespace VSS.TRex.Machines
 
     public double LastKnownY { get; set; } = Common.Consts.NullDouble;
 
-    public DateTime LastKnownPositionTimeStamp { get; set; } = DateTime.MinValue;
+    public DateTime LastKnownPositionTimeStamp { get; set; } = Common.Consts.MIN_DATETIME_AS_UTC;
 
     public string LastKnownDesignName { get; set; } = string.Empty;
 

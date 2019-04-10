@@ -34,8 +34,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 
-            DateTime start = new DateTime(2000, 1, 1, 1, 1, 1);
-            DateTime end = new DateTime(2000, 1, 2, 1, 1, 1);
+            DateTime start = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
+            DateTime end = DateTime.SpecifyKind(new DateTime(2000, 1, 2, 1, 1, 1), DateTimeKind.Utc);
             iterator.SetTimeRange(start, end);
 
             Assert.True(iterator.IterationState.StartSegmentTime == start && iterator.IterationState.EndSegmentTime == end,

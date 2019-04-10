@@ -120,6 +120,9 @@ namespace VSS.TRex.Events
     // by <Item> and the date held in <Value>
     public bool Find(DateTime findDate, out int index)
     {
+      if (findDate.Kind != DateTimeKind.Utc)
+        throw new ArgumentException("FindDate must be a UTC date time", nameof(findDate));
+
       int L = 0;
       int H = Events.Count - 1;
 
@@ -194,6 +197,9 @@ namespace VSS.TRex.Events
     /// <returns>The event instance that was added to the list</returns>
     public virtual void PutValueAtDate(DateTime dateTime, T value)
     {
+      if (dateTime.Kind != DateTimeKind.Utc)
+        throw new TRexException("dateTime must be a UTC date time");
+
       PutValueAtDate(new Event
       {
         Date = dateTime,
@@ -228,6 +234,9 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn)
     {
+      if (startDate.Kind != DateTimeKind.Utc || startDate.Kind != DateTimeKind.Utc)
+        throw new TRexException("Start and end dates must be a UTC date times");
+
       // Get the index of the first value
       GetValueAtDate(startDate, out int index);
 
@@ -322,8 +331,8 @@ namespace VSS.TRex.Events
     {
       bool HaveStartEndEventPair = false;
 
-      DateTime StartEvent = new DateTime();
-      DateTime EndEvent = new DateTime();
+      DateTime StartEvent = Consts.MIN_DATETIME_AS_UTC; 
+      DateTime EndEvent = Consts.MAX_DATETIME_AS_UTC;
 
       int FirstIdx = 0;
       int SecondIdx = 1;
@@ -340,7 +349,7 @@ namespace VSS.TRex.Events
       while (SecondIdx < Events.Count)
       {
         if (!HaveStartEndEventPair ||
-            !Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date))
+            !Range.InRange(Events[FirstIdx].Date, StartEvent, EndEvent))
         {
           if (!container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
           {
@@ -354,8 +363,8 @@ namespace VSS.TRex.Events
         }
 
         if (Events[FirstIdx].EquivalentTo(Events[SecondIdx]) &&
-            Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date) &&
-            Range.InRange(Events[SecondIdx].Date, StartEvent.Date, EndEvent.Date))
+            Range.InRange(Events[FirstIdx].Date, StartEvent, EndEvent) &&
+            Range.InRange(Events[SecondIdx].Date, StartEvent, EndEvent))
         {
           EventsChanged = true;
           Events.RemoveAt(SecondIdx);

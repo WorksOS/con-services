@@ -76,15 +76,15 @@ namespace VSS.TRex.Tests.Exports.CSV
     [Fact]
     public void VetaFinalPass_NorthingEasting()
     {
-      DILoggingFixture.SetMaxExportRowsConfig(100000);
+      DILoggingFixture.SetMaxExportRowsConfig(100);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
-        out CSVExportRequestArgument requestArgument, out ISiteModel _, "Dimensions2018-CaseMachine"); 
+        out CSVExportRequestArgument requestArgument, out ISiteModel _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
-      rows.Count.Should().Be(8);
-      rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,?,?,2,1,?,?,?,?,?,?,?,?,?,?,?");
+      rows.Count.Should().Be(100);
+      rows[0].Should().Be(@"2019-Jan-23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Skip until coreX is available")]
@@ -229,7 +229,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       clientGrid.Should().NotBe(null);
       clientGrid.Cells[0, 0] = new ClientCellProfileLeafSubgridRecord
       {
-        LastPassTime = new DateTime(2019, 3, 14, 23, 45, 00),
+        LastPassTime = DateTime.SpecifyKind(new DateTime(2019, 3, 14, 23, 45, 00), DateTimeKind.Utc),
         Height = 6509,
         PassCount = 1,
         LastPassValidRadioLatency = 34,
@@ -260,9 +260,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     // 1 cell with 5 passes, 2-halves and one whole
     private ClientCellProfileAllPassesLeafSubgrid SetupProfileAllPassesSampleCell()
     {
-      var firstHalfPassTime = new DateTime(2019, 3, 14);
-      var secondHalfPassTime = new DateTime(2019, 4, 15);
-      var fullPassTime = new DateTime(2019, 5, 16);
+      var firstHalfPassTime = DateTime.SpecifyKind(new DateTime(2019, 3, 14), DateTimeKind.Utc);
+      var secondHalfPassTime = DateTime.SpecifyKind(new DateTime(2019, 4, 15), DateTimeKind.Utc);
+      var fullPassTime = DateTime.SpecifyKind(new DateTime(2019, 5, 16), DateTimeKind.Utc);
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
       clientGrid.Should().NotBe(null);
       clientGrid.Cells[0, 0] = new ClientCellProfileAllPassesLeafSubgridRecord()
@@ -270,7 +270,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         TotalPasses = 5,
         CellPasses = new[]
         {
-          new ClientCellProfileLeafSubgridRecord()
+          new ClientCellProfileLeafSubgridRecord
           {
             HalfPass = true,
             LastPassTime = firstHalfPassTime,
@@ -284,7 +284,7 @@ namespace VSS.TRex.Tests.Exports.CSV
             LastPassValidCCV = 666,
             TargetCCV = 5
           },
-          new ClientCellProfileLeafSubgridRecord()
+          new ClientCellProfileLeafSubgridRecord
           {
             HalfPass = true,
             LastPassTime = secondHalfPassTime,
@@ -298,7 +298,7 @@ namespace VSS.TRex.Tests.Exports.CSV
             LastPassValidCCV = 777,
             TargetCCV = 8
           },
-          new ClientCellProfileLeafSubgridRecord()
+          new ClientCellProfileLeafSubgridRecord
           {
             HalfPass = false,
             LastPassTime = fullPassTime,
@@ -312,7 +312,7 @@ namespace VSS.TRex.Tests.Exports.CSV
             LastPassValidCCV = 44,
             TargetCCV = 66
           },
-          new ClientCellProfileLeafSubgridRecord()
+          new ClientCellProfileLeafSubgridRecord
           {
             HalfPass = true,
             LastPassTime = firstHalfPassTime,
@@ -326,7 +326,7 @@ namespace VSS.TRex.Tests.Exports.CSV
             LastPassValidCCV = 666,
             TargetCCV = 5
           },
-          new ClientCellProfileLeafSubgridRecord()
+          new ClientCellProfileLeafSubgridRecord
           {
             HalfPass = true,
             LastPassTime = secondHalfPassTime,

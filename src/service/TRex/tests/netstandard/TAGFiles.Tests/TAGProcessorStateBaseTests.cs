@@ -370,7 +370,7 @@ namespace VSS.TRex.Tests
 
       var startProofingDataTime = DateTime.Now;
 
-      Assert.Equal(DateTime.MinValue, state.StartProofingDataTime);
+      Assert.Equal(Consts.MIN_DATETIME_AS_UTC, state.StartProofingDataTime);
       state.StartProofingDataTime = startProofingDataTime;
       Assert.True(state.StartProofingDataTime == startProofingDataTime, "Initial value incorrect");
     }

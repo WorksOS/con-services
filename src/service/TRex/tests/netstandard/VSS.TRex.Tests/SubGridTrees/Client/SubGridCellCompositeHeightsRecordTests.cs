@@ -22,10 +22,11 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       Assert.True(rec.LowestHeight == Consts.NullHeight);
       Assert.True(rec.HighestHeight == Consts.NullHeight);
 
-      Assert.True(rec.FirstHeightTime == DateTime.MinValue.Ticks);
-      Assert.True(rec.LastHeightTime == DateTime.MinValue.Ticks);
-      Assert.True(rec.LowestHeightTime == DateTime.MinValue.Ticks);
-      Assert.True(rec.HighestHeightTime == DateTime.MinValue.Ticks);
+      var minTicks = Consts.MIN_DATETIME_AS_UTC.Ticks;
+      Assert.True(rec.FirstHeightTime == minTicks);
+      Assert.True(rec.LastHeightTime == minTicks);
+      Assert.True(rec.LowestHeightTime == minTicks);
+      Assert.True(rec.HighestHeightTime == minTicks);
     }
   }
 }

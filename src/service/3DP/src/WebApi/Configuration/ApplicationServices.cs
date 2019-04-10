@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -82,7 +83,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
       services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
-      services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
+      services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>) provider.GetServices<IHostedService>()
+        .First(service => service.GetType() == typeof(AddFileProcessingService)));
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IRaptorFileUploadUtility, RaptorFileUploadUtility>();
 
