@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Common;
+﻿using VSS.MasterData.Models.Models;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
@@ -68,8 +69,8 @@ namespace VSS.TRex.Events
     public short EventMachineRMVThreshold;
     public SiteModelMachineTargetValueTrackingState<short> EventMachineRMVThreshold_Tracking;
 
-    public MachineAutomaticsMode EventMachineAutomatics;
-    public SiteModelMachineTargetValueTrackingState<MachineAutomaticsMode> EventMachineAutomatics_Tracking;
+    public AutomaticsType EventMachineAutomatics;
+    public SiteModelMachineTargetValueTrackingState<AutomaticsType> EventMachineAutomatics_Tracking;
 
     public ushort EventLayerID;
     public SiteModelMachineTargetValueTrackingState<ushort> EventLayerID_Tracking;
@@ -171,8 +172,8 @@ namespace VSS.TRex.Events
 
       if (populationControl.WantsEventMachineAutomaticsValues)
       {
-        EventMachineAutomatics = MachineAutomaticsMode.Unknown;
-        EventMachineAutomatics_Tracking = new SiteModelMachineTargetValueTrackingState<MachineAutomaticsMode>(MachineTargetValues, ProductionEventType.MachineAutomaticsChange);
+        EventMachineAutomatics = AutomaticsType.Unknown;
+        EventMachineAutomatics_Tracking = new SiteModelMachineTargetValueTrackingState<AutomaticsType>(MachineTargetValues, ProductionEventType.MachineAutomaticsChange);
       }
 
       if (populationControl.WantsEventGPSAccuracyValues)

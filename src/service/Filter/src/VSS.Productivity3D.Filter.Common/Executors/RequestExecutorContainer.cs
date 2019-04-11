@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
@@ -47,6 +48,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// Implementation of the proxy interface for <see cref="IRaptorProxy"/>.
     /// </summary>
     protected IRaptorProxy raptorProxy;
+
+    /// <summary>
+    /// Implementation of the proxy interface for <see cref="IAssetResolverProxy"/>.
+    /// </summary>
+    protected IAssetResolverProxy assetResolverProxy;
 
     /// <summary>
     /// Main DB repo for filters/boundaries used in ProcessEx
@@ -146,7 +152,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IFileListProxy fileListProxy, RepositoryBase repository,
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileListProxy fileListProxy, RepositoryBase repository,
       IKafka producer, string kafkaTopicName, RepositoryBase auxRepository) : this()
     {
       this.configStore = configStore;
@@ -155,6 +161,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.projectListProxy = projectListProxy;
       this.raptorProxy = raptorProxy;
+      this.assetResolverProxy = assetResolverProxy;
       Repository = repository;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
@@ -179,7 +186,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       Build<TExecutor>(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
-      IProjectListProxy projectListProxy = null, IRaptorProxy raptorProxy = null,
+      IProjectListProxy projectListProxy = null, IRaptorProxy raptorProxy = null, IAssetResolverProxy assetResolverProxy = null,
       IKafka producer = null, string kafkaTopicName = null, IFileListProxy fileListProxy = null)
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -190,6 +197,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler = serviceExceptionHandler,
         projectListProxy = projectListProxy,
         raptorProxy = raptorProxy,
+        assetResolverProxy = assetResolverProxy,
         FileListProxy = fileListProxy,
         Repository = repository,
         producer = producer,

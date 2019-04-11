@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
