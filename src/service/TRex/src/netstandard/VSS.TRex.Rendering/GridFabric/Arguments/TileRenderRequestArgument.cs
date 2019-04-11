@@ -8,6 +8,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
@@ -17,7 +18,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
 
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
 
-    public PaletteBase Palette { get; set; }
+    public IPlanViewPalette Palette { get; set; }
 
     public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted();
 
@@ -63,7 +64,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       writer.WriteInt((int)Mode);
 
       writer.WriteBoolean(Palette != null);
-      Palette?.ToBinary(writer);
+      ((PaletteBase)Palette)?.ToBinary(writer);
 
       writer.WriteBoolean(Extents != null);
       Extents.ToBinary(writer);
@@ -88,7 +89,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       if (reader.ReadBoolean())
       {
         Palette = GetPalette();
-        Palette.FromBinary(reader);
+        ((PaletteBase)Palette).FromBinary(reader);
       }
 
       if (reader.ReadBoolean())

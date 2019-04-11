@@ -154,7 +154,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           convertedPalette = new CutFillPalette();
           break;
         case DisplayMode.Height:
-          BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
+          var extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
 
           convertedPalette = new HeightPalette(extent.MinZ, extent.MaxZ);
 

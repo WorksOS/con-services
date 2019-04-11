@@ -24,12 +24,12 @@ namespace VSS.TRex.Rendering.Palettes
     /// <summary>
     /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are within target range.
     /// </summary>
-    public Color WithinPassTargetRangeColour = Color.YellowGreen;
+    public Color WithinPassTargetRangeColour = Color.Lime;
 
     /// <summary>
     /// The color, which Pass Count summary data displayed in on a plan view map, where pass count values are less than target range.
     /// </summary>
-    public Color BelowPassTargetRangeColour = Color.DodgerBlue;
+    public Color BelowPassTargetRangeColour = Color.Blue;
 
     /// <summary>
     /// The flag is to indicate whether or not the machine Pass Count target range to be user overrides.

@@ -26,7 +26,7 @@ namespace VSS.TRex.Rendering.Palettes
     /// <returns></returns>
     public Draw.Color ChooseColour(double value)
     {
-      Draw.Color color = Draw.Color.Empty;
+      var color = Draw.Color.Empty;
 
       for (int i = PaletteTransitions.Length - 1; i >= 0; i--)
       {
