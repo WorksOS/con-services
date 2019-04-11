@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,7 +11,6 @@ using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Helpers;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -50,16 +48,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid project UID."));
       }
-
-      // todo which of these filters potentially have contributingMachines?
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(summaryVolumesRequest.ProjectUid.Value, nameof(PostSummaryVolumes));
-      if (summaryVolumesRequest.BaseFilter != null && summaryVolumesRequest.BaseFilter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(summaryVolumesRequest.BaseFilter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
-      if (summaryVolumesRequest.TopFilter != null && summaryVolumesRequest.TopFilter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(summaryVolumesRequest.TopFilter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
-      if (summaryVolumesRequest.AdditionalSpatialFilter != null && summaryVolumesRequest.AdditionalSpatialFilter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(summaryVolumesRequest.AdditionalSpatialFilter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
-
+      ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.BaseFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.TopFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumes), summaryVolumesRequest.ProjectUid, summaryVolumesRequest.AdditionalSpatialFilter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -85,14 +76,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid project UID."));
       }
-
-      // todo which of these filters potentially have contributingMachines?
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(summaryVolumesProfileRequest.ProjectUid.Value, nameof(PostSummaryVolumesProfile));
-      if (summaryVolumesProfileRequest.BaseFilter != null && summaryVolumesProfileRequest.BaseFilter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(summaryVolumesProfileRequest.BaseFilter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
-      if (summaryVolumesProfileRequest.TopFilter != null && summaryVolumesProfileRequest.TopFilter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(summaryVolumesProfileRequest.TopFilter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
-
+      ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.BaseFilter);
+      ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.TopFilter);
+      
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryVolumesProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)

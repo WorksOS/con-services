@@ -208,12 +208,24 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Forward);
 
-      filterResult.ForwardDirection = false;
+      filter = Filter.CreateFilter(
+        null, null, null, null,
+        new List<MachineDetails>(0), null, null,
+        null, null, false, null
+      );
+      filterResult = new FilterResult(null, filter, null, null,
+        null, null, true, null);
       combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeTrue();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Reverse);
 
-      filterResult.ForwardDirection = null;
+      filter = Filter.CreateFilter(
+        null, null, null, null,
+        new List<MachineDetails>(0), null, null,
+        null, null, null, null
+      );
+      filterResult = new FilterResult(null, filter, null, null,
+        null, null, true, null);
       combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filterResult);
       combinedFilter.AttributeFilter.HasMachineDirectionFilter.Should().BeFalse();
       combinedFilter.AttributeFilter.MachineDirection.Should().Be(MachineDirection.Unknown);

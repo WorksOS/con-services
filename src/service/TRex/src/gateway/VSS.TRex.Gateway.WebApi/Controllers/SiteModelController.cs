@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetExtents)}: siteModelID: {siteModelID}");
 
-      var extents = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetExtents)).SiteModelExtent;
+      var extents = GatewayHelper.ValidateAndGetSiteModel(nameof(GetExtents), siteModelID).SiteModelExtent;
       if (extents != null)
         return new BoundingBox3DGrid(
           extents.MinX,
@@ -63,7 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetStatistics)}: projectStatisticsTRexRequest: {JsonConvert.SerializeObject(projectStatisticsTRexRequest)}");
       projectStatisticsTRexRequest.Validate();
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectStatisticsTRexRequest.ProjectUid, nameof(GetStatistics));
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetStatistics), projectStatisticsTRexRequest.ProjectUid);
       var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid, projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
 
       var result = new ProjectStatisticsResult();
@@ -95,7 +95,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetMachines)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachines));
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetMachines), siteModelID);
       var CSIB = siteModel.CSIB();
       if (string.IsNullOrEmpty(CSIB))
       {
@@ -132,7 +132,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetAssetOnDesignPeriods));
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetAssetOnDesignPeriods), siteModelID);
       return new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
     }
 
@@ -146,7 +146,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetMachineLayers)}: siteModelID: {siteModelID}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(siteModelID, nameof(GetMachineLayers));
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetMachineLayers), siteModelID);
       return new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
     }
 

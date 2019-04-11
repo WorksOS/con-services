@@ -52,8 +52,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         null, GridReportOption.Automatic,
         800000, 400000, 800001, 400001, 2);
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectUid, nameof(ValidateReportData_GriddedSuccess));
-      var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(request, siteModel);
+      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(ValidateReportData_GriddedSuccess), projectUid);
+      var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_GriddedSuccess), projectUid, request);
       Assert.True(isOk);
     }
 
@@ -91,8 +91,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         cutFillDesignUid, alignmentDesignUid,
         2.0, 100, 200, new[] { -1.0, 0, 1.3 });
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectUid, nameof(ValidateReportData_AlignmentSuccess));
-      var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(request, siteModel);
+      var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentSuccess), projectUid, request);
       Assert.True(isOk);
     }
 
@@ -131,7 +130,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         cutFillDesignUid, alignmentDesignUid,
         2.0, 100, 200, new[] { -1.0, 0, 1.3 });
 
-      var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(request, mockSiteModel.Object);
+      var isOk = DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentIncludingCutFill_Success), request.ProjectUid, request);
       Assert.True(isOk);
     }
 
@@ -169,7 +168,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         null, GridReportOption.Automatic,
         800000, 400000, 800001, 400001, 2);
 
-      var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(request, mockSiteModel.Object));
+      var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_GriddedNoDesign_Fail), request.ProjectUid, request));
       Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.ValidationError, ex.GetResult.Code);
       Assert.Equal($"CutFill design {cutFillDesignUid} is not found.", ex.GetResult.Message);
@@ -208,7 +207,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
         cutFillDesignUid, alignmentDesignUid,
         2.0, 100, 200, new[] { -1.0, 0, 1.3 });
 
-      var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(request, mockSiteModel.Object));
+      var ex = Assert.Throws<ServiceException>(() => DIContext.Obtain<IReportDataValidationUtility>().ValidateData(nameof(ValidateReportData_AlignmentFailed), request.ProjectUid, request));
       Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.ValidationError, ex.GetResult.Code);
       Assert.Equal($"Alignment design {alignmentDesignUid} is not found.", ex.GetResult.Message);

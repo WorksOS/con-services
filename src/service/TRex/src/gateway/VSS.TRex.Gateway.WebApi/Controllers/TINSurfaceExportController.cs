@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -10,7 +9,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using FileSystem = System.IO.File;
@@ -60,9 +58,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
 
       compactionSurfaceExportRequest.Validate();
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(compactionSurfaceExportRequest.ProjectUid, nameof(PostTINSurface));
-      if (compactionSurfaceExportRequest.Filter != null && compactionSurfaceExportRequest.Filter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(compactionSurfaceExportRequest.Filter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+      ValidateFilterMachines(nameof(PostTINSurface), compactionSurfaceExportRequest.ProjectUid, compactionSurfaceExportRequest.Filter);
 
       var tinResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -112,10 +108,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       };
 
       request.Validate();
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(projectUid, nameof(GetTINSurface2));
-      if (request.Filter != null && request.Filter.ContributingMachines != null)
-        GatewayHelper.ValidateMachines(request.Filter.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
-
+      ValidateFilterMachines(nameof(GetTINSurface2), request.ProjectUid, request.Filter);
 
       var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 

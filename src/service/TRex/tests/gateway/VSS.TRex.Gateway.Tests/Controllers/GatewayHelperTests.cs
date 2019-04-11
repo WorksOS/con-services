@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         .Add(x => x.AddSingleton<ISiteModels>(mockSiteModels.Object))
         .Complete();
 
-      var ex = Assert.Throws<ServiceException>(() => GatewayHelper.ValidateAndGetSiteModel(projectUid, "ValidateReportData_GriddedNoSiteModel_Fail"));
+      var ex = Assert.Throws<ServiceException>(() => GatewayHelper.ValidateAndGetSiteModel("ValidateReportData_GriddedNoSiteModel_Fail", projectUid));
       ex.Code.Should().Be(HttpStatusCode.BadRequest);
       ex.GetResult.Code.Should().Be(ContractExecutionStatesEnum.ValidationError);
       ex.GetResult.Message.Should().Be($"ValidateReportData_GriddedNoSiteModel_Fail: SiteModel: {projectUid} not found ");
@@ -51,7 +51,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         .Complete();
 
       var siteModelID = Guid.Empty;
-      var ex = Assert.Throws<ServiceException>(() => GatewayHelper.ValidateAndGetSiteModel(siteModelID, "ValidateReportData_GriddedNoSiteModel_Fail"));
+      var ex = Assert.Throws<ServiceException>(() => GatewayHelper.ValidateAndGetSiteModel("ValidateReportData_GriddedNoSiteModel_Fail", siteModelID));
       ex.Code.Should().Be(HttpStatusCode.BadRequest);
       ex.GetResult.Code.Should().Be(ContractExecutionStatesEnum.ValidationError);
       ex.GetResult.Message.Should().Be($"siteModel ID: {siteModelID} format is invalid.");

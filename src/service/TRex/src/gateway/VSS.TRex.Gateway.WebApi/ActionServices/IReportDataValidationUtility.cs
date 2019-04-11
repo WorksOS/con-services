@@ -1,4 +1,4 @@
-﻿using VSS.TRex.SiteModels.Interfaces;
+﻿using System;
 
 namespace VSS.TRex.Gateway.WebApi.ActionServices
 {
@@ -7,7 +7,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
     /// <summary>
     /// Validates parameters for report data
     /// </summary>
-    bool ValidateData(object request, ISiteModel siteModel);
+    bool ValidateData(string method, Guid? projectUid, object request);
 
   }
 }

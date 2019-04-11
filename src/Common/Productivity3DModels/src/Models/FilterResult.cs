@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Only use cell passes recorded when the machine was driving in the forwards direction. If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
     /// </summary>
     [JsonProperty(PropertyName = "forwardDirection", Required = Required.Default)]
-    public bool? ForwardDirection { get; set; }
+    public bool? ForwardDirection { get; private set; }
 
     /// <summary>
     /// The alignment file to be used as an alignment spatial filter
