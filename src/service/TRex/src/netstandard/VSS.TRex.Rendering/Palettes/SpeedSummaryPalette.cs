@@ -21,12 +21,12 @@ namespace VSS.TRex.Rendering.Palettes
     /// <summary>
     /// The color, which Machine Speed summary data displayed in on a plan view map, where machine speed values are within target range.
     /// </summary>
-    public Color WithinSpeedRangeColour = Color.YellowGreen;
+    public Color WithinSpeedRangeColour = Color.Lime;
 
     /// <summary>
     /// The color, which Machine Speed summary data displayed in on a plan view map, where machine speed values are less than target range.
     /// </summary>
-    public Color LowerSpeedRangeColour = Color.DodgerBlue;
+    public Color LowerSpeedRangeColour = Color.Blue;
 
     /// <summary>
     /// Machine Speed target range.

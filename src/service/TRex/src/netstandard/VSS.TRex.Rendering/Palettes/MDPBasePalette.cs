@@ -14,7 +14,7 @@ namespace VSS.TRex.Rendering.Palettes
     private const double MDP_DEFAULT_PERCENTAGE_MIN = 75.0;
     private const double MDP_DEFAULT_PERCENTAGE_MAX = 110.0;
 
-    private const short ABSOLUTE_TARGET_MDP = 1200;
+    private const short ABSOLUTE_TARGET_MDP = 50;
 
     protected double _minTarget;
     protected double _maxTarget;

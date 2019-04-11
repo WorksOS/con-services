@@ -109,9 +109,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var ccaSummaryPalette = ((CCASummaryPalette)convertedPalette);
 
-          ccaSummaryPalette.UndercompactedColour = Color.FromArgb((int)request.Palettes[0].Color);
-          ccaSummaryPalette.CompactedColour = Color.FromArgb((int)request.Palettes[1].Color);
-          ccaSummaryPalette.OvercompactedColour = Color.FromArgb((int)request.Palettes[2].Color);
+          if (request.Palettes != null)
+          {
+            ccaSummaryPalette.UndercompactedColour = UIntToColor(request.Palettes[0].Color);
+            ccaSummaryPalette.CompactedColour = UIntToColor(request.Palettes[1].Color);
+            ccaSummaryPalette.OvercompactedColour = UIntToColor(request.Palettes[2].Color);
+          }
+
           break;
         case DisplayMode.CCV:
           convertedPalette = new CMVPalette();
@@ -127,7 +131,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           cmvPalette.TargetCCVColour = Color.Green;
           cmvPalette.DefaultDecoupledCMVColour = Color.Black;
           break;
-        case DisplayMode.CCVSummary:
+        case DisplayMode.CCVPercentSummary:
           convertedPalette = new CMVSummaryPalette();
 
           var cmvSummaryPalette = ((CMVSummaryPalette) convertedPalette);
@@ -138,24 +142,33 @@ namespace VSS.TRex.Gateway.Common.Executors
           cmvSummaryPalette.UseMachineTargetCMV = !request.LiftBuildSettings.OverridingMachineCCV.HasValue;
           cmvSummaryPalette.AbsoluteTargetCMV = request.LiftBuildSettings.OverridingMachineCCV ?? 0;
 
-          cmvSummaryPalette.AboveCMVTargetRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
-          cmvSummaryPalette.WithinCMVTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
-          cmvSummaryPalette.BelowCMVTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+          if (request.Palettes != null)
+          {
+            cmvSummaryPalette.AboveCMVTargetRangeColour = UIntToColor(request.Palettes[0].Color);
+            cmvSummaryPalette.WithinCMVTargetRangeColour = UIntToColor(request.Palettes[1].Color);
+            cmvSummaryPalette.BelowCMVTargetRangeColour = UIntToColor(request.Palettes[2].Color);
+          }
+
           break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
           break;
         case DisplayMode.Height:
-          BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
+          var extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
 
           convertedPalette = new HeightPalette(extent.MinZ, extent.MaxZ);
 
-          var colors = new Color[request.Palettes.Count];
+          if (request.Palettes != null)
+          {
 
-          for (var i = 0; i < request.Palettes.Count; i++)
-            colors[i] = Color.FromArgb((int) request.Palettes[i].Color);
+            var colors = new Color[request.Palettes.Count];
 
-          ((HeightPalette)convertedPalette).ElevationPalette = colors;
+            for (var i = 0; i < request.Palettes.Count; i++)
+              colors[i] = UIntToColor(request.Palettes[i].Color);
+
+            ((HeightPalette) convertedPalette).ElevationPalette = colors;
+          }
+
           break;
         case DisplayMode.MDP:
           convertedPalette = new MDPPalette();
@@ -181,9 +194,13 @@ namespace VSS.TRex.Gateway.Common.Executors
           mdpSummaryPalette.UseMachineTargetMDP = !request.LiftBuildSettings.OverridingMachineMDP.HasValue;
           mdpSummaryPalette.AbsoluteTargetMDP = request.LiftBuildSettings.OverridingMachineMDP ?? 0;
 
-          mdpSummaryPalette.AboveMDPTargetRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
-          mdpSummaryPalette.WithinMDPTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
-          mdpSummaryPalette.BelowMDPTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+          if (request.Palettes != null)
+          {
+            mdpSummaryPalette.AboveMDPTargetRangeColour = UIntToColor(request.Palettes[0].Color);
+            mdpSummaryPalette.WithinMDPTargetRangeColour = UIntToColor(request.Palettes[1].Color);
+            mdpSummaryPalette.BelowMDPTargetRangeColour = UIntToColor(request.Palettes[2].Color);
+          }
+
           break;
         case DisplayMode.PassCount:
           convertedPalette = new PassCountPalette();
@@ -193,9 +210,12 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var passCountPalette = ((PassCountSummaryPalette)convertedPalette);
 
-          passCountPalette.AbovePassTargetRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
-          passCountPalette.WithinPassTargetRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
-          passCountPalette.BelowPassTargetRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+          if (request.Palettes != null)
+          {
+            passCountPalette.AbovePassTargetRangeColour = UIntToColor(request.Palettes[0].Color);
+            passCountPalette.WithinPassTargetRangeColour = UIntToColor(request.Palettes[1].Color);
+            passCountPalette.BelowPassTargetRangeColour = UIntToColor(request.Palettes[2].Color);
+          }
 
           passCountPalette.UseMachineTargetPass = request.LiftBuildSettings.OverridingTargetPassCountRange == null;
           passCountPalette.TargetPassCountRange.Min = request.LiftBuildSettings.OverridingTargetPassCountRange?.Min ?? PASS_COUNT_TARGET_RANGE_MIN;
@@ -209,9 +229,12 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var speedSummaryPalette = ((SpeedSummaryPalette)convertedPalette);
 
-          speedSummaryPalette.OverSpeedRangeColour = Color.FromArgb((int)request.Palettes[0].Color);
-          speedSummaryPalette.WithinSpeedRangeColour = Color.FromArgb((int)request.Palettes[1].Color);
-          speedSummaryPalette.LowerSpeedRangeColour = Color.FromArgb((int)request.Palettes[2].Color);
+          if (request.Palettes != null)
+          {
+            speedSummaryPalette.OverSpeedRangeColour = UIntToColor(request.Palettes[0].Color);
+            speedSummaryPalette.WithinSpeedRangeColour = UIntToColor(request.Palettes[1].Color);
+            speedSummaryPalette.LowerSpeedRangeColour = UIntToColor(request.Palettes[2].Color);
+          }
 
           speedSummaryPalette.MachineSpeedTarget.Min = request.LiftBuildSettings.MachineSpeedTarget?.MinTargetMachineSpeed ?? CellPassConsts.NullMachineSpeed;
           speedSummaryPalette.MachineSpeedTarget.Max = request.LiftBuildSettings.MachineSpeedTarget?.MaxTargetMachineSpeed ?? CellPassConsts.NullMachineSpeed;
@@ -224,10 +247,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           var temperatureSummaryPalette = ((TemperatureSummaryPalette)convertedPalette);
 
-          temperatureSummaryPalette.AboveMaxLevelColour = Color.FromArgb((int)request.Palettes[0].Color);
-          temperatureSummaryPalette.WithinLevelsColour = Color.FromArgb((int)request.Palettes[1].Color);
-          temperatureSummaryPalette.BelowMinLevelColour = Color.FromArgb((int)request.Palettes[2].Color);
-          
+          if (request.Palettes != null)
+          {
+            temperatureSummaryPalette.AboveMaxLevelColour = UIntToColor(request.Palettes[0].Color);
+            temperatureSummaryPalette.WithinLevelsColour = UIntToColor(request.Palettes[1].Color);
+            temperatureSummaryPalette.BelowMinLevelColour = UIntToColor(request.Palettes[2].Color);
+          }
+
           temperatureSummaryPalette.UseMachineTempWarningLevels = request.LiftBuildSettings.OverridingTemperatureWarningLevels == null;
           temperatureSummaryPalette.TemperatureLevels.Min = request.LiftBuildSettings.OverridingTemperatureWarningLevels?.Min ?? TEMPERATURE_LEVELS_MIN;
           temperatureSummaryPalette.TemperatureLevels.Max = request.LiftBuildSettings.OverridingTemperatureWarningLevels?.Max ?? TEMPERATURE_LEVELS_MAX;
@@ -237,22 +263,34 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       if (request.Mode != DisplayMode.Height &&
-          request.Mode != DisplayMode.CCVSummary &&
+          request.Mode != DisplayMode.CCVPercentSummary &&
           request.Mode != DisplayMode.PassCountSummary && 
           request.Mode != DisplayMode.CCASummary &&
-          request.Mode != DisplayMode.MDPSummary &&
+          request.Mode != DisplayMode.MDPPercentSummary &&
           request.Mode != DisplayMode.TargetSpeedSummary &&
           request.Mode != DisplayMode.TemperatureSummary)
       {
-        var transitions = new Transition[request.Palettes.Count];
+        if (request.Palettes != null)
+        {
+          var transitions = new Transition[request.Palettes.Count];
 
         for (var i = 0; i < request.Palettes.Count; i++)
-          transitions[i] = new Transition(request.Palettes[i].Value, Color.FromArgb((int)request.Palettes[i].Color));
+          transitions[i] = new Transition(request.Palettes[i].Value, UIntToColor(request.Palettes[i].Color));
 
         convertedPalette.PaletteTransitions = transitions;
+        }
       }
 
       return convertedPalette;
+    }
+
+    private Color UIntToColor(uint color)
+    {
+      const byte BIT_SHIFT_COUNT_RED = 16;
+      const byte BIT_SHIFT_COUNT_GREEN = 8;
+      const byte BIT_SHIFT_COUNT_BLUE = 0;
+
+      return Color.FromArgb((byte)(color >> BIT_SHIFT_COUNT_RED), (byte)(color >> BIT_SHIFT_COUNT_GREEN), (byte)(color >> BIT_SHIFT_COUNT_BLUE));
     }
   }
 }
