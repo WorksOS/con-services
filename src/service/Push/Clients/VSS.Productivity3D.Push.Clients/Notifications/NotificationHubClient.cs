@@ -1,20 +1,21 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Productivity.Push.Models.Attributes;
 using VSS.Productivity.Push.Models.Enums;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 
-namespace VSS.Productivity3D.Push.Clients
+namespace VSS.Productivity3D.Push.Clients.Notifications
 {
   /// <summary>
   /// A notification hub client that will call methods decorated with the NotificationAttribute
@@ -22,8 +23,6 @@ namespace VSS.Productivity3D.Push.Clients
   /// </summary>
   public class NotificationHubClient : BaseClient, INotificationHubClient
   {
-    public const string ROUTE = "/notifications";
-
     private List<MethodInfo> methodInfoCache = null;
     private readonly object methodInfoLock = new object();
 
@@ -37,7 +36,7 @@ namespace VSS.Productivity3D.Push.Clients
     }
 
     /// <inheritdoc />
-    public override string HubRoute => ROUTE;
+    public override string HubRoute => HubRoutes.NOTIFICATIONS;
 
     /// <inheritdoc />
     /// <summary>
