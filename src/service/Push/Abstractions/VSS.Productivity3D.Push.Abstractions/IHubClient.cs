@@ -10,6 +10,11 @@ namespace VSS.Productivity3D.Push.Abstractions
     bool Connected { get; }
 
     /// <summary>
+    /// Is the hub attempting to connect already?
+    /// </summary>
+    bool IsConnecting { get; }
+
+    /// <summary>
     /// Disconnect from the Hub.
     /// </summary>
     Task Disconnect();

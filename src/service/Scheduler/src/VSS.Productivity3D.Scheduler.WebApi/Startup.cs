@@ -164,6 +164,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       });
     }
 
+    
+    protected override void StartServices(IServiceProvider serviceProvider)
+    {
+      base.StartServices(serviceProvider);
+      // No async / await in .NET core 2.0, coming in 3.0...
+      // But this will throw an exception halting start up correctly
+      serviceProvider.StartPushClients().Wait();
+    }
+
     /// <summary>
     /// Configure hangfire
     /// </summary>
