@@ -20,10 +20,13 @@ namespace VSS.Productivity3D.Push.WebAPI
       where TInterface : class, IHubClient 
       where TImplementation : class, IHubClient, TInterface
     {
-      services.AddSingleton<TInterface, TImplementation>();
       services.AddHostedService<HostedClientService<TInterface>>();
-      services.AddTransient<IServiceResolution, InternalServiceResolver>();
+      services.AddSingleton<IServiceResolution, InternalServiceResolver>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
+
+      var t = ActivatorUtilities.CreateInstance<TImplementation>(services.BuildServiceProvider());
+      t.Connect();
+      services.AddSingleton<TInterface>(t);
       return services;
     }
   }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using App.Metrics.Health;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;
@@ -13,6 +15,20 @@ using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 {
+  public class JobRunnerHealthCheck : HealthCheck
+  {
+    public JobRunnerHealthCheck() : base(nameof(JobRunnerHealthCheck))
+    {
+    }
+
+    protected override ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+      return new ValueTask<HealthCheckResult>(State ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy());
+    }
+
+    public static volatile bool State = true;
+  }
+
   /// <summary>
   /// Runs VSS jobs using Hangfire
   /// </summary>
@@ -102,6 +118,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
         {
           result = errorCodesProvider.CreateErrorResult(environment, SchedulerErrorCodes.VSSJobExecutionFailure,
             request.JobUid.ToString(), e.Message);
+          JobRunnerHealthCheck.State = false;
         }
       }
 
@@ -110,6 +127,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
         log.LogError(result.Message);
         throw new ServiceException(HttpStatusCode.InternalServerError, result);
       }
+
+      JobRunnerHealthCheck.State = true;
       return result;
     }
   }

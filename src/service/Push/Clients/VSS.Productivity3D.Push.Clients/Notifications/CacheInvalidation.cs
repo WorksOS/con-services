@@ -4,7 +4,7 @@ using VSS.Productivity.Push.Models.Attributes;
 using VSS.Productivity.Push.Models.Enums;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 
-namespace VSS.Productivity3D.Push.Clients
+namespace VSS.Productivity3D.Push.Clients.Notifications
 {
   public class CacheInvalidationService
   {
