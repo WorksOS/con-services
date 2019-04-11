@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -15,6 +16,7 @@ using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Filters
 {
@@ -517,7 +519,7 @@ namespace VSS.TRex.Filters
     public void ClearGuidanceMode()
     {
       HasGCSGuidanceModeFilter = false;
-      GCSGuidanceMode = MachineAutomaticsMode.Unknown;
+      GCSGuidanceMode = AutomaticsType.Unknown;
     }
 
     public void ClearLayerID()
@@ -662,8 +664,8 @@ namespace VSS.TRex.Filters
     {
       HasTimeFilter = false;
 
-      StartTime = DateTime.MinValue;
-      EndTime = DateTime.MaxValue;
+      StartTime = Consts.MIN_DATETIME_AS_UTC;
+      EndTime = Consts.MAX_DATETIME_AS_UTC;
     }
 
     private static readonly GPSAccuracyAndTolerance NullGPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
@@ -731,7 +733,7 @@ namespace VSS.TRex.Filters
 
         if (HasGCSGuidanceModeFilter)
         {
-          MachineAutomaticsMode GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, MachineAutomaticsMode.Unknown);
+          AutomaticsType GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, AutomaticsType.Unknown);
 
           if (GCSGuidanceMode != GCSGuidanceModeValue)
             return false;
@@ -921,7 +923,7 @@ namespace VSS.TRex.Filters
 
     public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
     {
-      if (StartTime == DateTime.MinValue)
+      if (StartTime == Consts.MIN_DATETIME_AS_UTC)
       {
         // It's an End/As At time filter
         if (PassValue.Time > EndTime)

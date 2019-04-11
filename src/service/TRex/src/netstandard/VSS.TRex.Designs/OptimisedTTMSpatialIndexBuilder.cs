@@ -42,7 +42,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Includes a triangle into the list of triangles that intersect the extent of a subgrid
+    /// Includes a triangle into the list of triangles that intersect the extent of a sub grid
     /// </summary>
     /// <param name="tree"></param>
     /// <param name="x"></param>
@@ -50,7 +50,7 @@ namespace VSS.TRex.Designs
     /// <param name="triIndex"></param>
     private void IncludeTriangleInSubGridTreeIndex(NonOptimisedSpatialIndexSubGridTree tree, uint x, uint y, int triIndex)
     {
-      // Get subgrid from tree, creating the path and leaf if necessary
+      // Get sub grid from tree, creating the path and leaf if necessary
       var leaf = tree.ConstructPathToCell(x, y, SubGridPathConstructionType.CreateLeaf) as NonOptimisedSpatialIndexSubGridLeaf;
 
       leaf.GetSubGridCellIndex(x, y, out byte SubGridX, out byte SubGridY);
@@ -77,22 +77,22 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Flag to enable detailed removal of duplicate triangle references in the subgrid spatial over and above the
+    /// Flag to enable detailed removal of duplicate triangle references in the sub grid spatial over and above the
     /// last-triangle-duplicate check in the logic constructing the initial lists of triangle references in each leaf.
     /// </summary>
-    public bool EnableDuplicateRemoval = false;
+    public bool EnableDuplicateRemoval { get; set; } = false;
 
     /// <summary>
-    /// Build a spatial index for the triangles in the TIN surface by assigning each triangle to every subgrid it intersects with
+    /// Build a spatial index for the triangles in the TIN surface by assigning each triangle to every sub grid it intersects with
     /// </summary>
     /// <returns></returns>
     public bool ConstructSpatialIndex()
     {
       // Read through all the triangles in the model and, for each triangle,
-      // determine which subgrids in the index intersect it and add it to those subgrids
+      // determine which sub grids in the index intersect it and add it to those sub grids
       try
       {
-        // Create the optimized subgrid tree spatial index that minimizes the number of allocations in the final result.
+        // Create the optimized sub grid tree spatial index that minimizes the number of allocations in the final result.
         SpatialIndexOptimised = new OptimisedSpatialIndexSubGridTree(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * CellSize);
 
         var FSpatialIndex = new NonOptimisedSpatialIndexSubGridTree(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * CellSize);
@@ -102,7 +102,7 @@ namespace VSS.TRex.Designs
         {
           var cellScanner = new TriangleCellScanner(TTM);
 
-          // Construct a subgrid tree containing list of triangles that intersect each on-the-ground subgrid
+          // Construct a sub grid tree containing list of triangles that intersect each on-the-ground sub grid
           int triangleCount = TTM.Triangles.Items.Length;
           for (int triIndex = 0; triIndex < triangleCount; triIndex++)
           {
@@ -124,8 +124,8 @@ namespace VSS.TRex.Designs
 
             FSpatialIndex.ScanAllSubGrids(leaf =>
             {
-              // Iterate across all cells in each (level 5) leaf subgrid. Each cell represents 
-              // a subgrid in the level 6 subgrid representing cells sampled across the surface at the
+              // Iterate across all cells in each (level 5) leaf sub grid. Each cell represents 
+              // a sub grid in the level 6 sub grid representing cells sampled across the surface at the
               // core cell size for the project
               SubGridUtilities.SubGridDimensionalIterator((x, y) =>
               {
@@ -162,7 +162,7 @@ namespace VSS.TRex.Designs
             Console.WriteLine($"Total duplicates encountered: {TotalDuplicates}");
           }
 
-          // Transform this subgrid tree into one where each on-the-ground subgrid is represented by an index and a number of triangles present in a
+          // Transform this sub grid tree into one where each on-the-ground sub grid is represented by an index and a number of triangles present in a
           // a single list of triangles.
 
           // Count the number of triangle references present in the tree
@@ -177,7 +177,7 @@ namespace VSS.TRex.Designs
           spatialIndexOptimisedTriangles = new int[numTriangleReferences];
 
           /////////////////////////////////////////////////
-          // Iterate across all leaf subgrids
+          // Iterate across all leaf sub grids
           //Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
           /////////////////////////////////////////////////
 
@@ -193,8 +193,8 @@ namespace VSS.TRex.Designs
 
           FSpatialIndex.ScanAllSubGrids(leaf =>
           {
-            // Iterate across all cells in each (level 5) leaf subgrid. Each cell represents 
-            // a subgrid in the level 6 subgrid representing cells sampled across the surface at the
+            // Iterate across all cells in each (level 5) leaf sub grid. Each cell represents 
+            // a sub grid in the level 6 sub grid representing cells sampled across the surface at the
             // core cell size for the project
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
@@ -207,7 +207,7 @@ namespace VSS.TRex.Designs
                 return;
 
               /////////////////////////////////////////////////////////////////////////////////////////////////
-              // Start: Determine the triangles that definitely cannot cover one or more cells in each subgrid
+              // Start: Determine the triangles that definitely cannot cover one or more cells in each sub grid
 
               double leafCellSize = SpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
               double halfLeafCellSize = leafCellSize / 2;
@@ -217,7 +217,7 @@ namespace VSS.TRex.Designs
 
               SpatialIndexOptimised.GetCellExtents(CellX, CellY, ref cellWorldExtent);
 
-              // Compute the bounding structs for the triangles in this subgrid and remove any triangles whose
+              // Compute the bounding structs for the triangles in this sub grid and remove any triangles whose
               // bounding struct is null (ie: no cell centers are covered by its bounding box).
 
               for (int i = 0; i < triList.Count; i++)
@@ -239,7 +239,7 @@ namespace VSS.TRex.Designs
                 double TriangleWorldExtent_MaxX = Math.Max(Vertex0.X, Math.Max(Vertex1.X, Vertex2.X)) - halfCellSizeMinusEpsilon;
                 double TriangleWorldExtent_MaxY = Math.Max(Vertex0.Y, Math.Max(Vertex1.Y, Vertex2.Y)) - halfCellSizeMinusEpsilon;
 
-                // Calculate cell coordinates relative to the origin of the subgrid
+                // Calculate cell coordinates relative to the origin of the sub grid
                 int minCellX = (int)Math.Floor((TriangleWorldExtent_MinX - cellWorldExtent.MinX) / leafCellSize);
                 int minCellY = (int)Math.Floor((TriangleWorldExtent_MinY - cellWorldExtent.MinY) / leafCellSize);
                 int maxCellX = (int)Math.Floor((TriangleWorldExtent_MaxX - cellWorldExtent.MinX) / leafCellSize);
@@ -259,13 +259,13 @@ namespace VSS.TRex.Designs
                   continue;
                 }
 
-                // Transform the cell bounds by clamping them to the bounds of this subgrid
+                // Transform the cell bounds by clamping them to the bounds of this sub grid
                 minCellX = minCellX <= 0 ? 0 : minCellX >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : minCellX;
                 minCellY = minCellY <= 0 ? 0 : minCellY >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : minCellY;
                 maxCellX = maxCellX <= 0 ? 0 : maxCellX >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : maxCellX;
                 maxCellY = maxCellY <= 0 ? 0 : maxCellY >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : maxCellY;
 
-                // Check all the cells in the subgrid covered by this bounding box to check if at least one cell will actively probe this triangle
+                // Check all the cells in the sub grid covered by this bounding box to check if at least one cell will actively probe this triangle
 
                 bool found = false;
                 double _x = cellWorldExtent.MinX + minCellX * leafCellSize + halfLeafCellSize;
@@ -292,7 +292,7 @@ namespace VSS.TRex.Designs
 
                 if (!found)
                 {
-                  // No cell in the subgrid intersects with the triangle - ignore it
+                  // No cell in the sub grid intersects with the triangle - ignore it
                   continue;
                 }
 
@@ -300,7 +300,7 @@ namespace VSS.TRex.Designs
                 trianglesCopiedToLeaf++;
                 spatialIndexOptimisedTriangles[copiedCount++] = triList[i];
               }
-              // End: Determine the triangles that definitely cannot cover one or more cells in each subgrid
+              // End: Determine the triangles that definitely cannot cover one or more cells in each sub grid
               ///////////////////////////////////////////////////////////////////////////////////////////////
 
               arrayReference.Count = trianglesCopiedToLeaf;
@@ -352,7 +352,7 @@ namespace VSS.TRex.Designs
           });
 
           Log.LogInformation(
-            $"Constructed subgrid index for design containing {TTM.Triangles.Items.Length} triangles, using {sumLeafSubGrids} leaf and {sumNodeSubGrids} node subgrids, {sumTriangleLists} triangle lists and {sumTriangleReferences} triangle references");
+            $"Constructed sub grid index for design containing {TTM.Triangles.Items.Length} triangles, using {sumLeafSubGrids} leaf and {sumNodeSubGrids} node subgrids, {sumTriangleLists} triangle lists and {sumTriangleReferences} triangle references");
         }
 
         return true;

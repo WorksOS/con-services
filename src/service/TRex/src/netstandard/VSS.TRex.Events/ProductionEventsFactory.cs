@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Types;
@@ -28,7 +29,7 @@ namespace VSS.TRex.Events
         case ProductionEventType.VibrationStateChange: return new ProductionEvents<VibrationState>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (VibrationState)r.ReadByte());
         case ProductionEventType.AutoVibrationStateChange: return new ProductionEvents<AutoVibrationState>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (AutoVibrationState)r.ReadByte());
         case ProductionEventType.MachineGearChange: return new ProductionEvents<MachineGear>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (MachineGear)r.ReadByte());
-        case ProductionEventType.MachineAutomaticsChange: return new ProductionEvents<MachineAutomaticsMode>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (MachineAutomaticsMode)r.ReadByte());
+        case ProductionEventType.MachineAutomaticsChange: return new ProductionEvents<AutomaticsType>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (AutomaticsType)r.ReadByte());
         case ProductionEventType.MachineRMVJumpValueChange: return new ProductionEvents<short>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadInt16());
         case ProductionEventType.ICFlagsChange: return new ProductionEvents<byte>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadByte());
         case ProductionEventType.ElevationMappingModeStateChange: return new ProductionEvents<ElevationMappingMode>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (ElevationMappingMode)r.ReadByte());

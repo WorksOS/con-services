@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -43,17 +44,17 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// <summary>
         /// The minimum cell pass time the call passes iterated through will be returned
         /// </summary>
-        public DateTime IteratorStartTime { get; private set; } = DateTime.MinValue;
+        public DateTime IteratorStartTime { get; private set; } = Consts.MIN_DATETIME_AS_UTC;
 
         /// <summary>
         /// The maximum cell pass time the call passes iterated through will be returned
         /// </summary>
-        public DateTime IteratorEndTime { get; private set; } =  DateTime.MaxValue;
+        public DateTime IteratorEndTime { get; private set; } = Consts.MAX_DATETIME_AS_UTC;
 
         /// <summary>
         /// The date/time of the cell pass that was returned last from the iterator
         /// </summary>
-        protected DateTime lastReturnedCellPassTime = DateTime.MinValue;
+        protected DateTime lastReturnedCellPassTime = Consts.MIN_DATETIME_AS_UTC;
 
         /// <summary>
         /// The maximum number of cell passes the iterator is permitted to return for a single cell
@@ -139,8 +140,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 throw new TRexSubGridProcessingException("No segment iterator assigned");
 
             lastReturnedCellPassTime = SegmentIterator.IterationDirection == IterationDirection.Forwards
-                ? DateTime.MinValue
-                : DateTime.MaxValue;
+              ? Consts.MIN_DATETIME_AS_UTC
+              : Consts.MAX_DATETIME_AS_UTC;
 
             SegmentIterator.InitialiseIterator();
             SegmentIterator.MoveToFirstSubGridSegment();
@@ -185,7 +186,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     CellPass = ExtractCellPass();
                     CellPassTime = CellPass.Time;
             
-                    if (CellPassTime == DateTime.MinValue)
+                    if (CellPassTime == Consts.MIN_DATETIME_AS_UTC)
                       throw new TRexSubGridProcessingException($"Cell pass with null time returned from {nameof(GetNextCellPass)}");
             
                     if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
@@ -231,8 +232,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// <param name="iteratorEndTime"></param>
         public void SetTimeRange(bool hasTimeFilter, DateTime iteratorStartTime, DateTime iteratorEndTime)
         {
-            IteratorStartTime = hasTimeFilter ? iteratorStartTime: DateTime.MinValue;
-            IteratorEndTime = hasTimeFilter ? iteratorEndTime : DateTime.MaxValue;
+            IteratorStartTime = hasTimeFilter ? iteratorStartTime: Consts.MIN_DATETIME_AS_UTC;
+            IteratorEndTime = hasTimeFilter ? iteratorEndTime : Consts.MAX_DATETIME_AS_UTC;
 
             // if we have a attached segment iterator then also set its date range
             SegmentIterator?.SetTimeRange(iteratorStartTime, iteratorEndTime);

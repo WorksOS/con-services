@@ -321,7 +321,7 @@ namespace WebApiTests
       var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
       var endUtc = DateTime.Now.AddMonths(+6).ToUniversalTime();
       var listMachines = new List<MachineDetails>();
-      var machine = MachineDetails.Create(123456789, "TheMachineName", false);
+      var machine = new MachineDetails(123456789, "TheMachineName", false);
       listMachines.Add(machine);
       var listPoints = new List<WGSPoint>
       {

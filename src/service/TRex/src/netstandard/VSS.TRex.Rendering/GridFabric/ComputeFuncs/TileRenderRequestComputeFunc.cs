@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
     public TileRenderResponse Invoke(TileRenderRequestArgument arg)
     {
-      DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
 
       Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
       }
       finally
       {
-        Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.Now - startTime}");
+                Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
       }
     }
   }

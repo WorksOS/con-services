@@ -30,13 +30,13 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       if (!string.IsNullOrEmpty(tmpFilter.DesignUid))
       {
         tmpFilter.SetFilenames(designName: fileList.FirstOrDefault(data => data.ImportedFileUid == tmpFilter.DesignUid)?.Name);
-        log.LogInformation($"{nameof(GetFilterFileNames)}: Resolved: {tmpFilter.DesignName}");
+        log.LogInformation($"{nameof(GetFilterFileNames)}: Resolved: {tmpFilter.DesignFileName}");
       }
 
       if (!string.IsNullOrEmpty(tmpFilter.AlignmentUid))
       {
         tmpFilter.SetFilenames(alignmentName: fileList.FirstOrDefault(data => data.ImportedFileUid == tmpFilter.AlignmentUid)?.Name);
-        log.LogInformation($"{nameof(GetFilterFileNames)}: Resolved: {tmpFilter.AlignmentName}");
+        log.LogInformation($"{nameof(GetFilterFileNames)}: Resolved: {tmpFilter.AlignmentFileName}");
       }
 
       filterRequestFull.FilterJson = JsonConvert.SerializeObject(tmpFilter);

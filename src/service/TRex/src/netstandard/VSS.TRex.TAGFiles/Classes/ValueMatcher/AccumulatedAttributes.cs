@@ -39,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
                 NumAttrs = 1;
             }
         }
-
+       
         /// <summary>
         /// Add adds a value recorded at DateTime to the list. It is assumed
         /// that the date time of this item is after the date time
@@ -49,6 +49,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <param name="value"></param>
         public void Add(DateTime dateTime, object value)
         {
+          if (dateTime.Kind != DateTimeKind.Utc)
+            throw new ArgumentException("Attribute time must be a UTC cell pass time", nameof(dateTime));
+
           // If there are available entries to reuse, then reuse them...
           if (NumAttrs < list.Count)
             list[NumAttrs] = new AccumulatedAttribute(dateTime, value);

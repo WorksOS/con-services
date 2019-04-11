@@ -339,7 +339,7 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       foreach (TMachineDetail machineDetail in machineIDs)
         yield return
-          MachineDetails.Create(machineDetail.ID, machineDetail.Name, machineDetail.IsJohnDoeMachine);
+          new MachineDetails(machineDetail.ID, machineDetail.Name, machineDetail.IsJohnDoeMachine);
     }
 
     public static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)

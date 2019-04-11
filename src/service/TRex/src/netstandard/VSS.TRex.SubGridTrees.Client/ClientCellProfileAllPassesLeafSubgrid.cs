@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -63,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
     */
 
-    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Time == DateTime.MinValue;
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Time == Consts.MIN_DATETIME_AS_UTC;
 
     public override void Clear()
     {
@@ -132,7 +133,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override bool CellHasValue(byte cellX, byte cellY)
     {
-      return Cells[cellX, cellY].CellPasses.Length > 0 ? Cells[cellX, cellY].CellPasses[0].LastPassTime != DateTime.MinValue : false;
+      return Cells[cellX, cellY].CellPasses.Length > 0 ? Cells[cellX, cellY].CellPasses[0].LastPassTime != Consts.MIN_DATETIME_AS_UTC : false;
     }
 
     public override void FillWithTestPattern()
@@ -146,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Client
           {
             new ClientCellProfileLeafSubgridRecord
             {
-              LastPassTime = new DateTime(1000 * x + y + 1)
+              LastPassTime = DateTime.SpecifyKind(new DateTime(1000 * x + y + 1), DateTimeKind.Utc)
               // Add others as appropriate here
             }
           } 

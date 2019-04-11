@@ -11,5 +11,6 @@
     public const string TILE_SERVICE = "tile-service";
 
     public const string REDIS_CACHE = "redis-cache-service";
+    public const string INFLUX_DB = "influx-db-service";
   }
 }

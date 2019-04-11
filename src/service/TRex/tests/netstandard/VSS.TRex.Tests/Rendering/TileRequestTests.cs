@@ -39,20 +39,10 @@ namespace VSS.TRex.Tests.Rendering
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
-    private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null)
+    private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)
     {
-      return new TileRenderRequestArgument
-      {
-        CoordsAreGrid = true,
-        Extents = siteModel.SiteModelExtent,
-        TRexNodeID = "UnitTest_TileRenderRequestNode",
-        Mode = displayMode,
-        ProjectID = siteModel.ID,
-        Filters = new FilterSet(new CombinedFilter()),
-        PixelsX = 256,
-        PixelsY = 256,
-        Palette = palette
-      };
+      return new TileRenderRequestArgument(siteModel.ID, displayMode, siteModel.SiteModelExtent, true, 256, 256,
+        new FilterSet(new CombinedFilter()), Guid.Empty, palette);
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
@@ -74,6 +64,7 @@ namespace VSS.TRex.Tests.Rendering
         }).ToArray();
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, cellX, cellY, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
     }
 
     private void CheckSimpleRenderTileResponse(TileRenderResponse response)

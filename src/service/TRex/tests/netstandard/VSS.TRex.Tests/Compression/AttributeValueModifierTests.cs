@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Compression;
 using VSS.TRex.Types;
@@ -18,13 +19,29 @@ namespace VSS.TRex.Tests.Compression
         [Fact]
         public void Test_AttributeValueModifier_Time()
         {
-            DateTime origin = new DateTime(2000, 1, 1, 1, 1, 1);
+            var origin = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
 
-            Assert.Equal(1, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 1), origin));
-            Assert.Equal(11, AttributeValueModifiers.ModifiedTime(new DateTime(2000, 1, 1, 1, 1, 11), origin));
+            Assert.Equal(0, AttributeValueModifiers.ModifiedTime(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc), origin));
+            Assert.Equal(100, AttributeValueModifiers.ModifiedTime(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 11), DateTimeKind.Utc), origin));
         }
 
         [Fact]
+        public void Test_AttributeValueModifier_Time_FailWithNegativeOffset()
+        {
+          var origin = DateTime.SpecifyKind(new DateTime(2000, 2, 1, 1, 1, 1), DateTimeKind.Utc);
+
+          Action act = () => AttributeValueModifiers.ModifiedTime(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc), origin);
+          act.Should().Throw<ArgumentException>().WithMessage("Time argument [*] should not be less that the origin [*]");
+        }
+
+        [Fact]
+        public void Test_AttributeValueModifier_Time_FailWithNonUTCDate()
+        {
+          Action act = () => AttributeValueModifiers.ModifiedTime(DateTime.Now, DateTime.Now);
+          act.Should().Throw<ArgumentException>().WithMessage("Time and time origin must be a UTC date time");
+        }
+
+    [Fact]
         public void Test_AttributeValueModifier_GPSMode()
         {
             Assert.Equal(0, AttributeValueModifiers.ModifiedGPSMode(GPSMode.Old));

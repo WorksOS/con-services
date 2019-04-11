@@ -215,17 +215,17 @@ namespace VSS.TRex.Rendering.Displayers
 
     private void DoRenderStrip()
     {
-      if (!accumulatingScanLine || cellStripColour == Color.Empty)
-        return;
+      if (accumulatingScanLine && cellStripColour != Color.Empty)
+      {
+        MapView.DrawRect(cellStripStartX - stepXIncrementOverTwo,
+          currentNorth - stepYIncrementOverTwo,
+          (cellStripEndX - cellStripStartX) + stepXIncrement,
+          stepYIncrement,
+          true,
+          cellStripColour);
 
-      MapView.DrawRect(cellStripStartX - stepXIncrementOverTwo,
-                       currentNorth - stepYIncrementOverTwo,
-                       (cellStripEndX - cellStripStartX) + stepXIncrement,
-                       stepYIncrement,
-                       true,
-                       cellStripColour);
-
-      accumulatingScanLine = false;
+        accumulatingScanLine = false;
+      }
     }
 
     // property ICOptions : TSVOICOptions read FICOptions write FICOptions;
@@ -240,19 +240,23 @@ namespace VSS.TRex.Rendering.Displayers
 
     public bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
     {
-      if (clientSubGrid == null)
-        return true;
+      bool result = false;
 
-      if (!displayParametersCalculated)
+      if (clientSubGrid != null)
       {
-        cellSize = clientSubGrid.CellSize;
-        CalculateDisplayParameters();
-        displayParametersCalculated = true;
-      }
+        if (!displayParametersCalculated)
+        {
+          cellSize = clientSubGrid.CellSize;
+          CalculateDisplayParameters();
+          displayParametersCalculated = true;
+        }
 
-      HasRenderedSubGrid = true;
+        HasRenderedSubGrid = true;
 
       return DoRenderSubGrid(clientSubGrid);
+      }
+
+      return result;
     }
   }
 }

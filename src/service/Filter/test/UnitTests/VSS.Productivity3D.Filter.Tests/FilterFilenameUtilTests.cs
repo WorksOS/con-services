@@ -11,11 +11,11 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using FilterModel = VSS.MasterData.Repositories.DBModels.Filter;
@@ -30,6 +30,19 @@ namespace VSS.Productivity3D.Filter.Tests
     private readonly string projectUid = Guid.NewGuid().ToString();
     private string KafkaTopicName => GetType().Name;
     private static Mock<IKafka> Producer => new Mock<IKafka>();
+    private IAssetResolverProxy _assetResolverProxy;
+
+    [TestInitialize]
+    public void TestInit()
+    {
+      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
+      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
+      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
+
+      _assetResolverProxy = mockedAssetResolverProxySetup.Object;
+    }
 
     [TestMethod]
     public async Task Should_return_when_DesignUid_and_AlignmentUid_arent_provided()
@@ -70,7 +83,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -79,8 +92,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(resultFilter.AlignmentName);
-      Assert.IsNull(resultFilter.DesignName);
+      Assert.IsNull(resultFilter.AlignmentFileName);
+      Assert.IsNull(resultFilter.DesignFileName);
     }
 
     [TestMethod]
@@ -91,7 +104,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
-
+     
       var filter = new FilterModel
       {
         CustomerUid = custUid,
@@ -125,7 +138,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -134,8 +147,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.IsNull(resultFilter.AlignmentName);
-      Assert.IsNull(resultFilter.DesignName);
+      Assert.IsNull(resultFilter.AlignmentFileName);
+      Assert.IsNull(resultFilter.DesignFileName);
     }
 
     [TestMethod]
@@ -195,7 +208,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -204,8 +217,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.DesignName, "Large Sites Road - Trimble Road.TTM");
-      Assert.IsNull(resultFilter.AlignmentName);
+      Assert.AreEqual(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
+      Assert.IsNull(resultFilter.AlignmentFileName);
     }
 
     [TestMethod]
@@ -216,7 +229,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseDataResult());
-
+     
       var filter = new FilterModel
       {
         CustomerUid = custUid,
@@ -265,7 +278,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -274,8 +287,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.AlignmentName, "Large Sites Road.svl");
-      Assert.IsNull(resultFilter.DesignName);
+      Assert.AreEqual(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.IsNull(resultFilter.DesignFileName);
     }
 
     [TestMethod]
@@ -347,7 +360,7 @@ namespace VSS.Productivity3D.Filter.Tests
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
-        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, Producer.Object, KafkaTopicName, fileListProxy.Object);
+        filterRepo.Object, geofenceRepo.Object, null, raptorProxy.Object, _assetResolverProxy, Producer.Object, KafkaTopicName, fileListProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -356,8 +369,8 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
 
       var resultFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
-      Assert.AreEqual(resultFilter.AlignmentName, "Large Sites Road.svl");
-      Assert.AreEqual(resultFilter.DesignName, "Large Sites Road - Trimble Road.TTM");
+      Assert.AreEqual(resultFilter.AlignmentFileName, "Large Sites Road.svl");
+      Assert.AreEqual(resultFilter.DesignFileName, "Large Sites Road - Trimble Road.TTM");
     }
   }
 }

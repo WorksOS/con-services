@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -12,6 +13,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
@@ -19,7 +22,9 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
@@ -75,7 +80,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      
+
+      services.AddServiceDiscovery();
+      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
+
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
 

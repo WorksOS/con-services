@@ -118,7 +118,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the existence map is not yet present
     /// load it from storage/cache.
-    /// This will ever return a null reference. In the case of a site model that does not have any spatial data withi it
+    /// This will never return a null reference. In the case of a site model that does not have any spatial data within it
     /// this will return an empty existence map rather than null.
     /// </summary>
     public ISubGridTreeBitMask ExistenceMap => existenceMap ?? (existenceMap = LoadProductionDataExistenceMapFromStorage());
@@ -210,10 +210,12 @@ namespace VSS.TRex.SiteModels
           {
             if (_siteModelDesigns == null)
             {
-              _siteModelDesigns = new SiteModelDesignList();
+              var newSiteModelDesigns = new SiteModelDesignList();
 
               if (!IsTransient)
-                _siteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
+                newSiteModelDesigns.LoadFromPersistentStore(ID, PrimaryStorageProxy);
+
+              _siteModelDesigns = newSiteModelDesigns;
             }
           }
         }
@@ -271,10 +273,12 @@ namespace VSS.TRex.SiteModels
           {
             if (siteProofingRuns == null)
             {
-              siteProofingRuns = new SiteProofingRunList {DataModelID = ID};
+              var newSiteProofingRuns = new SiteProofingRunList {DataModelID = ID};
 
               if (!IsTransient)
-                siteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
+                newSiteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteProofingRuns = newSiteProofingRuns;
             }
           }
         }
@@ -300,13 +304,15 @@ namespace VSS.TRex.SiteModels
           {
             if (siteModelMachineDesigns == null)
             {
-              siteModelMachineDesigns = new SiteModelMachineDesignList
+              var newSiteModelMachineDesigns = new SiteModelMachineDesignList
               {
                 DataModelID = ID
               };
 
               if (!IsTransient)
-                siteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+                newSiteModelMachineDesigns.LoadFromPersistentStore(PrimaryStorageProxy);
+
+              siteModelMachineDesigns = newSiteModelMachineDesigns;
             }
           }
         }
@@ -333,15 +339,17 @@ namespace VSS.TRex.SiteModels
           {
             if (machines == null)
             {
-              machines = new MachinesList
+              var newMachines = new MachinesList
               {
                 DataModelID = ID
               };
 
               if (!IsTransient)
               {
-                machines.LoadFromPersistentStore(PrimaryStorageProxy);
+                newMachines.LoadFromPersistentStore(PrimaryStorageProxy);
               }
+
+              machines = newMachines;
             }
           }
         }
@@ -580,7 +588,7 @@ namespace VSS.TRex.SiteModels
 
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
-      FileSystemErrorStatus Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {
@@ -678,8 +686,8 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     public (DateTime startUtc, DateTime endUtc) GetDateRange()
     {
-      DateTime minDate = DateTime.MaxValue;
-      DateTime maxDate = DateTime.MinValue;
+      DateTime minDate = Consts.MAX_DATETIME_AS_UTC;
+      DateTime maxDate = Consts.MIN_DATETIME_AS_UTC;
 
       foreach (var machine in Machines)
       {
@@ -719,7 +727,7 @@ namespace VSS.TRex.SiteModels
         var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
 
         int priorMachineDesignId = int.MinValue;
-        DateTime priorDateTime = DateTime.MinValue;
+        DateTime priorDateTime = Consts.MIN_DATETIME_AS_UTC;
         for (int i = 0; i < events.Count(); i++)
         {
           events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
@@ -733,7 +741,7 @@ namespace VSS.TRex.SiteModels
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-              priorMachineDesignId,Consts.NULL_LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
+              priorMachineDesignId,Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
           }
 
           // where multi events for same design -  want to retain startDate of first
@@ -748,7 +756,7 @@ namespace VSS.TRex.SiteModels
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
           assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-            priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
+            priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
         }
       }
 

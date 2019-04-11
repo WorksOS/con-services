@@ -98,6 +98,7 @@ namespace VSS.TRex.Tests.Machines
       var m2 = l.CreateNew("Machine2", "HardwareID2", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.Empty); // John Doe machines don;t have known guids at this point
 
       l.Locate(m2.ID, true).Should().BeSameAs(m2);
+      m2.ID.Should().NotBe(Guid.Empty);
     }
 
     [Fact]

@@ -123,8 +123,8 @@ namespace VSS.Productivity3D.WebApiTests.Common
 
         var contributingMachines = new List<MachineDetails>
         {
-          MachineDetails.Create(21, "twentyone", false),
-          MachineDetails.Create(43, "thirtyfour", false)
+          new MachineDetails(21, "twentyone", false),
+          new MachineDetails(43, "thirtyfour", false)
         };
 
         var filterResult = FilterResult.CreateFilterForCCATileRequest(null, null, assetIds, null, null, null, contributingMachines);

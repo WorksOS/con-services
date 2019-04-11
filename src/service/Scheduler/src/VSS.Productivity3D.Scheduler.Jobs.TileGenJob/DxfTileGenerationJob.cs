@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using App.Metrics.Health;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Http;
@@ -15,9 +17,11 @@ using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.WebApi.Common;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 {
+
   /// <summary>
   /// Job to generate DXF tiles using Pegasus.
   /// </summary>

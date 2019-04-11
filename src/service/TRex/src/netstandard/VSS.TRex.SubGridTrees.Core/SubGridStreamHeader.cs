@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
@@ -34,7 +35,7 @@ namespace VSS.TRex.SubGridTrees
 
         public void Read(BinaryReader reader)
         {
-            Version = reader.ReadByte();
+          Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
             Identifier = reader.ReadBytes(8);
 
@@ -47,7 +48,8 @@ namespace VSS.TRex.SubGridTrees
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write(VERSION_NUMBER);
+            VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
             writer.Write(Identifier);
 
             writer.Write(Flags);

@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
@@ -59,7 +60,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Automatics controls state the machine control system is operating in
     /// </summary>
-    public MachineAutomaticsMode EventMachineAutomatics { get; set; }
+    public AutomaticsType EventMachineAutomatics { get; set; }
 
     /// <summary>
     /// Positioning technology used to calculate machine position
@@ -104,7 +105,7 @@ namespace VSS.TRex.Cells
       EventFlags = 0;
       EventMachineGear = MachineGear.Neutral;
       EventMachineRMVThreshold = CellPassConsts.NullRMV;
-      EventMachineAutomatics = MachineAutomaticsMode.Unknown;
+      EventMachineAutomatics = AutomaticsType.Unknown;
       EventElevationMappingMode = ElevationMappingMode.LatestElevation;
       EventInAvoidZoneState = 0;
 
@@ -180,7 +181,7 @@ namespace VSS.TRex.Cells
       EventAutoVibrationState = (AutoVibrationState)reader.ReadByte();
       EventMachineGear = (MachineGear)reader.ReadByte();
       EventMachineRMVThreshold = reader.ReadShort();
-      EventMachineAutomatics = (MachineAutomaticsMode)reader.ReadByte();
+      EventMachineAutomatics = (AutomaticsType)reader.ReadByte();
       PositioningTechnology = (PositioningTech)reader.ReadByte();
       GPSTolerance = (ushort)reader.ReadInt();
       GPSAccuracy = (GPSAccuracy)reader.ReadByte();

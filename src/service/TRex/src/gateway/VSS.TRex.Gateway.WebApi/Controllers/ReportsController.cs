@@ -44,8 +44,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostStationOffsetReport)}: {Request.QueryString}");
 
       reportStationOffsetRequest.Validate();
-      reportDataValidationUtility.ValidateData((object) reportStationOffsetRequest);
-    
+      reportDataValidationUtility.ValidateData(nameof(PostStationOffsetReport), reportStationOffsetRequest.ProjectUid, (object)reportStationOffsetRequest);
+      ValidateFilterMachines(nameof(PostStationOffsetReport), reportStationOffsetRequest.ProjectUid, reportStationOffsetRequest.Filter);
+
       var stationOffsetReportDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<StationOffsetReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
@@ -77,7 +78,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostGriddedReport)}: {Request.QueryString}");
 
       reportGridRequest.Validate();
-      reportDataValidationUtility.ValidateData((object)reportGridRequest);
+      reportDataValidationUtility.ValidateData(nameof(PostGriddedReport), reportGridRequest.ProjectUid, (object)reportGridRequest);
+      ValidateFilterMachines(nameof(PostGriddedReport), reportGridRequest.ProjectUid, reportGridRequest.Filter);
 
       var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

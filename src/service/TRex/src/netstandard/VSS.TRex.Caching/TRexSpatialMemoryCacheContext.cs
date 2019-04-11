@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -30,7 +31,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public bool MarkedForRemoval { get; set; }
 
-    public DateTime MarkedForRemovalAtUtc { get; set; } = DateTime.MinValue;
+    public DateTime MarkedForRemovalAtUtc { get; set; } = Consts.MIN_DATETIME_AS_UTC;
 
     public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
@@ -225,7 +226,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Reanimate()
     {
-      MarkedForRemovalAtUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+      MarkedForRemovalAtUtc = Consts.MIN_DATETIME_AS_UTC;
       MarkedForRemoval = false;
     }
   }

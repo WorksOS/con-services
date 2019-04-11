@@ -693,7 +693,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     public bool BuildMesh()
     {
       BuildMeshFaultCode = DecimationResult.NoError;
-      DateTime StartTime = DateTime.Now;
+      DateTime StartTime = DateTime.UtcNow;
 
       if (Engine.TIN.Vertices.Count > 0 || Engine.TIN.Triangles.Count > 0)
       {
@@ -795,7 +795,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         Engine.TIN.Vertices[I].Y = Engine.TIN.Vertices[I].Y * DataStore.CellSize + VertexOffsetY;
       }
 
-      Log.LogInformation($"GridToTIN: {Engine.TIN.Triangles.Count} tris. Seed interval = {SeedPointInterval}. Time = {DateTime.Now - StartTime}");
+      Log.LogInformation($"GridToTIN: {Engine.TIN.Triangles.Count} tris. Seed interval = {SeedPointInterval}. Time = {DateTime.UtcNow - StartTime}");
 
       return true;
     }

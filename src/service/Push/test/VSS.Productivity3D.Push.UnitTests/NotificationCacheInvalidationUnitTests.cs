@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,7 +8,9 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.Clients.Notifications;
 
 namespace VSS.Productivity3D.Push.UnitTests
 {

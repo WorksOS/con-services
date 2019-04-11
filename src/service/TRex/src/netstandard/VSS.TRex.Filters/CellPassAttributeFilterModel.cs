@@ -1,10 +1,12 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Filters
 {
@@ -223,18 +225,37 @@ namespace VSS.TRex.Filters
 
     public bool FilterTemperatureByLastPass { get; set; }
 
-    public bool IsTimeRangeFilter() => HasTimeFilter && StartTime > DateTime.MinValue;
+    public bool IsTimeRangeFilter() => HasTimeFilter && StartTime > Consts.MIN_DATETIME_AS_UTC;
 
     // Time based filtering members
+    private DateTime _startTime = Consts.MIN_DATETIME_AS_UTC;
     /// <summary>
     /// The earliest time that a measured cell pass must have to be included in the filter
     /// </summary>
-    public DateTime StartTime { get; set; } = DateTime.MinValue;
+    public DateTime StartTime {
+      get => _startTime;
+      set
+      {
+        if (value.Kind != DateTimeKind.Utc)
+          throw new ArgumentException("StartTime must be a UTC date time", nameof(StartTime));
+        _startTime = value;
+      }
+    }
 
+    private DateTime _endTime = Consts.MAX_DATETIME_AS_UTC;
     /// <summary>
     /// The latest time that a measured cell pass must have to be included in the filter
     /// </summary>
-    public DateTime EndTime { get; set; } = DateTime.MaxValue;
+    public DateTime EndTime
+    {
+      get => _endTime;
+      set
+      {
+        if (value.Kind != DateTimeKind.Utc)
+          throw new ArgumentException("EndTime must be a UTC date time", nameof(EndTime));
+        _endTime = value;
+      }
+    }
 
     // Machine based filtering members
     public Guid[] MachinesList { get; set; } = new Guid[0];
@@ -269,7 +290,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The machine automatics guidance mode to be in used to record cell passes that will meet the filter.
     /// </summary>
-    public MachineAutomaticsMode GCSGuidanceMode { get; set; } = MachineAutomaticsMode.Unknown;
+    public AutomaticsType GCSGuidanceMode { get; set; } = AutomaticsType.Unknown;
 
     /// <summary>
     /// ReturnEarliestFilteredCellPass details how we choose a cell pass from a set of filtered
@@ -457,7 +478,7 @@ namespace VSS.TRex.Filters
       GPSToleranceIsGreaterThan = reader.ReadBoolean();
 
       ElevationType = (ElevationType)reader.ReadByte();
-      GCSGuidanceMode = (MachineAutomaticsMode)reader.ReadByte();
+      GCSGuidanceMode = (AutomaticsType)reader.ReadByte();
 
       ReturnEarliestFilteredCellPass = reader.ReadBoolean();
 

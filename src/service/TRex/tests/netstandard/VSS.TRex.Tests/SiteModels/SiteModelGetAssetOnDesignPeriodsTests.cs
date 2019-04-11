@@ -65,14 +65,14 @@ namespace VSS.TRex.Tests.SiteModels
       assetOnDesignPeriods[0].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID); 
       assetOnDesignPeriods[0].AssetUid.Should().Be(machine.ID);
       assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
-      assetOnDesignPeriods[0].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[0].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
       assetOnDesignPeriods[1].Id.Should().Be(design2.Id);
       assetOnDesignPeriods[1].Name.Should().Be(design2.Name);
       assetOnDesignPeriods[1].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[1].AssetUid.Should().Be(machine.ID);
       assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
-      assetOnDesignPeriods[1].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[1].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
     }
 
     [Fact]
@@ -99,14 +99,14 @@ namespace VSS.TRex.Tests.SiteModels
       assetOnDesignPeriods[0].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[0].AssetUid.Should().Be(machine.ID);
       assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
-      assetOnDesignPeriods[0].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[0].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
       assetOnDesignPeriods[1].Id.Should().Be(design2.Id);
       assetOnDesignPeriods[1].Name.Should().Be(design2.Name);
       assetOnDesignPeriods[1].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[1].AssetUid.Should().Be(machine.ID);
       assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
-      assetOnDesignPeriods[1].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[1].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
     }
 
     [Fact]
@@ -146,28 +146,28 @@ namespace VSS.TRex.Tests.SiteModels
       assetOnDesignPeriods[0].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[0].AssetUid.Should().Be(machine1.ID);
       assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
-      assetOnDesignPeriods[0].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[0].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
       assetOnDesignPeriods[1].Id.Should().Be(design2.Id);
       assetOnDesignPeriods[1].Name.Should().Be(design2.Name);
       assetOnDesignPeriods[1].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[1].AssetUid.Should().Be(machine1.ID);
       assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
-      assetOnDesignPeriods[1].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[1].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
       assetOnDesignPeriods[2].Id.Should().Be(design2.Id);
       assetOnDesignPeriods[2].Name.Should().Be(design2.Name);
       assetOnDesignPeriods[2].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[2].AssetUid.Should().Be(machine2.ID);
       assetOnDesignPeriods[2].StartDate.Should().Be(eventDate5);
-      assetOnDesignPeriods[2].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[2].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
       assetOnDesignPeriods[3].Id.Should().Be(design1.Id);
       assetOnDesignPeriods[3].Name.Should().Be(design1.Name);
       assetOnDesignPeriods[3].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[3].AssetUid.Should().Be(machine2.ID);
       assetOnDesignPeriods[3].StartDate.Should().Be(eventDate7);
-      assetOnDesignPeriods[3].EndDate.Should().Be(DateTime.MaxValue);
+      assetOnDesignPeriods[3].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
     }
   }
 }

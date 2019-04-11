@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.Machines
       m.IsJohnDoeMachine.Should().BeFalse();
       m.LastKnownDesignName.Should().BeNullOrEmpty();
       m.LastKnownLayerId.Should().Be(0);
-      m.LastKnownPositionTimeStamp.Should().Be(DateTime.MinValue);
+      m.LastKnownPositionTimeStamp.Should().Be(TRex.Common.Consts.MIN_DATETIME_AS_UTC);
       m.LastKnownX.Should().Be(Consts.NullDouble);
       m.LastKnownY.Should().Be(Consts.NullDouble);
       m.CompactionDataReported.Should().BeFalse();

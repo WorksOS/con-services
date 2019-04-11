@@ -252,6 +252,9 @@ namespace VSS.TRex.SurveyedSurfaces
       if (ExcludeSurveyedSurfaces)
         return;
 
+      if (StartTime.Kind != DateTimeKind.Utc || EndTime.Kind != DateTimeKind.Utc)
+        throw new ArgumentException("StartTime and EndTime must be UTC date times");
+
       if (!HasTimeFilter && (ExclusionList?.Length ?? 0) == 0)
       {
         FilteredSurveyedSurfaceDetails.Assign(this);
