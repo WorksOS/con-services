@@ -48,12 +48,16 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
 
     public Task Setup(object o)
     {
+      if (assetStatusServerHubClient.IsConnecting || assetStatusServerHubClient.Connected)
+        return Task.CompletedTask;
+      log.LogInformation("Asset Status Hub Client not connected, starting a connection.");
       return assetStatusServerHubClient.Connect();
     }
 
     public async Task Run(object o)
     {
       subscriptions = await assetStatusServerHubClient.GetSubscriptions();
+      log.LogInformation($"Found {subscriptions.Count} subscriptions to process");
       var tasks = subscriptions.Select(ProcessSubscription).ToList();
       await Task.WhenAll(tasks);
     }
