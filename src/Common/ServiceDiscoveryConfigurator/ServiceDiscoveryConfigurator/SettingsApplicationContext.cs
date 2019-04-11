@@ -202,6 +202,25 @@ namespace ServiceDiscoveryConfigurator
             }
           }
         });
+
+      developmentSettings.AvailableSettings.Add(ServiceNameConstants.ASSETMGMT3D_SERVICE,
+        new SettingsEntry()
+        {
+          IsInternal = true,
+          Options = new List<DisplaySetting>()
+          {
+            new DisplaySetting()
+            {
+              Name = "Dev",
+              Value = "http://assetmgmt3d.dev.eks.vspengg.com"
+            },
+            new DisplaySetting()
+            {
+              Name = "Alpha",
+              Value = "http://assetmgmt3d.alpha.eks.vspengg.com"
+            }
+          }
+        });
     }
 
     /// <summary>

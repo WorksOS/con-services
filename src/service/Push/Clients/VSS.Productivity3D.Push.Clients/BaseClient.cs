@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
@@ -46,10 +47,14 @@ namespace VSS.Productivity3D.Push.Clients
       get => _connected;
       private set
       {
+        IsConnecting = false;
         _connected = value;
         SignalRHealthCheck.State = value;
       }
     }
+    
+    /// <inheritdoc />
+    public bool IsConnecting { get; private set; }
 
     /// <summary>
     /// The Route for the hub, which is appended to the Push URL
@@ -86,6 +91,10 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     private async Task TryConnect()
     {
+      if (Connected || IsConnecting)
+        return;
+
+      IsConnecting = true;
       while (true)
       {
         try
@@ -109,16 +118,19 @@ namespace VSS.Productivity3D.Push.Clients
         }
         catch (HttpRequestException e)
         {
+          Connected = false;
           // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
           Logger.LogError($"Failed to connect due to exception - Is the Server online? Message: {e.Message}");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
         catch (Exception e)
         {
+          Connected = false;
           // We need to catch all exceptions, if we don't the reconnection thread will be stopped.
           Logger.LogError(e, "Failed to connect due to exception - Unknown exception occured.");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
+        
       }
     }
 
@@ -154,7 +166,6 @@ namespace VSS.Productivity3D.Push.Clients
           {
             Logger.LogWarning("No authentication headers added.");
           }
-
         }).Build();
 
       Connection.Closed += async (e) =>

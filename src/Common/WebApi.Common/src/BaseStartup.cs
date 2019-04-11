@@ -185,6 +185,8 @@ namespace VSS.WebApi.Common
 
       services.AddMetricsReportingHostedService();
       services.AddHealthReportingHostedService();
+
+      StartServices(ServiceProvider);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -211,6 +213,13 @@ namespace VSS.WebApi.Common
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
       app.UseMvc();
+    }
+
+    /// <summary>
+    /// Start any services once the service provider has been built
+    /// </summary>
+    protected virtual void StartServices(IServiceProvider serviceProvider)
+    {
     }
 
     /// <summary>

@@ -17,6 +17,7 @@ using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.WebApi.Common;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 {

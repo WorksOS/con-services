@@ -117,6 +117,7 @@ namespace VSS.TRex.TAGFiles.Executors
             Machine.LastKnownPositionTimeStamp = Processor.DataTime;
             Machine.MachineHardwareID = Processor.HardwareID;
             Machine.MachineType = Processor.MachineType;
+            Machine.Name = Processor.MachineID;
         }
 
         /// <summary>
