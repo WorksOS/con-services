@@ -574,7 +574,7 @@ namespace VSS.Productivity3D.Project.Repository
 
     private string BuildProjectInsertString(Abstractions.Models.DatabaseModels.Project project)
     {
-      string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(project.GeometryWKT);
+      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
   
       string insert = null;
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
@@ -596,7 +596,7 @@ namespace VSS.Productivity3D.Project.Repository
 
     private string BuildProjectUpdateString(Abstractions.Models.DatabaseModels.Project project)
     {
-      string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(project.GeometryWKT);
+      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
 
       string update = null;
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
@@ -682,7 +682,7 @@ namespace VSS.Productivity3D.Project.Repository
       geofence.IsDeleted = false;
       geofence.LastActionedUTC = DateTime.UtcNow;
 
-      string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(project.GeometryWKT);
+      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
 
       string insert = string.Format(
          "INSERT Geofence " +
@@ -711,7 +711,7 @@ namespace VSS.Productivity3D.Project.Repository
 
     private async Task<int> UpdateGeofence(Abstractions.Models.DatabaseModels.Project project, Geofence existingGeofence)
     {
-      string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(project.GeometryWKT);
+      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
 
       var update = "UPDATE Geofence " +
                    $" SET PolygonST = {formattedPolygon} " +
@@ -1763,7 +1763,7 @@ namespace VSS.Productivity3D.Project.Repository
     public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
       DateTime endDate, string excludeProjectUid = "")
     {
-      string polygonToCheck = RepositoryHelper.GeometryWKTToSpatial(geometryWkt);
+      string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
 
       var select = $@"SELECT DISTINCT
                           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,

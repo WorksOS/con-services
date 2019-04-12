@@ -134,7 +134,7 @@ namespace VSS.MasterData.Repositories
       {
         Log.LogDebug($"GeofenceRepository/CreateGeofence: going to create geofence={geofence.GeofenceUID}");
 
-        string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(geofence.GeometryWKT);
+        string formattedPolygon = RepositoryHelper.WKTToSpatial(geofence.GeometryWKT);
 
         string insert =
           "INSERT Geofence " + 
@@ -189,7 +189,7 @@ namespace VSS.MasterData.Repositories
 
           Log.LogDebug($"GeofenceRepository/UpdateGeofence: going to update geofence={geofence.GeofenceUID}");
 
-          string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(geofence.GeometryWKT);
+          string formattedPolygon = RepositoryHelper.WKTToSpatial(geofence.GeometryWKT);
 
           string update =
             "UPDATE Geofence " +                
@@ -211,7 +211,7 @@ namespace VSS.MasterData.Repositories
 
         geofence.Setup();
 
-        string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(geofence.GeometryWKT);
+        string formattedPolygon = RepositoryHelper.WKTToSpatial(geofence.GeometryWKT);
 
         string insert =
           "INSERT Geofence " +
@@ -260,7 +260,7 @@ namespace VSS.MasterData.Repositories
 
         Log.LogDebug(
           $"GeofenceRepository/DeleteGeofence: going to insert a deleted dummy geofence={geofence.GeofenceUID}");
-        string formattedPolygon = RepositoryHelper.GeometryWKTToSpatial(geofence.GeometryWKT);
+        string formattedPolygon = RepositoryHelper.WKTToSpatial(geofence.GeometryWKT);
 
         string insert =
           "INSERT Geofence " +
