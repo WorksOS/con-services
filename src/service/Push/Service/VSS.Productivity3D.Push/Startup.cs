@@ -14,8 +14,11 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Push.Abstractions;
-using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.Abstractions.AssetLocations;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.Hubs;
+using VSS.Productivity3D.Push.Hubs.AssetLocations;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
@@ -49,6 +52,7 @@ namespace VSS.Productivity3D.Push
       services.AddScoped<IErrorCodesProvider, PushResult>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
+      services.AddSingleton<IAssetStatusState, InMemoryAssetStatusState>();
       // Attempt to resolve the redis cache, and use it for SignalR
       var serviceDiscovery = services.BuildServiceProvider().GetService<IServiceResolution>();
       var redisService = serviceDiscovery.ResolveService(ServiceNameConstants.REDIS_CACHE).Result;
@@ -74,8 +78,9 @@ namespace VSS.Productivity3D.Push
       
       app.UseSignalR(route =>
       {
-        route.MapHub<NotificationHub>(NotificationHubClient.ROUTE);
-        route.MapHub<AssetStatusHub>(AssetStatusHubClient.ROUTE);
+        route.MapHub<NotificationHub>(HubRoutes.NOTIFICATIONS);
+        route.MapHub<AssetStatusClientHub>(HubRoutes.ASSET_STATUS_CLIENT);
+        route.MapHub<AssetStatusServerHub>(HubRoutes.ASSET_STATUS_SERVER);
       });
       
       app.UseMvc();

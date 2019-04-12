@@ -25,6 +25,7 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;

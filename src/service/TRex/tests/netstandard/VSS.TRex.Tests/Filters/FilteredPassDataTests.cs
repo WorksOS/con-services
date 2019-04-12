@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Models;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Tests.Filters
         EventElevationMappingMode = ElevationMappingMode.MinimumElevation,
         EventFlags = 11,
         EventInAvoidZoneState = 12,
-        EventMachineAutomatics = MachineAutomaticsMode.Manual,
+        EventMachineAutomatics = AutomaticsType.Manual,
         EventMachineGear = MachineGear.Forward3,
         EventMachineRMVThreshold = 100,
         EventVibrationState = VibrationState.Off,

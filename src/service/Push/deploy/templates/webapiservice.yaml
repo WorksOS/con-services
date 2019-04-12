@@ -4,6 +4,8 @@ metadata:
   name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
   labels:
     service-name: {{ .Values.serviceName }}
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   selector:
     app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}

@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -25,6 +26,19 @@ namespace VSS.Productivity3D.Filter.Tests
   [TestClass]
   public class BoundaryExecutorTests : ExecutorBaseTests
   {
+    private IAssetResolverProxy _assetResolverProxy;
+
+    [TestInitialize]
+    public void TestInit()
+    {
+      var mockedAssetResolverProxySetup = new Mock<IAssetResolverProxy>();
+      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
+      mockedAssetResolverProxySetup.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(new List<KeyValuePair<Guid, long>>(0));
+
+      _assetResolverProxy = mockedAssetResolverProxySetup.Object;
+    }
 
     [TestMethod]
     public async Task GetBoundaryExecutor()
@@ -182,7 +196,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor =
         RequestExecutorContainer.Build<UpsertBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, null, raptorProxy.Object, producer.Object, kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object, null, raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request) as GeofenceDataSingleResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -240,7 +254,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var executor =
         RequestExecutorContainer.Build<DeleteBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, null, raptorProxy.Object, producer.Object, kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object, null, raptorProxy.Object, _assetResolverProxy, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor failed");

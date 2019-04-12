@@ -28,7 +28,7 @@ namespace ExecutorTests
       Setup();
 
       executor = RequestExecutorContainer
-        .Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName, FileListProxy);
+        .Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName, FileListProxy);
     }
 
     [TestMethod]
@@ -456,7 +456,7 @@ namespace ExecutorTests
 
       var filterObj = JsonConvert.DeserializeObject<Filter>(result.FilterDescriptor.FilterJson);
 
-      Assert.AreEqual("Large Sites Road.svl", filterObj.AlignmentName);
+      Assert.AreEqual("Large Sites Road.svl", filterObj.AlignmentFileName);
     }
 
     /// <summary>
@@ -480,7 +480,7 @@ namespace ExecutorTests
 
       var filterObj = JsonConvert.DeserializeObject<Filter>(result.FilterDescriptor.FilterJson);
 
-      Assert.AreEqual("Large Sites Road - Trimble Road.TTM", filterObj.DesignName);
+      Assert.AreEqual("Large Sites Road - Trimble Road.TTM", filterObj.DesignFileName);
     }
   }
 }

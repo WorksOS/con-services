@@ -57,15 +57,12 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Create instance of MachineDetails
     /// </summary>
-    public static MachineDetails Create(long assetId, string machineName, bool isJohnDoe, Guid? assetUid = null)
+    public MachineDetails (long assetId, string machineName, bool isJohnDoe, Guid? assetUid = null)
     {
-      return new MachineDetails
-      {
-        AssetId = assetId,
-        MachineName = machineName,
-        IsJohnDoe = isJohnDoe,
-        AssetUid = assetUid
-      };
+      AssetId = assetId;
+      MachineName = machineName;
+      IsJohnDoe = isJohnDoe;
+      AssetUid = assetUid;
     }
 
     /// <summary>
