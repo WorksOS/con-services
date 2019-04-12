@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
@@ -86,9 +87,9 @@ namespace VSS.TRex.Events
     /// <summary>
     /// Records the state of the automatic machine control on the machine at the time measurements were being made.
     /// </summary>
-    public IProductionEvents<MachineAutomaticsMode> MachineAutomaticsStateEvents
+    public IProductionEvents<AutomaticsType> MachineAutomaticsStateEvents
     {
-      get => (IProductionEvents<MachineAutomaticsMode>) GetEventList(ProductionEventType.MachineAutomaticsChange);
+      get => (IProductionEvents<AutomaticsType>) GetEventList(ProductionEventType.MachineAutomaticsChange);
     }
 
     /// <summary>

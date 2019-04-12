@@ -79,12 +79,12 @@ namespace VSS.TRex.Tests.Exports.CSV
       DILoggingFixture.SetMaxExportRowsConfig(100);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
-        out CSVExportRequestArgument requestArgument, out ISiteModel _);
+        out CSVExportRequestArgument requestArgument, out ISiteModel _); 
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(100);
-      rows[0].Should().Be(@"2019-Jan-23 00:22:10.033,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
+      rows[0].Should().Be(@"2019-Jan-23 00:22:09.993,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Skip until coreX is available")]
@@ -92,6 +92,9 @@ namespace VSS.TRex.Tests.Exports.CSV
     {
       DILoggingFixture.SetMaxExportRowsConfig(10);
 
+      //todo when this test is enabled, you'll need to duplicate some of the "Dimensions2018-CaseMachine" tag files
+      // from their outer location of TRex\tests\netstandard\TAGFiles.Tests\TestData\TAGFiles
+      // to                           TRex\tests\netstandard\VSS.TRex.Tests\TestData\TAGFiles
       var requestedSubGrids = GetSubGrids(CoordType.LatLon, OutputTypes.VedaFinalPass, false,
         out CSVExportRequestArgument requestArgument, out ISiteModel siteModel, "Dimensions2018-CaseMachine");
 

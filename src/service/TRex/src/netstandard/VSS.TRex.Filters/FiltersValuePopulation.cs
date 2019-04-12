@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
@@ -95,7 +96,7 @@ namespace VSS.TRex.Filters
       // Machine Automatic States...
       if (PopulationControl.WantsEventMachineAutomaticsValues)
         filteredPass.EventValues.EventMachineAutomatics =
-          values.MachineAutomaticsStateEvents.GetValueAtDate(_Time, out _, MachineAutomaticsMode.Unknown);
+          values.MachineAutomaticsStateEvents.GetValueAtDate(_Time, out _, AutomaticsType.Unknown);
 
       if (PopulationControl.WantsEventMapResetValues)
       {

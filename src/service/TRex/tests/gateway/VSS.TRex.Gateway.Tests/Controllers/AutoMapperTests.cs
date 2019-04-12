@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
@@ -43,7 +40,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     [Fact]
     public void MapBoundingBox2DGridToBoundingWorldExtent3D()
     {
-      var box = new BoundingBox2DGrid(10, 12, 35, 27);  
+      var box = new BoundingBox2DGrid(10, 12, 35, 27);
       var box3d = AutoMapperUtility.Automapper.Map<BoundingWorldExtent3D>(box);
       Assert.Equal(box.BottomLeftX, box3d.MinX);
       Assert.Equal(box.BottomleftY, box3d.MinY);
@@ -61,56 +58,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       Assert.Equal(box.TopRightLon, box3d.MaxX);
       Assert.Equal(box.TopRightLat, box3d.MaxY);
     }
-
-    [Fact]
-    public void MapFilterResultWithPolygonToCombinedFilter()
-    {
-      List<WGSPoint> polygonLonLat = new List<WGSPoint>
-      {
-        new WGSPoint(1, 1),
-        new WGSPoint(2, 2),
-        new WGSPoint(3, 3)
-      };
-      var filter = new FilterResult(null, new Filter(), polygonLonLat, null, null, null, true, null);
-      var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
-      Assert.NotNull(combinedFilter.AttributeFilter);
-      Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
-      Assert.Equal(Types.ElevationType.First, combinedFilter.AttributeFilter.ElevationType);
-
-      Assert.NotNull(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
-      Assert.Empty(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
-
-      Assert.NotNull(combinedFilter.SpatialFilter);
-      Assert.False(combinedFilter.SpatialFilter.CoordsAreGrid);
-      Assert.True(combinedFilter.SpatialFilter.IsSpatial);
-      Assert.NotNull(combinedFilter.SpatialFilter.Fence);
-      Assert.NotNull(combinedFilter.SpatialFilter.Fence.Points);
-      Assert.Equal(polygonLonLat.Count, combinedFilter.SpatialFilter.Fence.Points.Count);
-      for (int i =0; i<combinedFilter.SpatialFilter.Fence.Points.Count; i++)
-      {
-        Assert.Equal(filter.PolygonLL[i].Lon, combinedFilter.SpatialFilter.Fence.Points[i].X);
-        Assert.Equal(filter.PolygonLL[i].Lat, combinedFilter.SpatialFilter.Fence.Points[i].Y);
-      }
-    }
-
-    [Fact]
-    public void MapFilterResultNoPolygonToCombinedFilter()
-    {
-      var filter = new FilterResult(null, new Filter(), null, null, null, null, true, null);
-      var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
-      Assert.NotNull(combinedFilter.AttributeFilter);
-      Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
-      Assert.Equal(Types.ElevationType.First, combinedFilter.AttributeFilter.ElevationType);
-
-      Assert.NotNull(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
-      Assert.Empty(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
-
-      Assert.NotNull(combinedFilter.SpatialFilter);
-      Assert.False(combinedFilter.SpatialFilter.CoordsAreGrid);
-      Assert.False(combinedFilter.SpatialFilter.IsSpatial);
-      Assert.Null(combinedFilter.SpatialFilter.Fence);
-    }
-
+    
     [Fact]
     public void MapPointToXYZ()
     {
@@ -131,14 +79,15 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       Assert.Equal(0, xyz.Z);
     }
 
-	[Fact]
+    [Fact]
     public void MapMachineToMachineStatus()
     {
       var machineUid1 = Guid.NewGuid();
       var machineUid2 = Guid.NewGuid();
       var machineUid3 = Guid.Empty;
-      var machines = new MachinesList { DataModelID = Guid.NewGuid() };
-      machines.CreateNew("MachineName1", "hardwareID444", MachineType.ConcretePaver, DeviceTypeEnum.SNM940, false, machineUid1);
+      var machines = new MachinesList {DataModelID = Guid.NewGuid()};
+      machines.CreateNew("MachineName1", "hardwareID444", MachineType.ConcretePaver, DeviceTypeEnum.SNM940, false,
+        machineUid1);
       machines[0].InternalSiteModelMachineIndex = 0;
       machines[0].LastKnownX = 34.34;
       machines[0].LastKnownY = 77.77;
@@ -146,11 +95,13 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       machines[0].LastKnownDesignName = "design1";
       machines[0].LastKnownLayerId = 11;
 
-      machines.CreateNew("MachineName2", "hardwareID555", MachineType.AsphaltCompactor, DeviceTypeEnum.SNM940, false, machineUid2);
-      machines.CreateNew("MachineName3", "hardwareID666", MachineType.Generic, DeviceTypeEnum.MANUALDEVICE, true, machineUid3);
+      machines.CreateNew("MachineName2", "hardwareID555", MachineType.AsphaltCompactor, DeviceTypeEnum.SNM940, false,
+        machineUid2);
+      machines.CreateNew("MachineName3", "hardwareID666", MachineType.Generic, DeviceTypeEnum.MANUALDEVICE, true,
+        machineUid3);
 
       var machineStatuses = machines.Select(machine =>
-          AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();
+        AutoMapperUtility.Automapper.Map<MachineStatus>(machine)).ToArray();
       machineStatuses.Length.Equals(3);
       machineStatuses[0].AssetUid.HasValue.Equals(true);
       machineStatuses[0].AssetUid?.Equals(machines[0].ID);
@@ -165,9 +116,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       machineStatuses[0].lastKnownTimeStamp.HasValue.Equals(true);
       machineStatuses[0].lastKnownTimeStamp?.Equals(machines[0].LastKnownPositionTimeStamp);
       machineStatuses[0].lastKnownLatitude.HasValue.Equals(true);
-      machineStatuses[0].lastKnownLatitude?.Equals(Double.MaxValue); 
+      machineStatuses[0].lastKnownLatitude?.Equals(Double.MaxValue);
       machineStatuses[0].lastKnownLongitude.HasValue.Equals(true);
-      machineStatuses[0].lastKnownLongitude?.Equals(Double.MaxValue); 
+      machineStatuses[0].lastKnownLongitude?.Equals(Double.MaxValue);
       machineStatuses[0].lastKnownX.HasValue.Equals(true);
       machineStatuses[0].lastKnownX?.Equals(machines[0].LastKnownX);
       machineStatuses[0].lastKnownY.HasValue.Equals(true);

@@ -1,12 +1,10 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Requests;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -38,6 +36,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCmvPercentChange)}: {Request.QueryString}");
 
       cmvChangeDetailsRequest.Validate();
+      ValidateFilterMachines(nameof(PostCmvPercentChange), cmvChangeDetailsRequest.ProjectUid, cmvChangeDetailsRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -57,6 +56,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
 
       cmvDetailsRequest.Validate();
+      ValidateFilterMachines(nameof(PostCmvDetails), cmvDetailsRequest.ProjectUid, cmvDetailsRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -76,6 +76,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostPassCountDetails)}: {Request.QueryString}");
 
       passCountDetailsRequest.Validate();
+      ValidateFilterMachines(nameof(PostPassCountDetails), passCountDetailsRequest.ProjectUid, passCountDetailsRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -95,6 +96,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCutFillDetails)}: {Request.QueryString}");
 
       cutFillRequest.Validate();
+      ValidateFilterMachines(nameof(PostCutFillDetails), cutFillRequest.ProjectUid, cutFillRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -115,6 +117,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostTemperatureDetails)}: {Request.QueryString}");
       
       temperatureDetailRequest.Validate();
+      ValidateFilterMachines(nameof(PostTemperatureDetails), temperatureDetailRequest.ProjectUid, temperatureDetailRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

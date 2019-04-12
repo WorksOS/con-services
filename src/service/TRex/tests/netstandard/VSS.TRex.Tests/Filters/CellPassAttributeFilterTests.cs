@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
@@ -8,6 +9,7 @@ using VSS.TRex.Machines;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Tests.Filters
 {
@@ -362,10 +364,10 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_ClearGuidanceMode()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("GuidanceMode",
-                                                            x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = MachineAutomaticsMode.Automatics; },
-                                                            x => x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == MachineAutomaticsMode.Automatics,
+                                                            x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = AutomaticsType.Automatics; },
+                                                            x => x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == AutomaticsType.Automatics,
                                                             x => { x.ClearGuidanceMode(); },
-                                                            x => !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == MachineAutomaticsMode.Unknown);
+                                                            x => !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == AutomaticsType.Unknown);
         }
 
         [Fact()]

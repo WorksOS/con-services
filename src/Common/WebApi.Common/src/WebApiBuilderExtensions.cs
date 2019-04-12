@@ -66,8 +66,7 @@ namespace VSS.WebApi.Common
           localBuilder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           localBuilder.SetMinimumLevel(LogLevel.Debug);
           localBuilder.AddConfiguration(kestrelConfig);
-        })
-        .UseHealth();
+        });
 
       ThreadPool.SetMaxThreads(1024, 2048);
       ThreadPool.SetMinThreads(1024, 2048);
@@ -95,19 +94,7 @@ namespace VSS.WebApi.Common
         throw new ArgumentNullException("builder");
 
       builder.ConfigureMetrics(Metrics)
-        .UseMetrics(
-          options =>
-          {
-            options.EndpointOptions = endpointsOptions =>
-            {
-              endpointsOptions.MetricsEndpointOutputFormatter =
-                Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
-            };
-            options.TrackingMiddlewareOptions = trackingOptions =>
-            {
-              trackingOptions.ApdexTrackingEnabled = true;
-            };
-          })
+        .UseMetrics()
         .UseHealth();
 
       return builder;

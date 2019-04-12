@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using VSS.Productivity.Push.Models.Notifications;
 
-namespace VSS.Productivity3D.Push.Abstractions
+namespace VSS.Productivity3D.Push.Abstractions.Notifications
 {
   public interface INotificationHub
   {

@@ -27,21 +27,22 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
       if (!machines.Any())
         return ContractExecutionStatesEnum.ExecutedSuccessfully;
 
-      var coordPointer = 0;
-      var NEECoords = new XYZ[0];
+      var NEECoords = new List<XYZ>();
       foreach (var machine in machines)
       {
-        if (machine.lastKnownX != null && machine.lastKnownY != null  && 
+        if (machine.lastKnownX != null && machine.lastKnownY != null &&
             machine.lastKnownX != Consts.NullDouble && machine.lastKnownY != Consts.NullDouble)
-          NEECoords.Append( new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value));
+          NEECoords.Add(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value));
       }
 
-      if (NEECoords.Length > 0)
+      if (NEECoords.Count > 0)
       {
-        (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords);
-        if (errorCode == RequestErrorStatus.OK && LLHCoords.Length > 0)
+        (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords.ToArray());
+     
+        // if the count returned is different to that sent, then we can't match with the machines list
+        if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)
         {
-          coordPointer = 0;
+          var coordPointer = 0;
           foreach (var machine in machines)
           {
             if (machine.lastKnownX != null && machine.lastKnownY != null &&
@@ -50,14 +51,13 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
               machine.lastKnownLatitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].Y);
               machine.lastKnownLongitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].X);
             }
-
             coordPointer++;
           }
         }
         else
         {
-          Log.LogError(
-            $"{nameof(CoordinateServiceUtility)} Failed to convert Coordinates. Error  {errorCode} Coords: {JsonConvert.SerializeObject(LLHCoords.Length)}");
+          var message = $"{nameof(CoordinateServiceUtility)} Failed to convert Coordinates. ErrorCode: {errorCode} CSIB: {CSIB} Coords: {(LLHCoords == null ? "null LLH returned" : JsonConvert.SerializeObject(LLHCoords))}, NEECoords: {JsonConvert.SerializeObject(NEECoords)}";
+          Log.LogError(message);
           return ContractExecutionStatesEnum.InternalProcessingError;
         }
       }
@@ -66,7 +66,6 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
         Log.LogError(
           $"{nameof(CoordinateServiceUtility)} No coordinates need converting as no machines have lastKnownXY. Machines: {JsonConvert.SerializeObject(machines)}");
       }
-
 
       return ContractExecutionStatesEnum.ExecutedSuccessfully;
     }
