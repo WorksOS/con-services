@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Types
+﻿namespace VSS.TRex.Common.Types
 {
     /// <summary>
     ///  The direction the machine is moving in 

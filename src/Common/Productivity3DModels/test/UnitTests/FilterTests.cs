@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.Models.UnitTests
       DesignDescriptor desc = new DesignDescriptor(1111, null, 0);
       List<MachineDetails> machines = new List<MachineDetails>
       {
-        MachineDetails.Create(12345678, "Acme Compactor 1", false)
+        new MachineDetails(12345678, "Acme Compactor 1", false)
       };
 
       var filter = FilterResult.CreateFilter(null, null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31),
