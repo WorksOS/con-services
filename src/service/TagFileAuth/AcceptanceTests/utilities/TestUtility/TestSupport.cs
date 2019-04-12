@@ -563,6 +563,10 @@ namespace TestUtility
           {
             updateProjectEvent.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
           }
+          if (HasProperty(eventObject, "GeometryWKT"))
+          {
+            updateProjectEvent.ProjectBoundary = eventObject.GeometryWKT;
+          }
           jsonString = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
           break;
         case "DeleteProjectEvent":
