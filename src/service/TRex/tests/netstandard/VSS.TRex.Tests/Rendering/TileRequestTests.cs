@@ -39,10 +39,10 @@ namespace VSS.TRex.Tests.Rendering
     private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
-    private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode)
+    private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null)
     {
-      return new TileRenderRequestArgument(siteModel.ID, displayMode, siteModel.SiteModelExtent, true, 256, 256,
-        new FilterSet(new CombinedFilter()), Guid.Empty, palette);
+      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256,
+        new FilterSet(new CombinedFilter()), Guid.Empty);
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
