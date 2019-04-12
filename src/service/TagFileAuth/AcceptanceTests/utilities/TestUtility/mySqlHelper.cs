@@ -121,7 +121,7 @@ namespace TestUtility
         var queryFields = string.Copy(fields);
         if (fields.Contains("GeometryWKT"))
         {
-          queryFields.Replace("GeometryWKT", "AsWKT(PolygonST) AS GeometryWKT");
+          queryFields = queryFields.Replace("GeometryWKT", "AsWKT(PolygonST) AS GeometryWKT");
         }
         var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
         var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, queryFields), fields);

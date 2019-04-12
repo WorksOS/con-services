@@ -43,7 +43,7 @@ namespace VSS.MasterData.Repositories
         geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
-        geofence.GeometryWKT = geofenceEvent.GeometryWKT;
+        geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT); 
         geofence.FillColor = geofenceEvent.FillColor;
         geofence.IsTransparent = geofenceEvent.IsTransparent;
         geofence.IsDeleted = false;
@@ -60,7 +60,7 @@ namespace VSS.MasterData.Repositories
         geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
-        geofence.GeometryWKT = geofenceEvent.GeometryWKT;
+        geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
 
         geofence.FillColor = geofenceEvent.FillColor;
         geofence.IsTransparent = geofenceEvent.IsTransparent;
