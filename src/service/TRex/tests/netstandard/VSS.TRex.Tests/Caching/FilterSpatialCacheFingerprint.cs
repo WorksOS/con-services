@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
@@ -6,6 +7,7 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Tests.Caching
 {
@@ -334,7 +336,7 @@ namespace VSS.TRex.Tests.Caching
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGCSGuidanceModeFilter = true;
-        x.AttributeFilter.GCSGuidanceMode = MachineAutomaticsMode.Manual;
+        x.AttributeFilter.GCSGuidanceMode = AutomaticsType.Manual;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GM:Manual", StringComparison.OrdinalIgnoreCase),

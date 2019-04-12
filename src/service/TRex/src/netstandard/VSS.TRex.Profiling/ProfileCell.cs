@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Profiling.Interfaces;

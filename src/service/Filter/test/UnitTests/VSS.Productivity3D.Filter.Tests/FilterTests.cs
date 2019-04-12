@@ -62,5 +62,45 @@ namespace VSS.Productivity3D.Filter.Tests
 
       Assert.AreEqual(expectedResult, filter.ContainsBoundary);
     }
+
+    [TestMethod]
+    [DataRow(555, "The Machine Name", "ce56b132-58a5-4803-b2c6-7a4bc3c2390b", "false")]
+    [DataRow(-1, "The Machine Name", "ce56b132-58a5-4803-b2c6-7a4bc3c2390b", "true")]
+    [DataRow(555, "The Machine Name", null, "false")]
+    [DataRow(555, "", null, "true")]
+    public void ContainsContributingMachines_returns_correct_result(long assetId, string machineName, string assetUid, string isJohnDoe)
+    {
+      var filterJson = $"{{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{{\"assetID\":\"{assetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{isJohnDoe},\"assetUid\":\"{assetUid}\"}}]}}";
+
+      var filter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
+
+      Assert.AreEqual(1, filter.ContributingMachines.Count);
+      Assert.AreEqual(assetId, filter.ContributingMachines[0].AssetId);
+      Assert.AreEqual(machineName, filter.ContributingMachines[0].MachineName);
+
+      if (!string.IsNullOrEmpty(assetUid))
+      {
+        Assert.IsNotNull(filter.ContributingMachines[0].AssetUid);
+        Assert.AreEqual(assetUid, filter.ContributingMachines[0].AssetUid.Value.ToString());
+      }
+      Assert.AreEqual(isJohnDoe == "true", filter.ContributingMachines[0].IsJohnDoe);
+    }
+
+    [TestMethod]
+    [DataRow(555, "The Machine Name", "false")]
+    [DataRow(-1, "The Machine Name", "true")]
+    [DataRow(555, "The Machine Name", "false")]
+    [DataRow(555, "", "true")]
+    public void ContainsContributingMachines_oldFormat(long assetId, string machineName, string isJohnDoe)
+    {
+      var filterJson = $"{{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":7,\"contributingMachines\":[{{\"assetID\":\"{assetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{isJohnDoe}}}]}}";
+
+      var filter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
+
+      Assert.AreEqual(1, filter.ContributingMachines.Count);
+      Assert.AreEqual(assetId, filter.ContributingMachines[0].AssetId);
+      Assert.AreEqual(machineName, filter.ContributingMachines[0].MachineName);
+      Assert.AreEqual(isJohnDoe == "true", filter.ContributingMachines[0].IsJohnDoe);
+    }
   }
 }
