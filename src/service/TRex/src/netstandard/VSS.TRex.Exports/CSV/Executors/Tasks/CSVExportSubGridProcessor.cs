@@ -37,7 +37,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     private readonly ISiteModel _siteModel;
 
     private XYZ[] _llhCoords = null;
-    private DateTime _runningLastPassTime = DateTime.MinValue;
+    private DateTime _runningLastPassTime = Consts.MIN_DATETIME_AS_UTC;
     private string _cellPassTimeString;
     private double _runningNorthing = Consts.NullDouble;
     private double _runningEasting = Consts.NullDouble;

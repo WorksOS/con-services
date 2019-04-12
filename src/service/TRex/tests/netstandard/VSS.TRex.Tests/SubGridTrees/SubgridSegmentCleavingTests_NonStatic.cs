@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 {
     public class SubgridSegmentCleavingTests_NonStatic : IClassFixture<DILoggingFixture>
   {
-        private DateTime startTime = new DateTime(2000, 1, 1, 0, 0, 0);
+        private DateTime startTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 
         private IServerLeafSubGrid MakeSubgridWith10240CellPassesAtOneSecondIntervals()
         {
@@ -312,7 +312,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_SubgridSegment_VerifyComputedAndRecordedSegmentTimeRangeBounds_Success()
     {
       // Create a subgrid to hold the segment
-      IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+      var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
       Assert.True(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Newly created segment fails bounds test");
     }
@@ -321,8 +321,8 @@ namespace VSS.TRex.Tests.SubGridTrees
     public void Test_SubgridSegment_VerifyComputedAndRecordedSegmentTimeRangeBounds_Fail()
     {
       // Create a subgrid to hold the segment
-      IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
-      subGrid.Cells.PassesData[0].SegmentInfo.EndTime = new DateTime(1900, 1, 1);
+      var subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+      subGrid.Cells.PassesData[0].SegmentInfo.EndTime = DateTime.SpecifyKind(new DateTime(1900, 1, 1), DateTimeKind.Utc);
 
       Assert.False(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Modified invalid segment passes bounds test");
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -52,7 +51,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, nameof(CreateDesign), true);
+      GatewayHelper.ValidateAndGetSiteModel(nameof(CreateDesign), designRequest.ProjectUid, true);
      
       if (DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
@@ -89,7 +88,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, nameof(UpdateDesign), true);
+      GatewayHelper.ValidateAndGetSiteModel(nameof(UpdateDesign), designRequest.ProjectUid, true);
       
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
@@ -127,7 +126,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      GatewayHelper.ValidateAndGetSiteModel(designRequest.ProjectUid, nameof(DeleteDesign),true);
+      GatewayHelper.ValidateAndGetSiteModel(nameof(DeleteDesign), designRequest.ProjectUid, true);
      
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {

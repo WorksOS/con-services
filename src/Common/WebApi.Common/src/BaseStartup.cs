@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using App.Metrics;
+using App.Metrics.Formatters;
+using App.Metrics.Formatters.Prometheus;
+using App.Metrics.Health;
+using App.Metrics.Health.Reporting.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -111,36 +117,76 @@ namespace VSS.WebApi.Common
         }
       });
 
+      //TODO this should be enabled for LibLog
+      /*XmlConfigurator.Configure(
+        LogManager.GetRepository(Assembly.GetAssembly(typeof(LogManager))),
+        new FileInfo("log4net.xml"));*/
+
+
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
       services.AddServiceDiscovery();
 
       services.AddMvcCore(config =>
-        {
-          // for jsonProperty validation
-          config.Filters.Add(new ValidationFilterAttribute());
-        }).AddMetricsCore();
+      {
+        // for jsonProperty validation
+        config.Filters.Add(new ValidationFilterAttribute());
+      }).AddMetricsCore();
 
-      services.AddMvc(
-        config =>
-        {
-          config.Filters.Add(new ValidationFilterAttribute());
-        }
-      );
 
       var metrics = AppMetrics.CreateDefaultBuilder()
+        .Configuration.Configure(options =>
+        {
+          options.Enabled = true;
+          options.ReportingEnabled = true;
+          options.AddServerTag();
+          options.AddAppTag(appName: ServiceName);
+        })
+        .OutputMetrics.AsPrometheusPlainText()
         .Build();
+
+      var healthMetrics = AppMetricsHealth.CreateDefaultBuilder()
+        .Configuration.Configure(options =>
+        {
+          options.Enabled = true;
+          options.ReportingEnabled = true;
+          options.ApplicationName = ServiceName;
+        })
+        .HealthChecks.RegisterFromAssembly(services)
+        .Report.ToMetrics(metrics)
+        .HealthChecks.AddPingCheck("InternetAccess", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
+        .BuildAndAddTo(services);
+
+
+      services.AddHealth(healthMetrics);
+      services.AddHealthEndpoints();
+
+
+      ConfigureAdditionalServices(services);
+
+      services.AddMvc(
+        config => { config.Filters.Add(new ValidationFilterAttribute()); }
+      ).AddMetrics();
 
       services.AddMetrics(metrics);
       services.AddMetricsTrackingMiddleware();
-
-      ConfigureAdditionalServices(services);
+      services.AddMetricsEndpoints(options =>
+      {
+        options.MetricsEndpointOutputFormatter =
+          metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
+      });
 
       Services = services;
 
       ServiceProvider = Services.BuildServiceProvider();
+
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+
+      services.AddMetricsReportingHostedService();
+      services.AddHealthReportingHostedService();
+
+      StartServices(ServiceProvider);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -154,6 +200,8 @@ namespace VSS.WebApi.Common
         app.UseCors(corsPolicyName);
 
       app.UseMetricsAllMiddleware();
+      app.UseMetricsAllEndpoints();
+      app.UseHealthAllEndpoints();
       app.UseCommon(ServiceName);
 
       if (Configuration.GetValueBool("newrelic").HasValue && Configuration.GetValueBool("newrelic").Value)
@@ -165,6 +213,13 @@ namespace VSS.WebApi.Common
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
       app.UseMvc();
+    }
+
+    /// <summary>
+    /// Start any services once the service provider has been built
+    /// </summary>
+    protected virtual void StartServices(IServiceProvider serviceProvider)
+    {
     }
 
     /// <summary>

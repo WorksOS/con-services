@@ -246,7 +246,7 @@ namespace VSS.TRex.Storage
     {
       try
       {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
+        var cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
         Log.LogInformation($"Removing key:{cacheKey}");
 
@@ -255,7 +255,7 @@ namespace VSS.TRex.Storage
         {
           nonSpatialCache.Remove(cacheKey);
         }
-        catch (Exception E)
+        catch (KeyNotFoundException E)
         {
           Log.LogError(E, "Exception occurred:");
         }

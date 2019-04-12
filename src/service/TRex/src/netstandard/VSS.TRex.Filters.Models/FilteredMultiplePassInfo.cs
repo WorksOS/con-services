@@ -145,7 +145,7 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Returns the time of the first cell pass in the set of filtered cell passes
     /// </summary>
-    public DateTime FirstPassTime => PassCount > 0 ? filteredPassData[0].FilteredPass.Time : DateTime.MinValue;
+    public DateTime FirstPassTime => PassCount > 0 ? filteredPassData[0].FilteredPass.Time : Consts.MIN_DATETIME_AS_UTC;
 
     /// <summary>
     /// Determines the time of the cell pass with the highest elevation in the set of cell passes
@@ -155,7 +155,7 @@ namespace VSS.TRex.Filters.Models
     {
       float TempHeight = Consts.NullHeight;
 
-      DateTime Result = DateTime.MinValue;
+      DateTime Result = Consts.MIN_DATETIME_AS_UTC;
 
       // todo: benchmark this against taking a copy of the Filteredpass in each loop iteration. Apply results to other similar contexts in this class
       for (int i = PassCount - 1; i >= 0; i--)
@@ -183,7 +183,7 @@ namespace VSS.TRex.Filters.Models
     /// Determine the time of the last cell pass in the set of filtered cell passes
     /// </summary>
     /// <returns></returns>
-    public DateTime LastPassTime() => PassCount > 0 ? filteredPassData[PassCount - 1].FilteredPass.Time : DateTime.MinValue;
+    public DateTime LastPassTime() => PassCount > 0 ? filteredPassData[PassCount - 1].FilteredPass.Time : Consts.MIN_DATETIME_AS_UTC;
 
 
     public ushort LastPassValidAmp()
@@ -344,7 +344,7 @@ namespace VSS.TRex.Filters.Models
     public DateTime LowestPassTime()
     {
       float TempHeight = Consts.NullHeight;
-      DateTime Result = DateTime.MinValue;
+      DateTime Result = Consts.MIN_DATETIME_AS_UTC;
 
       for (int i = PassCount - 1; i >= 0; i--)
       {

@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Types;
@@ -50,7 +51,7 @@ namespace VSS.TRex.Tests.Events
     [InlineData(ProductionEventType.VibrationStateChange, typeof(ProductionEvents<VibrationState>))]
     [InlineData(ProductionEventType.AutoVibrationStateChange, typeof(ProductionEvents<AutoVibrationState>))]
     [InlineData(ProductionEventType.MachineGearChange, typeof(ProductionEvents<MachineGear>))]
-    [InlineData(ProductionEventType.MachineAutomaticsChange, typeof(ProductionEvents<MachineAutomaticsMode>))]
+    [InlineData(ProductionEventType.MachineAutomaticsChange, typeof(ProductionEvents<AutomaticsType>))]
     [InlineData(ProductionEventType.MachineRMVJumpValueChange, typeof(ProductionEvents<short>))]
     [InlineData(ProductionEventType.ICFlagsChange, typeof(ProductionEvents<byte>))]
     [InlineData(ProductionEventType.ElevationMappingModeStateChange, typeof(ProductionEvents<ElevationMappingMode>))]

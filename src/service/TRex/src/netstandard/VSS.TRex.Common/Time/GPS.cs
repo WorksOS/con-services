@@ -26,7 +26,7 @@ namespace VSS.TRex.Common.Time
         /// The GPS time origin
         /// The first day of GPS starts at midnight on the 5/6 Jan, 1980.
         /// </summary>
-        private static readonly DateTime GPS_ORIGIN_DATE = new DateTime(1980, 1, 6);
+        private static readonly DateTime GPS_ORIGIN_DATE = DateTime.SpecifyKind(new DateTime(1980, 1, 6).Date, DateTimeKind.Utc);
 
         /// <summary>
         /// Returns a TimeSpan containing the GMT offset in the current local at the current time
@@ -72,6 +72,9 @@ namespace VSS.TRex.Common.Time
         /// <param name="millisecondsInWeek"></param>
         public static void DateTimeToGPSOriginTime(DateTime dateTime, out uint weekNumber, out uint millisecondsInWeek)
         {
+            if (dateTime.Kind != DateTimeKind.Utc)
+              throw new ArgumentException("Date must be a UTC date time", nameof(dateTime));
+
             if (dateTime < GPS_ORIGIN_DATE)
             {
                 throw new ArgumentException("Date to be converted to GPS date is before the GPS date origin", nameof(dateTime));

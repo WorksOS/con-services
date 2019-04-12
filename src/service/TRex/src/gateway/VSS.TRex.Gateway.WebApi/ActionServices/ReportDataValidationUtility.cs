@@ -6,7 +6,7 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Gateway.Common.Helpers;
 
 namespace VSS.TRex.Gateway.WebApi.ActionServices
 {
@@ -21,16 +21,17 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
     /// <param name="requestObj"></param>
     /// <returns></returns>
     /// <exception cref="ServiceException"></exception>
-    public bool ValidateData(object requestObj)
+    public bool ValidateData(string method, Guid? projectUid, object requestObj)
     {
-      var request = requestObj as CompactionReportTRexRequest;
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(request.ProjectUid, false);
-      if (siteModel == null)
+      if (projectUid == null || projectUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Project: {request.ProjectUid} is not found."));
+            "Invalid project UID."));
       }
+      GatewayHelper.ValidateAndGetSiteModel(method, projectUid.Value);
+
+      var request = requestObj as CompactionReportTRexRequest;
 
       if (request.CutFillDesignUid.HasValue && 
           !(request.CutFillDesignUid == Guid.Empty) &&

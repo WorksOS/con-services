@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
   /// <summary>
   /// The closure/function that implements sub grid request processing on compute nodes
   /// </summary>
-  public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : BaseComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
+  public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : BaseComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
@@ -62,19 +62,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       }
 
       return result;
-    }
-
-    protected virtual void DoDispose()
-    {
-      // No dispose behaviour for base compute function
-    }
-
-    /// <summary>
-    /// Implementation of the IDisposable interface
-    /// </summary>
-    public void Dispose()
-    {
-      DoDispose();
     }
   }
 }

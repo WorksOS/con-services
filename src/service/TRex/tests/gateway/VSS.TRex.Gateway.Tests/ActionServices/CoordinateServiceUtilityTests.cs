@@ -35,6 +35,22 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
       result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
     }
 
+    [Fact]
+    public void MachineStatusConvertCoords_Machines_DefaultNEE()
+    {
+      var machines = new List<MachineStatus>()
+      {
+        new MachineStatus(Consts.NULL_LEGACY_ASSETID, "Machine Name",
+          false, string.Empty, null, null,
+          Consts.NullDouble, Consts.NullDouble,
+          Consts.NullDouble, Consts.NullDouble, Guid.NewGuid())
+      };
+
+      var result = DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
+      result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+    }
+
+
     [Fact(Skip = "Skip until coreX is available")]
     public void MachineStatusConvertCoords_OneMachine()
     {

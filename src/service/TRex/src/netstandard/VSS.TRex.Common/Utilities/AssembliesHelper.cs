@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace VSS.TRex.Common.Utilities
   /// DotNetCore contexts will need to directly reference members of the required assemblies to ensure they are included
   /// by the compiler/linker.
   /// </summary>
+  [ExcludeFromCodeCoverage] // No longer used as refers to .Net Full Framework contexts only
   public static class AssembliesHelper
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);

@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
 
     public TileRenderRequestArgument(Guid siteModelID,
                                      DisplayMode mode,
-                                     PaletteBase palette,
+                                     IPlanViewPalette palette,
                                      BoundingWorldExtent3D extents,
                                      bool coordsAreGrid,
                                      ushort pixelsX,

@@ -38,8 +38,8 @@ namespace VSS.TRex.Cells
     /// </summary>
     public GPSMode gpsMode
     {
-      get => (GPSMode)(GPSModeStore & CellPassConsts.GPSModeStoreMask); 
-      set => GPSModeStore = (byte)((GPSModeStore & ~CellPassConsts.GPSModeStoreMask) | ((byte)value & CellPassConsts.GPSModeStoreMask)); 
+      get => (GPSMode)(GPSModeStore & CellPassConsts.GPS_MODE_STORE_BIT_MASK); 
+      set => GPSModeStore = (byte)((GPSModeStore & ~CellPassConsts.GPS_MODE_STORE_BIT_MASK) | ((byte)value & CellPassConsts.GPS_MODE_STORE_BIT_MASK)); 
     }
 
     /// <summary>
