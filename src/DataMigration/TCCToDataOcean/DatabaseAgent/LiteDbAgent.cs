@@ -1,5 +1,6 @@
 ﻿using LiteDB;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TCCToDataOcean.Utils;
@@ -106,6 +107,17 @@ namespace TCCToDataOcean.DatabaseAgent
       var dbObj = files.FindOne(x => x.Id == file.LegacyFileId);
 
       dbObj.MigrationState = migrationState;
+      dbObj.DateTimeUpdated = DateTime.UtcNow;
+
+      files.Update(dbObj);
+    }
+
+    public void SetFileSize(string tableName, FileData file, long length)
+    {
+      var files = db.GetCollection<MigrationFile>(tableName);
+      var dbObj = files.FindOne(x => x.Id == file.LegacyFileId);
+
+      dbObj.Length = length;
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
       files.Update(dbObj);

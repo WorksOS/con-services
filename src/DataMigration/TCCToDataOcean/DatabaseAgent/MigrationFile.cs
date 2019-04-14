@@ -11,6 +11,7 @@ namespace TCCToDataOcean.DatabaseAgent
     public ImportedFileType ImportedFileType { get; set; }
     public string Filename { get; set; }
     public MigrationState MigrationState { get; set; }
+    public long Length { get; set; }
 
     public MigrationFile()
     { }

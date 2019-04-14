@@ -239,8 +239,6 @@ namespace TCCToDataOcean
       Log.LogInformation($"{Method.Info()} | Creating DC file '{tempFileName}' for project {project.ProjectUID}");
 
       File.WriteAllBytes(tempFileName, dcFileContent);
-     
-      Log.LogDebug(Method.Out());
     }
 
     /// <summary>
@@ -302,8 +300,6 @@ namespace TCCToDataOcean
       Log.LogInformation(
         $"Coord system file for project {project.ProjectUID}: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
 
-      Log.LogInformation(Method.Out());
-
       return coordSystemFileContent;
     }
 
@@ -344,6 +340,8 @@ namespace TCCToDataOcean
           using (var tempFile = new FileStream(tempFileName, FileMode.Create))
           {
             fileContents.CopyTo(tempFile);
+
+            _migrationDb.SetFileSize(Table.Files, file, tempFile.Length);
           }
         }
         else
