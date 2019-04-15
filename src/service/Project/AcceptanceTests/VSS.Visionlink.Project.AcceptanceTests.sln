@@ -95,14 +95,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\TRe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{7706A865-38AD-4A77-B9E4-13F52E210565}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\..\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{E8308204-EAC2-47CB-BBE3-BAA6BFDC524C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{4EDFA5FB-712A-4AF9-B669-EB732B3A3FF1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj", "{19F59732-CCED-4914-A92E-07FE400E38EE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\..\..\Common\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{8154D579-8911-41E6-B6E5-B7C9A50EFD57}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -241,6 +233,22 @@ Global
 		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24050E20-C34B-4BFE-9419-3D3BE512D615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C44838E5-F93E-4E5C-B729-938B307CD433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C44838E5-F93E-4E5C-B729-938B307CD433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C44838E5-F93E-4E5C-B729-938B307CD433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C44838E5-F93E-4E5C-B729-938B307CD433}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9957CF9F-952C-4E63-8959-4748F5325AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9957CF9F-952C-4E63-8959-4748F5325AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9957CF9F-952C-4E63-8959-4748F5325AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9957CF9F-952C-4E63-8959-4748F5325AB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E2CD02F-D63A-4057-B4BE-BA0C243E3B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2CD02F-D63A-4057-B4BE-BA0C243E3B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E2CD02F-D63A-4057-B4BE-BA0C243E3B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E2CD02F-D63A-4057-B4BE-BA0C243E3B01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7706A865-38AD-4A77-B9E4-13F52E210565}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7706A865-38AD-4A77-B9E4-13F52E210565}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7706A865-38AD-4A77-B9E4-13F52E210565}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7706A865-38AD-4A77-B9E4-13F52E210565}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
