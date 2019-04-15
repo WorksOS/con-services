@@ -92,6 +92,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       {
         new CellPass
         {
+          Time = DateTime.UtcNow,
           Height = 1.0f
         }
       };
@@ -104,6 +105,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + 1, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + 1, SubGridTreeConsts.DefaultIndexOriginOffset + 1, cellPasses);
+
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       var request = new TINSurfaceRequest();
 

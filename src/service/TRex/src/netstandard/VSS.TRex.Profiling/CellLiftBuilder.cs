@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -192,7 +192,7 @@ namespace VSS.TRex.Profiling
       CurrentLayer = null;
       CurrentLayerRecycledIndex = -1;
       LastMRDesignNameID = Consts.kNoDesignNameID;
-      LastMRDate = DateTime.MinValue;
+      LastMRDate = Consts.MIN_DATETIME_AS_UTC;
       LastLayerID = 0;
       ElevationOfLastProcessedCellPass = Consts.NullHeight;
     }
@@ -431,7 +431,7 @@ namespace VSS.TRex.Profiling
       if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.MapReset ||
           Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.AutoMapReset)
       {
-        if ((pass.EventValues.MapReset_PriorDate != DateTime.MinValue &&
+        if ((pass.EventValues.MapReset_PriorDate != Consts.MIN_DATETIME_AS_UTC &&
              pass.EventValues.MapReset_PriorDate > LastMRDate) ||
             (LayerIDOfLastProcessedCellPass != pass.EventValues.LayerID))
           return false;
@@ -691,17 +691,17 @@ namespace VSS.TRex.Profiling
       if (PassFilter == null || !PassFilter.HasElevationTypeFilter)
         return;
 
-      DateTime TempDateTime = DateTime.MinValue;
+      DateTime TempDateTime = Consts.MIN_DATETIME_AS_UTC;
       float TempHeight = 0;
 
       // Loop through the layer and mark unwanted passes as unfiltered...
       switch (PassFilter.ElevationType)
       {
         case ElevationType.Last:
-          TempDateTime = DateTime.MinValue;
+          TempDateTime = Consts.MIN_DATETIME_AS_UTC;
           break;
         case ElevationType.First:
-          TempDateTime = DateTime.MaxValue;
+          TempDateTime = Consts.MAX_DATETIME_AS_UTC;
           break;
         case ElevationType.Highest:
           TempHeight = 0;

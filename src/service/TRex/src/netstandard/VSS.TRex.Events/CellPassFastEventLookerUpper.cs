@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events.Interfaces;
@@ -282,7 +283,7 @@ namespace VSS.TRex.Events
 
         if (populationControl.WantsEventMachineAutomaticsValues)
         {
-          TrackingState.EventMachineAutomatics = TrackingState.EventMachineAutomatics_Tracking.DetermineTrackingStateValue(Stamp, _Time, MachineAutomaticsMode.Unknown);
+          TrackingState.EventMachineAutomatics = TrackingState.EventMachineAutomatics_Tracking.DetermineTrackingStateValue(Stamp, _Time, AutomaticsType.Unknown);
           passes[I].EventValues.EventMachineAutomatics = TrackingState.EventMachineAutomatics;
         }
 

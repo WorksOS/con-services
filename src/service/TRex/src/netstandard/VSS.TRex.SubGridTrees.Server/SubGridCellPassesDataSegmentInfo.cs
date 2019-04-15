@@ -8,7 +8,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegmentInfo : ISubGridCellPassesDataSegmentInfo
-  {
+  {    
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
         /// as the number of ticks in DateTime.UtcNow at the time it is written.
@@ -16,8 +16,8 @@ namespace VSS.TRex.SubGridTrees.Server
         public long Version { get; set; }
 
         public ISubGridCellPassesDataSegment Segment { get; set; }
-        public DateTime StartTime { get; set; } = DateTime.MinValue;
-        public DateTime EndTime { get; set; } = DateTime.MaxValue;
+        public DateTime StartTime { get; set; } = Consts.MIN_DATETIME_AS_UTC;
+        public DateTime EndTime { get; set; } = Consts.MAX_DATETIME_AS_UTC;
 
         public double MinElevation { get; set; } = Consts.NullDouble;
         public double MaxElevation { get; set; } = Consts.NullDouble;
@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Returns a string representing the segment identifier for this segment within this subgrid. The identifier
+        /// Returns a string representing the segment identifier for this segment within this sub grid. The identifier
         /// is based on the time range this segment is responsible for storing cell passes for.
         /// </summary>
         /// <returns></returns>

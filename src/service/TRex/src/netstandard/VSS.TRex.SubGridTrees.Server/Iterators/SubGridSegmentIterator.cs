@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -16,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         // IterationState records the progress of the iteration by recording the path through
         // the sub grid tree which marks the progress of the iteration
-        public IIteratorStateIndex IterationState { get; set; } = new IteratorStateIndex();
+        public IIteratorStateIndex IterationState { get; } = new IteratorStateIndex();
 
         public IStorageProxy StorageProxy { get; set; }
 
@@ -35,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             while (IterationState.NextSegment())
             {
-                ISubGridCellPassesDataSegmentInfo SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
+                var SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
 
                 if (SegmentInfo.Segment != null)
                 {
@@ -43,96 +44,86 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 }
                 else
                 {
-                    if (ReturnDirtyOnly)
+                    // if there is no segment present in the cache then it can't be dirty, so is
+                    // not a candidate to be returned by the iterator
+                    // Similarly if the caller is only interested in segments that are present in the cache,
+                    // we do not need to read it from the persistent store
+                    if (!ReturnDirtyOnly && !ReturnCachedItemsOnly)
                     {
-                        // if there is no segment present in the cache then it can't be dirty, so is
-                        // not a candidate to be returned by the iterator
-                        continue;
-                    }
-
-                    if (ReturnCachedItemsOnly)
-                    {
-                        // The caller is only interested in segments that are present in the cache,
-                        // so we do not need to read it from the persistent store
-                        continue;
-                    }
-
-                    // This additional check to determine if the segment is defined
-                    // is necessary to check if an earlier thread through this code has
-                    // already allocated the new segment
-                    if (SegmentInfo.Segment == null)
-                    {
-                        IterationState.SubGrid.AllocateSegment(SegmentInfo);
-                    }
-
-                    Result = SegmentInfo.Segment;
-
-                    if (Result == null)
-                    {
-                        Log.LogCritical("IterationState.SubGrid.Cells.AllocateSegment failed to create a new segment");
-                        return null;
-                    }
-                }
-
-                if (!Result.Dirty && ReturnDirtyOnly)
-                {
-                    // The segment is not dirty, and the iterator has been instructed only to return
-                    // dirty segments, so ignore this one
-                    Result = null;
-                    continue;
-                }
-
-                // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
-                if (!Result.Dirty && !ReturnCachedItemsOnly && 
-                    (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
-                  {
-                    // This additional check to determine if the required storage classes
-                    // are present is necessary to check if an earlier thread through this code has
-                    // already allocated them
-
-                    if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
-                    {
-                        if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
-                            (StorageProxy,
-                             new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
-                             RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
-                             IterationState.SubGrid,
-                             Result))
-                        {
-                            /* TODO: no separate cache - it is in ignite
-                            // The segment is now loaded and available for use and should be touched
-                            // to link it into the cache segment MRU management
-                            if (Result != null && Result.Owner.PresentInCache)
-                            {
-                               DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                            }
-                            */
-                        }
-                        else
-                        {
-                            /* TODO: no separate cache - it is in ignite
-                            // The segment is failed to load, however it may have been created
-                            // to hold the data being read. The failure handling will have backtracked
-                            // out any allocations made within the segment, but it is safer to include
-                            // it into the cache and allow it to be managed there than to
-                            // independently remove it here
-                            if (Result != null && Result.Owner.PresentInCache)
-                            {
-                                DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                            }
-                            */
-
-                            // Segment failed to be loaded. Multiple messages will have been posted to the log.
-                            // Move to the next item in the iteration
-                            Result = null; 
-                            continue;
-                        }
+                        // This additional check to determine if the segment is defined
+                        // is necessary to check if an earlier thread through this code has
+                        // already allocated the new segment
+                        if (SegmentInfo.Segment == null)
+                          IterationState.SubGrid.AllocateSegment(SegmentInfo);
+                   
+                        Result = SegmentInfo.Segment;
+                   
+                        if (Result == null)
+                          throw new TRexSubGridProcessingException("IterationState.SubGrid.Cells.AllocateSegment failed to create a new segment");
                     }
                 }
 
                 if (Result != null)
-                {
-                    // We have a candidate to return as the next item in the iteration
+                { 
+                    if (!Result.Dirty && ReturnDirtyOnly)
+                    {
+                        // The segment is not dirty, and the iterator has been instructed only to return
+                        // dirty segments, so ignore this one
+                        Result = null;
+                        continue;
+                    }
+                
+                    // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
+                    if (!Result.Dirty && !ReturnCachedItemsOnly && 
+                        (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
+                      {
+                        // This additional check to determine if the required storage classes
+                        // are present is necessary to check if an earlier thread through this code has
+                        // already allocated them
+                
+                        if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
+                        {
+                            if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
+                                (StorageProxy,
+                                 new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
+                                 RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
+                                 IterationState.SubGrid,
+                                 Result))
+                            {
+                                /* TODO: no separate cache - it is in ignite
+                                // The segment is now loaded and available for use and should be touched
+                                // to link it into the cache segment MRU management
+                                if (Result != null && Result.Owner.PresentInCache)
+                                {
+                                   DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                                }
+                                */
+                            }
+                            else
+                            {
+                                /* TODO: no separate cache - it is in ignite
+                                // The segment is failed to load, however it may have been created
+                                // to hold the data being read. The failure handling will have backtracked
+                                // out any allocations made within the segment, but it is safer to include
+                                // it into the cache and allow it to be managed there than to
+                                // independently remove it here
+                                if (Result != null && Result.Owner.PresentInCache)
+                                {
+                                    DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
+                                }
+                                */
+                
+                                // Segment failed to be loaded. Multiple messages will have been posted to the log.
+                                // Move to the next item in the iteration
+                                Result = null; 
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (Result != null) // We have a candidate to return as the next item in the iteration
+                {                    
                     break;
                 }
             }
@@ -151,8 +142,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// </summary>
         public bool ReturnDirtyOnly { get; set; }
 
-        public IterationDirection IterationDirection { get => IterationState.IterationDirection;  set => IterationState.IterationDirection = value;
-        }
+        public IterationDirection IterationDirection { get => IterationState.IterationDirection;  set => IterationState.IterationDirection = value; }
 
         /// <summary>
         /// Allows the caller of the iterator to restrict the

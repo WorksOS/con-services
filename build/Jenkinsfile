@@ -75,6 +75,9 @@ node ('jenkinsslave-pod') {
 	def runTests = params.RUN_ACCTEST
 	def runUnitTests = params.RUN_UNITTESTS
 	def additionalImageTag = params.IMAGE_TAG
+	if (additionalImageTag == "None")
+		if (branchName == "master")
+			additionalImageTag="latest";
 	def targetFramework = params.TARGET
 	
     def vars = []

@@ -81,10 +81,12 @@ namespace VSS.MasterData.Proxies
         }
 
         log.LogDebug("Result of send to master data request: {0}", result);
+        BaseProxyHealthCheck.SetStatus(true,this.GetType());
       }
       catch (Exception ex)
       {
         LogWebRequestException(ex);
+        BaseProxyHealthCheck.SetStatus(false,this.GetType());
         throw;
       }
 
@@ -173,10 +175,12 @@ namespace VSS.MasterData.Proxies
         var request = new GracefulWebRequest(logger, configurationStore);
         result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: HttpMethod.Get);
         log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
+        BaseProxyHealthCheck.SetStatus(true,this.GetType());
       }
       catch (Exception ex)
       {
         LogWebRequestException(ex);
+        BaseProxyHealthCheck.SetStatus(false, this.GetType());
         throw;
       }
 
@@ -227,10 +231,12 @@ namespace VSS.MasterData.Proxies
         }
         else
           result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
+        BaseProxyHealthCheck.SetStatus(true, this.GetType());
       }
       catch (Exception ex)
       {
         LogWebRequestException(ex);
+        BaseProxyHealthCheck.SetStatus(false, this.GetType());
         throw;
       }
 
@@ -447,6 +453,8 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private bool IfCacheNeedsToBeInvalidated(IDictionary<string, string> customHeaders)
     {
+      if (customHeaders == null)
+        return false;
       customHeaders.TryGetValue("X-VisionLink-ClearCache", out var caching);
       return !string.IsNullOrEmpty(caching) && caching == "true";
     }

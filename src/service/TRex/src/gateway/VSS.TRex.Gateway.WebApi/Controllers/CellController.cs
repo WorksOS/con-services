@@ -35,7 +35,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
 
       patchRequest.Validate();
-
+      ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter1);
+      ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter2);
+      
       var patchResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<PatchRequestExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
@@ -63,6 +65,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostCellDatum)}: {Request.QueryString}");
 
       cellDatumRequest.Validate();
+      ValidateFilterMachines(nameof(PostCellDatum), cellDatumRequest.ProjectUid, cellDatumRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

@@ -3,6 +3,10 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ $serviceName }}
+  labels:
+    service-name: {{ .Values.serviceName }}
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   selector:
     app: {{ $serviceName }}

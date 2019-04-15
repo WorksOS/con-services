@@ -21,6 +21,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
+using Consts = VSS.TRex.Common.Consts;
 
 
 namespace VSS.TRex.Volumes
@@ -206,9 +207,9 @@ namespace VSS.TRex.Volumes
             {
             // Determine if intermediary filter/surface behaviour is required to
             // support summary volumes
-            if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == DateTime.MinValue // 'From' has As-At Time filter
+            if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC // 'From' has As-At Time filter
             && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
-            && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != DateTime.MinValue // 'To' has time-range filter with latest
+            && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
             && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
             {
               // Create and use the intermediary filter. The intermediary filter
@@ -246,9 +247,6 @@ namespace VSS.TRex.Volumes
             try
             {
                 ProdDataExistenceMap = SiteModel.ExistenceMap;
-
-                if (ProdDataExistenceMap == null)
-                    return RequestErrorStatus.FailedToRequestSubgridExistenceMap;
 
                 try
                 {

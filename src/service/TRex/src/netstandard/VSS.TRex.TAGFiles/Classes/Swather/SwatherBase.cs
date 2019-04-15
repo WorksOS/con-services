@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -59,7 +60,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
             if (SubGrid.Directory.SegmentDirectory.Count == 0)
             {
-                SubGrid.Cells.SelectSegment(DateTime.MinValue);
+                SubGrid.Cells.SelectSegment(Consts.MIN_DATETIME_AS_UTC);
             }
 
             SubGrid.SetDirty();

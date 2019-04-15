@@ -64,8 +64,6 @@ namespace VSS.TRex.Exports.Patches
 
       base.Populate(subGrid);
 
-      //IGenericClientLeafSubGrid<float> elevSubGrid = (IGenericClientLeafSubGrid<float>)subGrid;
-
       ClientHeightAndTimeLeafSubGrid elevSubGrid = (ClientHeightAndTimeLeafSubGrid)subGrid;
       var elevations = elevSubGrid.Cells;
       var times = elevSubGrid.Times;

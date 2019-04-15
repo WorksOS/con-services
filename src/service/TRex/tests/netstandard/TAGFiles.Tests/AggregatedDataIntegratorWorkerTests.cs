@@ -7,11 +7,9 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes.Integrator;
-using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -25,7 +23,7 @@ namespace TAGFiles.Tests
     {
       // Create the site model and machine etc to aggregate the processed TAG file into
       //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
-      ISiteModel targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
       targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
@@ -37,7 +35,7 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
     {
-      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      var integrator = new AggregatedDataIntegrator();
       Assert.NotNull(integrator);
     }
 
@@ -45,46 +43,122 @@ namespace TAGFiles.Tests
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile()
     {
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var priorMachineName = "Test Machine";
+      var testTAGFileMachineID = "CB54XW  JLM00885";
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      ISiteModel targetSiteModel = BuildModel();
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var targetSiteModel = BuildModel();
+      var targetMachine = targetSiteModel.Machines.CreateNew(priorMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       converter.Machine.ID = targetMachine.ID;
 
       // Create the integrator and add the processed TAG file to its processing list
-      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      var integrator = new AggregatedDataIntegrator();
 
       integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID,  converter.Machine, targetMachine.ID, 
                                       converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
-      List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
-      worker.ProcessTask(ProcessedTasks);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      worker.ProcessTask(processedTasks);
 
-      ProcessedTasks.Count.Should().Be(1);
+      processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
+      targetSiteModel.Machines.Count.Should().Be(1);
+      targetSiteModel.Machines[0].ID.Should().Be(targetMachine.ID);
+      targetSiteModel.Machines[0].InternalSiteModelMachineIndex.Should().Be(0);
+      targetSiteModel.Machines[0].Name.Should().Be(testTAGFileMachineID); // should have changed from priorMachineName
+    }
+
+    [Fact]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoe()
+    {
+      // Convert a TAG file using a TAGFileConverter into a mini-site model
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var testTAGFileMachineID = "CB54XW  JLM00885";
+
+      // Create the site model and machine etc to aggregate the processed TAG file into
+      ISiteModel targetSiteModel = BuildModel();
+      
+      converter.Machine.ID = Guid.Empty;
+      converter.Machine.IsJohnDoeMachine = true;
+
+      // Create the integrator and add the processed TAG file to its processing list
+      var integrator = new AggregatedDataIntegrator();
+
+      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID, converter.Machine, converter.Machine.ID,
+        converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+
+      // Construct an integration worker and ask it to perform the integration
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
+
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      worker.ProcessTask(processedTasks);
+
+      processedTasks.Count.Should().Be(1);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
+      targetSiteModel.Machines.Count.Should().Be(1);
+      targetSiteModel.Machines[0].ID.Should().NotBe(Guid.Empty);
+      targetSiteModel.Machines[0].InternalSiteModelMachineIndex.Should().Be(0);
+      targetSiteModel.Machines[0].IsJohnDoeMachine.Should().BeTrue();
+      targetSiteModel.Machines[0].Name.Should().Be(testTAGFileMachineID);
+    }
+
+    [Fact]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoeExists()
+    {
+      // Convert a TAG file using a TAGFileConverter into a mini-site model
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var testTAGFileMachineID = "CB54XW  JLM00885";
+
+      // Create the site model and machine etc to aggregate the processed TAG file into
+      var targetSiteModel = BuildModel();
+      targetSiteModel.Machines.CreateNew("SomeOtherJohnDoe", "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.NewGuid());
+      var targetJohnDoe = targetSiteModel.Machines.CreateNew(testTAGFileMachineID, "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.NewGuid());
+
+      converter.Machine.ID = Guid.Empty;
+      converter.Machine.IsJohnDoeMachine = true;
+
+      // Create the integrator and add the processed TAG file to its processing list
+      var integrator = new AggregatedDataIntegrator();
+
+      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID, converter.Machine, converter.Machine.ID,
+        converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+
+      // Construct an integration worker and ask it to perform the integration
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
+
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      worker.ProcessTask(processedTasks);
+
+      processedTasks.Count.Should().Be(1);
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
+      targetSiteModel.Machines.Count.Should().Be(2);
+      targetSiteModel.Machines[1].ID.Should().Be(targetJohnDoe.ID);
+      targetSiteModel.Machines[1].InternalSiteModelMachineIndex.Should().Be(1);
+      targetSiteModel.Machines[1].IsJohnDoeMachine.Should().BeTrue();
+      targetSiteModel.Machines[1].Name.Should().Be(testTAGFileMachineID);
     }
 
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFileTwice()
     {
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      TAGFileConverter converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
-      TAGFileConverter converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      ISiteModel targetSiteModel = BuildModel();
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var targetSiteModel = BuildModel();
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       converter1.Machine.ID = targetMachine.ID;
       converter2.Machine.ID = targetMachine.ID;
 
       // Create the integrator and add the processed TAG file to its processing list
-      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      var integrator = new AggregatedDataIntegrator();
 
       integrator.AddTaskToProcessList(converter1.SiteModel, targetSiteModel.ID, converter1.Machine, targetMachine.ID, 
         converter1.SiteModelGridAggregator, converter1.ProcessedCellPassCount, converter1.MachineTargetValueChangesAggregator);
@@ -92,12 +166,12 @@ namespace TAGFiles.Tests
         converter2.SiteModelGridAggregator, converter2.ProcessedCellPassCount, converter2.MachineTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
-      List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
-      worker.ProcessTask(ProcessedTasks);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
+      worker.ProcessTask(processedTasks);
 
-      ProcessedTasks.Count.Should().Be(2);
+      processedTasks.Count.Should().Be(2);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
     }
 
@@ -119,11 +193,11 @@ namespace TAGFiles.Tests
       converters.Length.Should().Be(numToTake);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      ISiteModel targetSiteModel = BuildModel();
-      IMachine targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var targetSiteModel = BuildModel();
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
-      AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+      var integrator = new AggregatedDataIntegrator();
 
       foreach (var c in converters)
       {
@@ -133,15 +207,15 @@ namespace TAGFiles.Tests
       }
 
       // Construct an integration worker and ask it to perform the integration
-      List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
 
-      AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess)
       {
         MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
       };
-      worker.ProcessTask(ProcessedTasks);
+      worker.ProcessTask(processedTasks);
 
-      ProcessedTasks.Count.Should().Be(numToTake);
+      processedTasks.Count.Should().Be(numToTake);
 
       // Check the set of TAG files created the expected number of sub grids
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
@@ -160,7 +234,7 @@ namespace TAGFiles.Tests
        id   Value        
       none
       */
-      EventIntegrator eventIntegrator = new EventIntegrator();
+      var eventIntegrator = new EventIntegrator();
       var sourceSiteModel = BuildModel();
       var design4 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
       var design2 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
@@ -199,7 +273,7 @@ namespace TAGFiles.Tests
        id   Value        
        0    'DesignName5'
       */
-      EventIntegrator eventIntegrator = new EventIntegrator();
+      var eventIntegrator = new EventIntegrator();
       var sourceSiteModel = BuildModel();
       var design3 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       var design4 = sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
@@ -238,7 +312,7 @@ namespace TAGFiles.Tests
        id   Value        
        0    'DesignName4'
       */
-      EventIntegrator eventIntegrator = new EventIntegrator();
+      var eventIntegrator = new EventIntegrator();
       var sourceSiteModel = BuildModel(); 
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");
@@ -275,7 +349,7 @@ namespace TAGFiles.Tests
        0    'DesignName2'
        1    'DesignName4'
       */
-      EventIntegrator eventIntegrator = new EventIntegrator();
+      var eventIntegrator = new EventIntegrator();
       var sourceSiteModel = BuildModel();
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
       sourceSiteModel.SiteModelMachineDesigns.CreateNew("DesignName4");

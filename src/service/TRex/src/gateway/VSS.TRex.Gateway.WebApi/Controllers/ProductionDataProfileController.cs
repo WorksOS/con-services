@@ -1,10 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
@@ -40,6 +37,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(PostProductionDataProfile)}: {Request.QueryString}");
 
       productionDataProfileRequest.Validate();
+      ValidateFilterMachines(nameof(PostProductionDataProfile), productionDataProfileRequest.ProjectUid, productionDataProfileRequest.BaseFilter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

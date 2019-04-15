@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -31,6 +32,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         public int AggregatedCellPassCount { get; set; } 
 
-        public DateTime StartProcessingTime { get; set; } = DateTime.MinValue;
+        public DateTime StartProcessingTime { get; set; } = Consts.MIN_DATETIME_AS_UTC;
     }
 }

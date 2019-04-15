@@ -54,7 +54,7 @@ namespace VSS.TRex.Storage
                 numUpdated += _numUpdated;
                 numBytesWritten += _numBytesWritten;
             }
-            catch ( Exception e)
+            catch (Exception e)
             {
                 Log.LogError(e, "Exception thrown committing changes to Ignite for spatial cache");
                 throw;

@@ -18,7 +18,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
     public CalculateDesignProfileResponse Invoke(CalculateDesignProfileArgument arg)
     {
-      var startDate = DateTime.Now;
+      var startDate = DateTime.UtcNow;
       try
       {
         Log.LogInformation($"In: {nameof(CalculateDesignProfileComputeFunc)}: Arg = {arg}");
@@ -43,7 +43,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       finally
       {
-        Log.LogInformation($"Out: CalculateDesignProfileComputeFunc in {DateTime.Now - startDate}, Arg = {arg}");
+        Log.LogInformation($"Out: CalculateDesignProfileComputeFunc in {DateTime.UtcNow - startDate}, Arg = {arg}");
       }
     }
   }

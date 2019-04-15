@@ -108,7 +108,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         (int)radioType, preScanState.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
         MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),
         MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0),
-        preScanState.LastDataTime ?? DateTime.MinValue);
+        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 

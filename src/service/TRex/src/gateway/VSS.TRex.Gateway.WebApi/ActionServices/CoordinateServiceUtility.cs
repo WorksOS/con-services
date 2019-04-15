@@ -2,6 +2,9 @@
 using System.Linq;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Geometry;
@@ -14,6 +17,8 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
   /// </summary>
   public class CoordinateServiceUtility : ICoordinateServiceUtility
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CoordinateServiceUtility>();
+
     /// <summary>
     /// Converts XYZ to LLH
     /// </summary>
@@ -22,29 +27,45 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
       if (!machines.Any())
         return ContractExecutionStatesEnum.ExecutedSuccessfully;
 
-      var coordPointer = 0;
-      var NEECoords = new XYZ[machines.Count];
+      var NEECoords = new List<XYZ>();
       foreach (var machine in machines)
       {
-        if (machine.lastKnownX != null && machine.lastKnownY != null && NEECoords.Length > coordPointer)
-          NEECoords[coordPointer++] = new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value);
+        if (machine.lastKnownX != null && machine.lastKnownY != null &&
+            machine.lastKnownX != Consts.NullDouble && machine.lastKnownY != Consts.NullDouble)
+          NEECoords.Add(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value));
       }
 
-      (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords);
-      if (errorCode == RequestErrorStatus.OK && LLHCoords.Length > 0)
+      if (NEECoords.Count > 0)
       {
-        coordPointer = 0;
-        foreach (var machine in machines)
+        (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(CSIB, NEECoords.ToArray());
+     
+        // if the count returned is different to that sent, then we can't match with the machines list
+        if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)
         {
-          if (machine.lastKnownX != null && machine.lastKnownY != null)
+          var coordPointer = 0;
+          foreach (var machine in machines)
           {
-            machine.lastKnownLatitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].Y);
-            machine.lastKnownLongitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer++].X);
+            if (machine.lastKnownX != null && machine.lastKnownY != null &&
+                machine.lastKnownX != Consts.NullDouble && machine.lastKnownY != Consts.NullDouble)
+            {
+              machine.lastKnownLatitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].Y);
+              machine.lastKnownLongitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].X);
+            }
+            coordPointer++;
           }
+        }
+        else
+        {
+          var message = $"{nameof(CoordinateServiceUtility)} Failed to convert Coordinates. ErrorCode: {errorCode} CSIB: {CSIB} Coords: {(LLHCoords == null ? "null LLH returned" : JsonConvert.SerializeObject(LLHCoords))}, NEECoords: {JsonConvert.SerializeObject(NEECoords)}";
+          Log.LogError(message);
+          return ContractExecutionStatesEnum.InternalProcessingError;
         }
       }
       else
-        return ContractExecutionStatesEnum.InternalProcessingError;
+      {
+        Log.LogError(
+          $"{nameof(CoordinateServiceUtility)} No coordinates need converting as no machines have lastKnownXY. Machines: {JsonConvert.SerializeObject(machines)}");
+      }
 
       return ContractExecutionStatesEnum.ExecutedSuccessfully;
     }

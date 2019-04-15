@@ -34,7 +34,7 @@ namespace VSS.MasterData.Models.UnitTests
       this._utcNow = DateTime.UtcNow;
       this._machines = new List<MachineDetails>()
       {
-        MachineDetails.Create(1137642418461469, "VOLVO G946B", false)
+        new MachineDetails(1137642418461469, "VOLVO G946B", false)
       };
 
       this._polygonLL = new List<WGSPoint>()
@@ -52,8 +52,8 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareMachineDetailsEqual()
     {
-      var machine1 = MachineDetails.Create(1, "test", true);
-      var machine2 = MachineDetails.Create(1, "test", true);
+      var machine1 = new MachineDetails(1, "test", true);
+      var machine2 = new MachineDetails(1, "test", true);
       Assert.IsTrue(machine1 == machine2);
     }
 
@@ -61,8 +61,8 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareMachineDetailsNonequal()
     {
-      var machine1 = MachineDetails.Create(1, "test", true);
-      var machine2 = MachineDetails.Create(1, "test1", false);
+      var machine1 = new MachineDetails(1, "test", true);
+      var machine2 = new MachineDetails(1, "test1", false);
       Assert.IsTrue(machine1 != machine2);
     }
 
@@ -89,11 +89,11 @@ namespace VSS.MasterData.Models.UnitTests
       var designUid = Guid.NewGuid().ToString();
 
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 == filter2);
@@ -104,11 +104,11 @@ namespace VSS.MasterData.Models.UnitTests
     public void CanCompareFiltersMachineDirection()
     {
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 != filter2);
@@ -119,11 +119,11 @@ namespace VSS.MasterData.Models.UnitTests
     public void CanCompareFiltersMachineDirectionTrue()
     {
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), true, -1, null, "123");
       var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 != filter2);
@@ -135,11 +135,11 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var designUid = Guid.NewGuid().ToString();
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 == filter2);
@@ -150,11 +150,11 @@ namespace VSS.MasterData.Models.UnitTests
     public void CanCompareFiltersNonEqual()
     {
       var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test2", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test2", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 != filter2);
@@ -167,11 +167,11 @@ namespace VSS.MasterData.Models.UnitTests
       var designUid = Guid.NewGuid().ToString();
 
       var filter1 = Filter.CreateFilter(DateTime.MinValue, null, designUid, "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
       var filter2 = Filter.CreateFilter(DateTime.MinValue, null, designUid, "designName",
-        new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
+        new List<MachineDetails>() { new MachineDetails(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
       Assert.IsTrue(filter1 == filter2);

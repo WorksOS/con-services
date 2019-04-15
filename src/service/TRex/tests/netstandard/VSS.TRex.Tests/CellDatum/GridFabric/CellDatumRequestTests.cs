@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     {
       siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].VibrationStateEvents.PutValueAtDate(DateTime.MinValue, VibrationState.On);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].VibrationStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
 
       var cellPasses = Enumerable.Range(1, 10).Select(x =>
         new CellPass
@@ -67,13 +67,15 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       //So we are placing the cell at the world origin (N/E) and default cell size of 0.34 metres
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       //Add the machine targets for summaries
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetPassCountStateEvents.PutValueAtDate(DateTime.MinValue, 10);
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCVStateEvents.PutValueAtDate(DateTime.MinValue, 220);
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMDPStateEvents.PutValueAtDate(DateTime.MinValue, 880);
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMinMaterialTemperature.PutValueAtDate(DateTime.MinValue, 900);
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMaxMaterialTemperature.PutValueAtDate(DateTime.MinValue, 1200);
+      var minUTCDate = Consts.MIN_DATETIME_AS_UTC;
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetPassCountStateEvents.PutValueAtDate(minUTCDate, 10);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCVStateEvents.PutValueAtDate(minUTCDate, 220);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMDPStateEvents.PutValueAtDate(minUTCDate, 880);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMinMaterialTemperature.PutValueAtDate(minUTCDate, 900);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMaxMaterialTemperature.PutValueAtDate(minUTCDate, 1200);
     }
 
     #region Cluster Compute

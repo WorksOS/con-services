@@ -35,13 +35,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
             {
                 cellInSegmentIndex = -1;
-                finishCellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(cellX, cellY);
+                finishCellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(CellX, CellY);
 
                 cellPassIterationDirectionIncrement = 1;
             }
             else
             {
-                cellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(cellX, cellY);
+                cellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(CellX, CellY);
                 finishCellInSegmentIndex = -1;
 
                 cellPassIterationDirectionIncrement = -1;
@@ -54,7 +54,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// <returns></returns>
         protected override CellPass ExtractCellPass()
         {
-            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(cellX, cellY, unchecked((uint)cellInSegmentIndex));
+            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(CellX, CellY, unchecked((uint)cellInSegmentIndex));
         }
     }
 }
