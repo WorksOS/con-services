@@ -405,7 +405,7 @@ namespace EventTests
       var fileCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var fileUpdatedUtc = fileCreatedUtc;
       var importedBy = "JoeSmoe";
-      var offset = 1.5;
+      var offset = 1.537;
       var parentUid = Guid.NewGuid();
 
       msg.Title("Create Imported File test 2", "Create one Imported File - Reference Surface");
