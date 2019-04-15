@@ -6,7 +6,7 @@ services:
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=prod-aslv01.vssengg.com
-     - ASSETMGMET3D-SERVICE=http://assetmgmt3d.prod.services.myvisionlink.com
+     - assetmgmt3d-service=http://assetmgmt3d.prod.services.myvisionlink.com
      - push-service=http://push.prod-eks.services.myvisionlink.com
      - scheduler-service=http://scheduler.prod-eks.services.myvisionlink.com
      - project-service=http://project.prod-eks.services.myvisionlink.com
@@ -92,7 +92,7 @@ services:
      - TILE_RENDER_MAX_ZOOM_RANGE=14
      - TILE_RENDER_WAIT_INTERVAL=2000
      - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
-     - assetmgmet3d-service-private-v1=http://assetmgmt3d.prod-eks.services.myvisionlink.com/api/v1
+     - assetmgmt3d-service-private-v1=http://assetmgmt3d.prod-eks.services.myvisionlink.com/api/v1
     ports:
       - "8080:80"
 networks:
