@@ -5,7 +5,11 @@ services:
     environment:
       - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
       - ASNODEIP=dev-aslv01.vssengg.com
-      - ASSETMGMET3D-SERVICE=http://assetmgmt3d.dev.eks.vspengg.com
+      - assetmgmt3d-service=http://assetmgmt3d.dev.eks.vspengg.com
+      - push-service=http://push.dev.eks.vspengg.com
+      - scheduler-service=http://scheduler.dev.eks.vspengg.com
+      - project-service=http://project.dev.eks.vspengg.com
+      - filter-service=http://filter.dev.eks.vspengg.com
       - ASSETMGMT_CACHE_LIFE=00:15:00
       - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
       - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp-stg
