@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.WebApi
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddMvcCore(options =>
+      services.AddMvc(options =>
       {
         options.OutputFormatters.Add(new ProtobufOutputFormatter(new ProtobufFormatterOptions()));
       });
