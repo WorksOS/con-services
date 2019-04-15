@@ -5,7 +5,7 @@ SET @s = (SELECT IF(
         AND table_schema = DATABASE()
         AND column_name = 'GeometryWKT'
     ) > 0,
-    "ALTER TABLE `Project` CHANGE COLUMN `GeometryWKT`  `OldGeometryWKT` varchar(4000);",
+    "ALTER TABLE `Project` CHANGE COLUMN `GeometryWKT`  `OldGeometryWKT` varchar(4000) DEFAULT NULL;",
 	"SELECT 1"
 ));  
 
