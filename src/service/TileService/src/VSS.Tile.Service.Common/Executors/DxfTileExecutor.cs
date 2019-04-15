@@ -32,14 +32,14 @@ namespace VSS.Tile.Service.Common.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      IEnumerable<FileData> files = null;
+      List<FileData> files = null;
       int zoomLevel = 0;
       Point topLeftTile = null;
       int numTiles = 0;
       if (item is DxfTileRequest)
       {
         var request = item as DxfTileRequest;
-        files = request.files;
+        files = request.files?.ToList();
         //Calculate zoom level
         zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.TopRightLat - request.bbox.BottomLeftLat,
           request.bbox.TopRightLon - request.bbox.BottomLeftLon);
@@ -55,7 +55,7 @@ namespace VSS.Tile.Service.Common.Executors
       else if (item is DxfTile3dRequest)
       {
         var request3d = item as DxfTile3dRequest;
-        files = request3d.files;
+        files = request3d.files?.ToList();
         zoomLevel = request3d.zoomLevel;
         numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
         topLeftTile = new Point { x = request3d.xTile, y = request3d.yTile };
@@ -65,10 +65,10 @@ namespace VSS.Tile.Service.Common.Executors
         ThrowRequestTypeCastException<DxfTileRequest>();
       }
 
-      log.LogDebug("DxfTileExecutor: {0} files", files.Count());
+      log.LogDebug("DxfTileExecutor: {0} files", files?.Count());
 
       //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
-      if (!files.Any())
+      if (files == null || !files.Any())
       {
         byte[] emptyOverlayData = null;
         using (var bitmap = new Image<Rgba32>(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
