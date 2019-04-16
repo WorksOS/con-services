@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       var assetList = assets?.ToList();
       if (assetList != null && assetList.Any())
       {
-        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(assetList.First().Key);
+        var matchingAsset = await assetResolverProxy.GetMatching3D2DAssets(assetList.First().Key, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset
 
