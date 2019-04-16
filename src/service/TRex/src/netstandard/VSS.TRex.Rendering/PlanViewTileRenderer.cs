@@ -1,13 +1,16 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -127,7 +130,7 @@ namespace VSS.TRex.Rendering
     /// <param name="mode"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette)
+    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters)
     {
       // Obtain the display responsible for rendering the thematic information for this mode
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
@@ -139,9 +142,7 @@ namespace VSS.TRex.Rendering
       if (colourPalette == null)
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
-        {
-          // TODO Create CCA palette...
-        }
+          Displayer.Palette = ComputeCCAPalette(processor, filters.Filters[0].AttributeFilter);
         else
           Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
       }
@@ -221,5 +222,18 @@ namespace VSS.TRex.Rendering
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
     }
+
+    private IPlanViewPalette ComputeCCAPalette(IPipelineProcessor processor,  ICellPassAttributeFilter filter)
+    {
+      const short UNKNOWN_MACHINE_ID = -1;
+
+      // TODO Get a Machine ID...
+      var machineID = filter.MachinesList.Length > 0 ? 0 /*filter.MachinesList[0]*/ : UNKNOWN_MACHINE_ID;
+      
+      var ccaMinimumPassesValue = processor.SiteModel.GetCCAMinimumPassesValue((short)machineID, filter.StartTime, filter.EndTime, filter.LayerID);
+
+      return null;
+    }
+
   }
 }

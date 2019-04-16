@@ -5,6 +5,12 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -15,18 +21,13 @@ using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SiteModels
 {
@@ -84,7 +85,7 @@ namespace VSS.TRex.SiteModels
       }
     }
 
-    public IStorageProxy PrimaryStorageProxy { get; private set; } 
+    public IStorageProxy PrimaryStorageProxy { get; private set; }
 
     public Guid ID { get; set; } = Guid.Empty;
 
@@ -109,7 +110,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID, StorageRepresentationToSupply) {CellSize = this.CellSize});
+    public IServerSubGridTree Grid => grid ?? (grid = new ServerSubGridTree(ID, StorageRepresentationToSupply) { CellSize = this.CellSize });
 
     public bool GridLoaded => grid != null;
 
@@ -273,7 +274,7 @@ namespace VSS.TRex.SiteModels
           {
             if (siteProofingRuns == null)
             {
-              var newSiteProofingRuns = new SiteProofingRunList {DataModelID = ID};
+              var newSiteProofingRuns = new SiteProofingRunList { DataModelID = ID };
 
               if (!IsTransient)
                 newSiteProofingRuns.LoadFromPersistentStore(PrimaryStorageProxy);
@@ -480,7 +481,7 @@ namespace VSS.TRex.SiteModels
           }
         }
 
-        LastModifiedDate = Source.LastModifiedDate;
+      LastModifiedDate = Source.LastModifiedDate;
     }
 
     public void Write(BinaryWriter writer)
@@ -741,7 +742,7 @@ namespace VSS.TRex.SiteModels
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-              priorMachineDesignId,Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
+              priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
           }
 
           // where multi events for same design -  want to retain startDate of first
@@ -789,7 +790,7 @@ namespace VSS.TRex.SiteModels
           // identify layer changes within a report period which will likely overlap reporting periods.
           int layerStateChangeIndex = 0;
           var priorLayerId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents.GetValueAtDate(startReportingPeriod, out layerStateChangeIndex, ushort.MaxValue);
-          var priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(startReportingPeriod, out int _, Consts.kNoDesignNameID );
+          var priorDesignNameId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents.GetValueAtDate(startReportingPeriod, out int _, Consts.kNoDesignNameID);
           if (priorLayerId == ushort.MaxValue || layerStateChangeIndex < 0)
             layerStateChangeIndex = 0; // no layer events found at or before startReportingPeriod
           else
@@ -818,6 +819,83 @@ namespace VSS.TRex.SiteModels
       }
 
       return new List<AssetOnDesignLayerPeriod>(assetOnDesignLayerPeriods);
+    }
+
+    public byte GetCCAMinimumPassesValue(short machinID, DateTime startDate, DateTime endDate, int layerID)
+    {
+      var ccaMinimumPassesValue = byte.MinValue;
+
+      if (!MachineTargetValuesLoaded)
+        return ccaMinimumPassesValue;
+
+      var targetvalues = machinesTargetValues[machinID];
+
+      if (targetvalues == null)
+      {
+        Log.LogWarning("Getting CCA minimum pass values. No Machine Targets found");
+        return ccaMinimumPassesValue;
+      }
+
+      var layerStartTime = DateTime.MinValue;
+      var layerEndTime = DateTime.MinValue;
+      var endTime = DateTime.MinValue;
+
+      var latestCCATime = targetvalues.StartEndRecordedDataEvents.LastStateDate();
+
+      if (layerID != 0)
+      {
+        var layerFound = false;
+
+        for (var i = 0; i < targetvalues.LayerIDStateEvents.Count(); i++)
+        {
+          targetvalues.LayerIDStateEvents.GetStateAtIndex(i, out var thisLayerChangeTime, out var thisLayerID);
+
+          if (thisLayerID == layerID)
+          {
+            if (!layerFound)
+            {
+              layerStartTime = thisLayerChangeTime;
+              layerFound = true;
+            }
+          }
+          else
+          {
+            if (layerFound)
+            {
+              layerEndTime = thisLayerChangeTime;
+              layerFound = false;
+            }
+          }
+        }
+
+        if (layerFound)
+          layerEndTime = latestCCATime;
+
+        endTime = layerEndTime;
+      }
+
+      if (layerStartTime == DateTime.MinValue && layerID != 0)
+        return ccaMinimumPassesValue;
+
+      if (startDate != DateTime.MinValue && endTime != DateTime.MinValue)
+      {
+        if (layerID != 0)
+          endTime = layerEndTime >= startDate && layerEndTime <= endTime ? layerEndTime : endDate;
+        else
+          endTime = endDate;
+      }
+      else
+      {
+        if (layerID == 0)
+          endTime = latestCCATime;
+      }
+
+      ccaMinimumPassesValue = targetvalues.TargetCCAStateEvents.GetValueAtDate(endTime, out _, CellPassConsts.NullCCATarget);
+
+      if (ccaMinimumPassesValue == CellPassConsts.NullCCATarget)
+        return byte.MinValue;
+
+      return ccaMinimumPassesValue;
     }
 
     /// <summary>
