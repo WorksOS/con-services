@@ -62,7 +62,7 @@ namespace EventTests
       var startDt = ts.FirstEventDate.ToString("M/d/yy hh:mm:ss tt");
       var endDt = eDate.ToString("M/d/yy hh:mm:ss tt");
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID","Name,fk_ProjectTypeID,StartDate,EndDate",$"{projectName},{(int)ProjectType.Standard},{startDt},{endDt},{GEOMETRY_WKT2}", projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT", $"{projectName},{(int)ProjectType.Standard},{startDt},{endDt},{GEOMETRY_WKT2}", projectGuid);
     }
 
 
