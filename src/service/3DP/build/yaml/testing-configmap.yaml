@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: 3dpservice-testing
 data:
-  ASSETMGMET3D-SERVICE: http://localhost:5001
+  assetmgmt3d-service: http://localhost:5001
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent
   FILTER_API_URL: http://localhost:5001/api/v1/mock

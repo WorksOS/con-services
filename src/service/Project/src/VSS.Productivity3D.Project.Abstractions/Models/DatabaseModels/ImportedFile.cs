@@ -27,6 +27,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
     public bool IsDeleted { get; set; }
     public DateTime LastActionedUtc { get; set; }
     public ImportedFileHistory ImportedFileHistory { get; set; }
+    public string ParentUid { get; set; }
+    public double Offset { get; set; }
 
 
     public override bool Equals(object obj)
@@ -50,7 +52,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
              && otherImportedFile.LastActionedUtc == LastActionedUtc
              && otherImportedFile.MinZoomLevel == MinZoomLevel
              && otherImportedFile.MaxZoomLevel == MaxZoomLevel
-             && otherImportedFile.ImportedFileHistory == ImportedFileHistory;
+             && otherImportedFile.ImportedFileHistory == ImportedFileHistory
+             && otherImportedFile.ParentUid == ParentUid 
+             && Math.Round(otherImportedFile.Offset, 3) == Math.Round(Offset, 3);
     }
 
     public override int GetHashCode()
