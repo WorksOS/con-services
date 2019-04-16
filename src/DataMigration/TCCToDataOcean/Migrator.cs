@@ -112,11 +112,19 @@ namespace TCCToDataOcean
 
       //await MigrateProject(project);
 
+      // Throttle the async jobs or on we could attempt to run thousands or projection migrations currently; which results in file stream errors in production.
+      const int THROTTLE_ASYNC_JOBS = 20;
+
       foreach (var project in projects)
       {
         _migrationDb.WriteRecord(Table.Projects, project);
 
         projectTasks.Add(MigrateProject(project));
+
+        if (projectTasks.Count != THROTTLE_ASYNC_JOBS) continue;
+
+        var completed = await Task.WhenAny(projectTasks);
+        projectTasks.Remove(completed);
       }
 
       await Task.WhenAll(projectTasks);
@@ -140,12 +148,12 @@ namespace TCCToDataOcean
 
         _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
 
-        if (csibResponse.Code != 0) _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
-
         byte[] coordSystemFileContent;
 
         if (csibResponse.Code != 0)
         {
+          _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
+
           // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
           coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
         }
@@ -329,11 +337,11 @@ namespace TCCToDataOcean
 
         if (fileContents == null)
         {
-          string errorMessage = $"Failed to fetch file '{file.Name}' ({file.LegacyFileId}), not found";
+          var message = $"Failed to fetch file '{file.Name}' ({file.LegacyFileId}), not found";
           _migrationDb.SetMigrationState(Table.Files, file, MigrationState.FileNotFound);
-          _migrationDb.WriteError(file.ProjectUid, errorMessage);
+          _migrationDb.WriteError(file.ProjectUid, message);
 
-          Log.LogError($"{Method.Out()} {errorMessage}");
+          Log.LogWarning($"{Method.Out()} {message}");
 
           return (false, null);
         }
@@ -355,10 +363,6 @@ namespace TCCToDataOcean
             _migrationDb.SetFileSize(Table.Files, file, tempFile.Length);
           }
         }
-        else
-        {
-          Log.LogDebug($"{Method.Info("DEBUG")} Skipped downloading file '{tempFileName}' from TCC");
-        }
       }
 
       var result = new FileDataSingleResult();
@@ -370,10 +374,6 @@ namespace TCCToDataOcean
         result = ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
         _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
-      }
-      else
-      {
-        Log.LogDebug($"{Method.Info("DEBUG")} Skipped uploading file '{tempFileName}' to project service");
       }
 
       Log.LogInformation($"{Method.Out()} File {file.ImportedFileUid} update result {result.Code} {result.Message}");
