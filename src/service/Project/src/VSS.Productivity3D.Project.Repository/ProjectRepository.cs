@@ -181,7 +181,9 @@ namespace VSS.Productivity3D.Project.Repository
           DxfUnitsType = projectEvent.DxfUnitsType,
           MinZoomLevel = projectEvent.MinZoomLevel,
           MaxZoomLevel = projectEvent.MaxZoomLevel,
-          LastActionedUtc = projectEvent.ActionUTC
+          LastActionedUtc = projectEvent.ActionUTC,
+          ParentUid = projectEvent.ParentUID?.ToString(),
+          Offset = projectEvent.Offset
         };
         upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
       }
@@ -199,7 +201,8 @@ namespace VSS.Productivity3D.Project.Repository
           SurveyedUtc = projectEvent.SurveyedUtc,
           MinZoomLevel = projectEvent.MinZoomLevel,
           MaxZoomLevel = projectEvent.MaxZoomLevel,
-          LastActionedUtc = projectEvent.ActionUTC
+          LastActionedUtc = projectEvent.ActionUTC,
+          Offset = projectEvent.Offset
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UpdateImportedFileEvent");
       }
@@ -920,7 +923,7 @@ namespace VSS.Productivity3D.Project.Repository
               fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID,
               fk_ImportedFileTypeID as ImportedFileType, Name, 
               FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, 
-              fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel,
+              fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel, Offset, fk_ReferenceImportedFileUID as ParentUID,
               IsDeleted, LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @ImportedFileUid", new {ImportedFileUid = importedFile.ImportedFileUid}
@@ -952,9 +955,9 @@ namespace VSS.Productivity3D.Project.Repository
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc, @Offset, @ParentUid)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         Log.LogDebug(
@@ -986,7 +989,9 @@ namespace VSS.Productivity3D.Project.Repository
                 SurveyedUTC = @SurveyedUtc,
                 MinZoomLevel = @MinZoomLevel,
                 MaxZoomLevel = @MaxZoomLevel,
-                fk_DXFUnitsTypeID = @DxfUnitsType
+                fk_DXFUnitsTypeID = @DxfUnitsType,
+                Offset = @Offset,
+                fk_ReferenceImportedFileUID  = @ParentUid
               WHERE ImportedFileUID = @ImportedFileUid";
 
         upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -1026,6 +1031,7 @@ namespace VSS.Productivity3D.Project.Repository
                   SurveyedUTC = @SurveyedUtc,
                   MinZoomLevel = @MinZoomLevel,
                   MaxZoomLevel = @MaxZoomLevel,
+                  Offset = @Offset,
                   LastActionedUTC = @LastActionedUtc
                 WHERE ImportedFileUID = @ImportedFileUid";
 
@@ -1674,7 +1680,7 @@ namespace VSS.Productivity3D.Project.Repository
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
           FROM ImportedFile
             WHERE fk_ProjectUID = @ProjectUid
               AND IsDeleted = 0",
@@ -1700,7 +1706,7 @@ namespace VSS.Productivity3D.Project.Repository
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
-            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID
           FROM ImportedFile
             WHERE importedFileUID = @ImportedFileUid",
         new {ImportedFileUid = importedFileUid}

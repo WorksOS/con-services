@@ -554,7 +554,9 @@ namespace TestUtility
             FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUTC),
             FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUTC),
             ImportedBy = eventObject.ImportedBy,
-            SurveyedUTC = DateTime.Parse(eventObject.SurveyedUTC),
+            SurveyedUTC = eventObject.SurveyedUTC != null ? DateTime.Parse(eventObject.SurveyedUTC) : (DateTime?)null,
+            Offset = double.Parse(eventObject.Offset),
+            ParentUID = eventObject.ParentUID != null ? new Guid(eventObject.ParentUID) : (Guid?)null
           };
           jsonString = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent }, jsonSettings);
           break;
