@@ -330,7 +330,7 @@ namespace WebApiTests
         new WGSPoint(38.8387897637231, -121.347275197506),
         new WGSPoint(38.8387145521594, -121.347189366818)
       };
-      var filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
+      var filter = new VSS.Productivity3D.Filter.Abstractions.Models.Filter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
                                         elevation, vibestate, listPoints, forward, layerNo);
       return JsonConvert.SerializeObject(filter);
     }

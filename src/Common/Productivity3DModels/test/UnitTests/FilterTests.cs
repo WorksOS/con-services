@@ -39,71 +39,71 @@ namespace VSS.Productivity3D.Models.UnitTests
         new MachineDetails(12345678, "Acme Compactor 1", false)
       };
 
-      var filter = FilterResult.CreateFilter(null, null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31),
-        1111, new List<long> { 12345678, 87654321 }, true, true, ElevationType.First, latLngs, gridPoints,
-        true, desc, 5.0, 100.0, 1.0, 2.0, "Acme Compactor", FilterLayerMethod.OffsetFromBench, desc, 0.3, 2,
+      var filter = FilterResult.CreateFilterObsolete(null, null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31),
+        1111, "Acme Compactor", new List<long> { 12345678, 87654321 }, true, true, ElevationType.First, latLngs, gridPoints,
+        true, desc, 5.0, 100.0, 1.0, 2.0, FilterLayerMethod.OffsetFromBench, desc, 0.3, 2,
         0.35, machines, new List<long> { 1, 2, 3, 4 }, true, GPSAccuracy.Medium, false, true, false, false,
         desc, AutomaticsType.Manual, 100.0, 150.0, 3, 10);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(filter, out results));
 
       //null filter
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, true, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, true, null, null, null,
+        null, null,  null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsTrue(validator.TryValidate(filter, out results), "null filter failed");
 
       //start station out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, -10001, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, -10001, null,
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "start station validate failed");
 
       //end station out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1000005,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1000005,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "end station validate failed");
 
       //left offset out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, 777, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "left offset validate failed");
 
       //right offset out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, 987, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "right offset validate failed");
 
       //bench elevation out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, 111111, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "bench elevation validate failed");
 
       //layer number out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, -9876, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "layer number validate failed");
 
       //layer thickness out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, 0.000001, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "layer thickness validate failed");
 
       //min temperature out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, -1.0, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "min temperature validate failed");
 
       //max temperature out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1000.0, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "max temperature validate failed");
 
       //min pass count out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, -1, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "min pass count validate failed");
 
       //max pass count out of range
-      filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 9999);
       Assert.IsFalse(validator.TryValidate(filter, out results), "max pass count validate failed");
     }
@@ -112,8 +112,8 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateSuccessTest()
     {
       DesignDescriptor desc = new DesignDescriptor(1, null, 2.0);
-      var filter = FilterResult.CreateFilter(null,null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), null, null,
-        null, null, null, null, null, null, desc, 100.0, 500.0, 1.0, 2.0, null, FilterLayerMethod.OffsetFromDesign, desc,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), null, null, null,
+        null, null, null, null, null, null, desc, 100.0, 500.0, 1.0, 2.0,  FilterLayerMethod.OffsetFromDesign, desc,
         null, 2, 0.5, null, null, null, null, null, null, null, null, desc, null, null, null, null, null);
       filter.Validate();
     }
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidDateRangeTest()
     {
       //start UTC > end UTC
-      var filter = FilterResult.CreateFilter(null,null, null, null, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -132,8 +132,8 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidAlignmentFilterTest()
     {
       //missing alignment filter fields
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, 100.0, 500.0, 2.0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, 100.0, 500.0, 2.0, null, null,  null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
@@ -142,7 +142,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidLayerFilterTest()
     {
       //Invalid layer filter
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, FilterLayerMethod.OffsetFromBench, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -152,8 +152,8 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidLatLngPointsTest()
     {
       //too few points
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
@@ -162,8 +162,8 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidGridPointsTest()
     {
       //too few points
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, new List<Point>(),
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, new List<Point>(),
+        null, null, null, null, null, null, null,  null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
 
@@ -186,8 +186,8 @@ namespace VSS.Productivity3D.Models.UnitTests
         Point.CreatePoint(15.2, 45.2),
         Point.CreatePoint(21.5, 89.3)
       };
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, latLngs, gridPoints,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, latLngs, gridPoints,
+        null, null, null, null, null, null,  null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
 
@@ -197,8 +197,8 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidTemperatureRangeFilterTest()
     {
       //Min temperature > max temperature
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null,  null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, 150.0, 100.0, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailTemperatureOutOfRangeFilterTest()
     {
       //Max temperature too big
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, 150.0, 500.0, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -217,7 +217,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailMissingTemperatureRangeFilterTest()
     {
       //Missing max temperature
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, 150.0, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -227,8 +227,8 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidPassCountRangeFilterTest()
     {
       //Min pass count > max pass count
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null,  null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, 10, 1);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
@@ -237,7 +237,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailPassCountOutOfRangeFilterTest()
     {
       //Max pass count too big
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, 10, 1500);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -247,7 +247,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailMissingPassCountRangeFilterTest()
     {
       //Missing max pass count
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, 10, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -256,7 +256,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterCustom_Success()
     {
-      var filter = Filter.Abstractions.Models.Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
+      var filter = new  Filter.Abstractions.Models.Filter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, true);
       var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
       filterResult.Validate();
@@ -275,7 +275,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterFailure_MissingEndUtc()
     {
-      var filter = Filter.Abstractions.Models.Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter.Abstractions.Models.Filter(null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, true);
       var filterResult = new FilterResult(null,filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
@@ -284,7 +284,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void AsAtDateFilterFailure_MissingStartUtc()
     {
-      var filter = Filter.Abstractions.Models.Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
+      var filter = new Filter.Abstractions.Models.Filter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, false);
       var filterResult = new FilterResult(null,filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
