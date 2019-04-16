@@ -28,23 +28,23 @@ namespace VSS.Productivity3D.WebApiTests.Common
         int? passCountRangeMin = null,
         int? passCountRangeMax = null)
       {
-        return Filter.Abstractions.Models.Filter.CreateFilter(
-        new DateTime(2019, 1, 10),
-        new DateTime(2019, 1, 20),
-        "",
-        Strings.Metrics_EnqueuedCountOrNull,
-        new List<MachineDetails>(),
-        onMachineDesignId,
-        elevationType,
-        vibeStateOn,
-        new List<WGSPoint>(),
-        forwardDirection,
-        0,
-        automaticsType: automaticsType,
-        temperatureRangeMin: temperatureRangeMin,
-        temperatureRangeMax: temperatureRangeMax,
-        passCountRangeMin: passCountRangeMin,
-        passCountRangeMax: passCountRangeMax);
+        return new Filter.Abstractions.Models.Filter(
+            new DateTime(2019, 1, 10),
+            new DateTime(2019, 1, 20),
+            "",
+            Strings.Metrics_EnqueuedCountOrNull,
+            new List<MachineDetails>(),
+            onMachineDesignId,
+            elevationType,
+            vibeStateOn,
+            new List<WGSPoint>(),
+            forwardDirection,
+            0,
+            automaticsType: automaticsType,
+            temperatureRangeMin:  temperatureRangeMin,
+            temperatureRangeMax: temperatureRangeMax,
+            passCountRangeMin: passCountRangeMin,
+            passCountRangeMax: passCountRangeMax);
       }
 
       [TestMethod]

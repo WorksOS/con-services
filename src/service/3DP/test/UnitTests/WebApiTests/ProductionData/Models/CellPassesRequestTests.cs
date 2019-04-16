@@ -41,21 +41,20 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
         LiftThicknessType.Compacted, new MDPRangePercentage(35.0, 75.0),
         false, 0.0f, 0, 0, null, null, null, liftThicknessTarget, null);
 
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, 1, new List<long>(), true, false, null,
+      var filterResult = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, 1, "", new List<long>(), true, false, null,
           new List<WGSPoint>(),
           new List<Point>(),
           false,
           new DesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0),
           0, 0, 0, 0,
-          "", null,
-          new DesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0),
+          null, new DesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0),
           0, 0, 0,
           new List<MachineDetails>(),
           new List<long>(),
           false, GPSAccuracy.Medium, false, null, null, null,
           new DesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0), null, null, null, null, null);
 
-      cpRequest = CellPassesRequest.CreateCellPassRequest(544, cellAddress, point, wgsPoint, settings, 0, 0, filter);
+      cpRequest = CellPassesRequest.CreateCellPassRequest(544, cellAddress, point, wgsPoint, settings, 0, 0, filterResult);
       Assert.IsTrue(validator.TryValidate(cpRequest, out results));
     }
 

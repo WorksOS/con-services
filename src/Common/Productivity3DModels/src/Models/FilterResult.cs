@@ -61,11 +61,26 @@ namespace VSS.Productivity3D.Models.Models
     public DateTime? EndUtc { get; private set; }
 
     /// <summary>
-    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction. 
+    /// A machine reported design.
+    /// This filter is used to select Cell passes recorded when a machine had this design loaded.
+    /// May be null/empty, which indicates no restriction.
+    ///   This is obtained by Trex/Raptor from tagFiles.
+    ///   There is no direct relationship to VSS designs i.e. ImportedFile 
+    ///
+    ///  todoJeannie
+    ///       Maybe we can set this to e.g.  -1 for Trex so we can tell where it was sourced.
+    ///       if these were obtained from TRex, then should not be sent to Raptor,
+    ///       however this may really screw up the UI which possibly depends on unique Ids?
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignID", Required = Required.Default)]
-    public long? OnMachineDesignId { get; private set; } //PDS not VL ID
+    public long? OnMachineDesignId { get; private set; } // Raptor/Trex not VSS ID
+
+    /// <summary>
+    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.
+    /// </summary>
+    [JsonProperty(PropertyName = "onMachineDesignName", Required = Required.Default)]
+    public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design
 
     /// <summary>
     ///  A list of machine IDs. Cell passes recorded by machine other than those in this list are not considered.
@@ -146,11 +161,12 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
     public double? RightOffset { get; private set; }
 
-    /// <summary>
-    /// Only consider cell passes recorded when the machine had the named design loaded.
-    /// </summary>
-    [JsonProperty(PropertyName = "machineDesignName", Required = Required.Default)]
-    public string MachineDesignName { get; private set; }
+    // todo is this ever used?
+    ///// <summary>
+    ///// Only consider cell passes recorded when the machine had the named design loaded.
+    ///// </summary>
+    //[JsonProperty(PropertyName = "machineDesignName", Required = Required.Default)]
+    //public string MachineDesignName { get; private set; }
 
     /// <summary>
     /// layerType indicates the layer analysis method to be used for determining layers from cell passes. Some of the layer types are implemented as a 
@@ -316,6 +332,7 @@ namespace VSS.Productivity3D.Models.Models
         !StartUtc.HasValue &&
         !EndUtc.HasValue &&
         !OnMachineDesignId.HasValue &&
+        string.IsNullOrEmpty(OnMachineDesignName) &&
         (AssetIDs == null || AssetIDs.Count == 0) &&
         !VibeStateOn.HasValue &&
         !CompactorDataOnly.HasValue &&
@@ -328,7 +345,6 @@ namespace VSS.Productivity3D.Models.Models
         !EndStation.HasValue &&
         !LeftOffset.HasValue &&
         !RightOffset.HasValue &&
-        string.IsNullOrEmpty(MachineDesignName) &&
         !LayerType.HasValue &&
         LayerDesignOrAlignmentFile == null &&
         !BenchElevation.HasValue &&
@@ -352,35 +368,11 @@ namespace VSS.Productivity3D.Models.Models
       return false;
     }
 
-    /// <summary>
-    /// Static constructor for use with the CCATileController class.
-    /// </summary>
-    public static FilterResult CreateFilterForCCATileRequest(
-      DateTime? startUtc,
-      DateTime? endUtc,
-      List<long> assetIDs,
-      List<WGSPoint> polygonLL,
-      FilterLayerMethod? layerType,
-      int? layerNumber,
-      List<MachineDetails> contributingMachines)
-    {
-      return new FilterResult
-      {
-        StartUtc = startUtc,
-        EndUtc = endUtc,
-        AssetIDs = assetIDs,
-        PolygonLL = polygonLL,
-        LayerType = layerType,
-        LayerNumber = layerNumber,
-        ContributingMachines = contributingMachines,
-      };
-    }
-
     // TODO (Aaron) Refactor the constructors for this object. The following is only used for unit testing.
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static FilterResult CreateFilter(
+    public static FilterResult CreateFilterObsolete(
       long? id,
       Guid? uid,
       string name,
@@ -388,6 +380,7 @@ namespace VSS.Productivity3D.Models.Models
       DateTime? startUtc,
       DateTime? endUtc,
       long? onMachineDesignId,
+      string onMachineDesignName,
       List<long> assetIDs,
       bool? vibeStateOn,
       bool? compactorDataOnly,
@@ -400,7 +393,6 @@ namespace VSS.Productivity3D.Models.Models
       double? endStation,
       double? leftOffset,
       double? rightOffset,
-      string machineDesignName,
       FilterLayerMethod? layerType,
       DesignDescriptor layerDesignOrAlignmentFile,
       double? benchElevation,
@@ -443,7 +435,7 @@ namespace VSS.Productivity3D.Models.Models
         EndStation = endStation,
         LeftOffset = leftOffset,
         RightOffset = rightOffset,
-        MachineDesignName = machineDesignName,
+        OnMachineDesignName = onMachineDesignName,
         LayerType = layerType,
         LayerDesignOrAlignmentFile = layerDesignOrAlignmentFile,
         BenchElevation = benchElevation,
@@ -463,6 +455,30 @@ namespace VSS.Productivity3D.Models.Models
         TemperatureRangeMax = temperatureRangeMax,
         PassCountRangeMin = passCountRangeMin,
         PassCountRangeMax = passCountRangeMax
+      };
+    }
+
+    /// <summary>
+    /// Static constructor for use with the CCATileController class.
+    /// </summary>
+    public static FilterResult CreateFilterForCCATileRequest(
+      DateTime? startUtc,
+      DateTime? endUtc,
+      List<long> assetIDs,
+      List<WGSPoint> polygonLL,
+      FilterLayerMethod? layerType,
+      int? layerNumber,
+      List<MachineDetails> contributingMachines)
+    {
+      return new FilterResult
+      {
+        StartUtc = startUtc,
+        EndUtc = endUtc,
+        AssetIDs = assetIDs,
+        PolygonLL = polygonLL,
+        LayerType = layerType,
+        LayerNumber = layerNumber,
+        ContributingMachines = contributingMachines,
       };
     }
 
@@ -496,6 +512,7 @@ namespace VSS.Productivity3D.Models.Models
       StartUtc = filter.StartUtc;
       EndUtc = filter.EndUtc;
       OnMachineDesignId = filter.OnMachineDesignId;
+      OnMachineDesignName = filter.OnMachineDesignName;
       VibeStateOn = filter.VibeStateOn;
       ElevationType = filter.ElevationType;
       PolygonLL = polygonLL;
@@ -731,6 +748,7 @@ namespace VSS.Productivity3D.Models.Models
              StartUtc.Equals(other.StartUtc) &&
              EndUtc.Equals(other.EndUtc) &&
              OnMachineDesignId == other.OnMachineDesignId &&
+             OnMachineDesignName == other.OnMachineDesignName &&
              AssetIDs.ScrambledEquals(other.AssetIDs) &&
              VibeStateOn == other.VibeStateOn &&
              CompactorDataOnly.Equals(other.CompactorDataOnly) &&
@@ -743,7 +761,6 @@ namespace VSS.Productivity3D.Models.Models
              EndStation.Equals(other.EndStation) &&
              LeftOffset.Equals(other.LeftOffset) &&
              RightOffset.Equals(other.RightOffset) &&
-             string.Equals(MachineDesignName, other.MachineDesignName) &&
              LayerType.Equals(other.LayerType) &&
              (LayerDesignOrAlignmentFile == null
                ? other.LayerDesignOrAlignmentFile == null
@@ -800,7 +817,7 @@ namespace VSS.Productivity3D.Models.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(EndStation));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LeftOffset));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(RightOffset));
-        hashCode = GetHashCode(hashCode, GetNullableHashCode(MachineDesignName));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(OnMachineDesignName));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerType));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerDesignOrAlignmentFile));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(BenchElevation));

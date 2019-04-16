@@ -254,7 +254,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     }
 
     /// <summary>
-    /// Filters out duplicate assetOnDesigns where the tRex/raptor internal Id and name match
+    /// Filters out duplicate assetOnDesigns where the tRex/raptor internal OnMachineDesignId and name match
     ///     NOTE that there is no way to match a machine design (which comes from a tag file)
     ///         with an imported design,
     ///         Therefore this id is unique to tRex OR raptor.
@@ -263,8 +263,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private List<AssetOnDesignPeriod> RemoveDuplicateMachineDesigns(List<AssetOnDesignPeriod> assetsOnDesignPeriods)
     {
       // order by Uid. Gen3 assetsOnDesignPeriods won't have LegacyId
-      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.Id).ToList();
-    }
+      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.OnMachineDesignId).ThenBy(n => n.OnMachineDesignName).ToList();}
 
     /// <summary>
     /// Gets On Machine assetOnDesigns by machine and date range for the selected project
@@ -303,7 +302,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
       // for this pairing to work, we need both executors to be using the same source: Raptor/TRex,
-      //  otherwise there will be a mismatch of Id v.s. Uid.
+      //  otherwise there will be a mismatch of OnMachineDesignId v.s. Uid.
       // For Gen3 assets, there will be no valid LegacyId. 
       var designDetailsList = new List<MachineDesignDetails>();
       if (machineResult != null && designsResult != null)
@@ -464,7 +463,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             machine.AssetId, machine.MachineName, machine.IsJohnDoe,
             filteredLayers.Select(f => new LiftDetails
             {
-              DesignId = f.DesignId,
+              DesignId = f.OnMachineDesignId,
               LayerId = f.LayerId,
               EndUtc = f.EndDate
             }).ToArray(), machine.AssetUid));
