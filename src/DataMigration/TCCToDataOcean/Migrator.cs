@@ -83,7 +83,7 @@ namespace TCCToDataOcean
       Log.LogInformation(Method.In());
 
       // TODO (Aaron) Remove if part of recovery phase.
-      Log.LogInformation($"{Method.Info()} | Cleaning database, dropping collections");
+      Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
       _migrationDb.DropTables(new[]
       {
           Table.MigrationInfo,
@@ -100,9 +100,9 @@ namespace TCCToDataOcean
 
       _migrationDb.InitDatabase();
 
-      Log.LogInformation($"{Method.Info()} | Fetching projects from: '{ProjectApiUrl}'");
+      Log.LogInformation($"{Method.Info()} Fetching projects from: '{ProjectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
-      Log.LogInformation($"{Method.Info()} | Found {projects.Count} projects");
+      Log.LogInformation($"{Method.Info()} Found {projects.Count} projects");
 
       var projectTasks = new List<Task<bool>>(projects.Count);
       _migrationDb.SetMigationInfo_SetProjectCount(projects.Count);
@@ -127,55 +127,59 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<bool> MigrateProject(Project project)
     {
-      Log.LogInformation($"{Method.In()} | Migrating project {project.ProjectUID}, Name: '{project.Name}'");
+      Log.LogInformation($"{Method.In()} Migrating project {project.ProjectUID}, Name: '{project.Name}'");
       _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress);
 
       var coordinateSystemFileMigrationResult = false;
 
-      // Get the real CSIB for this project, ignoring what's attached to the project in the database.
-      var csibResponse = await _csibAgent.GetCSIBForProject(project);
-
-      _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
-
-      if (csibResponse.Code != 0) _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
-
-      byte[] coordSystemFileContent;
-
-      if (csibResponse.Code != 0)
+      // DIAGNOSTIC RUNTIME SWITCH
+      if (_downloadProjectCoordinateSystemFile)
       {
-        // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
-        coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
-      }
-      else
-      {
-        _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
+        // Get the real CSIB for this project, ignoring what's attached to the project in the database.
+        var csibResponse = await _csibAgent.GetCSIBForProject(project);
 
-        var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
-        var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
+        _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
 
-        coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
-      }
+        if (csibResponse.Code != 0) _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csibResponse.Message);
 
-      if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
-      {
-        _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, true);
+        byte[] coordSystemFileContent;
 
-        // DIAGNOSTIC RUNTIME SWITCH
-        if (_updateProjectCoordinateSystemFile)
+        if (csibResponse.Code != 0)
         {
-          var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
-
-          coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
-
-          Log.LogInformation($"{Method.Info()} | Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+          // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
+          coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
         }
         else
         {
-          Log.LogDebug($"{Method.Info("DEBUG")} | Skipping updating project coordinate system file step");
+          _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csibResponse.Message);
+
+          var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csibResponse.Message);
+          var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
+
+          coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
         }
 
-        // DIAGNOSTIC STEP: To validate content of DC file is good.
-        SaveDCFileToDisk(project, coordSystemFileContent);
+        if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
+        {
+          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project, true);
+
+          // DIAGNOSTIC RUNTIME SWITCH
+          if (_updateProjectCoordinateSystemFile)
+          {
+            var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+
+            coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
+
+            Log.LogInformation($"{Method.Info()} Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
+          }
+          else
+          {
+            Log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
+          }
+
+          // DIAGNOSTIC STEP: To validate content of DC file is good.
+          SaveDCFileToDisk(project, coordSystemFileContent);
+        }
       }
       else
       {
@@ -185,12 +189,20 @@ namespace TCCToDataOcean
       var importedFilesResult = false;
       var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
 
+      if (filesResult == null)
+      {
+        Log.LogInformation($"{Method.Info()} Failed to fetch imported files for project {project.ProjectUID}, aborting project migration");
+        _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.Failed);
+
+        return false;
+      }
+
       if (filesResult.ImportedFileDescriptors?.Count > 0)
       {
         var selectedFiles = filesResult.ImportedFileDescriptors.Where(f => MigrationFileTypes.Contains(f.ImportedFileType)).ToList();
         _migrationDb.SetProjectFilesDetails(Table.Projects, project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
 
-        Log.LogInformation($"{Method.Info()} | Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
+        Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} out of {filesResult.ImportedFileDescriptors.Count} files to migrate for {project.ProjectUID}");
 
         var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
 
@@ -208,14 +220,14 @@ namespace TCCToDataOcean
       }
       else
       {
-        Log.LogInformation($"{Method.Info()} | No files found for {project.ProjectUID}");
+        Log.LogInformation($"{Method.Info()} No files found for {project.ProjectUID}");
       }
 
       var result = (coordinateSystemFileMigrationResult && importedFilesResult) || filesResult.ImportedFileDescriptors?.Count == 0;
 
       _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed);
 
-      Log.LogInformation($"{Method.Out()} | Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
+      Log.LogInformation($"{Method.Out()} Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
 
       _migrationDb.SetMigationInfo_IncrementProjectsProcessed();
 
@@ -227,16 +239,15 @@ namespace TCCToDataOcean
     /// </summary>
     private void SaveDCFileToDisk(Project project, byte[] dcFileContent)
     {
-      Log.LogDebug($"{Method.In()} | Writing coordinate system file for project {project.ProjectUID}");
+      Log.LogDebug($"{Method.In()} Writing coordinate system file for project {project.ProjectUID}");
 
       var dcFilePath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
 
       if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
 
-      // TODO Could check the actual project.CoordinateSystemFileName property, and it's a valid filename, use it; otherwise gen a new name.f
       var tempFileName = Path.Combine(dcFilePath, "CoordSystemFile.dc");
 
-      Log.LogInformation($"{Method.Info()} | Creating DC file '{tempFileName}' for project {project.ProjectUID}");
+      Log.LogInformation($"{Method.Info()} Creating DC file '{tempFileName}' for project {project.ProjectUID}");
 
       File.WriteAllBytes(tempFileName, dcFileContent);
     }
@@ -246,12 +257,12 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
     {
-      Log.LogInformation($"{Method.In()} | Downloading coord system file '{project.CoordinateSystemFileName}'");
+      Log.LogInformation($"{Method.In()} Downloading coord system file '{project.CoordinateSystemFileName}'");
 
       // DIAGNOSTIC RUNTIME SWITCH
       if (!_downloadProjectCoordinateSystemFile)
       {
-        Log.LogDebug($"{Method.Info("DEBUG")} | Skipped downloading coordinate system file '{project.CoordinateSystemFileName}' for project {project.ProjectUID}");
+        Log.LogDebug($"{Method.Info("DEBUG")} Skipped downloading coordinate system file '{project.CoordinateSystemFileName}' for project {project.ProjectUID}");
         return null;
       }
 
@@ -276,7 +287,7 @@ namespace TCCToDataOcean
 
             var tempFileName = Path.Combine(tempPath, project.CoordinateSystemFileName);
 
-            Log.LogInformation($"{Method.Info()} | Creating temporary file '{tempFileName}' for project {project.ProjectUID}");
+            Log.LogInformation($"{Method.Info()} Creating temporary file '{tempFileName}' for project {project.ProjectUID}");
 
             using (var tempFile = new FileStream(tempFileName, FileMode.Create))
             {
@@ -308,7 +319,7 @@ namespace TCCToDataOcean
     /// </summary>
     private async Task<(bool success, FileDataSingleResult file)> MigrateFile(FileData file)
     {
-      Log.LogInformation($"{Method.In()} | Migrating file '{file.Name}', Uid: {file.ImportedFileUid}");
+      Log.LogInformation($"{Method.In()} Migrating file '{file.Name}', Uid: {file.ImportedFileUid}");
 
       string tempFileName;
 
@@ -322,7 +333,7 @@ namespace TCCToDataOcean
           _migrationDb.SetMigrationState(Table.Files, file, MigrationState.FileNotFound);
           _migrationDb.WriteError(file.ProjectUid, errorMessage);
 
-          Log.LogError($"{Method.Out()} | {errorMessage}");
+          Log.LogError($"{Method.Out()} {errorMessage}");
 
           return (false, null);
         }
@@ -332,7 +343,7 @@ namespace TCCToDataOcean
 
         tempFileName = Path.Combine(tempPath, file.Name);
 
-        Log.LogInformation($"{Method.Info()} | Creating temporary file '{tempFileName}' for file {file.ImportedFileUid}");
+        Log.LogInformation($"{Method.Info()} Creating temporary file '{tempFileName}' for file {file.ImportedFileUid}");
 
         // DIAGNOSTIC RUNTIME SWITCH
         if (_downloadProjectFiles)
@@ -346,7 +357,7 @@ namespace TCCToDataOcean
         }
         else
         {
-          Log.LogDebug($"{Method.Info("DEBUG")} | Skipped downloading file '{tempFileName}' from TCC");
+          Log.LogDebug($"{Method.Info("DEBUG")} Skipped downloading file '{tempFileName}' from TCC");
         }
       }
 
@@ -355,17 +366,17 @@ namespace TCCToDataOcean
       // DIAGNOSTIC RUNTIME SWITCH
       if (_downloadProjectFiles && _uploadProjectFiles)
       {
-        Log.LogInformation($"{Method.Info()} | Uploading file {file.ImportedFileUid}");
+        Log.LogInformation($"{Method.Info()} Uploading file {file.ImportedFileUid}");
         result = ImportFile.SendRequestToFileImportV4(UploadFileApiUrl, file, tempFileName, new ImportOptions(HttpMethod.Post));
 
         _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
       }
       else
       {
-        Log.LogDebug($"{Method.Info("DEBUG")} | Skipped uploading file '{tempFileName}' to project service");
+        Log.LogDebug($"{Method.Info("DEBUG")} Skipped uploading file '{tempFileName}' to project service");
       }
 
-      Log.LogInformation($"{Method.Out()} | File {file.ImportedFileUid} update result {result.Code} {result.Message}");
+      Log.LogInformation($"{Method.Out()} File {file.ImportedFileUid} update result {result.Code} {result.Message}");
 
       return (true, result);
     }

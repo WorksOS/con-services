@@ -90,8 +90,6 @@ namespace TCCToDataOcean
         Log.LogError(exception.Message);
       }
 
-      Log.LogInformation(Method.Out());
-
       return null;
     }
 
@@ -141,10 +139,6 @@ namespace TCCToDataOcean
       {
         return ex.Message;
       }
-      finally
-      {
-        Log.LogInformation(Method.Out());
-      }
     }
 
     /// <summary>
@@ -190,13 +184,9 @@ namespace TCCToDataOcean
 
           if (response == null) { continue; }
 
-          Log.LogInformation(Method.Out());
-
           return GetStringFromResponseStream(response);
         }
       }
-
-      Log.LogInformation(Method.Out());
 
       return responseString;
     }

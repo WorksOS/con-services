@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -30,13 +31,11 @@ namespace TCCToDataOcean
       httpClient = new HttpClient();
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
       httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {bearerToken}");
-
-      Log.LogInformation(Method.Out());
     }
 
     public async Task<TResponse> SendHttpClientRequest<TResponse>(string uri, HttpMethod method, string acceptHeader, string contentType, string customerUid, string payloadData = null) where TResponse : class
     {
-      Log.LogInformation($"{Method.In()} | URI: {uri}");
+      Log.LogInformation($"{Method.In()} URI: {uri}");
 
       var request = GetRequestMessage(method, uri);
 
@@ -64,16 +63,20 @@ namespace TCCToDataOcean
         }
       }
 
-      var response = await httpClient.SendAsync(request);
-
-      var receiveStream = response.Content.ReadAsStreamAsync().Result;
-      var readStream = new StreamReader(receiveStream, Encoding.UTF8);
-      var responseBody = readStream.ReadToEnd();
-
-      Log.LogInformation($"{Method.Info()} | Status code: {response.StatusCode}, {responseBody}");
-
       try
       {
+        var response = await httpClient.SendAsync(request);
+
+        var receiveStream = response.Content.ReadAsStreamAsync().Result;
+        var readStream = new StreamReader(receiveStream, Encoding.UTF8);
+        var responseBody = readStream.ReadToEnd();
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+          Log.LogInformation($"{Method.Info()} Status [{response.StatusCode}] Body: '{responseBody}'");
+        }
+        else Log.LogDebug($"{Method.Info()} Status [{response.StatusCode}] URI: '{request.RequestUri.AbsoluteUri}', Body: '{responseBody}'");
+
         switch (response.Content.Headers.ContentType.MediaType)
         {
           case MediaType.APPLICATION_JSON:
@@ -91,10 +94,12 @@ namespace TCCToDataOcean
             }
         }
       }
-      finally
+      catch (Exception exception)
       {
-        Log.LogInformation(Method.Out());
+        Log.LogError($"{Method.Info("ERROR")} URI: '{request.RequestUri.AbsoluteUri}', Exception: {exception.GetBaseException()}");
       }
+
+      return null;
     }
   }
 }
