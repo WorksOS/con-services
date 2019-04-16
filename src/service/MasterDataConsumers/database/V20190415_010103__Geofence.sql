@@ -11,7 +11,7 @@ SET @s = (SELECT IF(
         AND table_schema = DATABASE()
 		AND column_name = 'GeometryWKT'
     ) > 0,
-    "UPDATE `Geofence` SET `PolygonST` = ST_GeomFromText(`GeometryWKT`) WHERE `GeometryWKT` IS NOT NULL AND CHAR_LENGTH(`GeometryWKT`) <= 4000 AND  CHAR_LENGTH(`GeometryWKT`) > 0",
+    "UPDATE `Geofence` SET `PolygonST` = ST_GeomFromText(`GeometryWKT`) WHERE `GeometryWKT` IS NOT NULL AND CHAR_LENGTH(`GeometryWKT`) < 4000 AND  CHAR_LENGTH(`GeometryWKT`) > 0",
 	"SELECT 1"
 ));  
 
