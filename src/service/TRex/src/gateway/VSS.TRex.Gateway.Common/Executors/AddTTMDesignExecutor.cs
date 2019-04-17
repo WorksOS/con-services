@@ -104,7 +104,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           // Create the new SurveyedSurface in our site model
           var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
-            request.SurveyedUtc ?? DateTime.MinValue, // validation will have ensured this exists
+            request.SurveyedUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC, // validation will have ensured this exists
             extents);
           existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
         }

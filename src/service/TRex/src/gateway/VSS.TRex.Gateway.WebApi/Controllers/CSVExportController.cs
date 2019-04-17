@@ -67,6 +67,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     private CompactionExportResult Execute<T>(T request)
     {
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+      ValidateFilterMachines(nameof(Execute), compactionCSVExportRequest.ProjectUid, compactionCSVExportRequest.Filter);
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer

@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Models.Models
@@ -43,6 +44,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Private constructor
     /// </summary>
+    [JsonConstructor]
     private MachineStatus()
     { }
 
@@ -63,9 +65,9 @@ namespace VSS.Productivity3D.Models.Models
         Guid? assetUid = null
         )
     {
-      this.AssetId = assetID;
-      this.MachineName = machineName;
-      this.IsJohnDoe = isJohnDoe;
+      AssetId = assetID;
+      MachineName = machineName;
+      IsJohnDoe = isJohnDoe;
       this.lastKnownDesignName = lastKnownDesignName;
       this.lastKnownLayerId = lastKnownLayerId;
       this.lastKnownTimeStamp = lastKnownTimeStamp;
@@ -73,7 +75,7 @@ namespace VSS.Productivity3D.Models.Models
       this.lastKnownLongitude = lastKnownLongitude;
       this.lastKnownX = lastKnownX;
       this.lastKnownY = lastKnownY;
-      this.AssetUid = assetUid;
+      AssetUid = assetUid;
     }
   }
 }

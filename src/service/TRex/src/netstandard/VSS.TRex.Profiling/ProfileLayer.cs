@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
@@ -128,7 +129,7 @@ namespace VSS.TRex.Profiling
       EndCellPassIdx = -1;
 
       MachineID = -1;
-      LastLayerPassTime = DateTime.MinValue;
+      LastLayerPassTime = Consts.MIN_DATETIME_AS_UTC;
 
       CCV = CellPassConsts.NullCCV;
       TargetCCV = CellPassConsts.NullCCV;

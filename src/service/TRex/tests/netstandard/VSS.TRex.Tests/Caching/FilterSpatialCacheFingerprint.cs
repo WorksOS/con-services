@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
@@ -6,6 +7,7 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
+using ElevationType = VSS.TRex.Common.Types.ElevationType;
 
 namespace VSS.TRex.Tests.Caching
 {
@@ -154,8 +156,8 @@ namespace VSS.TRex.Tests.Caching
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasTimeFilter = true;
-        x.AttributeFilter.StartTime = new DateTime(1111);
-        x.AttributeFilter.EndTime = new DateTime(2222);
+        x.AttributeFilter.StartTime = DateTime.SpecifyKind(new DateTime(1111), DateTimeKind.Utc);
+        x.AttributeFilter.EndTime = DateTime.SpecifyKind(new DateTime(2222), DateTimeKind.Utc);
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("TF:1111-2222", StringComparison.OrdinalIgnoreCase),
@@ -334,7 +336,7 @@ namespace VSS.TRex.Tests.Caching
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.HasGCSGuidanceModeFilter = true;
-        x.AttributeFilter.GCSGuidanceMode = MachineAutomaticsMode.Manual;
+        x.AttributeFilter.GCSGuidanceMode = AutomaticsType.Manual;
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GM:Manual", StringComparison.OrdinalIgnoreCase),

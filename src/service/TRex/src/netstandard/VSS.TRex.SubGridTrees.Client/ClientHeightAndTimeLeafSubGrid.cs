@@ -31,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientHeightAndTimeLeafSubGrid()
     {
-      long nullValue = DateTime.MinValue.Ticks;
+      long nullValue = 0; //DateTime.MinValue.Ticks;
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
     }

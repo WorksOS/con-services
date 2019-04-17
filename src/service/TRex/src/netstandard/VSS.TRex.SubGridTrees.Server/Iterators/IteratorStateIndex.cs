@@ -12,8 +12,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     /// </summary>
     public class IteratorStateIndex : IIteratorStateIndex
     {
-        public DateTime StartSegmentTime { get; set; } = DateTime.MinValue;
-        public DateTime EndSegmentTime { get; set; } = DateTime.MaxValue;
+        public DateTime StartSegmentTime { get; set; } = Consts.MIN_DATETIME_AS_UTC;
+        public DateTime EndSegmentTime { get; set; } = Consts.MAX_DATETIME_AS_UTC;
 
         public IterationDirection IterationDirection { get; set; } = IterationDirection.Forwards;
 

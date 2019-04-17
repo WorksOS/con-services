@@ -79,6 +79,12 @@
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

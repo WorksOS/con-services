@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagFileHarvester.netcore", "TagFileHarvester.netcore\TagFileHarvester.netcore.csproj", "{B9C2E487-91FB-4A6E-9FFA-ADFE3D4CF6B3}"
 EndProject
@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{D76D1EC5-8B87-4BC0-9284-A1DD21D0B074}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{1B4560AD-4DE9-455C-8044-0ACEE9600485}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{C6161758-1F10-466E-BC74-82C98B276C1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +44,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1AC6C9AC-D591-4338-B70A-BEAB01B7B5ED} = {C6161758-1F10-466E-BC74-82C98B276C1C}
+		{D76D1EC5-8B87-4BC0-9284-A1DD21D0B074} = {C6161758-1F10-466E-BC74-82C98B276C1C}
+		{C6161758-1F10-466E-BC74-82C98B276C1C} = {1B4560AD-4DE9-455C-8044-0ACEE9600485}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FBE97151-B52F-414B-842E-EFFC8DD75987}

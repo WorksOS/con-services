@@ -28,7 +28,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
 
     /// <summary>
-    /// Receive a TAG file to be processed, validate TAG File Authorisation for the file, and add it to the 
+    /// Receive a TAG file to be processed, validate TAG File Authorization for the file, and add it to the 
     /// queue to be processed.
     /// </summary>
     /// <param name="projectId">Project ID to be used as an override to any project ID that may be determined via TAG file authorization</param>

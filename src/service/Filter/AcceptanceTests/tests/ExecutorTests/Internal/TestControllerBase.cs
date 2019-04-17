@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -15,9 +16,11 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Log4Net.Extensions;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Productivity3D.AssetMgmt3D.Proxy;
 
 namespace ExecutorTests.Internal
 {
@@ -30,6 +33,7 @@ namespace ExecutorTests.Internal
     protected IProjectListProxy ProjectListProxy;
     protected IFileListProxy FileListProxy;
     protected IRaptorProxy RaptorProxy;
+    protected IAssetResolverProxy AssetResolverProxy;
     protected IKafka Producer;
     protected string KafkaTopicName;
     protected FilterRepository FilterRepo;
@@ -54,6 +58,9 @@ namespace ExecutorTests.Internal
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IProjectListProxy, ProjectListProxy>()
+        .AddServiceDiscovery()
+        .AddTransient<IAssetResolverProxy, AssetResolverProxy>()  
+        .AddTransient<IWebRequest, GracefulWebRequest>()
         .AddTransient<IFileListProxy, FileListProxy>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>()
@@ -71,6 +78,7 @@ namespace ExecutorTests.Internal
       ProjectListProxy = ServiceProvider.GetRequiredService<IProjectListProxy>();
       FileListProxy = ServiceProvider.GetRequiredService<IFileListProxy>();
       RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
+      AssetResolverProxy = ServiceProvider.GetRequiredService<IAssetResolverProxy>();
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }

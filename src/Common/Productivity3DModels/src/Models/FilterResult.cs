@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Models.Models
     public long? Id { get; set; }
 
     /// <summary>
-    /// A project unique identifier.
+    /// A filter unique identifier.
     /// </summary>
     [JsonProperty(PropertyName = "UID", Required = Required.Default)]
     public Guid? Uid { get; set; }

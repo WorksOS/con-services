@@ -119,7 +119,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         SiteModelFromDM.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
-        Task.StartProcessingTime = DateTime.Now;
+        Task.StartProcessingTime = Consts.MIN_DATETIME_AS_UTC;
 
         ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
 
@@ -222,6 +222,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               Task.IntermediaryTargetMachine.DeviceType,
               Task.IntermediaryTargetMachine.IsJohnDoeMachine,
               Task.PersistedTargetMachineID);
+            Task.IntermediaryTargetMachine.ID = MachineFromDM.ID;
+            Task.IntermediaryTargetMachine.InternalSiteModelMachineIndex = MachineFromDM.InternalSiteModelMachineIndex;
             MachineFromDM.Assign(Task.IntermediaryTargetMachine);
           }
 
@@ -323,10 +325,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // All operations within the transaction to integrate the changes into the live model have completed successfully.
           // Now commit those changes as a block.
 
-          var startTime = DateTime.Now;
+          var startTime = DateTime.UtcNow;
           Log.LogInformation("Starting storage proxy Commit()");
           storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
-          Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
+          Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
           // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
 

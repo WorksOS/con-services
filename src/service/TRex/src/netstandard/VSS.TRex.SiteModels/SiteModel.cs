@@ -686,8 +686,8 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     public (DateTime startUtc, DateTime endUtc) GetDateRange()
     {
-      DateTime minDate = DateTime.MaxValue;
-      DateTime maxDate = DateTime.MinValue;
+      DateTime minDate = Consts.MAX_DATETIME_AS_UTC;
+      DateTime maxDate = Consts.MIN_DATETIME_AS_UTC;
 
       foreach (var machine in Machines)
       {
@@ -727,7 +727,7 @@ namespace VSS.TRex.SiteModels
         var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].MachineDesignNameIDStateEvents;
 
         int priorMachineDesignId = int.MinValue;
-        DateTime priorDateTime = DateTime.MinValue;
+        DateTime priorDateTime = Consts.MIN_DATETIME_AS_UTC;
         for (int i = 0; i < events.Count(); i++)
         {
           events.GetStateAtIndex(i, out DateTime dateTime, out int machineDesignId);
@@ -741,7 +741,7 @@ namespace VSS.TRex.SiteModels
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-              priorMachineDesignId,Consts.NULL_LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
+              priorMachineDesignId,Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
           }
 
           // where multi events for same design -  want to retain startDate of first
@@ -756,7 +756,7 @@ namespace VSS.TRex.SiteModels
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
           assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
-            priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, DateTime.MaxValue, machine.ID));
+            priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
         }
       }
 

@@ -171,7 +171,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTile3dRequest = DxfTile3dRequest.Create(requiredFiles, z, y, x);
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTile3dExecutor, LineworkTileController>(
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
         Log, configStore, CustomHeaders, dataOceanClient, authn);
       var result = await executor.ProcessAsync(dxfTile3dRequest) as TileResult;
 

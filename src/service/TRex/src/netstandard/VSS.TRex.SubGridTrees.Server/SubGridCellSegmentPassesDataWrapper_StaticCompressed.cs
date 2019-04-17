@@ -640,7 +640,7 @@ namespace VSS.TRex.SubGridTrees.Server
             });
 
             // Compute the time of the earliest real cell pass within the segment
-            FirstRealCellPassTime = allCellPassesArray.Length > 0 ? allCellPassesArray.Min(x => x.Time) : DateTime.MinValue;
+            FirstRealCellPassTime = allCellPassesArray.Length > 0 ? allCellPassesArray.Min(x => x.Time) : Consts.MIN_DATETIME_AS_UTC;
 
             // Initialise the MachineIDs array and the MachineIDSet that encodes it as a bit array
             MachineIDSet = new BitArray(allCellPassesArray.Max(x => x.InternalSiteModelMachineIndex) + 1);

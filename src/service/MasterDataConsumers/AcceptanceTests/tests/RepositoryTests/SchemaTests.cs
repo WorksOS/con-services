@@ -128,11 +128,12 @@ namespace RepositoryTests
       const string tableName = "ImportedFile";
       List<string> columnNames = new List<string>
       {
-        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "LegacyImportedFileID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "fk_DXFUnitsTypeID", "MinZoomLevel", "MaxZoomLevel", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "LegacyImportedFileID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name",
+        "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "fk_DXFUnitsTypeID", "MinZoomLevel", "MaxZoomLevel",
+        "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC", "Offset", "fk_ReferenceImportedFileUID"
       };
       CheckSchema(tableName, columnNames);
     }
-
     [TestMethod]
     public void ImportedFileHistorySchemaExists()
     {
@@ -183,7 +184,7 @@ namespace RepositoryTests
       const string tableName = "Geofence";
       List<string> columnNames = new List<string>
           {
-            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "InsertUTC", "UpdateUTC"
+            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "PolygonST", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }

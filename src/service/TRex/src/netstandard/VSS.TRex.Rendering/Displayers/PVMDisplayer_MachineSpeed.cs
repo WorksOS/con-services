@@ -11,16 +11,6 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_MachineSpeed : PVMDisplayerBase
   {
     /// <summary>
-    /// Renders Machine Speed data as tiles. 
-    /// </summary>
-    /// <param name="subGrid"></param>
-    /// <returns></returns>
-    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
-    {
-      return base.DoRenderSubGrid<ClientMachineSpeedLeafSubGrid>(subGrid);
-    }
-
-    /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>

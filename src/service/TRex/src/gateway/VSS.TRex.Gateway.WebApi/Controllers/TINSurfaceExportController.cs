@@ -58,6 +58,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
 
       compactionSurfaceExportRequest.Validate();
+      ValidateFilterMachines(nameof(PostTINSurface), compactionSurfaceExportRequest.ProjectUid, compactionSurfaceExportRequest.Filter);
 
       var tinResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -107,6 +108,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       };
 
       request.Validate();
+      ValidateFilterMachines(nameof(GetTINSurface2), request.ProjectUid, request.Filter);
 
       var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 
