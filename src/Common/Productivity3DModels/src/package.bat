@@ -2,7 +2,7 @@
 
 SET config=Release
 SET projectFile=VSS.Productivity3D.Models.csproj
-SET packageServer=https://packages.vspengg.com/
+SET packageServer=http://10.97.96.144/nuget
 SET packageId=VSS.Productivity3D.Models.netcore
 SET apiKey=qATxVIHO5rIPF3K7
 
