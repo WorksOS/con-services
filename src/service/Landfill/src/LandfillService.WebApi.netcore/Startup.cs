@@ -85,6 +85,7 @@ namespace LandfillService.WebApi.netcore
 
       services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE);
+      services.AddMvc();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
@@ -107,7 +108,6 @@ namespace LandfillService.WebApi.netcore
 
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
-
       app.UseFilterMiddleware<TIDAuthentication>();
       app.UseMvc();
     }
