@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Landfill.WebAPI.Common.ResultsHandling;
@@ -19,7 +20,7 @@ namespace LandfillService.WebApi.netcore
 {
   /// <summary>
   /// </summary>
-  public class Startup
+  public class Startup : BaseStartup
   {
     /// <summary>
     ///   The name of this service for swagger etc.
@@ -31,41 +32,28 @@ namespace LandfillService.WebApi.netcore
     /// </summary>
     public const string LoggerRepoName = "WebApi";
 
-    private static readonly Uri _jaegerUri = new Uri("http://localhost:14268/api/traces");
-    private IServiceCollection serviceCollection;
-
     /// <summary>
     ///   Initializes a new instance of the <see cref="Startup" /> class.
     /// </summary>
     /// <param name="env">The env.</param>
-    public Startup(IHostingEnvironment env)
+    public Startup(IHostingEnvironment env) : base(env, LoggerRepoName)
     {
-      var builder = new ConfigurationBuilder()
-        .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", true, reloadOnChange: false)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
-
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
-
-      builder.AddEnvironmentVariables();
-      Configuration = builder.Build();
     }
+    
+    public override string ServiceName => SERVICE_TITLE;
 
-    /// <summary>
-    ///   Gets the configuration.
-    /// </summary>
-    /// <value>
-    ///   The configuration.
-    /// </value>
-    private IConfigurationRoot Configuration { get; }
+    public override string ServiceDescription => "A service for landfill request";
+
+    public override string ServiceVersion => "v1";
 
     // This method gets called by the runtime. Use this method to add services to the container
     /// <summary>
     ///   Configures the services.
     /// </summary>
     /// <param name="services">The services.</param>
-    public void ConfigureServices(IServiceCollection services)
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
+      services.AddMvc();
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
@@ -73,25 +61,20 @@ namespace LandfillService.WebApi.netcore
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
 
-      services.AddOpenTracing(builder =>
-        {
-          builder.ConfigureAspNetCore(options =>
-            {
-              options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-            });
-        });
-
-      services.AddJaeger(SERVICE_TITLE);
-
-      services.AddMemoryCache();
-      services.AddCommon<Startup>(SERVICE_TITLE);
-      services.AddMvc();
-
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IFileListProxy, FileListProxy>();
+      
+      services.AddServiceDiscovery();
 
-      serviceCollection = services;
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
+      });
+
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -101,13 +84,8 @@ namespace LandfillService.WebApi.netcore
     /// <param name="app">The application.</param>
     /// <param name="env">The env.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.BuildServiceProvider();
-
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon(SERVICE_TITLE);
       app.UseFilterMiddleware<TIDAuthentication>();
       app.UseMvc();
     }
