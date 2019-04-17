@@ -23,6 +23,7 @@ namespace VSS.TRex.Tests.Rendering
         100, // PixelsY
         null, // Filters
         Guid.Empty, // DesignDescriptor.Null(),
+        null,
         Color.Black,
         string.Empty);
 

@@ -70,25 +70,24 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     {
       Log.LogInformation($"Getting matching Assets for AssetUID: {assetUid}");
       var result = await assetRepository.GetMatching3D2DAssets(assetUid);
-      if (result == null)
-      {
-        Log.LogInformation($"No matching assets found for AssetUID: {assetUid}");
-        return Json(null);
-      }
 
-      Log.LogInformation($"Found a match for AssetUID: {assetUid}. Data: {JsonConvert.SerializeObject(result)}");
-      return Json(new MatchingAssetsDisplayModel
-      {
-        MatchingAssetUID = result.MatchingAssetUID,
-        CustomerName = result.CustomerName,
-        AssetUID = result.AssetUID,
-        MakeCode = result.MakeCode,
-        MatchingMakeCode = result.MatchingMakeCode,
-        MatchingSerialNumber = result.MatchingSerialNumber,
-        Model = result.Model,
-        Name = result.Name,
-        SerialNumber = result.SerialNumber
-      });
+      var model = result == null
+        ? new MatchingAssetsDisplayModel((int) AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
+        : new MatchingAssetsDisplayModel
+        {
+          MatchingAssetUID = result.MatchingAssetUID,
+          CustomerName = result.CustomerName,
+          AssetUID = result.AssetUID,
+          MakeCode = result.MakeCode,
+          MatchingMakeCode = result.MatchingMakeCode,
+          MatchingSerialNumber = result.MatchingSerialNumber,
+          Model = result.Model,
+          Name = result.Name,
+          SerialNumber = result.SerialNumber
+        };
+
+      Log.LogInformation($"Returning Asset Display Model for AssetUID: {assetUid}. Data: {JsonConvert.SerializeObject(result)}");
+      return Json(model);
     }
 
     /// <summary>

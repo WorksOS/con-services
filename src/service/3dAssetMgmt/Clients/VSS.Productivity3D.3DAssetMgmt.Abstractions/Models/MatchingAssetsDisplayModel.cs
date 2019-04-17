@@ -8,6 +8,16 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
 {
   public class MatchingAssetsDisplayModel : ContractExecutionResult, IMasterDataModel
   {
+    public MatchingAssetsDisplayModel()
+    {
+      
+    }
+
+    public MatchingAssetsDisplayModel(int code, string message = null) : base(code, message)
+    {
+      
+    }
+
     public string AssetUID { get; set; }
     public string MatchingAssetUID { get; set; }
     public string Name { get; set; }
