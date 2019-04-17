@@ -106,6 +106,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
       [DataRow("The Design Name2", 34, 34)]
       [DataRow("", 0, 0)]
       [DataRow("", 45, 45)]
+      [DataRow("<No Design>", 0, 0)]
       public void Should_set_DesignID_From_OnMachineDesignName_value(string onMachineDesignName, long onMachineDesignIdInput, int expectedValue)
       {
         long? onMachineDesignId = onMachineDesignIdInput; // DataRow doesn't like long? as parameter

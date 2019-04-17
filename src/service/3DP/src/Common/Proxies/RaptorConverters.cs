@@ -42,7 +42,8 @@ namespace VSS.Productivity3D.Common.Proxies
       if (onMachineDesignId.HasValue && onMachineDesignId > 0)
         return (int) onMachineDesignId;
 
-      if (legacyProjectId > VelociraptorConstants.NO_PROJECT_ID && !string.IsNullOrEmpty(onMachineDesignName))
+      if (legacyProjectId > VelociraptorConstants.NO_PROJECT_ID && !string.IsNullOrEmpty(onMachineDesignName) && 
+          (string.Compare("<No Design>", onMachineDesignName, StringComparison.OrdinalIgnoreCase) != 0))
       {
         var raptorDesigns = raptorClient.GetOnMachineDesignEvents(legacyProjectId.Value);
         if (raptorDesigns != null)
