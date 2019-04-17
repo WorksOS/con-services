@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Models.Models
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public Guid? AssetUid { get; set; }
-    [JsonProperty(PropertyName = "OnMachineDesignName")]
+    [JsonProperty(PropertyName = "DesignName")]
     public string OnMachineDesignName { get; set; }
 
     public AssetOnDesignLayerPeriod(long assetId, long onMachineDesignId, long layerId,

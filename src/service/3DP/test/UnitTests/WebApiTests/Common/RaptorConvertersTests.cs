@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using DotNetCore.CAP.Dashboard.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using SVOICDecls;
 using SVOICOptionsDecls;
 using SVOSiteVisionDecls;
+using VLPDDecls;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 
@@ -26,7 +29,8 @@ namespace VSS.Productivity3D.WebApiTests.Common
         double? temperatureRangeMin = null,
         double? temperatureRangeMax = null,
         int? passCountRangeMin = null,
-        int? passCountRangeMax = null)
+        int? passCountRangeMax = null,
+        string onMachineDesignName = null)
       {
         return new Filter.Abstractions.Models.Filter(
             new DateTime(2019, 1, 10),
@@ -44,13 +48,14 @@ namespace VSS.Productivity3D.WebApiTests.Common
             temperatureRangeMin:  temperatureRangeMin,
             temperatureRangeMax: temperatureRangeMax,
             passCountRangeMin: passCountRangeMin,
-            passCountRangeMax: passCountRangeMax);
+            passCountRangeMax: passCountRangeMax,
+            onMachineDesignName: onMachineDesignName);
       }
 
       [TestMethod]
       public void Should_return_Default_filter_When_input_filter_is_null()
       {
-        var result = RaptorConverters.ConvertFilter(null);
+        var result = RaptorConverters.ConvertFilter(null, null, null);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(TFilterLayerMethod.flmAutoMapReset == result.LayerMethod);
@@ -63,7 +68,7 @@ namespace VSS.Productivity3D.WebApiTests.Common
         var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
         var overrideStartUTC = new DateTime(2019, 1, 1);
 
-        var result = RaptorConverters.ConvertFilter(filterResult, overrideStartUTC);
+        var result = RaptorConverters.ConvertFilter(filterResult, overrideStartUTC: overrideStartUTC);
 
         Assert.AreEqual(overrideStartUTC, result.StartTime.Value);
         Assert.IsNotNull(filter.StartUtc);
@@ -97,6 +102,44 @@ namespace VSS.Productivity3D.WebApiTests.Common
       }
 
       [DataTestMethod]
+      [DataRow("The Design Name1", 0, 304)]
+      [DataRow("The Design Name2", 34, 34)]
+      [DataRow("", 0, 0)]
+      [DataRow("", 45, 45)]
+      public void Should_set_DesignID_From_OnMachineDesignName_value(string onMachineDesignName, long onMachineDesignIdInput, int expectedValue)
+      {
+        long? onMachineDesignId = onMachineDesignIdInput; // DataRow doesn't like long? as parameter
+        var machineDesigns = new []
+          {new TDesignName() {FID = expectedValue, FMachineID = 4, FName = onMachineDesignName}};
+        var mockRaptorClient = new Mock<IASNodeClient>();
+        mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
+        
+        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null);
+        Assert.AreEqual(onMachineDesignId, filterResult.OnMachineDesignId);
+
+        var raptorFilter = RaptorConverters.ConvertFilter(filterResult, 1, mockRaptorClient.Object);
+        Assert.AreEqual(expectedValue, raptorFilter.DesignNameID);
+      }
+
+      [TestMethod]
+      public void Should_set_DesignID_From_OnMachineDesignName_null()
+      {
+        string onMachineDesignName = null;
+        long? onMachineDesignId = null;
+        int expectedValue = 0;
+        var machineDesigns = new[]
+        {new TDesignName() {FID = expectedValue, FMachineID = 4, FName = onMachineDesignName}};
+        var mockRaptorClient = new Mock<IASNodeClient>();
+        mockRaptorClient.Setup(prj => prj.GetOnMachineDesignEvents(It.IsAny<long>())).Returns(machineDesigns);
+
+        var filterResult = new FilterResult(null, CreateFilter(onMachineDesignId, onMachineDesignName: onMachineDesignName), null, null, null, null, null, null);
+        Assert.AreEqual(onMachineDesignId, filterResult.OnMachineDesignId);
+
+        var raptorFilter = RaptorConverters.ConvertFilter(filterResult, 1, mockRaptorClient.Object);
+        Assert.AreEqual(expectedValue, raptorFilter.DesignNameID);
+      }
+
+    [DataTestMethod]
       [DataRow(false)]
       [DataRow(true)]
       public void Should_set_Machines_From_AssetIDs_list_When_ContributingMachines_is_null_or_empty(bool setContributingMachines)

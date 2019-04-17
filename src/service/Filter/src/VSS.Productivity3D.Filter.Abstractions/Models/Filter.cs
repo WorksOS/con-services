@@ -68,21 +68,21 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// <summary>
     /// A machine reported design.
     /// This filter is used to select Cell passes recorded when a machine had this design loaded.
-    /// May be null/empty, which indicates no restriction.
+    /// May be null, which indicates no restriction.
     ///   This is obtained by Trex/Raptor from tagFiles.
     ///   There is no direct relationship to VSS designs i.e. ImportedFile 
     ///
-    ///  todoJeannie
-    ///       Maybe we can set this to e.g.  -1 for Trex so we can tell where it was sourced.
-    ///       if these were obtained from TRex, then should not be sent to Raptor,
-    ///       however this may really screw up the UI which possibly depends on unique Ids?
+    /// TRex sets this to 0 (kNoMachineDesign) so we can tell where it was sourced.
+    ///       if these were obtained from TRex,
+    ///             then to send to Raptor, we need to obtain the correct Ids from the OnMachineDesignName,
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignId", Required = Required.Default)]
     public long? OnMachineDesignId { get; private set; } // Raptor/Trex not VSS ID
 
     /// <summary>
     /// A machine reported design.
-    ///    the onMachine name, potentially related to "onMachineDesignId" 
+    ///    the onMachine name, potentially related to "onMachineDesignId"
+    /// May be null/empty, which indicates no restriction. 
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignName", Required = Required.Default)]
     public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design

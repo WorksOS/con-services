@@ -740,7 +740,7 @@ namespace VSS.TRex.SiteModels
           if (priorMachineDesignId != int.MinValue && machineDesignId != priorMachineDesignId)
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
-            assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
+            assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? Consts.kNoDesignName,
               Consts.kNoDesignNameID, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
           }
 
@@ -755,7 +755,7 @@ namespace VSS.TRex.SiteModels
         if (priorMachineDesignId != int.MinValue)
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
-          assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? "unknown",
+          assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? Consts.kNoDesignName,
             Consts.kNoDesignNameID, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
         }
       }
@@ -810,7 +810,7 @@ namespace VSS.TRex.SiteModels
                 Consts.kNoDesignNameID,
                 priorLayerId, priorLayerChangeTime,
                 thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID,
-                machineDesign?.Name ?? "unknown"));
+                machineDesign?.Name ?? Consts.kNoDesignName));
             }
 
             priorMachineDesignId = MachinesTargetValues[machine.InternalSiteModelMachineIndex]
@@ -825,7 +825,7 @@ namespace VSS.TRex.SiteModels
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID,
               Consts.kNoDesignNameID, priorLayerId, priorLayerChangeTime,
-              endReportingPeriod, machine.ID, machineDesign?.Name ?? "unknown"));
+              endReportingPeriod, machine.ID, machineDesign?.Name ?? Consts.kNoDesignName));
           }
         }
       }

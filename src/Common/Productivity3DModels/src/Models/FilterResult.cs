@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Models.Models
     ///       however this may really screw up the UI which possibly depends on unique Ids?
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignID", Required = Required.Default)]
-    public long? OnMachineDesignId { get; private set; } // Raptor/Trex not VSS ID
+    public long? OnMachineDesignId { get; set; } // Raptor/Trex not VSS ID
 
     /// <summary>
     /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
