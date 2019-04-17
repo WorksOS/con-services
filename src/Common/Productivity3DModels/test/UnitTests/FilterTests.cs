@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Models.UnitTests
       Assert.IsTrue(validator.TryValidate(filter, out results));
 
       //null filter
-      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, true, null, null, null,
+      filter = FilterResult.CreateFilterObsolete(null, null, null, null, null, null, null, null, null, null, null, null, null, null, true, null, null, null,
         null, null,  null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsTrue(validator.TryValidate(filter, out results), "null filter failed");
 
@@ -63,8 +63,8 @@ namespace VSS.Productivity3D.Models.UnitTests
       Assert.IsFalse(validator.TryValidate(filter, out results), "end station validate failed");
 
       //left offset out of range
-      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, 777, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      filter = FilterResult.CreateFilterObsolete(null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, 777, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "left offset validate failed");
 
       //right offset out of range
