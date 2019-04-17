@@ -38,13 +38,13 @@ export class FetchDataService {
       case DisplayModeType.CCV:
         requestTypeString = "cmvdetails";
         break;
-      case DisplayModeType.CCVSummary:
+      case DisplayModeType.CCVPercentSummary:
         requestTypeString = "cmvsummary";
         break;
       case DisplayModeType.CMVChange:
         requestTypeString = "cmvchange";
         break;
-      case DisplayModeType.MDPSummary:
+      case DisplayModeType.MDPPercentSummary:
         requestTypeString = "mdpsummary";
         break;
       case DisplayModeType.PassCount:

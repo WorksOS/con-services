@@ -1,14 +1,13 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map  renderer for cut fill information presented as rendered tiles
+  /// Plan View Map displayer renderer for material temperature information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_CutFill : PVMDisplayerBase
+  public class PVMDisplayer_Temperature : PVMDisplayerBase
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
@@ -16,9 +15,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      float value = ((ClientHeightLeafSubGrid)SubGrid).Cells[east_col, north_row];
+      ushort value = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row].MeasuredTemperature;
 
-      return value == CellPassConsts.NullHeight ? Color.Empty : Palette.ChooseColour(value);
+      return value == CellPassConsts.NullMaterialTemperatureValue ? Color.Empty : Palette.ChooseColour(value);
     }
   }
 }

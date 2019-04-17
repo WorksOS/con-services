@@ -1,14 +1,14 @@
 ﻿using System.Drawing;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map displayer renderer for Pass Count information presented as rendered tiles
+  /// Plan View Map displayer renderer for CMV summary information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_PassCount : PVMDisplayerBase
+  public class PVMDisplayer_CMVSummary : PVMDisplayerBase
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
@@ -16,9 +16,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      var value = ((ClientPassCountLeafSubGrid)SubGrid).Cells[east_col, north_row];
+      var cellValue = ((ClientCMVLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
-      return value.MeasuredPassCount == CellPassConsts.NullPassCountValue ? Color.Empty : Palette.ChooseColour(value.MeasuredPassCount);
+      return cellValue.MeasuredCMV == CellPassConsts.NullCCV ? Color.Empty : ((CMVSummaryPalette)Palette).ChooseColour(cellValue.MeasuredCMV, cellValue.TargetCMV);
     }
   }
 }

@@ -6,9 +6,9 @@ using VSS.TRex.SubGridTrees.Client;
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map displayer renderer for CMV information presented as rendered tiles
+  /// Plan View Map displayer renderer for MDP information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_CMV : PVMDisplayerBase
+  public class PVMDisplayer_MDPSummary : PVMDisplayerBase
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
@@ -16,9 +16,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
-      var cellValue = ((ClientCMVLeafSubGrid)SubGrid).Cells[east_col, north_row];
+      var cellValue = ((ClientMDPLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
-      return cellValue.MeasuredCMV == CellPassConsts.NullCCV ? Color.Empty : ((CMVPalette) Palette).ChooseColour(cellValue);
+      return cellValue.MeasuredMDP == CellPassConsts.NullMDP ? Color.Empty : ((MDPSummaryPalette)Palette).ChooseColour(cellValue.MeasuredMDP, cellValue.TargetMDP);
     }
   }
 }

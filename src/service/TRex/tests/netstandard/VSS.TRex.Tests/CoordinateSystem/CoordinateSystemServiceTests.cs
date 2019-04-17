@@ -8,7 +8,6 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.Properties;
-using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.CoordinateSystem
