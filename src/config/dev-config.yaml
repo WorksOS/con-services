@@ -49,8 +49,8 @@ data:
   TREX_IMPORTFILE_WRITE_API_URL: http://trex.mutable.dev.eks.vspengg.com/api/v1/design
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
 #SERVICE DISCOVERY REFERENCES
-  assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0/
-  assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1/
+  assetdetails-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
+  assetsummary-public-v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
 #TPaaS
   TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2/token  
