@@ -2,7 +2,7 @@
 
 SET config=Release
 SET projectFile=ImageComparisonNetcore.csproj
-SET packageServer=https://packages.vspengg.com/
+SET packageServer=http://10.97.96.144/nuget
 SET apiKey=qATxVIHO5rIPF3K7
 
 IF "%~1"=="" GOTO buildAndPublishPackage

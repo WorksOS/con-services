@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using Tests.Common;
+using VSS.ConfigurationStore;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -163,6 +163,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
     {
       DIBuilder.New()
         .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Build()
         .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))

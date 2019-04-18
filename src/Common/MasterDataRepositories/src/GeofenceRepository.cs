@@ -106,7 +106,7 @@ namespace VSS.MasterData.Repositories
       var upsertedCount = 0;
       var existing = (await QueryWithAsyncPolicy<Geofence>
       (@"SELECT 
-              GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, AsWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
+              GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
               IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
               LastActionedUTC   
             FROM Geofence
@@ -288,7 +288,7 @@ namespace VSS.MasterData.Repositories
     {
       return QueryWithAsyncPolicy<Geofence>
       (@"SELECT 
-                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, AsWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
+                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
                 LastActionedUTC
               FROM Geofence 
@@ -306,7 +306,7 @@ namespace VSS.MasterData.Repositories
     {
       return QueryWithAsyncPolicy<Geofence>
       (@"SELECT 
-                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, AsWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
+                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
                 LastActionedUTC
               FROM Geofence 
@@ -320,7 +320,7 @@ namespace VSS.MasterData.Repositories
     {
       return (await QueryWithAsyncPolicy<Geofence>
       (@"SELECT 
-               GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, AsWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
+               GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
                 LastActionedUTC
               FROM Geofence
@@ -333,7 +333,7 @@ namespace VSS.MasterData.Repositories
     {
       return (await QueryWithAsyncPolicy<Geofence>
       (@"SELECT 
-               GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, AsWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
+               GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
                 LastActionedUTC
               FROM Geofence
