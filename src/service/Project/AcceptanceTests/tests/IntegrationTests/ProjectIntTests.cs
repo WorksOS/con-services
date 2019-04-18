@@ -81,7 +81,7 @@ namespace IntegrationTests
       DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate);
 
       Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid,projectId, projectName, startDate, endDate, 1);
-      ts.UpdateProjectViaWebApi(projectGuid, "New Name", endDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
+      ts.UpdateProjectViaWebApiV3(projectGuid, "New Name", endDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
 
       var expectedProjects = new string[] {
       "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID     | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
@@ -107,7 +107,7 @@ namespace IntegrationTests
 
       Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, 1, "Central Standard Time");
 
-      ts.UpdateProjectViaWebApi(projectGuid, projectName, endDate.AddDays(10), "Central Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
+      ts.UpdateProjectViaWebApiV3(projectGuid, projectName, endDate.AddDays(10), "Central Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
       var expectedProjects = new string[] {
       "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate          | ProjectUID    | ProjectID     | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
      $"| false      | {projectName} | Central Standard Time     | {ProjectType.Standard} | {startDate:O}    | {endDate.AddDays(10):O} | {projectGuid} | {projectId}   | {customerGuid}   | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
@@ -132,7 +132,7 @@ namespace IntegrationTests
 
       Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid,projectId, projectName, startDate, endDate, 1);
 
-      ts.UpdateProjectViaWebApi(projectGuid, projectName, endDate, "Central Standard Time", DateTime.UtcNow, HttpStatusCode.Forbidden);
+      ts.UpdateProjectViaWebApiV3(projectGuid, projectName, endDate, "Central Standard Time", DateTime.UtcNow, HttpStatusCode.Forbidden);
       var expectedProjects = new string[] {
       "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID     | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
      $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId}   | {customerGuid}   | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
@@ -156,7 +156,7 @@ namespace IntegrationTests
 
       Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, 1);
 
-      ts.UpdateProjectViaWebApi(projectGuid, projectName, endDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK, ProjectType.ProjectMonitoring);
+      ts.UpdateProjectViaWebApiV3(projectGuid, projectName, endDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK, ProjectType.ProjectMonitoring);
       var expectedProjects = new string[] {
       "| IsArchived | ProjectName   | ProjectTimezone            | ProjectType                     | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID   | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
      $"| false      | {projectName} | New Zealand Standard Time  | {ProjectType.ProjectMonitoring} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid}   | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
@@ -184,7 +184,7 @@ namespace IntegrationTests
       "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID   | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
      $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid}   | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
-      ts.DeleteProjectViaWebApi(projectGuid, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.DeleteProjectViaWebApiV3(projectGuid, DateTime.UtcNow, HttpStatusCode.OK);
       
       // on project deletion, endDate is set to now, in the projects timezone.
       var endDateReset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland")?.Date.ToString("O");
@@ -220,7 +220,7 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID","fk_CustomerUID, Name", $"{customerGuid}, Trump", geofenceGuid);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID", $"{projectGuid}", geofenceGuid);
 
@@ -261,15 +261,15 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID","fk_CustomerUID, Name", $"{customerGuid}, Walls of Troy", geofenceGuid2);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID","fk_CustomerUID, Name",$"{customerGuid}, Wailing Wall",geofenceGuid3);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid, geofenceGuid2, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid2);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid3, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid, geofenceGuid3, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid3);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid3);
 
@@ -304,7 +304,7 @@ namespace IntegrationTests
     // $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid} | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
     //  ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
-    //  ts.DissociateProjectViaWebApi(projectGuid, customerGuid, DateTime.Now, HttpStatusCode.NotImplemented);
+    //  ts.DissociateProjectViaWebApiV3(projectGuid, customerGuid, DateTime.Now, HttpStatusCode.NotImplemented);
     //  ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     //}
 
@@ -325,11 +325,11 @@ namespace IntegrationTests
       DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate);
             
       ts.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
-      ts.CreateProjectViaWebApi(projectGuid, projectId, projectName, startDate, endDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
+      ts.CreateProjectViaWebApiV3(projectGuid, projectId, projectName, startDate, endDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      ts.AssociateCustomerProjectViaWebApi(projectGuid, customerGuid, 1, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateCustomerProjectViaWebApiV3(projectGuid, customerGuid, 1, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, projectGuid);
       ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, new string[] { });
     }
@@ -357,7 +357,7 @@ namespace IntegrationTests
      $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid} | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
-      ts.AssociateCustomerProjectViaWebApi(projectGuid, Guid.NewGuid(), 102, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.AssociateCustomerProjectViaWebApiV3(projectGuid, Guid.NewGuid(), 102, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
     /// <summary>
@@ -393,11 +393,11 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID","fk_CustomerUID, Name", $"{customerGuid}, Berlin Wall", geofenceGuid);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID", "fk_ProjectUID", $"{projectGuid}", geofenceGuid);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid2, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid2, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, projectGuid2);
 
       var expectedProjects = new string[] {
@@ -425,7 +425,7 @@ namespace IntegrationTests
       DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("400d+00:00:00",ts.FirstEventDate);
 
       Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, 1);
-      ts.CreateProjectViaWebApi(projectGuid2,projectId, projectName, startDate.AddYears(-5),endDate.AddYears(-5), "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
+      ts.CreateProjectViaWebApiV3(projectGuid2,projectId, projectName, startDate.AddYears(-5),endDate.AddYears(-5), "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 
       var expectedProjects = new [] {
       "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID   | CustomerUID    | LegacyCustomerId | ProjectBoundary | ",
@@ -450,7 +450,7 @@ namespace IntegrationTests
       DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("1000d+00:00:00",ts.FirstEventDate);
 
       Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, 1);
-      ts.CreateProjectViaWebApi(projectGuid2, projectId, projectName, endDate,startDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApiV3(projectGuid2, projectId, projectName, endDate,startDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
 
       var expectedProjects = new string[] {
       "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID   | CustomerUID    | LegacyCustomerId | ProjectBoundary | ",
@@ -486,18 +486,18 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID", "fk_CustomerUID, Name", $"{customerGuid}, Great Wall of China", geofenceGuid);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateGeofenceProjectViaWebApiV3(projectGuid, geofenceGuid, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID", "fk_ProjectUID", $"{projectGuid}", geofenceGuid);
 
       //create project
-      ts.CreateProjectViaWebApi(projectGuid, projectId, projectName, startDate, endDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
+      ts.CreateProjectViaWebApiV3(projectGuid, projectId, projectName, startDate, endDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in webapi db
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in consumer db
       ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, new string[] { });
 
       //Associate non existant customer with project
-      ts.AssociateCustomerProjectViaWebApi(projectGuid, customerGuid, 1, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateCustomerProjectViaWebApiV3(projectGuid, customerGuid, 1, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, projectGuid);
       ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, new string[] { });
 
@@ -648,14 +648,14 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("ProjectSubscription", "fk_SubscriptionUID", 1, subscriptionUid); // Test the database record is there
       //  ts.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
 
-      ts.CreateProjectViaWebApi(projectGuid,projectId, projectName, startDate,endDate, timeZone, projectType , DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
+      ts.CreateProjectViaWebApiV3(projectGuid,projectId, projectName, startDate,endDate, timeZone, projectType , DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); 
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); 
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID","Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", $"{projectName}, {projectId}, {(int)projectType}, {startDate}, {endDate}", projectGuid);
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID","Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", $"{projectName},{projectId}, {(int)projectType}, {startDate}, {endDate}", projectGuid);
 
-      ts.AssociateCustomerProjectViaWebApi(projectGuid, customerGuid, 1, DateTime.UtcNow, HttpStatusCode.OK);
+      ts.AssociateCustomerProjectViaWebApiV3(projectGuid, customerGuid, 1, DateTime.UtcNow, HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_CustomerUID", numProjectsForCustomer, customerGuid); //check that number of associated projects is as expected
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_CustomerUID", numProjectsForCustomer, customerGuid);
