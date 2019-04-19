@@ -43,9 +43,9 @@ namespace VSS.MasterData.Proxies
         : HeaderConstants.ExternalHeaders;
 
       // Have to store the keys here, or else we modify the dictionary while iterating
-      var keys = headers.Keys.ToList();
+      var keys = headers?.Keys.ToList() ?? new List<string>();
 
-      foreach (var headerKey in  keys)
+      foreach (var headerKey in keys)
       {
         if(keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
           continue;
@@ -53,5 +53,6 @@ namespace VSS.MasterData.Proxies
         headers.Remove(headerKey);
       }
     }
+
   }
 }

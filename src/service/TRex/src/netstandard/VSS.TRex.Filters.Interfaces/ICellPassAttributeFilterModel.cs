@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
@@ -60,12 +61,12 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     bool GPSToleranceIsGreaterThan { get; set; }
 
-    ElevationType ElevationType { get; set; }
+    Common.Types.ElevationType ElevationType { get; set; }
 
     /// <summary>
     /// The machine automatics guidance mode to be in used to record cell passes that will meet the filter.
     /// </summary>
-    MachineAutomaticsMode GCSGuidanceMode { get; set; }
+    AutomaticsType GCSGuidanceMode { get; set; }
 
     /// <summary>
     /// ReturnEarliestFilteredCellPass details how we choose a cell pass from a set of filtered

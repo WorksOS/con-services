@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Types;
@@ -78,7 +79,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     // the 5 GCS900 control state flag sets. It is currently defined as a simple
     // on/off switch. The UpdateAutomaticsMode method examines the individual
     // control states and sets the value of this accordingly.
-    MachineAutomaticsMode _AutomaticsMode = MachineAutomaticsMode.Unknown;
+    AutomaticsType _AutomaticsMode = AutomaticsType.Unknown;
 
     private byte _UTMZone = CellPassConsts.NullUTMZone;
     private CoordinateSystemType _CSType = CoordinateSystemType.NoCoordSystem;
@@ -215,7 +216,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     protected virtual void SetStartProofing(string value) => _StartProofing = value;
     protected virtual void SetICTargetLiftThickness(float value) => _ICTargetLiftThickness = value;
     protected virtual void SetApplicationVersion(string value) => _ApplicationVersion = value;
-    protected virtual void SetAutomaticsMode(MachineAutomaticsMode value) => _AutomaticsMode = value;
+    protected virtual void SetAutomaticsMode(AutomaticsType value) => _AutomaticsMode = value;
     protected virtual void SetRMVJumpThresholdValue(short value) => _RMVJumpThreshold = value;
     protected virtual void SetICSensorType(CompactionSensorType value) => _ICSensorType = value;
     protected virtual void SetICTempWarningLevelMinValue(ushort value) => _ICTempWarningLevelMinValue = value;
@@ -231,9 +232,9 @@ namespace VSS.TRex.TAGFiles.Classes.States
                                                   MachineControlStateFlags.GCSControlStateInActiveAuto |
                                                   MachineControlStateFlags.GCSControlStateAutoValueNotDriving;
 
-      MachineAutomaticsMode NewAutomaticsModeState;
+      AutomaticsType NewAutomaticsModeState;
 
-      MachineAutomaticsMode OldAutomaticsModeState = _AutomaticsMode;
+      AutomaticsType OldAutomaticsModeState = _AutomaticsMode;
 
       //   implement unknown automatics state for initialisation purposes
 
@@ -243,11 +244,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
          ((_ControlStateTilt & kMachineIsInAutomaticsModeFlags) != 0) ||
          ((_ControlStateSideShift & kMachineIsInAutomaticsModeFlags) != 0))
       {
-        NewAutomaticsModeState = MachineAutomaticsMode.Automatics;
+        NewAutomaticsModeState = AutomaticsType.Automatics;
       }
       else
       {
-        NewAutomaticsModeState = MachineAutomaticsMode.Manual;
+        NewAutomaticsModeState = AutomaticsType.Manual;
       }
 
       if (OldAutomaticsModeState != NewAutomaticsModeState)
@@ -487,7 +488,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public int ControlStateTilt { get { return _ControlStateTilt; } set { SetControlStateTilt(value); } }
     public int ControlStateSideShift { get { return _ControlStateSideShift; } set { SetControlStateSideShift(value); } }
 
-    public MachineAutomaticsMode AutomaticsMode { get { return _AutomaticsMode; } set { SetAutomaticsMode(value); } }
+    public AutomaticsType AutomaticsMode { get { return _AutomaticsMode; } set { SetAutomaticsMode(value); } }
 
     // FMachineWheelWidth records the width of wheels on wheeled machines.
     // Units are meters

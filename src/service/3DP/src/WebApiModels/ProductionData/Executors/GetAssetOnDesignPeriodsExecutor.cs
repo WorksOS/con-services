@@ -78,24 +78,30 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         // assetMatch will return rows if Uids found, however the legacyAssetIds may be invalid
         var assetUids = new List<Guid>(assetOnDesignPeriods.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty).Select(a => a.AssetUid.Value).Distinct());
-        var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders)).ToList();
-        foreach (var assetMatch in assetMatchingResult)
+        if (assetUids.Count > 0)
         {
-          if (assetMatch.Value > 0)
-            foreach (var assetOnDesignPeriod in assetOnDesignPeriods.FindAll(x => x.AssetUid == assetMatch.Key))
-              assetOnDesignPeriod.MachineId = assetMatch.Value;
+          var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders)).ToList();
+          foreach (var assetMatch in assetMatchingResult)
+          {
+            if (assetMatch.Value > 0)
+              foreach (var assetOnDesignPeriod in assetOnDesignPeriods.FindAll(x => x.AssetUid == assetMatch.Key))
+                assetOnDesignPeriod.MachineId = assetMatch.Value;
+          }
         }
       }
       else
       {
         // assetMatch will only return rows if Uids found for the legacyAssetIds
         var assetIds = new List<long>(assetOnDesignPeriods.Where(a => a.MachineId > 0).Select(a => a.MachineId).Distinct());
-        var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders)).ToList();
-        foreach (var assetMatch in assetMatchingResult)
+        if (assetIds.Count > 0)
         {
-          if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid
-            foreach (var assetOnDesignPeriod in assetOnDesignPeriods.FindAll(x => x.MachineId == assetMatch.Value))
-              assetOnDesignPeriod.AssetUid = assetMatch.Key;
+          var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders)).ToList();
+          foreach (var assetMatch in assetMatchingResult)
+          {
+            if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid
+              foreach (var assetOnDesignPeriod in assetOnDesignPeriods.FindAll(x => x.MachineId == assetMatch.Value))
+                assetOnDesignPeriod.AssetUid = assetMatch.Key;
+          }
         }
       }
     }

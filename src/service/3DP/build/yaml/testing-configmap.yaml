@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: 3dpservice-testing
 data:
+  assetmgmt3d-service: http://localhost:5001
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   FILTERSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IFilterEvent
   FILTER_API_URL: http://localhost:5001/api/v1/mock
@@ -23,7 +24,6 @@ data:
   RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   SCHEDULER_INTERNAL_EXPORT_URL: http://localhost:5001/internal/v1/mock/export
-  assetmgmet3d-service-private-v1: http://localhost:5001/api/v1
   TCCFILESPACENAME: "vldatastore-dev"
   TCCORG: "vldev"
   TCCPWD: "vldev_key"

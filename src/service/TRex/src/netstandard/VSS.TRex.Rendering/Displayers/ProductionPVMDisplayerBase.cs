@@ -81,11 +81,8 @@ namespace VSS.TRex.Rendering.Displayers
       stepYIncrementOverTwo = stepYIncrement / 2;
     }
 
-    protected virtual bool DoRenderSubGrid<T>(ISubGrid subGrid) where T : ISubGrid
+    protected virtual bool DoRenderSubGrid(ISubGrid subGrid)
     {
-      if (!(subGrid is T))
-        return false;
-
       SubGrid = subGrid;
 
       bool DrawCellStrips;
@@ -256,7 +253,7 @@ namespace VSS.TRex.Rendering.Displayers
 
         HasRenderedSubGrid = true;
 
-        result = DoRenderSubGrid<IClientLeafSubGrid>(clientSubGrid);
+      return DoRenderSubGrid(clientSubGrid);
       }
 
       return result;

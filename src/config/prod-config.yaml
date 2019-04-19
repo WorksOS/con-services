@@ -47,6 +47,9 @@ data:
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
+#SERVICE DISCOVERY REFERENCES
+  assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
+  assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
@@ -65,17 +68,19 @@ data:
 #Raptor configuration
   ASNODEIP: 10.97.96.150
   ENABLE_CONNECTED_SITE_GATEWAY: "false"
-  ENABLE_RAPTOR_GATEWAY_TAGFILE: "false"
-  ENABLE_TREX_GATEWAY_LINEWORKFILE: "false"
-  ENABLE_TREX_GATEWAY_TAGFILE: "false"
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
-  ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
-  ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
-  ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
+  ENABLE_RAPTOR_GATEWAY_TAGFILE: "false"
   ENABLE_TREX_GATEWAY_CELL_DATUM: "false"
+  ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
+  ENABLE_TREX_GATEWAY_ELEVATION: "false"
+  ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
+  ENABLE_TREX_GATEWAY_LINEWORKFILE: "false"
+  ENABLE_TREX_GATEWAY_STATIONOFFSET: "false"
+  ENABLE_TREX_GATEWAY_TAGFILE: "false"
+  ENABLE_TREX_GATEWAY_TILES: "false"
   IONODEIP: 10.97.96.165
-  SHAREUNC: \\prod-iolv01.vssengg.com\ProductionData
   RAPTORUSERNAME: svcRaptor
+  SHAREUNC: \\prod-iolv01.vssengg.com\ProductionData
   TCCSynchOtherIssueFolder: Other... (Issue)
   TCCSynchProductionDataArchivedFolder: Production-Data (Archived)
   TCCSynchProjectBoundaryIssueFolder: Project Boundary (Issue)

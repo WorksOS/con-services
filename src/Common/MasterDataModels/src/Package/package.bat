@@ -2,7 +2,7 @@
 
 SET config=Release
 SET projectFile=VSS.MasterData.Models.csproj
-SET packageServer=https://packages.vspengg.com/
+SET packageServer=http://10.97.96.144/nuget
 SET projectId=VSS.MasterData.Models.netcore
 SET packageOutputFolder=%cd%\nupkgs
 SET apiKey=qATxVIHO5rIPF3K7

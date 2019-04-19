@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Types
+﻿namespace VSS.TRex.Common.Types
 {
     /// <summary>
     /// Elevation type controls the cell pass from which to select an elevation when a set of cell passes has been 

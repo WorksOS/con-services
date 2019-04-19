@@ -20,6 +20,8 @@ using VSS.DataOcean.Client;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.TCCFileAccess;
 
 namespace VSS.Tile.Service.WebApi

@@ -245,7 +245,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         geometry,
         liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
         liftId,
-        new List<MachineDetails> { MachineDetails.Create(assetId, machineName, isJohnDoe) }
+        new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe) }
        );
 
       var request = new TileRequest

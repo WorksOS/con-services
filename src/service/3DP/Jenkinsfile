@@ -110,7 +110,7 @@ node('Jenkins-Win2016-Raptor') {
 
             // This stage is only necessarly so long as the Prod deployments are not containerised.
             stage ('Upload artifact to S3 deployment repository') {
-                bat "powershell.exe -ExecutionPolicy Bypass -Command aws s3 cp ${buildArtifact} s3://vss-merino/Productivity3D/Releases/${buildArtifact} --acl public-read --profile vss-grant"
+                bat "powershell.exe -ExecutionPolicy Bypass -Command aws s3 cp ${buildArtifact} s3://vss-merino/Productivity3D/Releases/${buildArtifact} --acl public-read"
             }
 
             stage ('Tag repository') {
