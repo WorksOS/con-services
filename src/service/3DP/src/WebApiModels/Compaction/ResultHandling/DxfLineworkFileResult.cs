@@ -40,12 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 
       foreach (var boundary in LineworkBoundaries)
       {
-        TWGS84Point[] fencePoints = boundary.Boundary.FencePoints;
-
-        if (maxPointsToApproximateTo > 2)
-        {
-           fencePoints = new DouglasPeucker().SimplifyPolyline(boundary.Boundary.FencePoints, 5);
-        }
+        var fencePoints = DouglasPeucker.DouglasPeuckerByCount(boundary.Boundary.FencePoints, maxPointsToApproximateTo);
 
         geoJson.Features.Add(new Feature
         {
@@ -58,16 +53,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       return geoJson;
     }
 
-    private static Geometry GetCoordinatesFromFencePoints(TWGS84Point[] fencePoints, bool convertLineStringCoordsToPolygon)
+    private static Geometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
     {
-      var boundaries = fencePoints.Select(point => new[] { point.Lon, point.Lat }).ToList(); // GeoJSON is lon/lat.
+  //    List<double[]> boundaries = fencePoints.Select(point => new[] { point.Lon, point.Lat }).ToList(); // GeoJSON is lon/lat.
       var boundaryType = Geometry.Types.POLYGON;
 
-      if (boundaries.First()[0] != boundaries.Last()[0] && boundaries.First()[1] != boundaries.Last()[1])
+      if (fencePoints.First()[0] != fencePoints.Last()[0] && fencePoints.First()[1] != fencePoints.Last()[1])
       {
         if (convertLineStringCoordsToPolygon)
         {
-          boundaries.Add(boundaries.First());
+          fencePoints.Add(fencePoints.First());
         }
         else
         {
@@ -78,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       return new Geometry
       {
         Type = boundaryType,
-        Coordinates = new List<List<double[]>> { boundaries }
+        Coordinates = new List<List<double[]>> { fencePoints }
       };
     }
   }

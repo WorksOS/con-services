@@ -25,11 +25,16 @@ Scenario Outline: LineworkFile - Good Request
   And with property ConvertLineStringCoordsToPolygon with value "<ConvertLineStringCoordsToPolygon>"
   And with property DxfFile with value "<DxfFile>"
   And with property CoordinateSystemFile with value "<CoordinateSystemFile>"
+  And with property MaxPoints with value "<MaxPoints>"
   When I POST the multipart request I expect response code <HttpCode>
   Then the response should match "<ResultName>" from the repository with rounding to 8
   Examples: 
-  | DxfUnits | MaxBoundariesToProcess | ConvertLineStringCoordsToPolygon | DxfFile                        | CoordinateSystemFile | ResultName              | HttpCode |
-  | 2        | 21                     |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 21BoundariesDXF         | 200      |
-  | 2        | 1                      |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 1BoundaryDXF            | 200      |
-  | 2        | 0                      |                                  | Dimensions_2012_LineString.dxf | Dimensions_2012.dc   | 1LineStringDXF          | 200      |
-  | 2        | 0                      | true                             | Dimensions_2012_LineString.dxf | Dimensions_2012.dc   | 1LineStringToPolygonDXF | 200      |
+  | DxfUnits | MaxBoundariesToProcess | ConvertLineStringCoordsToPolygon | DxfFile                        | CoordinateSystemFile | ResultName              | MaxPoints | HttpCode |
+  | 2        | 21                     |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 21BoundariesDXF         |           | 200      |
+  | 2        | 1                      |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 1BoundaryDXF            |           | 200      |
+  | 2        | 0                      |                                  | Dimensions_2012_LineString.dxf | Dimensions_2012.dc   | 1LineStringDXF          |           | 200      |
+  | 2        | 0                      | true                             | Dimensions_2012_LineString.dxf | Dimensions_2012.dc   | 1LineStringToPolygonDXF |           | 200      |
+  | 2        | 1                      |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 1BoundaryDXF            | 0         | 200      |
+  | 2        | 1                      |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 1BoundaryDXF            | 500       | 200      |
+  | 2        | 1                      |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 15PointBoundaryDXF      | 15        | 200      |
+  | 2        | 1                      |                                  | Dimensions_2012.dxf            | Dimensions_2012.dc   | 47PointBoundaryDXF      | 47        | 200      |

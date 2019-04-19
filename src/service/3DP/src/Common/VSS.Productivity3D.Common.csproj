@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.6" />

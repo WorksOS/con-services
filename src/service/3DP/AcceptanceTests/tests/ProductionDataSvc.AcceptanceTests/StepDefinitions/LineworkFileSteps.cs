@@ -21,6 +21,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string ConvertLineStringCoordsToPolygon;
     private Stream dxfFileStream;
     private Stream dcFileStream;
+    private string MaxPoints;
 
     private static string GetResource(string resourceName)
     {
@@ -51,6 +52,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void AndWithPropertyConvertLineStringCoordsToPolygonWithValue(string parameterValue)
     {
       ConvertLineStringCoordsToPolygon = parameterValue;
+    }
+
+    [And(@"with property MaxPoints with value ""(.*)""")]
+    public void AndWithPropertyMaxPointsWithValue(string parameterValue)
+    {
+      MaxPoints = parameterValue;
     }
 
     [And(@"with property DxfFile with value ""(.*)""")]
@@ -98,6 +105,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       if (int.Parse(DxfUnits) >= 0) { formContent.Add(new StringContent(DxfUnits), "DxfUnits"); }
       formContent.Add(new StringContent(MaxBoundariesToProcess), "MaxBoundariesToProcess");
+      if (int.TryParse(MaxPoints, out _)) formContent.Add(new StringContent(MaxPoints), "MaxPoints");
       if (!string.IsNullOrEmpty(ConvertLineStringCoordsToPolygon)) { formContent.Add(new StringContent(ConvertLineStringCoordsToPolygon), "ConvertLineStringCoordsToPolygon"); }
       formContent.Add(new StreamContent(dxfFileStream), "DxfFile", "dxfFile.dxf");
       formContent.Add(new StreamContent(dcFileStream), "CoordinateSystemFile", "coordinateSystemFile.dc");

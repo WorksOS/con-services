@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using C5;
 using VLPDDecls;
 
 namespace VSS.Productivity3D.Common.Algorithms
@@ -7,178 +9,196 @@ namespace VSS.Productivity3D.Common.Algorithms
   public class DouglasPeucker
   {
     /// <summary>
-    /// Simplify the polyline using Douglas-Peucker algorithm. The algorithm always includes (starts with) the first and last point.
-    /// </summary>
-    public List<TCoordPoint> SimplifyPolyline(List<TCoordPoint> nePoints, double distanceTolerance)
-    {
-      var included = new List<bool>();
-
-      // TODO (Aaron) init better.
-      for (var i = 0; i < nePoints.Count; i++)
-      {
-        included.Add(i == 0 || i == nePoints.Count - 1);
-      }
-
-      ReducePointCount(nePoints, 0, nePoints.Count - 1, included, distanceTolerance);
-      var newPoints = new List<TCoordPoint>();
-
-      for (var i = 0; i < nePoints.Count; i++)
-      {
-        if (included[i]) newPoints.Add(nePoints[i]);
-      }
-
-      return newPoints;
-    }
-
-    /// <summary>
-    /// Simplify the polyline using Douglas-Peucker algorithm. The algorithm always includes (starts with) the first and last point.
-    /// </summary>
-    public TWGS84Point[] SimplifyPolyline(TWGS84Point[] wgsPoints, double distanceTolerance)
-    {
-      var included = new List<bool>();
-
-      for (var i = 0; i < wgsPoints.Length; i++)
-      {
-        included.Add(i == 0 || i == wgsPoints.Length - 1);
-      }
-
-      ReducePointCount(wgsPoints, 0, wgsPoints.Length - 1, included, distanceTolerance);
-
-      var fencePoints = new List<TWGS84Point>(wgsPoints.Length);
-
-      for (var i = 0; i < wgsPoints.Length; i++)
-      {
-        if (included[i]) fencePoints.Add(wgsPoints[i]);
-      }
-      
-      return fencePoints.ToArray();
-    }
-
-    private static void ReducePointCount(TWGS84Point[] wgsPoints, int startIndex, int endIndex, List<bool> included, double distanceTolerance)
-    {
-      var maxDistanceIndex = -1;
-      double maxDistance = 0;
-
-      for (var i = startIndex + 1; i < endIndex; i++)
-      {
-        double distance = LineToPointDistance2D(
-          wgsPoints[startIndex].Lat,
-          wgsPoints[startIndex].Lon,
-          wgsPoints[endIndex].Lat,
-          wgsPoints[endIndex].Lon,
-          wgsPoints[i].Lat,
-          wgsPoints[i].Lon, true);
-
-        if (distance > maxDistance)
-        {
-          maxDistance = distance;
-          maxDistanceIndex = i;
-        }
-      }
-
-      if (maxDistance > distanceTolerance)
-      {
-        included[maxDistanceIndex] = true;
-
-        ReducePointCount(wgsPoints, startIndex, maxDistanceIndex, included, distanceTolerance);
-        ReducePointCount(wgsPoints, maxDistanceIndex, endIndex, included, distanceTolerance);
-      }
-    }
-
-    private static void ReducePointCount(List<TCoordPoint> nePoints, int startIndex, int endIndex, List<bool> included, double distanceTolerance)
-    {
-      var maxDistanceIndex = -1;
-      double maxDistance = 0;
-
-      for (var i = startIndex + 1; i < endIndex; i++)
-      {
-        double distance =
-          LineToPointDistance2D(nePoints[startIndex].X,
-          nePoints[startIndex].Y,
-          nePoints[endIndex].X,
-          nePoints[endIndex].Y,
-          nePoints[i].X,
-          nePoints[i].Y,
-          true);
-
-        if (distance > maxDistance)
-        {
-          maxDistance = distance;
-          maxDistanceIndex = i;
-        }
-      }
-
-      if (maxDistance > distanceTolerance)
-      {
-        included[maxDistanceIndex] = true;
-
-        ReducePointCount(nePoints, startIndex, maxDistanceIndex, included, distanceTolerance);
-        ReducePointCount(nePoints, maxDistanceIndex, endIndex, included, distanceTolerance);
-      }
-    }
-
-    /// <summary>
-    /// Compute the distance from AB to C.
+    /// Uses the Douglas Peucker alogrithm to reduce a polyline to a specifc number of points.
+    /// 
+    /// The Original Code is 'psimpl - generic n-dimensional polyline simplification'.
+    /// The Initial Developer of the Original Code is Elmar de Koning.
     /// </summary>
     /// <remarks>
-    /// If isSegment is true, AB is a segment, not a line.
+    /// This is not a pure implementation of Douglas Peucker because it lacks the tolerance input that allows point reduction through
+    /// approximation based on the 
     /// </remarks>
-    private static double LineToPointDistance2D(double ax, double ay, double bx, double by, double cx, double cy, bool isSegment)
+    /// <returns>Returns coorindate array reduced to the target point count.</returns>
+    public static List<double[]> DouglasPeuckerByCount(TWGS84Point[] coordinates, int maxPointTolerance)
     {
-      double dist = CrossProduct(ax, ay, bx, by, cx, cy) / Distance(ax, ay, bx, by);
+      if (maxPointTolerance < 0) maxPointTolerance = coordinates.GetLength(0);
+      if (maxPointTolerance > 1500) maxPointTolerance = 1500;
 
-      if (isSegment)
+      // Zero out keys and mark the first and last 'to keep'.
+      var keys = Enumerable.Repeat(false, coordinates.Length).ToList();
+      keys[0] = true;
+      keys[coordinates.Length - 1] = true;
+
+      var keyCount = 2;
+
+      // Sorted (max dist2) queue containing sub-polylines.
+      IPriorityQueue<SubPolyAlt> queue = new IntervalHeap<SubPolyAlt>();
+
+      // Add initial polys
+      SubPolyAlt subPoly;
+      for (var i = 1; i < keyCount; i++)
       {
-        double dot1 = DotProduct(ax, ay, bx, by, cx, cy);
-        if (dot1 > 0) return Distance(bx, by, cx, cy);
-
-        double dot2 = DotProduct(bx, by, ax, ay, cx, cy);
-        if (dot2 > 0) return Distance(ax, ay, cx, cy);
+        subPoly = new SubPolyAlt(0, coordinates.Length - 1);
+        subPoly.subPolyKeyInfo = FindKey(coordinates, subPoly.FirstPointCoordIndex, subPoly.LastPointCoordIndex);
+        queue.Add(subPoly);
       }
 
-      return Math.Abs(dist);
+      while (!queue.IsEmpty)
+      {
+        // Take a sub poly
+        subPoly = queue.DeleteMax();
+        // And store the key
+        keys[subPoly.subPolyKeyInfo.CoordinateKeyIndex] = true;
+
+        // check point count tolerance
+        keyCount++;
+        if (keyCount == maxPointTolerance) break;
+
+        // split the polyline at the key and recurse
+        var subPolyLeft = new SubPolyAlt(subPoly.FirstPointCoordIndex, subPoly.subPolyKeyInfo.CoordinateKeyIndex);
+        subPolyLeft.subPolyKeyInfo = FindKey(coordinates, subPolyLeft.FirstPointCoordIndex, subPolyLeft.LastPointCoordIndex);
+
+        if (subPolyLeft.subPolyKeyInfo.CoordinateKeyIndex > 0) queue.Add(subPolyLeft);
+
+        var subPolyRight = new SubPolyAlt(subPoly.subPolyKeyInfo.CoordinateKeyIndex, subPoly.LastPointCoordIndex);
+        subPolyRight.subPolyKeyInfo = FindKey(coordinates, subPolyRight.FirstPointCoordIndex, subPolyRight.LastPointCoordIndex);
+
+        if (subPolyRight.subPolyKeyInfo.CoordinateKeyIndex > 0) queue.Add(subPolyRight);
+      }
+
+      var fencePoints = new List<double[]>(keys.Count);
+
+      for (var i = 0; i < coordinates.Length; i++)
+      {
+        if (keys[i]) fencePoints.Add(new [] { coordinates[i].Lon, coordinates[i].Lat });
+      }
+
+      return fencePoints;
+    }
+
+    /// <summary>
+    /// Uses the Douglas Peucker alogrithm to reduce a polyline to a specifc number of points.
+    /// </summary>
+    public static List<double[]> DouglasPeuckerByCount(double[,] coordinates, int maxPointTolerance)
+    {
+      var pointCount = coordinates.GetLength(0);
+      var wgsPointArray = new TWGS84Point[pointCount];
+
+      for (var i = 0; i < pointCount; i++)
+      { 
+        wgsPointArray[i].Lon = coordinates[i, 0];
+        wgsPointArray[i].Lat = coordinates[i, 1];
+      }
+
+      return DouglasPeuckerByCount(wgsPointArray, maxPointTolerance);
     }
 
     /// <summary>
     /// Compute the dot product AB . AC
     /// </summary>
-    private static double DotProduct(double ax, double ay, double bx, double by, double cx, double cy)
+    private static double DotProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
     {
-      double abx = bx - ax;
-      double aby = by - ay;
-      double bcx = cx - bx;
-      double bcy = cy - by;
+      double abx = lastPoint.Lon - lastPoint.Lon;
+      double aby = lastPoint.Lat - firstPoint.Lat;
+      double bcx = currentPoint.Lon - lastPoint.Lon;
+      double bcy = currentPoint.Lat - lastPoint.Lat;
+      double dot = abx * bcx + aby * bcy;
 
-      return abx * bcx + aby * bcy;
+      return dot;
     }
 
     /// <summary>
     /// Compute the cross product AB x AC
     /// </summary>
-    private static double CrossProduct(double ax, double ay, double bx, double by, double cx, double cy)
+    private static double CrossProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
     {
-      double abx = bx - ax;
-      double aby = by - ay;
-      double acx = cx - ax;
-      double acy = cy - ay;
+      double abx = lastPoint.Lon - firstPoint.Lon;
+      double aby = lastPoint.Lat - firstPoint.Lat;
+      double acx = currentPoint.Lon - firstPoint.Lon;
+      double acy = currentPoint.Lat - firstPoint.Lat;
+      double cross = abx * acy - aby * acx;
 
-      return abx * acy - aby * acx;
+      return cross;
     }
 
     /// <summary>
     /// Compute the distance from A to B
     /// </summary>
-    public static double Distance(double ax, double ay, double bx, double by)
-    {
-      return Math.Sqrt(SquaredDistance(ax, ay, bx, by));
-    }
+    private static double Distance(TWGS84Point firstPoint, TWGS84Point lastPoint) => Math.Sqrt(SquaredDistance(firstPoint, lastPoint));
 
-    private static double SquaredDistance(double ax, double ay, double bx, double by)
+    private static double SquaredDistance(TWGS84Point firstPoint, TWGS84Point lastPoint)
     {
-      double d1 = ax - bx;
-      double d2 = ay - by;
+      double d1 = firstPoint.Lon - lastPoint.Lon;
+      double d2 = firstPoint.Lat - lastPoint.Lat;
 
       return d1 * d1 + d2 * d2;
+    }
+
+    /// <summary>
+    /// Compute the distance from AB to C.
+    /// If isSegment is true, AB is a segment, not a line.
+    /// </summary>
+    private static double LineToPointDistance2D(TWGS84Point firstLatLon, TWGS84Point lastPoint, TWGS84Point currentPoint, bool isSegment)
+    {
+      double dist = CrossProduct(firstLatLon, lastPoint, currentPoint) / Distance(firstLatLon, lastPoint);
+
+      if (isSegment)
+      {
+        double dot1 = DotProduct(firstLatLon, lastPoint, currentPoint);
+
+        if (dot1 > 0) return Distance(lastPoint, currentPoint);
+
+        double dot2 = DotProduct(lastPoint, firstLatLon, currentPoint);
+
+        if (dot2 > 0) return Distance(firstLatLon, currentPoint);
+      }
+
+      return Math.Abs(dist);
+    }
+
+    private static KeyInfo FindKey(TWGS84Point[] coords, int first, int last)
+    {
+      var keyInfo = new KeyInfo();
+
+      for (var current = first + 1; current < last; current++)
+      {
+        double d2 = LineToPointDistance2D(coords[first], coords[last], coords[current], true);
+
+        if (d2 < keyInfo.SquaredDistanceOfKeyToSegment) continue;
+
+        // Update maximum squared distance and the point it belongs to
+        keyInfo.CoordinateKeyIndex = current;
+        keyInfo.SquaredDistanceOfKeyToSegment = d2;
+      }
+
+      return keyInfo;
+    }
+
+    private class KeyInfo
+    {
+      public int CoordinateKeyIndex;
+      public double SquaredDistanceOfKeyToSegment;
+
+      public KeyInfo(int coordinateKeyIndex = 0, double squaredDistanceOfKeyToSegment = 0)
+      {
+        CoordinateKeyIndex = coordinateKeyIndex;
+        SquaredDistanceOfKeyToSegment = squaredDistanceOfKeyToSegment;
+      }
+    }
+
+    private class SubPolyAlt : IComparable<SubPolyAlt>
+    {
+      public readonly int FirstPointCoordIndex;
+      public readonly int LastPointCoordIndex;
+      public KeyInfo subPolyKeyInfo;
+
+      public SubPolyAlt(int firstPointCoordIndex = 0, int lastPointCoordIndex = 0)
+      {
+        FirstPointCoordIndex = firstPointCoordIndex;
+        LastPointCoordIndex = lastPointCoordIndex;
+      }
+
+      public int CompareTo(SubPolyAlt other) => subPolyKeyInfo.SquaredDistanceOfKeyToSegment.CompareTo(other.subPolyKeyInfo.SquaredDistanceOfKeyToSegment);
     }
   }
 }
