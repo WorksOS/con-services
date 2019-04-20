@@ -1,7 +1,7 @@
 ﻿Feature: LineworkFile
 
 Scenario Outline: LineworkFile - Bad Request
-  Given the service route "/api/v2/linework/boundaries" and result repo "LineworkFileResponse.json"
+  Given the service route "/api/v2/linework/boundaries" and result repo "LineworkFiles/LineworkFileResponse.json"
   And with property DxfUnits with value "<DxfUnits>"
   And with property MaxBoundariesToProcess with value "<MaxBoundariesToProcess>"
   And with property DxfFile with value "<DxfFile>"
@@ -19,7 +19,7 @@ Scenario Outline: LineworkFile - Bad Request
   | 2        | 1                      | 0_boundaries.dxf    | Dimensions_2012.dc   | ErrorNoBoundariesInFile                  | 400      |
 
 Scenario Outline: LineworkFile - Good Request
-  Given the service route "/api/v2/linework/boundaries" and result repo "LineworkFileResponse.json"
+  Given the service route "/api/v2/linework/boundaries" and result repo "LineworkFiles/LineworkFileResponse.json"
   And with property DxfUnits with value "<DxfUnits>"
   And with property MaxBoundariesToProcess with value "<MaxBoundariesToProcess>"
   And with property ConvertLineStringCoordsToPolygon with value "<ConvertLineStringCoordsToPolygon>"

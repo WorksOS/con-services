@@ -55,7 +55,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 
     private static Geometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
     {
-  //    List<double[]> boundaries = fencePoints.Select(point => new[] { point.Lon, point.Lat }).ToList(); // GeoJSON is lon/lat.
       var boundaryType = Geometry.Types.POLYGON;
 
       if (fencePoints.First()[0] != fencePoints.Last()[0] && fencePoints.First()[1] != fencePoints.Last()[1])

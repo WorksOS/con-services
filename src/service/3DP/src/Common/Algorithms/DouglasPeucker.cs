@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Common.Algorithms
 
       for (var i = 0; i < coordinates.Length; i++)
       {
-        if (keys[i]) fencePoints.Add(new [] { coordinates[i].Lon, coordinates[i].Lat });
+        if (keys[i]) fencePoints.Add(new[] { coordinates[i].Lon, coordinates[i].Lat });
       }
 
       return fencePoints;
@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.Common.Algorithms
       var wgsPointArray = new TWGS84Point[pointCount];
 
       for (var i = 0; i < pointCount; i++)
-      { 
+      {
         wgsPointArray[i].Lon = coordinates[i, 0];
         wgsPointArray[i].Lat = coordinates[i, 1];
       }
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// </summary>
     private static double DotProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
     {
-      double abx = lastPoint.Lon - lastPoint.Lon;
+      double abx = lastPoint.Lon - firstPoint.Lon;
       double aby = lastPoint.Lat - firstPoint.Lat;
       double bcx = currentPoint.Lon - lastPoint.Lon;
       double bcy = currentPoint.Lat - lastPoint.Lat;
@@ -138,19 +138,19 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// Compute the distance from AB to C.
     /// If isSegment is true, AB is a segment, not a line.
     /// </summary>
-    private static double LineToPointDistance2D(TWGS84Point firstLatLon, TWGS84Point lastPoint, TWGS84Point currentPoint, bool isSegment)
+    private static double LineToPointDistance2D(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint, bool isSegment)
     {
-      double dist = CrossProduct(firstLatLon, lastPoint, currentPoint) / Distance(firstLatLon, lastPoint);
+      double dist = CrossProduct(firstPoint, lastPoint, currentPoint) / Distance(firstPoint, lastPoint);
 
       if (isSegment)
       {
-        double dot1 = DotProduct(firstLatLon, lastPoint, currentPoint);
+        double dot1 = DotProduct(firstPoint, lastPoint, currentPoint);
 
         if (dot1 > 0) return Distance(lastPoint, currentPoint);
 
-        double dot2 = DotProduct(lastPoint, firstLatLon, currentPoint);
+        double dot2 = DotProduct(lastPoint, firstPoint, currentPoint);
 
-        if (dot2 > 0) return Distance(firstLatLon, currentPoint);
+        if (dot2 > 0) return Distance(firstPoint, currentPoint);
       }
 
       return Math.Abs(dist);
