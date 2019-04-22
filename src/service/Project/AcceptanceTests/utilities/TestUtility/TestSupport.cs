@@ -1500,11 +1500,11 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "ParentUid"))
           {
-            importedFileDescriptor.ParentUid = eventObject.ParentUid;
+            importedFileDescriptor.ParentUid = Guid.Parse(eventObject.ParentUid);
           }
           if (HasProperty(eventObject, "Offset"))
           {
-            importedFileDescriptor.Offset = eventObject.Offset;
+            importedFileDescriptor.Offset = double.Parse(eventObject.Offset);
           }
           if (HasProperty(eventObject, "IsActivated"))
           {
