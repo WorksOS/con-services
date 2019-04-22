@@ -10,6 +10,7 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
 using VSS.Common.Abstractions.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Exceptions;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Models;
 
@@ -169,7 +170,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
       logger.LogInformation($"Request for Service {serviceName}, Type: {apiType}, Version: {version} result: {url}");
 
       if (string.IsNullOrEmpty(url))
-        return null;
+        throw new ServiceNotFoundException(serviceName);
 
       // Now we have a URL, attempt to add the routes
       if (string.IsNullOrEmpty(route))

@@ -9,6 +9,7 @@ namespace VSS.Productivity3D.AssetMgmt3D
       GeneralError = 0,
       FilterConvertFailure = 1,
       DataError = 2,
+      NoMatchingAssets = 3
     }
 
     public AssetMgmt3DExecutionStates()
