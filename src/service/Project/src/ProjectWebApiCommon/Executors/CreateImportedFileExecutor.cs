@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
@@ -52,7 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           "shouldn't get here"); // to keep compiler happy
       }
 
-      await CheckIfParentSurfaceExistsAsync(createimportedfile);
+      await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(createimportedfile.ImportedFileType, createimportedfile.ParentUid, serviceExceptionHandler, projectRepo);
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
@@ -148,19 +149,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogInformation(
         $"CreateImportedFileV4. completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       return importedFile;
-    }
-
-    private async Task CheckIfParentSurfaceExistsAsync(CreateImportedFile createImportedFile)
-    {
-      //Check parent exists for a reference design
-      if (createImportedFile.ImportedFileType == ImportedFileType.ReferenceSurface)
-      {
-        var parent = await projectRepo.GetImportedFile(createImportedFile.ParentUid.ToString());
-        if (parent == null)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);
-        }
-      }
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

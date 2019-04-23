@@ -15,7 +15,6 @@ using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -27,15 +26,11 @@ using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Project.WebAPI.Internal.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
@@ -133,7 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       ContractExecutionResult importedFileResult;
 
-      using (var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read))
+      using (var fileStream = importedFileType == ImportedFileType.ReferenceSurface ? null : System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read))
       {
         importedFileResult = await UpsertFileInternal(file.flowFilename, fileStream, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
@@ -183,15 +178,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
-      var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
-      transferProxy.Upload(fileStream, s3Path);
+      if (importedFileType != ImportedFileType.ReferenceSurface)
+      {
+        var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
+        var transferProxy = transferProxyFunc(TransferProxyType.Default);
+        transferProxy.Upload(fileStream, s3Path);
+      }
 
       var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
       // The QueryString will have values in it, so it's safe to add extra queries with the & as opposed to ?, then &
       var callbackUrl = $"{baseUrl}/internal/v4/importedfile{Request.QueryString}";
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}";
-      callbackUrl += $"&awsFilePath={WebUtility.UrlEncode(s3Path)}";
+      if (importedFileType != ImportedFileType.ReferenceSurface)
+        callbackUrl += $"&awsFilePath={WebUtility.UrlEncode(s3Path)}";
 
       var executionTimeout = configStore.GetValueInt("PEGASUS_EXECUTION_TIMEOUT_MINS", 5) * 60000;//minutes converted to millisecs
       var request = new ScheduleJobRequest
@@ -243,36 +242,47 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromServices] ISchedulerProxy schedulerProxy)
     {
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
-      log.LogInformation(
-        $"InternalImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
-        $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}  parentUid: {parentUid} offset: {offset}");
 
-      // Retrieve the stored file from AWS
-      var fileResult = await transferProxy.Download(awsFilePath);
-      if (fileResult == null)
+      ImportedFileDescriptorSingleResult importedFileResult = null;
+      if (importedFileType == ImportedFileType.ReferenceSurface)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
+        importedFileResult = await UpsertFileInternal(filename, null, projectUid, importedFileType, dxfUnitsType,
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
+      }
+      else
+      {
+        var transferProxy = transferProxyFunc(TransferProxyType.Default);
+        log.LogInformation(
+          $"InternalImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
+          $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}  parentUid: {parentUid} offset: {offset}");
+
+        // Retrieve the stored file from AWS
+        var fileResult = await transferProxy.Download(awsFilePath);
+        if (fileResult == null)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
+        }
+
+        using (var ms = new MemoryStream())
+        {
+          // Depending on the size of the file in S3, the stream returned may or may not support seeking
+          // Which we need to TCC to know the length of the file (can't find the length, if you can't seek).
+          // To solve this, we have to download the entire stream here and copy to memory.
+          // Allowing TCC to upload the file.
+          // Not the best solution for extra large files, but TCC doesn't support uploading without file size AFAIK
+          fileResult.FileStream.CopyTo(ms);
+
+          importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
+            fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
+        }
       }
 
-      using (var ms = new MemoryStream())
-      {
-        // Depending on the size of the file in S3, the stream returned may or may not support seeking
-        // Which we need to TCC to know the length of the file (can't find the length, if you can't seek).
-        // To solve this, we have to download the entire stream here and copy to memory.
-        // Allowing TCC to upload the file.
-        // Not the best solution for extra large files, but TCC doesn't support uploading without file size AFAIK
-        fileResult.FileStream.CopyTo(ms);
-
-        var importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
-
-        log.LogInformation(
-          $"InternalImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
+      log.LogInformation(
+          $"InternalImportedFileV4. Completed successfully. Response: {JsonConvert.SerializeObject(importedFileResult)}");
 
         return importedFileResult;
-      }
     }
+    
 
     /// <summary>
     /// Upsert imported file
@@ -417,17 +427,25 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Guid? parentUid,
       double offset)
     {
-      if (!System.IO.File.Exists(filePath))
+      if (importedFileType == ImportedFileType.ReferenceSurface)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
+        return await UpsertFileInternal(filePath, null, Guid.Parse(projectUid), importedFileType, dxfUnitsType, 
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
       }
-
-      string fileName = Path.GetFileName(filePath);
-
-      using (var fileStream = new FileStream(filePath, FileMode.Open))
+      else
       {
-        return await UpsertFileInternal(fileName, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType, fileCreatedUtc,
-          fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
+        if (!System.IO.File.Exists(filePath))
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
+        }
+
+        string fileName = Path.GetFileName(filePath);
+
+        using (var fileStream = new FileStream(filePath, FileMode.Open))
+        {
+          return await UpsertFileInternal(fileName, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
+            fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
+        }
       }
     }
 
@@ -464,6 +482,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       FileDescriptor fileDescriptor = null;
 
       if (importedFileType != ImportedFileType.ReferenceSurface)
+      {
+        //Set file descriptor to parent design
+        var parentDesign = await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(importedFileType, parentUid, serviceExceptionHandler, projectRepo);
+        fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(parentDesign.FileDescriptor);
+      }
+      else
       {
         if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
         {
@@ -554,11 +578,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       ImportedFileDescriptor importedFileDescriptor = null;
       if (importedFileList.Count > 0)
-        importedFileDescriptor = importedFileList.FirstOrDefault(
-          f => string.Equals(f.Name, filename, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (importedFileType != ImportedFileType.SurveyedSurface || f.SurveyedUtc == surveyedUtc)
-               && (importedFileType != ImportedFileType.ReferenceSurface || (f.ParentUid == parentUid && f.Offset == offset)));
+      {
+        if (importedFileType == ImportedFileType.ReferenceSurface)
+        {
+          importedFileDescriptor = importedFileList.FirstOrDefault(
+            f => f.ParentUid == parentUid && Math.Round(Math.Abs(f.Offset - offset), 3) > 0.001);
+        }
+        else
+        {
+          importedFileDescriptor = importedFileList.FirstOrDefault(
+            f => string.Equals(f.Name, filename, StringComparison.OrdinalIgnoreCase)
+                 && f.ImportedFileType == importedFileType
+                 && (importedFileType != ImportedFileType.SurveyedSurface || f.SurveyedUtc == surveyedUtc));
+        }
+      }
 
       if (importedFileDescriptor != null)
       {

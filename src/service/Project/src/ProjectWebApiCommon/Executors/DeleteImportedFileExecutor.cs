@@ -154,11 +154,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return new ContractExecutionResult();
     }
 
-    private void xxx()
-    {
-
-    }
-
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();

@@ -183,27 +183,16 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void ValidateImportFile_ReferenceSurfaceHappyPath()
     {
-      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
 
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
         fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUid, offset);
     }
 
     [TestMethod]
-    public void ValidateImportFile_ReferenceSurfaceWrongFileExtension()
-    {
-      var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
-
-      var ex = Assert.ThrowsException<ServiceException>(
-        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
-          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null, parentUid, offset));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
-    }
-
-    [TestMethod]
     public void ValidateImportFile_ReferenceSurfaceMissingParent()
     {
-      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,
@@ -214,7 +203,7 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void ValidateImportFile_ReferenceSurfaceMissingOffset()
     {
-      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah" };
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.ImperialFeet,

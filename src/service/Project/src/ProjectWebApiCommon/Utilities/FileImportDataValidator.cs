@@ -46,16 +46,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             ProjectErrorCodesProvider.FirstNameWithOffset(31)));
       }
 
-      var fileExtension = Path.GetExtension(filename).ToLower();
-      if (!(importedFileType == ImportedFileType.Linework && fileExtension == ".dxf" ||
-            importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
-            importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
-            importedFileType == ImportedFileType.Alignment && fileExtension == ".svl" ||
-            importedFileType == ImportedFileType.ReferenceSurface && fileExtension == ".ttm"))
+      if (importedFileType != ImportedFileType.ReferenceSurface)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
-            ProjectErrorCodesProvider.FirstNameWithOffset(32)));
+        var fileExtension = Path.GetExtension(filename).ToLower();
+        if (!(importedFileType == ImportedFileType.Linework && fileExtension == ".dxf" ||
+              importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
+              importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
+              importedFileType == ImportedFileType.Alignment && fileExtension == ".svl"))
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
+              ProjectErrorCodesProvider.FirstNameWithOffset(32)));
+        }
       }
 
       if (!Enum.IsDefined(typeof(DxfUnitsType), dxfUnitsType))
