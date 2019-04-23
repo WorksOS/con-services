@@ -474,14 +474,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       bool creating = existing == null;
       log.LogInformation(
         creating
-          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUId {parentUid} offset: {offset}"
+          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
           : $"UpdateImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
       ImportedFileDescriptorSingleResult importedFile;
 
       FileDescriptor fileDescriptor = null;
 
-      if (importedFileType != ImportedFileType.ReferenceSurface)
+      if (importedFileType == ImportedFileType.ReferenceSurface)
       {
         //Set file descriptor to parent design
         var parentDesign = await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(importedFileType, parentUid, serviceExceptionHandler, projectRepo);
