@@ -192,7 +192,7 @@ namespace RepositoryTests
       Assert.IsNotNull(g2.Result, "Unable to retrieve referenced ImportedFiles from ProjectRepo");
       var list = g2.Result.ToList();
       Assert.AreEqual(1, list.Count, "Wrong number of referenced ImportedFiles");
-      Assert.AreEqual(createImportedFileEvent2.ImportedFileUID, list[0].ImportedFileUid, "Wrong referenced ImportedFile");
+      Assert.AreEqual(createImportedFileEvent2.ImportedFileUID.ToString(), list[0].ImportedFileUid, "Wrong referenced ImportedFile");
     }
 
     /// <summary>
