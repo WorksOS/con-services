@@ -317,8 +317,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       log.LogInformation(
         $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}  parentUid: {parentUid} offset: {offset}");
-
-      return UpsertFile(file.path, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
+      var filePath = importedFileType == ImportedFileType.ReferenceSurface ? file.flowFilename : file.path;
+      return UpsertFile(filePath, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
     }
 
     /// <summary>
@@ -358,7 +358,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58, $"Expected a multipart request, but got '{Request.ContentType}'");
       }
 
-      var targetFilePath = await HttpContext.Request.StreamFile(filename, log);
+      var targetFilePath = importedFileType == ImportedFileType.ReferenceSurface ? filename : await HttpContext.Request.StreamFile(filename, log);
 
       var result = await UpsertFile(targetFilePath, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, parentUid, offset);
 
@@ -582,7 +582,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         if (importedFileType == ImportedFileType.ReferenceSurface)
         {
           importedFileDescriptor = importedFileList.FirstOrDefault(
-            f => f.ParentUid == parentUid && Math.Round(Math.Abs(f.Offset - offset), 3) > 0.001);
+            f => f.ParentUid == parentUid && Math.Round(Math.Abs(f.Offset - offset), 3) < 0.001);
         }
         else
         {

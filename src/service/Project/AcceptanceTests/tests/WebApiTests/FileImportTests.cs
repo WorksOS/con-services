@@ -319,13 +319,13 @@ namespace WebApiTests
       //Parent Design
       var parentName = TestFile.TestDesignSurface1.FullPath();
       var importFileArray = new[] {
-        "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
+        "| EventType              | ProjectUid   | CustomerUid   | Name          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {parentName} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult1 = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
       var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpected(filesResult1.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Reference Surfaces
-      var parentUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
+      var parentUid = filesResult1.ImportedFileDescriptor.ImportedFileUid;
       var offset1 = 1.5;
       var offset2 = -2.5;
       parentName = Path.GetFileNameWithoutExtension(parentName);
@@ -335,11 +335,11 @@ namespace WebApiTests
          "| EventType              | ProjectUid   | CustomerUid   | Name    | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset    |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name1} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset1} |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name2} | 6                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset2} |"};
-      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name1)}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var filesResult3 = importFile.SendRequestToFileImportV4(ts, importFileArray2, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface2 }" }));
+      var filesResult3 = importFile.SendRequestToFileImportV4(ts, importFileArray2, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name2)}" }));
       var expectedResult3 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult3.ImportedFileDescriptor, expectedResult3, true);
 
@@ -628,10 +628,10 @@ namespace WebApiTests
       var importFileArray1 = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                                     | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |", 
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime} | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray1, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var filesResult1 = importFile.SendRequestToFileImportV4(ts, importFileArray1, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
       var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
+      ts.CompareTheActualImportFileWithExpected(filesResult1.ImportedFileDescriptor, expectedResult1, true);
+      Assert.AreEqual(1, filesResult1.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult1.ImportedFileDescriptor.ImportedFileHistory.Count);
 
       //Reference surface
       var offset = 1.5;
@@ -639,29 +639,24 @@ namespace WebApiTests
       var parentName = Path.GetFileNameWithoutExtension(TestFile.TestDesignSurface1.FullPath());
       var name = $"{parentName} +{offset}m";
       var newName = $"{parentName} +{newOffset}m";
+      var parentUid = filesResult1.ImportedFileDescriptor.ImportedFileUid;
       var importFileArray2 = new[] {
-        "| EventType              | ProjectUid   | CustomerUid   | Name       | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid                   | Offset      |", 
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name}    | 6                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           | {expectedResult1.ParentUid} | {offset}    |", 
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {newName} | 6                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | true        | 15           | 19           | {expectedResult1.ParentUid} | {newOffset} |" }; 
+        "| EventType              | ProjectUid   | CustomerUid   | Name       | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel | ParentUid   | Offset      |", 
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {name}    | 6                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {offset}    |", 
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {newName} | 6                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | true        | 15           | 19           | {parentUid} | {newOffset} |" }; 
       var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult2, true);
-      Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count);
+      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      Assert.AreEqual(1, filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count);
 
-      //Update reference surface
+      //Update reference surface - will create a new one (since new name and offset)
       var filesResult3 = importFile.SendRequestToFileImportV4(ts, importFileArray2, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={HttpUtility.UrlEncode(newName)}" }));
       var expectedResult3 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult3.ImportedFileDescriptor, expectedResult3, true);
+      Assert.AreEqual(1, filesResult3.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult3.ImportedFileDescriptor.ImportedFileHistory.Count);
 
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
-      Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      var design =
-        importFileList.ImportedFileDescriptors.First(i => i.ImportedFileType == ImportedFileType.DesignSurface);
-      ts.CompareTheActualImportFileWithExpectedV4(design, expectedResult1, true);
-      Assert.AreEqual(1, design.ImportedFileHistory.Count, "Expected 1 imported file History but got " + design.ImportedFileHistory.Count);
-      var reference =
-        importFileList.ImportedFileDescriptors.First(i => i.ImportedFileType == ImportedFileType.ReferenceSurface);
-      ts.CompareTheActualImportFileWithExpectedV4(reference, expectedResult3, true);
-      Assert.AreEqual(2, reference.ImportedFileHistory.Count, "Expected 2 imported file History but got " + reference.ImportedFileHistory.Count);
+      Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 3, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
     }
 
     [TestMethod]

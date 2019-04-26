@@ -179,8 +179,8 @@ namespace TestUtility
     {
       try
       {
-        var name = new DirectoryInfo(fullFileName).Name;
         //For reference surfaces no file to upload
+        var name = isReferenceSurface ?  fullFileName : new DirectoryInfo(fullFileName).Name;
         Byte[] bytes = isReferenceSurface ? null : File.ReadAllBytes(fullFileName);
         var fileSize = isReferenceSurface ? 0 : bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
