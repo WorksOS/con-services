@@ -5,7 +5,7 @@ param(
 Set-Location $PSScriptRoot
 
 Write-Host "Logging in to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --profile vss-grant --region us-west-2)
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 docker-compose --file docker-compose-local.yml pull
 
