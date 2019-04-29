@@ -52,7 +52,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       {
         ProjectID = siteModel.ID,
         ReferenceDesignUID = designUid,
-        Offset = 0,
+        ReferenceOffset = 0,
         CellSize = siteModel.CellSize,
         Filters = new FilterSet(new CombinedFilter()),
         OriginX = cellX,
@@ -83,7 +83,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       if (patchExists)
       {
         // Check a request with an offset provides the expected answer
-        argument.Offset = offset;
+        argument.ReferenceOffset = offset;
 
         var response2 = request.Execute(argument);
 

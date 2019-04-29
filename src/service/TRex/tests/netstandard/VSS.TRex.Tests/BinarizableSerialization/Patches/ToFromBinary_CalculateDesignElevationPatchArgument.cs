@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Patches
         Filters = new FilterSet(new CombinedFilter()),
         CellSize = TestConsts.CELL_SIZE,
         ReferenceDesignUID = Guid.Empty,
-        Offset = 0.0,
+        ReferenceOffset = 0.0,
         OriginX = 12345,
         OriginY = 67890
       };

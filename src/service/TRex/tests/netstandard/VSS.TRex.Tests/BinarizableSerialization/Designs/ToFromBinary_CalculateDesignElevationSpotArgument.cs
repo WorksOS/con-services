@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         ProjectID = Guid.NewGuid(),
         SpotX = 123.4,
         SpotY = 234.5,
-        Offset = 999.9,
+        ReferenceOffset = 999.9,
         Filters = null,
         ReferenceDesignUID = Guid.NewGuid(),
         TRexNodeID = "NodeID"        

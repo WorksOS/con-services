@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         CellSize = 0.34,
         OriginX = 1234,
         OriginY = 2345,
-        Offset = 999.9,
+        ReferenceOffset = 999.9,
         Filters = null,
         ReferenceDesignUID = Guid.NewGuid(),
         TRexNodeID = "NodeID"        

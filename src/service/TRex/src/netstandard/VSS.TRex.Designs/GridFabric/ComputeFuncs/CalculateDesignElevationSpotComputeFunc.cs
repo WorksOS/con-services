@@ -20,7 +20,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       {
         CalculateDesignElevationSpot Executor = new CalculateDesignElevationSpot();
 
-        return Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.SpotX, args.SpotY, args.Offset);
+        return Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.SpotX, args.SpotY, args.ReferenceOffset);
       }
       catch (Exception E)
       {

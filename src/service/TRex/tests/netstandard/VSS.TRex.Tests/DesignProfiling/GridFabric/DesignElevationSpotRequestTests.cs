@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       {
         ProjectID = siteModel.ID,
         ReferenceDesignUID = designUid,
-        Offset = offset,
+        ReferenceOffset = offset,
         SpotX = spotX,
         SpotY = spotY,
       });
