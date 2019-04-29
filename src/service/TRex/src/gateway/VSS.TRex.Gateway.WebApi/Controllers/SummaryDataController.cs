@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -74,15 +75,23 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public PassCountSummaryResult PostPassCountSummary([FromBody] PassCountSummaryRequest passCountSummaryRequest)
     {
-      Log.LogInformation($"{nameof(PostPassCountSummary)}: {Request.QueryString}");
+      Log.LogInformation($"#In# {nameof(PostPassCountSummary)}: {Request.QueryString}");
 
-      passCountSummaryRequest.Validate();
-      ValidateFilterMachines(nameof(PostPassCountSummary), passCountSummaryRequest.ProjectUid, passCountSummaryRequest.Filter);
+      try
+      {
+        passCountSummaryRequest.Validate();
+        ValidateFilterMachines(nameof(PostPassCountSummary), passCountSummaryRequest.ProjectUid,
+          passCountSummaryRequest.Filter);
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(passCountSummaryRequest) as PassCountSummaryResult);
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(passCountSummaryRequest) as PassCountSummaryResult);
+      }
+      finally
+      {
+        Log.LogInformation($"#In# {nameof(PostPassCountSummary)}: {Request.QueryString}");
+      }
     }
 
     /// <summary>
