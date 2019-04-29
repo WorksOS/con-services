@@ -29,6 +29,12 @@ namespace MockProjectWebApi.Json
       return jObj.ToString(Formatting.None);
     }
 
+    public static string GetKettlewellDriveFilterJson(string resourceName)
+    {
+      var jObj = GetJsonFromEmbeddedResource($"Filters.KettlewellDrive.{resourceName}");
+      return jObj.ToString(Formatting.None);
+    }
+
     public static string GetUserPreferencesJson(string resourceName)
     {
       var jObj = GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
