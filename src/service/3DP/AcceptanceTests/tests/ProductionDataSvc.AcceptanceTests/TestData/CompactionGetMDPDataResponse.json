@@ -75,10 +75,10 @@
   },
   "PassCountFilter": {
     "mdpSummaryData": {
-      "percentEqualsTarget": 79.3533176153587,
+      "percentEqualsTarget": 84.707009857612263,
       "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 20.646682384641295,
-      "totalAreaCoveredSqMeters": 1029.6492000000003,
+      "percentLessThanTarget": 15.292990142387733,
+      "totalAreaCoveredSqMeters": 844.34240000000011,
       "mdpTarget": {
         "mdpMachineTarget": 150.0,
         "targetVaries": false

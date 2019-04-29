@@ -154,5 +154,25 @@
     "timestamp": "2012-11-07T23:16:46.769",
     "Code": 0,
     "Message": "success"
+  },
+  "MinimumElevationMultiMode": {
+    "northing": 808554.27797177189,
+    "easting": 376674.277608794,
+    "displayMode": 0,
+    "returnCode": 0,
+    "value": 66.316001892089844,
+    "timestamp": "2019-03-27T21:41:19.463",
+    "Code": 0,
+    "Message": "success"
+  },
+  "MinimumElevationLatestMode": {
+    "northing": 808554.095524168,
+    "easting": 376674.25113549712,
+    "displayMode": 0,
+    "returnCode": 0,
+    "value": 65.752998352050781,
+    "timestamp": "2019-03-27T21:44:34.463",
+    "Code": 0,
+    "Message": "success"
   }
 }

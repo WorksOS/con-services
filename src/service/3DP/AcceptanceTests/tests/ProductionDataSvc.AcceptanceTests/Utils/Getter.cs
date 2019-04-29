@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -59,11 +60,15 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         MediaTypes.JSON,
         null).Result;
 
-      Assert.Equal(expectedHttpCode, (int)HttpResponseMessage.StatusCode);
-
       var receiveStream = HttpResponseMessage.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader(receiveStream, Encoding.UTF8);
       var responseBody = readStream.ReadToEnd();
+      if (expectedHttpCode != (int)HttpResponseMessage.StatusCode)
+      {
+        Console.WriteLine("FAILEDHTTPSTATUS:" + responseBody);
+      }
+
+      Assert.Equal(expectedHttpCode, (int)HttpResponseMessage.StatusCode);
 
       if (!HttpResponseMessage.IsSuccessStatusCode)
       {
