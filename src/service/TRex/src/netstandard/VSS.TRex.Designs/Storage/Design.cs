@@ -134,9 +134,6 @@ namespace VSS.TRex.Designs.Storage
       {
         BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
 
-        // Incorporate any vertical offset from the underlying design the surveyed surface is based on
-        result.Offset(DesignDescriptor.Offset);
-
         return result;
       }
     }
@@ -168,7 +165,7 @@ namespace VSS.TRex.Designs.Storage
     /// <returns></returns>
     public override string ToString()
     {
-      return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
+      return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID};{DesignDescriptor.Folder};{DesignDescriptor.FileName} [{Extents}]";
     }
 
     /// <summary>
@@ -188,11 +185,12 @@ namespace VSS.TRex.Designs.Storage
     /// Calculates a spot elevation designated location on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="spotX"></param>
     /// <param name="spotY"></param>
     /// <param name="spotHeight"></param>
     /// <param name="errorCode"></param>
-    public void GetDesignSpotHeight(Guid siteModelID,
+    public void GetDesignSpotHeight(Guid siteModelID, double offset,
       double spotX, double spotY,
       out double spotHeight,
       out DesignProfilerRequestResult errorCode)
@@ -204,7 +202,7 @@ namespace VSS.TRex.Designs.Storage
         elevSpotRequest = new DesignElevationSpotRequest();
 
       spotHeight = elevSpotRequest.Execute(new CalculateDesignElevationSpotArgument
-        (siteModelID, spotX, spotY, DesignDescriptor.DesignID, DesignDescriptor.Offset));
+        (siteModelID, spotX, spotY, DesignDescriptor.DesignID, offset));
     }
 
     /// <summary>

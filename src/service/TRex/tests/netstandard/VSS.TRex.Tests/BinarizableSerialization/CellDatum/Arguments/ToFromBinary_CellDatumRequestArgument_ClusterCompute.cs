@@ -27,7 +27,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.CellDatum.Arguments
         OTGCellX = 65125,
         OTGCellY = 28451,
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        ReferenceDesignUID = Guid.Empty
+        ReferenceDesignUID = Guid.Empty,
+        ReferenceOffset = 0
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom CellDatumRequestArgument_ClusterCompute not same after round trip serialisation");

@@ -30,7 +30,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.CellDatum.ComputeFuncs
         OTGCellX = 65125,
         OTGCellY = 28451,
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        ReferenceDesignUID = Guid.Empty
+        ReferenceDesignUID = Guid.Empty,
+        ReferenceOffset = 0
       };
 
       var func = new CellDatumRequestComputeFunc_ClusterCompute {Argument = argument};

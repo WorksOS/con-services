@@ -94,7 +94,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           // Create the new designSurface in our site model
           var designSurface = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
             extents);
           existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
         }
@@ -103,7 +103,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           // Create the new SurveyedSurface in our site model
           var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
             request.SurveyedUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC, // validation will have ensured this exists
             extents);
           existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());

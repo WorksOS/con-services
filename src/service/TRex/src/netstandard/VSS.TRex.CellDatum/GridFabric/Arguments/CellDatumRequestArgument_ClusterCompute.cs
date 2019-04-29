@@ -42,7 +42,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       uint otgCellX,
       uint otgCellY,
       IFilterSet filters,
-      Guid referenceDesignUid)
+      Guid referenceDesignUid,
+      double referenceOffset)
     {
       ProjectID = siteModelID;
       Mode = mode;
@@ -51,6 +52,7 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       OTGCellY = otgCellY;
       Filters = filters;
       ReferenceDesignUID = referenceDesignUid;
+      ReferenceOffset = referenceOffset;
     }
 
     /// <summary>

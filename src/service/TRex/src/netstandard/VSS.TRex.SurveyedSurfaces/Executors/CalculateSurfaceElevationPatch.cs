@@ -123,7 +123,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
               continue;
 
             long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
-            double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
+            double Offset = 0;//ThisSurveyedSurface.DesignDescriptor.Offset;  //TODO: #81789
 
             // Walk across the sub grid checking for a design elevation for each appropriate cell
             // based on the processing bit mask passed in

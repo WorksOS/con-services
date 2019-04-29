@@ -74,7 +74,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     {
       var fileName = "theFile name.ttm";
       var designUid = Guid.NewGuid();
-      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
+      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName);
       var extents = new BoundingWorldExtent3D(1, 2, 50, 100, -45, 50 );
       var design = new Designs.Storage.Design(designUid, designDescriptor, extents);
 
@@ -92,7 +92,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     {
       var fileName = "theFile name.ttm";
       var designUid = Guid.NewGuid();
-      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
+      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName);
       var extents = new BoundingWorldExtent3D(1, 2, 50, 100);
       var surveyedUtc = DateTime.UtcNow.AddDays(-2);
       var design = new SurveyedSurface(designUid, designDescriptor, surveyedUtc, extents);
@@ -111,7 +111,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     {
       var fileName = "theFile name.svl";
       var designUid = Guid.NewGuid();
-      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
+      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName);
       var extents = new BoundingWorldExtent3D(1, 2, 50, 100);
       var design = new Alignment(designUid, designDescriptor, extents);
 

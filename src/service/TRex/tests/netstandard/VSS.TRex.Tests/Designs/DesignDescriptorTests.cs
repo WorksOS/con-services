@@ -19,7 +19,6 @@ namespace VSS.TRex.Tests.Designs
       dd.Folder.Should().BeNullOrEmpty();
       dd.FullPath.Should().BeNullOrEmpty();
       dd.IsNull.Should().BeTrue();
-      dd.Offset.Should().Be(0);
     }
 
     [Fact]
@@ -27,14 +26,13 @@ namespace VSS.TRex.Tests.Designs
     {
       Guid newGuid = Guid.NewGuid();
 
-      var dd = new DesignDescriptor(newGuid, "folder", "file.name", 1.1);
+      var dd = new DesignDescriptor(newGuid, "folder", "file.name");
 
       dd.DesignID.Should().Be(newGuid);
       dd.FileName.Should().Be("file.name");
       dd.Folder.Should().Be("folder");
       dd.FullPath.Should().Be(@"folder\file.name");
       dd.IsNull.Should().BeFalse();
-      dd.Offset.Should().Be(1.1);
     }
 
     [Fact]
@@ -42,7 +40,7 @@ namespace VSS.TRex.Tests.Designs
     {
       Guid newGuid = Guid.NewGuid();
 
-      var dd = new DesignDescriptor(newGuid, "folder", "file.name", 1.1);
+      var dd = new DesignDescriptor(newGuid, "folder", "file.name");
       var dd2 = new DesignDescriptor();
 
       dd2.Init(newGuid, "folder", "file.name", 1.1);
@@ -53,17 +51,17 @@ namespace VSS.TRex.Tests.Designs
     [Fact]
     public void Test_ToString()
     {
-      var dd = new DesignDescriptor(Guid.NewGuid(), "folder", "filename", 1.2);
-      dd.ToString().Should().Match("*folder*filename*1.2*");
+      var dd = new DesignDescriptor(Guid.NewGuid(), "folder", "filename");
+      dd.ToString().Should().Match("*folder*filename*");
     }
 
     [Fact]
     public void Test_Equals()
     {
       Guid newGuid = Guid.NewGuid();
-      var dd = new DesignDescriptor(newGuid, "folder", "filename", 1.2);
-      var dd2 = new DesignDescriptor(newGuid, "folder", "filename", 1.2);
-      var dd3 = new DesignDescriptor(newGuid, "bob", "filename", 1.2);
+      var dd = new DesignDescriptor(newGuid, "folder", "filename");
+      var dd2 = new DesignDescriptor(newGuid, "folder", "filename");
+      var dd3 = new DesignDescriptor(newGuid, "bob", "filename");
 
       dd.Equals(dd2).Should().BeTrue();
       dd.Equals(dd3).Should().BeFalse();
@@ -72,7 +70,7 @@ namespace VSS.TRex.Tests.Designs
     [Fact]
     public void Clear()
     {
-      var dd = new DesignDescriptor(Guid.Empty, "", "", 0.0);
+      var dd = new DesignDescriptor(Guid.Empty, "", "");
       var dd2 = new DesignDescriptor();
       dd2.Clear();
 
@@ -92,7 +90,7 @@ namespace VSS.TRex.Tests.Designs
     public void FromToBinary()
     {
       Guid newGuid = Guid.NewGuid();
-      var dd = new DesignDescriptor(newGuid, "folder", "filename", 1.2);
+      var dd = new DesignDescriptor(newGuid, "folder", "filename");
 
       TestBinarizable_ReaderWriterHelper.RoundTripSerialise(dd);
     }
@@ -101,7 +99,7 @@ namespace VSS.TRex.Tests.Designs
     public void BinaryReaderWriter()
     {
       Guid newGuid = Guid.NewGuid();
-      var dd = new DesignDescriptor(newGuid, "folder", "filename", 1.2);
+      var dd = new DesignDescriptor(newGuid, "folder", "filename");
 
       TestBinary_ReaderWriterHelper.RoundTripSerialise(dd);
     }

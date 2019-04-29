@@ -86,7 +86,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         // Create the new alignment in our site model
         var designAlignment = DIContext.Obtain<IAlignmentManager>()
           .Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
             extents);
 
         // todo possibly, when SDK avail

@@ -40,7 +40,8 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       bool coordsAreGrid,
       XYZ point,
       IFilterSet filters,
-      Guid referenceDesignUid)
+      Guid referenceDesignUid,
+      double referenceOffset)
     {
       ProjectID = siteModelID;
       Mode = mode;
@@ -48,6 +49,7 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       Point = point;
       Filters = filters;
       ReferenceDesignUID = referenceDesignUid;
+      ReferenceOffset = referenceOffset;
     }
 
     /// <summary>

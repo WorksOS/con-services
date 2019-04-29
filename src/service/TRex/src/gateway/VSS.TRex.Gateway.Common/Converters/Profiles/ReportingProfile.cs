@@ -26,6 +26,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
+        .ForMember(x => x.ReferenceOffset,
+          opt => opt.MapFrom(f => f.CutFillDesignOffset))
         .ForMember(x => x.ReferenceDesignUID,
           opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
 
@@ -44,6 +46,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
+        .ForMember(x => x.ReferenceOffset,
+          opt => opt.MapFrom(f => f.CutFillDesignOffset))
         .ForMember(x => x.ReferenceDesignUID,
           opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
     }

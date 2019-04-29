@@ -26,7 +26,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       XYZ latLngPoint = new XYZ(12345.6789, 98765.4321);
       IFilterSet filters = new FilterSet();
       Guid referenceDesignUid = Guid.NewGuid();
-      var arg = new CellDatumRequestArgument_ApplicationService(siteModelID, mode, coordsAreGrid, latLngPoint, filters, referenceDesignUid);
+      var referenceOffset = 12.34;
+      var arg = new CellDatumRequestArgument_ApplicationService(siteModelID, mode, coordsAreGrid, latLngPoint, filters, referenceDesignUid, referenceOffset);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);
@@ -34,6 +35,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(latLngPoint, arg.Point);
       Assert.Equal(filters, arg.Filters);
       Assert.Equal(referenceDesignUid, arg.ReferenceDesignUID);
+      Assert.Equal(referenceOffset, arg.ReferenceOffset);
     }
 
     [Fact]
@@ -53,7 +55,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       uint otgCellY = 55236;
       IFilterSet filters = new FilterSet();
       Guid referenceDesignUid = Guid.NewGuid();
-      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesignUid);
+      var referenceOffset = 12.34;
+      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesignUid, referenceOffset);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);
@@ -62,6 +65,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.Equal(otgCellY, arg.OTGCellY);
       Assert.Equal(filters, arg.Filters);
       Assert.Equal(referenceDesignUid, arg.ReferenceDesignUID);
+      Assert.Equal(referenceOffset, arg.ReferenceOffset);
     }
   }
 }

@@ -160,7 +160,7 @@ namespace VSS.TRex.CellDatum.Executors
           result.Value = cell.Height;
           if (arg.ReferenceDesignUID != Guid.Empty)
           {
-            cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.NEECoords.X, arg.NEECoords.Y, out var spotHeight, out var errorCode);
+            cutFillDesign.GetDesignSpotHeight(arg.ProjectID, arg.ReferenceOffset, arg.NEECoords.X, arg.NEECoords.Y, out var spotHeight, out var errorCode);
 
             if (errorCode == DesignProfilerRequestResult.OK && spotHeight != CellPassConsts.NullHeight)
             {

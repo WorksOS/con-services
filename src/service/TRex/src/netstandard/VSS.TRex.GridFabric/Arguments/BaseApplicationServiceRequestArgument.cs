@@ -34,6 +34,11 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public Guid ReferenceDesignUID { get; set; } = Guid.Empty;
 
+    /// <summary>
+    /// The offset to be applied to the design for reference surfaces
+    /// </summary>
+    public double ReferenceOffset { get; set; }
+
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 
     public override void ToBinary(IBinaryRawWriter writer)
@@ -45,6 +50,7 @@ namespace VSS.TRex.GridFabric.Arguments
       writer.WriteString(TRexNodeID);
       writer.WriteGuid(ProjectID);
       writer.WriteGuid(ReferenceDesignUID);
+      writer.WriteDouble(ReferenceOffset);
 
       writer.WriteBoolean(Filters != null);
 
@@ -60,6 +66,7 @@ namespace VSS.TRex.GridFabric.Arguments
       TRexNodeID = reader.ReadString();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       ReferenceDesignUID = reader.ReadGuid() ?? Guid.Empty;
+      ReferenceOffset = reader.ReadDouble();
 
       if (reader.ReadBoolean())
       {
