@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models.Extensions
     [TestMethod]
     [DataRow(ImportedFileType.DesignSurface, true)]
     [DataRow(ImportedFileType.SurveyedSurface, true)]
-    [DataRow(ImportedFileType.ReferenceSurface, false)]
+    [DataRow(ImportedFileType.ReferenceSurface, true)]
     [DataRow(ImportedFileType.Alignment, false)]
     [DataRow(ImportedFileType.Linework, false)]
     [DataRow(ImportedFileType.MassHaulPlan, false)]

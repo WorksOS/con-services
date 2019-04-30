@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -281,6 +282,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
                       Path.GetExtension(tccFileName);
       }
+#if RAPTOR
+      //For Raptor, need the parent design if it's a reference surface
+      if (file.ImportedFileType == ImportedFileType.ReferenceSurface)
+      {
+        var parent = fileList.FirstOrDefault(f => f.ImportedFileUid == file.ParentUid);
+        if (parent == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Unable to access parent design file."));
+        }
+
+        fileUid = Guid.Parse(parent.ImportedFileUid);
+        file.LegacyFileId = parent.LegacyFileId;
+        tccFileName = parent.Name;
+        //The file.Path is CustomerUid + ProjectUid which should be the same for both
+      }
+#endif
 
       var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
