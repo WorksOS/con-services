@@ -101,7 +101,7 @@ namespace Common.Repository
               p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
               cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
               p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, p.GeometryWKT, 
+              p.fk_ProjectTypeID AS ProjectType, ST_AsWKT(p.PolygonST) AS GeometryWKT, 
               s.StartDate AS SubStartDate, s.EndDate AS SubEndDate
           FROM Project p  
               JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
@@ -144,7 +144,7 @@ namespace Common.Repository
               p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
               cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
               p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, p.GeometryWKT, 
+              p.fk_ProjectTypeID AS ProjectType, ST_AsWKT(p.PolygonST) AS GeometryWKT, 
               s.StartDate AS SubStartDate, s.EndDate AS SubEndDate
             FROM Project p  
               JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
@@ -546,7 +546,7 @@ namespace Common.Repository
     {
       return WithConnection(conn =>
       {
-        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT 
+        var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, ST_AsWKT(g.PolygonST) AS GeometryWKT 
                           FROM Geofence g
                             JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
                           WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
@@ -603,7 +603,7 @@ namespace Common.Repository
     {
       return WithConnection(conn =>
       {
-        var command = @"SELECT GeometryWKT 
+        var command = @"SELECT ST_AsWKT(g.PolygonST) AS GeometryWKT 
                           FROM Geofence
                           WHERE GeofenceUID = @geofenceUid";
 
