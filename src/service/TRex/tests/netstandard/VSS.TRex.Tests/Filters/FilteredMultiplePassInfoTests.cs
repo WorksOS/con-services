@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.Filters
         gpsMode = GPSMode.AutonomousPosition,
         HalfPass = false,
         Height = 5,
-        //MachineID = 6,
+        //internalSiteModelMachineIndex = 6,
         InternalSiteModelMachineIndex = 6,
         MachineSpeed = 7,
         MaterialTemperature = 8,
