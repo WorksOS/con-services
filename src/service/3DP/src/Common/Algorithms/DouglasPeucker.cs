@@ -15,14 +15,14 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// The Initial Developer of the Original Code is Elmar de Koning.
     /// </summary>
     /// <remarks>
-    /// This is not a pure implementation of Douglas Peucker because it lacks the tolerance input that allows point reduction through
-    /// approximation based on the 
+    /// This is not a pure implementation of Douglas Peucker because it lacks the tolerance input that is normally used to
+    /// create point reduction based on the maximum distance between the original curve and simplified curve.
     /// </remarks>
     /// <returns>Returns coorindate array reduced to the target point count.</returns>
-    public static List<double[]> DouglasPeuckerByCount(TWGS84Point[] coordinates, int maxPointTolerance)
+    public static List<double[]> DouglasPeuckerByCount(TWGS84Point[] coordinates, int maxVertexLimit)
     {
-      if (maxPointTolerance < 0) maxPointTolerance = coordinates.GetLength(0);
-      if (maxPointTolerance > 1500) maxPointTolerance = 1500;
+      if (maxVertexLimit < 0) maxVertexLimit = coordinates.GetLength(0);
+      if (maxVertexLimit > 1500) maxVertexLimit = 1500;
 
       // Zero out keys and mark the first and last 'to keep'.
       var keys = Enumerable.Repeat(false, coordinates.Length).ToList();
@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.Common.Algorithms
 
         // check point count tolerance
         keyCount++;
-        if (keyCount == maxPointTolerance) break;
+        if (keyCount == maxVertexLimit) break;
 
         // split the polyline at the key and recurse
         var subPolyLeft = new SubPolyAlt(subPoly.FirstPointCoordIndex, subPoly.subPolyKeyInfo.CoordinateKeyIndex);
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// <summary>
     /// Uses the Douglas Peucker alogrithm to reduce a polyline to a specifc number of points.
     /// </summary>
-    public static List<double[]> DouglasPeuckerByCount(double[,] coordinates, int maxPointTolerance)
+    public static List<double[]> DouglasPeuckerByCount(double[,] coordinates, int maxVertexLimit)
     {
       var pointCount = coordinates.GetLength(0);
       var wgsPointArray = new TWGS84Point[pointCount];
@@ -90,13 +90,13 @@ namespace VSS.Productivity3D.Common.Algorithms
         wgsPointArray[i].Lat = coordinates[i, 1];
       }
 
-      return DouglasPeuckerByCount(wgsPointArray, maxPointTolerance);
+      return DouglasPeuckerByCount(wgsPointArray, maxVertexLimit);
     }
 
     /// <summary>
     /// Compute the dot product AB . AC
     /// </summary>
-    private static double DotProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
+    private static double ComputeDotProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
     {
       double abx = lastPoint.Lon - firstPoint.Lon;
       double aby = lastPoint.Lat - firstPoint.Lat;
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// <summary>
     /// Compute the cross product AB x AC
     /// </summary>
-    private static double CrossProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
+    private static double ComputeCrossProduct(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint)
     {
       double abx = lastPoint.Lon - firstPoint.Lon;
       double aby = lastPoint.Lat - firstPoint.Lat;
@@ -124,9 +124,9 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// <summary>
     /// Compute the distance from A to B
     /// </summary>
-    private static double Distance(TWGS84Point firstPoint, TWGS84Point lastPoint) => Math.Sqrt(SquaredDistance(firstPoint, lastPoint));
+    private static double ComputeDistance(TWGS84Point firstPoint, TWGS84Point lastPoint) => Math.Sqrt(ComputeSquaredDistance(firstPoint, lastPoint));
 
-    private static double SquaredDistance(TWGS84Point firstPoint, TWGS84Point lastPoint)
+    private static double ComputeSquaredDistance(TWGS84Point firstPoint, TWGS84Point lastPoint)
     {
       double d1 = firstPoint.Lon - lastPoint.Lon;
       double d2 = firstPoint.Lat - lastPoint.Lat;
@@ -140,17 +140,17 @@ namespace VSS.Productivity3D.Common.Algorithms
     /// </summary>
     private static double LineToPointDistance2D(TWGS84Point firstPoint, TWGS84Point lastPoint, TWGS84Point currentPoint, bool isSegment)
     {
-      double dist = CrossProduct(firstPoint, lastPoint, currentPoint) / Distance(firstPoint, lastPoint);
+      double dist = ComputeCrossProduct(firstPoint, lastPoint, currentPoint) / ComputeDistance(firstPoint, lastPoint);
 
       if (isSegment)
       {
-        double dot1 = DotProduct(firstPoint, lastPoint, currentPoint);
+        double dot1 = ComputeDotProduct(firstPoint, lastPoint, currentPoint);
 
-        if (dot1 > 0) return Distance(lastPoint, currentPoint);
+        if (dot1 > 0) return ComputeDistance(lastPoint, currentPoint);
 
-        double dot2 = DotProduct(lastPoint, firstPoint, currentPoint);
+        double dot2 = ComputeDotProduct(lastPoint, firstPoint, currentPoint);
 
-        if (dot2 > 0) return Distance(firstPoint, currentPoint);
+        if (dot2 > 0) return ComputeDistance(firstPoint, currentPoint);
       }
 
       return Math.Abs(dist);

@@ -33,7 +33,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug($"{nameof(PolylineReducePoints)}: {requestDto}");
 
 #if RAPTOR
-      if (requestDto.MaxPoints > SmoothPolylineRequest.NOT_DEFINED && requestDto.MaxPoints < 3) return StatusCode((int)HttpStatusCode.BadRequest, new { Message = "Cannot reduce polyline to fewer than 3 points." });
+      if (requestDto.MaxPoints > SmoothPolylineRequest.NOT_DEFINED && requestDto.MaxPoints < 3)
+      {
+        return StatusCode((int)HttpStatusCode.BadRequest, new { Message = "Cannot reduce polyline to fewer than 3 points." });
+      }
 
       var fencePoints = DouglasPeucker.DouglasPeuckerByCount(requestDto.Coordinates, requestDto.MaxPoints);
 
