@@ -66,22 +66,10 @@ namespace VSS.Productivity3D.Models.Models
     /// May be null/empty, which indicates no restriction.
     ///   This is obtained by Trex/Raptor from tagFiles.
     ///   There is no direct relationship to VSS designs i.e. ImportedFile 
-    ///
-    ///  todoJeannie
-    ///       Maybe we can set this to e.g.  -1 for Trex so we can tell where it was sourced.
-    ///       if these were obtained from TRex, then should not be sent to Raptor,
-    ///       however this may really screw up the UI which possibly depends on unique Ids?
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignID", Required = Required.Default)]
     public long? OnMachineDesignId { get; set; } // Raptor/Trex not VSS ID
-
-    /// <summary>
-    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.
-    /// </summary>
-    [JsonProperty(PropertyName = "onMachineDesignName", Required = Required.Default)]
-    public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design
-
+    
     /// <summary>
     ///  A list of machine IDs. Cell passes recorded by machine other than those in this list are not considered.
     ///  May be null/empty, which indicates no restriction.
@@ -161,12 +149,12 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
     public double? RightOffset { get; private set; }
 
-    // todo is this ever used?
-    ///// <summary>
-    ///// Only consider cell passes recorded when the machine had the named design loaded.
-    ///// </summary>
-    //[JsonProperty(PropertyName = "machineDesignName", Required = Required.Default)]
-    //public string MachineDesignName { get; private set; }
+    /// <summary>
+    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.
+    /// </summary>
+    [JsonProperty(PropertyName = "machineDesignName", Required = Required.Default)]
+    public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design
 
     /// <summary>
     /// layerType indicates the layer analysis method to be used for determining layers from cell passes. Some of the layer types are implemented as a 

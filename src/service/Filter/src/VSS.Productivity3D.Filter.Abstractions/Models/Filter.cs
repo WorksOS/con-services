@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public string DesignUid { get; protected set; }
 
     /// <summary>
-    /// A VSS design file filename (ala ImportedFileUid).
+    /// A VSS design file filename (from an ImportedFile).
     ///     This is only used internally and a filter object is passed around.
     ///     It is not sent from UI to FilterSvc (blank)
     ///     It is not returned from the FilterSvc anywhere 
