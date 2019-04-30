@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void Write(BinaryWriter writer)
         {
             if (GlobalLatestCells == null)  
-              throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");
+              throw new TRexSubGridIOException("Cannot write sub grid directory without global latest values available");
 
             GlobalLatestCells.Write(writer, new byte[10000]);
 
@@ -78,7 +78,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void Read_2p0(BinaryReader reader)
+        public void Read(BinaryReader reader)
         {
             if (GlobalLatestCells == null)
               throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");
