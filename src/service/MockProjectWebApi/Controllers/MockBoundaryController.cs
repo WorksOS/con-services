@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MockProjectWebApi.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -14,7 +14,7 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"GetMockBoundariesForProject: projectUid={projectUid}");
 
-      return new GeofenceListData {GeofenceData = GetMockBoundaries(projectUid)};
+      return new GeofenceListData { GeofenceData = GetMockBoundaries(projectUid) };
     }
 
     private List<GeofenceData> GetMockBoundaries(string projectUid)
@@ -26,10 +26,24 @@ namespace MockProjectWebApi.Controllers
           {
             return _goldenDataProjectFilterBoundaryList;
           }
+        case ConstantsUtil.KETTLEWELL_DRIVE_PROJECT_UID:
+          {
+            return _kettlewellDriveFilterBoundaryList;
+          }
         default:
           return null;
       }
     }
+
+    private readonly List<GeofenceData> _kettlewellDriveFilterBoundaryList = new List<GeofenceData>
+    {
+      new GeofenceData
+      {
+        GeofenceName = "MinElevationSingleCell",
+        GeofenceUID = Guid.Parse("c96e9fc1-32e9-4e92-bf94-8e291a97d8c5"),
+        GeometryWKT = "POLYGON((172.438472433625 -43.5131973131333,172.438468242674 -43.513197434707,172.438468410312 -43.5132002309037,172.43847293654 -43.5132004132644,172.438472433625 -43.5131973131333))"
+      }
+    };
 
     /// <summary>
     /// <see cref="GeofenceData"/> objects don't know about their Filter object or Project so to mock this we need separate collections per project.

@@ -66,9 +66,9 @@
   },
   "PassCountFilter_Summary": {
     "speedSummaryData": {
-      "percentEqualsTarget": 36.8,
-      "percentGreaterThanTarget": 39.1,
-      "percentLessThanTarget": 24.1,
+      "percentEqualsTarget": 48.5,
+      "percentGreaterThanTarget": 22.3,
+      "percentLessThanTarget": 29.2,
       "totalAreaCoveredSqMeters": 10636.7028,
       "minTarget": 5.0,
       "maxTarget": 10.0
