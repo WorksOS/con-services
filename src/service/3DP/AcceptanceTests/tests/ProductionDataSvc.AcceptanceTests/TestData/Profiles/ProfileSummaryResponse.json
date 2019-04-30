@@ -43,6 +43,10 @@
         "data": []
       },
       {
+        "type": "temperatureDetail",
+        "data": []
+      },
+      {
         "type": "speedSummary",
         "data": []
       },
@@ -562,6 +566,10 @@
       },
       {
         "type": "temperatureSummary",
+        "data": []
+      },
+      {
+        "type": "temperatureDetail",
         "data": []
       },
       {
@@ -1298,6 +1306,10 @@
       },
       {
         "type": "temperatureSummary",
+        "data": []
+      },
+      {
+        "type": "temperatureDetail",
         "data": []
       },
       {
@@ -15724,5 +15736,186 @@
     "Code": 0,
     "Message": "success"
 
+  },
+  "MinimumElevationSingleCell": {
+    "gridDistanceBetweenProfilePoints": 0.24540479,
+    "results": [
+      {
+        "type": "firstPass",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.17099762,
+            "value": 66.17099762
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.17099762,
+            "value": 66.17099762
+          }
+        ]
+      },
+      {
+        "type": "highestPass",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.56300354,
+            "value": 66.56300354
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.56300354,
+            "value": 66.56300354
+          }
+        ]
+      },
+      {
+        "type": "lastPass",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.31600189,
+            "value": 66.31600189
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.31600189,
+            "value": 66.31600189
+          }
+        ]
+      },
+      {
+        "type": "lowestPass",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 65.58200073,
+            "value": 65.58200073
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 65.58200073,
+            "value": 65.58200073
+          }
+        ]
+      },
+      {
+        "type": "lastComposite",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.31600189,
+            "value": 66.31600189
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.31600189,
+            "value": 66.31600189
+          }
+        ]
+      },
+      {
+        "type": "cmvSummary",
+        "data": []
+      },
+      {
+        "type": "cmvDetail",
+        "data": []
+      },
+      {
+        "type": "cmvPercentChange",
+        "data": []
+      },
+      {
+        "type": "mdpSummary",
+        "data": []
+      },
+      {
+        "type": "temperatureSummary",
+        "data": []
+      },
+      {
+        "type": "temperatureDetail",
+        "data": []
+      },
+      {
+        "type": "speedSummary",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.31600189,
+            "value": 0.54000002,
+            "valueType": 1,
+            "value2": 5.76000023
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.31600189,
+            "value": 0.54000002,
+            "valueType": 1,
+            "value2": 5.76000023
+          }
+        ]
+      },
+      {
+        "type": "passCountSummary",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.31600189,
+            "value": 15.0,
+            "valueType": 0
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.31600189,
+            "value": 15.0,
+            "valueType": 0
+          }
+        ]
+      },
+      {
+        "type": "passCountDetail",
+        "data": [
+          {
+            "cellType": 1,
+            "x": 0.0,
+            "y": 66.31600189,
+            "value": 15.0
+          },
+          {
+            "cellType": 1,
+            "x": 0.24540479,
+            "y": 66.31600189,
+            "value": 15.0
+          }
+        ]
+      },
+      {
+        "type": "cutFill",
+        "data": []
+      },
+      {
+        "type": "summaryVolumes",
+        "data": []
+      }
+    ],
+    "Code": 0,
+    "Message": "success"
   }
 }
