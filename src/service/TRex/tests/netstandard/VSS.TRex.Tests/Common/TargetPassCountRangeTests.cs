@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.Common
       Action act = () => range.SetMinMax(22, 11);
 
       act.Should().Throw<ArgumentException>()
-        .WithMessage("Minimum value must be greater than or equal to minimum value.");
+        .WithMessage("Maximum value must be greater than or equal to minimum value.");
     }
   }
 }

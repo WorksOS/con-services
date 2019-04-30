@@ -90,7 +90,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
       finally
       {
-        Log.LogInformation($"#In# {nameof(PostPassCountSummary)}: {Request.QueryString}");
+        Log.LogInformation($"#Out# {nameof(PostPassCountSummary)}: {Request.QueryString}");
       }
     }
 
