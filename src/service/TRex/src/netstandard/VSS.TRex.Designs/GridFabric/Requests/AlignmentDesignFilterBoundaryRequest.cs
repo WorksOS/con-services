@@ -15,13 +15,14 @@ namespace VSS.TRex.Designs.GridFabric.Requests
       return Compute.Apply(func, arg);
     }
 
-    public static AlignmentDesignFilterBoundaryResponse Execute(Guid referenceDesignUID, double startStation, double endStation, double leftOffset, double rightOffset)
+    public static AlignmentDesignFilterBoundaryResponse Execute(Guid referenceDesignUID, double offset, double startStation, double endStation, double leftOffset, double rightOffset)
     {
       var request = new AlignmentDesignFilterBoundaryRequest();
 
       return request.Execute(new AlignmentDesignFilterBoundaryArgument
       {
         ReferenceDesignUID = referenceDesignUID,
+        ReferenceOffset = offset,
         StartStation = startStation,
         EndStation = endStation,
         LeftOffset = leftOffset,

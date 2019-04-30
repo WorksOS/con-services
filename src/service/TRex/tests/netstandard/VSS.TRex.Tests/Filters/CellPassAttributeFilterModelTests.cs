@@ -32,6 +32,7 @@ namespace VSS.TRex.Tests.Filters
         DesignNameID = 3,
         ElevationMappingMode = ElevationMappingMode.LatestElevation,
         ElevationRangeDesignUID = Guid.NewGuid(),
+        ElevationRangeDesignOffset = 1.5,
         ElevationRangeLevel = 4.0,
         ElevationRangeOffset = 5.0,
         ElevationRangeThickness = 6.0,

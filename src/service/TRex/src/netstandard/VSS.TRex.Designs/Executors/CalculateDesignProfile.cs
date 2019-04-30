@@ -44,6 +44,14 @@ namespace VSS.TRex.Designs.Executors
       try
       {
         var result = Design.ComputeProfile(arg.ProfilePath, arg.CellSize);
+        //Apply any offset to the profile
+        if (arg.ReferenceOffset != 0)
+        {
+          for (var i=0; i<result.Count; i++)
+          {
+            result[i] = new XYZS(result[i].X, result[i].Y, result[i].Z + arg.ReferenceOffset, result[i].Station, result[i].TriIndex);
+          }
+        }
         calcResult = DesignProfilerRequestResult.OK;
 
         return result;

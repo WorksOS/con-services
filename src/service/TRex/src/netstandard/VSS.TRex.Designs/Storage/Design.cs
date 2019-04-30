@@ -87,9 +87,10 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="projectUID"></param>
     /// <param name="profilePath"></param>
     /// <param name="cellSize"></param>
+    /// <param name="offset"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    public List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode)
+    public List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset, out DesignProfilerRequestResult errorCode)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
       errorCode = DesignProfilerRequestResult.OK;
@@ -99,7 +100,7 @@ namespace VSS.TRex.Designs.Storage
         if (profileRequest == null)
           profileRequest = new DesignProfileRequest();
 
-        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, profilePath));
+        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, offset, profilePath));
 
         return profile.Profile;
       }

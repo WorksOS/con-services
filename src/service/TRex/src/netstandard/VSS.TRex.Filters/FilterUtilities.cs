@@ -104,7 +104,7 @@ namespace VSS.TRex.Filters
         if (Filter.SpatialFilter.HasAlignmentDesignMask() && !(Filter.SpatialFilter.AlignmentFence?.HasVertices ?? true))
         {
           var BoundaryResult = AlignmentDesignFilterBoundaryRequest.Execute
-            (Filter.SpatialFilter.AlignmentDesignMaskDesignUID,
+            (Filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0,
              Filter.SpatialFilter.StartStation ?? Common.Consts.NullDouble,
              Filter.SpatialFilter.EndStation ?? Common.Consts.NullDouble,
              Filter.SpatialFilter.LeftOffset ?? Common.Consts.NullDouble,

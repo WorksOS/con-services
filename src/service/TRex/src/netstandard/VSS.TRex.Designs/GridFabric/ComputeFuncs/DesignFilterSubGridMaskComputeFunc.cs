@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
 
-        var patch = Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.CellSize, args.OriginX, args.OriginY, 0, out var calcResult);
+        var patch = Executor.Execute(args.ProjectID, args.ReferenceDesignUID, args.CellSize, args.OriginX, args.OriginY, args.ReferenceOffset, out var calcResult);
 
         var result = new DesignFilterSubGridMaskResponse();
 

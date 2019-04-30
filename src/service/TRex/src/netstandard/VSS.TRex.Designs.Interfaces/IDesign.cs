@@ -104,6 +104,6 @@ namespace VSS.TRex.Designs.Interfaces
 
     DesignDescriptor DesignDescriptor { get; }
 
-    List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode);
+    List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset, out DesignProfilerRequestResult errorCode);
   }
 }

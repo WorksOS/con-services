@@ -96,6 +96,11 @@ namespace VSS.TRex.Filters.Interfaces
     Guid ElevationRangeDesignUID { get; set; }
 
     /// <summary>
+    /// The offset from the benchmark design for a reference surface
+    /// </summary>
+    double ElevationRangeDesignOffset { get; set; }
+
+    /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
     /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>

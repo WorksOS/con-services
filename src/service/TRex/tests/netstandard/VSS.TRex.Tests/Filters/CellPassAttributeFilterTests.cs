@@ -288,12 +288,13 @@ namespace VSS.TRex.Tests.Filters
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Design",
                                                             x => { x.HasElevationRangeFilter = true;
                                                                    x.ElevationRangeDesignUID = Guid.NewGuid();
+                                                                   x.ElevationRangeDesignOffset = 1.5;
                                                                    x.ElevationRangeOffset = 10;
                                                                    x.ElevationRangeThickness = 1;
                                                             },
-                                                            x => x.HasElevationRangeFilter && x.ElevationRangeDesignUID != Guid.Empty && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1,
+                                                            x => x.HasElevationRangeFilter && x.ElevationRangeDesignUID != Guid.Empty && x.ElevationRangeDesignOffset == 1.5 && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1,
                                                             x => { x.ClearElevationRange(); },
-                                                            x => !x.HasElevationRangeFilter && x.ElevationRangeDesignUID == Guid.Empty && x.ElevationRangeOffset == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble);
+                                                            x => !x.HasElevationRangeFilter && x.ElevationRangeDesignUID == Guid.Empty && x.ElevationRangeDesignOffset == 0 && x.ElevationRangeOffset == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble);
 
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Level",
                                                             x => {
