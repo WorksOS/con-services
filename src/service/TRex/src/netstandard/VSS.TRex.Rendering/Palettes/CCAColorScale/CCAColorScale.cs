@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Palettes.CCAColorScale
 {
@@ -8,6 +9,10 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
   /// </summary>
   public class CCAColorScale
   {
+    private const int COLOR_RED_VALUE = 255;
+    private const int COLOR_GREEN_VALUE = 255;
+    private const int COLOR_BLUE_VALUE = 255;
+
     /// <summary>
     /// The segments which make up the scale.
     /// </summary>
@@ -72,19 +77,102 @@ namespace VSS.TRex.Rendering.Palettes.CCAColorScale
       // Mix with 50% black at max, and 0% black at min...
       var blackMix = 0;
 
-      //if (rangeMin != rangeMax)
-      //{
-      //  if (!InvertGradient)
-      //    blackMix = 50 * (value - rangeMin) div (rangeMax - rangeMin);
-      //  else
-      //BlackMix:= (50 * (RangeMax - Value)) div(RangeMax - RangeMin);
-      //}
+      if (rangeMin != rangeMax)
+      {
+        var colorValue = !InvertGradient ? value - rangeMin : rangeMax - value;
 
-      //RGB:= ColorToRGB(BaseColor);
+        blackMix = 50 * colorValue / (rangeMax - rangeMin);
+      }
 
-      //Result:= RGBToColor(RGB.R - (BlackMix * RGB.R) div 100,
-      //                    RGB.G - (BlackMix * RGB.G) div 100,
-      //                    RGB.B - (BlackMix * RGB.B) div 100);
+      var color = ColorUtility.UIntToColor(baseColor);
+
+      var r = color.R - (blackMix * color.R) / 100;
+      var g = color.G - (blackMix * color.G) / 100;
+      var b = color.B - (blackMix * color.B) / 100;
+
+      return ColorUtility.ColorToUInt(r, g, b);
+    }
+
+    /// <summary>
+    /// Looks up for the colour in the list of the colour segments.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="isHatched"></param>
+    /// <returns></returns>
+    public uint Lookup(int value, ref bool isHatched)
+    {
+      if (ColorSegments.Count == 0)
+        return ColorUtility.ColorToUInt(COLOR_RED_VALUE, COLOR_GREEN_VALUE, COLOR_BLUE_VALUE);
+
+      int minValue;
+      int maxValue;
+
+      for (var i = ColorSegments.Count - 1; i >= 0; i--)
+      {
+        isHatched = ColorSegments[i].IsHatched;
+
+        if (!IsSolidColors)
+        {
+          minValue = ColorSegments[i].MinValue;
+          maxValue = ColorSegments[i].MaxValue;
+
+          return  ScaleColor(value, minValue, maxValue, ColorSegments[i].Color);
+        }
+
+        return ColorSegments[i].Color;
+      }
+
+      // Off the top, scaled to max...
+      var tempColor = ColorSegments[0].Color;
+
+      minValue = ColorSegments[0].MinValue;
+      maxValue = ColorSegments[0].MaxValue;
+
+      isHatched = ColorSegments[0].IsHatched;
+
+      if (minValue != maxValue)
+        tempColor = ScaleColor(maxValue, minValue, maxValue, ColorSegments[0].Color);
+
+      return tempColor;
+    }
+
+    /// <summary>
+    ///  Returns the number of colors in the scale.
+    ///  This function returns the number of colors in the scale. It effectively
+    ///  corresponds to the number of segments in the scale. It returns the same
+    ///  value whether a scale uses solid colors or a gradient.
+    /// </summary>
+    public int TotalColors => ColorSegments.Count;
+
+    public uint GetColorAtIndex(int index, ref bool isHatched)
+    {
+      var tempColor = ColorUtility.ColorToUInt(COLOR_RED_VALUE, COLOR_GREEN_VALUE, COLOR_BLUE_VALUE);
+
+      if (index >= 0 && index < ColorSegments.Count)
+      {
+        tempColor = ColorSegments[index].Color;
+        isHatched = ColorSegments[index].IsHatched;
+      }
+
+      return tempColor;
+    }
+
+    /// <summary>
+    /// Gets the min and max values for the segment at the specified index.
+    /// </summary>
+    /// <param name="segmentIndex"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    public void GetSegmentMinMax(int segmentIndex, out int min, out int max)
+    {
+      min = 0;
+      max = int.MaxValue;
+
+      if (segmentIndex >= 0 && segmentIndex < ColorSegments.Count)
+      {
+        min = ColorSegments[segmentIndex].MinValue;
+        max = ColorSegments[segmentIndex].MaxValue;
+      }
     }
 
   }

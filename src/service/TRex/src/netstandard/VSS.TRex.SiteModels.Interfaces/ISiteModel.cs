@@ -147,6 +147,6 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     ISiteModelMetadata MetaData { get; }
 
-    byte GetCCAMinimumPassesValue(short machineID, DateTime startDate, DateTime endDate, int layerID);
+    byte GetCCAMinimumPassesValue(Guid machineUID, DateTime startDate, DateTime endDate, int layerID);
   }
 }

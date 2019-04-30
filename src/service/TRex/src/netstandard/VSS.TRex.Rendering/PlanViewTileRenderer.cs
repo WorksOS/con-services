@@ -9,6 +9,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.CCAColorScale;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
@@ -142,7 +143,12 @@ namespace VSS.TRex.Rendering
       if (colourPalette == null)
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
-          Displayer.Palette = ComputeCCAPalette(processor, filters.Filters[0].AttributeFilter);
+        {
+          Displayer.Palette = ComputeCCAPalette(processor, filters.Filters[0].AttributeFilter, mode);
+
+          if (Displayer.Palette == null)
+            return RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
+        }
         else
           Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
       }
@@ -223,17 +229,36 @@ namespace VSS.TRex.Rendering
       NPixelsY = ANPixelsY;
     }
 
-    private IPlanViewPalette ComputeCCAPalette(IPipelineProcessor processor,  ICellPassAttributeFilter filter)
+    private IPlanViewPalette ComputeCCAPalette(IPipelineProcessor processor,  ICellPassAttributeFilter filter, DisplayMode mode)
     {
-      const short UNKNOWN_MACHINE_ID = -1;
-
-      // TODO Get a Machine ID...
-      var machineID = filter.MachinesList.Length > 0 ? 0 /*filter.MachinesList[0]*/ : UNKNOWN_MACHINE_ID;
+      var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
       
-      var ccaMinimumPassesValue = processor.SiteModel.GetCCAMinimumPassesValue((short)machineID, filter.StartTime, filter.EndTime, filter.LayerID);
+      var ccaMinimumPassesValue = processor.SiteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
 
-      return null;
+      if (ccaMinimumPassesValue == 0)
+        return null;
+
+      var ccaColorScale = CCAColorScaleManager.CreateCoverageScale(ccaMinimumPassesValue);
+
+      var transitions = new Transition[ccaColorScale.TotalColors];
+
+      for (var i = 0; i < transitions.Length; i++)
+        transitions[i] = new Transition(i + 1, Color.FromArgb((int)ccaColorScale.ColorSegments[i].Color));
+
+      if (mode == DisplayMode.CCA)
+      {
+        var ccaPalette = new CCAPalette();
+        ccaPalette.PaletteTransitions = transitions;
+
+        return ccaPalette;
+      }
+
+      var ccaSummaryPalette = new CCASummaryPalette();
+      ccaSummaryPalette.UndercompactedColour = transitions[0].Color;
+      ccaSummaryPalette.CompactedColour = transitions[1].Color;
+      ccaSummaryPalette.OvercompactedColour = transitions[2].Color;
+
+      return ccaSummaryPalette;
     }
-
   }
 }

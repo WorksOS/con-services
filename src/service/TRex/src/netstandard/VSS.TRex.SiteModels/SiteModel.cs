@@ -821,14 +821,22 @@ namespace VSS.TRex.SiteModels
       return new List<AssetOnDesignLayerPeriod>(assetOnDesignLayerPeriods);
     }
 
-    public byte GetCCAMinimumPassesValue(short machinID, DateTime startDate, DateTime endDate, int layerID)
+    public byte GetCCAMinimumPassesValue(Guid machineUID, DateTime startDate, DateTime endDate, int layerID)
     {
       var ccaMinimumPassesValue = byte.MinValue;
 
       if (!MachineTargetValuesLoaded)
         return ccaMinimumPassesValue;
 
-      var targetvalues = machinesTargetValues[machinID];
+      var machine = Machines.Locate(machineUID);
+
+      if (machine == null)
+      {
+        Log.LogWarning($"Getting CCA minimum pass values. No Machine found. Machine UID: {machineUID}");
+        return ccaMinimumPassesValue;
+      }
+
+      var targetvalues = machinesTargetValues[machine.InternalSiteModelMachineIndex];
 
       if (targetvalues == null)
       {
