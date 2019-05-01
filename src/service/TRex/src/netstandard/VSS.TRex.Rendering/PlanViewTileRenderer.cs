@@ -144,7 +144,7 @@ namespace VSS.TRex.Rendering
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
         {
-          Displayer.Palette = ComputeCCAPalette(processor, filters.Filters[0].AttributeFilter, mode);
+          Displayer.Palette = ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
 
           if (Displayer.Palette == null)
             return RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
@@ -229,11 +229,11 @@ namespace VSS.TRex.Rendering
       NPixelsY = ANPixelsY;
     }
 
-    private IPlanViewPalette ComputeCCAPalette(IPipelineProcessor processor,  ICellPassAttributeFilter filter, DisplayMode mode)
+    private IPlanViewPalette ComputeCCAPalette(ISiteModel siteModel,  ICellPassAttributeFilter filter, DisplayMode mode)
     {
       var machineUID = filter.MachinesList.Length > 0 ? filter.MachinesList[0] : Guid.Empty;
       
-      var ccaMinimumPassesValue = processor.SiteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
+      var ccaMinimumPassesValue = siteModel.GetCCAMinimumPassesValue(machineUID, filter.StartTime, filter.EndTime, filter.LayerID);
 
       if (ccaMinimumPassesValue == 0)
         return null;
