@@ -23,7 +23,6 @@ namespace VSS.TRex.Tests.Cells
                 gpsMode = GPSMode.AutonomousPosition,
                 HalfPass = false,
                 Height = 5,
-                //internalSiteModelMachineIndex = 6,
                 InternalSiteModelMachineIndex = 6,
                 MachineSpeed = 7,
                 MaterialTemperature = 8,
@@ -46,7 +45,6 @@ namespace VSS.TRex.Tests.Cells
                 gpsMode = GPSMode.DGPS,
                 HalfPass = true,
                 Height = 50,
-                //internalSiteModelMachineIndex = 60,
                 InternalSiteModelMachineIndex = 60,
                 MachineSpeed = 70,
                 MaterialTemperature = 80,
@@ -75,7 +73,6 @@ namespace VSS.TRex.Tests.Cells
                 cp.gpsMode == CellPassConsts.NullGPSMode &&
                 cp.HalfPass == false &&
                 cp.Height == CellPassConsts.NullHeight &&
-                //cp.internalSiteModelMachineIndex == CellPass.NullMachineID &&
                 cp.InternalSiteModelMachineIndex == CellPassConsts.NullInternalSiteModelMachineIndex &&
                 cp.MachineSpeed == CellPassConsts.NullMachineSpeed &&
                 cp.MaterialTemperature == CellPassConsts.NullMaterialTemperatureValue &&
@@ -96,12 +93,11 @@ namespace VSS.TRex.Tests.Cells
             CellPass cp = ATestCellPass();
 
             DateTime testTime = DateTime.Now;
-            //cp.internalSiteModelMachineIndex = 100;
             cp.InternalSiteModelMachineIndex = 100;
             cp.Time = testTime;
 
-            //cp.MachineIDAndTime(out long internalSiteModelMachineIndex, out DateTime Time);
-            // Assert.True(internalSiteModelMachineIndex == 100 && Time == testTime, "Machine ID and time are not the expected values");
+            //cp.MachineIDAndTime(out long InternalSiteModelMachineIndex, out DateTime Time);
+            // Assert.True(InternalSiteModelMachineIndex == 100 && Time == testTime, "Machine ID and time are not the expected values");
 
             cp.MachineIDAndTime(out short internalSiteModelMachineIndex, out DateTime Time);
             Assert.True(internalSiteModelMachineIndex == 100 && Time == testTime, "Machine ID and time are not the expected values");

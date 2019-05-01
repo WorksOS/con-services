@@ -294,7 +294,7 @@ namespace VSS.TRex.Tests.Cells
 
             // Modify the cell pass in cell 2 to have a different machine ID, but same remaining state to determine if the modification count is set
 
-            //c2.Passes[0].internalSiteModelMachineIndex = 10000;
+            //c2.Passes[0].InternalSiteModelMachineIndex = 10000;
             c2.Passes[0].InternalSiteModelMachineIndex = 10000;
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 1 modified (as identical cell passes are not a modification)

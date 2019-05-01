@@ -155,7 +155,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                         if (BaseProductionDataSupportedByMachine)
                         {
                             // Prepare a processed pass record to include in the cell
-                            //ProcessedCellPass.internalSiteModelMachineIndex = internalSiteModelMachineIndex;
+                            //ProcessedCellPass.InternalSiteModelMachineIndex = InternalSiteModelMachineIndex;
                             ProcessedCellPass.InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex;
                             ProcessedCellPass.Time = _TheTime;
                             ProcessedCellPass.Height = _TheHeight;

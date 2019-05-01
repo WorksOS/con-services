@@ -138,7 +138,7 @@ namespace VSS.TRex.Events
         if (TrackingState.MachineTargetValues == null)
           return;
 
-        passes[I].MachineType = SiteModel.Machines[TrackingState.MachineTargetValues.internalSiteModelMachineIndex].MachineType;
+        passes[I].MachineType = SiteModel.Machines[TrackingState.MachineTargetValues.InternalSiteModelMachineIndex].MachineType;
 
         // ******************************************************
         // ****************** Target Values *********************

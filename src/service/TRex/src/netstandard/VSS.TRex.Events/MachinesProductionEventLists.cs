@@ -73,10 +73,10 @@ namespace VSS.TRex.Events
     /// <param name="events"></param>
     public void Add(IProductionEventLists events)
     {
-      if (events.internalSiteModelMachineIndex >= internalSiteModelMachineIndexMap.Length)
-        Array.Resize(ref internalSiteModelMachineIndexMap, events.internalSiteModelMachineIndex + 1);
+      if (events.InternalSiteModelMachineIndex >= internalSiteModelMachineIndexMap.Length)
+        Array.Resize(ref internalSiteModelMachineIndexMap, events.InternalSiteModelMachineIndex + 1);
 
-      internalSiteModelMachineIndexMap[events.internalSiteModelMachineIndex] = events;
+      internalSiteModelMachineIndexMap[events.InternalSiteModelMachineIndex] = events;
     }
   }
 }
