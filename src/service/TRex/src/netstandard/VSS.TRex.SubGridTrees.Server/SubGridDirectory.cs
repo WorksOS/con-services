@@ -61,43 +61,45 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Write(BinaryWriter writer)
         {
-            if (GlobalLatestCells == null)  
-              throw new TRexSubGridIOException("Cannot write sub grid directory without global latest values available");
-
-            GlobalLatestCells.Write(writer, new byte[10000]);
+            writer.Write(GlobalLatestCells != null);
+            GlobalLatestCells?.Write(writer, new byte[10000]);
 
             // Write out the directory of segments
-            if (SegmentDirectory.Count == 0)
-              throw new TRexSubGridIOException("Writing a segment directory with no segments");
-
             writer.Write(SegmentDirectory.Count);
 
-            foreach (var Segment in SegmentDirectory)
+            if (SegmentDirectory.Count > 0)
             {
+              foreach (var Segment in SegmentDirectory)
+              {
                 Segment.Write(writer);
+              }
             }
+
+            ExistsInPersistentStore = true;
         }
 
         public void Read(BinaryReader reader)
         {
+          if (reader.ReadBoolean())
+          {
             if (GlobalLatestCells == null)
               throw new TRexSubGridIOException("Cannot read sub grid directory without global latest values available");
-         
             GlobalLatestCells.Read(reader, new byte[10000]);
-         
-            // Read in the directory of segments
-            int SegmentCount = reader.ReadInt32();
-         
-            for (int I = 0; I < SegmentCount; I++)
-            {
-              SubGridCellPassesDataSegmentInfo segmentInfo = new SubGridCellPassesDataSegmentInfo();
-              segmentInfo.Read(reader);
-         
-              segmentInfo.ExistsInPersistentStore = true;
-              SegmentDirectory.Add(segmentInfo);
-            }
-         
-            ExistsInPersistentStore = true;
+          }
+
+          // Read in the directory of segments
+          int SegmentCount = reader.ReadInt32();
+
+          for (int I = 0; I < SegmentCount; I++)
+          {
+            SubGridCellPassesDataSegmentInfo segmentInfo = new SubGridCellPassesDataSegmentInfo();
+            segmentInfo.Read(reader);
+
+            segmentInfo.ExistsInPersistentStore = true;
+            SegmentDirectory.Add(segmentInfo);
+          }
+
+          ExistsInPersistentStore = true;
         }
   }
 }
