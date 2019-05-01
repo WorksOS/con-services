@@ -36,7 +36,7 @@ namespace VSS.TRex.Events
     /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
     /// used within the data model, not the GUID descriptor for the machine
     /// </summary>
-    public short MachineID { get; set; }
+    public short InternalSiteModelMachineIndex { get; set; }
 
     public IStartEndProductionEvents MachineStartupShutdownEvents
     {
@@ -220,7 +220,7 @@ namespace VSS.TRex.Events
         {
           if (allEventsForMachine[(int) eventType] == null) // This thread won the lock
           {
-            IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(MachineID, SiteModel.ID, eventType);
+            IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(InternalSiteModelMachineIndex, SiteModel.ID, eventType);
 
             if (temp != null) // The event is supported, load if the model is persistent (non-transient)
             {
@@ -249,10 +249,10 @@ namespace VSS.TRex.Events
     /// </summary>
     private static readonly int NumEventListTypes = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().Max() + 1;
 
-    public ProductionEventLists(ISiteModel siteModel, short machineID)
+    public ProductionEventLists(ISiteModel siteModel, short internalSiteModelMachineIndex)
     {
       SiteModel = siteModel;
-      MachineID = machineID;
+      InternalSiteModelMachineIndex = internalSiteModelMachineIndex;
 
       // Create an array large enough to hold all the possible enumeration values for production events
       allEventsForMachine = new IProductionEvents[NumEventListTypes];
@@ -270,7 +270,7 @@ namespace VSS.TRex.Events
       {
         if (list?.EventsChanged == true)
         {
-          Log.LogDebug($"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
+          Log.LogDebug($"Saving {list.EventListType} with {list.Count()} events for machine {InternalSiteModelMachineIndex} in project {SiteModel.ID}");
 
           list.SaveToStore(storageProxy);
         }
@@ -287,7 +287,7 @@ namespace VSS.TRex.Events
     {
       foreach (ProductionEventType evt in Enum.GetValues(typeof(ProductionEventType)))
       {
-        Log.LogDebug($"Loading {evt} events for machine {MachineID} in project {SiteModel.ID}");
+        Log.LogDebug($"Loading {evt} events for machine {InternalSiteModelMachineIndex} in project {SiteModel.ID}");
 
         GetEventList(evt)?.LoadFromStore(storageProxy);
       }
