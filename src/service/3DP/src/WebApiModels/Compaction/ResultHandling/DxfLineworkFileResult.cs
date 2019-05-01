@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       Code = (int)code;
     }
 
-    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxPointsToApproximateTo)
+    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxVerticiesToApproximateTo)
     {
       if (LineworkBoundaries == null) return null;
 
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 
       foreach (var boundary in LineworkBoundaries)
       {
-        var fencePoints = DouglasPeucker.DouglasPeuckerByCount(boundary.Boundary.FencePoints, maxPointsToApproximateTo);
+        var fencePoints = DouglasPeucker.DouglasPeuckerByCount(boundary.Boundary.FencePoints, maxVerticiesToApproximateTo);
 
         geoJson.Features.Add(new Feature
         {

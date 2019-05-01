@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Gets or sets the maximum number of points the returned GeoJSON should include. 
     /// </summary>
-    public int MaxPoints { get; set; } = NOT_DEFINED;
+    public int MaxVerticesPerBoundary { get; set; } = NOT_DEFINED;
 
     /// <summary>
     /// Gets or sets the maximum number of boundies within the DXF file to process.
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Models.Models
     {
       return $"{nameof(DxfFileRequest)}: " +
              $"{nameof(DxfUnits)}='{DxfUnits}', " +
-             $"{nameof(MaxPoints)}='{MaxPoints}', " +
+             $"{nameof(MaxVerticesPerBoundary)}='{MaxVerticesPerBoundary}', " +
              $"{nameof(MaxBoundariesToProcess)}='{MaxBoundariesToProcess}', " +
              $"{nameof(ConvertLineStringCoordsToPolygon)}='{ConvertLineStringCoordsToPolygon}'";
     }

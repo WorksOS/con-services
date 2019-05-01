@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.CoordinateSystemFileDescriptor.Path, executorRequestObj.CoordinateSystemFileDescriptor.FileName));
 
       return result.Code == 0
-        ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson(requestDto.ConvertLineStringCoordsToPolygon, requestDto.MaxPoints))
+        ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson(requestDto.ConvertLineStringCoordsToPolygon, requestDto.MaxVerticesPerBoundary))
         : StatusCode((int)HttpStatusCode.BadRequest, result);
 #else
       throw new ServiceException(HttpStatusCode.BadRequest,
