@@ -17,24 +17,16 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
     public static async Task ParseFilterJson(ProjectData project, IEnumerable<DbFilter> filters, IRaptorProxy raptorProxy,
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders)
     {
-      if (filters == null)
-      {
-        return;
-      }
+      if (filters == null) return;
 
       foreach (var filter in filters)
-      {
         await FixupFilterValues(project, filter, raptorProxy, assetResolverProxy, customHeaders);
-      }
     }
 
     public static async Task ParseFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy,
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders)
     {
-      if (filter == null)
-      {
-        return;
-      }
+      if (filter == null) return;
 
       await FixupFilterValues(project, filter, raptorProxy, assetResolverProxy, customHeaders);
     }
@@ -42,33 +34,31 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
     public static async Task ParseFilterJson(ProjectData project, FilterDescriptor filter, IRaptorProxy raptorProxy,
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders)
     {
-      if (filter == null)
-        return;
+      if (filter == null) return;
 
-      var processFilterJson =
-        await ProcessFilterJsonAsync(project, filter.FilterJson, raptorProxy, assetResolverProxy, customHeaders);
+      var processFilterJson = await ProcessFilterJson(project, filter.FilterJson, raptorProxy, assetResolverProxy, customHeaders);
 
       filter.FilterJson = processFilterJson.filterJson;
       filter.ContainsBoundary = processFilterJson.containsBoundary;
     }
 
-    private static async Task<(string filterJson, bool containsBoundary)> ProcessFilterJsonAsync(ProjectData project, string filterJson,
+    private static async Task<(string filterJson, bool containsBoundary)> ProcessFilterJson(ProjectData project, string filterJson,
       IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders)
     {
       var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
 
-      // FixupFilterValues
+      // date timezone changes
       filterObj.ApplyDateRange(project?.IanaTimeZone);
 
       if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
       {
-        //get extents from 3d pm
+        // get project productionData data extents from 3dpm
         var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
         filterObj.StartUtc = statistics?.startTime;
         filterObj.EndUtc = statistics?.endTime;
       }
 
-      //The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
+      // The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
       if (filterObj.AsAtDate == true)
       {
         var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
@@ -76,15 +66,16 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         filterObj.DateRangeType = DateRangeType.Custom;
       }
 
-      // pair up AssetUids and legacyAssetIds
+      // pair up AssetUids and legacyAssetIds in contributingMachines
       await PairUpAssetIdentifiersAsync(filterObj.ContributingMachines, assetResolverProxy, customHeaders);
+
       return (JsonConvert.SerializeObject(filterObj), filterObj.ContainsBoundary);
     }
 
     private static async Task FixupFilterValues(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy,
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders)
     {
-      var processFilterJson = await ProcessFilterJsonAsync(project, filter.FilterJson, raptorProxy, assetResolverProxy, customHeaders);
+      var processFilterJson = await ProcessFilterJson(project, filter.FilterJson, raptorProxy, assetResolverProxy, customHeaders);
 
       filter.FilterJson = processFilterJson.filterJson;
     }
@@ -97,13 +88,12 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       if (machines == null || !machines.Any())
         return;
 
-
-      // assetMatch will return rows only if Uids found.
       var assetUids = new List<Guid>(machines.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && !a.IsJohnDoe
                                                                              && a.AssetId <= 0
                                                    ).Select(a => a.AssetUid.Value).Distinct());
       if (assetUids.Count > 0)
       {
+        // assetMatch will return rows of found Uids.
         var assetMatchingResult = await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders);
         foreach (var assetMatch in assetMatchingResult)
         {
@@ -113,13 +103,13 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         }
       }
 
-      // assetMatch will only return rows if Uids found for the legacyAssetIds
       var assetIds = new List<long>(machines.Where(a => a.AssetId > 0 && !a.IsJohnDoe
                                                                       && (!a.AssetUid.HasValue ||
                                                                           a.AssetUid.Value == Guid.Empty)
                                                    ).Select(a => a.AssetId).Distinct());
       if (assetIds.Count > 0)
       {
+        // assetMatch will only return rows of found legacyAssetIds.
         var assetMatchingResult = await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders);
         foreach (var assetMatch in assetMatchingResult)
           {

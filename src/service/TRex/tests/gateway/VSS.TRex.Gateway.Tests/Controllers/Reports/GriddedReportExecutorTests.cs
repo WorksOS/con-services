@@ -76,7 +76,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       double endEasting = 400010;
       double azimuth = 4;
 
-      var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
+      var filter = new Productivity3D.Filter.Abstractions.Models.Filter(
         DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null

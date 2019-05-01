@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ValidationConstants3D.MAX_STATION,
           RaptorConverters.DesignDescriptor(request.DesignDescriptor),
           RaptorConverters.EmptyDesignDescriptor,
-          RaptorConverters.ConvertFilter(request.Filter),
+          RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient),
           positionsAreGrid);
 
         var memoryStream = raptorClient.GetDesignProfile(designProfile);

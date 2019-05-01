@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtCMVChange),
           settings,
-          RaptorConverters.ConvertFilter(request.Filter, overrideAssetIds: new List<long>()),
+          RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient, overrideAssetIds: new List<long>()),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
           out var result);
 

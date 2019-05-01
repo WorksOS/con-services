@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
       double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
 
-      var raptorFilter = RaptorConverters.ConvertFilter(request.filter, overrideAssetIds: new List<long>());
+      var raptorFilter = RaptorConverters.ConvertFilter(request.filter, request.ProjectId, raptorClient, overrideAssetIds: new List<long>());
 
       int code = raptorClient.RequestCellProfile
       (request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,

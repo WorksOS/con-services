@@ -26,6 +26,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     private static IServiceProvider serviceProvider;
     private static ILoggerFactory logger;
     private static Dictionary<string, string> _customHeaders;
+    private const int NULL_RAPTOR_MACHINE_DESIGN_ID = -1;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       (
         new List<AssetOnDesignPeriod>
         {
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-50),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, assetId, DateTime.UtcNow.AddDays(-50),
             DateTime.UtcNow.AddDays(-40), assetUid)
         }
       );
@@ -81,11 +82,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(1, result.AssetOnDesignPeriods.Count, "Wrong design count");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].AssetUid, result.AssetOnDesignPeriods[0].AssetUid,
         "Wrong asset Uid");
-      Assert.AreEqual(assets[0].Value, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
+      Assert.AreEqual(assetId, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].MachineId, result.AssetOnDesignPeriods[0].MachineId,
         "Wrong legacyAssetId");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate,
         "Wrong StartDate");
+      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignPeriods[0].OnMachineDesignId,"Wrong onMachineDesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName, result.AssetOnDesignPeriods[0].OnMachineDesignName, "Wrong onMachineDesignName");
 
       // there's some funny giggery-pokery in the executor to join up any dis-jointed periods
       Assert.IsTrue(result.AssetOnDesignPeriods[0].EndDate > expectedResult.AssetOnDesignPeriods[0].EndDate,
@@ -103,9 +106,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       (
         new List<AssetOnDesignPeriod>
         {
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-50),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, assetId, DateTime.UtcNow.AddDays(-50),
             DateTime.UtcNow.AddDays(-40), assetUid),
-          new AssetOnDesignPeriod("The NameOf Design2", 2, -1, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-1),
+          new AssetOnDesignPeriod("The NameOf Design2", NULL_RAPTOR_MACHINE_DESIGN_ID, assetId, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-1),
             assetUid)
         }
       );
@@ -134,9 +137,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].AssetUid, result.AssetOnDesignPeriods[0].AssetUid,
         "Wrong asset Uid");
       Assert.AreEqual(assets[0].Value, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].MachineId, result.AssetOnDesignPeriods[0].MachineId,
+      Assert.AreEqual(assetId, result.AssetOnDesignPeriods[0].MachineId,
         "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].Id, result.AssetOnDesignPeriods[0].Id, "Wrong DesignId");
+      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignPeriods[0].OnMachineDesignId, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName, result.AssetOnDesignPeriods[0].OnMachineDesignName, "Wrong DesignName");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate,
         "Wrong StartDate");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].StartDate, result.AssetOnDesignPeriods[0].EndDate,
@@ -145,9 +149,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].AssetUid, result.AssetOnDesignPeriods[1].AssetUid,
         "Wrong asset Uid");
       Assert.AreEqual(assets[0].Value, result.AssetOnDesignPeriods[1].MachineId, "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].MachineId, result.AssetOnDesignPeriods[1].MachineId,
+      Assert.AreEqual(assetId, result.AssetOnDesignPeriods[1].MachineId,
         "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].Id, result.AssetOnDesignPeriods[1].Id, "Wrong DesignId");
+      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignPeriods[1].OnMachineDesignId, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].OnMachineDesignName, result.AssetOnDesignPeriods[1].OnMachineDesignName, "Wrong DesignName");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[1].StartDate, result.AssetOnDesignPeriods[1].StartDate,
         "Wrong StartDate");
       // the final design change is considered current
@@ -172,17 +177,17 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       (
         new List<AssetOnDesignPeriod>
         {
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-4),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, -1, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-4),
             assetUid1Good),
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-3), DateTime.UtcNow.AddDays(-2),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, -1, DateTime.UtcNow.AddDays(-3), DateTime.UtcNow.AddDays(-2),
             assetUid2Good),
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-2), DateTime.UtcNow.AddDays(-1),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, -1, DateTime.UtcNow.AddDays(-2), DateTime.UtcNow.AddDays(-1),
             assetUid3Good),
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-10),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, -1, DateTime.UtcNow.AddDays(-10),
             DateTime.UtcNow.AddDays(-9), assetUid1Good),
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-10),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, -1, DateTime.UtcNow.AddDays(-10),
             DateTime.UtcNow.AddDays(-9), assetUid2Good),
-          new AssetOnDesignPeriod("The NameOf Design1", 1, -1, DateTime.UtcNow.AddDays(-10),
+          new AssetOnDesignPeriod("The NameOf Design1", NULL_RAPTOR_MACHINE_DESIGN_ID, -1, DateTime.UtcNow.AddDays(-10),
             DateTime.UtcNow.AddDays(-9), assetUid3Good)
         }
       );
@@ -214,6 +219,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(6, result.AssetOnDesignPeriods.Count, "Wrong design count");
       Assert.AreEqual(assetUid1Good, result.AssetOnDesignPeriods[0].AssetUid, "Wrong asset1 Uid (0)");
       Assert.AreEqual(assetId1Expected, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId1 (0)");
+      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignPeriods[0].OnMachineDesignId, "Wrong onMachineDesignId (0)");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName, result.AssetOnDesignPeriods[0].OnMachineDesignName, "Wrong onMachineDesignName (0)");
       Assert.AreEqual(assetUid1Good, result.AssetOnDesignPeriods[1].AssetUid, "Wrong asset1 Uid (1)");
       Assert.AreEqual(assetId1Expected, result.AssetOnDesignPeriods[1].MachineId, "Wrong legacyAssetId1 (1)");
 
@@ -270,8 +277,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       {
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[0].Id,
-          FName = expectedResult.AssetOnDesignPeriods[0].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[0].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[0].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[0].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[0].MachineId
@@ -302,7 +309,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(assets[0].Key, result.AssetOnDesignPeriods[0].AssetUid, "Wrong assetUid");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].MachineId, result.AssetOnDesignPeriods[0].MachineId,
         "Wrong legacyAssetId");
-      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].Id, result.AssetOnDesignPeriods[0].Id, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignId, result.AssetOnDesignPeriods[0].OnMachineDesignId, "Wrong DesignId");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName, result.AssetOnDesignPeriods[0].OnMachineDesignName, "Wrong DesignName");
       Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate,
         "Wrong StartDate");
 
@@ -348,48 +356,48 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       {
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[0].Id,
-          FName = expectedResult.AssetOnDesignPeriods[0].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[0].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[0].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[0].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[0].MachineId
         },
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[1].Id,
-          FName = expectedResult.AssetOnDesignPeriods[1].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[1].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[1].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[1].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[1].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[1].MachineId
         },
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[2].Id,
-          FName = expectedResult.AssetOnDesignPeriods[2].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[2].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[2].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[2].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[2].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[2].MachineId
         },
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[3].Id,
-          FName = expectedResult.AssetOnDesignPeriods[3].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[3].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[3].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[3].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[3].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[3].MachineId
         },
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[4].Id,
-          FName = expectedResult.AssetOnDesignPeriods[4].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[4].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[4].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[4].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[4].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[4].MachineId
         },
         new TDesignName
         {
-          FID = (int) expectedResult.AssetOnDesignPeriods[5].Id,
-          FName = expectedResult.AssetOnDesignPeriods[5].Name,
+          FID = (int) expectedResult.AssetOnDesignPeriods[5].OnMachineDesignId,
+          FName = expectedResult.AssetOnDesignPeriods[5].OnMachineDesignName,
           FStartDate = expectedResult.AssetOnDesignPeriods[5].StartDate,
           FEndDate = expectedResult.AssetOnDesignPeriods[5].EndDate,
           FMachineID = expectedResult.AssetOnDesignPeriods[5].MachineId
@@ -423,6 +431,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(6, result.AssetOnDesignPeriods.Count, "Wrong design count");
       Assert.AreEqual(assetUid1Expected, result.AssetOnDesignPeriods[0].AssetUid, "Wrong asset1 Uid (0)");
       Assert.AreEqual(assetId1Good, result.AssetOnDesignPeriods[0].MachineId, "Wrong legacyAssetId1 (0)");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignId, result.AssetOnDesignPeriods[0].OnMachineDesignId, "Wrong onMachineDesignId (0)");
+      Assert.AreEqual(expectedResult.AssetOnDesignPeriods[0].OnMachineDesignName, result.AssetOnDesignPeriods[0].OnMachineDesignName, "Wrong onMachineDesignName (0)");
       Assert.AreEqual(assetUid1Expected, result.AssetOnDesignPeriods[1].AssetUid, "Wrong asset1 Uid (1)");
       Assert.AreEqual(assetId1Good, result.AssetOnDesignPeriods[1].MachineId, "Wrong legacyAssetId1 (1)");
 

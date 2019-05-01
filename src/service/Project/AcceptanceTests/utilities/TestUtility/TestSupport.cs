@@ -325,7 +325,7 @@ namespace TestUtility
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="boundary"></param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public void CreateProjectViaWebApiV3(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
@@ -339,7 +339,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      CallProjectWebApiV3(CreateProjectEvt, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ namespace TestUtility
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
     /// <param name="projectType"></param>
-    public void UpdateProjectViaWebApi(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
+    public void UpdateProjectViaWebApiV3(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
     {
       UpdateProjectEvt = new UpdateProjectEvent
       {
@@ -363,7 +363,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(UpdateProjectEvt, string.Empty, statusCode, "Update", HttpMethod.Put.ToString(), CustomerUid.ToString());
+      CallProjectWebApiV3(UpdateProjectEvt, string.Empty, statusCode, "Update", HttpMethod.Put.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -372,14 +372,14 @@ namespace TestUtility
     /// <param name="projectUid">project UID</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void DeleteProjectViaWebApi(Guid projectUid, DateTime actionUtc, HttpStatusCode statusCode)
+    public void DeleteProjectViaWebApiV3(Guid projectUid, DateTime actionUtc, HttpStatusCode statusCode)
     {
       //DeleteProjectEvt = new DeleteProjectEvent
       //{
       //  ProjectUID = projectUid,
       //  ActionUTC = actionUtc
       //};
-      CallProjectWebApi(null, projectUid.ToString(), statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
+      CallProjectWebApiV3(null, projectUid.ToString(), statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -390,7 +390,7 @@ namespace TestUtility
     /// <param name="customerId">legacy customer ID</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void AssociateCustomerProjectViaWebApi(Guid projectUid, Guid customerUid, int customerId, DateTime actionUtc, HttpStatusCode statusCode)
+    public void AssociateCustomerProjectViaWebApiV3(Guid projectUid, Guid customerUid, int customerId, DateTime actionUtc, HttpStatusCode statusCode)
     {
       AssociateCustomerProjectEvt = new AssociateProjectCustomer
       {
@@ -400,7 +400,7 @@ namespace TestUtility
         RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString(), customerUid.ToString());
+      CallProjectWebApiV3(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString(), customerUid.ToString());
     }
 
     /// <summary>
@@ -410,7 +410,7 @@ namespace TestUtility
     /// <param name="customerUid">customer UID</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void DissociateProjectViaWebApi(Guid projectUid, Guid customerUid, DateTime actionUtc, HttpStatusCode statusCode)
+    public void DissociateProjectViaWebApiV3(Guid projectUid, Guid customerUid, DateTime actionUtc, HttpStatusCode statusCode)
     {
       DissociateCustomerProjectEvt = new DissociateProjectCustomer
       {
@@ -418,7 +418,7 @@ namespace TestUtility
         CustomerUID = customerUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      CallProjectWebApiV3(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -428,7 +428,7 @@ namespace TestUtility
     /// <param name="geofenceUid">geofence UID</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void AssociateGeofenceProjectViaWebApi(Guid projectUid, Guid geofenceUid, DateTime actionUtc, HttpStatusCode statusCode)
+    public void AssociateGeofenceProjectViaWebApiV3(Guid projectUid, Guid geofenceUid, DateTime actionUtc, HttpStatusCode statusCode)
     {
       AssociateProjectGeofenceEvt = new AssociateProjectGeofence
       {
@@ -436,7 +436,7 @@ namespace TestUtility
         GeofenceUID = geofenceUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      CallProjectWebApiV3(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -499,7 +499,7 @@ namespace TestUtility
     /// <param name="expectedResultsArray"></param>
     public void GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
-      var response = CallProjectWebApi(null, string.Empty, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
+      var response = CallProjectWebApiV3(null, string.Empty, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
@@ -1846,7 +1846,7 @@ namespace TestUtility
     /// <param name="method">http method</param>
     /// <param name="customerUid">Customer UID to add to http headers</param>
     /// <returns>The web api response</returns>
-    private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
+    private string CallProjectWebApiV3(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
       string configJson;
       if (evt == null)

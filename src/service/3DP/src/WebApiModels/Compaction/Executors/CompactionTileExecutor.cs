@@ -69,8 +69,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
         out bool coordsAreGrid);
 
-      var baseFilter = RaptorConverters.ConvertFilter(request.Filter1);
-      var topFilter = RaptorConverters.ConvertFilter(request.Filter2);
+      var baseFilter = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
+      var topFilter = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
 
       var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
