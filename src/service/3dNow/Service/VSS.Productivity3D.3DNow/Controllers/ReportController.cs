@@ -204,7 +204,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
           $"Cannot find file {simpleFilter.DesignFileUid} for project {simpleFilter.ProjectUid}");
       }
 
-      var filterModel = Filter.Abstractions.Models.Filter.CreateFilter(simpleFilter.StartDateUtc,
+      var filterModel = new Filter.Abstractions.Models.Filter(simpleFilter.StartDateUtc,
         simpleFilter.EndDateUtc,
         simpleFilter.DesignFileUid,
         file.Name,

@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
     public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, Guid? projectUid, long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IDictionary<string, string> headers, FilterResult filter, DesignDescriptor designDescriptor)
     {
-      filter?.Validate(); // Should be moved to FilterResult.CreateFilter().
+      filter?.Validate(); // Should be moved to FilterResult.CreateFilterObsolete().
 
       Log = log;
       ConfigurationStore = configurationStore;

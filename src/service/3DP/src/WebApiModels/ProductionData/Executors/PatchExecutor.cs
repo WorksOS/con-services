@@ -31,8 +31,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        var filter1 = RaptorConverters.ConvertFilter(request.Filter1);
-        var filter2 = RaptorConverters.ConvertFilter(request.Filter2);
+        var filter1 = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
+        var filter2 = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
 
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)

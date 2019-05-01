@@ -31,8 +31,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         TASNodeSimpleVolumesResult result;
 
-        var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilter);
-        var topFilter = RaptorConverters.ConvertFilter(request.TopFilter);
+        var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilter, request.ProjectId, raptorClient);
+        var topFilter = RaptorConverters.ConvertFilter(request.TopFilter, request.ProjectId, raptorClient);
         var baseDesignDescriptor = RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor);
         var topDesignDescriptor = RaptorConverters.DesignDescriptor(request.TopDesignDescriptor);
 
@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             baseDesignDescriptor,
             topFilter,
             topDesignDescriptor,
-            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter), (double)request.CutTolerance,
+            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter, request.ProjectId, raptorClient), (double)request.CutTolerance,
             (double)request.FillTolerance,
             RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
             out result);
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor),
             topFilter,
             RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
-            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter),
+            RaptorConverters.ConvertFilter(request.AdditionalSpatialFilter, request.ProjectId, raptorClient),
             RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
             out result);
         }

@@ -222,6 +222,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               Task.IntermediaryTargetMachine.DeviceType,
               Task.IntermediaryTargetMachine.IsJohnDoeMachine,
               Task.PersistedTargetMachineID);
+            Task.PersistedTargetMachineID = MachineFromDM.ID;
             Task.IntermediaryTargetMachine.ID = MachineFromDM.ID;
             Task.IntermediaryTargetMachine.InternalSiteModelMachineIndex = MachineFromDM.InternalSiteModelMachineIndex;
             MachineFromDM.Assign(Task.IntermediaryTargetMachine);
@@ -402,7 +403,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.PersistedTargetMachineID} in project {Task?.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for PersistedMachine: {Task?.PersistedTargetMachineID} FinalMachine: {Task?.IntermediaryTargetMachine.ID} in project {Task?.PersistedTargetSiteModelID}");
       }
 
       return true;
