@@ -27,7 +27,7 @@ namespace VSS.MasterData.Proxies
     public override string ExternalServiceName => "assetsummary";
     public override ApiVersion Version => ApiVersion.V1;
     public override ApiType Type => ApiType.Public;
-    public override string CacheLifeKey => null;
+    public override string CacheLifeKey => "FLEET_ASSET_SUMMARY_CACHE_LIFE";
 
     public Task<AssetSummary> GetAssetSummary(string assetUid, IDictionary<string, string> customHeaders = null)
     {

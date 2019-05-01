@@ -7,7 +7,6 @@ using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Filters;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using PassCountStatisticsResult = VSS.TRex.Analytics.PassCountStatistics.PassCountStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.PassCountSummaryResult;
@@ -36,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      PassCountSummaryRequest request = item as PassCountSummaryRequest;
+      var request = item as PassCountSummaryRequest;
 
       if (request == null)
         ThrowRequestTypeCastException< PassCountSummaryRequest>();
@@ -49,9 +48,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request.OverridingTargetPassCountRange != null)
         targetPassCountRange.SetMinMax(request.OverridingTargetPassCountRange.Min, request.OverridingTargetPassCountRange.Max);
 
-      PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-      PassCountStatisticsResult passCountSummaryResult = operation.Execute(
-        new PassCountStatisticsArgument()
+      var operation = new PassCountStatisticsOperation();
+      var passCountSummaryResult = operation.Execute(
+        new PassCountStatisticsArgument
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),

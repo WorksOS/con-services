@@ -12,6 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Middleware\**" />
+    <Content Remove="Middleware\**" />
+    <EmbeddedResource Remove="Middleware\**" />
+    <None Remove="Middleware\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
     <PackageReference Include="NewRelic.Agent.Api" Version="8.10.51" />
@@ -30,16 +37,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Middleware\" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="appsettingsAlpha.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -47,6 +47,9 @@ data:
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.k8s.services.myvisionlink.com/internal/v1/export
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
+#SERVICE DISCOVERY REFERENCES
+  assetdetails-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
+  assetsummary-public-v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"

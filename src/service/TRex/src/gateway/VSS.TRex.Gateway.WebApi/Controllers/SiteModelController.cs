@@ -60,26 +60,36 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("statistics")]
     public ProjectStatisticsResult GetStatistics([FromBody] ProjectStatisticsTRexRequest projectStatisticsTRexRequest)
     {
-      Log.LogInformation($"{nameof(GetStatistics)}: projectStatisticsTRexRequest: {JsonConvert.SerializeObject(projectStatisticsTRexRequest)}");
-      projectStatisticsTRexRequest.Validate();
+      Log.LogInformation($"#In# {nameof(GetStatistics)}: projectStatisticsTRexRequest: {JsonConvert.SerializeObject(projectStatisticsTRexRequest)}");
 
-      var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetStatistics), projectStatisticsTRexRequest.ProjectUid);
-      var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid, projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
+      try
+      {
+        projectStatisticsTRexRequest.Validate();
 
-      var result = new ProjectStatisticsResult();
-      if (extents != null)
-        result.extents = new BoundingBox3DGrid(
-          extents.MinX, extents.MinY, extents.MinZ,
-          extents.MaxX, extents.MaxY, extents.MaxZ
-        );
+        var siteModel =
+          GatewayHelper.ValidateAndGetSiteModel(nameof(GetStatistics), projectStatisticsTRexRequest.ProjectUid);
+        var extents = ProjectExtents.ProductionDataAndSurveyedSurfaces(projectStatisticsTRexRequest.ProjectUid,
+          projectStatisticsTRexRequest.ExcludedSurveyedSurfaceUids);
 
-      var startEndDates = siteModel.GetDateRange();
-      result.startTime = startEndDates.startUtc;
-      result.endTime = startEndDates.endUtc;
+        var result = new ProjectStatisticsResult();
+        if (extents != null)
+          result.extents = new BoundingBox3DGrid(
+            extents.MinX, extents.MinY, extents.MinZ,
+            extents.MaxX, extents.MaxY, extents.MaxZ
+          );
 
-      result.cellSize = siteModel.Grid.CellSize;
-      result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
-      return result;
+        var startEndDates = siteModel.GetDateRange();
+        result.startTime = startEndDates.startUtc;
+        result.endTime = startEndDates.endUtc;
+
+        result.cellSize = siteModel.Grid.CellSize;
+        result.indexOriginOffset = (int) siteModel.Grid.IndexOriginOffset;
+        return result;
+      }
+      finally
+      {
+        Log.LogInformation($"#Out# {nameof(GetStatistics)}: projectStatisticsTRexRequest: {JsonConvert.SerializeObject(projectStatisticsTRexRequest)}");
+      }
     }
 
     

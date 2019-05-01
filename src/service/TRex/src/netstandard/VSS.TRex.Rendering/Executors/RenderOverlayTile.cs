@@ -18,6 +18,8 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
+using VSS.TRex.Rendering.Palettes;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Executors
 {
@@ -63,7 +65,7 @@ namespace VSS.TRex.Rendering.Executors
     public Guid CutFillDesignID { get; set; }
 
     // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
-    // FColourPalettes: TColourPalettes;
+    private IPlanViewPalette ColourPalettes;
     // ICOptions ICOptions = new ICOptions();
     private Color RepresentColor;
 
@@ -92,7 +94,7 @@ namespace VSS.TRex.Rendering.Executors
       IFilterSet filters,
       Guid ACutFillDesignID, //DesignDescriptor ACutFillDesign,
                              //AReferenceVolumeType : TComputeICVolumesType;
-                             //AColourPalettes: TColourPalettes;
+      IPlanViewPalette AColourPalettes,
                              //AICOptions: TSVOICOptions;
       Color ARepresentColor,
       string requestingTRexNodeId
@@ -109,7 +111,7 @@ namespace VSS.TRex.Rendering.Executors
       Filters = filters;
       CutFillDesignID = ACutFillDesignID; // CutFillDesign = ACutFillDesign;
       //ReferenceVolumeType = AReferenceVolumeType;
-      //ColourPalettes = AColourPalettes;
+      ColourPalettes = AColourPalettes;
       //ICOptions = AICOptions;
       RepresentColor = ARepresentColor;
       RequestingTRexNodeID = requestingTRexNodeId;
@@ -571,7 +573,7 @@ namespace VSS.TRex.Rendering.Executors
         Renderer.WorldTileWidth = WorldTileWidth;
         Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor);
+        ResultStatus = Renderer.PerformRender(Mode, processor, ColourPalettes);
 
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
         {

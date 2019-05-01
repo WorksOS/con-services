@@ -27,14 +27,21 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public ElevationDataResult PostElevationStatistics([FromBody] ElevationDataRequest elevationStatisticsRequest)
     {
-      Log.LogInformation($"{nameof(PostElevationStatistics)}: {Request.QueryString}");
+      Log.LogInformation($"#In# {nameof(PostElevationStatistics)}: {Request.QueryString}");
 
-      elevationStatisticsRequest.Validate();
+      try
+      {
+        elevationStatisticsRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<ElevationStatisticsExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(elevationStatisticsRequest) as ElevationDataResult);
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<ElevationStatisticsExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(elevationStatisticsRequest) as ElevationDataResult);
+      }
+      finally
+      {
+        Log.LogInformation($"#Out# {nameof(PostElevationStatistics)}: {Request.QueryString}");
+      }
     }
   }
 }
