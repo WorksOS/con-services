@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -46,7 +47,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         );
 
       var startEndDates = siteModel.GetDateRange();
-      result.startTime = startEndDates.startUtc; // todoJeannie
+      // todoJeannie need fffffff?
+      var dd = startEndDates.startUtc.ToString("yyyy-MM-ddTHH-mm-ss.fff", CultureInfo.InvariantCulture);
+      var ee = DateTime.ParseExact(dd, "yyyy-MM-ddTHH-mm-ss.fff", CultureInfo.InvariantCulture);
+      result.startTime = ee;
       result.endTime = startEndDates.endUtc;
 
       result.cellSize = siteModel.Grid.CellSize;
