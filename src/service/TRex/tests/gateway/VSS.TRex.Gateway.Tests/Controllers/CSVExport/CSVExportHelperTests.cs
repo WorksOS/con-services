@@ -34,7 +34,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_EndDateOnly()
     {
-      var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
+      var filter = new Productivity3D.Filter.Abstractions.Models.Filter(
         DateTime.SpecifyKind(new DateTime(2018, 1, 10), DateTimeKind.Utc),
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "","",
         new List<MachineDetails>(), null, null, null, null, null, null
@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
     [Fact]
     public void CSVExportHelper_DateRangeFromFilter()
     {
-      var filter = Productivity3D.Filter.Abstractions.Models.Filter.CreateFilter(
+      var filter = new Productivity3D.Filter.Abstractions.Models.Filter(
         DateTime.SpecifyKind(new DateTime(2019, 1, 10), DateTimeKind.Utc),
         null, "", "",
         new List<MachineDetails>(), null, null, null, null, null, null

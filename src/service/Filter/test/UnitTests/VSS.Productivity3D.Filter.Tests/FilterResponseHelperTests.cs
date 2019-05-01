@@ -49,13 +49,13 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void Should_return_When_project_is_null()
+    public async Task Should_return_When_project_is_null()
     {
       try
       {
         var filter = new MasterData.Repositories.DBModels.Filter
           {FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}"};
-        FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxy, mockedAssetResolverProxy,
+        await FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxy, mockedAssetResolverProxy,
           new Dictionary<string, string>());
 
         Abstractions.Models.Filter filterObj =
@@ -69,11 +69,11 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void Should_return_When_filter_is_null()
+    public async Task Should_return_When_filter_is_null()
     {
       try
       {
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter) null,
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter) null,
           raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
           customHeaders: new Dictionary<string, string>());
       }
@@ -84,11 +84,11 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void Should_return_When_filterDescriptor_is_null()
+    public async Task Should_return_When_filterDescriptor_is_null()
     {
       try
       {
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor) null,
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor) null,
           raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
           customHeaders: new Dictionary<string, string>());
       }
@@ -99,11 +99,11 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void Should_return_When_filters_collection_is_null()
+    public async Task Should_return_When_filters_collection_is_null()
     {
       try
       {
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, raptorProxy: mockedRaptorProxy,
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, raptorProxy: mockedRaptorProxy,
           assetResolverProxy: mockedAssetResolverProxy, customHeaders: new Dictionary<string, string>());
       }
       catch (Exception exception)
@@ -113,13 +113,13 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    public void Should_return_When_project_ianaTimezone_is_null()
+    public async Task Should_return_When_project_ianaTimezone_is_null()
     {
       try
       {
         var filter = new MasterData.Repositories.DBModels.Filter
           {FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}"};
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxy,
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxy,
           assetResolverProxy: mockedAssetResolverProxy, customHeaders: new Dictionary<string, string>());
 
         Abstractions.Models.Filter filterObj =
@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     [DataRow(DateRangeType.Custom, true)]
     [DataRow(DateRangeType.Custom, false)]
-    public void Should_not_set_dates_based_on_DateRangeType(DateRangeType dateRangeType, bool asAtDate)
+    public async Task Should_not_set_dates_based_on_DateRangeType(DateRangeType dateRangeType, bool asAtDate)
     {
       var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?) null;
       var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?) null;
@@ -148,7 +148,7 @@ namespace VSS.Productivity3D.Filter.Tests
           $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}"
       };
 
-      FilterJsonHelper.ParseFilterJson(
+      await FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filter,
         raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
         customHeaders: new Dictionary<string, string>());
@@ -241,7 +241,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(DateRangeType.PriorToYesterday, false)]
     [DataRow(DateRangeType.PriorToPreviousWeek, false)]
     [DataRow(DateRangeType.PriorToPreviousMonth, false)]
-    public void Should_set_dates_based_on_DateRangeType_When_using_collection_of_Filters(DateRangeType dateRangeType,
+    public async Task Should_set_dates_based_on_DateRangeType_When_using_collection_of_Filters(DateRangeType dateRangeType,
       bool asAtDate)
     {
       var filters = new List<MasterData.Repositories.DBModels.Filter>();
@@ -254,7 +254,7 @@ namespace VSS.Productivity3D.Filter.Tests
         });
       }
 
-      FilterJsonHelper.ParseFilterJson(
+      await FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filters,
         raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
         customHeaders: new Dictionary<string, string>());
@@ -284,12 +284,12 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(DateRangeType.PriorToYesterday, false)]
     [DataRow(DateRangeType.PriorToPreviousWeek, false)]
     [DataRow(DateRangeType.PriorToPreviousMonth, false)]
-    public void Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType, bool asAtDate)
+    public async Task Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType, bool asAtDate)
     {
       var filter = new MasterData.Repositories.DBModels.Filter
         {FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}"};
 
-      FilterJsonHelper.ParseFilterJson(
+      await FilterJsonHelper.ParseFilterJson(
         new ProjectData {IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filter,
         raptorProxy: mockedRaptorProxy, assetResolverProxy: mockedAssetResolverProxy,
         customHeaders: new Dictionary<string, string>());

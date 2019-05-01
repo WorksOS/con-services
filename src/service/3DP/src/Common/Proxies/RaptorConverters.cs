@@ -18,6 +18,7 @@ using SVOSiteVisionDecls;
 using VLPDDecls;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -30,6 +31,30 @@ namespace VSS.Productivity3D.Common.Proxies
   public static class RaptorConverters
   {
     public static readonly DateTime PDS_MIN_DATE = new DateTime(1899, 12, 30, 0, 0, 0);
+
+    // a filter may have a design name but a zero Id (if it came from database or TRex)
+    // find the raptorId from Raptor using the designName, as at this stage Raptor needs it's Id.
+    // this may be changed in future to have Raptor use the name
+    // This returns designs on machine. Designs are specific to project, so can disregard machineID.
+    public static int GetRaptorDesignId(IASNodeClient raptorClient, long? legacyProjectId, long? onMachineDesignId,
+      string onMachineDesignName)
+    {
+      if (onMachineDesignId.HasValue && onMachineDesignId > 0)
+        return (int) onMachineDesignId;
+
+      if (legacyProjectId > VelociraptorConstants.NO_PROJECT_ID && !string.IsNullOrEmpty(onMachineDesignName) && 
+          (string.Compare("<No Design>", onMachineDesignName, StringComparison.OrdinalIgnoreCase) != 0))
+      {
+        var raptorDesigns = raptorClient.GetOnMachineDesignEvents(legacyProjectId.Value);
+        if (raptorDesigns != null)
+          return (int) raptorDesigns?.ToList()
+            .Select(d => (string.Compare(d.FName, onMachineDesignName, StringComparison.OrdinalIgnoreCase) == 0)
+              ? d.FID : 0)
+            .FirstOrDefault();
+      }
+
+      return (int) onMachineDesignId;
+    }
 
     public static void AdjustFilterToFilter(ref TICFilterSettings baseFilter, TICFilterSettings topFilter)
     {
@@ -477,7 +502,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <summary>
     /// Convert <see cref="FilterResult"/> filter object to a Raptor compatible <see cref="TICFilterSettings"/> filter.
     /// </summary>
-    public static TICFilterSettings ConvertFilter(FilterResult filterResult, DateTime? overrideStartUTC = null,
+    public static TICFilterSettings ConvertFilter(FilterResult filterResult, long? legacyProjectId = null, IASNodeClient raptorClient = null, DateTime? overrideStartUTC = null,
       DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null)
     {
       if (filterResult == null) return DefaultRaptorFilter;
@@ -508,13 +533,19 @@ namespace VSS.Productivity3D.Common.Proxies
       }
 
       // Currently the Raptor code only supports filtering on a single Machine Design
-      if (filterResult.OnMachineDesignId.HasValue)
+      if (!string.IsNullOrEmpty(filterResult.OnMachineDesignName))
       {
-        filter.DesignNameID =
-          (int) filterResult.OnMachineDesignId
-            .Value; // (Aaron) Possible mismatch here, OnMachineDesignId is a long?. Won't fit into int...
+        filter.DesignNameID = GetRaptorDesignId(raptorClient, legacyProjectId, filterResult.OnMachineDesignId, filterResult.OnMachineDesignName);
         filter.SetDesignNameCellpassState(true);
       }
+      else
+        if (filterResult.OnMachineDesignId.HasValue && filterResult.OnMachineDesignId.Value > 0)
+        {
+          filter.DesignNameID =
+            (int)filterResult.OnMachineDesignId
+              .Value; // (Aaron) Possible mismatch here, OnMachineDesignId is a long?. Won't fit into int...
+          filter.SetDesignNameCellpassState(true);
+        }
 
       if (filterResult.AssetIDs != null && filterResult.AssetIDs.Count > 0)
       {
