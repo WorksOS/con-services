@@ -22,22 +22,31 @@ Arguments for building project #6, Christchurch Southern Motorway:
 
 namespace VSS.TRex.Tools.TagfileSubmitter
 {
-  public class Program
+  public class TAGFileNameComparer : IComparer<string>
+  {
+    public int Compare(string x, string y)
+    {
+      // Sort the filename using the date encoded into the filename
+      return x.Split('-')[4].CompareTo(y.Split('-')[4]);
+    }
+  }
+
+  public class Processor
   {
     private static ILogger Log = Logging.Logger.CreateLogger<Program>();
 
     // Singleton request object for submitting TAG files. Creating these is relatively slow and support concurrent operations.
-    private static SubmitTAGFileRequest submitTAGFileRequest;
-    private static ProcessTAGFileRequest processTAGFileRequest;
+    private SubmitTAGFileRequest submitTAGFileRequest;
+    private ProcessTAGFileRequest processTAGFileRequest;
 
-    private static int tAGFileCount = 0;
+    private int tAGFileCount = 0;
 
-    private static Guid[] ExtraProjectGuids = new[] {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()};
+    public Guid[] ExtraProjectGuids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
 
-    private static Guid AssetOverride = Guid.Empty;
+    public Guid AssetOverride = Guid.Empty;
 
 
-    public static void SubmitSingleTAGFile(Guid projectID, Guid assetID, string fileName)
+    public void SubmitSingleTAGFile(Guid projectID, Guid assetID, string fileName)
     {
       submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
       SubmitTAGFileRequestArgument arg;
@@ -61,10 +70,10 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       submitTAGFileRequest.Execute(arg);
     }
 
-    public static void ProcessSingleTAGFile(Guid projectID, string fileName)
+    public void ProcessSingleTAGFile(Guid projectID, string fileName)
     {
-   //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-      Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride; 
+      //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+      Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
 
       processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
       ProcessTAGFileRequestArgument arg;
@@ -93,9 +102,9 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       processTAGFileRequest.Execute(arg);
     }
 
-    public static void ProcessTAGFiles(Guid projectID, string[] files)
+    public void ProcessTAGFiles(Guid projectID, string[] files)
     {
-     // Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+      // Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
       Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
 
       processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
@@ -113,14 +122,14 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           byte[] bytes = new byte[fs.Length];
           fs.Read(bytes, 0, bytes.Length);
 
-          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes, IsJohnDoe = false});
+          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes, IsJohnDoe = false });
         }
       }
 
       processTAGFileRequest.Execute(arg);
     }
 
-    public static void SubmitTAGFiles(Guid projectID, string[] files)
+    public void SubmitTAGFiles(Guid projectID, string[] files)
     {
       //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
       Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
@@ -128,13 +137,40 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         SubmitSingleTAGFile(projectID, machineID, file);
     }
 
-    public static void ProcessTAGFilesInFolder(Guid projectID, string folder)
+    public void CollectTAGFilesInFolder(string folder, List<string> fileNamesFromFolders)
+    {
+      // If it is a single file, just include it
+
+      if (File.Exists(folder))
+      {
+        fileNamesFromFolders.Add(folder);
+      }
+      else
+      {
+        foreach (string f in Directory.GetDirectories(folder))
+          CollectTAGFilesInFolder(f, fileNamesFromFolders);
+
+        fileNamesFromFolders.AddRange(Directory.GetFiles(folder, "*.tag"));
+      }
+    }
+
+    public void ProcessSortedTAGFilesInFolder(Guid projectID, string folder)
+    {
+      var fileNamesFromFolders = new List<string>();
+      CollectTAGFilesInFolder(folder, fileNamesFromFolders);
+
+      fileNamesFromFolders.Sort(new TAGFileNameComparer());
+
+      SubmitTAGFiles(projectID, fileNamesFromFolders.ToArray());
+    }
+
+    public void ProcessTAGFilesInFolder(Guid projectID, string folder)
     {
       // If it is a single file, just process it
       if (File.Exists(folder))
       {
         // ProcessTAGFiles(projectID, new string[] { folder });
-        SubmitTAGFiles(projectID, new[] {folder});
+        SubmitTAGFiles(projectID, new[] { folder });
       }
       else
       {
@@ -149,16 +185,21 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       }
     }
 
-    public static void ProcessMachine333TAGFiles(Guid projectID)
+    public void ProcessMachine333TAGFiles(Guid projectID)
     {
-      ProcessTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333");
+      ProcessSortedTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333");
     }
 
-    public static void ProcessMachine10101TAGFiles(Guid projectID)
+    public void ProcessMachine10101TAGFiles(Guid projectID)
     {
-      ProcessTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
+      ProcessSortedTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
     }
+  }
 
+  public class Program
+  {
+    private static ILogger Log = Logging.Logger.CreateLogger<Program>();
+    
     private static void DependencyInjection()
     {
       DIBuilder.New()
@@ -170,9 +211,11 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         .Complete();
     }
 
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
       DependencyInjection();
+
+      var processor = new Processor();
 
       // Make sure all our assemblies are loaded...
       AssembliesHelper.LoadAllAssembliesForExecutingContext();
@@ -211,7 +254,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         try
         {
           if (args.Length > 2)
-            AssetOverride = Guid.Parse(args[2]);
+            processor.AssetOverride = Guid.Parse(args[2]);
         }
         catch
         {
@@ -221,7 +264,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
         try
         {
-          ProcessTAGFilesInFolder(projectID, folderPath);
+          processor.ProcessSortedTAGFilesInFolder(projectID, folderPath);
         }
         catch (Exception e)
         {
