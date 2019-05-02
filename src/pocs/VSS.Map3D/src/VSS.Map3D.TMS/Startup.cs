@@ -1,27 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.TMS.Controllers;
-using VSS.TMS.TileSources;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using VSS.Map3D.DEM;
 
-namespace VSS.TMS
+namespace VSS.Map3D.TMS
 {
-  class Startup
+  public class Startup
   {
-
-    public static Dictionary<string, ITileSource> TileSources;
-
-
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
-
-      Startup.TileSources = Utils.GetTileSetConfigurations(this.Configuration)
-        .ToDictionary(c => c.Name, c => TileSourceFabric.CreateTileSource(c));
+      Trace.Listeners.Add(new TextWriterTraceListener("c:\\temp\\trace.log"));
+      Trace.AutoFlush = true;
+      Trace.Indent();
+      Trace.WriteLine("Entering Startup");
+      Console.WriteLine("Hello World.");
+      Trace.WriteLine("Exiting Startup");
+      Trace.Unindent();
     }
 
     public IConfiguration Configuration { get; }
@@ -31,17 +35,17 @@ namespace VSS.TMS
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+      services.AddSingleton<IDEMSource, TRexDEMSource>();
+      services.AddSingleton<IConfiguration>(Configuration);
       services.AddCors(options =>
       {
-        //   options.AddPolicy("AllowSpecificOrigin",builder => builder.WithOrigins("http://localhost:8080"));
-
         options.AddPolicy("AllowAllOrigins",
           builder =>
           {
             builder.AllowAnyOrigin().AllowAnyMethod();
           });
-
       });
+
 
     }
 
@@ -52,11 +56,10 @@ namespace VSS.TMS
       {
         app.UseDeveloperExceptionPage();
       }
-      // Shows UseCors with named policy.
-      //app.UseCors("AllowSpecificOrigin");
+
+      app.UseMvc();
       app.UseCors("AllowAllOrigins");
       app.UseStaticFiles();
-      app.UseMvc();
     }
   }
 }
