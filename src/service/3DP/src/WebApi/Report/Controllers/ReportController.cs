@@ -458,7 +458,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
+          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as
           CCASummaryResult;
     }
   }
