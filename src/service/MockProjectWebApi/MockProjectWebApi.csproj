@@ -86,6 +86,8 @@
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesTopFilter20170621.json" />
     <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
     <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeLatest.json" />
+    <Content Remove="Json\Filters\KettlewellDrive\LastElevationSingleCellMultiMode.json" />
+    <Content Remove="Json\Filters\KettlewellDrive\MinElevationSingleCellPassMultiMode.json" />
     <Content Remove="Json\Filters\ReportDxfTile.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
@@ -96,6 +98,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
+    <EmbeddedResource Include="Json\Filters\KettlewellDrive\LastElevationSingleCellMultiMode.json" />
+    <EmbeddedResource Include="Json\Filters\KettlewellDrive\MinElevationSingleCellPassMultiMode.json" />
     <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />

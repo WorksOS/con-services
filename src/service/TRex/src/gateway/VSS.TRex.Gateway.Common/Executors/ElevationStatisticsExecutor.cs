@@ -1,7 +1,6 @@
 ﻿using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.ElevationStatistics;
 using VSS.TRex.Analytics.ElevationStatistics.GridFabric;
 using VSS.TRex.Filters;

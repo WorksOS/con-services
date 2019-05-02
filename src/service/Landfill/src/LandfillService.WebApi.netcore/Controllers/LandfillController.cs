@@ -51,8 +51,15 @@ namespace LandfillService.WebApi.netcore.Controllers
     private IEnumerable<Project> PerhapsUpdateProjectList(string userUid,string customerUid)
     {
       Log.LogDebug("PerhapsUpdateProjectList: user: " + userUid + " customer: " + customerUid);
-      var projects = LandfillDb.GetProjects(userUid, customerUid);
-      return projects;
+      try
+      {
+        return LandfillDb.GetProjects(userUid, customerUid);
+      }
+      catch ( Exception e)
+      {
+        Log.LogError(e, $"PerhapsUpdateProjectList failed with exception. userUid: {userUid} customerUid: {customerUid}");
+        throw;
+      }
     }
 
 
@@ -352,9 +359,9 @@ namespace LandfillService.WebApi.netcore.Controllers
           remainingTime = timeLeft
         });
       }
-      catch (Exception ex) //InvalidOperationException)
+      catch (Exception e) 
       {
-        Log.LogDebug("Volumes exception:" + ex.Message);
+        Log.LogError(e, $"GetVolumeTimeSummary failed with exception. Id: {id}");
         return Ok();
       }
     }
@@ -473,13 +480,14 @@ namespace LandfillService.WebApi.netcore.Controllers
 
       try
       {
-        var project = LandfillDb.GetProjects(principal.Identity.Name, principal.CustomerUid).Where(p => p.id == id)
-          .First();
+        var project = LandfillDb.GetProjects(principal.Identity.Name, principal.CustomerUid)
+          .First(p => p.id == id);
         var geofences = LandfillDb.GetGeofences(project.projectUid);
         return Ok(geofences);
       }
-      catch (InvalidOperationException)
+      catch (Exception e)
       {
+        Log.LogError(e, $"GetGeofences failed with exception. Id: {id}");
         return Ok();
       }
     }
@@ -560,8 +568,9 @@ namespace LandfillService.WebApi.netcore.Controllers
         }).ToList();
         return Ok(data);
       }
-      catch (InvalidOperationException)
+      catch (Exception e)
       {
+        Log.LogError(e, $"GetCCARatio failed with exception. Id: {id}");
         return Ok();
       }
     }
@@ -639,8 +648,9 @@ namespace LandfillService.WebApi.netcore.Controllers
         Log.LogDebug("ccasummary: " + project.name);
         return Ok(data);
       }
-      catch (InvalidOperationException)
+      catch (Exception e)
       {
+        Log.LogError(e, $"GetCCASummary failed with exception. Id: {id}");
         return Ok();
       }
     }
@@ -678,8 +688,9 @@ namespace LandfillService.WebApi.netcore.Controllers
 
         return Ok(task);
       }
-      catch (InvalidOperationException)
+      catch (Exception e)
       {
+        Log.LogError(e, $"GetMachineLifts failed with exception. Id: {id}");
         return Ok();
       }
     }

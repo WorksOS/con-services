@@ -79,12 +79,13 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    [Ignore("Temporary so old and new deployments can run side by side using a common database")]
     public void ProjectSchemaExists()
     {
       const string tableName = "Project";
       List<string> columnNames = new List<string>
           {
-            "ProjectUID", "LegacyProjectID", "Name", "Description", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "OldGeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC"
+            "ProjectUID", "LegacyProjectID", "Name", "Description", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -179,12 +180,13 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    [Ignore("Temporary so old and new deployments can run side by side using a common database")]
     public void GeofenceSchemaExists()
     {
       const string tableName = "Geofence";
       List<string> columnNames = new List<string>
           {
-            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "OldGeometryWKT", "PolygonST", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "InsertUTC", "UpdateUTC"
+            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "PolygonST", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }

@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #if RAPTOR
       }
 
-      var filter = RaptorConverters.ConvertFilter(request.Filter);
+      var filter = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 

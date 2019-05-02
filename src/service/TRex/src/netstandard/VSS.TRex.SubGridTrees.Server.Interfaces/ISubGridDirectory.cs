@@ -17,6 +17,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void CreateDefaultSegment();
     void Clear();
     void Write(BinaryWriter writer);
-    void Read_2p0(BinaryReader reader);
+    void Read(BinaryReader reader);
   }
 }

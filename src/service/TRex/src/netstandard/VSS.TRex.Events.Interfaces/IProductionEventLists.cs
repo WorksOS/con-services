@@ -11,7 +11,7 @@ namespace VSS.TRex.Events.Interfaces
     /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
     /// used within the data model, not the GUID descriptor for the machine
     /// </summary>
-    short MachineID { get; set; }
+    short InternalSiteModelMachineIndex { get; set; }
 
     IStartEndProductionEvents MachineStartupShutdownEvents { get; }
 

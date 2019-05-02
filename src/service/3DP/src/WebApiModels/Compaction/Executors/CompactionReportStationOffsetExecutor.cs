@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(CompactionReportStationOffsetRequest request)
     {
-      var filterSettings = RaptorConverters.ConvertFilter(request.Filter);
+      var filterSettings = RaptorConverters.ConvertFilter(request.Filter, request.ProjectId, raptorClient);
       var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
       var userPreferences =
