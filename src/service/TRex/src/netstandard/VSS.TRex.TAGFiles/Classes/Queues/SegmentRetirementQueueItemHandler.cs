@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueItemHandler>();
 
+    private static readonly bool ReportDetailedSegmentRetirementActivityToLog = false;
+
     /// <summary>
     /// Takes a set of segment retirees and removes them from grid storage in both the mutable grid (the 'local' grid) and
     /// the immutable grid (that it is a client of).
@@ -25,6 +28,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
       try
       {
+        var sw = Stopwatch.StartNew();
+
         int count = 0;
         storageProxy.Clear();
 
@@ -66,7 +71,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           Log.LogInformation($"Retiring a group containing {group.SegmentKeys.Length} keys");
           foreach (var key in group.SegmentKeys)
           {
-            Log.LogInformation($"About to retire {key}");
+            if (ReportDetailedSegmentRetirementActivityToLog)
+              Log.LogInformation($"About to retire {key}");
 
             if (!storageProxy.SpatialCache.Remove(key))
             {
@@ -88,13 +94,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           }
         }
 
-        Log.LogInformation($"Prepared {count} retires for removal");
-        DateTime startTime = DateTime.UtcNow;
+        Log.LogInformation($"Prepared {count} retires for removal in {sw.Elapsed}");
+
+        sw = Stopwatch.StartNew();        
 
         // Commit all the deletes for this retiree group
         if (storageProxy.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten))
         {
-          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {DateTime.UtcNow - startTime}");
+          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {sw.Elapsed}");
         }
         else
         {

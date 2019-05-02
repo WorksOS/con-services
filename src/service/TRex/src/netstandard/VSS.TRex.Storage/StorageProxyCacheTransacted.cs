@@ -16,6 +16,8 @@ namespace VSS.TRex.Storage
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
 
+        private static readonly bool ReportPendingTransactedDeleteDuplicatesToLog = false;
+
         private readonly HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
         protected readonly Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
 
@@ -46,7 +48,10 @@ namespace VSS.TRex.Storage
 
           // Note the delete request in pending deletes
           if (!PendingTransactedDeletes.Add(key))
-            Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
+          {
+            if (ReportPendingTransactedDeleteDuplicatesToLog)
+              Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
+          }
 
           return true;
         }
