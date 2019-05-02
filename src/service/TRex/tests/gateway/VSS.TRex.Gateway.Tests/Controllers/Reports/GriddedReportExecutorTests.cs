@@ -33,6 +33,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       bool reportTemperature = true;
       bool reportCutFill = false;
       Guid? cutFillDesignUid = null;
+      double? cutFillDesignOffset = null;
       double? gridInterval = null;
       GridReportOption gridReportOption = GridReportOption.Automatic;
       double startNorthing = 800000;
@@ -44,7 +45,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       var request = new CompactionReportGridTRexRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid,
+        cutFillDesignUid, cutFillDesignOffset,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
       request.Validate();
 
@@ -68,6 +69,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       bool reportTemperature = true;
       bool reportCutFill = false;
       Guid? cutFillDesignUid = null;
+      double? cutFillDesignOffset = null;
       double? gridInterval = null;
       GridReportOption gridReportOption = GridReportOption.Automatic;
       double startNorthing = 800000;
@@ -87,7 +89,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       var request = new CompactionReportGridTRexRequest(
         siteModel.ID, filterResult,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid,
+        cutFillDesignUid, cutFillDesignOffset,
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth);
       request.Validate();
 

@@ -148,8 +148,8 @@ namespace VSS.TRex.Reports.Gridded.Executors
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
         }
 
-        cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
-          subGrid.CellSize, out designHeights, out var errorCode);
+        cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, _griddedReportRequestArgument.ReferenceOffset, 
+          subGrid.OriginAsCellAddress(), subGrid.CellSize, out designHeights, out var errorCode);
 
         if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
         {

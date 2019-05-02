@@ -119,12 +119,21 @@ namespace VSS.TRex.Volumes.Executors
             ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesignID);
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
-                ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
+            {
+              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
+              ComputeVolumes.ActiveDesignOffset = ComputeVolumes.RefOriginalOffset;
+            }
             else
-                ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface ? ComputeVolumes.RefDesign : null;
+            {
+              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface
+                ? ComputeVolumes.RefDesign
+                : null;
+              ComputeVolumes.ActiveDesignOffset = ComputeVolumes.RefDesignOffset;
+            }
 
             // Assign the active design into the aggregator for use
             Aggregator.ActiveDesign = ComputeVolumes.ActiveDesign;
+            Aggregator.ActiveDesignOffset = ComputeVolumes.ActiveDesignOffset;
         }
 
         /// <summary>

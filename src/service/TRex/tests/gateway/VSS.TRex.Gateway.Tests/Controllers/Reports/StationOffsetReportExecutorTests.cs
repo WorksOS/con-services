@@ -32,6 +32,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       bool reportTemperature = true;
       bool reportCutFill = false;
       Guid? cutFillDesignUid = null;
+      double? cutFillDesignOffset = null;
       Guid alignmentDesignUid = Guid.NewGuid();
       double crossSectionInterval = 1.0;
       double startStation = 100;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid, alignmentDesignUid,
+        cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
         crossSectionInterval, startStation, endStation, offsets);
       request.Validate();
 
@@ -65,6 +66,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       bool reportTemperature = true;
       bool reportCutFill = false;
       Guid? cutFillDesignUid = null;
+      double? cutFillDesignOffset = null;
       Guid alignmentDesignUid = Guid.NewGuid();
       double crossSectionInterval = 1.0;
       double startStation = 100;
@@ -82,7 +84,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         siteModel.ID, filterResult,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
-        cutFillDesignUid, alignmentDesignUid,
+        cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
         crossSectionInterval, startStation, endStation, offsets);
       request.Validate();
 

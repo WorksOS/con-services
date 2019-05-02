@@ -22,14 +22,16 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="siteModel"></param>
     /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
+    /// <param name="cutFillDesignOffset"></param>
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     public ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
       IFilterSet filterSet,
       IDesign cutFillDesign,
+      double cutFillDesignOffset,
       bool slicerToolUsed)
     {
-      return new CellProfileBuilder<T>(siteModel, filterSet, cutFillDesign, slicerToolUsed);
+      return new CellProfileBuilder<T>(siteModel, filterSet, cutFillDesign, cutFillDesignOffset, slicerToolUsed);
     }
 
     /// <summary>
@@ -48,7 +50,9 @@ namespace VSS.TRex.Profiling.Factories
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
+      double cellPassFilter_ElevationRangeDesignOffset,
       IDesign referenceDesign,
+      double referenceDesignOffset,
       ICellLiftBuilder cellLiftBuilder)
     {
       switch (profileStyle)

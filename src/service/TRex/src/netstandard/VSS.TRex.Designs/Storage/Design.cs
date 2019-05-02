@@ -210,11 +210,12 @@ namespace VSS.TRex.Designs.Storage
     /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
-    public void GetDesignHeights(Guid siteModelID,
+    public void GetDesignHeights(Guid siteModelID, double offset,
       SubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
@@ -231,6 +232,7 @@ namespace VSS.TRex.Designs.Storage
       {
         CellSize = cellSize,
         ReferenceDesignUID = DesignDescriptor.DesignID,
+        ReferenceOffset = offset,
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),

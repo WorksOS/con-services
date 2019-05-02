@@ -85,6 +85,11 @@ namespace VSS.TRex.SubGrids.Executors
     private IDesign ReferenceDesign;
 
     /// <summary>
+    /// The offset for cut-fill calculations when the design is a reference surface.
+    /// </summary>
+    private double ReferenceDesignOffset;
+
+    /// <summary>
     /// Cleans an array of client leaf sub grids by repatriating them to the client leaf sub grid factory
     /// </summary>
     /// <param name="SubGridResultArray"></param>
@@ -238,7 +243,7 @@ namespace VSS.TRex.SubGrids.Executors
     {
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.CellSize,
+        ReferenceDesign.GetDesignHeights(localArg.ProjectID, ReferenceDesignOffset, address, siteModel.CellSize,
           out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
         clientGrid = DesignElevations;
@@ -280,6 +285,7 @@ namespace VSS.TRex.SubGrids.Executors
             // height sub grid to be calculated from a designated design
             if (!CutFillUtilities.ComputeCutFillSubGrid(ClientArray[0], // base
               ReferenceDesign, // 'top'
+              ReferenceDesignOffset,
               localArg.ProjectID,
               out _ /*ProfilerRequestResult*/))
               result = ServerRequestResult.FailedToComputeDesignElevationPatch;

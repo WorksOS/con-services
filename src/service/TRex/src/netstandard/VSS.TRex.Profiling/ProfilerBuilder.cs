@@ -59,7 +59,9 @@ namespace VSS.TRex.Profiling
       GridDataType gridDataType,
       IFilterSet filterSet,
       IDesign referenceDesign,
+      double referenceDesignOffset,
       IDesign cellPassFilter_ElevationRangeDesign,
+      double cellPassFilter_ElevationRangeDesignOffset,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType VolumeType = VolumeComputationType.None,
@@ -67,9 +69,10 @@ namespace VSS.TRex.Profiling
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, filterSet, CellPassFastEventLookerUpper);
 
-        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesign, slicerToolUsed);
+        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, filterSet, referenceDesign, referenceDesignOffset, slicerToolUsed);
 
-        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign,referenceDesign, CellLiftBuilder);
+        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(
+          profileStyle, siteModel, productionDataExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellPassFilter_ElevationRangeDesignOffset, referenceDesign, referenceDesignOffset, CellLiftBuilder);
     }
   }
 }

@@ -76,12 +76,13 @@ namespace VSS.TRex.Designs.Interfaces
     /// Calculates an elevation sub grid for a design sub grid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
+    /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    void GetDesignHeights(Guid siteModelID,
+    void GetDesignHeights(Guid siteModelID, double offset,
       SubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,

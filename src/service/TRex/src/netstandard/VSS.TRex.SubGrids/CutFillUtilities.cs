@@ -20,12 +20,14 @@ namespace VSS.TRex.SubGrids
     /// replacing the elevations in the first sub grid with the resulting cut fill values
     /// </summary>
     /// <param name="design"></param>
+    /// <param name="offset"></param>
     /// <param name="SubGrid"></param>
     /// <param name="DataModelID"></param>
     /// <param name="ProfilerRequestResult"></param>
     /// <returns></returns>
     public static bool ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid,
       IDesign design,
+      double offset,
       Guid DataModelID,
       out DesignProfilerRequestResult ProfilerRequestResult)
     {
@@ -34,7 +36,7 @@ namespace VSS.TRex.SubGrids
       if (design == null)
         return false;
 
-      design.GetDesignHeights(DataModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
+      design.GetDesignHeights(DataModelID, offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
         out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult);
 
       if (ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

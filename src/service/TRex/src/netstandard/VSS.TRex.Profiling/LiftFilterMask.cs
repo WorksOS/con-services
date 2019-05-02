@@ -103,7 +103,8 @@ namespace VSS.TRex.Profiling
 
     public static bool InitialiseFilterContext(ISiteModel siteModel, 
       ICellPassAttributeFilter passFilter, ICellPassAttributeFilterProcessingAnnex passFilterAnnex,
-      ProfileCell profileCell, IDesign design, out DesignProfilerRequestResult FilterDesignErrorCode)
+      ProfileCell profileCell, IDesign design,
+      out DesignProfilerRequestResult FilterDesignErrorCode)
     {
       FilterDesignErrorCode = DesignProfilerRequestResult.UnknownError;
 
@@ -114,7 +115,7 @@ namespace VSS.TRex.Profiling
 
         if (passFilter.ElevationRangeDesignUID != Guid.Empty)
         {
-          design.GetDesignHeights(siteModel.ID, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
+          design.GetDesignHeights(siteModel.ID, passFilter.ElevationRangeDesignOffset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
             siteModel.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations, out FilterDesignErrorCode);
 
           if (FilterDesignErrorCode != DesignProfilerRequestResult.OK || FilterDesignElevations == null)

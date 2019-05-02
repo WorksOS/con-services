@@ -55,6 +55,7 @@ namespace VSS.TRex.Profiling
     private XYZ[] NEECoords;
     private ICellSpatialFilter CellFilter;
     private IDesign CutFillDesign;
+    private double CutFillDesignOffset;
 
     public double GridDistanceBetweenProfilePoints { get; set; }
 
@@ -76,15 +77,18 @@ namespace VSS.TRex.Profiling
     /// <param name="siteModel"></param>
     /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
+    /// <param name="offset"></param>
     /// <param name="slicerToolUsed"></param>
     public CellProfileBuilder(ISiteModel siteModel,
       IFilterSet filterSet,
       IDesign cutFillDesign,
+      double offset,
       bool slicerToolUsed)
     {
       SiteModel = siteModel;
       CellFilter = filterSet?.Filters[0].SpatialFilter;
       CutFillDesign = cutFillDesign;
+      CutFillDesignOffset = offset;
       SlicerToolUsed = slicerToolUsed;
 
       Initialise();
@@ -311,7 +315,7 @@ namespace VSS.TRex.Profiling
 
           if (ReturnDesignElevation && CutFillDesign != null) // cut fill profile request then get elevation at same spot along design
           {
-            CutFillDesign.GetDesignHeights(SiteModel.ID, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize, out DesignElevations, out DesignResult);
+            CutFillDesign.GetDesignHeights(SiteModel.ID, CutFillDesignOffset, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize, out DesignElevations, out DesignResult);
 
             if (DesignResult != DesignProfilerRequestResult.OK &&
                 DesignResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

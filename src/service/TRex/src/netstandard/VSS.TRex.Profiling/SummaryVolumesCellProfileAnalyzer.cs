@@ -45,6 +45,7 @@ namespace VSS.TRex.Profiling
     private bool IntermediaryFilterRequired = false;
 
     private IDesign svDesign;
+    private double svDesignOffset;
 
     private int cellCounter;
 
@@ -65,9 +66,11 @@ namespace VSS.TRex.Profiling
       IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
       IDesign referenceDesign,
+      double referenceOffset,
       ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign)
     {
       svDesign = referenceDesign;
+      svDesignOffset = referenceOffset;
     }
 
     /// <summary>
@@ -166,7 +169,7 @@ namespace VSS.TRex.Profiling
         if (svDesign != null)
         {
 
-          svDesign.GetDesignHeights(SiteModel.ID, address, SiteModel.CellSize, out designHeights, out var errorCode);
+          svDesign.GetDesignHeights(SiteModel.ID, svDesignOffset, address, SiteModel.CellSize, out designHeights, out var errorCode);
           if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
           {
             if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)

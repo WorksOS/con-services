@@ -152,7 +152,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       if (requestArgument.ReferenceDesignUID != Guid.Empty)
       {
-        cutFillDesign.GetDesignHeights(requestArgument.ProjectID, clientGrid.OriginAsCellAddress(),
+        cutFillDesign.GetDesignHeights(requestArgument.ProjectID, requestArgument.ReferenceOffset, clientGrid.OriginAsCellAddress(),
           clientGrid.CellSize, out designHeights, out var errorCode);
 
         if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)

@@ -118,10 +118,20 @@ namespace VSS.TRex.Volumes
         public IDesign RefOriginal { get; set; }
 
         /// <summary>
+        /// The offset for the RefOriginal design if it is a reference surface
+        /// </summary>
+        public double RefOriginalOffset { get; set; }
+
+        /// <summary>
         /// RefDesign references a subset that may be used in the volumes calculations
         /// process. If set, it takes the place of the 'top' filter.
         /// </summary>
         public IDesign RefDesign { get; set; }
+
+        /// <summary>
+        /// The offset for the RefOriginal design if it is a reference surface
+        /// </summary>
+        public double RefDesignOffset { get; set; }
 
         /// <summary>
         /// ActiveDesign is the design surface being used as the comparison surface in the
@@ -129,6 +139,11 @@ namespace VSS.TRex.Volumes
         /// and FRefDesign surfaces depending on the volumes reporting type and configuration.
         /// </summary>
         public IDesign ActiveDesign { get; set; }
+
+        /// <summary>
+        /// The offset for the active design if it is a reference surface
+        /// </summary>
+        public double ActiveDesignOffset { get; set; }
 
         /// <summary>
         /// FromSelectionType and ToSelectionType describe how we mix the two filters

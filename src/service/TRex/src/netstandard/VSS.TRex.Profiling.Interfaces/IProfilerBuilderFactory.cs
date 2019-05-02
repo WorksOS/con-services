@@ -31,11 +31,13 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="siteModel"></param>
     /// <param name="filterSet"></param>
     /// <param name="cutFillDesign"></param>
+    /// <param name="cutFillDesignOffset"></param>
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
       IFilterSet filterSet,
       IDesign cutFillDesign,
+      double cutFillDesignOffset,
       bool slicerToolUsed);
 
     /// <summary>
@@ -54,7 +56,9 @@ namespace VSS.TRex.Profiling.Interfaces
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
+      double cellPassFilter_ElevationRangeDesignOffset,
       IDesign referenceDesign,
+      double referenceDesignOffset,
       ICellLiftBuilder cellLiftBuilder);
   }
 }
