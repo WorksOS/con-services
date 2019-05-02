@@ -24,12 +24,13 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       Guid projectUid,
       FilterResult baseFilter,
       Guid? referenceDesignUid,
+      double? referenceDesignOffset,
       bool positionsAreGrid,
       double startX,
       double startY,
       double endX,
       double endY,
-      bool returnAllPassesAndLayers) : base (projectUid, baseFilter, referenceDesignUid, positionsAreGrid, startX, startY, endX, endY)
+      bool returnAllPassesAndLayers) : base (projectUid, baseFilter, referenceDesignUid, referenceDesignOffset, positionsAreGrid, startX, startY, endX, endY)
     {
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }

@@ -50,9 +50,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
       var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
       var topFilter = ConvertFilter(request.TopFilter, siteModel);
-      var refDesign = Guid.Empty; 
-      if (request.ReferenceDesignUid.HasValue)
-        refDesign = request.ReferenceDesignUid.Value;
 
       ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
       {
@@ -61,7 +58,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProfileStyle = ProfileStyle.SummaryVolume,
         PositionsAreGrid = request.PositionsAreGrid,
         Filters = new FilterSet(baseFilter, topFilter),
-        ReferenceDesignUID = refDesign,
+        ReferenceDesignUID = request.ReferenceDesignUid ?? Guid.Empty,
+        ReferenceOffset = request.ReferenceDesignOffset ?? 0,
         StartPoint = new WGS84Point(lon: request.StartX, lat: request.StartY),
         EndPoint = new WGS84Point(lon: request.EndX, lat: request.EndY),
         ReturnAllPassesAndLayers = false,

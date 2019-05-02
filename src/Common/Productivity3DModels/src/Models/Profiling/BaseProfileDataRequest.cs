@@ -21,6 +21,12 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     public Guid? ReferenceDesignUid { get; private set; }
 
     /// <summary>
+    /// The offset if the design surface is a reference surface
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public double? ReferenceDesignOffset { get; private set; }
+
+    /// <summary>
     ///  Start grid position x or start lon
     /// </summary>
     [JsonProperty(Required = Required.Default)]
@@ -63,6 +69,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// <param name="projectUid"></param>
     /// <param name="baseFilter"></param>
     /// <param name="referenceDesignUid"></param>
+    /// <param name="referenceDesignOffset"></param>
     /// <param name="positionsAreGrid"></param>
     /// <param name="startX"></param>
     /// <param name="startY"></param>
@@ -72,6 +79,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       Guid projectUid,
       FilterResult baseFilter,
       Guid? referenceDesignUid,
+      double? referenceDesignOffset,
       bool positionsAreGrid,
       double startX,
       double startY,
@@ -81,6 +89,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
       ProjectUid = projectUid;
       BaseFilter = baseFilter;
       ReferenceDesignUid = referenceDesignUid;
+      ReferenceDesignOffset = referenceDesignOffset;
       PositionsAreGrid = positionsAreGrid;
       StartX = startX;
       StartY = startY;

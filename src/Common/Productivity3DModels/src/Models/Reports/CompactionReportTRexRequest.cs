@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
     /// </summary>
     /// 
     [JsonProperty(Required = Required.Default)]
-    public double CutFillDesignOffset { get; protected set; }
+    public double? CutFillDesignOffset { get; protected set; }
 
     /// <summary>
     /// Validates properties.

@@ -51,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         CoordsAreGrid = request.CoordsAreGrid,
         Point = request.CoordsAreGrid  ? AutoMapperUtility.Automapper.Map<XYZ>(request.GridPoint) : AutoMapperUtility.Automapper.Map<XYZ>(request.LLPoint),
         ReferenceDesignUID = request.DesignUid ?? Guid.Empty,
-        ReferenceOffset = request.Offset,        
+        ReferenceOffset = request.Offset ?? 0,        
       });
 
       return new CompactionCellDatumResult(response.DisplayMode, response.ReturnCode, response.Value, response.TimeStampUTC, response.Northing, response.Easting);
