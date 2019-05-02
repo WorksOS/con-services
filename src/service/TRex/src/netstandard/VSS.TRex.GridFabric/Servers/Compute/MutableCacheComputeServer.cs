@@ -20,6 +20,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
@@ -274,6 +275,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
       var tagCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
       InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
+
+      // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
+      var _ = DIContext.Obtain<ISiteModelMetadataManager>();
     }
 
   }

@@ -17,6 +17,7 @@
     <ProjectReference Include="..\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
