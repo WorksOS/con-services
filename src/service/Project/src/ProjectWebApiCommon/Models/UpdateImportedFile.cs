@@ -28,7 +28,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public long ImportedFileId { get; set; }
     public string DataOceanRootFolder { get; set; }
 
-    public double Offset { get; set; }
+    public double? Offset { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -42,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId, 
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
-      string dataOceanRootFolder, double offset
+      string dataOceanRootFolder, double? offset
     )
     {
       return new UpdateImportedFile()

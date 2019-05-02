@@ -17,7 +17,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     public static void ValidateUpsertImportedFileRequest(FlowFile file, Guid projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, 
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string importedBy, DateTime? surveyedUtc, Guid? parentUid, double offset)
+      string importedBy, DateTime? surveyedUtc, Guid? parentUid, double? offset)
     {
       if (file == null)
       {

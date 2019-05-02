@@ -870,6 +870,7 @@ namespace TestUtility
     /// </summary>
     public string GetBaseUri()
     {
+      return "http://localhost:5000/";
       var baseUri = TsCfg.webApiUri;
       if (Debugger.IsAttached || TsCfg.operatingSystem == "Windows_NT")
       {

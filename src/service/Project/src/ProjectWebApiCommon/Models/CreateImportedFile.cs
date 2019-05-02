@@ -30,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
     public Guid? ParentUid { get; set; }
 
-    public double Offset { get; set; }
+    public double? Offset { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -44,7 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public static CreateImportedFile Create(Guid projectUid,
       string fileName, FileDescriptor fileDescriptor, ImportedFileType importedFileType, 
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string dataOceanRootFolder, Guid? parentUid, double offset)
+      string dataOceanRootFolder, Guid? parentUid, double? offset)
     {
       return new CreateImportedFile
       {

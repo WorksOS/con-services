@@ -112,7 +112,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
       [FromQuery] Guid? parentUid,
-      [FromQuery] double offset
+      [FromQuery] double? offset
     )
     {
       // Validate the file
@@ -162,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
       [FromQuery] Guid? parentUid,
-      [FromQuery] double offset,
+      [FromQuery] double? offset,
       [FromServices] ISchedulerProxy scheduler,
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
     {
@@ -237,7 +237,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
       [FromQuery] Guid? parentUid,
-      [FromQuery] double offset,
+      [FromQuery] double? offset,
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc,
       [FromServices] ISchedulerProxy schedulerProxy)
     {
@@ -309,7 +309,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null,
       [FromQuery] Guid? parentUid = null,
-      [FromQuery] double offset = 0
+      [FromQuery] double? offset = null
       )
     {
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
@@ -342,7 +342,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime fileUpdatedUtc,
       DateTime? surveyedUtc = null,
       Guid? parentUid = null,
-      double offset = 0)
+      double? offset = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc, filename, parentUid, offset);
@@ -425,7 +425,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime? surveyedUtc,
       ISchedulerProxy schedulerProxy,
       Guid? parentUid,
-      double offset)
+      double? offset)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
@@ -463,7 +463,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime? surveyedUtc,
       ISchedulerProxy schedulerProxy,
       Guid? parentUid,
-      double offset)
+      double? offset)
     {
       var existing = await ImportedFileRequestDatabaseHelper
         .GetImportedFileForProject
@@ -569,7 +569,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Validate that the uploaded file doesn't already exist in the database.
     /// Should only be called from create methods where there's an expectation the file isn't already present.
     /// </summary>
-    private void ValidateFileDoesNotExist(string projectUid, string filename, ImportedFileType importedFileType, DateTime? surveyedUtc, Guid? parentUid, double offset)
+    private void ValidateFileDoesNotExist(string projectUid, string filename, ImportedFileType importedFileType, DateTime? surveyedUtc, Guid? parentUid, double? offset)
     {
       var importedFileList = ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, log, userId, projectRepo)
         .ConfigureAwait(false)
@@ -582,7 +582,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         if (importedFileType == ImportedFileType.ReferenceSurface)
         {
           importedFileDescriptor = importedFileList.FirstOrDefault(
-            f => f.ParentUid == parentUid && Math.Round(Math.Abs(f.Offset - offset), 3) < 0.001);
+            f => f.ParentUid == parentUid && Math.Round(Math.Abs((f.Offset ?? 0) - (offset ?? 0)), 3) < 0.001);
         }
         else
         {

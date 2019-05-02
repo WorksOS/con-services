@@ -130,7 +130,7 @@ namespace VSS.MasterData.Models.Models
     public int MaxZoomLevel { get; set; }
 
     public string ParentUid { get; set; }
-    public double Offset { get; set; }
+    public double? Offset { get; set; }
 
     public List<string> GetIdentifiers() => new List<string>
     {

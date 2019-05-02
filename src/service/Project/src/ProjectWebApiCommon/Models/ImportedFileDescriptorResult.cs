@@ -196,7 +196,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// The offset in meters for the reference surface.
     /// </summary>
-    public double Offset { get; set; }
+    public double? Offset { get; set; }
 
     public List<ImportedFileHistoryItem> ImportedFileHistory { get; set; }
 
@@ -226,7 +226,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherImportedFile.MaxZoomLevel == this.MaxZoomLevel
              && otherImportedFile.ImportedFileHistory == this.ImportedFileHistory
              && otherImportedFile.ParentUid == this.ParentUid
-             && Math.Round(otherImportedFile.Offset, 3) == Math.Round(this.Offset, 3)
+             && Math.Round((otherImportedFile.Offset ?? 0), 3) == Math.Round((this.Offset ?? 0), 3)
         ;
     }
   }

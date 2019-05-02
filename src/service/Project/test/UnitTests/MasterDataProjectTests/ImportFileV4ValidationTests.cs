@@ -25,7 +25,7 @@ namespace VSS.MasterData.ProjectTests
     private static readonly DateTime fileCreatedUtc = DateTime.UtcNow;
     private static readonly DateTime fileUpdatedUtc = DateTime.UtcNow;
     private static readonly Guid? parentUid = Guid.NewGuid();
-    private static readonly double offset = 1.5;
+    private static readonly double? offset = 1.5;
 
     static ImportFileV4ValidationTests()
     {

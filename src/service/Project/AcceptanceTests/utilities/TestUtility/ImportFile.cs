@@ -93,13 +93,13 @@ namespace TestUtility
       switch (ed.ImportedFileTypeName)
       {
         case "SurveyedSurface":
-          uri = $"{uri}&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff} ";
+          uri = $"{uri}&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
           break;
         case "Linework":
-          uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType} ";
+          uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType}";
           break;
         case "ReferenceSurface":
-          uri = $"{uri}&ParentUid={ed.ParentUid}&Offset={ed.Offset} ";
+          uri = $"{uri}&ParentUid={ed.ParentUid}&Offset={ed.Offset}";
           break;
       }
 
