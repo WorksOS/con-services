@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         result = await ProcessPersistent(filterRequest);
       }
 
-      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy, assetResolverProxy, filterRequest.CustomHeaders);
 
       return result;
     }
