@@ -19,7 +19,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.SiteModel
   public class SiteModelStatisticsExecutorTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
-    public void SiteModelStatisticsExecutor_EmptySite()
+    public void SiteModelStatisticsExecutor_EmptySiteModel()
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
@@ -33,7 +33,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.SiteModel
       var result = executor.Process(request) as ProjectStatisticsResult;
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.cellSize.Should().Be(SubGridTreeConsts.DefaultCellSize);
-       // todoJeannie result.startTime.Should().Be(Consts.MAX_DATETIME_AS_UTC);
+      result.startTime.Should().Be(Consts.MAX_DATETIME_AS_UTC);
       result.endTime.Should().Be(Consts.MIN_DATETIME_AS_UTC);
       result.extents.MinX.Should().Be(BoundingWorldExtent3D.Inverted().MinX);
       result.extents.MaxX.Should().Be(BoundingWorldExtent3D.Inverted().MaxX);
@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.SiteModel
       result.extents.MaxZ.Should().Be(BoundingWorldExtent3D.Inverted().MaxZ);
       result.indexOriginOffset.Should().Be((int) SubGridTreeConsts.DefaultIndexOriginOffset);
 
-      var expectedJson = "{{\"startTime\":\"9999-12-31T23:59:59.9999999\",\"endTime\":\"0001-01-01T00:00:00\",\"cellSize\":0.34,\"indexOriginOffset\":536870912,\"extents\":{{\"maxX\":-1E+100,\"maxY\":-1E+100,\"maxZ\":-1E+100,\"minX\":1E+100,\"minY\":1E+100,\"minZ\":1E+100}},\"Code\":0,\"Message\":\"success\"}}";
+      var expectedJson = "{\"startTime\":\"9999-12-31T23:59:59.9999999\",\"endTime\":\"0001-01-01T00:00:00\",\"cellSize\":0.34,\"indexOriginOffset\":536870912,\"extents\":{\"maxX\":-1E+100,\"maxY\":-1E+100,\"maxZ\":-1E+100,\"minX\":1E+100,\"minY\":1E+100,\"minZ\":1E+100},\"Code\":0,\"Message\":\"success\"}";
       var json = JsonConvert.SerializeObject(result);
       json.Should().Be(expectedJson);
     }

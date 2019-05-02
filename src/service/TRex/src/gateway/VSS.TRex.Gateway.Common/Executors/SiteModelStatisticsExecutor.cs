@@ -47,11 +47,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         );
 
       var startEndDates = siteModel.GetDateRange();
-      // todoJeannie need fffffff?
-      var dd = startEndDates.startUtc.ToString("yyyy-MM-ddTHH-mm-ss.fff", CultureInfo.InvariantCulture);
-      var ee = DateTime.ParseExact(dd, "yyyy-MM-ddTHH-mm-ss.fff", CultureInfo.InvariantCulture);
-      result.startTime = ee;
-      result.endTime = startEndDates.endUtc;
+      var format = "yyyy-MM-ddTHH-mm-ss.fffffff";
+      result.startTime = DateTime.ParseExact(startEndDates.startUtc.ToString(format, CultureInfo.InvariantCulture), format, CultureInfo.InvariantCulture);
+      result.endTime = DateTime.ParseExact(startEndDates.endUtc.ToString(format, CultureInfo.InvariantCulture), format, CultureInfo.InvariantCulture);
 
       result.cellSize = siteModel.Grid.CellSize;
       result.indexOriginOffset = (int)siteModel.Grid.IndexOriginOffset;
