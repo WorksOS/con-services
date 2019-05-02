@@ -8,7 +8,6 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
-//using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -114,8 +113,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         if (TAGQueueItems?.Count > 0)
                         {
                             // -> Supply the package to the processor
-                            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-                            ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                            var request = new ProcessTAGFileRequest();
+                            var response = request.Execute(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectID,
                                 AssetUID = TAGQueueItems[0].AssetID,
@@ -177,7 +176,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="package"></param>
         private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
-            Guid projectID = package[0].ProjectUID;
+            var projectID = package[0].ProjectUID;
 
             List<TAGFileBufferQueueItem> TAGQueueItems = null;
             List<ProcessTAGFileRequestFileItem> fileItems = null;
@@ -219,8 +218,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             if (TAGQueueItems?.Count > 0)
             {
                 // -> Supply the package to the processor
-                ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-                ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                var request = new ProcessTAGFileRequest();
+                var response = request.Execute(new ProcessTAGFileRequestArgument
                 {
                     ProjectID = projectID,
                     AssetUID = TAGQueueItems[0].AssetID,
@@ -284,9 +283,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         hadWorkToDo = true;
                         try
                         {
-                            //Task task = Task.Factory.StartNew(() => ProcessTAGFileBucketFromGrouper2(package));
-                            //task.Wait();
-
                             Log.LogInformation(
                                 $"#Progress# Start processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
                             ProcessTAGFileBucketFromGrouper2(package);

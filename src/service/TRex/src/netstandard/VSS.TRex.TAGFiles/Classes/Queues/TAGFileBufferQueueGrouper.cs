@@ -4,6 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -21,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 
         /// full buckets list.
         /// </summary>
-        public const int kMaxNumberOfTAGFilesPerBucket = 100;
+        public int kMaxNumberOfTAGFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXGROUPEDTAGFILES_TOPROCESSPERPROCESSINGEPOCH", Consts.MAXGROUPEDTAGFILES_TOPROCESSPERPROCESSINGEPOCH);
 
         /// <summary>
         /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of
@@ -101,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     }
             }
 
-            foreach (Guid projectID in groupMap.Keys)
+            foreach (var projectID in groupMap.Keys)
             {
                 // Check the project is not in the avoid list
                 if (avoidProjects != null && avoidProjects.Any(x => x == projectID))
@@ -136,7 +139,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (!SelectProject(avoidProjects, out projectID))
                     return null;
 
-                Guid _projectID = projectID;
+                var _projectID = projectID;
                 IEnumerable<ITAGFileBufferQueueKey> result;
 
                 // Determine if there is a full bucket for the requested project
