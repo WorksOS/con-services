@@ -365,7 +365,6 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public bool IgnoreInvalidPositions { get; set; } = true;
 
-
     public SiteModel()
     {
       CreationDate = DateTime.UtcNow;
