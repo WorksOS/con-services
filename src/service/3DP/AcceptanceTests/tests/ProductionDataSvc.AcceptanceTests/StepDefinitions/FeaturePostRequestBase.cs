@@ -62,8 +62,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var expectedJObject = JObject.FromObject(PostRequestHandler.ResponseRepo[resultName]);
       var actualJObject = JObject.FromObject(PostRequestHandler.CurrentResponse);
 
-      ObjectComparer.RoundAllDoubleProperties(actualJObject, roundingPrecision: 8);
-      ObjectComparer.RoundAllDoubleProperties(expectedJObject, roundingPrecision: 8);
+      ObjectComparer.RoundAllDoubleProperties(actualJObject, precision);
+      ObjectComparer.RoundAllDoubleProperties(expectedJObject, precision);
 
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
     }

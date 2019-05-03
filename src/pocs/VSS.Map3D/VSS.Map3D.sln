@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7E314585-3734-4F1B-99E8-67224ACA102E}"
+	ProjectSection(SolutionItems) = preProject
+		doc\CodeSnippets.md = doc\CodeSnippets.md
+		README.md = README.md
+		doc\Setup.md = doc\Setup.md
+		doc\TodoList.md = doc\TodoList.md
+		tests\VSS-TestData-Demo.html = tests\VSS-TestData-Demo.html
+		tests\VSS-TestMakeData-Demo.html = tests\VSS-TestMakeData-Demo.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2FBF3987-208E-42CA-BF5B-D2F83856CC40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapClient", "tools\MapClient\MapClient.csproj", "{9F812B6F-F307-4704-82A7-EE9716CB2AD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Map3D.Models", "src\VSS.Map3D.Models\VSS.Map3D.Models.csproj", "{D8BC32AC-1A0F-428A-AF53-36EB61646D43}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Map3D.DEM", "src\VSS.Map3D.DEM\VSS.Map3D.DEM.csproj", "{BCB15FF0-96D5-4371-B64B-F8355014EF5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Map3D.Mesh", "src\VSS.Map3D.Mesh\VSS.Map3D.Mesh.csproj", "{CDB18621-13EC-4774-8446-A857F3E6205F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Map3D.Tiler", "src\VSS.Map3D.Tiler\VSS.Map3D.Tiler.csproj", "{CCAA8311-3903-4986-9407-5E41D6036DEF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Map3D.TMS", "src\VSS.Map3D.TMS\VSS.Map3D.TMS.csproj", "{28FA77E9-969A-4218-B1A0-3DD3556DE91E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Map3D.Common", "src\VSS.Map3D.Common\VSS.Map3D.Common.csproj", "{B155CFE0-0775-4559-95AD-0F6D5212E0D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Map3D.Terrain", "src\VSS.Map3D.Terrain\VSS.Map3D.Terrain.csproj", "{2FAC7F54-878D-409D-8782-2A65E5730DE0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F812B6F-F307-4704-82A7-EE9716CB2AD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F812B6F-F307-4704-82A7-EE9716CB2AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F812B6F-F307-4704-82A7-EE9716CB2AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F812B6F-F307-4704-82A7-EE9716CB2AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8BC32AC-1A0F-428A-AF53-36EB61646D43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8BC32AC-1A0F-428A-AF53-36EB61646D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8BC32AC-1A0F-428A-AF53-36EB61646D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8BC32AC-1A0F-428A-AF53-36EB61646D43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCB15FF0-96D5-4371-B64B-F8355014EF5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCB15FF0-96D5-4371-B64B-F8355014EF5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCB15FF0-96D5-4371-B64B-F8355014EF5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCB15FF0-96D5-4371-B64B-F8355014EF5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDB18621-13EC-4774-8446-A857F3E6205F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDB18621-13EC-4774-8446-A857F3E6205F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDB18621-13EC-4774-8446-A857F3E6205F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDB18621-13EC-4774-8446-A857F3E6205F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCAA8311-3903-4986-9407-5E41D6036DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCAA8311-3903-4986-9407-5E41D6036DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCAA8311-3903-4986-9407-5E41D6036DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCAA8311-3903-4986-9407-5E41D6036DEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28FA77E9-969A-4218-B1A0-3DD3556DE91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28FA77E9-969A-4218-B1A0-3DD3556DE91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28FA77E9-969A-4218-B1A0-3DD3556DE91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28FA77E9-969A-4218-B1A0-3DD3556DE91E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B155CFE0-0775-4559-95AD-0F6D5212E0D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B155CFE0-0775-4559-95AD-0F6D5212E0D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B155CFE0-0775-4559-95AD-0F6D5212E0D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B155CFE0-0775-4559-95AD-0F6D5212E0D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FAC7F54-878D-409D-8782-2A65E5730DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FAC7F54-878D-409D-8782-2A65E5730DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FAC7F54-878D-409D-8782-2A65E5730DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FAC7F54-878D-409D-8782-2A65E5730DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9F812B6F-F307-4704-82A7-EE9716CB2AD8} = {2FBF3987-208E-42CA-BF5B-D2F83856CC40}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5D8FDA6B-9E23-4162-BED6-A7D635577C7F}
+	EndGlobalSection
+EndGlobal

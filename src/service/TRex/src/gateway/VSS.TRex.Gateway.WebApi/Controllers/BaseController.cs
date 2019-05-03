@@ -120,11 +120,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Invalid project UID."));
+            $"Invalid project UID {projectUid}"));
       }
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(method, projectUid.Value);
+
       if (filterResult != null && filterResult.ContributingMachines != null)
         GatewayHelper.ValidateMachines(filterResult.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
+
+      if (filterResult != null && !string.IsNullOrEmpty(filterResult.OnMachineDesignName))
+      {
+        var machineDesign = siteModel.SiteModelMachineDesigns.Locate(filterResult.OnMachineDesignName);
+        if (machineDesign == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Unknown DesignName: {filterResult.OnMachineDesignName}."));
+        }
+
+        filterResult.OnMachineDesignId = machineDesign.Id;
+      }
     }
   }
 }

@@ -279,7 +279,7 @@ namespace WebApiTests
       var listMachines = new List<MachineDetails>();
       var machine = new MachineDetails(123456789, "TheMachineName", false);
       listMachines.Add(machine);
-      var filter = Filter.CreateFilter(startUtc, endUtc, null, null, listMachines, onMachineDesignId,
+      var filter = new Filter(startUtc, endUtc, null, null, listMachines, onMachineDesignId,
                                        elevation, vibestate, polygonPoints, forward, layerNo, polygonUid, polygonName);
       return JsonConvert.SerializeObject(filter);
     }

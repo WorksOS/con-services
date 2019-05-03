@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [JsonProperty(PropertyName = "layerId")]
     public long LayerId { get; set; }
 
-    [JsonProperty(PropertyName = "designUid", Required = Required.Default)]
-    public Guid? DesignUid { get; set; }
+    [JsonProperty(PropertyName = "designName", Required = Required.Default)]
+    public string DesignName { get; set; }
   }
 }

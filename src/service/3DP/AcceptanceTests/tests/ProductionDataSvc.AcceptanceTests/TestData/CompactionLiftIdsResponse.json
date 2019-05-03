@@ -7,7 +7,8 @@
         "layerId": 8,
         "startDate": "2014-04-10T03:26:11.457",
         "endDate": "2014-04-10T03:51:06.274",
-        "assetUid": null 
+        "assetUid": null,
+        "designName": "FH MACLEANS ISLAND"
       },
       {
         "assetId": "4035848580437757",
@@ -15,7 +16,8 @@
         "layerId": 8,
         "startDate": "2014-04-15T02:25:57.665",
         "endDate": "2014-04-15T02:32:46.369",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "<No Design>"
       },
       {
         "assetId": "4035848580437757",
@@ -23,7 +25,8 @@
         "layerId": 8,
         "startDate": "2014-04-15T02:32:59.356",
         "endDate": "2014-04-15T03:25:39.495",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "FH MACLEANS ISLAND"
       },
       {
         "assetId": "4035848580437757",
@@ -31,7 +34,8 @@
         "layerId": 8,
         "startDate": "2014-04-15T03:34:04.966",
         "endDate": "2014-04-15T03:59:05.352",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MT PLEASANT UTS"
       }
     ],
     "Code": 0,
@@ -45,7 +49,8 @@
         "layerId": 0,
         "startDate": "2012-10-30T17:50:27.72",
         "endDate": "2012-10-30T17:53:00.376",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "1244020666025812",
@@ -53,7 +58,8 @@
         "layerId": 0,
         "startDate": "2012-10-30T20:01:06.866",
         "endDate": "2012-10-30T20:03:44.909",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "1244020666025812",
@@ -61,7 +67,8 @@
         "layerId": 0,
         "startDate": "2012-10-30T22:01:34.513",
         "endDate": "2012-10-30T22:16:12.466",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "1244020666025812",
@@ -69,7 +76,8 @@
         "layerId": 0,
         "startDate": "2012-10-30T23:31:27.611",
         "endDate": "2012-10-30T23:33:53.782",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -77,7 +85,8 @@
         "layerId": 0,
         "startDate": "2012-10-30T23:34:05.219",
         "endDate": "2012-10-31T00:35:38.3",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -85,7 +94,8 @@
         "layerId": 0,
         "startDate": "2012-10-31T16:01:06.208",
         "endDate": "2012-10-31T17:28:51.945",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -93,7 +103,8 @@
         "layerId": 0,
         "startDate": "2012-10-31T20:15:25.582",
         "endDate": "2012-10-31T21:41:43.404",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -101,7 +112,8 @@
         "layerId": 0,
         "startDate": "2012-10-31T21:50:52.505",
         "endDate": "2012-10-31T21:58:20.238",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -109,7 +121,8 @@
         "layerId": 0,
         "startDate": "2012-11-01T14:46:24.808",
         "endDate": "2012-11-01T14:51:24.952",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -117,7 +130,8 @@
         "layerId": 1,
         "startDate": "2012-11-01T14:51:24.952",
         "endDate": "2012-11-01T14:52:58.852",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -125,7 +139,8 @@
         "layerId": 2,
         "startDate": "2012-11-01T15:19:03.312",
         "endDate": "2012-11-01T16:49:24.822",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -133,7 +148,8 @@
         "layerId": 3,
         "startDate": "2012-11-01T16:49:24.822",
         "endDate": "2012-11-01T17:34:26.85",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -141,7 +157,8 @@
         "layerId": 4,
         "startDate": "2012-11-01T17:34:26.85",
         "endDate": "2012-11-01T18:49:37.016",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -149,7 +166,8 @@
         "layerId": 5,
         "startDate": "2012-11-01T18:49:37.016",
         "endDate": "2012-11-01T19:07:41.498",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -157,7 +175,8 @@
         "layerId": 5,
         "startDate": "2012-11-01T20:12:35.578",
         "endDate": "2012-11-01T20:57:43.367",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -165,7 +184,8 @@
         "layerId": 6,
         "startDate": "2012-11-01T20:57:43.367",
         "endDate": "2012-11-01T21:42:44.203",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -173,7 +193,8 @@
         "layerId": 7,
         "startDate": "2012-11-01T21:42:44.203",
         "endDate": "2012-11-01T22:32:49.705",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -181,7 +202,8 @@
         "layerId": 8,
         "startDate": "2012-11-01T22:32:49.705",
         "endDate": "2012-11-01T22:42:04.302",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -189,7 +211,8 @@
         "layerId": 8,
         "startDate": "2012-11-01T23:22:33.779",
         "endDate": "2012-11-01T23:32:34.896",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -197,7 +220,8 @@
         "layerId": 9,
         "startDate": "2012-11-01T23:32:34.896",
         "endDate": "2012-11-01T23:46:42.169",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -205,7 +229,8 @@
         "layerId": 9,
         "startDate": "2012-11-02T14:37:03.525",
         "endDate": "2012-11-02T15:37:42.006",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -213,7 +238,8 @@
         "layerId": 9,
         "startDate": "2012-11-02T16:38:08.045",
         "endDate": "2012-11-02T16:43:08.216",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -221,7 +247,8 @@
         "layerId": 10,
         "startDate": "2012-11-02T16:43:08.216",
         "endDate": "2012-11-02T17:33:10.449",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -229,7 +256,8 @@
         "layerId": 11,
         "startDate": "2012-11-02T17:33:10.449",
         "endDate": "2012-11-02T18:18:12.57",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -237,7 +265,8 @@
         "layerId": 12,
         "startDate": "2012-11-02T18:18:12.57",
         "endDate": "2012-11-02T19:05:04.172",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -245,7 +274,8 @@
         "layerId": 13,
         "startDate": "2012-11-02T20:33:58.818",
         "endDate": "2012-11-02T21:09:05.734",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -253,7 +283,8 @@
         "layerId": 14,
         "startDate": "2012-11-02T21:09:05.734",
         "endDate": "2012-11-02T21:59:08.752",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -261,7 +292,8 @@
         "layerId": 15,
         "startDate": "2012-11-02T21:59:08.752",
         "endDate": "2012-11-02T22:33:05.011",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -269,7 +301,8 @@
         "layerId": 15,
         "startDate": "2012-11-02T22:38:18.941",
         "endDate": "2012-11-02T22:53:21.61",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -277,7 +310,8 @@
         "layerId": 16,
         "startDate": "2012-11-02T22:53:21.61",
         "endDate": "2012-11-02T23:28:28.658",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -285,7 +319,8 @@
         "layerId": 17,
         "startDate": "2012-11-02T23:28:28.658",
         "endDate": "2012-11-02T23:32:05.258",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -293,7 +328,8 @@
         "layerId": 17,
         "startDate": "2012-11-03T14:59:12.094",
         "endDate": "2012-11-03T15:25:56.009",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -301,7 +337,8 @@
         "layerId": 17,
         "startDate": "2012-11-03T16:33:05.57",
         "endDate": "2012-11-03T16:48:08.482",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -309,7 +346,8 @@
         "layerId": 18,
         "startDate": "2012-11-03T16:48:08.482",
         "endDate": "2012-11-03T16:50:06.257",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -317,7 +355,8 @@
         "layerId": 18,
         "startDate": "2012-11-03T17:22:44.718",
         "endDate": "2012-11-03T17:27:48.827",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -325,7 +364,8 @@
         "layerId": 18,
         "startDate": "2012-11-03T17:28:49.229",
         "endDate": "2012-11-03T17:31:53.331",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -333,7 +373,8 @@
         "layerId": 19,
         "startDate": "2012-11-03T17:34:07.347",
         "endDate": "2012-11-03T18:12:11.365",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -341,7 +382,8 @@
         "layerId": 20,
         "startDate": "2012-11-03T18:44:23",
         "endDate": "2012-11-03T18:54:26.183",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -349,7 +391,8 @@
         "layerId": 21,
         "startDate": "2012-11-03T18:54:26.183",
         "endDate": "2012-11-03T18:55:19.683",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -357,7 +400,8 @@
         "layerId": 21,
         "startDate": "2012-11-03T20:56:23.801",
         "endDate": "2012-11-03T21:11:24.724",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -365,7 +409,8 @@
         "layerId": 22,
         "startDate": "2012-11-03T21:11:24.724",
         "endDate": "2012-11-03T21:16:07.522",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -373,7 +418,8 @@
         "layerId": 22,
         "startDate": "2012-11-03T21:49:22.234",
         "endDate": "2012-11-03T21:59:25.284",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -381,7 +427,8 @@
         "layerId": 23,
         "startDate": "2012-11-03T21:59:25.284",
         "endDate": "2012-11-03T22:44:38.531",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -389,7 +436,8 @@
         "layerId": 24,
         "startDate": "2012-11-03T22:44:38.531",
         "endDate": "2012-11-03T23:27:31.562",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -397,7 +445,8 @@
         "layerId": 25,
         "startDate": "2012-11-05T19:27:28.001",
         "endDate": "2012-11-05T19:42:30.915",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -405,7 +454,8 @@
         "layerId": 26,
         "startDate": "2012-11-05T19:42:30.915",
         "endDate": "2012-11-05T19:44:01.415",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -413,7 +463,8 @@
         "layerId": 26,
         "startDate": "2012-11-05T20:10:31.485",
         "endDate": "2012-11-05T20:19:49.272",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -421,7 +472,8 @@
         "layerId": 27,
         "startDate": "2012-11-05T20:49:40.105",
         "endDate": "2012-11-05T20:56:01.649",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -429,7 +481,8 @@
         "layerId": 27,
         "startDate": "2012-11-05T22:43:26.986",
         "endDate": "2012-11-05T22:53:31",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -437,7 +490,8 @@
         "layerId": 28,
         "startDate": "2012-11-05T22:53:31",
         "endDate": "2012-11-05T23:01:09.794",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -445,7 +499,8 @@
         "layerId": 29,
         "startDate": "2012-11-05T23:40:02.797",
         "endDate": "2012-11-05T23:41:31.297",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -453,7 +508,8 @@
         "layerId": 29,
         "startDate": "2012-11-05T23:57:55.37",
         "endDate": "2012-11-06T00:22:58.57",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -461,7 +517,8 @@
         "layerId": 30,
         "startDate": "2012-11-06T00:22:58.57",
         "endDate": "2012-11-06T00:25:14.17",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -469,7 +526,8 @@
         "layerId": 30,
         "startDate": "2012-11-06T00:30:38.383",
         "endDate": "2012-11-06T00:31:01.483",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -477,7 +535,8 @@
         "layerId": 30,
         "startDate": "2012-11-06T22:31:46.474",
         "endDate": "2012-11-06T22:36:47.022",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -485,7 +544,8 @@
         "layerId": 31,
         "startDate": "2012-11-06T22:36:47.022",
         "endDate": "2012-11-06T22:46:16.853",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -493,7 +553,8 @@
         "layerId": 32,
         "startDate": "2012-11-06T23:16:14.639",
         "endDate": "2012-11-06T23:31:16.126",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -501,7 +562,8 @@
         "layerId": 33,
         "startDate": "2012-11-06T23:31:16.126",
         "endDate": "2012-11-06T23:32:42.126",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -509,7 +571,8 @@
         "layerId": 33,
         "startDate": "2012-11-07T00:00:10.897",
         "endDate": "2012-11-07T00:20:12.12",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -517,7 +580,8 @@
         "layerId": 34,
         "startDate": "2012-11-07T00:20:12.12",
         "endDate": "2012-11-07T00:20:45.32",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -525,7 +589,8 @@
         "layerId": 35,
         "startDate": "2012-11-07T18:44:34.914",
         "endDate": "2012-11-07T18:59:37.798",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -533,7 +598,8 @@
         "layerId": 36,
         "startDate": "2012-11-07T18:59:37.798",
         "endDate": "2012-11-07T19:01:31.498",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -541,7 +607,8 @@
         "layerId": 36,
         "startDate": "2012-11-07T19:25:15.001",
         "endDate": "2012-11-07T19:37:42.203",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -549,7 +616,8 @@
         "layerId": 37,
         "startDate": "2012-11-07T20:12:06.223",
         "endDate": "2012-11-07T20:20:11.573",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -557,7 +625,8 @@
         "layerId": 38,
         "startDate": "2012-11-07T22:21:46.381",
         "endDate": "2012-11-07T23:14:14.679",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -565,7 +634,8 @@
         "layerId": 38,
         "startDate": "2012-11-07T23:16:51.793",
         "endDate": "2012-11-07T23:21:51.94",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -573,7 +643,8 @@
         "layerId": 39,
         "startDate": "2012-11-07T23:21:51.94",
         "endDate": "2012-11-08T00:01:53.52",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "1244020666025812",
@@ -581,7 +652,8 @@
         "layerId": 40,
         "startDate": "2012-11-08T00:01:53.52",
         "endDate": "2012-11-08T00:06:47.82",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "BC12"
       },
       {
         "assetId": "3517551388324974",
@@ -589,7 +661,8 @@
         "layerId": 5,
         "startDate": "2012-11-01T18:11:24.913",
         "endDate": "2012-11-01T19:16:09.467",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -597,7 +670,8 @@
         "layerId": 5,
         "startDate": "2012-11-01T19:31:57.003",
         "endDate": "2012-11-01T19:41:57.137",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -605,7 +679,8 @@
         "layerId": 6,
         "startDate": "2012-11-01T19:41:57.137",
         "endDate": "2012-11-01T19:54:11.189",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -613,7 +688,8 @@
         "layerId": 6,
         "startDate": "2012-11-01T20:26:54.476",
         "endDate": "2012-11-01T22:18:17.147",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -621,7 +697,8 @@
         "layerId": 6,
         "startDate": "2012-11-01T22:23:57.731",
         "endDate": "2012-11-01T22:43:20.517",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -629,7 +706,8 @@
         "layerId": 6,
         "startDate": "2012-11-01T22:44:59.672",
         "endDate": "2012-11-01T22:49:59.774",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -637,7 +715,8 @@
         "layerId": 7,
         "startDate": "2012-11-01T22:49:59.774",
         "endDate": "2012-11-01T23:39:24.489",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -645,7 +724,8 @@
         "layerId": 7,
         "startDate": "2012-11-02T14:50:02.124",
         "endDate": "2012-11-02T14:55:02.325",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -653,7 +733,8 @@
         "layerId": 8,
         "startDate": "2012-11-02T14:55:02.325",
         "endDate": "2012-11-02T17:00:04.847",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -661,7 +742,8 @@
         "layerId": 9,
         "startDate": "2012-11-02T17:00:04.847",
         "endDate": "2012-11-02T17:50:05.834",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -669,7 +751,8 @@
         "layerId": 10,
         "startDate": "2012-11-02T17:55:06.071",
         "endDate": "2012-11-02T18:50:21.004",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -677,7 +760,8 @@
         "layerId": 10,
         "startDate": "2012-11-02T22:02:01.001",
         "endDate": "2012-11-02T22:07:01.129",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -685,7 +769,8 @@
         "layerId": 11,
         "startDate": "2012-11-02T22:07:01.129",
         "endDate": "2012-11-02T22:15:08.882",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -693,7 +778,8 @@
         "layerId": 11,
         "startDate": "2012-11-02T22:19:29.26",
         "endDate": "2012-11-02T23:01:49.462",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -701,7 +787,8 @@
         "layerId": 11,
         "startDate": "2012-11-02T23:09:57",
         "endDate": "2012-11-02T23:19:20.85",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -709,7 +796,8 @@
         "layerId": 12,
         "startDate": "2012-11-03T14:57:11.711",
         "endDate": "2012-11-03T18:50:03.839",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -717,7 +805,8 @@
         "layerId": 12,
         "startDate": "2012-11-03T20:03:03.864",
         "endDate": "2012-11-03T20:08:03.983",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -725,7 +814,8 @@
         "layerId": 13,
         "startDate": "2012-11-03T20:08:03.983",
         "endDate": "2012-11-03T23:12:15.741",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -733,7 +823,8 @@
         "layerId": 15,
         "startDate": "2012-11-05T16:49:22.104",
         "endDate": "2012-11-05T16:59:55.242",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -741,7 +832,8 @@
         "layerId": 15,
         "startDate": "2012-11-05T18:21:07.951",
         "endDate": "2012-11-05T18:26:08.135",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -749,7 +841,8 @@
         "layerId": 16,
         "startDate": "2012-11-05T18:26:08.135",
         "endDate": "2012-11-06T00:36:36.154",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -757,7 +850,8 @@
         "layerId": 16,
         "startDate": "2012-11-06T17:14:42.576",
         "endDate": "2012-11-06T17:18:39.076",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -765,7 +859,8 @@
         "layerId": 16,
         "startDate": "2012-11-06T17:19:53.51",
         "endDate": "2012-11-06T17:51:59.694",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -773,7 +868,8 @@
         "layerId": 16,
         "startDate": "2012-11-06T17:52:48.805",
         "endDate": "2012-11-06T17:53:44.401",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -781,7 +877,8 @@
         "layerId": 17,
         "startDate": "2012-11-06T17:54:55.101",
         "endDate": "2012-11-06T18:03:13.413",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -789,7 +886,8 @@
         "layerId": 17,
         "startDate": "2012-11-06T18:07:46.74",
         "endDate": "2012-11-06T18:07:58.54",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -797,7 +895,8 @@
         "layerId": 17,
         "startDate": "2012-11-06T18:08:55.547",
         "endDate": "2012-11-06T20:28:58.527",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -805,7 +904,8 @@
         "layerId": 18,
         "startDate": "2012-11-06T20:28:58.527",
         "endDate": "2012-11-06T21:08:59.373",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -813,7 +913,8 @@
         "layerId": 19,
         "startDate": "2012-11-06T21:08:59.373",
         "endDate": "2012-11-06T21:11:02.773",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -821,7 +922,8 @@
         "layerId": 19,
         "startDate": "2012-11-06T21:18:45.498",
         "endDate": "2012-11-07T00:29:16.593",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       },
       {
         "assetId": "3517551388324974",
@@ -829,7 +931,8 @@
         "layerId": 19,
         "startDate": "2012-11-07T00:37:31",
         "endDate": "2012-11-07T00:41:25.7",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "<No Design>"
       },
       {
         "assetId": "3517551388324974",
@@ -837,7 +940,8 @@
         "layerId": 19,
         "startDate": "2012-11-07T18:11:59.181",
         "endDate": "2012-11-07T22:37:04.381",
-        "assetUid": null
+        "assetUid": null,
+        "designName": "MAP 01"
       }
     ],
     "Code": 0,

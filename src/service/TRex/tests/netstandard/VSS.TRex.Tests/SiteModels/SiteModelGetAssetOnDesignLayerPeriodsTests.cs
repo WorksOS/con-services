@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_NoMachineNoRecordingPeriodNoLayersNoDesign()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
     
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(0);
@@ -26,8 +26,8 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_OneMachineNoRecordingPeriodNoLayersNoDesign()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(0);
@@ -36,10 +36,10 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_LateLayerNoDesign()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
-      DateTime referenceDate = DateTime.UtcNow;
+      var referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
       var endReportPeriod1 = referenceDate.AddMinutes(-30);
 
@@ -55,10 +55,10 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_TwoLayersNoDesign()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
-      DateTime referenceDate = DateTime.UtcNow;
+      var referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
       var endReportPeriod1 = referenceDate.AddMinutes(-30);
 
@@ -72,7 +72,8 @@ namespace VSS.TRex.Tests.SiteModels
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(1);
       assetOnDesignLayerPeriods[0].AssetId.Should().Be(Consts.NULL_LEGACY_ASSETID);
-      assetOnDesignLayerPeriods[0].DesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(Consts.kNoDesignName);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod1);
       assetOnDesignLayerPeriods[0].EndDate.Should().Be(endReportPeriod1);
@@ -82,11 +83,11 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_TwoLayersOneDesign()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
 
-      DateTime referenceDate = DateTime.UtcNow;
+      var referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddMinutes(-60);
       var endReportPeriod1 = referenceDate.AddMinutes(-30);
 
@@ -101,7 +102,8 @@ namespace VSS.TRex.Tests.SiteModels
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(1);
       assetOnDesignLayerPeriods[0].AssetId.Should().Be(Consts.NULL_LEGACY_ASSETID);
-      assetOnDesignLayerPeriods[0].DesignId.Should().Be(design1.Id);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod1);
       assetOnDesignLayerPeriods[0].EndDate.Should().Be(endReportPeriod1);
@@ -111,12 +113,12 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_MultiLayersDesignsReportPeriods()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
       var design2 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName2");
 
-      DateTime referenceDate = DateTime.UtcNow;
+      var referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddDays(-1).AddMinutes(-60);
       var endReportPeriod1 = referenceDate.AddDays(-1).AddMinutes(-30);
 
@@ -141,25 +143,29 @@ namespace VSS.TRex.Tests.SiteModels
 
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(4);
-      assetOnDesignLayerPeriods[0].DesignId.Should().Be(design1.Id);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod1);
       assetOnDesignLayerPeriods[0].EndDate.Should().Be(startReportPeriod1.AddMinutes(5));
       assetOnDesignLayerPeriods[0].AssetUid.Should().Be(machine.ID);
 
-      assetOnDesignLayerPeriods[1].DesignId.Should().Be(design1.Id);
+      assetOnDesignLayerPeriods[1].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[1].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[1].LayerId.Should().Be(layerId2);
       assetOnDesignLayerPeriods[1].StartDate.Should().Be(startReportPeriod1.AddMinutes(5));
       assetOnDesignLayerPeriods[1].EndDate.Should().Be(endReportPeriod1);
       assetOnDesignLayerPeriods[1].AssetUid.Should().Be(machine.ID);
 
-      assetOnDesignLayerPeriods[2].DesignId.Should().Be(design1.Id);
+      assetOnDesignLayerPeriods[2].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[2].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[2].LayerId.Should().Be(layerId2);
       assetOnDesignLayerPeriods[2].StartDate.Should().Be(startReportPeriod2);
       assetOnDesignLayerPeriods[2].EndDate.Should().Be(startReportPeriod2.AddMinutes(6));
       assetOnDesignLayerPeriods[2].AssetUid.Should().Be(machine.ID);
 
-      assetOnDesignLayerPeriods[3].DesignId.Should().Be(design2.Id);
+      assetOnDesignLayerPeriods[3].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[3].OnMachineDesignName.Should().Be(design2.Name);
       assetOnDesignLayerPeriods[3].LayerId.Should().Be(layerId3);
       assetOnDesignLayerPeriods[3].StartDate.Should().Be(startReportPeriod2.AddMinutes(6));
       assetOnDesignLayerPeriods[3].EndDate.Should().Be(endReportPeriod2);
@@ -169,11 +175,11 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignLayerPeriods_FirstLayerWithinReportPeriod()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       var design1 = siteModel.SiteModelMachineDesigns.CreateNew("DesignName1");
 
-      DateTime referenceDate = DateTime.UtcNow;
+      var referenceDate = DateTime.UtcNow;
       var startReportPeriod1 = referenceDate.AddDays(-1).AddMinutes(-60);
       var endReportPeriod1 = referenceDate.AddDays(-1).AddMinutes(-30);
 
@@ -194,7 +200,8 @@ namespace VSS.TRex.Tests.SiteModels
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(1);
 
-      assetOnDesignLayerPeriods[0].DesignId.Should().Be(design1.Id);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod2.AddMinutes(6));
       assetOnDesignLayerPeriods[0].EndDate.Should().Be(endReportPeriod2);

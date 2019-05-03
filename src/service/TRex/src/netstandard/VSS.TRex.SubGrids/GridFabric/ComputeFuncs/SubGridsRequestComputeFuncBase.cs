@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     {
       TSubGridRequestsResponse result;
 
-      Log.LogInformation("In SubGridsRequestComputeFunc.invoke()");
+      Log.LogInformation("#In# SubGridsRequestComputeFunc.invoke()");
 
       try
       {

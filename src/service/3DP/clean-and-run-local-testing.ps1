@@ -1,4 +1,5 @@
 [Console]::ResetColor()
+$Env:COMPOSE_CONVERT_WINDOWS_PATHS=0
 
 IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
 
