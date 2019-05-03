@@ -1,4 +1,6 @@
 MYSQL_DATABASE_NAME: "VSS-3DScheduler"
+MYSQL_USERNAME: "vssProjectMDMUsr"
+MYSQL_ROOT_PASSWORD: "mRty94hER"
 JAEGER_SERVICE_NAME: "Scheduler Service"
 NEW_RELIC_APP_NAME: eks-scheduler-service
 newrelic: "true"

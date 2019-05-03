@@ -1,4 +1,6 @@
 MYSQL_DATABASE_NAME: VSS-ProjectMDM-13
+MYSQL_USERNAME: vssProjectMDMUsr
+MYSQL_ROOT_PASSWORD: mRty94hER
 KAFKA_GROUP_NAME: ProjectMasterData-Consumer-13-Prod-1043-V1
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IGeofenceEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1
 NEW_RELIC_APP_NAME: eks-project-service
