@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -32,8 +33,9 @@ namespace VSS.TRex.Analytics.Foundation
 
         /// <summary>
         /// Identifier for the design to be used as the basis for any required cut fill operations
+        /// together with its offset for a reference surface
         /// </summary>
-        public Guid CutFillDesignID { get; set; } = Guid.Empty;
+        public DesignOffset CutFillDesign { get; set; } = new DesignOffset();
 
         /// <summary>
         /// The underlying grid data type required to satisfy the processing requirements of this analytics computor
@@ -68,11 +70,11 @@ namespace VSS.TRex.Analytics.Foundation
             gridDataType: RequestedGridDataType,
             response: response,
             filters: Filters,
-            cutFillDesignID: CutFillDesignID,
+            cutFillDesign: CutFillDesign,
             task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
             pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
             requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-            requestRequiresAccessToDesignFileExistenceMap: CutFillDesignID != Guid.Empty,
+            requestRequiresAccessToDesignFileExistenceMap: CutFillDesign?.DesignID != Guid.Empty,
             requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
             overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
           );

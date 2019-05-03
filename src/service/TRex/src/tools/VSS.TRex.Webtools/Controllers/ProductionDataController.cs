@@ -23,6 +23,7 @@ using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Common.Records;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -627,7 +628,7 @@ namespace VSS.TRex.Webtools.Controllers
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
-            DesignID = Guid.Empty, // TODO (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
+            ReferenceDesign = new DesignOffset(), // TODO (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
             Offsets = offsets
           });
 

@@ -33,7 +33,7 @@ namespace VSS.TRex.GridFabric.Arguments
     /// <summary>
     /// The design to be used in cases of cut/fill or DesignHeights sub grid requests  together with its offset for a reference surface.
     /// </summary>
-    public DesignOffset ReferenceDesign { get; set; } = new DesignOffset(Guid.Empty, 0);
+    public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 

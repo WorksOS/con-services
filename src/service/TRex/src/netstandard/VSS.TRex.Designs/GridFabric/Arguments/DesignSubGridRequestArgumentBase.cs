@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
@@ -18,13 +19,10 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="siteModelID"></param>
     /// <param name="referenceDesignUID"></param>
     /// <param name="offset"></param>
-    protected DesignSubGridRequestArgumentBase(Guid siteModelID,
-                                     Guid referenceDesignUID,
-                                     double offset) : this()
+    protected DesignSubGridRequestArgumentBase(Guid siteModelID, DesignOffset referenceDesign) : this()
     {
       ProjectID = siteModelID;
-      ReferenceDesign.DesignID = referenceDesignUID;
-      ReferenceDesign.Offset = offset;
+      ReferenceDesign = referenceDesign;
     }
 
     /// <summary>

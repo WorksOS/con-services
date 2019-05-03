@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
       {
         var factory = new ProfilerBuilderFactory<ProfileCell>();
 
-        Assert.True(factory.NewCellProfileBuilder(null, null, null, true) != null, "Failed to construct new cell profile builder");
+        Assert.True(factory.NewCellProfileBuilder(null, null, null, 0, true) != null, "Failed to construct new cell profile builder");
       }
 
       [Fact]
@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
                                                    new SiteModel(Guid.NewGuid()), 
                                                    null, 
                                                    new FilterSet(new CombinedFilter()), 
-                                                   null, null, null) != null, "Failed to construct new profile lift builder");
+                                                   null, 0, null, 0, null) != null, "Failed to construct new profile lift builder");
       }
 
       [Fact]
@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
             new SiteModel(Guid.NewGuid()),
             null,
             new FilterSet(new CombinedFilter()),
-            null, null, null);
+            null, 0, null, 0, null);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
       }
@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
                       new SiteModel(Guid.NewGuid()),
                       null,
                       new FilterSet(new CombinedFilter()),
-                      null, null, null) != null, "Failed to construct new profile lift builder");
+                      null, 0, null, 0, null) != null, "Failed to construct new profile lift builder");
       }
   }
 }

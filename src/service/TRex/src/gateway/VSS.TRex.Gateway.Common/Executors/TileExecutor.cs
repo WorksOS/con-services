@@ -12,6 +12,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
@@ -74,7 +75,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           request.Width, // PixelsX
           request.Height, // PixelsY
           new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
-          request.DesignDescriptor?.FileUid ?? Guid.Empty
+          new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor.Offset)
         )) as TileRenderResponse_Core2;
 
       return new TileResult(response?.TileBitmapData);

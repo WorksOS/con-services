@@ -10,6 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
@@ -48,6 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
+      var referenceDesign = new DesignOffset(request.ReferenceDesignUid ?? Guid.Empty, request.ReferenceDesignOffset ?? 0);
 
       ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
       {
@@ -56,8 +58,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = request.PositionsAreGrid,
         Filters = new FilterSet(baseFilter),
-        ReferenceDesign.DesignID = request.ReferenceDesignUid ?? Guid.Empty,
-        ReferenceDesign.Offset = request.ReferenceDesignOffset ?? 0,
+        ReferenceDesign = referenceDesign,
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
         ReturnAllPassesAndLayers = true

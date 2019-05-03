@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests.Designs
       var dd = new DesignDescriptor(newGuid, "folder", "file.name");
       var dd2 = new DesignDescriptor();
 
-      dd2.Init(newGuid, "folder", "file.name", 1.1);
+      dd2.Init(newGuid, "folder", "file.name");
 
       dd.Should().BeEquivalentTo(dd2);
     }

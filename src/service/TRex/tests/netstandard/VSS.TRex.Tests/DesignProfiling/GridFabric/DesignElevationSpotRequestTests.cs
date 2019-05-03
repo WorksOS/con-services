@@ -1,8 +1,10 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -36,13 +38,13 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var referenceDesign = new DesignOffset(designUid, offset);
 
       var request = new DesignElevationSpotRequest();
       var response = request.Execute(new CalculateDesignElevationSpotArgument
       {
         ProjectID = siteModel.ID,
-        ReferenceDesign.DesignID = designUid,
-        ReferenceDesign.Offset = offset,
+        ReferenceDesign = referenceDesign,
         SpotX = spotX,
         SpotY = spotY,
       });

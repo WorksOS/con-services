@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
@@ -42,14 +43,12 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="originX"></param>
     /// <param name="originY"></param>
     /// <param name="cellSize"></param>
-    /// <param name="designUid"></param>
-    /// <param name="offset"></param>
+    /// <param name="referenceDesign"></param>
     public CalculateDesignElevationPatchArgument(Guid siteModelID,
       uint originX,
       uint originY,
       double cellSize,
-      Guid designUid,
-      double offset) : base(siteModelID, designUid, offset)
+      DesignOffset referenceDesign) : base(siteModelID, referenceDesign)
     {
       OriginX = originX;
       OriginY = originY;

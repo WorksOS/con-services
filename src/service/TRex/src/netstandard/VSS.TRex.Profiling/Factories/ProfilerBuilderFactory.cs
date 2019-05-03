@@ -41,7 +41,9 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignOffset"></param>
     /// <param name="referenceDesign"></param>
+    /// <param name="referenceDesignOffset"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <param name="profileStyle"></param>
     /// <returns></returns>
@@ -58,12 +60,12 @@ namespace VSS.TRex.Profiling.Factories
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, double, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellPassFilter_ElevationRangeDesignOffset, cellLiftBuilder);
 
         case ProfileStyle.SummaryVolume:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, referenceDesign, cellLiftBuilder);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesign, double, IDesign, double, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellPassFilter_ElevationRangeDesignOffset, referenceDesign, referenceDesignOffset, cellLiftBuilder);
 
         default:
           throw new ArgumentOutOfRangeException(nameof(profileStyle), profileStyle, null);

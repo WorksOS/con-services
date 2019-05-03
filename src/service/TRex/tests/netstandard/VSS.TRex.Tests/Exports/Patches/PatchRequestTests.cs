@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
@@ -64,7 +65,7 @@ namespace VSS.TRex.Tests.Exports.Patches
         Filters = new FilterSet(new CombinedFilter()),
         Mode = DisplayMode.Height,
         ProjectID = projectUid,
-        ReferenceDesign.DesignID = Guid.Empty,
+        ReferenceDesign = new DesignOffset(),
         TRexNodeID = "'Test_PatchRequest_Execute_EmptySiteModel"
       };
     }

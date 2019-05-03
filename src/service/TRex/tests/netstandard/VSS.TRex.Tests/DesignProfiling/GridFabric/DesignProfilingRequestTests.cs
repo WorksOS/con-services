@@ -51,13 +51,14 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new DesignProfileRequest();
       var response = request.Execute(new CalculateDesignProfileArgument
       {
         ProjectID = siteModel.ID,
         CellSize = SubGridTreeConsts.DefaultCellSize,
-        ReferenceDesign.DesignID = designUid,
+        ReferenceDesign = referenceDesign,
         Filters = new FilterSet(new CombinedFilter()),
         ProfilePath = new [] { new XYZ(startX, startY), new XYZ(endX, endY) },
         TRexNodeID = "UnitTest_TRexNodeID"

@@ -59,18 +59,21 @@ namespace VSS.TRex.Profiling
     /// <param name="pDExistenceMap"></param>
     /// <param name="filterSet"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesignOffset"></param>
     /// <param name="referenceDesign"></param>
+    /// <param name="referenceDesignOffset"></param>
     /// <param name="cellLiftBuilder"></param>
     public SummaryVolumesCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
       IDesign cellPassFilter_ElevationRangeDesign,
+      double cellPassFilter_ElevationRangeDesignOffset,
       IDesign referenceDesign,
-      double referenceOffset,
-      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign)
+      double referenceDesignOffset,
+      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesign, cellPassFilter_ElevationRangeDesignOffset)
     {
       svDesign = referenceDesign;
-      svDesignOffset = referenceOffset;
+      svDesignOffset = referenceDesignOffset;
     }
 
     /// <summary>

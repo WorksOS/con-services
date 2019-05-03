@@ -442,7 +442,7 @@ namespace VSS.TRex.Volumes
           gridDataType: GridDataType.Height,
           response: new SimpleVolumesResponse(), // todo or any predefined response object
           filters: new FilterSet(BaseFilter, TopFilter),
-          cutFillDesignID: ReferenceDesignUID,
+          cutFillDesign: ReferenceDesign,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),

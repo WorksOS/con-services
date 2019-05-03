@@ -8,6 +8,7 @@ using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
@@ -29,13 +30,13 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       IgniteMock.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
     }
 
-    private CutFillStatisticsArgument SimpleCutFillStatisticsArgument(ISiteModel siteModel, Guid DesignUid)
+    private CutFillStatisticsArgument SimpleCutFillStatisticsArgument(ISiteModel siteModel, Guid designUid, double offset)
     {
       return new CutFillStatisticsArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
-        DesignID = DesignUid,
+        ReferenceDesign = new DesignOffset(designUid, offset),
         Offsets = new double[0]
       };
     }
@@ -107,7 +108,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new CutFillStatisticsOperation();
 
-      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid());
+      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 0);
       var result = operation.Execute(argument);
 
       result.Should().NotBeNull();
@@ -123,7 +124,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       BuildModelForSingleCellCutFill(out var siteModel, 0.5f);
 
       var operation = new CutFillStatisticsOperation();
-      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid());
+      var argument = SimpleCutFillStatisticsArgument(siteModel, Guid.NewGuid(), 0);
       var result = operation.Execute(argument);
 
       result.Should().NotBeNull();
@@ -141,7 +142,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 1.0f);
 
       var operation = new CutFillStatisticsOperation();
-      var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);
+      var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, 0);
       argument.Offsets = new[] {0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5};
 
       var result = operation.Execute(argument);
@@ -163,7 +164,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 2.0f);
 
       var operation = new CutFillStatisticsOperation();
-      var argument = SimpleCutFillStatisticsArgument(siteModel, designUid);
+      var argument = SimpleCutFillStatisticsArgument(siteModel, designUid, 0);
       argument.Offsets = new[] {1.0, 0.4, 0.2, 0.0, -0.2, -0.4, -1.0};
 
       var result = operation.Execute(argument);

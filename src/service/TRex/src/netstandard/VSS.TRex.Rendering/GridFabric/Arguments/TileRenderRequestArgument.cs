@@ -8,6 +8,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
@@ -38,7 +39,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
                                      ushort pixelsX,
                                      ushort pixelsY,
                                      IFilterSet filters,
-                                     Guid referenceDesignUid)
+                                     DesignOffset referenceDesign)
     {
       ProjectID = siteModelID;
       Mode = mode;
@@ -48,7 +49,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       PixelsX = pixelsX;
       PixelsY = pixelsY;
       Filters = filters;
-      ReferenceDesign.DesignID = referenceDesignUid;
+      ReferenceDesign = referenceDesign;
     }
 
     /// <summary>

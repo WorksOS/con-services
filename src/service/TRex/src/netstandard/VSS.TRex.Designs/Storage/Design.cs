@@ -203,7 +203,7 @@ namespace VSS.TRex.Designs.Storage
         elevSpotRequest = new DesignElevationSpotRequest();
 
       spotHeight = elevSpotRequest.Execute(new CalculateDesignElevationSpotArgument
-        (siteModelID, spotX, spotY, DesignDescriptor.DesignID, offset));
+        (siteModelID, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
     }
 
     /// <summary>
@@ -231,8 +231,7 @@ namespace VSS.TRex.Designs.Storage
       var response = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
-        ReferenceDesign.DesignID = DesignDescriptor.DesignID,
-        ReferenceDesign.Offset = offset,
+        ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, offset),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
@@ -266,7 +265,7 @@ namespace VSS.TRex.Designs.Storage
       var maskResponse = filterMaskRequest.Execute(new DesignSubGridFilterMaskArgument
       {
         CellSize = cellSize,
-        ReferenceDesign.DesignID = DesignDescriptor.DesignID,
+        ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, 0),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
         ProjectID = siteModelID

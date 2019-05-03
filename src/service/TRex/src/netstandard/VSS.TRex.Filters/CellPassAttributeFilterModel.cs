@@ -318,7 +318,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The design to be used as the benchmark for a surface based elevation range filter  together with its offset for a reference surface
     /// </summary>
-    public DesignOffset ElevationRangeDesign { get; set; } = new DesignOffset(Guid.Empty, 0);
+    public DesignOffset ElevationRangeDesign { get; set; } = new DesignOffset();
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 

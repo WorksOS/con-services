@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
@@ -21,8 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         SpotX = 123.4,
         SpotY = 234.5,
         Filters = null,
-        ReferenceDesign.DesignID = Guid.NewGuid(),
-        ReferenceDesign.Offset = 999.9,
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 999.9),
         TRexNodeID = "NodeID"        
       };
 

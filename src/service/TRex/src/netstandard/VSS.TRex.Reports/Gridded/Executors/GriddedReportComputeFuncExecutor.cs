@@ -74,7 +74,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         gridDataType: GridDataType.CellProfile,
         response: GriddedReportRequestResponse,
         filters: _griddedReportRequestArgument.Filters,
-        cutFillDesignID: _griddedReportRequestArgument.ReferenceDesign.DesignID,
+        cutFillDesign: _griddedReportRequestArgument.ReferenceDesign,
         task: task,
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),

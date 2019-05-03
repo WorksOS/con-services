@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var req = new DesignFilterSubGridMaskRequest();
 
       // Ask for a design that does not exist
-      var response = req.Execute(new DesignSubGridFilterMaskArgument(siteModel.ID, 0, 0, Guid.NewGuid(), siteModel.CellSize));
+      var response = req.Execute(new DesignSubGridFilterMaskArgument(siteModel.ID, 0, 0, new DesignOffset(Guid.NewGuid(), 0), siteModel.CellSize));
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.DesignDoesNotExist);
@@ -47,13 +47,14 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 100.0f);
+      var referenceDesign = new DesignOffset(designUid, 0);
       var req = new DesignFilterSubGridMaskRequest();
 
       var response = req.Execute(new DesignSubGridFilterMaskArgument
         (siteModel.ID,
          SubGridTreeConsts.DefaultIndexOriginOffset, // Cell address of originX, 
          SubGridTreeConsts.DefaultIndexOriginOffset, // Cell address of originY
-         designUid, siteModel.CellSize));
+         referenceDesign, siteModel.CellSize));
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
@@ -67,13 +68,14 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 100.0f);
+      var refeenceDesign = new DesignOffset(designUid, 0);
       var req = new DesignFilterSubGridMaskRequest();
 
       var response = req.Execute(new DesignSubGridFilterMaskArgument
       (siteModel.ID,
         SubGridTreeConsts.DefaultIndexOriginOffset + 10000, // Cell address of originX, about 3km from location of triangle at origin 
         SubGridTreeConsts.DefaultIndexOriginOffset + 10000, // Cell address of originY, about 3km from location of triangle at origin
-        designUid, siteModel.CellSize));
+        refeenceDesign, siteModel.CellSize));
 
       response.Should().NotBeNull();
       response.RequestResult.Should().Be(DesignProfilerRequestResult.NoElevationsInRequestedPatch);

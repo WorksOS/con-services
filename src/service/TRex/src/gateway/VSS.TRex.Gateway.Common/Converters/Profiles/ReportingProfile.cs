@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
@@ -26,10 +27,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
-        .ForMember(x => x.ReferenceDesign.Offset,
-          opt => opt.MapFrom(f => f.CutFillDesignOffset ?? 0))
-        .ForMember(x => x.ReferenceDesign.DesignID,
-          opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
+        .ForMember(x => x.ReferenceDesign,
+          opt => opt.ResolveUsing<CustomStationOffsetReferenceDesignResolver>());
 
       CreateMap<CompactionReportGridTRexRequest, GriddedReportData>()
         .ForMember(x => x.NumberOfRows,
@@ -46,10 +45,26 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
-        .ForMember(x => x.ReferenceDesign.Offset,
-          opt => opt.MapFrom(f => f.CutFillDesignOffset))
-        .ForMember(x => x.ReferenceDesign.DesignID,
-          opt => opt.MapFrom(f => f.CutFillDesignUid ?? Guid.Empty));
+        .ForMember(x => x.ReferenceDesign,
+          opt => opt.ResolveUsing<CustomGridReferenceDesignResolver>());
     }
+
+    
+    public class CustomGridReferenceDesignResolver : IValueResolver<CompactionReportTRexRequest, GriddedReportRequestArgument, DesignOffset>
+    {
+      public DesignOffset Resolve(CompactionReportTRexRequest src, GriddedReportRequestArgument dst, DesignOffset member, ResolutionContext context)
+      {
+        return new DesignOffset(src.CutFillDesignUid ?? Guid.Empty, src.CutFillDesignOffset ?? 0);
+      }
+    }
+
+    public class CustomStationOffsetReferenceDesignResolver : IValueResolver<CompactionReportStationOffsetTRexRequest, StationOffsetReportRequestArgument_ApplicationService, DesignOffset>
+    {
+      public DesignOffset Resolve(CompactionReportStationOffsetTRexRequest src, StationOffsetReportRequestArgument_ApplicationService dst, DesignOffset member, ResolutionContext context)
+      {
+        return new DesignOffset(src.CutFillDesignUid ?? Guid.Empty, src.CutFillDesignOffset ?? 0);
+      }
+    }
+
   }
 }

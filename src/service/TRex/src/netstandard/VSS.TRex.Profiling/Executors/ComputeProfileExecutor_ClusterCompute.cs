@@ -150,8 +150,8 @@ namespace VSS.TRex.Profiling.Executors
           }
 
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design,
-            /* todo elevation range design: */null,
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, design, /* todo design offset */0,
+            /* todo elevation range design: */null, /* todo elevation range design offset */ 0,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
           Log.LogInformation("Building cell profile");

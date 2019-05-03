@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 
@@ -19,6 +20,7 @@ namespace VSS.TRex.Webtools.Controllers
     public async Task<JsonResult> GetCellDatum(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? designUid,
+      [FromQuery] double? offset,
       [FromQuery] int displayMode,
       [FromQuery] double x,
       [FromQuery] double y)
@@ -31,7 +33,7 @@ namespace VSS.TRex.Webtools.Controllers
         Mode = (DisplayMode) displayMode,
         CoordsAreGrid = true,
         Point = new XYZ(x, y),
-        ReferenceDesign.DesignID = designUid ?? Guid.Empty
+        ReferenceDesign = new DesignOffset(designUid ?? Guid.Empty, offset ?? 0)
       });
 
       var result = new

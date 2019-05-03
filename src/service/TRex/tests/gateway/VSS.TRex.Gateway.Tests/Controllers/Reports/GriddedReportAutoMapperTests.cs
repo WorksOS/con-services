@@ -145,6 +145,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
     public void GriddedReportDataResult()
     {
       var projectUid = Guid.NewGuid();
+      //Set these for testing Automapper - they're not actually used in the gridded data
       var cutFillDesignUid = Guid.NewGuid();
       var cutFillDesignOffset = 1.5;
       var request = new CompactionReportGridTRexRequest(
@@ -193,7 +194,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       retrieved.GriddedData.Rows[0].Northing.Should().Be(computeResult.GriddedData.Rows[0].Northing);
       retrieved.GriddedData.Rows[0].Easting.Should().Be(computeResult.GriddedData.Rows[0].Easting);
       retrieved.GriddedData.Rows[0].Elevation.Should().Be(computeResult.GriddedData.Rows[0].Elevation);
-      retrieved.GriddedData.Rows[0].CutFill.Should().Be(computeResult.GriddedData.Rows[0].CutFill + cutFillDesignOffset);
+      retrieved.GriddedData.Rows[0].CutFill.Should().Be(computeResult.GriddedData.Rows[0].CutFill);
       retrieved.GriddedData.Rows[0].Cmv.Should().Be(computeResult.GriddedData.Rows[0].Cmv);
       retrieved.GriddedData.Rows[0].Mdp.Should().Be(computeResult.GriddedData.Rows[0].Mdp);
       retrieved.GriddedData.Rows[0].PassCount.Should().Be(computeResult.GriddedData.Rows[0].PassCount);

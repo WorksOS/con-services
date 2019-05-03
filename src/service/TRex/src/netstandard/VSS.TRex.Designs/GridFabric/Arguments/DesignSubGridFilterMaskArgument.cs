@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
@@ -33,12 +34,12 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="siteModelID"></param>
     /// <param name="originX"></param>
     /// <param name="originY"></param>
-    /// <param name="designUid"></param>
+    /// <param name="referenceSurface"></param>
     public DesignSubGridFilterMaskArgument(Guid siteModelID,
       uint originX,
       uint originY,
-      Guid designUid,
-      double cellSize) : base(siteModelID, designUid, 0)
+      DesignOffset referenceSurface,
+      double cellSize) : base(siteModelID, referenceSurface)
     {
       OriginX = originX;
       OriginY = originY;

@@ -7,6 +7,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Tests.Rendering
     private TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null)
     {
       return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256,
-        new FilterSet(new CombinedFilter()), Guid.Empty);
+        new FilterSet(new CombinedFilter()), new DesignOffset());
     }
 
     private void BuildModelForSingleCellTileRender(out ISiteModel siteModel, float heightIncrement,
@@ -299,13 +300,14 @@ namespace VSS.TRex.Tests.Rendering
       var palette = usePalette ? PVMPaletteFactory.GetPallete(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
 
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
 
       // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
       // with an additional 1 meter border around the cell
-      arg.ReferenceDesign.DesignID = designUid;
+      arg.ReferenceDesign = referenceDesign;
       arg.Extents = siteModel.Grid.GetCellExtents(cellX, cellY);
       arg.Extents.Expand(1.0, 1.0);
 

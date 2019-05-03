@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
@@ -77,9 +78,9 @@ namespace VSS.TRex.Pipelines
     public bool SurveyedSurfacesExcludedViaTimeFiltering;
 
     /// <summary>
-    /// The identifier for any cut/fill design reference being supplied to the request
+    /// The identifier for any cut/fill design reference being supplied to the request together with its offset for a reference surface
     /// </summary>
-    public Guid CutFillDesignID;
+    public DesignOffset CutFillDesign;
 
     /// <summary>
     /// Records if the pipeline was aborted before completing operations
@@ -137,7 +138,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="gridDataType"></param>
     /// <param name="response"></param>
     /// <param name="filters"></param>
-    /// <param name="cutFillDesignID"></param>
+    /// <param name="cutFillDesign"></param>
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
@@ -149,7 +150,7 @@ namespace VSS.TRex.Pipelines
                              GridDataType gridDataType,
                              ISubGridsPipelinedReponseBase response,
                              IFilterSet filters,
-                             Guid cutFillDesignID,
+                             DesignOffset cutFillDesign,
                              ITRexTask task,
                              ISubGridPipelineBase pipeline,
                              IRequestAnalyser requestAnalyser,
@@ -162,7 +163,7 @@ namespace VSS.TRex.Pipelines
       GridDataType = gridDataType;
       Response = response;
       Filters = filters;
-      CutFillDesignID = cutFillDesignID;
+      CutFillDesign = cutFillDesign;
       Task = task;
       Pipeline = pipeline;
 
@@ -279,18 +280,18 @@ namespace VSS.TRex.Pipelines
       // sub grid requests that overlay the actual design
       if (RequestRequiresAccessToDesignFileExistenceMap)
       {
-        if (CutFillDesignID == Guid.Empty)
+        if (CutFillDesign?.DesignID == Guid.Empty)
         {
             Log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
             Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
             return false;
         }
 
-        DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
+        DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
 
         if (DesignSubGridOverlayMap == null)
         {
-          Log.LogError($"Failed to request sub grid overlay index for design {CutFillDesignID} in datamodel {DataModelID}");
+          Log.LogError($"Failed to request sub grid overlay index for design {CutFillDesign.DesignID} in datamodel {DataModelID}");
           Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
           return false;
         }
@@ -325,7 +326,7 @@ namespace VSS.TRex.Pipelines
       // PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
 
       Pipeline.DataModelID = DataModelID;
-      Pipeline.ReferenceDesignID = CutFillDesignID;
+      Pipeline.ReferenceDesign = CutFillDesign;
 
       //TODO Re-add when lift build settings are supported
       // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);

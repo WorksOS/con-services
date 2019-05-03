@@ -9,6 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -57,7 +58,7 @@ namespace VSS.TRex.Webtools.Controllers
         extents: new BoundingWorldExtent3D(minX, minY, maxX, maxY),
         mode: (DisplayMode) mode,
         filters: new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        referenceDesignUid: Guid.Empty
+        referenceDesign: new DesignOffset()
       )) as TileRenderResponse_Core2;
 
       return new JsonResult(new TileResult(response?.TileBitmapData));

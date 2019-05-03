@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -31,7 +32,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Arguments
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesign.DesignID = Guid.NewGuid(),
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 0),
         ReportElevation = true,
         ReportCmv = true,
         ReportMdp = true,

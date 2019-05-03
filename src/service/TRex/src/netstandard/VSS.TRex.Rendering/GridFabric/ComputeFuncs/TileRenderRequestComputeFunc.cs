@@ -52,7 +52,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
              arg.CoordsAreGrid,
              arg.PixelsX, arg.PixelsY,
              arg.Filters,
-             arg.ReferenceDesign.DesignID,
+             arg.ReferenceDesign,
              arg.Palette,
              Color.Black,
              arg.TRexNodeID);

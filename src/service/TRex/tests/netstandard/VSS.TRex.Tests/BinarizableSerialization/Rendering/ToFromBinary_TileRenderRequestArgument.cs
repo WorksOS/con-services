@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
-        ReferenceDesign.DesignID = Guid.Empty,
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 0),
         Mode = DisplayMode.Height,
         CoordsAreGrid =  true,
         PixelsX = 100,

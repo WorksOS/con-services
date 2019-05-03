@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
@@ -18,8 +19,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
       var argument = new DesignSubGridRequestArgumentBase
       {
         ProjectID = Guid.NewGuid(),
-        ReferenceDesign.DesignID = Guid.Empty,
-        ReferenceDesign.Offset = 123.4,
+        ReferenceDesign = new DesignOffset(Guid.NewGuid(), 123.4),
         TRexNodeID = "NodeID",
         Filters = null
       };

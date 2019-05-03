@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.GridDecimator;
@@ -119,7 +120,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           gridDataType: GridDataFromModeConverter.Convert(DisplayMode.Height),
           response: SurfaceSubGridsResponse,
           filters: Filters,
-          cutFillDesignID: Guid.Empty,
+          cutFillDesign: new DesignOffset(), 
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SurfaceExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
